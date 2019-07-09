@@ -16,3 +16,8 @@ obj-$(CONFIG_MSM_GCC_8960) += gcc-msm8960.o
 obj-$(CONFIG_MSM_GCC_8974) += gcc-msm8974.o
 obj-$(CONFIG_MSM_MMCC_8960) += mmcc-msm8960.o
 obj-$(CONFIG_MSM_MMCC_8974) += mmcc-msm8974.o
+# MSM8976
+obj-$(CONFIG_ARCH_MSM8916)	+=clock-gcc-8976.o
+obj-$(CONFIG_ARCH_MSM8916)	+=clock-rcgwr.o
+obj-$(CONFIG_ARCH_MSM8916)	+=clock-cpu-8976.o
+

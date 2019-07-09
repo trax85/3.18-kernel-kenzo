@@ -60,7 +60,7 @@ static void scm_disable_sdi(void);
 * There is no API from TZ to re-enable the registers.
 * So the SDI cannot be re-enabled when it already by-passed.
 */
-static int download_mode = 1;
+int download_mode = 0;
 #else
 static const int download_mode;
 #endif
@@ -290,6 +290,9 @@ static void msm_restart_prepare(const char *cmd)
 				((cmd != NULL && cmd[0] != '\0') &&
 				strcmp(cmd, "userrequested")));
 	}
+#ifdef CONFIG_MSM_PRESERVE_MEM
+	need_warm_reset = true;
+#endif
 
 	/* Hard reset the PMIC unless memory contents must be maintained. */
 	if (need_warm_reset) {
