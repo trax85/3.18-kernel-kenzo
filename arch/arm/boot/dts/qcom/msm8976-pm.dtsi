@@ -108,7 +108,6 @@
 				label = "a53";
 				qcom,spm-device-names = "l2";
 				qcom,default-level=<0>;
-                                qcom,use-prediction;
 				qcom,cpu = <&CPU0 &CPU1 &CPU2 &CPU3>;
 				qcom,psci-mode-shift = <4>;
 				qcom,psci-mode-mask = <0xf>;
@@ -194,7 +193,6 @@
 				label = "a72";
 				qcom,spm-device-names = "l2";
 				qcom,default-level=<0>;
-                                qcom,use-prediction;
 				qcom,cpu = <&CPU4 &CPU5 &CPU6 &CPU7>;
 				qcom,psci-mode-shift = <4>;
 				qcom,psci-mode-mask = <0xf>;
@@ -293,7 +291,7 @@
 		    <0xb011008 0x4>;
 		reg-names = "vmpm", "ipc";
 		interrupts = <0 171 1>;
-		clocks = <&clock_gcc _XO_LPM_CLK>;
+		clocks = <&clock_gcc clk_xo_lpm_clk>;
 		clock-names = "xo";
 
 		qcom,ipc-bit-offset = <1>;

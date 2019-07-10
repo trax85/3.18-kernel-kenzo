@@ -70,16 +70,16 @@
 		 */
 		qcom,clk-map = <0x00000F9E>;
 
-	clocks = <&clock_gcc_gfx GCC_GFX3D_OXILI_CLK>,
-		 <&clock_gcc_gfx GCC_GFX3D_OXILI_AHB_CLK>,
-		 <&clock_gcc_gfx GCC_GFX3D_OXILI_GMEM_CLK>,
-		 <&clock_gcc_gfx GCC_GFX3D_BIMC_CLK>,
-		 <&clock_gcc_gfx GCC_GFX3D_GTCU_AHB_CLK>,
-		 <&clock_gcc_gfx GCC_GFX3D_TCU_CLK>,
-		 <&clock_gcc_gfx GCC_GFX3D_TBU0_CLK>,
-		 <&clock_gcc_gfx GCC_GFX3D_TBU1_CLK>,
-		 <&clock_gcc_gfx GCC_GFX3D_OXILI_TIMER_CLK>,
-		 <&clock_gcc_gfx GCC_GFX3D_OXILI_AON_CLK>;
+	clocks = <&clock_gcc_gfx clk_gcc_oxili_gfx3d_clk>,
+		 <&clock_gcc_gfx clk_gcc_oxili_ahb_clk>,
+		 <&clock_gcc_gfx clk_gcc_oxili_gmem_clk>,
+		 <&clock_gcc_gfx clk_gcc_bimc_gfx_clk>,
+		 <&clock_gcc_gfx clk_gcc_gtcu_ahb_clk>,
+		 <&clock_gcc_gfx clk_gcc_gfx_tcu_clk>,
+		 <&clock_gcc_gfx clk_gcc_gfx_tbu_clk>,
+		 <&clock_gcc_gfx clk_gcc_gfx_1_tbu_clk>,
+		 <&clock_gcc_gfx clk_gcc_oxili_timer_clk>,
+		 <&clock_gcc_gfx clk_gcc_oxili_aon_clk>;
 
 	clock-names =   "core_clk", "iface_clk", "mem_clk",
 			"mem_iface_clk", "gtcu_iface_clk",
@@ -122,7 +122,7 @@
 		coresight-outports = <0>;
 		coresight-child-list = <&funnel_in0>;
 		coresight-child-ports = <4>;
-                
+
                 qcom,deep-nap-timeout = <10>; //msecs
 
 		/* Enable context aware freq. scaling */

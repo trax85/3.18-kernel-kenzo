@@ -190,7 +190,7 @@ static int bcl_write_general_register(int16_t reg_offset,
 		return -EINVAL;
 	}
 	ret = spmi_ext_register_writel(bcl_perph->spmi->ctrl,
-		bcl_perph->slave_id, (base + reg_offset),
+ 	 bcl_perph->slave_id, (base + reg_offset),
 		write_buf, 1);
 	if (ret < 0) {
 		pr_err("Error reading register %d. err:%d", reg_offset, ret);
@@ -1257,4 +1257,3 @@ static void __exit bcl_perph_exit(void)
 fs_initcall(bcl_perph_init);
 module_exit(bcl_perph_exit);
 MODULE_ALIAS("platform:" BCL_DRIVER_NAME);
-

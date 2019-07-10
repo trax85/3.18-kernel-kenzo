@@ -606,36 +606,35 @@ void mdss_dsi_lp_cd_rx(struct mdss_dsi_ctrl_pdata *ctrl)
 	wmb();
 }
 
-static void mdss_dsi_28nm_phy_regulator_enable(
+/*static void mdss_dsi_28nm_phy_regulator_enable(
 		struct mdss_dsi_ctrl_pdata *ctrl_pdata)
 {
 	struct mdss_dsi_phy_ctrl *pd;
 	pd = &(((ctrl_pdata->panel_data).panel_info.mipi).dsi_phy_db);
 
 	if (pd->reg_ldo_mode) {
-		/* Regulator ctrl 0 */
+
 		MIPI_OUTP(ctrl_pdata->phy_regulator_io.base, 0x0);
-		/* Regulator ctrl - CAL_PWR_CFG */
+
 		MIPI_OUTP((ctrl_pdata->phy_regulator_io.base)
 				+ 0x18, pd->regulator[6]);
-		/* Add H/w recommended delay */
 		udelay(1000);
-		/* Regulator ctrl - TEST */
+
 		MIPI_OUTP((ctrl_pdata->phy_regulator_io.base)
 				+ 0x14, pd->regulator[5]);
-		/* Regulator ctrl 3 */
+
 		MIPI_OUTP((ctrl_pdata->phy_regulator_io.base)
 				+ 0xc, pd->regulator[3]);
-		/* Regulator ctrl 2 */
+
 		MIPI_OUTP((ctrl_pdata->phy_regulator_io.base)
 				+ 0x8, pd->regulator[2]);
-		/* Regulator ctrl 1 */
+
 		MIPI_OUTP((ctrl_pdata->phy_regulator_io.base)
 				+ 0x4, pd->regulator[1]);
-		/* Regulator ctrl 4 */
+
 		MIPI_OUTP((ctrl_pdata->phy_regulator_io.base)
 				+ 0x10, pd->regulator[4]);
-		/* LDO ctrl */
+
 		if ((ctrl_pdata->shared_data->hw_rev ==
 			MDSS_DSI_HW_REV_103_1)
 			|| (ctrl_pdata->shared_data->hw_rev ==
@@ -644,34 +643,34 @@ static void mdss_dsi_28nm_phy_regulator_enable(
 		else
 			MIPI_OUTP((ctrl_pdata->phy_io.base) + 0x1dc, 0x0d);
 	} else {
-		/* Regulator ctrl 0 */
+
 		MIPI_OUTP(ctrl_pdata->phy_regulator_io.base,
 					0x0);
-		/* Regulator ctrl - CAL_PWR_CFG */
+
 		MIPI_OUTP((ctrl_pdata->phy_regulator_io.base)
 				+ 0x18, pd->regulator[6]);
-		/* Add H/w recommended delay */
+
 		udelay(1000);
-		/* Regulator ctrl 1 */
+
 		MIPI_OUTP((ctrl_pdata->phy_regulator_io.base)
 				+ 0x4, pd->regulator[1]);
-		/* Regulator ctrl 2 */
+
 		MIPI_OUTP((ctrl_pdata->phy_regulator_io.base)
 				+ 0x8, pd->regulator[2]);
-		/* Regulator ctrl 3 */
+
 		MIPI_OUTP((ctrl_pdata->phy_regulator_io.base)
 				+ 0xc, pd->regulator[3]);
-		/* Regulator ctrl 4 */
+
 		MIPI_OUTP((ctrl_pdata->phy_regulator_io.base)
 				+ 0x10, pd->regulator[4]);
-		/* LDO ctrl */
+
 		MIPI_OUTP((ctrl_pdata->phy_io.base) + 0x1dc, 0x00);
-		/* Regulator ctrl 0 */
+	
 		MIPI_OUTP(ctrl_pdata->phy_regulator_io.base,
 				pd->regulator[0]);
 	}
 }
-
+*/
 static void mdss_dsi_28nm_phy_config(struct mdss_dsi_ctrl_pdata *ctrl_pdata)
 {
 	struct mdss_dsi_phy_ctrl *pd;
@@ -1153,17 +1152,17 @@ static void mdss_dsi_phy_regulator_ctrl(struct mdss_dsi_ctrl_pdata *ctrl,
 			case MDSS_DSI_HW_REV_103:
 				mdss_dsi_20nm_phy_regulator_enable(ctrl);
 				break;
-			default:
+			//default:
 			/*
 			 * For dual dsi case, do not reconfigure dsi phy
 			 * regulator if the other dsi controller is still
 			 * active.
 			 */
-			if (!mdss_dsi_is_hw_config_dual(sdata) ||
+			/*if (!mdss_dsi_is_hw_config_dual(sdata) ||
 				(other_ctrl && (!other_ctrl->is_phyreg_enabled
 						|| other_ctrl->mmss_clamp)))
 				mdss_dsi_28nm_phy_regulator_enable(ctrl);
-				break;
+				break;*/
 			}
 		}
 		ctrl->is_phyreg_enabled = 1;

@@ -25,25 +25,25 @@
 		qcom,msm-bus,num-paths = <2>;
 		qcom,msm-bus,vectors-KBps =
 			<22 512 0 0>, <23 512 0 0>,
-			<22 512 0 6600000>, <23 512 0 6600000>,
-			<22 512 0 7000000>, <23 512 0 7000000>;
+			<22 512 0 6400000>, <23 512 0 6400000>,
+			<22 512 0 6400000>, <23 512 0 6400000>;
 
 		/* Fudge factors */
 		qcom,mdss-ab-factor = <1 1>;		/* no fudge    */
 		qcom,mdss-ib-factor = <1 1>;		/* no fudge  */
 		qcom,mdss-ib-factor-cmd = <1 1>;	/* no fudge */
 		qcom,mdss-clk-factor = <105 100>;	/* 1.05 times */
-		qcom,max-bandwidth-low-kbps = <6600000>;
-		qcom,max-bandwidth-high-kbps = <6600000>;
-		qcom,max-bandwidth-per-pipe-kbps = <4 2700000>,	/* HFlip */
-						   <8 2100000>;	/* VFlip */
+		qcom,max-bandwidth-low-kbps = <5700000>;
+		qcom,max-bandwidth-high-kbps = <5700000>;
+		qcom,max-bandwidth-per-pipe-kbps = <4 2100000>,	/* HFlip */
+						   <8 1800000>;	/* VFlip */
 
 		/* VBIF QoS remapper settings*/
 		qcom,mdss-vbif-qos-rt-setting = <2 2 2 2>;
 		qcom,mdss-vbif-qos-nrt-setting = <1 1 1 1>;
 		qcom,max-mixer-width = <2560>;
 		qcom,mdss-mdp-reg-offset = <0x00001000>;
-		qcom,max-clk-rate = <420000000>;
+		qcom,max-clk-rate = <360000000>;
 		qcom,mdss-pipe-vig-off = <0x00005000 0x00007000>;
 		qcom,mdss-pipe-rgb-off = <0x00015000 0x00017000>;
 		qcom,mdss-pipe-dma-off = <0x00025000>;
@@ -92,14 +92,15 @@
 		qcom,mdss-has-panic-ctrl;
 		qcom,mdss-has-dst-split;
 		qcom,mdss-dsc-off = <0x00081000 0x00081400>;
+		qcom,mdss-idle-power-collapse-enabled;
 
-		clocks = <&clock_gcc GCC_MDSS_AHB_CLK>,
-			 <&clock_gcc GCC_MDSS_AXI_CLK>,
-			 <&clock_gcc MDP_CLK_SRC>,
-			 <&clock_gcc_vote GCC_MDSS_MDP_VOTE_CLK>,
-			 <&clock_gcc GCC_MDSS_VSYNC_CLK>,
-			 <&clock_gcc GCC_MDP_TBU_CLK>,
-			 <&clock_gcc GCC_MDP_RT_TBU_CLK>;
+		clocks = <&clock_gcc clk_gcc_mdss_ahb_clk>,
+			 <&clock_gcc clk_gcc_mdss_axi_clk>,
+			 <&clock_gcc clk_mdp_clk_src>,
+			 <&clock_gcc clk_gcc_mdss_mdp_clk>,
+			 <&clock_gcc clk_gcc_mdss_vsync_clk>,
+			 <&clock_gcc clk_gcc_mdp_tbu_clk>,
+			 <&clock_gcc clk_gcc_mdp_rt_tbu_clk>;
 		clock-names = "iface_clk", "bus_clk", "core_clk_src",
 				"core_clk", "vsync_clk", "tbu_clk",
 				"tbu_rt_clk";
@@ -338,3 +339,4 @@
 };
 
 #include "msm8976-mdss-panels-kenzo.dtsi"
+

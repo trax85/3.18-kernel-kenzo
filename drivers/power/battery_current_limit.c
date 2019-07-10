@@ -575,8 +575,8 @@ static int vph_disable(void)
 {
 	int ret = 0;
 
-	ret = qpnp_adc_tm_disable_chan_meas(gbcl->btm_adc_tm_dev,
-			&gbcl->btm_vph_adc_param);
+//	ret = qpnp_adc_tm_disable_chan_meas(gbcl->btm_adc_tm_dev,
+//			&gbcl->btm_vph_adc_param);
 	if (ret) {
 		pr_err("Error disabling ADC. err:%d\n", ret);
 		gbcl->bcl_mode = BCL_DEVICE_ENABLED;
@@ -594,8 +594,8 @@ static int ibat_disable(void)
 {
 	int ret = 0;
 
-	ret = qpnp_adc_tm_disable_chan_meas(gbcl->btm_adc_tm_dev,
-			&gbcl->btm_ibat_adc_param);
+//	ret = qpnp_adc_tm_disable_chan_meas(gbcl->btm_adc_tm_dev,
+//			&gbcl->btm_ibat_adc_param);
 	if (ret) {
 		pr_err("Error disabling ADC. err:%d\n", ret);
 		gbcl->bcl_mode = BCL_DEVICE_ENABLED;

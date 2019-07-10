@@ -1915,7 +1915,7 @@ static void wcnss_notify_vbat(enum qpnp_tm_state state, void *ctx)
 			penv->vbat_monitor_params.high_thr);
 
 	rc = qpnp_adc_tm_channel_measure(penv->adc_tm_dev,
-					 &penv->vbat_monitor_params);
+				 &penv->vbat_monitor_params);
 
 	if (rc)
 		pr_err("%s: tm setup failed: %d\n", __func__, rc);

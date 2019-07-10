@@ -2280,9 +2280,9 @@ static inline int qpnp_iadc_resume_calibration(struct qpnp_iadc_chip *iadc)
 { return -ENXIO; }
 #endif
 
-/* Public API */
+/* Public API
 #if defined(CONFIG_THERMAL_QPNP_ADC_TM)				\
-			|| defined(CONFIG_THERMAL_QPNP_ADC_TM_MODULE)
+			|| defined(CONFIG_THERMAL_QPNP_ADC_TM_MODULE)*/
 /**
  * qpnp_adc_tm_usbid_configure() - Configures Channel 0 of VADC_BTM to
  *		monitor USB_ID channel using 100k internal pull-up.
@@ -2293,15 +2293,15 @@ static inline int qpnp_iadc_resume_calibration(struct qpnp_iadc_chip *iadc)
  *		Clients pass the low/high voltage along with the threshold
  *		notification callback.
  */
-int32_t qpnp_adc_tm_usbid_configure(struct qpnp_adc_tm_chip *chip,
-					struct qpnp_adc_tm_btm_param *param);
+/*int32_t qpnp_adc_tm_usbid_configure(struct qpnp_adc_tm_chip *chip,
+					struct qpnp_adc_tm_btm_param *param);*/
 /**
  * qpnp_adc_tm_usbid_end() - Disables the monitoring of channel 0 thats
  *		assigned for monitoring USB_ID. Disables the low/high
  *		threshold activation for channel 0 as well.
  * @param:	none.
  */
-int32_t qpnp_adc_tm_usbid_end(struct qpnp_adc_tm_chip *chip);
+//int32_t qpnp_adc_tm_usbid_end(struct qpnp_adc_tm_chip *chip);
 /**
  * qpnp_adc_tm_channel_measure() - Configures kernel clients a channel to
  *		monitor the corresponding ADC channel for threshold detection.
@@ -2312,8 +2312,8 @@ int32_t qpnp_adc_tm_usbid_end(struct qpnp_adc_tm_chip *chip);
  *		Clients pass the low/high temperature along with the threshold
  *		notification callback.
  */
-int32_t qpnp_adc_tm_channel_measure(struct qpnp_adc_tm_chip *chip,
-					struct qpnp_adc_tm_btm_param *param);
+//int32_t qpnp_adc_tm_channel_measure(struct qpnp_adc_tm_chip *chip,
+	//				struct qpnp_adc_tm_btm_param *param);
 /**
  * qpnp_adc_tm_disable_chan_meas() - Disables the monitoring of channel thats
  *		assigned for monitoring kernel clients. Disables the low/high
@@ -2322,8 +2322,8 @@ int32_t qpnp_adc_tm_channel_measure(struct qpnp_adc_tm_chip *chip,
  *		This is used to identify the channel for which the corresponding
  *		channels high/low threshold notification will be disabled.
  */
-int32_t qpnp_adc_tm_disable_chan_meas(struct qpnp_adc_tm_chip *chip,
-					struct qpnp_adc_tm_btm_param *param);
+/*int32_t qpnp_adc_tm_disable_chan_meas(struct qpnp_adc_tm_chip *chip,
+					struct qpnp_adc_tm_btm_param *param);*/
 /**
  * qpnp_get_adc_tm() - Clients need to register with the adc_tm using the
  *		corresponding device instance it wants to read the channels
@@ -2334,8 +2334,8 @@ int32_t qpnp_adc_tm_disable_chan_meas(struct qpnp_adc_tm_chip *chip,
  * @struct qpnp_adc_tm_chip * - On success returns the vadc device structure
  *		pointer that needs to be used during an ADC TM request.
  */
-struct qpnp_adc_tm_chip *qpnp_get_adc_tm(struct device *dev, const char *name);
-#else
+//struct qpnp_adc_tm_chip *qpnp_get_adc_tm(struct device *dev, const char *name);
+//#else
 static inline int32_t qpnp_adc_tm_usbid_configure(
 			struct qpnp_adc_tm_chip *chip,
 			struct qpnp_adc_tm_btm_param *param)
@@ -2353,6 +2353,6 @@ static inline int32_t qpnp_adc_tm_disable_chan_meas(
 static inline struct qpnp_adc_tm_chip *qpnp_get_adc_tm(struct device *dev,
 							const char *name)
 { return ERR_PTR(-ENXIO); }
-#endif
+//#endif
 
 #endif

@@ -828,4 +828,3 @@ static inline void perf_test_probe_##call(void)				\
 
 #include TRACE_INCLUDE(TRACE_INCLUDE_FILE)
 #endif /* CONFIG_PERF_EVENTS */
-

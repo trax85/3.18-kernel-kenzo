@@ -31,8 +31,8 @@
 			qcom,bus-type = <2>;
 			qcom,util-fact = <154>;
 			clock-names = "bus_clk", "bus_a_clk";
-			clocks = <&clock_rpmcc  BIMC_MSMBUS_CLK>,
-				<&clock_rpmcc  BIMC_MSMBUS_A_CLK>;
+			clocks = <&clock_gcc  clk_bimc_msmbus_clk>,
+				<&clock_gcc  clk_bimc_msmbus_a_clk>;
 
 			coresight-id = <203>;
 			coresight-name = "coresight-bimc";
@@ -51,8 +51,9 @@
 			qcom,qos-delta = <0x1000>;
 			qcom,bus-type = <1>;
 			clock-names = "bus_clk", "bus_a_clk";
-			clocks = <&clock_rpmcc  PNOC_MSMBUS_CLK>,
-				<&clock_rpmcc  PNOC_MSMBUS_A_CLK>;
+			clocks = <&clock_gcc  clk_pcnoc_msmbus_clk>,
+				<&clock_gcc  clk_pcnoc_msmbus_a_clk>;
+
 			coresight-id = <201>;
 			coresight-name = "coresight-pcnoc";
 			coresight-nr-inports = <0>;
@@ -70,8 +71,8 @@
 			qcom,qos-off = <0x1000>;
 			qcom,bus-type = <1>;
 			clock-names = "bus_clk", "bus_a_clk";
-			clocks = <&clock_gcc  _SNOC_MSMBUS_CLK>,
-				<&clock_gcc  _SNOC_MSMBUS_A_CLK>;
+			clocks = <&clock_gcc  clk_snoc_msmbus_clk>,
+				<&clock_gcc  clk_snoc_msmbus_a_clk>;
 
 			coresight-id = <200>;
 			coresight-name = "coresight-snoc";
@@ -91,8 +92,8 @@
 			qcom,bus-type = <1>;
 			qcom,util-fact = <154>;
 			clock-names = "bus_clk", "bus_a_clk";
-			clocks = <&clock_gcc  _SYSMMNOC_MSMBUS_CLK>,
-				<&clock_gcc  _SYSMMNOC_MSMBUS_A_CLK>;
+			clocks = <&clock_gcc  clk_sysmmnoc_msmbus_clk>,
+				<&clock_gcc  clk_sysmmnoc_msmbus_a_clk>;
 		};
 
 		/*BIMC Masters*/
@@ -226,7 +227,7 @@
 		mas_crypto: mas-crypto {
 			cell-id = <MSM_BUS_MASTER_CRYPTO_CORE0>;
 			label = "mas-crypto";
-			qcom,buswidth = <16>;
+			qcom,buswidth = <8>;
 			qcom,agg-ports = <1>;
 			qcom,ap-owned;
 			qcom,qport = <0>;
@@ -416,7 +417,7 @@
 		mas_jpeg: mas-jpeg {
 			cell-id = <MSM_BUS_MASTER_JPEG>;
 			label = "mas-jpeg";
-			qcom,buswidth = <32>;
+			qcom,buswidth = <16>;
 			qcom,agg-ports = <1>;
 			qcom,ap-owned;
 			qcom,qport = <6>;
@@ -431,7 +432,7 @@
 		mas_oxili: mas-oxili {
 			cell-id = <MSM_BUS_MASTER_GRAPHICS_3D>;
 			label = "mas-oxili";
-			qcom,buswidth = <32>;
+			qcom,buswidth = <16>;
 			qcom,agg-ports = <2>;
 			qcom,ap-owned;
 			qcom,qport = <16 17>;
@@ -447,7 +448,7 @@
 		mas_mdp0: mas-mdp0 {
 			cell-id = <MSM_BUS_MASTER_MDP_PORT0>;
 			label = "mas-mdp0";
-			qcom,buswidth = <32>;
+			qcom,buswidth = <16>;
 			qcom,agg-ports = <1>;
 			qcom,ap-owned;
 			qcom,qport = <7>;
@@ -463,7 +464,7 @@
 		mas_mdp1: mas-mdp1 {
 			cell-id = <MSM_BUS_MASTER_MDP_PORT1>;
 			label = "mas-mdp1";
-			qcom,buswidth = <32>;
+			qcom,buswidth = <16>;
 			qcom,agg-ports = <1>;
 			qcom,ap-owned;
 			qcom,qport = <13>;
@@ -492,7 +493,7 @@
 		mas_venus_0: mas-venus-0 {
 			cell-id = <MSM_BUS_MASTER_VIDEO_P0>;
 			label = "mas-venus-0";
-			qcom,buswidth = <32>;
+			qcom,buswidth = <16>;
 			qcom,agg-ports = <1>;
 			qcom,ap-owned;
 			qcom,qport = <8>;
@@ -507,7 +508,7 @@
 		mas_venus_1: mas-venus-1 {
 			cell-id = <MSM_BUS_MASTER_VIDEO_P1>;
 			label = "mas-venus-1";
-			qcom,buswidth = <32>;
+			qcom,buswidth = <16>;
 			qcom,agg-ports = <1>;
 			qcom,ap-owned;
 			qcom,qport = <14>;
@@ -522,7 +523,7 @@
 		mas_vfe_0: mas-vfe-0 {
 			cell-id = <MSM_BUS_MASTER_VFE0>;
 			label = "mas-vfe-0";
-			qcom,buswidth = <32>;
+			qcom,buswidth = <16>;
 			qcom,agg-ports = <1>;
 			qcom,ap-owned;
 			qcom,qport = <9>;
@@ -537,7 +538,7 @@
 		mas_vfe_1: mas-vfe-1 {
 			cell-id = <MSM_BUS_MASTER_VFE1>;
 			label = "mas-vfe-1";
-			qcom,buswidth = <32>;
+			qcom,buswidth = <16>;
 			qcom,agg-ports = <1>;
 			qcom,ap-owned;
 			qcom,qport = <15>;
@@ -552,7 +553,7 @@
 		mas_cpp: mas-cpp {
 			cell-id = <MSM_BUS_MASTER_CPP>;
 			label = "mas-cpp";
-			qcom,buswidth = <32>;
+			qcom,buswidth = <16>;
 			qcom,agg-ports = <1>;
 			qcom,ap-owned;
 			qcom,qport = <12>;
@@ -847,7 +848,7 @@
 		slv_crypto_0_cfg:slv-crypto-0-cfg {
 			cell-id = <MSM_BUS_SLAVE_CRYPTO_0_CFG>;
 			label = "slv-crypto-0-cfg";
-			qcom,buswidth = <16>;
+			qcom,buswidth = <4>;
 			qcom,agg-ports = <1>;
 			qcom,ap-owned;
 			qcom,bus-dev = <&fab_pcnoc>;
@@ -913,7 +914,7 @@
 		slv_camera_ss_cfg:slv-camera-ss-cfg {
 			cell-id = <MSM_BUS_SLAVE_CAMERA_CFG>;
 			label = "slv-camera-ss-cfg";
-			qcom,buswidth = <16>;
+			qcom,buswidth = <4>;
 			qcom,agg-ports = <1>;
 			qcom,ap-owned;
 			qcom,bus-dev = <&fab_pcnoc>;
@@ -923,7 +924,7 @@
 		slv_disp_ss_cfg:slv-disp-ss-cfg {
 			cell-id = <MSM_BUS_SLAVE_DISPLAY_CFG>;
 			label = "slv-disp-ss-cfg";
-			qcom,buswidth = <16>;
+			qcom,buswidth = <4>;
 			qcom,agg-ports = <1>;
 			qcom,ap-owned;
 			qcom,bus-dev = <&fab_pcnoc>;
@@ -933,7 +934,7 @@
 		slv_venus_cfg:slv-venus-cfg {
 			cell-id = <MSM_BUS_SLAVE_VENUS_CFG>;
 			label = "slv-venus-cfg";
-			qcom,buswidth = <16>;
+			qcom,buswidth = <4>;
 			qcom,agg-ports = <1>;
 			qcom,ap-owned;
 			qcom,bus-dev = <&fab_pcnoc>;
@@ -1128,11 +1129,11 @@
 		qcom,spdm-client = <0>;
 
 		clock-names = "cci_clk";
-		clocks = <&clock_cpu P_CCI_CLK>;
+		clocks = <&clock_cpu clk_cci_clk>;
 
 		qcom,bw-upstep = <520>;
 		qcom,bw-dwnstep = <3640>;
-		qcom,max-vote = <9887>;
+		qcom,max-vote = <6760>;
 		qcom,up-step-multp = <2>;
 		qcom,spdm-interval = <50>;
 
@@ -1150,7 +1151,7 @@
 		qcom,response-time-us = <1000 1000 1000 1000 1000 1000>;
 		/* pl1 low, pl1 high, pl2 low, pl2 high, pl3 low, pl3 high */
 		qcom,cci-response-time-us = <1000 1000 1000 1000 1000 1000>;
-		qcom,max-cci-freq = <614400>;
+		qcom,max-cci-freq = <500000>;
 	};
 
 	devfreq_spdm_gov {
