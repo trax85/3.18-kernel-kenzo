@@ -8,10 +8,6 @@ clk-qcom-y += clk-rcg2.o
 clk-qcom-y += clk-branch.o
 clk-qcom-y += reset.o
 
-# MSM8976
-obj-$(CONFIG_ARCH_MSM8916)	+=clock-gcc-8976.o
-obj-$(CONFIG_ARCH_MSM8916)	+=clock-rcgwr.o
-obj-$(CONFIG_ARCH_MSM8916)	+=clock-cpu-8976.o
 
 obj-$(CONFIG_APQ_GCC_8084) += gcc-apq8084.o
 obj-$(CONFIG_APQ_MMCC_8084) += mmcc-apq8084.o
