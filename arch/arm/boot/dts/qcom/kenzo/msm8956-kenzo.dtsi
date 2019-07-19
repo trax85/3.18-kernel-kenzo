@@ -31,7 +31,14 @@
 			compatible = "android,firmware";
             fstab {
 				compatible = "android,fstab";
-                 
+                 vendor {
+                                        compatible = "android,vendor";
+                                        dev = "/dev/block/platform/soc.0/7824900.sdhci/by-name/cust";
+                                        type = "ext4";
+                                        mnt_flags = "ro,barrier=1";
+                                        fsmgr_flags = "wait";
+                                        status = "ok";
+                                };
                 system {
             	    compatible = "android,system";
                     dev = "/dev/block/platform/soc.0/7824900.sdhci/by-name/system";
@@ -257,10 +264,10 @@
 			< 366670000   3 >,  /* SVS Minus */
 			< 480000000   4 >,  /* SVS       */
 			< 550000000   5 >,  /* SVS Plus  */
-			< 623330000   6 >,  /* NOM       */
-			< 660000000   7 >,  /* Turbo     */
-			< 710000000   8 >,  /* Super Turbo */
-			< 753333333   9 >;  /* Super Turbo V2 */
+			< 600000000   6 >,  /* NOM       */
+			< 623330000   7 >,  /* Turbo     */
+			< 660000000   8 >,  /* Super Turbo */
+			< 710000000   9 >;  /* Super Turbo V2 */
 		#clock-cells = <1>;
 	};
 

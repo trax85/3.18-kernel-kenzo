@@ -286,13 +286,13 @@ static int hdmi_hdcp_load_keys(void *input)
 			use_sw_keys = true;
 	}
 
-	if (use_sw_keys) {
+	/*if (use_sw_keys) {
 		if (hdcp1_set_keys(&aksv_msb, &aksv_lsb)) {
 			pr_err("%s: setting hdcp SW keys failed\n", __func__);
 			rc = -EINVAL;
 			goto end;
 		}
-	} else {
+	} else {*/
 		/* Fetch aksv from QFPROM, this info should be public. */
 		ksv_lsb_addr = HDCP_KSV_LSB;
 		ksv_msb_addr = HDCP_KSV_MSB;
@@ -304,7 +304,7 @@ static int hdmi_hdcp_load_keys(void *input)
 
 		aksv_lsb = DSS_REG_R(qfprom_io, ksv_lsb_addr);
 		aksv_msb = DSS_REG_R(qfprom_io, ksv_msb_addr);
-	}
+	//}
 
 	DEV_DBG("%s: %s: AKSV=%02x%08x\n", __func__, HDCP_STATE_NAME,
 		aksv_msb, aksv_lsb);
@@ -1675,4 +1675,3 @@ struct hdmi_hdcp_ops *hdmi_hdcp_start(void *input)
 {
 	return ((struct hdmi_hdcp_ctrl *)input)->ops;
 }
-

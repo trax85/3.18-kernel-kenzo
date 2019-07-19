@@ -525,6 +525,12 @@ static int persistent_ram_post_init(struct persistent_ram_zone *prz, u32 sig,
 		return ret;
 
 	sig ^= PERSISTENT_RAM_SIG;
+	if (prz->buffer->sig != sig) {
+			pr_err("persistent_ram: no valid data in buffer"
+				" (sig = 0x%08x)\n", prz->buffer->sig);
+			pr_err("persistent_ram: but still dump last kmsg!!!!!!!!!!!!!!!\n");
+			prz->buffer->sig = sig;
+		}
 
 	if (prz->buffer->sig == sig) {
 		if (buffer_size(prz) == 0) {
@@ -537,7 +543,7 @@ static int persistent_ram_post_init(struct persistent_ram_zone *prz, u32 sig,
 			pr_info("found existing invalid buffer, size %zu, start %zu\n",
 				buffer_size(prz), buffer_start(prz));
 		else {
-			pr_debug("found existing buffer, size %zu, start %zu\n",
+			pr_info("found existing buffer, size %zu, start %zu\n",
 				 buffer_size(prz), buffer_start(prz));
 			persistent_ram_save_old(prz);
 			return 0;

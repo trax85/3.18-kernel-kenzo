@@ -77,7 +77,6 @@
 
 #define HDMI_TX_MIN_FPS 20000
 #define HDMI_TX_MAX_FPS 120000
-
 /* Enable HDCP by default */
 static bool hdcp_feature_on = true;
 
@@ -1456,7 +1455,7 @@ static void hdmi_tx_hdcp_cb_work(struct work_struct *work)
 	mutex_lock(&hdmi_ctrl->tx_lock);
 
 	switch (hdmi_ctrl->hdcp_status) {
-	case HDCP_STATE_AUTHENTICATED:
+	/*case HDCP_STATE_AUTHENTICATED:
 		hdmi_ctrl->auth_state = true;
 
 		if (hdmi_tx_is_panel_on(hdmi_ctrl) &&
@@ -1472,7 +1471,7 @@ static void hdmi_tx_hdcp_cb_work(struct work_struct *work)
 		if (hdmi_ctrl->hdcp1_use_sw_keys && hdmi_ctrl->hdcp14_present) {
 			if (hdmi_ctrl->auth_state)
 				hdcp1_set_enc(false);
-		}
+		}*/
 
 		hdmi_ctrl->auth_state = false;
 
@@ -2078,9 +2077,9 @@ static void hdmi_tx_update_hdcp_info(struct hdmi_tx_ctrl *hdmi_ctrl)
 		hdmi_ctrl->hdcp22_present = false;
 
 	if (!hdmi_ctrl->hdcp22_present) {
-		if (hdmi_ctrl->hdcp1_use_sw_keys)
+	/*	if (hdmi_ctrl->hdcp1_use_sw_keys)
 			hdmi_ctrl->hdcp14_present =
-				hdcp1_check_if_supported_load_app();
+				hdcp1_check_if_supported_load_app();*/
 
 		if (hdmi_ctrl->hdcp14_present) {
 			fd = hdmi_tx_get_fd(HDMI_TX_FEAT_HDCP);
