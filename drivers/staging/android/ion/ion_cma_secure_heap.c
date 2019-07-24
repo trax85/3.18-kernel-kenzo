@@ -1,3 +1,4 @@
+
 /*
  * drivers/staging/android/ion/ion_cma_secure_heap.c
  *
@@ -864,14 +865,17 @@ struct ion_heap *ion_secure_cma_heap_create(struct ion_platform_heap *data)
 	sheap->shrinker.count_objects = ion_secure_cma_shrinker_count;
 	sheap->default_prefetch_size = sheap->heap_size;
 	register_shrinker(&sheap->shrinker);
+	printk("came here to register_shrinker|");
 
 	if (!sheap->bitmap) {
+		printk("came here to error bitmap|");
 		kfree(sheap);
 		return ERR_PTR(-ENOMEM);
 	}
 
 	if (data->extra_data) {
 		struct ion_cma_pdata *extra = data->extra_data;
+		printk("came here to export values tosheep|");
 		sheap->default_prefetch_size = extra->default_prefetch_size;
 	}
 
@@ -879,8 +883,9 @@ struct ion_heap *ion_secure_cma_heap_create(struct ion_platform_heap *data)
 	 * we initially mark everything in the allocator as being free so that
 	 * allocations can come in later
 	 */
+	printk("came here to error bitmap|");
 	bitmap_fill(sheap->bitmap, sheap->npages);
-
+  printk("came here to export sheep|");
 	return &sheap->heap;
 }
 

@@ -88,6 +88,9 @@ extern int early_init_dt_reserve_memory_arch(phys_addr_t base, phys_addr_t size,
 					     bool no_map);
 extern void * early_init_dt_alloc_memory_arch(u64 size, u64 align);
 extern u64 dt_mem_next_cell(int s, const __be32 **cellp);
+#ifdef CONFIG_BLK_DEV_INITRD
+extern void early_init_dt_setup_initrd_arch(u64 start, u64 end);
+#endif
 
 /* Early flat tree scan hooks */
 extern int early_init_dt_scan_root(unsigned long node, const char *uname,

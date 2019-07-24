@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2017, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2011-2018, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -720,7 +720,7 @@ long msm_ion_custom_ioctl(struct ion_client *client,
 			data.flush_data.offset;
 		end = start + data.flush_data.length;
 
-		if (check_vaddr_bounds(start, end)) {
+		if (start && check_vaddr_bounds(start, end)) {
 			pr_err("%s: virtual address %pK is out of bounds\n",
 				__func__, data.flush_data.vaddr);
 			ret = -EINVAL;
@@ -914,7 +914,9 @@ static struct ion_heap *msm_ion_heap_create(struct ion_platform_heap *heap_data)
 	switch ((int)heap_data->type) {
 #ifdef CONFIG_CMA
 	case ION_HEAP_TYPE_SECURE_DMA:
+	  printk("came here to invoke dmasecure bfr|");
 		heap = ion_secure_cma_heap_create(heap_data);
+		printk("came here to invoke dmasecure|");
 		break;
 #endif
 	case ION_HEAP_TYPE_SYSTEM_SECURE:
@@ -924,6 +926,7 @@ static struct ion_heap *msm_ion_heap_create(struct ion_platform_heap *heap_data)
 		heap = ion_cma_secure_heap_create(heap_data);
 		break;
 	default:
+	printk("came here to invoke system|");
 		heap = ion_heap_create(heap_data);
 	}
 
@@ -1100,4 +1103,3 @@ static void __exit msm_ion_exit(void)
 
 subsys_initcall(msm_ion_init);
 module_exit(msm_ion_exit);
-

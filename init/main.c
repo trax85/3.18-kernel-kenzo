@@ -93,7 +93,13 @@ static int kernel_init(void *);
 
 extern void init_IRQ(void);
 extern void fork_init(unsigned long);
+extern void mca_init(void);		
+extern void sbus_init(void);
 extern void radix_tree_init(void);
+
+
+int kenzo_boardid = 2;		
+
 
 /*
  * Debug helper: via this flag we know that we are in 'early bootup code'
@@ -116,6 +122,7 @@ EXPORT_SYMBOL(system_state);
 extern void time_init(void);
 /* Default late time init is NULL. archs can override this later. */
 void (*__initdata late_time_init)(void);
+extern void softirq_init(void);	
 
 /* Untouched command line saved by arch-specific code. */
 char __initdata boot_command_line[COMMAND_LINE_SIZE];
@@ -504,18 +511,17 @@ asmlinkage __visible void __init start_kernel(void)
 {
 	char *command_line;
 	char *after_dashes;
-
+        extern const struct kernel_param __start___param[], __stop___param[];			
+	char * board_id_ptr;		
 	/*
 	 * Need to run as early as possible, to initialize the
 	 * lockdep hash:
 	 */
 	lockdep_init();
-	set_task_stack_end_magic(&init_task);
 	smp_setup_processor_id();
 	debug_objects_early_init();
 
 	cgroup_init_early();
-
 	local_irq_disable();
 	early_boot_irqs_disabled = true;
 
@@ -541,8 +547,10 @@ asmlinkage __visible void __init start_kernel(void)
 	page_alloc_init();
 
 	pr_notice("Kernel command line: %s\n", boot_command_line);
-	/* parameters may set static keys */
-	jump_label_init();
+
+        board_id_ptr = strstr(boot_command_line, "androidboot.boardID=");		
+        if (board_id_ptr)		
+	kenzo_boardid = simple_strtoul(&board_id_ptr[strlen("androidboot.boardID=")], NULL, 10);		
 	parse_early_param();
 	after_dashes = parse_args("Booting kernel",
 				  static_command_line, __start___param,
@@ -551,6 +559,8 @@ asmlinkage __visible void __init start_kernel(void)
 	if (!IS_ERR_OR_NULL(after_dashes))
 		parse_args("Setting init args", after_dashes, NULL, 0, -1, -1,
 			   NULL, set_init_arg);
+        /* parameters may set static keys */
+	jump_label_init();
 
 	/*
 	 * These use large bootmem allocations and must precede

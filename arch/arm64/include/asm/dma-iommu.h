@@ -16,6 +16,7 @@ struct dma_iommu_mapping {
 
 	void			*bitmap;
 	size_t			bits;
+	unsigned int		order;
 	dma_addr_t		base;
 
 	spinlock_t		lock;
