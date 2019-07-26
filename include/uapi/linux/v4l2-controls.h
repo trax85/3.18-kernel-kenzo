@@ -645,7 +645,8 @@ enum v4l2_mpeg_mfc51_video_force_frame_type {
 
 /*  MPEG-class control IDs specific to the msm_vidc driver */
 #define V4L2_CID_MPEG_MSM_VIDC_BASE		(V4L2_CTRL_CLASS_MPEG | 0x2000)
-
+#define V4L2_CID_MPEG_VIDC_VIDEO_ENABLE_PICTURE_TYPE \
+			(V4L2_CID_MPEG_MSM_VIDC_BASE+0)
 #define V4L2_CID_MPEG_VIDC_VIDEO_PICTYPE_DEC_MODE \
 			(V4L2_CID_MPEG_MSM_VIDC_BASE+0)
 enum v4l2_mpeg_vidc_video_pictype_dec_mode {

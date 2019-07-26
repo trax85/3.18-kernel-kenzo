@@ -106,6 +106,9 @@ int msm_vidc_g_ctrl(void *instance, struct v4l2_control *a);
 int msm_vidc_reqbufs(void *instance, struct v4l2_requestbuffers *b);
 int msm_vidc_prepare_buf(void *instance, struct v4l2_buffer *b);
 int msm_vidc_release_buffers(void *instance, int buffer_type);
+int msm_vidc_free_buffers(void *instance, int buffer_type);
+int msm_vidc_decoder_cmd(void *instance, struct v4l2_decoder_cmd *dec);
+int msm_vidc_encoder_cmd(void *instance, struct v4l2_encoder_cmd *enc);
 int msm_vidc_qbuf(void *instance, struct v4l2_buffer *b);
 int msm_vidc_dqbuf(void *instance, struct v4l2_buffer *b);
 int msm_vidc_streamon(void *instance, enum v4l2_buf_type i);
@@ -117,6 +120,7 @@ int msm_vidc_subscribe_event(void *instance,
 		const struct v4l2_event_subscription *sub);
 int msm_vidc_unsubscribe_event(void *instance,
 		const struct v4l2_event_subscription *sub);
+int msm_vidc_s_parm(void *instance, struct v4l2_streamparm *a);
 int msm_vidc_dqevent(void *instance, struct v4l2_event *event);
 int msm_vidc_enum_framesizes(void *instance, struct v4l2_frmsizeenum *fsize);
 #endif

@@ -1390,11 +1390,6 @@ static int msm_probe(struct platform_device *pdev)
 			pr_warn("NON-FATAL: failed to create logsync debugfs file\n");
 	}
 
-	rc = cam_ahb_clk_init(pdev);
-	if (rc < 0) {
-		pr_err("%s: failed to register ahb clocks\n", __func__);
-		goto v4l2_fail;
-	}
 
 	goto probe_end;
 
