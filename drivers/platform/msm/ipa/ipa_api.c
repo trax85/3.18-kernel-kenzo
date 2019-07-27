@@ -2517,12 +2517,14 @@ const char *ipa_get_version_string(enum ipa_hw_type ver)
 	switch (ver) {
 	case IPA_HW_v1_0:
 		str = "1.0";
+                printk("ver1 ipa");
 		break;
 	case IPA_HW_v1_1:
 		str = "1.1";
 		break;
 	case IPA_HW_v2_0:
 		str = "2.0";
+                printk("ver2 ipa");
 		break;
 	case IPA_HW_v2_1:
 		str = "2.1";
@@ -2547,6 +2549,7 @@ const char *ipa_get_version_string(enum ipa_hw_type ver)
 		break;
 	default:
 		str = "Invalid version";
+                printk("invalid version");
 		break;
 	}
 
@@ -2598,8 +2601,10 @@ static int ipa_generic_plat_drv_probe(struct platform_device *pdev_p)
 	case IPA_HW_v2_1:
 	case IPA_HW_v2_5:
 	case IPA_HW_v2_6L:
-		result = ipa_plat_drv_probe(pdev_p, ipa_api_ctrl,
-			ipa_plat_drv_match);
+                printk("2.6L VER probe");
+		//result = ipa_plat_drv_probe(pdev_p, ipa_api_ctrl,
+		//	ipa_plat_drv_match);
+                printk("2.6L VER probe seccus");
 		break;
 	case IPA_HW_v3_0:
 	case IPA_HW_v3_1:
@@ -2610,6 +2615,7 @@ static int ipa_generic_plat_drv_probe(struct platform_device *pdev_p)
 		break;
 	default:
 		pr_err("ipa: unsupported version %d\n", ipa_api_hw_type);
+                printk("unsupported type hw");
 		return -EPERM;
 	}
 

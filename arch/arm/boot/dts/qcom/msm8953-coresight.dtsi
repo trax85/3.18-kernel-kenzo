@@ -26,7 +26,7 @@
 
 		coresight-id = <0>;
 		coresight-name = "coresight-tmc-etr";
-		coresight-nr-inports= <1>;
+		coresight-nr-inports = <1>;
 		coresight-ctis = <&cti0 &cti8>;
 
 		clocks = <&clock_gcc clk_qdss_clk>,
