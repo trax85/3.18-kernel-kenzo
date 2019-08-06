@@ -20,6 +20,19 @@ config GENERIC_PINCONF
 	bool
 	select PINCONF
 
+config PINCTRL_MSM
+	bool
+	select PINMUX
+	select PINCONF
+	select GENERIC_PINCONF
+	select GPIOLIB_IRQCHIP
+
+config PINCTRL_MSM_TLMM
+	bool "MSM TLMM pinctrl driver"
+	depends on OF && ARCH_MSM
+	select PINMUX
+	select GENERIC_PINCONF
+
 config DEBUG_PINCTRL
 	bool "Debug PINCTRL calls"
 	depends on DEBUG_KERNEL
