@@ -43,6 +43,10 @@
 #include "sdhci-msm-ice.h"
 #include "cmdq_hci.h"
 
+
+extern int sd_slot_plugoutt;
+struct sdhci_msm_reg_data *sd_vdd_vreg = NULL;
+
 #define QOS_REMOVE_DELAY_MS	10
 #define CORE_POWER		0x0
 #define CORE_SW_RST		(1 << 7)
@@ -67,6 +71,7 @@
 #define CORE_HC_MODE		0x78
 #define HC_MODE_EN		0x1
 #define FF_CLK_SW_RST_DIS	(1 << 13)
+#define MSM_MMC_DEFAULT_CPU_DMA_LATENCY 200 /* usecs */
 
 #define CORE_TESTBUS_CONFIG	0x0CC
 #define CORE_TESTBUS_SEL2_BIT	4
@@ -1323,6 +1328,13 @@ static int sdhci_msm_dt_parse_vreg_info(struct device *dev,
 	if (of_get_property(np, prop_name, NULL))
 		vreg->is_always_on = true;
 
+#ifdef CONFIG_MACH_XIAOMI_KENZO
+	snprintf(prop_name, MAX_PROP_SIZE,
+			"qcom,%s-is-sd-vdd", vreg_name);
+	if (of_get_property(np, prop_name, NULL))
+		vreg->is_sd_vdd = true;
+#endif
+
 	snprintf(prop_name, MAX_PROP_SIZE,
 			"qcom,%s-lpm-sup", vreg_name);
 	if (of_get_property(np, prop_name, NULL))
@@ -1351,6 +1363,10 @@ static int sdhci_msm_dt_parse_vreg_info(struct device *dev,
 	}
 
 	*vreg_data = vreg;
+#ifdef CONFIG_MACH_XIAOMI_KENZO
+	if (vreg->is_sd_vdd == true)
+		sd_vdd_vreg = vreg;
+#endif
 	dev_dbg(dev, "%s: %s %s vol=[%d %d]uV, curr=[%d %d]uA\n",
 		vreg->name, vreg->is_always_on ? "always_on," : "",
 		vreg->lpm_sup ? "lpm_sup," : "", vreg->low_vol_level,
@@ -4666,6 +4682,16 @@ out:
 
 	trace_sdhci_msm_resume(mmc_hostname(host->mmc), ret,
 			ktime_to_us(ktime_sub(ktime_get(), start)));
+	return ret;
+}
+
+int sdhci_msm_disable_sd_vdd(void)
+{
+	int ret = 0;
+	if ((sd_vdd_vreg != NULL) && (sd_vdd_vreg->is_sd_vdd == 1)) {
+		pr_err("sdhci_msm_disable_sd_vdd \n");
+		ret = sdhci_msm_vreg_disable(sd_vdd_vreg);
+	}
 	return ret;
 }
 

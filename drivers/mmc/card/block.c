@@ -2830,6 +2830,14 @@ static int mmc_blk_cmdq_issue_rw_rq(struct mmc_queue *mq, struct request *req)
 			active_small_sector_read = 1;
 	}
 	ret = mmc_blk_cmdq_start_req(card->host, mc_rq);
+
+        if (!ret && (card->quirks & MMC_QUIRK_CMDQ_EMPTY_BEFORE_DCMD)) {
+			unsigned int sectors = blk_rq_sectors(req);
+	
+			if (((sectors > 0) && (sectors < 8))
+					&& (rq_data_dir(req) == READ))
+				host->cmdq_ctx.active_small_sector_read_reqs++;
+		}
 	if (!ret && active_small_sector_read)
 		host->cmdq_ctx.active_small_sector_read_reqs++;
 	/*
@@ -3742,6 +3750,7 @@ static int mmc_blk_cmdq_issue_rq(struct mmc_queue *mq, struct request *req)
 	struct mmc_card *card = md->queue.card;
 	struct mmc_host *host = card->host;
 	unsigned int cmd_flags = req ? req->cmd_flags : 0;
+	struct mmc_cmdq_context_info *ctx = &host->cmdq_ctx;
 
 	mmc_get_card(card);
 
@@ -3777,6 +3786,22 @@ static int mmc_blk_cmdq_issue_rq(struct mmc_queue *mq, struct request *req)
 			goto out;
 		}
 	}
+        if ((cmd_flags & (REQ_FLUSH | REQ_DISCARD)) &&
+				(card->quirks & MMC_QUIRK_CMDQ_EMPTY_BEFORE_DCMD) &&
+				ctx->active_small_sector_read_reqs) {
+			ret = wait_event_interruptible(ctx->queue_empty_wq,
+						!ctx->active_reqs);
+			if (ret) {
+				pr_err("%s: failed while waiting for the CMDQ to be empty %s err (%d)\n",
+					mmc_hostname(host),
+					__func__, ret);
+				BUG_ON(1);
+			}
+			/* clear the counter now */
+			ctx->active_small_sector_read_reqs = 0;
+			udelay(MMC_QUIRK_CMDQ_DELAY_BEFORE_DCMD);
+		}
+	
 
 	if (req) {
 		struct mmc_host *host = card->host;
@@ -4261,6 +4286,8 @@ static const struct mmc_fixup blk_fixups[] =
 		  MMC_QUIRK_INAND_CMD38),
 	MMC_FIXUP("SEM32G", CID_MANFID_SANDISK, 0x100, add_quirk,
 		  MMC_QUIRK_INAND_CMD38),
+        MMC_FIXUP(CID_NAME_ANY, CID_MANFID_TOSHIBA, CID_OEMID_ANY, add_quirk_mmc,
+		MMC_QUIRK_CMDQ_EMPTY_BEFORE_DCMD),
 
 	/*
 	 * Some MMC cards experience performance degradation with CMD23

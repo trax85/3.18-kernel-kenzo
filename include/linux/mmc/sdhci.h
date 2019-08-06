@@ -29,6 +29,18 @@ enum sdhci_power_policy {
 	SDHCI_POWER_POLICY_NUM /* Always keep this one last */
 };
 
+struct sdhci_host_qos {
+	unsigned int *cpu_dma_latency_us;
+	unsigned int cpu_dma_latency_tbl_sz;
+};
+
+enum sdhci_host_qos_policy {
+	SDHCI_QOS_READ_WRITE,
+	SDHCI_QOS_READ,
+	SDHCI_QOS_WRITE,
+	SDHCI_QOS_MAX_POLICY,
+};
+
 struct sdhci_host {
 	/* Data set by hardware interface driver */
 	const char *hw_name;	/* Hardware bus name */
@@ -289,6 +301,7 @@ struct sdhci_host {
 #define SDHCI_TUNING_MODE_1	0
 	struct timer_list	tuning_timer;	/* Timer for tuning */
 
+        struct sdhci_host_qos host_qos[SDHCI_QOS_MAX_POLICY];
 	struct sdhci_next next_data;
 	ktime_t data_start_time;
 	enum sdhci_power_policy power_policy;
