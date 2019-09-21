@@ -2593,9 +2593,8 @@ int cpufreq_register_driver(struct cpufreq_driver *driver_data)
 {
 	unsigned long flags;
 	int ret;
-
-	if (cpufreq_disabled())
-		return -ENODEV;
+	if (cpufreq_disabled()){
+		return -ENODEV;}
 
 	if (!driver_data || !driver_data->verify || !driver_data->init ||
 	    !(driver_data->setpolicy || driver_data->target_index ||
@@ -2604,11 +2603,10 @@ int cpufreq_register_driver(struct cpufreq_driver *driver_data)
 		    driver_data->target)) ||
 	     (!!driver_data->get_intermediate != !!driver_data->target_intermediate))
 		return -EINVAL;
-
 	pr_debug("trying to register driver %s\n", driver_data->name);
 
-	if (driver_data->setpolicy)
-		driver_data->flags |= CPUFREQ_CONST_LOOPS;
+	if (driver_data->setpolicy){
+		driver_data->flags |= CPUFREQ_CONST_LOOPS;}
 
 	write_lock_irqsave(&cpufreq_driver_lock, flags);
 	if (cpufreq_driver) {
@@ -2622,16 +2620,15 @@ int cpufreq_register_driver(struct cpufreq_driver *driver_data)
 		driver_data->flags |= CPUFREQ_CONST_LOOPS;
 
 	ret = create_boost_sysfs_file();
-	if (ret)
-		goto err_null_driver;
+	if (ret){
+		goto err_null_driver;}
 
 	register_hotcpu_notifier(&cpufreq_cpu_notifier);
-
 	get_online_cpus();
-	ret = subsys_interface_register(&cpufreq_interface);
+	//ret = subsys_interface_register(&cpufreq_interface);
 	put_online_cpus();
-	if (ret)
-		goto err_boost_unreg;
+	//if (ret){
+	//	goto err_boost_unreg;}
 
 	if (!(cpufreq_driver->flags & CPUFREQ_STICKY)) {
 		int i;
@@ -2648,18 +2645,21 @@ int cpufreq_register_driver(struct cpufreq_driver *driver_data)
 		if (ret) {
 			pr_debug("no CPU initialized for driver %s\n",
 				 driver_data->name);
+                        printk("cpu unregister");
 			goto err_if_unreg;
 		}
 	}
-
+        printk("cpu is up and running ");
 	pr_info("driver %s up and running\n", driver_data->name);
 
 	return 0;
 err_if_unreg:
+        printk("error unregister");
 	subsys_interface_unregister(&cpufreq_interface);
-err_boost_unreg:
-	remove_boost_sysfs_file();
+//err_boost_unreg:
+//	remove_boost_sysfs_file();
 err_null_driver:
+        printk("error null driver");
 	unregister_hotcpu_notifier(&cpufreq_cpu_notifier);
 	write_lock_irqsave(&cpufreq_driver_lock, flags);
 	cpufreq_driver = NULL;

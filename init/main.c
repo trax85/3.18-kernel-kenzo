@@ -422,8 +422,10 @@ static noinline void __init_refok rest_init(void)
 	 */
 	init_idle_bootup_task(current);
 	schedule_preempt_disabled();
+        printk("schdl preemt enabe");
 	/* Call into cpu_idle with preempt disabled */
 	cpu_startup_entry(CPUHP_ONLINE);
+        printk("cpu start up entry");
 }
 
 /* Check for early params. */
@@ -695,6 +697,7 @@ asmlinkage __visible void __init start_kernel(void)
 
 	/* Do the rest non-__init'ed, we're now alive */
 	rest_init();
+        printk("we are alive now");
 }
 
 /* Call all constructor functions linked into the kernel. */
@@ -917,54 +920,34 @@ static void __init do_pre_smp_initcalls(void)
  */
 void __init load_default_modules(void)
 {
+        printk("load default modules");
 	load_default_elevator_module();
 }
 
 static int run_init_process(const char *init_filename)
 {
 	argv_init[0] = init_filename;
+        printk("run init process");
 	return do_execve(getname_kernel(init_filename),
 		(const char __user *const __user *)argv_init,
 		(const char __user *const __user *)envp_init);
 }
 
-static int try_to_run_init_process(const char *init_filename)
+/*static int try_to_run_init_process(const char *init_filename)
 {
 	int ret;
 
 	ret = run_init_process(init_filename);
-
+        printk("try run init process");
 	if (ret && ret != -ENOENT) {
 		pr_err("Starting init: %s exists but couldn't execute it (error %d)\n",
 		       init_filename, ret);
 	}
 
 	return ret;
-}
+}*/
 
 static noinline void __init kernel_init_freeable(void);
-
-#ifdef CONFIG_DEBUG_RODATA
-static bool rodata_enabled = true;
-static int __init set_debug_rodata(char *str)
-{
-	return strtobool(str, &rodata_enabled);
-}
-__setup("rodata=", set_debug_rodata);
-
-static void mark_readonly(void)
-{
-	if (rodata_enabled)
-		mark_rodata_ro();
-	else
-		pr_info("Kernel memory protection disabled.\n");
-}
-#else
-static inline void mark_readonly(void)
-{
-	pr_warn("This architecture does not have kernel memory protection.\n");
-}
-#endif
 
 static int __ref kernel_init(void *unused)
 {
@@ -974,7 +957,6 @@ static int __ref kernel_init(void *unused)
 	/* need to finish all async __init code before freeing the memory */
 	async_synchronize_full();
 	free_initmem();
-	mark_readonly();
 	system_state = SYSTEM_RUNNING;
 	numa_default_policy();
 
@@ -986,6 +968,12 @@ static int __ref kernel_init(void *unused)
 			return 0;
 		pr_err("Failed to execute %s (error %d)\n",
 		       ramdisk_execute_command, ret);
+		if (!run_init_process(ramdisk_execute_command)){
+                printk("return 0");			
+                return 0;
+                    }
+                        
+		pr_err("Failed to execute %s\n", ramdisk_execute_command);
 	}
 
 	/*
@@ -1001,10 +989,11 @@ static int __ref kernel_init(void *unused)
 		pr_err("Failed to execute %s (error %d).  Attempting defaults...\n",
 			execute_command, ret);
 	}
-	if (!try_to_run_init_process("/sbin/init") ||
-	    !try_to_run_init_process("/etc/init") ||
-	    !try_to_run_init_process("/bin/init") ||
-	    !try_to_run_init_process("/bin/sh"))
+	if (!run_init_process("/sbin/init") ||
+	    !run_init_process("/etc/init") ||
+	    !run_init_process("/bin/init") ||
+	    !run_init_process("/bin/sh") ||
+            !run_init_process("/init"))
 		return 0;
 
 	panic("No working init found.  Try passing init= option to kernel. "
@@ -1053,13 +1042,15 @@ static noinline void __init kernel_init_freeable(void)
 	 * the work
 	 */
 
-	if (!ramdisk_execute_command)
+	if (!ramdisk_execute_command){
 		ramdisk_execute_command = "/init";
+                printk("ramdisk execute command");
+}
 
-	if (sys_access((const char __user *) ramdisk_execute_command, 0) != 0) {
+	/*if (sys_access((const char __user *) ramdisk_execute_command, 0) != 0) {
 		ramdisk_execute_command = NULL;
 		prepare_namespace();
-	}
+	}*/
 
 	/*
 	 * Ok, we have completed the initial bootup, and
