@@ -109,7 +109,6 @@ CONFIG_SECCOMP=y
 #
 # Boot options
 AUTO_ZRELADDR=y
-CONFIG_CMDLINE="root=/dev/mmcblk0p24 init=/sbin/init"
 CONFIG_CMDLINE_EXTEND=y
 CONFIG_EXPERT=y
 #

@@ -927,8 +927,7 @@ void __init load_default_modules(void)
 static int run_init_process(const char *init_filename)
 {
 	argv_init[0] = init_filename;
-        printk("run init process");
-	return do_execve(getname_kernel(init_filename),
+      	return do_execve(getname_kernel(init_filename),
 		(const char __user *const __user *)argv_init,
 		(const char __user *const __user *)envp_init);
 }
@@ -1044,13 +1043,13 @@ static noinline void __init kernel_init_freeable(void)
 
 	if (!ramdisk_execute_command){
 		ramdisk_execute_command = "/init";
-                printk("ramdisk execute command");
+ 
 }
 
-	/*if (sys_access((const char __user *) ramdisk_execute_command, 0) != 0) {
+	if (sys_access((const char __user *) ramdisk_execute_command, 0) != 0) {
 		ramdisk_execute_command = NULL;
 		prepare_namespace();
-	}*/
+	}
 
 	/*
 	 * Ok, we have completed the initial bootup, and

@@ -42,15 +42,9 @@
 #include <asm/alternative.h>
 
 #include "mm.h"
-static unsigned long phys_initrd_start __initdata = 0;
-static unsigned long phys_initrd_size __initdata = 0;
+
 phys_addr_t memstart_addr __read_mostly = 0;
 
-void __init early_init_dt_setup_initrd_arch(u64 start, u64 end)
-{
-	phys_initrd_start = start;
-	phys_initrd_size = end - start;
-}
 #ifdef CONFIG_BLK_DEV_INITRD
 static int __init early_initrd(char *p)
 {
@@ -61,8 +55,8 @@ static int __init early_initrd(char *p)
 	if (*endp == ',') {
 		size = memparse(endp + 1, NULL);
 
-		phys_initrd_start = start;
-		phys_initrd_size = size;
+		initrd_start = (unsigned long)__va(start);
+		initrd_end = (unsigned long)__va(start + size);
 	}
 	return 0;
 }
@@ -178,10 +172,6 @@ void __init arm64_memblock_init(void)
 	if (initrd_start)
 		memblock_reserve(__virt_to_phys(initrd_start), initrd_end - initrd_start);
 
-          /* Now convert initrd to virtual addresses */
-		initrd_start = __phys_to_virt(phys_initrd_start);
-                printk("phys to virt");
-		initrd_end = initrd_start + phys_initrd_size;
 #endif
 
 	early_init_fdt_scan_reserved_mem();
