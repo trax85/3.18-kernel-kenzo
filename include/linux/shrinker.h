@@ -50,7 +50,7 @@ struct shrinker {
 				       struct shrink_control *sc);
 	unsigned long (*scan_objects)(struct shrinker *,
 				      struct shrink_control *sc);
-        int (*shrink)(struct shrinker *, struct shrink_control *sc);
+       // int (*shrink)(struct shrinker *, struct shrink_control *sc);
 
 	int seeks;	/* seeks to recreate an obj */
 	long batch;	/* reclaim batch size, 0 = default */

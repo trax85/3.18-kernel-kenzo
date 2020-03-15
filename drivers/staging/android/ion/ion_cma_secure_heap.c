@@ -1,4 +1,3 @@
-
 /*
  * drivers/staging/android/ion/ion_cma_secure_heap.c
  *
@@ -881,6 +880,7 @@ struct ion_heap *ion_secure_cma_heap_create(struct ion_platform_heap *data)
 	 * allocations can come in later
 	 */
 	bitmap_fill(sheap->bitmap, sheap->npages);
+
 	return &sheap->heap;
 }
 

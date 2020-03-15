@@ -557,38 +557,6 @@ static void msm_ion_get_heap_base(struct device_node *node,
 	return;
 }
 
-static void msm_ion_get_heap_adjacent(struct device_node *node,
-				      struct ion_platform_heap *heap)
-{
-	unsigned int val;
-	int ret = of_property_read_u32(node, "qcom,heap-adjacent", &val);
-	if (!ret) {
-		switch (heap->type) {
-		case ION_HEAP_TYPE_CARVEOUT:
-		{
-			struct ion_co_heap_pdata *extra = heap->extra_data;
-			extra->adjacent_mem_id = val;
-			break;
-		}
-		default:
-			pr_err("ION-heap %s: Cannot specify adjcent mem id for this type of heap\n",
-				heap->name);
-			break;
-		}
-	} else {
-		switch (heap->type) {
-		case ION_HEAP_TYPE_CARVEOUT:
-		{
-			struct ion_co_heap_pdata *extra = heap->extra_data;
-			extra->adjacent_mem_id = INVALID_HEAP_ID;
-			break;
-		}
-		default:
-			break;
-		}
-	}
-}
-
 static struct ion_platform_data *msm_ion_parse_dt(struct platform_device *pdev)
 {
 	struct ion_platform_data *pdata = 0;
@@ -651,7 +619,6 @@ static struct ion_platform_data *msm_ion_parse_dt(struct platform_device *pdev)
 		if (ret)
 			goto free_heaps;
 
-		msm_ion_get_heap_adjacent(node, &pdata->heaps[idx]);
 		++idx;
 	}
 	return pdata;
@@ -814,7 +781,7 @@ long msm_ion_custom_ioctl(struct ion_client *client,
 			data.flush_data.offset;
 		end = start + data.flush_data.length;
 
-		if (start && check_vaddr_bounds(start, end)) {
+		if (check_vaddr_bounds(start, end)) {
 			pr_err("%s: virtual address %pK is out of bounds\n",
 				__func__, data.flush_data.vaddr);
 			ret = -EINVAL;
@@ -1194,3 +1161,4 @@ static void __exit msm_ion_exit(void)
 
 subsys_initcall(msm_ion_init);
 module_exit(msm_ion_exit);
+

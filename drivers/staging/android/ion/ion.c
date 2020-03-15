@@ -16,10 +16,6 @@
  */
 
 #include <linux/atomic.h>
-
-
-#include <linux/device.h>
-
 #include <linux/err.h>
 #include <linux/file.h>
 #include <linux/freezer.h>
@@ -332,8 +328,7 @@ static void ion_handle_get(struct ion_handle *handle)
 }
 
 /* Must hold the client lock */
-
-static struct ion_handle* ion_handle_get_check_overflow(
+static struct ion_handle *ion_handle_get_check_overflow(
 					struct ion_handle *handle)
 {
 	if (atomic_read(&handle->ref.refcount) + 1 == 0)
@@ -1960,7 +1955,7 @@ void ion_device_add_heap(struct ion_device *dev, struct ion_heap *heap)
 }
 
 int ion_walk_heaps(struct ion_client *client, int heap_id,
-			unsigned int type, void *data,
+			enum ion_heap_type type, void *data,
 			int (*f)(struct ion_heap *heap, void *data))
 {
 	int ret_val = 0;
@@ -2074,4 +2069,3 @@ void __init ion_reserve(struct ion_platform_data *data)
 			data->heaps[i].size);
 	}
 }
-
