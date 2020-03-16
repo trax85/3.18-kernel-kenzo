@@ -93,13 +93,7 @@ static int kernel_init(void *);
 
 extern void init_IRQ(void);
 extern void fork_init(unsigned long);
-extern void mca_init(void);		
-extern void sbus_init(void);
 extern void radix_tree_init(void);
-
-
-int kenzo_boardid = 2;		
-
 
 /*
  * Debug helper: via this flag we know that we are in 'early bootup code'
@@ -122,7 +116,6 @@ EXPORT_SYMBOL(system_state);
 extern void time_init(void);
 /* Default late time init is NULL. archs can override this later. */
 void (*__initdata late_time_init)(void);
-extern void softirq_init(void);	
 
 /* Untouched command line saved by arch-specific code. */
 char __initdata boot_command_line[COMMAND_LINE_SIZE];
@@ -422,10 +415,8 @@ static noinline void __init_refok rest_init(void)
 	 */
 	init_idle_bootup_task(current);
 	schedule_preempt_disabled();
-        printk("schdl preemt enabe");
 	/* Call into cpu_idle with preempt disabled */
 	cpu_startup_entry(CPUHP_ONLINE);
-        printk("cpu start up entry");
 }
 
 /* Check for early params. */
@@ -513,17 +504,18 @@ asmlinkage __visible void __init start_kernel(void)
 {
 	char *command_line;
 	char *after_dashes;
-        extern const struct kernel_param __start___param[], __stop___param[];			
-	char * board_id_ptr;		
+
 	/*
 	 * Need to run as early as possible, to initialize the
 	 * lockdep hash:
 	 */
 	lockdep_init();
+	set_task_stack_end_magic(&init_task);
 	smp_setup_processor_id();
 	debug_objects_early_init();
 
 	cgroup_init_early();
+
 	local_irq_disable();
 	early_boot_irqs_disabled = true;
 
@@ -549,10 +541,8 @@ asmlinkage __visible void __init start_kernel(void)
 	page_alloc_init();
 
 	pr_notice("Kernel command line: %s\n", boot_command_line);
-
-        board_id_ptr = strstr(boot_command_line, "androidboot.boardID=");		
-        if (board_id_ptr)		
-	kenzo_boardid = simple_strtoul(&board_id_ptr[strlen("androidboot.boardID=")], NULL, 10);		
+	/* parameters may set static keys */
+	jump_label_init();
 	parse_early_param();
 	after_dashes = parse_args("Booting kernel",
 				  static_command_line, __start___param,
@@ -561,8 +551,6 @@ asmlinkage __visible void __init start_kernel(void)
 	if (!IS_ERR_OR_NULL(after_dashes))
 		parse_args("Setting init args", after_dashes, NULL, 0, -1, -1,
 			   NULL, set_init_arg);
-        /* parameters may set static keys */
-	jump_label_init();
 
 	/*
 	 * These use large bootmem allocations and must precede
@@ -697,7 +685,6 @@ asmlinkage __visible void __init start_kernel(void)
 
 	/* Do the rest non-__init'ed, we're now alive */
 	rest_init();
-        printk("we are alive now");
 }
 
 /* Call all constructor functions linked into the kernel. */
@@ -920,33 +907,54 @@ static void __init do_pre_smp_initcalls(void)
  */
 void __init load_default_modules(void)
 {
-        printk("load default modules");
 	load_default_elevator_module();
 }
 
 static int run_init_process(const char *init_filename)
 {
 	argv_init[0] = init_filename;
-      	return do_execve(getname_kernel(init_filename),
+	return do_execve(getname_kernel(init_filename),
 		(const char __user *const __user *)argv_init,
 		(const char __user *const __user *)envp_init);
 }
 
-/*static int try_to_run_init_process(const char *init_filename)
+static int try_to_run_init_process(const char *init_filename)
 {
 	int ret;
 
 	ret = run_init_process(init_filename);
-        printk("try run init process");
+
 	if (ret && ret != -ENOENT) {
 		pr_err("Starting init: %s exists but couldn't execute it (error %d)\n",
 		       init_filename, ret);
 	}
 
 	return ret;
-}*/
+}
 
 static noinline void __init kernel_init_freeable(void);
+
+#ifdef CONFIG_DEBUG_RODATA
+static bool rodata_enabled = true;
+static int __init set_debug_rodata(char *str)
+{
+	return strtobool(str, &rodata_enabled);
+}
+__setup("rodata=", set_debug_rodata);
+
+static void mark_readonly(void)
+{
+	if (rodata_enabled)
+		mark_rodata_ro();
+	else
+		pr_info("Kernel memory protection disabled.\n");
+}
+#else
+static inline void mark_readonly(void)
+{
+	pr_warn("This architecture does not have kernel memory protection.\n");
+}
+#endif
 
 static int __ref kernel_init(void *unused)
 {
@@ -956,6 +964,7 @@ static int __ref kernel_init(void *unused)
 	/* need to finish all async __init code before freeing the memory */
 	async_synchronize_full();
 	free_initmem();
+	mark_readonly();
 	system_state = SYSTEM_RUNNING;
 	numa_default_policy();
 
@@ -967,12 +976,6 @@ static int __ref kernel_init(void *unused)
 			return 0;
 		pr_err("Failed to execute %s (error %d)\n",
 		       ramdisk_execute_command, ret);
-		if (!run_init_process(ramdisk_execute_command)){
-                printk("return 0");			
-                return 0;
-                    }
-                        
-		pr_err("Failed to execute %s\n", ramdisk_execute_command);
 	}
 
 	/*
@@ -988,11 +991,10 @@ static int __ref kernel_init(void *unused)
 		pr_err("Failed to execute %s (error %d).  Attempting defaults...\n",
 			execute_command, ret);
 	}
-	if (!run_init_process("/sbin/init") ||
-	    !run_init_process("/etc/init") ||
-	    !run_init_process("/bin/init") ||
-	    !run_init_process("/bin/sh") ||
-            !run_init_process("/init"))
+	if (!try_to_run_init_process("/sbin/init") ||
+	    !try_to_run_init_process("/etc/init") ||
+	    !try_to_run_init_process("/bin/init") ||
+	    !try_to_run_init_process("/bin/sh"))
 		return 0;
 
 	panic("No working init found.  Try passing init= option to kernel. "
@@ -1041,10 +1043,8 @@ static noinline void __init kernel_init_freeable(void)
 	 * the work
 	 */
 
-	if (!ramdisk_execute_command){
+	if (!ramdisk_execute_command)
 		ramdisk_execute_command = "/init";
- 
-}
 
 	if (sys_access((const char __user *) ramdisk_execute_command, 0) != 0) {
 		ramdisk_execute_command = NULL;

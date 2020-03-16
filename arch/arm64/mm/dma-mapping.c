@@ -33,7 +33,6 @@
 #include <asm/dma-iommu.h>
 #include <linux/io.h>
 #include <linux/dma-mapping-fast.h>
-#include <asm-generic/dma-contiguous.h>
 
 #include "mm.h"
 

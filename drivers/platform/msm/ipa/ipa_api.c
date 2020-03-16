@@ -2602,9 +2602,8 @@ static int ipa_generic_plat_drv_probe(struct platform_device *pdev_p)
 	case IPA_HW_v2_5:
 	case IPA_HW_v2_6L:
                 printk("2.6L VER probe");
-		//result = ipa_plat_drv_probe(pdev_p, ipa_api_ctrl,
-		//	ipa_plat_drv_match);
-                printk("2.6L VER probe seccus");
+		result = ipa_plat_drv_probe(pdev_p, ipa_api_ctrl,
+			ipa_plat_drv_match);
 		break;
 	case IPA_HW_v3_0:
 	case IPA_HW_v3_1:
@@ -2615,7 +2614,6 @@ static int ipa_generic_plat_drv_probe(struct platform_device *pdev_p)
 		break;
 	default:
 		pr_err("ipa: unsupported version %d\n", ipa_api_hw_type);
-                printk("unsupported type hw");
 		return -EPERM;
 	}
 
