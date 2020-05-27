@@ -998,7 +998,6 @@
                 qcom,pm-qos-cpu-groups = <0x03 0x0c>;
 		qcom,pm-qos-cmdq-latency-us = <70 70>, <70 70>;
 		qcom,pm-qos-legacy-latency-us = <70 70>, <70 70>;
-		qcom,pm-qos-irq-type = "affine_cores";
 		qcom,pm-qos-irq-cpu = <0>;
 		qcom,pm-qos-irq-latency = <70 70>;
 
@@ -1048,7 +1047,6 @@
 		interrupt-names = "hc_irq", "pwr_irq";
                 qcom,pm-qos-cpu-groups = <0x03 0x0c>;
 		qcom,pm-qos-legacy-latency-us = <70 70>, <70 70>;
-		qcom,pm-qos-irq-type = "affine_cores";
 		qcom,pm-qos-irq-cpu = <0>;
 		qcom,pm-qos-irq-latency = <70 70>;
 
@@ -1101,7 +1099,6 @@
                 qcom,pm-qos-cpu-groups = <0x03 0x0c>;
 		qcom,pm-qos-cmdq-latency-us = <70 70>, <70 70>;
 		qcom,pm-qos-legacy-latency-us = <70 70>, <70 70>;
-		qcom,pm-qos-irq-type = "affine_cores";
 		qcom,pm-qos-irq-cpu = <0>;
 		qcom,pm-qos-irq-latency = <70 70>;
 
