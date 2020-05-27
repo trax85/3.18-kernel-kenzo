@@ -1727,6 +1727,26 @@ static int msm_eeprom_platform_probe(struct platform_device *pdev)
 			CDBG("memory_data[%d] = 0x%X\n", j,
 				e_ctrl->cal_data.mapdata[j]);
 
+#ifdef CONFIG_MACH_XIAOMI_KENZO
+		if (eb_info->eeprom_name != NULL)
+		{
+			if (strcmp(eb_info->eeprom_name, "s5k3p3_omida01") == 0 ||
+					strcmp(eb_info->eeprom_name, "s5k3p3_gt24c64") == 0 ||
+					strcmp(eb_info->eeprom_name, "s5k3p3_f16s01c") == 0 ||
+					strcmp(eb_info->eeprom_name, "s5k3p3_f3p3man") == 0 ) {
+				s5k3p3_set_otp_module_id(e_ctrl);
+			} else if (strcmp(eb_info->eeprom_name, "ov16880_f16v01a") == 0 ||
+					strcmp(eb_info->eeprom_name, "ov16880_omida05") == 0) {
+				ov16880_set_otp_module_id(e_ctrl);
+			} else if (strcmp(eb_info->eeprom_name, "sunny_omi5f06") == 0) {
+				ov5670_set_otp_module_id(e_ctrl);
+			} else if (strcmp(eb_info->eeprom_name, "s5k5e8_z5e8yab") == 0 ||
+					strcmp(eb_info->eeprom_name, "s5k5e8_yx13") == 0) {
+				s5k5e8_set_otp_module_id(e_ctrl);
+			}
+		}
+#endif
+
 		e_ctrl->is_supported |= msm_eeprom_match_crc(&e_ctrl->cal_data);
 
 		rc = msm_camera_power_down(power_info,
