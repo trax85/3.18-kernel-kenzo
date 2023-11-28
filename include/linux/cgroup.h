@@ -584,7 +584,7 @@ struct cgroup_subsys {
 	int (*css_online)(struct cgroup *cgrp);
 	void (*css_offline)(struct cgroup *cgrp);
 	void (*css_free)(struct cgroup *cgrp);
-
+        int (*allow_attach)(struct cgroup *cgrp, struct cgroup_taskset *tset);
 	int (*can_attach)(struct cgroup *cgrp, struct cgroup_taskset *tset);
 	void (*cancel_attach)(struct cgroup *cgrp, struct cgroup_taskset *tset);
 	void (*attach)(struct cgroup *cgrp, struct cgroup_taskset *tset);
@@ -874,6 +874,8 @@ bool css_is_ancestor(struct cgroup_subsys_state *cg,
 unsigned short css_id(struct cgroup_subsys_state *css);
 unsigned short css_depth(struct cgroup_subsys_state *css);
 struct cgroup_subsys_state *cgroup_css_from_dir(struct file *f, int id);
+int subsys_cgroup_allow_attach(struct cgroup *cgrp,
+			       struct cgroup_taskset *tset);
 
 #else /* !CONFIG_CGROUPS */
 
