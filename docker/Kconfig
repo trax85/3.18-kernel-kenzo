@@ -72,13 +72,13 @@ config DOCKER
 
 	select NAMESPACES
 
-	select NET_NS
+#	select NET_NS
 
-	select PID_NS
+#	select PID_NS
 
-	select IPC_NS
+#	select IPC_NS
 
-	select UTS_NS
+#	select UTS_NS
 
 	select CGROUP_CPUACCT
 
