@@ -58,7 +58,10 @@ show up in /proc/sys/kernel:
 - panic_on_oops
 - panic_on_stackoverflow
 - panic_on_unrecovered_nmi
+<<<<<<< HEAD
 - perf_cpu_time_max_percent
+=======
+>>>>>>> p9x
 - perf_event_paranoid
 - pid_max
 - powersave-nap               [ PPC only ]
@@ -576,6 +579,7 @@ This file shows up if CONFIG_DEBUG_STACKOVERFLOW is enabled.
 
 ==============================================================
 
+<<<<<<< HEAD
 panic_on_unrecovered_nmi:
 
 The default Linux behaviour on an NMI of either memory or unknown is
@@ -602,6 +606,8 @@ the existing panic controls already in that directory.
 
 ==============================================================
 
+=======
+>>>>>>> p9x
 perf_cpu_time_max_percent:
 
 Hints to the kernel how much CPU time it should be allowed to

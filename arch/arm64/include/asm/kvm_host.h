@@ -22,8 +22,11 @@
 #ifndef __ARM64_KVM_HOST_H__
 #define __ARM64_KVM_HOST_H__
 
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/kvm_types.h>
+=======
+>>>>>>> p9x
 #include <asm/kvm.h>
 #include <asm/kvm_asm.h>
 #include <asm/kvm_mmio.h>
@@ -43,7 +46,12 @@
 
 #define KVM_VCPU_MAX_FEATURES 3
 
+<<<<<<< HEAD
 int __attribute_const__ kvm_target_cpu(void);
+=======
+struct kvm_vcpu;
+int kvm_target_cpu(void);
+>>>>>>> p9x
 int kvm_reset_vcpu(struct kvm_vcpu *vcpu);
 int kvm_arch_dev_ioctl_check_extension(long ext);
 
@@ -87,7 +95,11 @@ struct kvm_cpu_context {
 	struct kvm_regs	gp_regs;
 	union {
 		u64 sys_regs[NR_SYS_REGS];
+<<<<<<< HEAD
 		u32 copro[NR_COPRO_REGS];
+=======
+		u32 cp15[NR_CP15_REGS];
+>>>>>>> p9x
 	};
 };
 
@@ -102,9 +114,12 @@ struct kvm_vcpu_arch {
 	/* Exception Information */
 	struct kvm_vcpu_fault_info fault;
 
+<<<<<<< HEAD
 	/* Debug state */
 	u64 debug_flags;
 
+=======
+>>>>>>> p9x
 	/* Pointer to host CPU context */
 	kvm_cpu_context_t *host_cpu_context;
 
@@ -116,6 +131,12 @@ struct kvm_vcpu_arch {
 	 * Anything that is not used directly from assembly code goes
 	 * here.
 	 */
+<<<<<<< HEAD
+=======
+	/* dcache set/way operation pending */
+	int last_pcpu;
+	cpumask_t require_dcache_flush;
+>>>>>>> p9x
 
 	/* Don't run the guest */
 	bool pause;
@@ -139,6 +160,7 @@ struct kvm_vcpu_arch {
 
 #define vcpu_gp_regs(v)		(&(v)->arch.ctxt.gp_regs)
 #define vcpu_sys_reg(v,r)	((v)->arch.ctxt.sys_regs[(r)])
+<<<<<<< HEAD
 /*
  * CP14 and CP15 live in the same array, as they are backed by the
  * same system registers.
@@ -153,6 +175,9 @@ struct kvm_vcpu_arch {
 #define vcpu_cp15_64_high(v,r)	vcpu_cp15((v),(r) + 1)
 #define vcpu_cp15_64_low(v,r)	vcpu_cp15((v),(r))
 #endif
+=======
+#define vcpu_cp15(v,r)		((v)->arch.ctxt.cp15[(r)])
+>>>>>>> p9x
 
 struct kvm_vm_stat {
 	u32 remote_tlb_flush;
@@ -162,23 +187,39 @@ struct kvm_vcpu_stat {
 	u32 halt_wakeup;
 };
 
+<<<<<<< HEAD
+=======
+struct kvm_vcpu_init;
+>>>>>>> p9x
 int kvm_vcpu_set_target(struct kvm_vcpu *vcpu,
 			const struct kvm_vcpu_init *init);
 int kvm_vcpu_preferred_target(struct kvm_vcpu_init *init);
 unsigned long kvm_arm_num_regs(struct kvm_vcpu *vcpu);
 int kvm_arm_copy_reg_indices(struct kvm_vcpu *vcpu, u64 __user *indices);
+<<<<<<< HEAD
+=======
+struct kvm_one_reg;
+>>>>>>> p9x
 int kvm_arm_get_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg);
 int kvm_arm_set_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg);
 
 #define KVM_ARCH_WANT_MMU_NOTIFIER
+<<<<<<< HEAD
+=======
+struct kvm;
+>>>>>>> p9x
 int kvm_unmap_hva(struct kvm *kvm, unsigned long hva);
 int kvm_unmap_hva_range(struct kvm *kvm,
 			unsigned long start, unsigned long end);
 void kvm_set_spte_hva(struct kvm *kvm, unsigned long hva, pte_t pte);
 
 /* We do not have shadow page tables, hence the empty hooks */
+<<<<<<< HEAD
 static inline int kvm_age_hva(struct kvm *kvm, unsigned long start,
 			      unsigned long end)
+=======
+static inline int kvm_age_hva(struct kvm *kvm, unsigned long hva)
+>>>>>>> p9x
 {
 	return 0;
 }
@@ -188,6 +229,7 @@ static inline int kvm_test_age_hva(struct kvm *kvm, unsigned long hva)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void kvm_arch_mmu_notifier_invalidate_page(struct kvm *kvm,
 							 unsigned long address)
 {
@@ -198,6 +240,12 @@ struct kvm_vcpu * __percpu *kvm_get_running_vcpus(void);
 
 u64 kvm_call_hyp(void *hypfn, ...);
 void force_vm_exit(const cpumask_t *mask);
+=======
+struct kvm_vcpu *kvm_arm_get_running_vcpu(void);
+struct kvm_vcpu __percpu **kvm_get_running_vcpus(void);
+
+u64 kvm_call_hyp(void *hypfn, ...);
+>>>>>>> p9x
 
 int handle_exit(struct kvm_vcpu *vcpu, struct kvm_run *run,
 		int exception_index);
@@ -218,6 +266,7 @@ static inline void __cpu_init_hyp_mode(phys_addr_t boot_pgd_ptr,
 		     hyp_stack_ptr, vector_ptr);
 }
 
+<<<<<<< HEAD
 struct vgic_sr_vectors {
 	void	*save_vgic;
 	void	*restore_vgic;
@@ -252,4 +301,6 @@ static inline void kvm_arch_sync_events(struct kvm *kvm) {}
 static inline void kvm_arch_vcpu_uninit(struct kvm_vcpu *vcpu) {}
 static inline void kvm_arch_sched_in(struct kvm_vcpu *vcpu, int cpu) {}
 
+=======
+>>>>>>> p9x
 #endif /* __ARM64_KVM_HOST_H__ */

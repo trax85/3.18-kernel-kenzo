@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -30,10 +34,13 @@
 #define CLK_ZERO_RECO_MAX1	511
 #define CLK_ZERO_RECO_MAX2	255
 
+<<<<<<< HEAD
 /* No. of timing params for phy rev 2.0 */
 #define TIMING_PARAM_DLANE_COUNT	32
 #define TIMING_PARAM_CLK_COUNT	8
 
+=======
+>>>>>>> p9x
 struct timing_entry {
 	int32_t mipi_min;
 	int32_t mipi_max;
@@ -156,10 +163,13 @@ static int mdss_dsi_phy_calc_param_phy_rev_2(struct dsi_phy_t_clk_param *t_clk,
 	s64 actual_intermediate;
 	s32 actual_frac;
 	s64 rec_temp1, rec_temp2, rec_temp3;
+<<<<<<< HEAD
 	int tclk_prepare_program, dsiphy_halfbyteclk_en, tclk_zero_program;
 	int ths_request_clk_prepare, hstx_prepare_delay, temp_rec_min;
 	s64 tclk_prepare_theoretical, tclk_zero_theoretical;
 	s64 ths_request_theoretical;
+=======
+>>>>>>> p9x
 
 	/* clk_prepare calculations */
 	dividend = ((t_param->clk_prepare.rec_max
@@ -202,6 +212,10 @@ static int mdss_dsi_phy_calc_param_phy_rev_2(struct dsi_phy_t_clk_param *t_clk,
 	rec_temp3 = roundup(div_s64(rec_temp2, 8),  multiplier);
 	rec_min = div_s64(rec_temp3, multiplier) - 3;
 	t_param->clk_zero.rec_min = rec_min;
+<<<<<<< HEAD
+=======
+	t_param->clk_zero.mipi_min = div_s64(mipi_min, multiplier);
+>>>>>>> p9x
 
 	/* recommended max */
 	t_param->clk_zero.rec_max =
@@ -296,12 +310,20 @@ static int mdss_dsi_phy_calc_param_phy_rev_2(struct dsi_phy_t_clk_param *t_clk,
 	temp_multiple = div_s64(mipi_max * t_clk->bitclk_mbps,
 			t_clk->tlpx_numer_ns);
 	div_s64_rem(temp_multiple, multiplier, &actual_frac);
+<<<<<<< HEAD
 	rec_temp2 = rounddown((temp_multiple + actual_frac)/8, multiplier);
+=======
+	rec_temp2 = rounddown((temp_multiple)/8, multiplier);
+>>>>>>> p9x
 	t_param->hs_prepare.rec_max = div_s64(rec_temp2, multiplier);
 
 	/* prog value*/
 	dividend = (rec_temp2 - rec_temp1) * min_prepare_frac;
+<<<<<<< HEAD
 	temp = roundup(div_u64(dividend, 100), multiplier);
+=======
+	temp = roundup(div_s64(dividend, 100), multiplier);
+>>>>>>> p9x
 	rec_prog = temp + rec_temp1;
 	t_param->hs_prepare.rec = div_s64(rec_prog, multiplier);
 
@@ -430,6 +452,7 @@ static int mdss_dsi_phy_calc_param_phy_rev_2(struct dsi_phy_t_clk_param *t_clk,
 			t_param->hs_rqst_clk.rec_min,
 			t_param->hs_rqst_clk.rec_max,
 			t_param->hs_rqst_clk.rec);
+<<<<<<< HEAD
 
 	/* clk post and pre value calculation */
 	tmp = ((60 * (int)t_clk->bitclk_mbps) + (52 * 1000) - (43 * 1000));
@@ -509,6 +532,8 @@ static int mdss_dsi_phy_calc_param_phy_rev_2(struct dsi_phy_t_clk_param *t_clk,
 			t_param->clk_post.program_value,
 			t_param->clk_pre.program_value);
 
+=======
+>>>>>>> p9x
 	pr_debug("teot_clk=%d, data=%d\n", teot_clk_lane, teot_data_lane);
 	return 0;
 
@@ -524,8 +549,12 @@ static int mdss_dsi_phy_calc_hs_param_phy_rev_1(
 	int percent_allowable_phy = 0;
 	int percent_min_ths;
 	int tmp, rc = 0;
+<<<<<<< HEAD
 	int tclk_prepare_theoretical, tclk_zero_theoretical;
 	int tlpx, ths_exit_theoretical;
+=======
+	int b6, h10, h11, h17;
+>>>>>>> p9x
 
 	if (t_clk->bitclk_mbps > 1200)
 		percent_min_ths = 15;
@@ -591,9 +620,15 @@ static int mdss_dsi_phy_calc_hs_param_phy_rev_1(
 		goto error;
 
 	/* clk post and pre value calculation */
+<<<<<<< HEAD
 	ths_exit_theoretical = (t_param->hs_exit.program_value / 2) + 1;
 	tmp = ((60 * (int)t_clk->bitclk_mbps) + (52 * 1000)
 			- (24 * 1000) - (ths_exit_theoretical * 2 * 1000));
+=======
+	h17 = (t_param->hs_exit.program_value / 2) + 1;
+	tmp = ((60 * (int)t_clk->bitclk_mbps) + (52 * 1000)
+			- (24 * 1000) - (h17 * 2 * 1000));
+>>>>>>> p9x
 	/* clk_post minimum value can be a negetive number */
 	if (tmp % (8 * 1000) != 0) {
 		if (tmp < 0)
@@ -617,6 +652,7 @@ static int mdss_dsi_phy_calc_hs_param_phy_rev_1(
 
 	t_param->clk_post.rec_min = tmp;
 
+<<<<<<< HEAD
 	tclk_prepare_theoretical = (t_param->clk_prepare.program_value / 2) + 1;
 	tclk_zero_theoretical = (t_param->clk_zero.program_value / 2) + 1;
 	tlpx = 10000/t_clk->escclk_numer;
@@ -625,6 +661,15 @@ static int mdss_dsi_phy_calc_hs_param_phy_rev_1(
 		DIV_ROUND_UP((tlpx * t_clk->bitclk_mbps) + (8 * 1000)
 			+ (tclk_prepare_theoretical * 2 * 1000)
 			+ (tclk_zero_theoretical * 2 * 1000), 8 * 1000) - 1;
+=======
+	h10 = (t_param->clk_prepare.program_value / 2) + 1;
+	h11 = (t_param->clk_zero.program_value / 2) + 1;
+	b6 = 10000/t_clk->escclk_numer;
+
+	t_param->clk_pre.rec_min =
+		DIV_ROUND_UP((b6 * t_clk->bitclk_mbps) + (8 * 1000)
+			+ (h10 * 2 * 1000) + (h11 * 2 * 1000), 8 * 1000) - 1;
+>>>>>>> p9x
 	if (t_param->clk_pre.rec_min > 63) {
 		t_param->clk_pre.program_value =
 			DIV_ROUND_UP((2 * 63 - t_param->clk_pre.rec_min)
@@ -789,6 +834,7 @@ static void mdss_dsi_phy_update_timing_param(struct mdss_panel_info *pinfo,
 		reg->timing[11]);
 }
 
+<<<<<<< HEAD
 static void mdss_dsi_phy_update_timing_param_rev_2(
 		struct mdss_panel_info *pinfo,
 		struct dsi_phy_timing *t_param)
@@ -826,6 +872,8 @@ static void mdss_dsi_phy_update_timing_param_rev_2(
 	}
 }
 
+=======
+>>>>>>> p9x
 int mdss_dsi_phy_calc_timing_param(struct mdss_panel_info *pinfo, u32 phy_rev,
 		u32 frate_hz)
 {
@@ -890,9 +938,14 @@ int mdss_dsi_phy_calc_timing_param(struct mdss_panel_info *pinfo, u32 phy_rev,
 		rc = mdss_dsi_phy_calc_param_phy_rev_2(&t_clk, &t_param);
 		if (rc) {
 			pr_err("Phy timing calculations failed\n");
+<<<<<<< HEAD
 			goto timing_calc_end;
 		}
 		mdss_dsi_phy_update_timing_param_rev_2(pinfo, &t_param);
+=======
+			break;
+		}
+>>>>>>> p9x
 		break;
 	default:
 		pr_err("phy rev %d not supported\n", phy_rev);

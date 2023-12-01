@@ -16,6 +16,11 @@
 #include <linux/crypto.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
+=======
+#include "aes-ce-setkey.h"
+
+>>>>>>> p9x
 static int num_rounds(struct crypto_aes_ctx *ctx)
 {
 	/*
@@ -48,7 +53,11 @@ static int ccm_setkey(struct crypto_aead *tfm, const u8 *in_key,
 	struct crypto_aes_ctx *ctx = crypto_aead_ctx(tfm);
 	int ret;
 
+<<<<<<< HEAD
 	ret = crypto_aes_expand_key(ctx, in_key, key_len);
+=======
+	ret = ce_aes_expandkey(ctx, in_key, key_len);
+>>>>>>> p9x
 	if (!ret)
 		return 0;
 
@@ -294,4 +303,8 @@ module_exit(aes_mod_exit);
 MODULE_DESCRIPTION("Synchronous AES in CCM mode using ARMv8 Crypto Extensions");
 MODULE_AUTHOR("Ard Biesheuvel <ard.biesheuvel@linaro.org>");
 MODULE_LICENSE("GPL v2");
+<<<<<<< HEAD
 MODULE_ALIAS_CRYPTO("ccm(aes)");
+=======
+MODULE_ALIAS("ccm(aes)");
+>>>>>>> p9x

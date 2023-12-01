@@ -1,7 +1,11 @@
 /* drivers/input/touchscreen/gt9xx_update.c
  *
  * 2010 - 2012 Goodix Technology.
+<<<<<<< HEAD
  * Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -389,7 +393,11 @@ s32 gup_enter_update_mode(struct i2c_client *client)
 
 	/* step1:RST output low last at least 2ms */
 	gpio_direction_output(ts->pdata->reset_gpio, 0);
+<<<<<<< HEAD
 	msleep(20);
+=======
+	usleep(20000);
+>>>>>>> p9x
 
 	/* step2:select I2C slave addr,INT:0--0xBA;1--0x28. */
 	gpio_direction_output(ts->pdata->irq_gpio,
@@ -496,12 +504,22 @@ static u8 gup_enter_update_judge(struct i2c_client *client,
 		if (strlen(update_msg.ic_fw_msg.pid) < 3) {
 			pr_info("Illegal IC pid, need enter update");
 			return SUCCESS;
+<<<<<<< HEAD
 		}
 		for (i = 0; i < 3; i++) {
 			if ((update_msg.ic_fw_msg.pid[i] < 0x30) ||
 				(update_msg.ic_fw_msg.pid[i] > 0x39)) {
 				pr_info("Illegal IC pid, out of bound, need enter update");
 				return SUCCESS;
+=======
+		} else {
+			for (i = 0; i < 3; i++) {
+				if ((update_msg.ic_fw_msg.pid[i] < 0x30) ||
+					(update_msg.ic_fw_msg.pid[i] > 0x39)) {
+					pr_info("Illegal IC pid, out of bound, need enter update");
+					return SUCCESS;
+				}
+>>>>>>> p9x
 			}
 		}
 		/* 20130523 end */
@@ -564,14 +582,20 @@ static s8 gup_update_config(struct i2c_client *client,
 		!memcmp(&pid[GTP_ADDR_LENGTH], "960", 3)) {
 		chip_cfg_len = 228;
 	}
+<<<<<<< HEAD
 	pr_debug("config file ASCII len: %zu", cfg->size);
 	pr_debug("need config binary len: %u", chip_cfg_len);
+=======
+	pr_debug("config file ASCII len:%d", cfg->size);
+	pr_debug("need config binary len:%d", chip_cfg_len);
+>>>>>>> p9x
 	if ((cfg->size + 5) < chip_cfg_len * 5) {
 		pr_err("Config length error");
 		return -EINVAL;
 	}
 
 	buf = devm_kzalloc(&client->dev, cfg->size, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!buf)
 		return -ENOMEM;
 
@@ -581,6 +605,21 @@ static s8 gup_update_config(struct i2c_client *client,
 		return -ENOMEM;
 
 	pr_debug("Delete illegal character.");
+=======
+	if (!buf) {
+		dev_err(&client->dev, "Memory allocation failed for buf.");
+		return -ENOMEM;
+	}
+
+	file_config = devm_kzalloc(&client->dev, chip_cfg_len + GTP_ADDR_LENGTH,
+								GFP_KERNEL);
+	if (!file_config) {
+		dev_err(&client->dev, "Memory allocation failed.");
+		return -ENOMEM;
+	}
+
+	pr_debug("Delete illgal charactor.");
+>>>>>>> p9x
 	for (i = 0, count = 0; i < cfg->size; i++) {
 		if (cfg->data[i] == ' ' || cfg->data[i] == '\r'
 					|| cfg->data[i] == '\n')
@@ -644,7 +683,11 @@ static s32 gup_get_firmware_file(struct i2c_client *client,
 		return -EEXIST;
 	}
 
+<<<<<<< HEAD
 	dev_dbg(&client->dev, "Config File: %s size: %zu", path, fw->size);
+=======
+	dev_dbg(&client->dev, "Config File: %s size=%d", path, fw->size);
+>>>>>>> p9x
 	msg->fw_data =
 		devm_kzalloc(&client->dev, fw->size, GFP_KERNEL);
 	if (!msg->fw_data) {
@@ -953,14 +996,36 @@ static u8 gup_burn_dsp_isp(struct i2c_client *client)
 {
 	s32 ret = 0;
 	u8 *fw_dsp_isp = NULL;
+<<<<<<< HEAD
+=======
+	u8  retry = 0;
+>>>>>>> p9x
 
 	pr_debug("Begin burn dsp isp.");
 
 	/* step1:alloc memory */
 	pr_debug("step1:alloc memory");
+<<<<<<< HEAD
 	fw_dsp_isp = devm_kzalloc(&client->dev, FW_DSP_ISP_LENGTH, GFP_KERNEL);
 	if (fw_dsp_isp == NULL)
 		return FAIL;
+=======
+	while (retry++ < 5) {
+		fw_dsp_isp = devm_kzalloc(&client->dev, FW_DSP_ISP_LENGTH,
+								GFP_KERNEL);
+		if (fw_dsp_isp == NULL) {
+			continue;
+		} else {
+			pr_info("Alloc %dk byte memory success.",
+					(FW_DSP_ISP_LENGTH/1024));
+			break;
+		}
+	}
+	if (retry == 5) {
+		pr_err("Alloc memory fail,exit.");
+		return FAIL;
+	}
+>>>>>>> p9x
 
 	/* step2:load dsp isp file data */
 	pr_debug("step2:load dsp isp file data");
@@ -1046,15 +1111,37 @@ static u8 gup_burn_dsp_isp(struct i2c_client *client)
 static u8 gup_burn_fw_ss51(struct i2c_client *client)
 {
 	u8 *fw_ss51 = NULL;
+<<<<<<< HEAD
+=======
+	u8  retry = 0;
+>>>>>>> p9x
 	s32 ret = 0;
 
 	pr_debug("Begin burn ss51 firmware.");
 
 	/* step1:alloc memory */
 	pr_debug("step1:alloc memory");
+<<<<<<< HEAD
 	fw_ss51 = devm_kzalloc(&client->dev, FW_SECTION_LENGTH, GFP_KERNEL);
 	if (fw_ss51 == NULL)
 		return FAIL;
+=======
+	while (retry++ < 5) {
+		fw_ss51 = devm_kzalloc(&client->dev, FW_SECTION_LENGTH,
+							GFP_KERNEL);
+		if (fw_ss51 == NULL) {
+			continue;
+		} else {
+			pr_info("Alloc %dk byte memory success.",
+						(FW_SECTION_LENGTH/1024));
+			break;
+		}
+	}
+	if (retry == 5) {
+		pr_err("Alloc memory fail,exit.");
+		return FAIL;
+	}
+>>>>>>> p9x
 
 	/* step2:load ss51 firmware section 1 file data */
 	pr_debug("step2:load ss51 firmware section 1 file data");
@@ -1138,14 +1225,36 @@ static u8 gup_burn_fw_dsp(struct i2c_client *client)
 {
 	s32 ret = 0;
 	u8 *fw_dsp = NULL;
+<<<<<<< HEAD
+=======
+	u8  retry = 0;
+>>>>>>> p9x
 	u8  rd_buf[5];
 
 	pr_debug("Begin burn dsp firmware.");
 	/* step1:alloc memory */
 	pr_debug("step1:alloc memory");
+<<<<<<< HEAD
 	fw_dsp = devm_kzalloc(&client->dev, FW_DSP_LENGTH, GFP_KERNEL);
 	if (fw_dsp == NULL)
 		return FAIL;
+=======
+	while (retry++ < 5) {
+		fw_dsp = devm_kzalloc(&client->dev, FW_DSP_LENGTH,
+							GFP_KERNEL);
+		if (fw_dsp == NULL) {
+			continue;
+		} else  {
+			pr_info("Alloc %dk byte memory success.",
+					(FW_SECTION_LENGTH/1024));
+			break;
+		}
+	}
+	if (retry == 5) {
+		pr_err("Alloc memory fail,exit.");
+		return FAIL;
+	}
+>>>>>>> p9x
 
 	/* step2:load firmware dsp */
 	pr_debug("step2:load firmware dsp");
@@ -1229,15 +1338,37 @@ static u8 gup_burn_fw_boot(struct i2c_client *client)
 {
 	s32 ret = 0;
 	u8 *fw_boot = NULL;
+<<<<<<< HEAD
+=======
+	u8  retry = 0;
+>>>>>>> p9x
 	u8  rd_buf[5];
 
 	pr_debug("Begin burn bootloader firmware.");
 
 	/* step1:Alloc memory */
 	pr_debug("step1:Alloc memory");
+<<<<<<< HEAD
 	fw_boot = devm_kzalloc(&client->dev, FW_BOOT_LENGTH, GFP_KERNEL);
 	if (fw_boot == NULL)
 		return FAIL;
+=======
+	while (retry++ < 5) {
+		fw_boot = devm_kzalloc(&client->dev, FW_BOOT_LENGTH,
+							GFP_KERNEL);
+		if (fw_boot == NULL) {
+			continue;
+		} else {
+			pr_info("Alloc %dk byte memory success.",
+						(FW_BOOT_LENGTH/1024));
+			break;
+		}
+	}
+	if (retry == 5) {
+		pr_err("Alloc memory fail,exit.");
+		return FAIL;
+	}
+>>>>>>> p9x
 
 	/* step2:load firmware bootloader */
 	pr_debug("step2:load firmware bootloader");

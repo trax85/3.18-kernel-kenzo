@@ -40,6 +40,7 @@ Optional Properties:
   - max-clock-frequency-hz: list of the maximum operating frequencies stored
 				in the same order of clock names;
   - qcom,pcie-phy-ver: version of PCIe PHY.
+<<<<<<< HEAD
   - qcom,phy-init: The initialization sequence to bring up the PCIe PHY.
     Should be specified in groups (offset, value, delay, direction).
   - qcom,phy-status-reg: Register offset for PHY status.
@@ -54,6 +55,10 @@ Optional Properties:
   - qcom,pcie-perst-enum: Link enumeration will be triggered by PERST
     deassertion.
   - mdm2apstatus-gpio: GPIO used by PCIe endpoint side to notify the host side.
+=======
+  - qcom,pcie-link-speed: generation of PCIe link speed. The value could be
+    1, 2 or 3.
+>>>>>>> p9x
   - Refer to "Documentation/devicetree/bindings/arm/msm/msm_bus.txt" for
     below optional properties:
 	- qcom,msm-bus,name
@@ -92,7 +97,10 @@ Example:
 		perst-gpio = <&msmgpio 65 0>;
 		wake-gpio = <&msmgpio 61 0>;
 		clkreq-gpio = <&msmgpio 64 0>;
+<<<<<<< HEAD
 		mdm2apstatus-gpio = <&tlmm_pinmux 16 0>;
+=======
+>>>>>>> p9x
 
 		gdsc-vdd-supply = <&gdsc_pcie_0>;
 		vreg-1.8-supply = <&pmd9635_l8>;
@@ -116,6 +124,7 @@ Example:
 				<45 512 500 800>;
 
 		qcom,pcie-link-speed = <1>;
+<<<<<<< HEAD
 		qcom,pcie-active-config;
 		qcom,pcie-aggregated-irq;
 		qcom,pcie-mhi-a7-irq;
@@ -130,3 +139,6 @@ Example:
 					0x600 0x00 0x0 0x1
 					0x608 0x03 0x0 0x1>;
 	};
+=======
+	};
+>>>>>>> p9x

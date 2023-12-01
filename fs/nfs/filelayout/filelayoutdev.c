@@ -729,7 +729,12 @@ nfs4_fl_prepare_ds(struct pnfs_layout_segment *lseg, u32 ds_idx)
 		nfs4_wait_ds_connect(ds);
 	}
 out_test_devid:
+<<<<<<< HEAD:fs/nfs/filelayout/filelayoutdev.c
 	if (filelayout_test_devid_unavailable(devid))
+=======
+	if (ret->ds_clp == NULL ||
+	    filelayout_test_devid_unavailable(devid))
+>>>>>>> p9x:fs/nfs/nfs4filelayoutdev.c
 		ret = NULL;
 out:
 	return ret;

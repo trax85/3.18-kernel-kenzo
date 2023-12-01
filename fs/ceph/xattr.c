@@ -728,11 +728,33 @@ ssize_t __ceph_getxattr(struct inode *inode, const char *name, void *value,
 	if (!ceph_is_valid_xattr(name))
 		return -ENODATA;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 	/* let's see if a virtual xattr was requested */
 	vxattr = ceph_match_vxattr(inode, name);
 	if (vxattr && !(vxattr->exists_cb && !vxattr->exists_cb(ci))) {
 		err = vxattr->getxattr_cb(ci, value, size);
 		return err;
+<<<<<<< HEAD
+=======
+	}
+
+	spin_lock(&ci->i_ceph_lock);
+	dout("getxattr %p ver=%lld index_ver=%lld\n", inode,
+	     ci->i_xattrs.version, ci->i_xattrs.index_version);
+
+	if (__ceph_caps_issued_mask(ci, CEPH_CAP_XATTR_SHARED, 1) &&
+	    (ci->i_xattrs.index_version >= ci->i_xattrs.version)) {
+		goto get_xattr;
+	} else {
+		spin_unlock(&ci->i_ceph_lock);
+		/* get xattrs from mds (if we don't already have them) */
+		err = ceph_do_getattr(inode, CEPH_STAT_CAP_XATTR);
+		if (err)
+			return err;
+>>>>>>> p9x
 	}
 
 	spin_lock(&ci->i_ceph_lock);

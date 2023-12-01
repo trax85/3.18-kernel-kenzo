@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * drivers/staging/android/ion/ion_cma_heap.c
+=======
+ * drivers/gpu/ion/ion_cma_heap.c
+>>>>>>> p9x
  *
  * Copyright (C) Linaro 2012
  * Author: <benjamin.gaignard@linaro.org> for ST-Ericsson.
@@ -23,7 +27,10 @@
 #include <linux/msm_ion.h>
 
 #include <asm/cacheflush.h>
+<<<<<<< HEAD
 #include <soc/qcom/secure_buffer.h>
+=======
+>>>>>>> p9x
 
 #include "ion.h"
 #include "ion_priv.h"
@@ -68,8 +75,15 @@ static int ion_cma_allocate(struct ion_heap *heap, struct ion_buffer *buffer,
 	dev_dbg(dev, "Request buffer allocation len %ld\n", len);
 
 	info = kzalloc(sizeof(struct ion_cma_buffer_info), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!info)
 		return ION_CMA_ALLOCATE_FAILED;
+=======
+	if (!info) {
+		dev_err(dev, "Can't allocate buffer info\n");
+		return ION_CMA_ALLOCATE_FAILED;
+	}
+>>>>>>> p9x
 
 	if (!ION_IS_CACHED(flags))
 		info->cpu_addr = dma_alloc_writecombine(dev, len,
@@ -84,8 +98,15 @@ static int ion_cma_allocate(struct ion_heap *heap, struct ion_buffer *buffer,
 	}
 
 	info->table = kmalloc(sizeof(struct sg_table), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!info->table)
 		goto err;
+=======
+	if (!info->table) {
+		dev_err(dev, "Fail to allocate sg table\n");
+		goto err;
+	}
+>>>>>>> p9x
 
 	info->is_cached = ION_IS_CACHED(flags);
 
@@ -123,7 +144,11 @@ static int ion_cma_phys(struct ion_heap *heap, struct ion_buffer *buffer,
 	struct device *dev = heap->priv;
 	struct ion_cma_buffer_info *info = buffer->priv_virt;
 
+<<<<<<< HEAD
 	dev_dbg(dev, "Return buffer %pK physical address %pa\n", buffer,
+=======
+	dev_dbg(dev, "Return buffer %pK physical address 0x%pa\n", buffer,
+>>>>>>> p9x
 		&info->handle);
 
 	*addr = info->handle;
@@ -143,6 +168,10 @@ static struct sg_table *ion_cma_heap_map_dma(struct ion_heap *heap,
 static void ion_cma_heap_unmap_dma(struct ion_heap *heap,
 				   struct ion_buffer *buffer)
 {
+<<<<<<< HEAD
+=======
+	return;
+>>>>>>> p9x
 }
 
 static int ion_cma_mmap(struct ion_heap *mapper, struct ion_buffer *buffer,
@@ -234,6 +263,7 @@ void ion_cma_heap_destroy(struct ion_heap *heap)
 {
 	kfree(heap);
 }
+<<<<<<< HEAD
 
 static void ion_secure_cma_free(struct ion_buffer *buffer)
 {
@@ -348,3 +378,5 @@ void ion_cma_secure_heap_destroy(struct ion_heap *heap)
 {
 	kfree(heap);
 }
+=======
+>>>>>>> p9x

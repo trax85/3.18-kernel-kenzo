@@ -24,6 +24,14 @@
 
 /* Max transfer size done by I2C transfer functions */
 #define MAX_XFER_SIZE  64
+<<<<<<< HEAD
+=======
+
+int rtl2832_debug;
+module_param_named(debug, rtl2832_debug, int, 0644);
+MODULE_PARM_DESC(debug, "Turn on/off frontend debugging (default:off).");
+
+>>>>>>> p9x
 #define REG_MASK(b) (BIT(b + 1) - 1)
 
 static const struct rtl2832_reg_entry registers[] = {

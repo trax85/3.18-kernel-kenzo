@@ -27,7 +27,10 @@
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
 #include <linux/sched_clock.h>
+<<<<<<< HEAD
 #include <linux/delay.h>
+=======
+>>>>>>> p9x
 
 #include <asm/mach/time.h>
 #include <asm/smp_twd.h>

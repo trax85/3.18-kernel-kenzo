@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2015, 2017, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -1162,7 +1166,11 @@ void bam_output_register_content(void *base, u32 ee)
 
 	print_bam_test_bus_reg(base, 0);
 
+<<<<<<< HEAD
 	print_bam_selected_reg(base, BAM_MAX_EES);
+=======
+	print_bam_selected_reg(dev->base, BAM_MAX_EES);
+>>>>>>> p9x
 
 	num_pipes = bam_read_reg_field(base, NUM_PIPES, 0,
 					BAM_NUM_PIPES);
@@ -1174,11 +1182,19 @@ void bam_output_register_content(void *base, u32 ee)
 
 	if (!enhd_pipe || !pipe_attr)
 		for (i = 0; i < num_pipes; i++)
+<<<<<<< HEAD
 			print_bam_pipe_selected_reg(base, i);
 	else {
 		for (i = 0; i < num_pipes; i++) {
 			if (pipe_attr & (1UL << i))
 				print_bam_pipe_selected_reg(base, i);
+=======
+			print_bam_pipe_selected_reg(dev->base, i);
+	else {
+		for (i = 0; i < num_pipes; i++) {
+			if (pipe_attr & (1UL << i))
+				print_bam_pipe_selected_reg(dev->base, i);
+>>>>>>> p9x
 		}
 	}
 }
@@ -1505,10 +1521,15 @@ void bam_pipe_set_irq(void *base, u32 pipe, enum bam_enable irq_en,
 				__func__, base);
 		return;
 	}
+<<<<<<< HEAD
 	SPS_DBG2(dev,
 		"sps:%s:bam=%pa 0x%pK(va).pipe=%d; irq_en:%d; src_mask:0x%x; ee:%d.\n",
 			__func__, BAM_ID(dev), dev->base, pipe,
 			irq_en, src_mask, ee);
+=======
+	SPS_DBG2(dev, "sps:%s:bam=%pa 0x%pK(va).pipe=%d.",
+			__func__, BAM_ID(dev), dev->base, pipe);
+>>>>>>> p9x
 	if (src_mask & BAM_PIPE_IRQ_RST_ERROR) {
 		if (enhd_pipe)
 			bam_write_reg_field(base, IRQ_EN, 0,

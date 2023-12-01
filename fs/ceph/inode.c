@@ -950,6 +950,44 @@ out_unlock:
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * Set dentry's directory position based on the current dir's max, and
+ * order it in d_subdirs, so that dcache_readdir behaves.
+ *
+ * Always called under directory's i_mutex.
+ */
+static void ceph_set_dentry_offset(struct dentry *dn)
+{
+	struct dentry *dir = dn->d_parent;
+	struct inode *inode = dir->d_inode;
+	struct ceph_inode_info *ci;
+	struct ceph_dentry_info *di;
+
+	BUG_ON(!inode);
+
+	ci = ceph_inode(inode);
+	di = ceph_dentry(dn);
+
+	spin_lock(&ci->i_ceph_lock);
+	if (!__ceph_dir_is_complete(ci)) {
+		spin_unlock(&ci->i_ceph_lock);
+		return;
+	}
+	di->offset = ceph_inode(inode)->i_max_offset++;
+	spin_unlock(&ci->i_ceph_lock);
+
+	spin_lock(&dir->d_lock);
+	spin_lock_nested(&dn->d_lock, DENTRY_D_LOCK_NESTED);
+	list_move(&dn->d_child, &dir->d_subdirs);
+	dout("set_dentry_offset %p %lld (%p %p)\n", dn, di->offset,
+	     dn->d_child.prev, dn->d_child.next);
+	spin_unlock(&dn->d_lock);
+	spin_unlock(&dir->d_lock);
+}
+
+/*
+>>>>>>> p9x
  * splice a dentry to an inode.
  * caller must hold directory i_mutex for this to be safe.
  *

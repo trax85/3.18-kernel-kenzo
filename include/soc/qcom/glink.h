@@ -43,6 +43,7 @@ enum {
 /**
  * Open configuration.
  *
+<<<<<<< HEAD
  * priv:			Private data passed into user callbacks
  * options:			Open option flags
  * rx_intent_req_timeout_ms:	Timeout for requesting an RX intent, in
@@ -54,6 +55,17 @@ enum {
  * notify_rxv:			Receive notification function for vector buffers
  *			(required if notify_rx is not provided)
  * notify_sig:			Signal-change notification (optional)
+=======
+ * priv:	Private data passed into user callbacks
+ * options:	Open option flags
+ * notify_rx:	Receive notification function (required)
+ * notify_tx_done: Transmit-done notification function (required)
+ * notify_state: State-change notification (required)
+ * notify_rx_intent_req: Receive intent request (optional)
+ * notify_rxv:	Receive notification function for vector buffers (required if
+ *		notify_rx is not provided)
+ * notify_sig:	Signal-change notification (optional)
+>>>>>>> p9x
  * notify_rx_tracer_pkt:	Receive notification for tracer packet
  * notify_remote_rx_intent:	Receive notification for remote-queued RX intent
  *
@@ -69,7 +81,10 @@ struct glink_open_config {
 	const char *transport;
 	const char *edge;
 	const char *name;
+<<<<<<< HEAD
 	unsigned int rx_intent_req_timeout_ms;
+=======
+>>>>>>> p9x
 
 	void (*notify_rx)(void *handle, const void *priv, const void *pkt_priv,
 			const void *ptr, size_t size);
@@ -131,7 +146,10 @@ enum tx_flags {
 	GLINK_TX_REQ_INTENT = 0x1,
 	GLINK_TX_SINGLE_THREADED = 0x2,
 	GLINK_TX_TRACER_PKT = 0x4,
+<<<<<<< HEAD
 	GLINK_TX_ATOMIC = 0x8,
+=======
+>>>>>>> p9x
 };
 
 #ifdef CONFIG_MSM_GLINK
@@ -291,6 +309,7 @@ void *glink_register_link_state_cb(struct glink_link_info *link_info,
  */
 void glink_unregister_link_state_cb(void *notif_handle);
 
+<<<<<<< HEAD
 /**
  * glink_qos_latency() - Register the latency QoS requirement
  * @handle:	Channel handle in which the latency is required.
@@ -339,6 +358,8 @@ int glink_qos_start(void *handle);
  */
 unsigned long glink_qos_get_ramp_time(void *handle, size_t pkt_size);
 
+=======
+>>>>>>> p9x
 #else /* CONFIG_MSM_GLINK */
 static inline void *glink_open(const struct glink_open_config *cfg_ptr)
 {
@@ -405,6 +426,7 @@ static inline void *glink_register_link_state_cb(
 static inline void glink_unregister_link_state_cb(void *notif_handle)
 {
 }
+<<<<<<< HEAD
 
 static inline int glink_qos_latency(void *handle, unsigned long latency_us,
 				    size_t pkt_size)
@@ -427,5 +449,7 @@ static inline unsigned long glink_qos_get_ramp_time(void *handle,
 {
 	return 0;
 }
+=======
+>>>>>>> p9x
 #endif /* CONFIG_MSM_GLINK */
 #endif /* _SOC_QCOM_GLINK_H_ */

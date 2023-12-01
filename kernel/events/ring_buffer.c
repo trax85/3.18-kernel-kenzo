@@ -61,6 +61,7 @@ again:
 	 *
 	 *   kernel				user
 	 *
+<<<<<<< HEAD
 	 *   if (LOAD ->data_tail) {		LOAD ->data_head
 	 *			(A)		smp_rmb()	(C)
 	 *	STORE $data			LOAD $data
@@ -75,6 +76,21 @@ again:
 	 * indicates there is no room in the buffer to store $data we do not.
 	 *
 	 * D needs to be a full barrier since it separates the data READ
+=======
+	 *   READ ->data_tail			READ ->data_head
+	 *   smp_mb()	(A)			smp_rmb()	(C)
+	 *   WRITE $data			READ $data
+	 *   smp_wmb()	(B)			smp_mb()	(D)
+	 *   STORE ->data_head			WRITE ->data_tail
+	 *
+	 * Where A pairs with D, and B pairs with C.
+	 *
+	 * I don't think A needs to be a full barrier because we won't in fact
+	 * write data until we see the store from userspace. So we simply don't
+	 * issue the data WRITE until we observe it. Be conservative for now.
+	 *
+	 * OTOH, D needs to be a full barrier since it separates the data READ
+>>>>>>> p9x
 	 * from the tail WRITE.
 	 *
 	 * For B a WMB is sufficient since it separates two WRITEs, and for C
@@ -82,7 +98,11 @@ again:
 	 *
 	 * See perf_output_begin().
 	 */
+<<<<<<< HEAD
 	smp_wmb(); /* B, matches C */
+=======
+	smp_wmb();
+>>>>>>> p9x
 	rb->user_page->data_head = head;
 
 	/*
@@ -140,7 +160,19 @@ int perf_output_begin(struct perf_output_handle *handle,
 	perf_output_get_handle(handle);
 
 	do {
+<<<<<<< HEAD
 		tail = ACCESS_ONCE(rb->user_page->data_tail);
+=======
+		/*
+		 * Userspace could choose to issue a mb() before updating the
+		 * tail pointer. So that all reads will be completed before the
+		 * write is issued.
+		 *
+		 * See perf_output_put_handle().
+		 */
+		tail = ACCESS_ONCE(rb->user_page->data_tail);
+		smp_mb();
+>>>>>>> p9x
 		offset = head = local_read(&rb->head);
 		if (!rb->overwrite &&
 		    unlikely(CIRC_SPACE(head, tail, perf_data_size(rb)) < size))

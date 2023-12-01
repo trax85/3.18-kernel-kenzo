@@ -32,6 +32,14 @@
 #include <asm/processor-flags.h>
 #include <asm/asm-offsets.h>
 
+/*
+ * Locally defined symbols should be marked hidden:
+ */
+	.hidden _bss
+	.hidden _ebss
+	.hidden _got
+	.hidden _egot
+
 	__HEAD
 	.code32
 ENTRY(startup_32)
@@ -259,11 +267,20 @@ ENTRY(efi_pe_entry)
 	movq	%rax, %rdi
 	call	make_boot_params
 	cmpq	$0,%rax
+<<<<<<< HEAD
 	je	fail
 	mov	%rax, %rsi
 	leaq	startup_32(%rip), %rax
 	movl	%eax, BP_code32_start(%rsi)
 	jmp	2f		/* Skip the relocation */
+=======
+	je	1f
+	mov	%rax, %rdx
+	leaq	startup_32(%rip), %rax
+	movl	%eax, BP_code32_start(%rdx)
+	popq	%rsi
+	popq	%rdi
+>>>>>>> p9x
 
 handover_entry:
 	call	1f

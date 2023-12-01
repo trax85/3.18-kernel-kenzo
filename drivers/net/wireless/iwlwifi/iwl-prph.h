@@ -315,6 +315,7 @@ static inline unsigned int SCD_QUEUE_STATUS_BITS(unsigned int chnl)
 #define OSC_CLK				(0xa04068)
 #define OSC_CLK_FORCE_CONTROL		(0x8)
 
+<<<<<<< HEAD
 /* SECURE boot registers */
 #define LMPM_SECURE_BOOT_CONFIG_ADDR	(0x100)
 enum secure_boot_config_reg {
@@ -374,4 +375,6 @@ enum {
 	LMPM_CHICK_EXTENDED_ADDR_SPACE = BIT(0),
 };
 
+=======
+>>>>>>> p9x
 #endif				/* __iwl_prph_h__ */

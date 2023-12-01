@@ -305,7 +305,12 @@ static int _rmnet_vnd_do_flow_control(struct net_device *dev,
 {
 	struct rmnet_vnd_fc_work *fcwork;
 
+<<<<<<< HEAD
 	fcwork = kmalloc(sizeof(*fcwork), GFP_ATOMIC);
+=======
+	fcwork = (struct rmnet_vnd_fc_work *)
+			kmalloc(sizeof(struct rmnet_vnd_fc_work), GFP_ATOMIC);
+>>>>>>> p9x
 	if (!fcwork)
 		return RMNET_VND_FC_KMALLOC_ERR;
 	memset(fcwork, 0, sizeof(struct rmnet_vnd_fc_work));
@@ -454,7 +459,11 @@ static int rmnet_vnd_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 		break;
 
 	default:
+<<<<<<< HEAD
 		LOGM("Unknown IOCTL 0x%08X", cmd);
+=======
+		LOGL("Unkown IOCTL 0x%08X", cmd);
+>>>>>>> p9x
 		rc = -EINVAL;
 	}
 
@@ -503,6 +512,7 @@ static void rmnet_vnd_setup(struct net_device *dev)
 	INIT_LIST_HEAD(&dev_conf->flow_head);
 }
 
+<<<<<<< HEAD
 /**
  * rmnet_vnd_setup() - net_device initialization helper function
  * @dev:      Virtual network device
@@ -515,6 +525,8 @@ static void rmnet_vnd_disable_offload(struct net_device *dev)
 	__netdev_update_features(dev);
 }
 
+=======
+>>>>>>> p9x
 /* ***************** Exposed API ******************************************** */
 
 /**
@@ -586,8 +598,14 @@ int rmnet_vnd_create_dev(int id, struct net_device **new_device,
 	else if (prefix && use_name)
 		p = scnprintf(dev_prefix, IFNAMSIZ, "%s", prefix);
 	else if (prefix && !use_name)
+<<<<<<< HEAD
 		p = scnprintf(dev_prefix, IFNAMSIZ, "%s%%d",
 			  prefix);
+=======
+		p = scnprintf(dev_prefix, IFNAMSIZ, "%s%%d", prefix);
+	else
+		return RMNET_CONFIG_BAD_ARGUMENTS;
+>>>>>>> p9x
 	if (p >= (IFNAMSIZ-1)) {
 		LOGE("Specified prefix longer than IFNAMSIZ");
 		return RMNET_CONFIG_BAD_ARGUMENTS;
@@ -595,7 +613,10 @@ int rmnet_vnd_create_dev(int id, struct net_device **new_device,
 
 	dev = alloc_netdev(sizeof(struct rmnet_vnd_private_s),
 			   dev_prefix,
+<<<<<<< HEAD
 			   use_name ? NET_NAME_UNKNOWN : NET_NAME_ENUM,
+=======
+>>>>>>> p9x
 			   rmnet_vnd_setup);
 	if (!dev) {
 		LOGE("Failed to to allocate netdev for id %d", id);
@@ -616,7 +637,10 @@ int rmnet_vnd_create_dev(int id, struct net_device **new_device,
 		/* Configuring GSO on rmnet_data interfaces */
 		dev->hw_features |= NETIF_F_GSO;
 		dev->hw_features |= NETIF_F_GSO_UDP_TUNNEL;
+<<<<<<< HEAD
 		dev->hw_features |= NETIF_F_GSO_UDP_TUNNEL_CSUM;
+=======
+>>>>>>> p9x
 	}
 
 	rc = register_netdevice(dev);
@@ -630,8 +654,11 @@ int rmnet_vnd_create_dev(int id, struct net_device **new_device,
 		*new_device = dev;
 	}
 
+<<<<<<< HEAD
 	rmnet_vnd_disable_offload(dev);
 
+=======
+>>>>>>> p9x
 	LOGM("Registered device %s", dev->name);
 	return rc;
 }
@@ -923,7 +950,12 @@ int rmnet_vnd_add_tc_flow(uint32_t id, uint32_t map_flow, uint32_t tc_flow)
 	}
 	write_unlock_irqrestore(&dev_conf->flow_map_lock, flags);
 
+<<<<<<< HEAD
 	itm = kmalloc(sizeof(*itm), GFP_KERNEL);
+=======
+	itm = (struct rmnet_map_flow_mapping_s *)
+		kmalloc(sizeof(struct rmnet_map_flow_mapping_s), GFP_KERNEL);
+>>>>>>> p9x
 
 	if (!itm) {
 		LOGM("%s", "Failure allocating flow mapping");

@@ -32,11 +32,14 @@ struct cpufreq_arm_bL_ops {
 	 */
 	int (*init_opp_table)(struct device *cpu_dev);
 
+<<<<<<< HEAD
 	/* Optional */
 	int (*get_transition_latency)(struct device *cpu_dev);
 	void (*free_opp_table)(struct device *cpu_dev);
 };
 
+=======
+>>>>>>> p9x
 int bL_cpufreq_register(struct cpufreq_arm_bL_ops *ops);
 void bL_cpufreq_unregister(struct cpufreq_arm_bL_ops *ops);
 

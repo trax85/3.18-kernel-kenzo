@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -45,11 +49,14 @@ module_param(msm_rmnet_bam_headroom_check_failure, ulong, S_IRUGO);
 MODULE_PARM_DESC(msm_rmnet_bam_headroom_check_failure,
 		 "Number of packets with insufficient headroom");
 
+<<<<<<< HEAD
 /* Packet threshold. */
 static unsigned int pkt_threshold = 1;
 module_param(pkt_threshold,
 	     uint, S_IRUGO | S_IWUSR | S_IWGRP);
 
+=======
+>>>>>>> p9x
 #define DEBUG_MASK_LVL0 (1U << 0)
 #define DEBUG_MASK_LVL1 (1U << 1)
 #define DEBUG_MASK_LVL2 (1U << 2)
@@ -231,6 +238,7 @@ static void bam_recv_notify(void *dev, struct sk_buff *skb)
 			p->stats.rx_packets, skb->len);
 
 		/* Deliver to network stack */
+<<<<<<< HEAD
 		if (pkt_threshold == 1) {
 			netif_rx_ni(skb);
 		} else {
@@ -240,6 +248,9 @@ static void bam_recv_notify(void *dev, struct sk_buff *skb)
 			else
 				netif_rx(skb);
 		}
+=======
+		netif_rx_ni(skb);
+>>>>>>> p9x
 	} else
 		pr_err("[%s] %s: No skb received",
 			((struct net_device *)dev)->name, __func__);
@@ -451,7 +462,11 @@ static int rmnet_xmit(struct sk_buff *skb, struct net_device *dev)
 	if (netif_queue_stopped(dev)) {
 		pr_err("[%s]fatal: rmnet_xmit called when "
 			"netif_queue is stopped", dev->name);
+<<<<<<< HEAD
 		return NETDEV_TX_BUSY;
+=======
+		return 0;
+>>>>>>> p9x
 	}
 
 	spin_lock_irqsave(&p->lock, flags);
@@ -547,7 +562,10 @@ static const struct net_device_ops rmnet_ops_ip = {
 static void _rmnet_free_bam_later(struct work_struct *work)
 {
 	struct rmnet_free_bam_work *fwork;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	fwork = container_of(work, struct rmnet_free_bam_work, work);
 
 	DBG0("%s: unregister_netdev, done", __func__);
@@ -824,7 +842,11 @@ static int bam_rmnet_probe(struct platform_device *pdev)
 	else
 		dev_name = "rev_rmnet%d";
 
+<<<<<<< HEAD
 	dev = alloc_netdev(sizeof(*p), dev_name, NET_NAME_ENUM, rmnet_setup);
+=======
+	dev = alloc_netdev(sizeof(*p), dev_name, rmnet_setup);
+>>>>>>> p9x
 	if (!dev) {
 		pr_err("%s: no memory for netdev %d\n", __func__, i);
 		return -ENOMEM;

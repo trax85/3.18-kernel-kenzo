@@ -13,6 +13,7 @@ Required properties:
 - compatible : Must be "qcom,avtimer"
 
 Optional properties:
+<<<<<<< HEAD
 - clk-div : The clk is at 27MHz and hence ticks are to be
  divided by 27 to achive the msec value.
 
@@ -23,4 +24,16 @@ Example:
 		      <0x90f7010 0x4>;
 		reg-names = "avtimer_lsb_addr", "avtimer_msb_addr";
 		qcom,clk-div = <27>;
+=======
+- clk_div : The clk is at 27MHz and hence ticks are to be
+ divided by 27 to achive the msec value.
+
+Example:
+	qcom,avtimer {
+		compatible = "qcom,avtimer";
+		reg = <0xfe053008 0x4>,
+			<0xfe05300c 0x4>;
+		reg-names = "avtimer_lsb_addr", "avtimer_msb_addr";
+		qcom,clk_div = <27>;
+>>>>>>> p9x
 	};

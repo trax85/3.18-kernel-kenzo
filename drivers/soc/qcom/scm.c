@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2010-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2010-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -24,9 +28,12 @@
 
 #include <soc/qcom/scm.h>
 
+<<<<<<< HEAD
 #define CREATE_TRACE_POINTS
 #include <trace/events/scm.h>
 
+=======
+>>>>>>> p9x
 #define SCM_ENOMEM		-5
 #define SCM_EOPNOTSUPP		-4
 #define SCM_EINVAL_ADDR		-3
@@ -38,6 +45,7 @@
 
 static DEFINE_MUTEX(scm_lock);
 
+<<<<<<< HEAD
 /*
  * MSM8996 V2 requires a lock to protect against
  * concurrent accesses between the limits management
@@ -47,6 +55,10 @@ DEFINE_MUTEX(scm_lmh_lock);
 
 #define SCM_EBUSY_WAIT_MS 30
 #define SCM_EBUSY_MAX_RETRY 67
+=======
+#define SCM_EBUSY_WAIT_MS 30
+#define SCM_EBUSY_MAX_RETRY 20
+>>>>>>> p9x
 
 #define N_EXT_SCM_ARGS 7
 #define FIRST_EXT_ARG_IDX 3
@@ -340,8 +352,11 @@ static int _scm_call_retry(u32 svc_id, u32 cmd_id, const void *cmd_buf,
 					resp_buf, resp_len, cmd, len);
 		if (ret == SCM_EBUSY)
 			msleep(SCM_EBUSY_WAIT_MS);
+<<<<<<< HEAD
 		if (retry_count == 33)
 			pr_warn("scm: secure world has been busy for 1 second!\n");
+=======
+>>>>>>> p9x
 	} while (ret == SCM_EBUSY && (retry_count++ < SCM_EBUSY_MAX_RETRY));
 
 	if (ret == SCM_EBUSY)
@@ -651,9 +666,12 @@ int scm_call2(u32 fn_id, struct scm_desc *desc)
 	int ret, retry_count = 0;
 	u64 x0;
 
+<<<<<<< HEAD
 	if (unlikely(!is_scm_armv8()))
 		return -ENODEV;
 
+=======
+>>>>>>> p9x
 	ret = allocate_extra_arg_buffer(desc, GFP_KERNEL);
 	if (ret)
 		return ret;
@@ -663,6 +681,7 @@ int scm_call2(u32 fn_id, struct scm_desc *desc)
 	do {
 		mutex_lock(&scm_lock);
 
+<<<<<<< HEAD
 		if (SCM_SVC_ID(fn_id) == SCM_SVC_LMH)
 			mutex_lock(&scm_lmh_lock);
 
@@ -670,6 +689,10 @@ int scm_call2(u32 fn_id, struct scm_desc *desc)
 
 		trace_scm_call_start(x0, desc);
 
+=======
+		desc->ret[0] = desc->ret[1] = desc->ret[2] = 0;
+
+>>>>>>> p9x
 		if (scm_version == SCM_ARMV8_64)
 			ret = __scm_call_armv8_64(x0, desc->arginfo,
 						  desc->args[0], desc->args[1],
@@ -682,18 +705,24 @@ int scm_call2(u32 fn_id, struct scm_desc *desc)
 						  desc->args[2], desc->x5,
 						  &desc->ret[0], &desc->ret[1],
 						  &desc->ret[2]);
+<<<<<<< HEAD
 
 		trace_scm_call_end(desc);
 
 		if (SCM_SVC_ID(fn_id) == SCM_SVC_LMH)
 			mutex_unlock(&scm_lmh_lock);
 
+=======
+>>>>>>> p9x
 		mutex_unlock(&scm_lock);
 
 		if (ret == SCM_V2_EBUSY)
 			msleep(SCM_EBUSY_WAIT_MS);
+<<<<<<< HEAD
 		if (retry_count == 33)
 			pr_warn("scm: secure world has been busy for 1 second!\n");
+=======
+>>>>>>> p9x
 	}  while (ret == SCM_V2_EBUSY && (retry_count++ < SCM_EBUSY_MAX_RETRY));
 
 	if (ret < 0)
@@ -722,15 +751,25 @@ int scm_call2_atomic(u32 fn_id, struct scm_desc *desc)
 	int ret;
 	u64 x0;
 
+<<<<<<< HEAD
 	if (unlikely(!is_scm_armv8()))
 		return -ENODEV;
 
+=======
+>>>>>>> p9x
 	ret = allocate_extra_arg_buffer(desc, GFP_ATOMIC);
 	if (ret)
 		return ret;
 
 	x0 = fn_id | BIT(SMC_ATOMIC_SYSCALL) | scm_version_mask;
 
+<<<<<<< HEAD
+=======
+	pr_debug("scm_call: func id %#llx, args: %#x, %#llx, %#llx, %#llx, %#llx\n",
+		x0, desc->arginfo, desc->args[0], desc->args[1],
+		desc->args[2], desc->x5);
+
+>>>>>>> p9x
 	if (scm_version == SCM_ARMV8_64)
 		ret = __scm_call_armv8_64(x0, desc->arginfo, desc->args[0],
 					  desc->args[1], desc->args[2],
@@ -742,8 +781,14 @@ int scm_call2_atomic(u32 fn_id, struct scm_desc *desc)
 					  desc->x5, &desc->ret[0],
 					  &desc->ret[1], &desc->ret[2]);
 	if (ret < 0)
+<<<<<<< HEAD
 		pr_err("scm_call failed: func id %#llx, ret: %d, syscall returns: %#llx, %#llx, %#llx\n",
 			x0, ret, desc->ret[0],
+=======
+		pr_err("scm_call failed: func id %#llx, arginfo: %#x, args: %#llx, %#llx, %#llx, %#llx, ret: %d, syscall returns: %#llx, %#llx, %#llx\n",
+			x0, desc->arginfo, desc->args[0], desc->args[1],
+			desc->args[2], desc->x5, ret, desc->ret[0],
+>>>>>>> p9x
 			desc->ret[1], desc->ret[2]);
 
 	if (arglen > N_REGISTER_ARGS)
@@ -1195,6 +1240,7 @@ int scm_restore_sec_cfg(u32 device_id, u32 spare, int *scm_ret)
 	return 0;
 }
 EXPORT_SYMBOL(scm_restore_sec_cfg);
+<<<<<<< HEAD
 
 /*
  * SCM call command ID to check secure mode
@@ -1231,3 +1277,5 @@ bool scm_is_secure_device(void)
 		return false;
 }
 EXPORT_SYMBOL(scm_is_secure_device);
+=======
+>>>>>>> p9x

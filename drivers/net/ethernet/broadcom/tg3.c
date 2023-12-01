@@ -3046,7 +3046,10 @@ static bool tg3_phy_led_bug(struct tg3 *tp)
 {
 	switch (tg3_asic_rev(tp)) {
 	case ASIC_REV_5719:
+<<<<<<< HEAD
 	case ASIC_REV_5720:
+=======
+>>>>>>> p9x
 		if ((tp->phy_flags & TG3_PHYFLG_MII_SERDES) &&
 		    !tp->pci_fn)
 			return true;
@@ -7933,7 +7936,11 @@ static netdev_tx_t tg3_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		 */
 		if (skb->protocol == htons(ETH_P_8021Q) ||
 		    skb->protocol == htons(ETH_P_8021AD))
+<<<<<<< HEAD
 			return tg3_tso_bug(tp, tnapi, txq, skb);
+=======
+			return tg3_tso_bug(tp, skb);
+>>>>>>> p9x
 
 		if (!skb_is_gso_v6(skb)) {
 			if (unlikely((ETH_HLEN + hdr_len) > 80) &&
@@ -17857,10 +17864,15 @@ static int tg3_init_one(struct pci_dev *pdev,
 	 */
 	if ((tr32(HOSTCC_MODE) & HOSTCC_MODE_ENABLE) ||
 	    (tr32(WDMAC_MODE) & WDMAC_MODE_ENABLE)) {
+<<<<<<< HEAD
 		tg3_full_lock(tp, 0);
 		tw32(MEMARB_MODE, MEMARB_MODE_ENABLE);
 		tg3_halt(tp, RESET_KIND_SHUTDOWN, 1);
 		tg3_full_unlock(tp);
+=======
+		tw32(MEMARB_MODE, MEMARB_MODE_ENABLE);
+		tg3_halt(tp, RESET_KIND_SHUTDOWN, 1);
+>>>>>>> p9x
 	}
 
 	err = tg3_test_dma(tp);

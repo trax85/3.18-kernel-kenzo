@@ -1,4 +1,5 @@
 # UAPI Header export list
+header-y += android/
 header-y += byteorder/
 header-y += can/
 header-y += caif/
@@ -20,9 +21,14 @@ header-y += netfilter_ipv4/
 header-y += netfilter_ipv6/
 header-y += usb/
 header-y += wimax/
+<<<<<<< HEAD
 header-y += ../../../drivers/staging/android/uapi/
 header-y += mfd/
 header-y += nfc/
+=======
+header-y += mfd/
+header-y += ../../../drivers/staging/android/uapi/
+>>>>>>> p9x
 
 genhdr-y += version.h
 
@@ -86,6 +92,7 @@ header-y += cciss_ioctl.h
 header-y += cdrom.h
 header-y += cgroupstats.h
 header-y += chio.h
+header-y += ci-bridge-spi.h
 header-y += cm4000_cs.h
 header-y += cn_proc.h
 header-y += coda.h
@@ -115,6 +122,7 @@ header-y += elf-em.h
 header-y += elf-fdpic.h
 header-y += elf.h
 header-y += elfcore.h
+header-y += epm_adc.h
 header-y += errno.h
 header-y += errqueue.h
 header-y += esoc_ctrl.h
@@ -162,6 +170,7 @@ header-y += i2o-dev.h
 header-y += i8k.h
 header-y += icmp.h
 header-y += icmpv6.h
+header-y += idle_stats_device.h
 header-y += if.h
 header-y += if_addr.h
 header-y += if_addrlabel.h
@@ -202,6 +211,10 @@ header-y += input.h
 header-y += input-event-codes.h
 header-y += ioctl.h
 header-y += ion.h
+<<<<<<< HEAD
+=======
+header-y += ioprio.h
+>>>>>>> p9x
 header-y += ip.h
 header-y += ip6_tunnel.h
 header-y += ip_vs.h
@@ -233,6 +246,8 @@ header-y += kernelcapi.h
 header-y += kexec.h
 header-y += keyboard.h
 header-y += keyctl.h
+header-y += ensigma_uccp330.h
+header-y += demod_wrapper.h
 
 ifneq ($(wildcard $(srctree)/arch/$(SRCARCH)/include/uapi/asm/kvm.h \
 		  $(srctree)/arch/$(SRCARCH)/include/asm/kvm.h),)
@@ -246,7 +261,11 @@ header-y += kvm_para.h
 endif
 
 header-y += l2tp.h
+<<<<<<< HEAD
 header-y += libc-compat.h
+=======
+header-y += lirc.h
+>>>>>>> p9x
 header-y += limits.h
 header-y += llc.h
 header-y += loop.h
@@ -276,6 +295,7 @@ header-y += mroute.h
 header-y += mroute6.h
 header-y += msdos_fs.h
 header-y += msg.h
+<<<<<<< HEAD
 header-y += msm_adc.h
 header-y += msm_adsp.h
 header-y += msm_audio.h
@@ -289,10 +309,32 @@ header-y += msm_audio_mvs.h
 header-y += msm_audio_qcp.h
 header-y += msm_audio_sbc.h
 header-y += msm_audio_voicememo.h
+=======
+header-y += msm-core-interface.h
+header-y += msm_adc.h
+header-y += msm_adsp.h
+header-y += msm_dsps.h
+header-y += msm_ion.h
+header-y += msm_ipa.h
+header-y += rmnet_ipa_fd_ioctl.h
+header-y += ipa_qmi_service_v01.h
+header-y += msm_mdp.h
+header-y += msm_kgsl.h
+header-y += msm_q6venc.h
+header-y += msm_q6vdec.h
+header-y += msm_rotator.h
+header-y += msm_vidc_dec.h
+header-y += msm_vidc_enc.h
+header-y += msm_audio.h
+header-y += msm_audio_aac.h
+header-y += msm_audio_ac3.h
+header-y += msm_audio_calibration.h
+>>>>>>> p9x
 header-y += msm_audio_wma.h
 header-y += msm_audio_wmapro.h
 header-y += msm_audio_alac.h
 header-y += msm_audio_ape.h
+<<<<<<< HEAD
 header-y += msm_audio_g711.h
 header-y += msm_audio_g711_dec.h
 header-y += msm-core-interface.h
@@ -311,6 +353,20 @@ header-y += msm_rotator.h
 header-y += msm_vidc_dec.h
 header-y += msm_vidc_enc.h
 header-y += msm_thermal_ioctl.h
+=======
+header-y += msm_audio_mvs.h
+header-y += msm_audio_qcp.h
+header-y += msm_audio_amrnb.h
+header-y += msm_audio_amrwb.h
+header-y += msm_audio_amrwbplus.h
+header-y += msm_audio_voicememo.h
+header-y += msm_audio_sbc.h
+header-y += msm_ipc.h
+header-y += msm_charm.h
+header-y += msm_rmnet.h
+header-y += msm_pft.h
+header-y += rmnet_data.h
+>>>>>>> p9x
 header-y += mtio.h
 header-y += n_r3964.h
 header-y += nbd.h
@@ -380,13 +436,21 @@ header-y += prctl.h
 header-y += psci.h
 header-y += ptp_clock.h
 header-y += ptrace.h
+<<<<<<< HEAD
 header-y += qbt1000.h
+=======
+>>>>>>> p9x
 header-y += qcedev.h
 header-y += qcota.h
 header-y += qnx4_fs.h
 header-y += qnxtypes.h
+<<<<<<< HEAD
 header-y += qseecom.h
 header-y += qrng.h
+=======
+header-y += qrng.h
+header-y += qseecom.h
+>>>>>>> p9x
 header-y += quota.h
 header-y += radeonfb.h
 header-y += random.h
@@ -496,7 +560,10 @@ header-y += virtio_pci.h
 header-y += virtio_ring.h
 header-y += virtio_rng.h
 header-y += vm_bms.h
+<<<<<<< HEAD
 header-y += vm_sockets.h
+=======
+>>>>>>> p9x
 header-y += vt.h
 header-y += wait.h
 header-y += wanrouter.h
@@ -506,10 +573,17 @@ header-y += wireless.h
 header-y += x25.h
 header-y += xattr.h
 header-y += xfrm.h
+header-y += msm_thermal_ioctl.h
 header-y += hw_breakpoint.h
+<<<<<<< HEAD
 header-y += zorro.h
 header-y += zorro_ids.h
 header-y += android_pmem.h
 header-y += smcinvoke.h
 header-y += bgcom_interface.h
 header-y += habmm.h
+=======
+header-y += android_pmem.h
+header-y += tsc.h
+header-y += danipc_ioctl.h
+>>>>>>> p9x

@@ -68,8 +68,14 @@ static ssize_t ecryptfs_read_update_atime(struct kiocb *iocb,
 
 struct ecryptfs_getdents_callback {
 	struct dir_context ctx;
+<<<<<<< HEAD
 	struct dir_context *caller;
 	struct super_block *sb;
+=======
+	void *dirent;
+	struct dentry *dentry;
+	filldir_t filldir;
+>>>>>>> p9x
 	int filldir_called;
 	int entries_written;
 };
@@ -113,6 +119,7 @@ static int ecryptfs_readdir(struct file *file, struct dir_context *ctx)
 {
 	int rc;
 	struct file *lower_file;
+<<<<<<< HEAD
 	struct inode *inode = file_inode(file);
 	struct ecryptfs_getdents_callback buf = {
 		.ctx.actor = ecryptfs_filldir,
@@ -122,6 +129,23 @@ static int ecryptfs_readdir(struct file *file, struct dir_context *ctx)
 	lower_file = ecryptfs_file_to_lower(file);
 	rc = iterate_dir(lower_file, &buf.ctx);
 	ctx->pos = buf.ctx.pos;
+=======
+	struct inode *inode;
+	struct ecryptfs_getdents_callback buf = {
+		.dirent = dirent,
+		.dentry = file->f_path.dentry,
+		.filldir = filldir,
+		.filldir_called = 0,
+		.entries_written = 0,
+		.ctx.actor = ecryptfs_filldir
+	};
+
+	lower_file = ecryptfs_file_to_lower(file);
+	lower_file->f_pos = file->f_pos;
+	inode = file_inode(file);
+	rc = iterate_dir(lower_file, &buf.ctx);
+	file->f_pos = lower_file->f_pos;
+>>>>>>> p9x
 	if (rc < 0)
 		goto out;
 	if (buf.filldir_called && !buf.entries_written)

@@ -58,9 +58,24 @@ void xenvif_skb_zerocopy_prepare(struct xenvif_queue *queue,
 	atomic_inc(&queue->inflight_packets);
 }
 
+<<<<<<< HEAD
 void xenvif_skb_zerocopy_complete(struct xenvif_queue *queue)
+=======
+void xenvif_get_rings(struct xenvif *vif)
+{
+	atomic_inc(&vif->ring_refcnt);
+}
+
+void xenvif_put(struct xenvif *vif)
+>>>>>>> p9x
 {
 	atomic_dec(&queue->inflight_packets);
+}
+
+void xenvif_put_rings(struct xenvif *vif)
+{
+	if (atomic_dec_and_test(&vif->ring_refcnt))
+		wake_up(&vif->waiting_to_unmap);
 }
 
 int xenvif_schedulable(struct xenvif *vif)
@@ -169,8 +184,15 @@ static int xenvif_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	    !xenvif_schedulable(vif))
 		goto drop;
 
+<<<<<<< HEAD
 	cb = XENVIF_RX_CB(skb);
 	cb->expires = jiffies + vif->drain_timeout;
+=======
+	/* Reserve ring slots for the worst-case number of fragments. */
+	vif->rx_req_cons_peek += xen_netbk_count_skb_slots(vif, skb);
+	xenvif_get(vif);
+	xenvif_get_rings(vif);
+>>>>>>> p9x
 
 	xenvif_rx_queue_tail(queue, skb);
 	xenvif_kick_thread(queue);
@@ -417,6 +439,7 @@ struct xenvif *xenvif_alloc(struct device *parent, domid_t domid,
 	vif->can_sg = 1;
 	vif->ip_csum = 1;
 	vif->dev = dev;
+<<<<<<< HEAD
 	vif->disabled = false;
 	vif->drain_timeout = msecs_to_jiffies(rx_drain_timeout_msecs);
 	vif->stall_timeout = msecs_to_jiffies(rx_stall_timeout_msecs);
@@ -426,6 +449,16 @@ struct xenvif *xenvif_alloc(struct device *parent, domid_t domid,
 	vif->num_queues = 0;
 
 	spin_lock_init(&vif->lock);
+=======
+	INIT_LIST_HEAD(&vif->schedule_list);
+	INIT_LIST_HEAD(&vif->notify_list);
+	init_waitqueue_head(&vif->waiting_to_unmap);
+
+	vif->credit_bytes = vif->remaining_credit = ~0UL;
+	vif->credit_usec  = 0UL;
+	init_timer(&vif->credit_timeout);
+	vif->credit_window_start = get_jiffies_64();
+>>>>>>> p9x
 
 	dev->netdev_ops	= &xenvif_netdev_ops;
 	dev->hw_features = NETIF_F_SG |
@@ -629,6 +662,7 @@ void xenvif_disconnect(struct xenvif *vif)
 	unsigned int num_queues = vif->num_queues;
 	unsigned int queue_index;
 
+<<<<<<< HEAD
 	xenvif_carrier_off(vif);
 
 	for (queue_index = 0; queue_index < num_queues; ++queue_index) {
@@ -686,6 +720,23 @@ void xenvif_free(struct xenvif *vif)
 	vif->queues = NULL;
 	vif->num_queues = 0;
 
+=======
+	disable_irq(vif->irq);
+	xen_netbk_unmap_frontend_rings(vif);
+	if (vif->irq) {
+		unbind_from_irqhandler(vif->irq, vif);
+		vif->irq = 0;
+	}
+}
+
+void xenvif_free(struct xenvif *vif)
+{
+	atomic_dec(&vif->refcnt);
+	wait_event(vif->waiting_to_free, atomic_read(&vif->refcnt) == 0);
+
+	unregister_netdev(vif->dev);
+
+>>>>>>> p9x
 	free_netdev(vif->dev);
 
 	module_put(THIS_MODULE);

@@ -19,8 +19,11 @@ KBUILD_DEFCONFIG := defconfig
 
 KBUILD_CFLAGS	+= -mgeneral-regs-only
 KBUILD_CFLAGS	+= -fno-pic
+<<<<<<< HEAD
 KBUILD_CFLAGS	+= $(call cc-option, -mpc-relative-literal-loads)
 
+=======
+>>>>>>> p9x
 ifeq ($(CONFIG_CPU_BIG_ENDIAN), y)
 KBUILD_CPPFLAGS	+= -mbig-endian
 AS		+= -EB
@@ -30,6 +33,11 @@ KBUILD_CPPFLAGS	+= -mlittle-endian
 AS		+= -EL
 LD		+= -EL
 endif
+<<<<<<< HEAD
+=======
+
+comma = ,
+>>>>>>> p9x
 
 CHECKFLAGS	+= -D__aarch64__
 
@@ -57,9 +65,14 @@ KASAN_SHADOW_OFFSET := $(shell printf "0x%08x00000000\n" $$(( \
 export	TEXT_OFFSET GZFLAGS
 
 core-y		+= arch/arm64/kernel/ arch/arm64/mm/
+<<<<<<< HEAD
 core-$(CONFIG_NET) += arch/arm64/net/
 core-$(CONFIG_KVM) += arch/arm64/kvm/
 core-$(CONFIG_XEN) += arch/arm64/xen/
+=======
+core-$(CONFIG_XEN)		+= arch/arm64/xen/
+core-$(CONFIG_KVM) += arch/arm64/kvm/
+>>>>>>> p9x
 core-$(CONFIG_CRYPTO) += arch/arm64/crypto/
 libs-y		:= arch/arm64/lib/ $(libs-y)
 libs-$(CONFIG_EFI_STUB) += drivers/firmware/efi/libstub/
@@ -74,6 +87,16 @@ ifeq ($(CONFIG_BUILD_ARM64_APPENDED_DTB_IMAGE),y)
 KBUILD_IMAGE   := $(addsuffix -dtb,$(KBUILD_IMAGE))
 endif
 
+<<<<<<< HEAD
+=======
+# Default target when executing plain make
+ifeq ($(CONFIG_BUILD_ARM64_APPENDED_DTB_IMAGE),y)
+KBUILD_IMAGE	:= Image.gz-dtb
+else
+KBUILD_IMAGE	:= Image.gz
+endif
+
+>>>>>>> p9x
 KBUILD_DTBS	:= dtbs
 
 all:	$(KBUILD_IMAGE) $(KBUILD_DTBS)
@@ -89,6 +112,7 @@ zinstall install: vmlinux
 %.dtb: scripts
 	$(Q)$(MAKE) $(build)=$(boot)/dts $(boot)/dts/$@
 
+<<<<<<< HEAD
 PHONY += dtbs dtbs_install
 
 dtbs: prepare scripts
@@ -99,10 +123,21 @@ dtbs_install:
 
 Image-dtb Image.gz-dtb: vmlinux scripts dtbs
 	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
+=======
+dtbs: scripts
+	$(Q)$(MAKE) $(build)=$(boot)/dts dtbs
+	$(Q)$(MAKE) $(build)=$(boot)/dts/qcom dtbs
+>>>>>>> p9x
 
 PHONY += vdso_install
 vdso_install:
 	$(Q)$(MAKE) $(build)=arch/arm64/kernel/vdso $@
+<<<<<<< HEAD
+=======
+
+Image.gz-dtb: vmlinux scripts dtbs
+	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
+>>>>>>> p9x
 
 # We use MRPROPER_FILES and CLEAN_FILES now
 archclean:

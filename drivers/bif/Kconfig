@@ -13,7 +13,11 @@ menuconfig BIF
 
 if BIF
 config BIF_QPNP
+<<<<<<< HEAD
 	depends on SPMI || MSM_SPMI
+=======
+	depends on SPMI
+>>>>>>> p9x
 	depends on OF_SPMI
 	tristate "Qualcomm QPNP BIF support"
 	help

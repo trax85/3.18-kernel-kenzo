@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -206,8 +210,11 @@ static char *msm_pm_sleep_mode_labels[MSM_PM_SLEEP_MODE_NR] = {
 	[MSM_PM_SLEEP_MODE_RETENTION] = "retention",
 	[MSM_PM_SLEEP_MODE_POWER_COLLAPSE_STANDALONE] =
 		"standalone_power_collapse",
+<<<<<<< HEAD
 	[MSM_PM_SLEEP_MODE_FASTPC] =
 		"fpc",
+=======
+>>>>>>> p9x
 };
 
 /*

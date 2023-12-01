@@ -1401,7 +1401,10 @@ err_hfi_init:
 }
 
 #else
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 int q6_hfi_initialize(struct hfi_device *hdev, u32 device_id,
 		struct msm_vidc_platform_resources *res,
 		hfi_cmd_response_callback callback)
@@ -1411,7 +1414,13 @@ int q6_hfi_initialize(struct hfi_device *hdev, u32 device_id,
 
 void q6_hfi_delete_device(void *device)
 {
+<<<<<<< HEAD
 	/* Nothing to do!*/ 
 }
 #endif
 
+=======
+	/* Nothing to do! */
+}
+#endif
+>>>>>>> p9x

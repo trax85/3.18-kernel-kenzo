@@ -226,6 +226,7 @@ enum {
 	CXT_PINCFG_COMPAQ_CQ60,
 	CXT_FIXUP_STEREO_DMIC,
 	CXT_FIXUP_INC_MIC_BOOST,
+<<<<<<< HEAD
 	CXT_FIXUP_HEADPHONE_MIC_PIN,
 	CXT_FIXUP_HEADPHONE_MIC,
 	CXT_FIXUP_GPIO1,
@@ -237,6 +238,9 @@ enum {
 	CXT_FIXUP_HP_530,
 	CXT_FIXUP_CAP_MIX_AMP_5047,
 	CXT_FIXUP_MUTE_LED_EAPD,
+=======
+	CXT_FIXUP_GPIO1,
+>>>>>>> p9x
 };
 
 /* for hda_fixup_thinkpad_acpi() */
@@ -678,6 +682,7 @@ static const struct hda_fixup cxt_fixups[] = {
 		.type = HDA_FIXUP_FUNC,
 		.v.func = cxt5066_increase_mic_boost,
 	},
+<<<<<<< HEAD
 	[CXT_FIXUP_HEADPHONE_MIC_PIN] = {
 		.type = HDA_FIXUP_PINS,
 		.chained = true,
@@ -691,6 +696,8 @@ static const struct hda_fixup cxt_fixups[] = {
 		.type = HDA_FIXUP_FUNC,
 		.v.func = cxt_fixup_headphone_mic,
 	},
+=======
+>>>>>>> p9x
 	[CXT_FIXUP_GPIO1] = {
 		.type = HDA_FIXUP_VERBS,
 		.v.verbs = (const struct hda_verb[]) {
@@ -700,6 +707,7 @@ static const struct hda_fixup cxt_fixups[] = {
 			{ }
 		},
 	},
+<<<<<<< HEAD
 	[CXT_FIXUP_ASPIRE_DMIC] = {
 		.type = HDA_FIXUP_FUNC,
 		.v.func = cxt_fixup_stereo_dmic,
@@ -776,6 +784,8 @@ static const struct snd_pci_quirk cxt5047_fixups[] = {
 static const struct hda_model_fixup cxt5047_fixup_models[] = {
 	{ .id = CXT_FIXUP_CAP_MIX_AMP_5047, .name = "cap-mix-amp" },
 	{}
+=======
+>>>>>>> p9x
 };
 
 static const struct snd_pci_quirk cxt5051_fixups[] = {
@@ -791,10 +801,14 @@ static const struct hda_model_fixup cxt5051_fixup_models[] = {
 
 static const struct snd_pci_quirk cxt5066_fixups[] = {
 	SND_PCI_QUIRK(0x1025, 0x0543, "Acer Aspire One 522", CXT_FIXUP_STEREO_DMIC),
+<<<<<<< HEAD
 	SND_PCI_QUIRK(0x1025, 0x054c, "Acer Aspire 3830TG", CXT_FIXUP_ASPIRE_DMIC),
 	SND_PCI_QUIRK(0x1025, 0x054f, "Acer Aspire 4830T", CXT_FIXUP_ASPIRE_DMIC),
 	SND_PCI_QUIRK(0x1043, 0x138d, "Asus", CXT_FIXUP_HEADPHONE_MIC_PIN),
 	SND_PCI_QUIRK(0x152d, 0x0833, "OLPC XO-1.5", CXT_FIXUP_OLPC_XO),
+=======
+	SND_PCI_QUIRK(0x1025, 0x054c, "Acer Aspire 3830TG", CXT_FIXUP_GPIO1),
+>>>>>>> p9x
 	SND_PCI_QUIRK(0x17aa, 0x20f2, "Lenovo T400", CXT_PINCFG_LENOVO_TP410),
 	SND_PCI_QUIRK(0x17aa, 0x215e, "Lenovo T410", CXT_PINCFG_LENOVO_TP410),
 	SND_PCI_QUIRK(0x17aa, 0x215f, "Lenovo T510", CXT_PINCFG_LENOVO_TP410),

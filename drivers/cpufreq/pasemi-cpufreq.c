@@ -198,9 +198,16 @@ static int pas_cpufreq_cpu_init(struct cpufreq_policy *policy)
 	pr_debug("initializing frequency table\n");
 
 	/* initialize frequency table */
+<<<<<<< HEAD:drivers/cpufreq/pasemi-cpufreq.c
 	cpufreq_for_each_entry(pos, pas_freqs) {
 		pos->frequency = get_astate_freq(pos->driver_data) * 100000;
 		pr_debug("%d: %d\n", (int)(pos - pas_freqs), pos->frequency);
+=======
+	for (i=0; pas_freqs[i].frequency!=CPUFREQ_TABLE_END; i++) {
+		pas_freqs[i].frequency =
+			get_astate_freq(pas_freqs[i].driver_data) * 100000;
+		pr_debug("%d: %d\n", i, pas_freqs[i].frequency);
+>>>>>>> p9x:arch/powerpc/platforms/pasemi/cpufreq.c
 	}
 
 	cur_astate = get_cur_astate(policy->cpu);

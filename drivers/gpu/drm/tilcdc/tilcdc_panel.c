@@ -157,7 +157,11 @@ struct panel_connector {
 static void panel_connector_destroy(struct drm_connector *connector)
 {
 	struct panel_connector *panel_connector = to_panel_connector(connector);
+<<<<<<< HEAD
 	drm_connector_unregister(connector);
+=======
+	drm_sysfs_connector_remove(connector);
+>>>>>>> p9x
 	drm_connector_cleanup(connector);
 	kfree(panel_connector);
 }
@@ -288,6 +292,21 @@ static int panel_modeset_init(struct tilcdc_module *mod, struct drm_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void panel_destroy(struct tilcdc_module *mod)
+{
+	struct panel_module *panel_mod = to_panel_module(mod);
+
+	if (panel_mod->timings)
+		display_timings_release(panel_mod->timings);
+
+	tilcdc_module_cleanup(mod);
+	kfree(panel_mod->info);
+	kfree(panel_mod);
+}
+
+>>>>>>> p9x
 static const struct tilcdc_module_ops panel_module_ops = {
 		.modeset_init = panel_modeset_init,
 };

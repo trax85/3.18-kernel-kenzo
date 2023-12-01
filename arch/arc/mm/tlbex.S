@@ -253,6 +253,71 @@ ex_saved_reg1:
 #endif
 .endm
 
+<<<<<<< HEAD
+=======
+;-----------------------------------------------------------------
+; ARC700 Exception Handling doesn't auto-switch stack and it only provides
+; ONE scratch AUX reg "ARC_REG_SCRATCH_DATA0"
+;
+; For Non-SMP, the scratch AUX reg is repurposed to cache task PGD, so a
+; "global" is used to free-up FIRST core reg to be able to code the rest of
+; exception prologue (IRQ auto-disabled on Exceptions, so it's IRQ-safe).
+; Since the Fast Path TLB Miss handler is coded with 4 regs, the remaining 3
+; need to be saved as well by extending the "global" to be 4 words. Hence
+;	".size   ex_saved_reg1, 16"
+; [All of this dance is to avoid stack switching for each TLB Miss, since we
+; only need to save only a handful of regs, as opposed to complete reg file]
+;
+; For ARC700 SMP, the "global" obviously can't be used for free up the FIRST
+; core reg as it will not be SMP safe.
+; Thus scratch AUX reg is used (and no longer used to cache task PGD).
+; To save the rest of 3 regs - per cpu, the global is made "per-cpu".
+; Epilogue thus has to locate the "per-cpu" storage for regs.
+; To avoid cache line bouncing the per-cpu global is aligned/sized per
+; L1_CACHE_SHIFT, despite fundamentally needing to be 12 bytes only. Hence
+;	".size   ex_saved_reg1, (CONFIG_NR_CPUS << L1_CACHE_SHIFT)"
+
+; As simple as that....
+
+.macro TLBMISS_FREEUP_REGS
+#ifdef CONFIG_SMP
+	sr  r0, [ARC_REG_SCRATCH_DATA0]	; freeup r0 to code with
+	GET_CPU_ID  r0			; get to per cpu scratch mem,
+	asl r0, r0, L1_CACHE_SHIFT	; cache line wide per cpu
+	add r0, @ex_saved_reg1, r0
+#else
+	st    r0, [@ex_saved_reg1]
+	mov_s r0, @ex_saved_reg1
+#endif
+	st_s  r1, [r0, 4]
+	st_s  r2, [r0, 8]
+	st_s  r3, [r0, 12]
+
+	; VERIFY if the ASID in MMU-PID Reg is same as
+	; one in Linux data structures
+
+	DBG_ASID_MISMATCH
+.endm
+
+;-----------------------------------------------------------------
+.macro TLBMISS_RESTORE_REGS
+#ifdef CONFIG_SMP
+	GET_CPU_ID  r0			; get to per cpu scratch mem
+	asl r0, r0, L1_CACHE_SHIFT	; each is cache line wide
+	add r0, @ex_saved_reg1, r0
+	ld_s  r3, [r0,12]
+	ld_s  r2, [r0, 8]
+	ld_s  r1, [r0, 4]
+	lr    r0, [ARC_REG_SCRATCH_DATA0]
+#else
+	mov_s r0, @ex_saved_reg1
+	ld_s  r3, [r0,12]
+	ld_s  r2, [r0, 8]
+	ld_s  r1, [r0, 4]
+	ld_s  r0, [r0]
+#endif
+.endm
+>>>>>>> p9x
 
 ARCFP_CODE	;Fast Path Code, candidate for ICCM
 

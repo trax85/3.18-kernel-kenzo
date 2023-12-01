@@ -23,7 +23,10 @@ Required properties:
 				1 = SMPS
 				2 = VS
 				3 = NCP
+<<<<<<< HEAD
 				4 = Buck or Boost (BoB)
+=======
+>>>>>>> p9x
 
 Optional properties:
 - qcom,allow-atomic:   Flag specifying if atomic access is allowed for this
@@ -37,10 +40,13 @@ Optional properties:
 			consumers on the application processor. If this flag
 			is specified, then voltage and current updates are
 			only sent to the RPM if the regulator is enabled.
+<<<<<<< HEAD
 - qcom,always-wait-for-ack:   Flag which indicates that the application
 			processor must wait for an ACK or a NACK from the RPM
 			for every request sent for this regulator including
 			those which are for a strictly lower power state.
+=======
+>>>>>>> p9x
 
 [Second Level Nodes]
 
@@ -91,6 +97,7 @@ Optional properties:
 				qcom,use-voltage-floor-level are mutually
 				exclusive.  Only one may be specified for a
 				given regulator.
+<<<<<<< HEAD
 - qcom,use-pin-ctrl-voltage1:  Flag which indicates that updates to voltage
 				should be sent to the pin control voltage 1
 				parameter. Only one pin may be specified per
@@ -106,6 +113,8 @@ Optional properties:
 				parameter. Only one pin may be specified per
 				regulator. This property only applies to BoB
 				type regulators.
+=======
+>>>>>>> p9x
 - qcom,always-send-voltage:    Flag which indicates that updates to the
 				voltage, voltage corner or voltage level set
 				point should always be sent immediately to the
@@ -150,12 +159,15 @@ RPM in regulator requests.
 					0 = auto; hardware determines mode
 					1 = mode determined by current requests
 					2 = force HPM (PWM)
+<<<<<<< HEAD
 - qcom,init-bob-mode:          Operating mode to be used with BoB regulators
 				Supported values are:
 					0 = pass; use priority order
 					1 = force PFM
 					2 = auto; hardware determines mode
 					3 = force PWM
+=======
+>>>>>>> p9x
 - qcom,init-pin-ctrl-enable:   Bit mask specifying which hardware pins should be
 				used to enable the regulator, if any; supported
 				bits are:
@@ -173,6 +185,7 @@ RPM in regulator requests.
 					BIT(2) = follow HW2_EN signal
 					BIT(3) = follow HW3_EN signal
 					BIT(4) = follow PMIC awake state
+<<<<<<< HEAD
 - qcom,init-pin-ctrl-voltage1: Minimum voltage in micro-volts to use while pin
 				control 1 is enabled. This property only
 				applies to BoB type regulators.
@@ -182,6 +195,8 @@ RPM in regulator requests.
 - qcom,init-pin-ctrl-voltage3: Minimum voltage in micro-volts to use while pin
 				control 3 is enabled. This property only
 				applies to BoB type regulators.
+=======
+>>>>>>> p9x
 - qcom,init-frequency:         Switching frequency divisor for SMPS regulators.
 				Supported values are n = 0 to 31 where
 				freq = 19.2 MHz / (n + 1).

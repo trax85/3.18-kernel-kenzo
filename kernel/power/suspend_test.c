@@ -95,13 +95,13 @@ repeat:
 	}
 
 	if (state == PM_SUSPEND_MEM) {
-		printk(info_test, pm_states[state]);
+		printk(info_test, pm_states[state].label);
 		status = pm_suspend(state);
 		if (status == -ENODEV)
 			state = PM_SUSPEND_STANDBY;
 	}
 	if (state == PM_SUSPEND_STANDBY) {
-		printk(info_test, pm_states[state]);
+		printk(info_test, pm_states[state].label);
 		status = pm_suspend(state);
 		if (status < 0)
 			state = PM_SUSPEND_FREEZE;
@@ -150,12 +150,17 @@ static char warn_bad_state[] __initdata =
 
 static int __init setup_test_suspend(char *value)
 {
+<<<<<<< HEAD
 	int i;
 	char *repeat;
 	char *suspend_type;
+=======
+	suspend_state_t i;
+>>>>>>> p9x
 
 	/* example : "=mem[,N]" ==> "mem[,N]" */
 	value++;
+<<<<<<< HEAD
 	suspend_type = strsep(&value, ",");
 	if (!suspend_type)
 		return 0;
@@ -173,6 +178,15 @@ static int __init setup_test_suspend(char *value)
 		}
 
 	printk(warn_bad_state, suspend_type);
+=======
+	for (i = PM_SUSPEND_MIN; i < PM_SUSPEND_MAX; i++)
+		if (!strcmp(pm_states[i].label, value)) {
+			test_state = pm_states[i].state;
+			return 0;
+		}
+
+	printk(warn_bad_state, value);
+>>>>>>> p9x
 	return 0;
 }
 __setup("test_suspend", setup_test_suspend);
@@ -187,6 +201,7 @@ static int __init test_suspend(void)
 	suspend_state_t test_state;
 
 	/* PM is initialized by now; is that state testable? */
+<<<<<<< HEAD
 	if (!test_state_label)
 		return 0;
 
@@ -199,12 +214,21 @@ static int __init test_suspend(void)
 	if (test_state == PM_SUSPEND_MAX) {
 		printk(warn_bad_state, test_state_label);
 		return 0;
+=======
+	if (test_state == PM_SUSPEND_ON)
+		goto done;
+	if (!pm_states[test_state].state) {
+		printk(warn_bad_state, pm_states[test_state].label);
+		goto done;
+>>>>>>> p9x
 	}
 
 	/* RTCs have initialized by now too ... can we use one? */
 	dev = class_find_device(rtc_class, NULL, NULL, has_wakealarm);
-	if (dev)
+	if (dev) {
 		rtc = rtc_class_open(dev_name(dev));
+		put_device(dev);
+	}
 	if (!rtc) {
 		printk(warn_no_rtc);
 		return 0;

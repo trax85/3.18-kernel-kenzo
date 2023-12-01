@@ -1439,15 +1439,24 @@ int __break_lease(struct inode *inode, unsigned int mode, unsigned int type)
 	}
 
 restart:
+<<<<<<< HEAD
 	break_time = inode->i_flock->fl_break_time;
+=======
+	break_time = flock->fl_break_time;
+>>>>>>> p9x
 	if (break_time != 0)
 		break_time -= jiffies;
 	if (break_time == 0)
 		break_time++;
+<<<<<<< HEAD
 	locks_insert_block(inode->i_flock, new_fl);
 	trace_break_lease_block(inode, new_fl);
 	spin_unlock(&inode->i_lock);
 	locks_dispose_list(&dispose);
+=======
+	locks_insert_block(flock, new_fl);
+	unlock_flocks();
+>>>>>>> p9x
 	error = wait_event_interruptible_timeout(new_fl->fl_wait,
 						!new_fl->fl_next, break_time);
 	spin_lock(&inode->i_lock);
@@ -2171,7 +2180,11 @@ int fcntl_setlk(unsigned int fd, struct file *filp, unsigned int cmd,
 	if (!error && file_lock->fl_type != F_UNLCK) {
 		/*
 		 * We need that spin_lock here - it prevents reordering between
+<<<<<<< HEAD
 		 * update of i_flctx->flc_posix and check for it done in
+=======
+		 * update of inode->i_flock and check for it done in
+>>>>>>> p9x
 		 * close(). rcu_read_lock() wouldn't do.
 		 */
 		spin_lock(&current->files->file_lock);
@@ -2313,7 +2326,11 @@ int fcntl_setlk64(unsigned int fd, struct file *filp, unsigned int cmd,
 	if (!error && file_lock->fl_type != F_UNLCK) {
 		/*
 		 * We need that spin_lock here - it prevents reordering between
+<<<<<<< HEAD
 		 * update of i_flctx->flc_posix and check for it done in
+=======
+		 * update of inode->i_flock and check for it done in
+>>>>>>> p9x
 		 * close(). rcu_read_lock() wouldn't do.
 		 */
 		spin_lock(&current->files->file_lock);

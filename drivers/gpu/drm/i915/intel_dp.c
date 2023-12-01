@@ -1171,6 +1171,69 @@ hsw_dp_set_ddi_pll_sel(struct intel_crtc_state *pipe_config)
 		pipe_config->ddi_pll_sel = PORT_CLK_SEL_LCPLL_2700;
 		break;
 	}
+<<<<<<< HEAD
+=======
+
+	for (retry = 0; retry < 5; retry++) {
+		ret = intel_dp_aux_ch(intel_dp,
+				      msg, msg_bytes,
+				      reply, reply_bytes);
+		if (ret < 0) {
+			DRM_DEBUG_KMS("aux_ch failed %d\n", ret);
+			return ret;
+		}
+
+		switch (reply[0] & AUX_NATIVE_REPLY_MASK) {
+		case AUX_NATIVE_REPLY_ACK:
+			/* I2C-over-AUX Reply field is only valid
+			 * when paired with AUX ACK.
+			 */
+			break;
+		case AUX_NATIVE_REPLY_NACK:
+			DRM_DEBUG_KMS("aux_ch native nack\n");
+			return -EREMOTEIO;
+		case AUX_NATIVE_REPLY_DEFER:
+			/*
+			 * For now, just give more slack to branch devices. We
+			 * could check the DPCD for I2C bit rate capabilities,
+			 * and if available, adjust the interval. We could also
+			 * be more careful with DP-to-Legacy adapters where a
+			 * long legacy cable may force very low I2C bit rates.
+			 */
+			if (intel_dp->dpcd[DP_DOWNSTREAMPORT_PRESENT] &
+			    DP_DWN_STRM_PORT_PRESENT)
+				usleep_range(500, 600);
+			else
+				usleep_range(300, 400);
+			continue;
+		default:
+			DRM_ERROR("aux_ch invalid native reply 0x%02x\n",
+				  reply[0]);
+			return -EREMOTEIO;
+		}
+
+		switch (reply[0] & AUX_I2C_REPLY_MASK) {
+		case AUX_I2C_REPLY_ACK:
+			if (mode == MODE_I2C_READ) {
+				*read_byte = reply[1];
+			}
+			return reply_bytes - 1;
+		case AUX_I2C_REPLY_NACK:
+			DRM_DEBUG_KMS("aux_i2c nack\n");
+			return -EREMOTEIO;
+		case AUX_I2C_REPLY_DEFER:
+			DRM_DEBUG_KMS("aux_i2c defer\n");
+			udelay(100);
+			break;
+		default:
+			DRM_ERROR("aux_i2c invalid reply 0x%02x\n", reply[0]);
+			return -EREMOTEIO;
+		}
+	}
+
+	DRM_ERROR("too many retries, giving up\n");
+	return -EREMOTEIO;
+>>>>>>> p9x
 }
 
 static int
@@ -4692,7 +4755,41 @@ g4x_dp_detect(struct intel_dp *intel_dp)
 		return status;
 	}
 
+<<<<<<< HEAD
 	if (!intel_digital_port_connected(dev->dev_private, intel_dig_port))
+=======
+	if (IS_VALLEYVIEW(dev)) {
+		switch (intel_dig_port->port) {
+		case PORT_B:
+			bit = PORTB_HOTPLUG_LIVE_STATUS_VLV;
+			break;
+		case PORT_C:
+			bit = PORTC_HOTPLUG_LIVE_STATUS_VLV;
+			break;
+		case PORT_D:
+			bit = PORTD_HOTPLUG_LIVE_STATUS_VLV;
+			break;
+		default:
+			return connector_status_unknown;
+		}
+	} else {
+		switch (intel_dig_port->port) {
+		case PORT_B:
+			bit = PORTB_HOTPLUG_LIVE_STATUS_G4X;
+			break;
+		case PORT_C:
+			bit = PORTC_HOTPLUG_LIVE_STATUS_G4X;
+			break;
+		case PORT_D:
+			bit = PORTD_HOTPLUG_LIVE_STATUS_G4X;
+			break;
+		default:
+			return connector_status_unknown;
+		}
+	}
+
+	if ((I915_READ(PORT_HOTPLUG_STAT) & bit) == 0)
+>>>>>>> p9x
 		return connector_status_disconnected;
 
 	return intel_dp_detect_dpcd(intel_dp);

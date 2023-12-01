@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2016 Qualcomm Atheros, Inc.
+=======
+ * Copyright (c) 2012-2015 Qualcomm Atheros, Inc.
+>>>>>>> p9x
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -18,10 +22,13 @@
 #include <linux/etherdevice.h>
 #include "wil6210.h"
 #include "txrx.h"
+<<<<<<< HEAD
 
 static bool alt_ifname; /* = false; */
 module_param(alt_ifname, bool, S_IRUGO);
 MODULE_PARM_DESC(alt_ifname, " use an alternate interface name wigigN instead of wlanN");
+=======
+>>>>>>> p9x
 
 static int wil_open(struct net_device *ndev)
 {
@@ -29,11 +36,14 @@ static int wil_open(struct net_device *ndev)
 
 	wil_dbg_misc(wil, "%s()\n", __func__);
 
+<<<<<<< HEAD
 	if (debug_fw) {
 		wil_err(wil, "%s() while in debug_fw mode\n", __func__);
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> p9x
 	return wil_up(wil);
 }
 
@@ -65,7 +75,15 @@ static int wil_do_ioctl(struct net_device *ndev, struct ifreq *ifr, int cmd)
 {
 	struct wil6210_priv *wil = ndev_to_wil(ndev);
 
+<<<<<<< HEAD
 	return wil_ioctl(wil, ifr->ifr_data, cmd);
+=======
+	int ret = wil_ioctl(wil, ifr->ifr_data, cmd);
+
+	wil_dbg_misc(wil, "ioctl(0x%04x) -> %d\n", cmd, ret);
+
+	return ret;
+>>>>>>> p9x
 }
 
 static const struct net_device_ops wil_netdev_ops = {
@@ -88,7 +106,11 @@ static int wil6210_netdev_poll_rx(struct napi_struct *napi, int budget)
 	wil_rx_handle(wil, &quota);
 	done = budget - quota;
 
+<<<<<<< HEAD
 	if (done < budget) {
+=======
+	if (done <= 1) { /* burst ends - only one packet processed */
+>>>>>>> p9x
 		napi_complete(napi);
 		wil6210_unmask_irq_rx(wil);
 		wil_dbg_txrx(wil, "NAPI RX complete\n");
@@ -109,15 +131,24 @@ static int wil6210_netdev_poll_tx(struct napi_struct *napi, int budget)
 	/* always process ALL Tx complete, regardless budget - it is fast */
 	for (i = 0; i < WIL6210_MAX_TX_RINGS; i++) {
 		struct vring *vring = &wil->vring_tx[i];
+<<<<<<< HEAD
 		struct vring_tx_data *txdata = &wil->vring_tx_data[i];
 
 		if (!vring->va || !txdata->enabled)
+=======
+
+		if (!vring->va)
+>>>>>>> p9x
 			continue;
 
 		tx_done += wil_tx_complete(wil, i);
 	}
 
+<<<<<<< HEAD
 	if (tx_done < budget) {
+=======
+	if (tx_done <= 1) { /* burst ends - only one packet processed */
+>>>>>>> p9x
 		napi_complete(napi);
 		wil6210_unmask_irq_tx(wil);
 		wil_dbg_txrx(wil, "NAPI TX complete\n");
@@ -134,7 +165,11 @@ static void wil_dev_setup(struct net_device *dev)
 	dev->tx_queue_len = WIL_TX_Q_LEN_DEFAULT;
 }
 
+<<<<<<< HEAD
 void *wil_if_alloc(struct device *dev)
+=======
+void *wil_if_alloc(struct device *dev, void __iomem *csr)
+>>>>>>> p9x
 {
 	struct net_device *ndev;
 	struct wireless_dev *wdev;
@@ -155,6 +190,8 @@ void *wil_if_alloc(struct device *dev)
 
 	wil_dbg_misc(wil, "%s()\n", __func__);
 
+	wil_dbg_misc(wil, "%s()\n", __func__);
+
 	rc = wil_priv_init(wil);
 	if (rc) {
 		dev_err(dev, "wil_priv_init failed\n");
@@ -166,7 +203,11 @@ void *wil_if_alloc(struct device *dev)
 	ch = wdev->wiphy->bands[IEEE80211_BAND_60GHZ]->channels;
 	cfg80211_chandef_create(&wdev->preset_chandef, ch, NL80211_CHAN_NO_HT);
 
+<<<<<<< HEAD
 	ndev = alloc_netdev(0, ifname, NET_NAME_UNKNOWN, wil_dev_setup);
+=======
+	ndev = alloc_netdev(0, "wlan%d", wil_dev_setup);
+>>>>>>> p9x
 	if (!ndev) {
 		dev_err(dev, "alloc_netdev_mqs failed\n");
 		rc = -ENOMEM;
@@ -177,13 +218,27 @@ void *wil_if_alloc(struct device *dev)
 	wil_set_ethtoolops(ndev);
 	ndev->ieee80211_ptr = wdev;
 	ndev->hw_features = NETIF_F_HW_CSUM | NETIF_F_RXCSUM |
+<<<<<<< HEAD
 			    NETIF_F_SG | NETIF_F_GRO |
 			    NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_RXHASH;
 
+=======
+			    NETIF_F_SG | NETIF_F_GRO;
+>>>>>>> p9x
 	ndev->features |= ndev->hw_features;
 	SET_NETDEV_DEV(ndev, wiphy_dev(wdev->wiphy));
 	wdev->netdev = ndev;
 
+<<<<<<< HEAD
+=======
+	netif_napi_add(ndev, &wil->napi_rx, wil6210_netdev_poll_rx,
+		       WIL6210_NAPI_BUDGET);
+	netif_napi_add(ndev, &wil->napi_tx, wil6210_netdev_poll_tx,
+		       WIL6210_NAPI_BUDGET);
+
+	netif_tx_stop_all_queues(ndev);
+
+>>>>>>> p9x
 	return wil;
 
  out_priv:
@@ -219,6 +274,7 @@ int wil_if_add(struct wil6210_priv *wil)
 	struct net_device *ndev = wil_to_ndev(wil);
 	int rc;
 
+<<<<<<< HEAD
 	wil_dbg_misc(wil, "entered");
 
 	strlcpy(wiphy->fw_version, wil->fw_version, sizeof(wiphy->fw_version));
@@ -235,6 +291,9 @@ int wil_if_add(struct wil6210_priv *wil)
 		       WIL6210_NAPI_BUDGET);
 
 	netif_tx_stop_all_queues(ndev);
+=======
+	wil_dbg_misc(wil, "%s()\n", __func__);
+>>>>>>> p9x
 
 	rc = register_netdev(ndev);
 	if (rc < 0) {
@@ -253,6 +312,8 @@ void wil_if_remove(struct wil6210_priv *wil)
 {
 	struct net_device *ndev = wil_to_ndev(wil);
 	struct wireless_dev *wdev = wil_to_wdev(wil);
+
+	wil_dbg_misc(wil, "%s()\n", __func__);
 
 	wil_dbg_misc(wil, "%s()\n", __func__);
 

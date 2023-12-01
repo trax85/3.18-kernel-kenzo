@@ -102,17 +102,55 @@ typedef struct dmx_filter
 } dmx_filter_t;
 
 
+/* Filter flags */
+#define DMX_CHECK_CRC		0x01
+#define DMX_ONESHOT		0x02
+#define DMX_IMMEDIATE_START	0x04
+#define DMX_KERNEL_CLIENT	0x8000
+
 struct dmx_sct_filter_params
 {
 	__u16          pid;
 	dmx_filter_t   filter;
 	__u32          timeout;
 	__u32          flags;
-#define DMX_CHECK_CRC       1
-#define DMX_ONESHOT         2
-#define DMX_IMMEDIATE_START 4
-#define DMX_KERNEL_CLIENT   0x8000
 };
+
+enum dmx_video_codec {
+	DMX_VIDEO_CODEC_MPEG2,
+	DMX_VIDEO_CODEC_H264,
+	DMX_VIDEO_CODEC_VC1
+};
+
+/* Index entries types */
+#define DMX_IDX_RAI                         0x00000001
+#define DMX_IDX_PUSI                        0x00000002
+#define DMX_IDX_MPEG_SEQ_HEADER             0x00000004
+#define DMX_IDX_MPEG_GOP                    0x00000008
+#define DMX_IDX_MPEG_FIRST_SEQ_FRAME_START  0x00000010
+#define DMX_IDX_MPEG_FIRST_SEQ_FRAME_END    0x00000020
+#define DMX_IDX_MPEG_I_FRAME_START          0x00000040
+#define DMX_IDX_MPEG_I_FRAME_END            0x00000080
+#define DMX_IDX_MPEG_P_FRAME_START          0x00000100
+#define DMX_IDX_MPEG_P_FRAME_END            0x00000200
+#define DMX_IDX_MPEG_B_FRAME_START          0x00000400
+#define DMX_IDX_MPEG_B_FRAME_END            0x00000800
+#define DMX_IDX_H264_SPS                    0x00001000
+#define DMX_IDX_H264_PPS                    0x00002000
+#define DMX_IDX_H264_FIRST_SPS_FRAME_START  0x00004000
+#define DMX_IDX_H264_FIRST_SPS_FRAME_END    0x00008000
+#define DMX_IDX_H264_IDR_START              0x00010000
+#define DMX_IDX_H264_IDR_END                0x00020000
+#define DMX_IDX_H264_NON_IDR_START          0x00040000
+#define DMX_IDX_H264_NON_IDR_END            0x00080000
+#define DMX_IDX_VC1_SEQ_HEADER              0x00100000
+#define DMX_IDX_VC1_ENTRY_POINT             0x00200000
+#define DMX_IDX_VC1_FIRST_SEQ_FRAME_START   0x00400000
+#define DMX_IDX_VC1_FIRST_SEQ_FRAME_END     0x00800000
+#define DMX_IDX_VC1_FRAME_START             0x01000000
+#define DMX_IDX_VC1_FRAME_END               0x02000000
+#define DMX_IDX_H264_ACCESS_UNIT_DEL        0x04000000
+#define DMX_IDX_H264_SEI                    0x08000000
 
 enum dmx_video_codec {
 	DMX_VIDEO_CODEC_MPEG2,
@@ -626,6 +664,7 @@ enum dmx_tsp_format_t {
 	DMX_TSP_FORMAT_192_TAIL,
 	DMX_TSP_FORMAT_192_HEAD,
 	DMX_TSP_FORMAT_204,
+<<<<<<< HEAD
 };
 
 enum dmx_playback_mode_t {
@@ -655,6 +694,37 @@ struct dmx_stc {
 	__u64 stc;		/* output: stc in 'base'*90 kHz units */
 };
 
+=======
+};
+
+enum dmx_playback_mode_t {
+	/*
+	 * In push mode, if one of output buffers
+	 * is full, the buffer would overflow
+	 * and demux continue processing incoming stream.
+	 * This is the default mode. When playing from frontend,
+	 * this is the only mode that is allowed.
+	 */
+	DMX_PB_MODE_PUSH = 0,
+
+	/*
+	 * In pull mode, if one of output buffers
+	 * is full, demux stalls waiting for free space,
+	 * this would cause DVR input buffer fullness
+	 * to accumulate.
+	 * This mode is possible only when playing
+	 * from DVR.
+	 */
+	DMX_PB_MODE_PULL,
+};
+
+struct dmx_stc {
+	unsigned int num; /* input : which STC? 0..N */
+	unsigned int base; /* output: divisor for stc to get 90 kHz clock */
+	__u64 stc; /* output: stc in 'base'*90 kHz units */
+};
+
+>>>>>>> p9x
 enum dmx_buffer_mode {
 	/*
 	 * demux buffers are allocated internally
@@ -877,5 +947,9 @@ struct dmx_scrambling_bits {
 #define DMX_GET_SCRAMBLING_BITS _IOWR('o', 72, struct dmx_scrambling_bits)
 #define DMX_SET_CIPHER _IOW('o', 73, struct dmx_cipher_operations)
 #define DMX_FLUSH_BUFFER _IO('o', 74)
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 
 #endif /* _UAPI_DVBDMX_H_ */

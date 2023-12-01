@@ -23,7 +23,11 @@
 /*
  * Patterns definitions for read/write requests data
  */
+<<<<<<< HEAD
 #define TEST_PATTERN_SEQUENTIAL	-1
+=======
+#define TEST_PATTERN_SEQUENTIAL	0x12345678
+>>>>>>> p9x
 #define TEST_PATTERN_5A		0x5A5A5A5A
 #define TEST_PATTERN_FF		0xFFFFFFFF
 #define TEST_NO_PATTERN		0xDEADBEEF
@@ -238,7 +242,11 @@ struct test_iosched {
 	struct test_info test_info;
 	bool fs_wr_reqs_during_test;
 	bool ignore_round;
+<<<<<<< HEAD
 	bool notified_urgent;
+=======
+
+>>>>>>> p9x
 	void *blk_dev_test_data;
 };
 

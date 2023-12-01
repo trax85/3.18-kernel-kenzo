@@ -160,6 +160,12 @@ static int ohci_quirk_amd700(struct usb_hcd *hcd)
 		ohci_dbg(ohci, "enabled AMD prefetch quirk\n");
 	}
 
+<<<<<<< HEAD
+=======
+	pci_dev_put(amd_smbus_dev);
+	amd_smbus_dev = NULL;
+
+>>>>>>> p9x
 	ohci->flags |= OHCI_QUIRK_GLOBAL_SUSPEND;
 	return 0;
 }

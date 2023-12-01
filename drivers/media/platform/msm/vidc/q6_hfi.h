@@ -128,4 +128,7 @@ int q6_hfi_initialize(struct hfi_device *hdev, u32 device_id,
 void q6_hfi_delete_device(void *device);
 
 #endif /*#ifndef  __Q6_HFI_H__ */
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x

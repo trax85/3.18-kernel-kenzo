@@ -59,10 +59,15 @@
  *
  * Level 1 descriptor (PUD).
  */
+<<<<<<< HEAD
 #define PUD_TYPE_TABLE		(_AT(pudval_t, 3) << 0)
 #define PUD_TABLE_BIT		(_AT(pgdval_t, 1) << 1)
 #define PUD_TYPE_MASK		(_AT(pgdval_t, 3) << 0)
 #define PUD_TYPE_SECT		(_AT(pgdval_t, 1) << 0)
+=======
+
+#define PUD_TABLE_BIT		(_AT(pgdval_t, 1) << 1)
+>>>>>>> p9x
 
 /*
  * Level 2 descriptor (PMD).
@@ -77,6 +82,10 @@
  * Section
  */
 #define PMD_SECT_VALID		(_AT(pmdval_t, 1) << 0)
+<<<<<<< HEAD
+=======
+#define PMD_SECT_PROT_NONE	(_AT(pmdval_t, 1) << 58)
+>>>>>>> p9x
 #define PMD_SECT_USER		(_AT(pmdval_t, 1) << 6)		/* AP[1] */
 #define PMD_SECT_RDONLY		(_AT(pmdval_t, 1) << 7)		/* AP[2] */
 #define PMD_SECT_S		(_AT(pmdval_t, 3) << 8)
@@ -164,8 +173,11 @@
 #define TCR_TG1_16K		(UL(1) << 30)
 #define TCR_TG1_4K		(UL(2) << 30)
 #define TCR_TG1_64K		(UL(3) << 30)
+<<<<<<< HEAD
 
 #define TCR_A1			(UL(1) << 22)
+=======
+>>>>>>> p9x
 #define TCR_ASID16		(UL(1) << 36)
 #define TCR_TBI0		(UL(1) << 37)
 

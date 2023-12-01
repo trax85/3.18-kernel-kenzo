@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014, 2017, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -11,7 +15,11 @@
  * GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
 /* register and associated bit definition */
+=======
+/*register and associated bit definition*/
+>>>>>>> p9x
 
 #ifndef __MPU6050_H__
 #define __MPU6050_H__
@@ -81,7 +89,11 @@
 
 #define REG_USER_CTRL		0x6A
 #define BIT_FIFO_EN		0x40
+<<<<<<< HEAD
 #define BIT_FIFO_RESET		0x04
+=======
+#define	BIT_FIFO_RESET		0x04
+>>>>>>> p9x
 
 #define REG_PWR_MGMT_1		0x6B
 #define BIT_H_RESET		0x80
@@ -138,7 +150,11 @@
 
 /* FIFO related constant */
 #define MPU6050_FIFO_SIZE_BYTE	1024
+<<<<<<< HEAD
 #define MPU6050_FIFO_CNT_SIZE	2
+=======
+#define	MPU6050_FIFO_CNT_SIZE	2
+>>>>>>> p9x
 
 enum mpu_device_id {
 	MPU6050_ID = 0x68,
@@ -179,9 +195,14 @@ enum mpu_accl_fs {
 	NUM_ACCL_FSR
 };
 
+<<<<<<< HEAD
 /* Sensitivity Scale Factor
  * Sensor HAL will take 1024 LSB/g
  */
+=======
+/* Sensitivity Scale Factor */
+/* Sensor HAL will take 1024 LSB/g */
+>>>>>>> p9x
 enum mpu_accel_fs_shift {
 	ACCEL_SCALE_SHIFT_02G = 0,
 	ACCEL_SCALE_SHIFT_04G = 1,
@@ -196,7 +217,11 @@ enum mpu_gyro_fs_shift {
 	GYRO_SCALE_SHIFT_FS3 = 0
 };
 
+<<<<<<< HEAD
 /* device enum */
+=======
+/*device enum */
+>>>>>>> p9x
 enum inv_devices {
 	INV_MPU6050,
 	INV_MPU6500,
@@ -204,7 +229,11 @@ enum inv_devices {
 	INV_NUM_PARTS
 };
 
+<<<<<<< HEAD
 /*
+=======
+/**
+>>>>>>> p9x
  *  struct mpu_reg_map_s - Notable slave registers.
  *  @sample_rate_div:	Divider applied to gyro output rate.
  *  @lpf:		Configures internal LPF.
@@ -245,7 +274,11 @@ struct mpu_reg_map {
 	u8 pwr_mgmt_2;
 };
 
+<<<<<<< HEAD
 /*
+=======
+/**
+>>>>>>> p9x
  *  struct mpu_chip_config - Cached chip configuration data.
  *  @fsr:		Full scale range.
  *  @lpf:		Digital low pass filter frequency.
@@ -287,7 +320,12 @@ struct mpu_chip_config {
 	u16 rate_div;
 };
 
+<<<<<<< HEAD
 /*
+=======
+
+/**
+>>>>>>> p9x
  *  struct mpu6050_platform_data - device platform dependent data.
  *  @gpio_en:		enable GPIO.
  *  @gpio_int:		interrupt GPIO.
@@ -301,6 +339,10 @@ struct mpu6050_platform_data {
 	u32 int_flags;
 	bool use_int;
 	u8 place;
+<<<<<<< HEAD
+=======
+	u32 vdd_min_uv;
+>>>>>>> p9x
 };
 
 #endif /* __MPU6050_H__ */

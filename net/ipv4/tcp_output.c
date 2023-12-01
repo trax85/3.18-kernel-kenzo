@@ -250,7 +250,8 @@ void tcp_select_initial_window(int __space, __u32 mss,
 		/* Set window scaling on max possible window
 		 * See RFC1323 for an explanation of the limit to 14
 		 */
-		space = max_t(u32, sysctl_tcp_rmem[2], sysctl_rmem_max);
+		space = max_t(u32, space, sysctl_tcp_rmem[2]);
+		space = max_t(u32, space, sysctl_rmem_max);
 		space = min_t(u32, space, *window_clamp);
 		while (space > 65535 && (*rcv_wscale) < 14) {
 			space >>= 1;
@@ -258,10 +259,28 @@ void tcp_select_initial_window(int __space, __u32 mss,
 		}
 	}
 
+<<<<<<< HEAD
 	if (mss > (1 << *rcv_wscale)) {
 		if (!init_rcv_wnd) /* Use default unless specified otherwise */
 			init_rcv_wnd = tcp_default_init_rwnd(mss);
 		*rcv_wnd = min(*rcv_wnd, init_rcv_wnd * mss);
+=======
+	/* Set initial window to a value enough for senders starting with
+	 * initial congestion window of sysctl_tcp_default_init_rwnd. Place
+	 * a limit on the initial window when mss is larger than 1460.
+	 */
+	if (mss > (1 << *rcv_wscale)) {
+		int init_cwnd = sysctl_tcp_default_init_rwnd;
+		if (mss > 1460)
+			init_cwnd = max_t(u32, (1460 * init_cwnd) / mss, 2);
+		/* when initializing use the value from init_rcv_wnd
+		 * rather than the default from above
+		 */
+		if (init_rcv_wnd)
+			*rcv_wnd = min(*rcv_wnd, init_rcv_wnd * mss);
+		else
+			*rcv_wnd = min(*rcv_wnd, init_cwnd * mss);
+>>>>>>> p9x
 	}
 
 	/* Set the clamp no higher than max representable value */
@@ -945,7 +964,10 @@ static int __tcp_transmit_skb(struct sock *sk, struct sk_buff *skb,
 	skb_orphan(skb);
 	skb->sk = sk;
 	skb->destructor = tcp_wfree;
+<<<<<<< HEAD
 	skb_set_hash_from_sk(skb, sk);
+=======
+>>>>>>> p9x
 	atomic_add(skb->truesize, &sk->sk_wmem_alloc);
 
 	/* Build TCP header and checksum it. */
@@ -1052,12 +1074,20 @@ static void tcp_queue_skb(struct sock *sk, struct sk_buff *skb)
 static void tcp_set_skb_tso_segs(const struct sock *sk, struct sk_buff *skb,
 				 unsigned int mss_now)
 {
+<<<<<<< HEAD
 	struct skb_shared_info *shinfo = skb_shinfo(skb);
 
 	/* Make sure we own this skb before messing gso_size/gso_segs */
 	WARN_ON_ONCE(skb_cloned(skb));
 
 	if (skb->len <= mss_now || skb->ip_summed == CHECKSUM_NONE) {
+=======
+	/* Make sure we own this skb before messing gso_size/gso_segs */
+	WARN_ON_ONCE(skb_cloned(skb));
+
+	if (skb->len <= mss_now || !sk_can_gso(sk) ||
+	    skb->ip_summed == CHECKSUM_NONE) {
+>>>>>>> p9x
 		/* Avoid the costly divide in the normal
 		 * non-TSO case.
 		 */
@@ -1152,7 +1182,11 @@ int tcp_fragment(struct sock *sk, struct sk_buff *skb, u32 len,
 	if (nsize < 0)
 		nsize = 0;
 
+<<<<<<< HEAD
 	if (skb_unclone(skb, gfp))
+=======
+	if (skb_unclone(skb, GFP_ATOMIC))
+>>>>>>> p9x
 		return -ENOMEM;
 
 	/* Get a new skb... force flag on. */
@@ -2082,26 +2116,19 @@ repair:
 
 bool tcp_schedule_loss_probe(struct sock *sk)
 {
-	struct inet_connection_sock *icsk = inet_csk(sk);
 	struct tcp_sock *tp = tcp_sk(sk);
+<<<<<<< HEAD
 	u32 timeout, tlp_time_stamp, rto_time_stamp;
 	u32 rtt = usecs_to_jiffies(tp->srtt_us >> 3);
+=======
+	u32 rtt = tp->srtt >> 3;
+	u32 timeout, rto_delta;
+>>>>>>> p9x
 
-	if (WARN_ON(icsk->icsk_pending == ICSK_TIME_EARLY_RETRANS))
-		return false;
-	/* No consecutive loss probes. */
-	if (WARN_ON(icsk->icsk_pending == ICSK_TIME_LOSS_PROBE)) {
-		tcp_rearm_rto(sk);
-		return false;
-	}
 	/* Don't do any loss probe on a Fast Open connection before 3WHS
 	 * finishes.
 	 */
 	if (sk->sk_state == TCP_SYN_RECV)
-		return false;
-
-	/* TLP is only scheduled when next timer event is RTO. */
-	if (icsk->icsk_pending != ICSK_TIME_RETRANS)
 		return false;
 
 	/* Schedule a loss probe in 2*RTT for SACK capable connections
@@ -2124,14 +2151,10 @@ bool tcp_schedule_loss_probe(struct sock *sk)
 				(rtt + (rtt >> 1) + TCP_DELACK_MAX));
 	timeout = max_t(u32, timeout, msecs_to_jiffies(10));
 
-	/* If RTO is shorter, just schedule TLP in its place. */
-	tlp_time_stamp = tcp_time_stamp + timeout;
-	rto_time_stamp = (u32)inet_csk(sk)->icsk_timeout;
-	if ((s32)(tlp_time_stamp - rto_time_stamp) > 0) {
-		s32 delta = rto_time_stamp - tcp_time_stamp;
-		if (delta > 0)
-			timeout = delta;
-	}
+	/* If the RTO formula yields an earlier time, then use that time. */
+	rto_delta = tcp_rto_delta(sk);  /* How far in future is RTO? */
+	if (rto_delta > 0)
+		timeout = min_t(u32, timeout, rto_delta);
 
 	inet_csk_reset_xmit_timer(sk, ICSK_TIME_LOSS_PROBE, timeout,
 				  TCP_RTO_MAX);
@@ -2596,7 +2619,11 @@ int tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb)
 
 		/* Save stamp of the first retransmit. */
 		if (!tp->retrans_stamp)
+<<<<<<< HEAD
 			tp->retrans_stamp = tcp_skb_timestamp(skb);
+=======
+			tp->retrans_stamp = TCP_SKB_CB(skb)->when;
+>>>>>>> p9x
 
 		/* snd_nxt is stored to detect loss of retransmitted segment,
 		 * see tcp_input.c tcp_sacktag_write_queue().
@@ -2890,7 +2917,11 @@ struct sk_buff *tcp_make_synack(struct sock *sk, struct dst_entry *dst,
 	int tcp_header_size;
 	int mss;
 
+<<<<<<< HEAD
 	skb = sock_wmalloc(sk, MAX_TCP_HEADER, 1, GFP_ATOMIC);
+=======
+	skb = sock_wmalloc(sk, MAX_TCP_HEADER + 15, 1, GFP_ATOMIC);
+>>>>>>> p9x
 	if (unlikely(!skb)) {
 		dst_release(dst);
 		return NULL;
@@ -3084,6 +3115,10 @@ static int tcp_send_syn_data(struct sock *sk, struct sk_buff *syn)
 		goto fallback;
 	syn_data->ip_summed = CHECKSUM_PARTIAL;
 	memcpy(syn_data->cb, syn->cb, sizeof(syn->cb));
+<<<<<<< HEAD
+=======
+	skb_shinfo(syn_data)->gso_segs = 1;
+>>>>>>> p9x
 	if (unlikely(memcpy_fromiovecend(skb_put(syn_data, space),
 					 fo->data->msg_iov, 0, space))) {
 		kfree_skb(syn_data);
@@ -3099,8 +3134,11 @@ static int tcp_send_syn_data(struct sock *sk, struct sk_buff *syn)
 
 	err = tcp_transmit_skb(sk, syn_data, 1, sk->sk_allocation);
 
+<<<<<<< HEAD
 	syn->skb_mstamp = syn_data->skb_mstamp;
 
+=======
+>>>>>>> p9x
 	/* Now full SYN+DATA was cloned and sent (or not),
 	 * remove the SYN from the original skb (syn_data)
 	 * we keep in write queue in case of a retransmit, as we

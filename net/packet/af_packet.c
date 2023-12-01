@@ -237,6 +237,7 @@ struct packet_skb_cb {
 static void __fanout_unlink(struct sock *sk, struct packet_sock *po);
 static void __fanout_link(struct sock *sk, struct packet_sock *po);
 
+<<<<<<< HEAD
 static int packet_direct_xmit(struct sk_buff *skb)
 {
 	struct net_device *dev = skb->dev;
@@ -273,6 +274,8 @@ drop:
 	return NET_XMIT_DROP;
 }
 
+=======
+>>>>>>> p9x
 static struct net_device *packet_cached_dev_get(struct packet_sock *po)
 {
 	struct net_device *dev;
@@ -297,6 +300,7 @@ static void packet_cached_dev_reset(struct packet_sock *po)
 	RCU_INIT_POINTER(po->cached_dev, NULL);
 }
 
+<<<<<<< HEAD
 static bool packet_use_direct_xmit(const struct packet_sock *po)
 {
 	return po->xmit == packet_direct_xmit;
@@ -324,6 +328,9 @@ static void packet_pick_tx_queue(struct net_device *dev, struct sk_buff *skb)
 }
 
 /* __register_prot_hook must be invoked through register_prot_hook
+=======
+/* register_prot_hook must be invoked with the po->bind_lock held,
+>>>>>>> p9x
  * or from a context in which asynchronous accesses to the packet
  * socket is not possible (packet_create()).
  */
@@ -1262,7 +1269,7 @@ static void packet_sock_destruct(struct sock *sk)
 	WARN_ON(atomic_read(&sk->sk_wmem_alloc));
 
 	if (!sock_flag(sk, SOCK_DEAD)) {
-		pr_err("Attempt to release alive packet socket: %p\n", sk);
+		WARN(1, "Attempt to release alive packet socket: %p\n", sk);
 		return;
 	}
 
@@ -1336,7 +1343,11 @@ static int packet_rcv_fanout(struct sk_buff *skb, struct net_device *dev,
 			     struct packet_type *pt, struct net_device *orig_dev)
 {
 	struct packet_fanout *f = pt->af_packet_priv;
+<<<<<<< HEAD
 	unsigned int num = READ_ONCE(f->num_members);
+=======
+	unsigned int num = ACCESS_ONCE(f->num_members);
+>>>>>>> p9x
 	struct packet_sock *po;
 	unsigned int idx;
 
@@ -1450,6 +1461,13 @@ static int fanout_add(struct sock *sk, u16 id, u16 type_flags)
 
 	mutex_lock(&fanout_mutex);
 
+<<<<<<< HEAD
+=======
+	err = -EINVAL;
+	if (!po->running)
+		goto out;
+
+>>>>>>> p9x
 	err = -EALREADY;
 	if (po->fanout)
 		goto out;
@@ -1515,10 +1533,15 @@ out:
 
 /* If pkt_sk(sk)->fanout->sk_ref is zero, this function removes
  * pkt_sk(sk)->fanout from fanout_list and returns pkt_sk(sk)->fanout.
+<<<<<<< HEAD
  * It is the responsibility of the caller to free the returned packet_fanout 
  * (after synchronize_net())
  * This Branch still does not have support classic BPF fanout mode.
  *  upstream commit 47dceb8ecdc: packet: add classic BPF fanout mode
+=======
+ * It is the responsibility of the caller to call fanout_release_data() and
+ * free the returned packet_fanout (after synchronize_net())
+>>>>>>> p9x
  */
 static struct packet_fanout *fanout_release(struct sock *sk)
 {
@@ -1529,16 +1552,25 @@ static struct packet_fanout *fanout_release(struct sock *sk)
 	f = po->fanout;
 	if (f) {
 		po->fanout = NULL;
+<<<<<<< HEAD
 
 		if (atomic_dec_and_test(&f->sk_ref))
 			list_del(&f->list);
 		else
 			f = NULL;
 
+=======
+
+		if (atomic_dec_and_test(&f->sk_ref))
+			list_del(&f->list);
+		else
+			f = NULL;
+>>>>>>> p9x
 	}
 	mutex_unlock(&fanout_mutex);
 
 	return f;
+<<<<<<< HEAD
 }
 
 static bool packet_extra_vlan_len_allowed(const struct net_device *dev,
@@ -1553,6 +1585,8 @@ static bool packet_extra_vlan_len_allowed(const struct net_device *dev,
 
 	skb_reset_mac_header(skb);
 	return likely(eth_hdr(skb)->h_proto == htons(ETH_P_8021Q));
+=======
+>>>>>>> p9x
 }
 
 static const struct proto_ops packet_ops;
@@ -2290,12 +2324,15 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
 			goto out;
 		proto	= saddr->sll_protocol;
 		dev = dev_get_by_index(sock_net(&po->sk), saddr->sll_ifindex);
+<<<<<<< HEAD
 		if (po->sk.sk_socket->type == SOCK_DGRAM) {
 			if (dev && msg->msg_namelen < dev->addr_len +
 				   offsetof(struct sockaddr_ll, sll_addr))
 				goto out_put;
 			addr = saddr->sll_addr;
 		}
+=======
+>>>>>>> p9x
 	}
 
 	err = -ENXIO;
@@ -2305,8 +2342,13 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
 	if (unlikely(!(dev->flags & IFF_UP)))
 		goto out_put;
 
+<<<<<<< HEAD
 	if (po->sk.sk_socket->type == SOCK_RAW)
 		reserve = dev->hard_header_len;
+=======
+	reserve = dev->hard_header_len;
+
+>>>>>>> p9x
 	size_max = po->tx_ring.frame_size
 		- (po->tp_hdrlen - sizeof(struct sockaddr_ll));
 
@@ -2430,14 +2472,18 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
 	struct sk_buff *skb;
 	struct net_device *dev;
 	__be16 proto;
+<<<<<<< HEAD
 	unsigned char *addr = NULL;
+=======
+	unsigned char *addr;
+>>>>>>> p9x
 	int err, reserve = 0;
 	struct virtio_net_hdr vnet_hdr = { 0 };
 	int offset = 0;
 	int vnet_hdr_len;
 	struct packet_sock *po = pkt_sk(sk);
 	unsigned short gso_type = 0;
-	int hlen, tlen;
+	int hlen, tlen, linear;
 	int extra_len = 0;
 
 	/*
@@ -2455,12 +2501,15 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
 			goto out;
 		proto	= saddr->sll_protocol;
 		dev = dev_get_by_index(sock_net(sk), saddr->sll_ifindex);
+<<<<<<< HEAD
 		if (sock->type == SOCK_DGRAM) {
 			if (dev && msg->msg_namelen < dev->addr_len +
 				   offsetof(struct sockaddr_ll, sll_addr))
 				goto out_unlock;
 			addr = saddr->sll_addr;
 		}
+=======
+>>>>>>> p9x
 	}
 
 	err = -ENXIO;
@@ -2535,7 +2584,9 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
 	err = -ENOBUFS;
 	hlen = LL_RESERVED_SPACE(dev);
 	tlen = dev->needed_tailroom;
-	skb = packet_alloc_skb(sk, hlen + tlen, hlen, len, vnet_hdr.hdr_len,
+	linear = vnet_hdr.hdr_len;
+	linear = max(linear, min_t(int, len, dev->hard_header_len));
+	skb = packet_alloc_skb(sk, hlen + tlen, hlen, len, linear,
 			       msg->msg_flags & MSG_DONTWAIT, &err);
 	if (skb == NULL)
 		goto out_unlock;
@@ -2675,9 +2726,15 @@ static int packet_release(struct socket *sock)
 
 	synchronize_net();
 
+<<<<<<< HEAD
 	if (f)
 		kfree(f);
 
+=======
+	if (f) {
+		kfree(f);
+	}
+>>>>>>> p9x
 	/*
 	 *	Now the socket is dead. No more input will appear.
 	 */
@@ -2711,6 +2768,7 @@ static int packet_do_bind(struct sock *sk, const char *name, int ifindex,
 
 	lock_sock(sk);
 	spin_lock(&po->bind_lock);
+<<<<<<< HEAD
 	rcu_read_lock();
 
 	if (po->fanout) {
@@ -2774,6 +2832,21 @@ static int packet_do_bind(struct sock *sk, const char *name, int ifindex,
 		dev_put(dev_curr);
 
 	if (proto == 0 || !need_rehook)
+=======
+	unregister_prot_hook(sk, true);
+
+	po->num = protocol;
+	po->prot_hook.type = protocol;
+	if (po->prot_hook.dev)
+		dev_put(po->prot_hook.dev);
+
+	po->prot_hook.dev = dev;
+	po->ifindex = dev ? dev->ifindex : 0;
+
+	packet_cached_dev_assign(po, dev);
+
+	if (protocol == 0)
+>>>>>>> p9x
 		goto out_unlock;
 
 	if (!unlisted && (!dev || (dev->flags & IFF_UP))) {
@@ -2800,6 +2873,11 @@ static int packet_bind_spkt(struct socket *sock, struct sockaddr *uaddr,
 {
 	struct sock *sk = sock->sk;
 	char name[sizeof(uaddr->sa_data) + 1];
+<<<<<<< HEAD
+=======
+	struct net_device *dev;
+	int err = -ENODEV;
+>>>>>>> p9x
 
 	/*
 	 *	Check legality
@@ -2879,6 +2957,8 @@ static int packet_create(struct net *net, struct socket *sock, int protocol,
 	err = packet_alloc_pending(po);
 	if (err)
 		goto out2;
+
+	packet_cached_dev_reset(po);
 
 	packet_cached_dev_reset(po);
 
@@ -3033,7 +3113,10 @@ static int packet_recvmsg(struct kiocb *iocb, struct socket *sock,
 		 * in, we fill it in now.
 		 */
 		if (sock->type == SOCK_PACKET) {
+<<<<<<< HEAD
 			__sockaddr_check_size(sizeof(struct sockaddr_pkt));
+=======
+>>>>>>> p9x
 			msg->msg_namelen = sizeof(struct sockaddr_pkt);
 		} else {
 			struct sockaddr_ll *sll = &PACKET_SKB_CB(skb)->sa.ll;
@@ -3864,6 +3947,7 @@ static int packet_set_ring(struct sock *sk, union tpacket_req_u *req_u,
 	/* Added to avoid minimal code churn */
 	struct tpacket_req *req = &req_u->req;
 
+	lock_sock(sk);
 	/* Opening a Tx-ring is NOT supported in TPACKET_V3 */
 	if (!closing && tx_ring && (po->tp_version > TPACKET_V2)) {
 		WARN(1, "Tx-ring is not supported.\n");
@@ -3906,12 +3990,21 @@ static int packet_set_ring(struct sock *sk, union tpacket_req_u *req_u,
 			goto out;
 		if (unlikely(req->tp_block_size & (PAGE_SIZE - 1)))
 			goto out;
+<<<<<<< HEAD
 		min_frame_size = po->tp_hdrlen + po->tp_reserve;
 		if (po->tp_version >= TPACKET_V3 &&
 		    req->tp_block_size <
 		    BLK_PLUS_PRIV((u64)req_u->req3.tp_sizeof_priv) + min_frame_size)
 			goto out;
 		if (unlikely(req->tp_frame_size < min_frame_size))
+=======
+		if (po->tp_version >= TPACKET_V3 &&
+		    (int)(req->tp_block_size -
+			  BLK_PLUS_PRIV(req_u->req3.tp_sizeof_priv)) <= 0)
+			goto out;
+		if (unlikely(req->tp_frame_size < po->tp_hdrlen +
+					po->tp_reserve))
+>>>>>>> p9x
 			goto out;
 		if (unlikely(req->tp_frame_size & (TPACKET_ALIGNMENT - 1)))
 			goto out;
@@ -4001,6 +4094,7 @@ static int packet_set_ring(struct sock *sk, union tpacket_req_u *req_u,
 	if (pg_vec)
 		free_pg_vec(pg_vec, order, req->tp_block_nr);
 out:
+	release_sock(sk);
 	return err;
 }
 

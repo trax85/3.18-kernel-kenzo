@@ -24,7 +24,11 @@
 
 #include <linux/ipa.h>
 
+<<<<<<< HEAD
 #define USBNET_IPA_SYS_PIPE_MAX_PKTS_DESC 200
+=======
+#define USBNET_IPA_SYS_PIPE_MAX_PKTS_DESC 160
+>>>>>>> p9x
 #define USBNET_IPA_SYS_PIPE_MIN_PKTS_DESC 5
 #define USBNET_IPA_SYS_PIPE_DNE_PKTS (USBNET_IPA_SYS_PIPE_MAX_PKTS_DESC*2)
 
@@ -38,10 +42,13 @@ struct usbnet_ipa_stats {
 	/* TX Side*/
 	uint64_t tx_ipa_send;
 	uint64_t tx_ipa_send_err;
+<<<<<<< HEAD
 
 	/* Flow Control stats */
 	uint64_t flow_control_pkt_drop;
 	uint64_t ipa_low_watermark_cnt;
+=======
+>>>>>>> p9x
 };
 
 struct usbnet_ipa_ctx {
@@ -63,7 +70,10 @@ struct usbnet {
 	unsigned char		suspend_count;
 	unsigned char		pkt_cnt, pkt_err;
 	unsigned short		rx_qlen, tx_qlen;
+<<<<<<< HEAD
 	unsigned		can_dma_sg:1;
+=======
+>>>>>>> p9x
 
 	/* i/o info: pipes etc */
 	unsigned		in, out;
@@ -106,20 +116,26 @@ struct usbnet {
 #		define EVENT_NO_RUNTIME_PM	9
 #		define EVENT_RX_KILL	10
 #		define EVENT_LINK_CHANGE	11
+<<<<<<< HEAD
 #		define EVENT_SET_RX_MODE	12
 
 	struct completion rm_prod_granted_comp;
 	struct completion rm_prod_release_comp;
+=======
+>>>>>>> p9x
 
 	u16 ipa_free_desc_cnt;
 	u16 ipa_high_watermark;
 	u16 ipa_low_watermark;
+<<<<<<< HEAD
 
 	struct sk_buff_head	ipa_pendq;
 	/* work to send pending packets to ipa */
 	struct work_struct ipa_send_task;
 	/* work for odu bridge initialization */
 	struct work_struct odu_bridge_init;
+=======
+>>>>>>> p9x
 };
 
 static inline struct usb_driver *driver_of(struct usb_interface *intf)
@@ -311,6 +327,7 @@ extern u32 usbnet_get_msglevel(struct net_device *);
 extern void usbnet_set_msglevel(struct net_device *, u32);
 extern void usbnet_get_drvinfo(struct net_device *, struct ethtool_drvinfo *);
 extern int usbnet_nway_reset(struct net_device *net);
+extern void usbnet_terminate_urbs(struct usbnet *dev);
 
 extern int usbnet_manage_power(struct usbnet *, int);
 extern void usbnet_link_change(struct usbnet *, bool, bool);

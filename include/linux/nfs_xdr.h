@@ -1115,6 +1115,7 @@ struct pnfs_ds_commit_info {
 	struct pnfs_commit_bucket *buckets;
 };
 
+<<<<<<< HEAD
 #define NFS4_OP_MAP_NUM_LONGS \
 	DIV_ROUND_UP(LAST_NFS4_OP, 8 * sizeof(unsigned long))
 #define NFS4_OP_MAP_NUM_WORDS \
@@ -1132,6 +1133,8 @@ struct nfs41_state_protection {
 	struct nfs4_op_map allow;
 };
 
+=======
+>>>>>>> p9x
 #define NFS4_EXCHANGE_ID_LEN	(127)
 struct nfs41_exchange_id_args {
 	struct nfs_client		*client;

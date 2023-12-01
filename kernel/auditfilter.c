@@ -439,7 +439,11 @@ static struct audit_entry *audit_data_to_entry(struct audit_rule_data *data,
 		f->val = data->values[i];
 
 		/* Support legacy tests for a valid loginuid */
+<<<<<<< HEAD
 		if ((f->type == AUDIT_LOGINUID) && (f->val == AUDIT_UID_UNSET)) {
+=======
+		if ((f->type == AUDIT_LOGINUID) && (f->val == 4294967295u)) {
+>>>>>>> p9x
 			f->type = AUDIT_LOGINUID_SET;
 			f->val = 0;
 			entry->rule.pflags |= AUDIT_LOGINUID_LEGACY;

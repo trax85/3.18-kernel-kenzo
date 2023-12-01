@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -44,6 +48,7 @@
 #define QMI_IPA_IPFLTR_NUM_IHL_MEQ_32_EQNS_V01 2
 #define QMI_IPA_IPFLTR_NUM_MEQ_128_EQNS_V01 2
 #define QMI_IPA_MAX_FILTERS_V01 64
+<<<<<<< HEAD
 #define QMI_IPA_MAX_FILTERS_EX_V01 128
 #define QMI_IPA_MAX_PIPES_V01 20
 #define QMI_IPA_MAX_APN_V01 8
@@ -53,6 +58,10 @@
  */
 #define QMI_IPA_MAX_CLIENT_DST_PIPES_V01 8
 #define QMI_IPA_MAX_UL_FIREWALL_RULES_V01 64
+=======
+#define QMI_IPA_MAX_PIPES_V01 20
+#define QMI_IPA_MAX_APN_V01 8
+>>>>>>> p9x
 
 #define IPA_INT_MAX	((int)(~0U>>1))
 #define IPA_INT_MIN	(-IPA_INT_MAX - 1)
@@ -175,10 +184,14 @@ struct ipa_zip_tbl_info_type_v01 {
 	 */
 };  /* Type */
 
+<<<<<<< HEAD
 /**
  * Request Message; Requests the modem IPA driver
  * to perform initializtion
  */
+=======
+/** Request Message; Requests the modem IPA driver to perform initializtion */
+>>>>>>> p9x
 struct ipa_init_modem_driver_req_msg_v01 {
 
 	/* Optional */
@@ -215,8 +228,12 @@ struct ipa_init_modem_driver_req_msg_v01 {
 	if v4_filter_tbl_start_addr is being passed */
 	uint32_t v4_filter_tbl_start_addr;
 	/*	Provides information about the starting address of IPV4 filter
+<<<<<<< HEAD
 	 *	table in IPAv2 or non-hashable IPv4 filter table in IPAv3.
 	 *	Denotes the offset from the start of the IPA Shared Mem
+=======
+	 *	tableDenotes the offset from the start of the IPA Shared Mem
+>>>>>>> p9x
 	 */
 
 	/* Optional */
@@ -225,8 +242,12 @@ struct ipa_init_modem_driver_req_msg_v01 {
 	/* Must be set to true if v6_filter_tbl_start_addr is being passed */
 	uint32_t v6_filter_tbl_start_addr;
 	/*	Provides information about the starting address of IPV6 filter
+<<<<<<< HEAD
 	 *	table in IPAv2 or non-hashable IPv6 filter table in IPAv3.
 	 *	Denotes the offset from the start of the IPA Shared Mem
+=======
+	 *	table Denotes the offset from the start of the IPA Shared Mem
+>>>>>>> p9x
 	 */
 
 	/* Optional */
@@ -275,6 +296,7 @@ struct ipa_init_modem_driver_req_msg_v01 {
 	uint8_t zip_tbl_info_valid;
 	/* Must be set to true if zip_tbl_info is being passed */
 	struct ipa_zip_tbl_info_type_v01 zip_tbl_info;
+<<<<<<< HEAD
 	/* Provides information about the zip table.
 	*/
 
@@ -314,6 +336,13 @@ struct ipa_init_modem_driver_req_msg_v01 {
 };  /* Message */
 
 /* Response Message; Requests the modem IPA driver about initialization */
+=======
+	/* Provides information about the header processing context table.
+	*/
+};  /* Message */
+
+/* Response Message; Requests the modem IPA driver about initializtion */
+>>>>>>> p9x
 struct ipa_init_modem_driver_resp_msg_v01 {
 	/* Mandatory */
 	/*  Result Code */
@@ -343,6 +372,7 @@ struct ipa_init_modem_driver_resp_msg_v01 {
 	 *	since IPA only supports 20 end points. This field is looked
 	 *	at only if the result in TLV RESULT_CODE is QMI_RESULT_SUCCESS
 	 */
+<<<<<<< HEAD
 
 	/* Optional */
 	/*  Modem Driver Initialization Pending */
@@ -382,6 +412,10 @@ struct ipa_init_modem_driver_cmplt_resp_msg_v01 {
 	struct ipa_qmi_response_type_v01 resp;
 	/**<   Standard response type.*/
 };  /* Message */
+=======
+};  /* Message */
+
+>>>>>>> p9x
 
 /*	Request Message; This is the message that is exchanged between the
  *	control point and the service in order to register for indications.
@@ -685,6 +719,7 @@ struct ipa_filter_spec_type_v01 {
 	 */
 };  /* Type */
 
+<<<<<<< HEAD
 struct ipa_filter_spec_ex_type_v01 {
 	enum ipa_ip_type_enum_v01 ip_type;
 	/*	This field identifies the IP type for which this rule is
@@ -735,6 +770,8 @@ struct ipa_filter_spec_ex_type_v01 {
 	*/
 };  /* Type */
 
+=======
+>>>>>>> p9x
 
 /*  Request Message; This is the message that is exchanged between the
  *	control point and the service in order to request the installation
@@ -795,6 +832,7 @@ struct ipa_install_fltr_rule_req_msg_v01 {
 	 * will need to be modified by the receiver if the PDN is XLAT
 	 * before installing them on the associated IPA consumer pipe.
 	 */
+<<<<<<< HEAD
 
 	/* Optional */
 	/*  Extended Filter Specification  */
@@ -810,6 +848,8 @@ struct ipa_install_fltr_rule_req_msg_v01 {
 	 *	The driver installing these rules must do so in the same
 	 *	order as specified in this list.
 	 */
+=======
+>>>>>>> p9x
 };  /* Message */
 
 struct ipa_filter_rule_identifier_to_handle_map_v01 {
@@ -842,13 +882,20 @@ struct ipa_install_fltr_rule_resp_msg_v01 {
 	 */
 
 	/* Optional */
+<<<<<<< HEAD
 	/*  Filter Handle List */
 	uint8_t filter_handle_list_valid;
 	/* Must be set to true if filter_handle_list is being passed */
+=======
+	/*  Filter Handle list */
+	uint8_t filter_handle_list_valid;
+	/**< Must be set to true if filter_handle_list is being passed */
+>>>>>>> p9x
 	uint32_t filter_handle_list_len;
 	/* Must be set to # of elements in filter_handle_list */
 	struct ipa_filter_rule_identifier_to_handle_map_v01
 		filter_handle_list[QMI_IPA_MAX_FILTERS_V01];
+<<<<<<< HEAD
 	/*
 	 * List of handles returned to the control point. Each handle is
 	 *	mapped to the rule identifier that was specified in the
@@ -867,6 +914,12 @@ struct ipa_install_fltr_rule_resp_msg_v01 {
 	 * List of rule ids returned to the control point.
 	 *	Any further reference to the rule is done using the
 	 *	filter rule id specified in this list.
+=======
+	/*  This is a list of handles returned to the control point.
+	 *	Each handle is mapped to the rule identifier that was
+	 *	specified in the request message. Any further reference
+	 *	to the rule is done using the filter handle
+>>>>>>> p9x
 	 */
 };  /* Message */
 
@@ -884,8 +937,13 @@ struct ipa_filter_handle_to_index_map_v01 {
 
 /* Request Message; This is the message that is exchanged between the
  * control point and the service in order to notify the remote driver
+<<<<<<< HEAD
  * of the installation of the filter rule supplied earlier by the
  * remote driver.
+=======
+ * about the installation of the filter rule supplied earlier by
+ * the remote driver
+>>>>>>> p9x
  */
 struct ipa_fltr_installed_notif_req_msg_v01 {
 	/*	Mandatory	*/
@@ -904,16 +962,27 @@ struct ipa_fltr_installed_notif_req_msg_v01 {
 	 */
 
 	/* Mandatory */
+<<<<<<< HEAD
 	/*  List of Filter Indices */
+=======
+	/*  List of filter indices */
+>>>>>>> p9x
 	uint32_t filter_index_list_len;
 	/* Must be set to # of elements in filter_index_list */
 	struct ipa_filter_handle_to_index_map_v01
 		filter_index_list[QMI_IPA_MAX_FILTERS_V01];
+<<<<<<< HEAD
 	/*
 	 * Provides the list of filter indices and the corresponding
 	 *	filter handle. If the installation_status indicates a
 	 *	failure, the filter indices must be set to a reserve
 	 *	index (255).
+=======
+	/*	This field provides the list of filter indices and the
+	 *	corresponding filter handle. If the installation_status
+	 *	indicates failure, then the filter indices shall be set
+	 *	to a reserve index (255)
+>>>>>>> p9x
 	 */
 
 	/* Optional */
@@ -976,6 +1045,7 @@ struct ipa_fltr_installed_notif_req_msg_v01 {
 	/* Must be set to true if start_ipv6_filter_idx is being passed */
 	uint32_t start_ipv6_filter_idx;
 	/* Start index of IPv6 rules in filter index list */
+<<<<<<< HEAD
 
 	/* Optional */
 	/*  List of Rule Ids */
@@ -1006,6 +1076,13 @@ struct ipa_fltr_installed_notif_req_msg_v01 {
  * control point and the service in order to notify the remote driver
  * of the installation of the filter rule supplied earlier by the
  * remote driver.
+=======
+};  /* Message */
+
+/* Response Message; This is the message that is exchanged between the control
+ *	point and the service in order to notify the remote driver about the
+ *	installation of the filter rule supplied earlier by the remote driver
+>>>>>>> p9x
  */
 struct ipa_fltr_installed_notif_resp_msg_v01 {
 	/* Mandatory */
@@ -1274,6 +1351,7 @@ struct ipa_config_req_msg_v01 {
 	 * This threshold is applicable for data that is moved in the
 	 * DL direction - Maximum value: 65535
 	 */
+<<<<<<< HEAD
 
 	/* Optional */
 	/*  Uplink Fifo Size */
@@ -1310,6 +1388,8 @@ struct ipa_config_req_msg_v01 {
 	uint32_t dl_buf_size;
 	/*  Informs the remote driver about the single xDCI buffer size.
 		This is applicable only in GSI mode(in Bytes).\n */
+=======
+>>>>>>> p9x
 };  /* Message */
 
 /* Response Message; Notifies the remote driver of the configuration
@@ -1560,6 +1640,7 @@ struct ipa_stop_data_usage_quota_resp_msg_v01 {
 	/**<   Standard response type.*/
 };  /* Message */
 
+<<<<<<< HEAD
 /* Request Message; Request from Modem IPA driver to set DPL peripheral pipe */
 struct ipa_install_fltr_rule_req_ex_msg_v01 {
 
@@ -1903,6 +1984,8 @@ struct ipa_configure_ul_firewall_rules_ind_msg_v01 {
 };  /* Message */
 
 
+=======
+>>>>>>> p9x
 /*Service Message Definition*/
 #define QMI_IPA_INDICATION_REGISTER_REQ_V01 0x0020
 #define QMI_IPA_INDICATION_REGISTER_RESP_V01 0x0020
@@ -1932,6 +2015,7 @@ struct ipa_configure_ul_firewall_rules_ind_msg_v01 {
 #define QMI_IPA_DATA_USAGE_QUOTA_REACHED_IND_V01 0x0033
 #define QMI_IPA_STOP_DATA_USAGE_QUOTA_REQ_V01 0x0034
 #define QMI_IPA_STOP_DATA_USAGE_QUOTA_RESP_V01 0x0034
+<<<<<<< HEAD
 #define QMI_IPA_INIT_MODEM_DRIVER_CMPLT_REQ_V01 0x0035
 #define QMI_IPA_INIT_MODEM_DRIVER_CMPLT_RESP_V01 0x0035
 #define QMI_IPA_INSTALL_FILTER_RULE_EX_REQ_V01 0x0037
@@ -1952,6 +2036,16 @@ struct ipa_configure_ul_firewall_rules_ind_msg_v01 {
 #define QMI_IPA_INSTALL_FILTER_RULE_REQ_MAX_MSG_LEN_V01 22369
 #define QMI_IPA_INSTALL_FILTER_RULE_RESP_MAX_MSG_LEN_V01 783
 #define QMI_IPA_FILTER_INSTALLED_NOTIF_REQ_MAX_MSG_LEN_V01 870
+=======
+/* add for max length*/
+#define QMI_IPA_INIT_MODEM_DRIVER_REQ_MAX_MSG_LEN_V01 98
+#define QMI_IPA_INIT_MODEM_DRIVER_RESP_MAX_MSG_LEN_V01 21
+#define QMI_IPA_INDICATION_REGISTER_REQ_MAX_MSG_LEN_V01 8
+#define QMI_IPA_INDICATION_REGISTER_RESP_MAX_MSG_LEN_V01 7
+#define QMI_IPA_INSTALL_FILTER_RULE_REQ_MAX_MSG_LEN_V01 11293
+#define QMI_IPA_INSTALL_FILTER_RULE_RESP_MAX_MSG_LEN_V01 523
+#define QMI_IPA_FILTER_INSTALLED_NOTIF_REQ_MAX_MSG_LEN_V01 574
+>>>>>>> p9x
 #define QMI_IPA_FILTER_INSTALLED_NOTIF_RESP_MAX_MSG_LEN_V01 7
 #define QMI_IPA_MASTER_DRIVER_INIT_COMPLETE_IND_MAX_MSG_LEN_V01 7
 #define QMI_IPA_DATA_USAGE_QUOTA_REACHED_IND_MAX_MSG_LEN_V01 15
@@ -1963,7 +2057,11 @@ struct ipa_configure_ul_firewall_rules_ind_msg_v01 {
 #define QMI_IPA_DISABLE_FORCE_CLEAR_DATAPATH_RESP_MAX_MSG_LEN_V01 7
 
 
+<<<<<<< HEAD
 #define QMI_IPA_CONFIG_REQ_MAX_MSG_LEN_V01 102
+=======
+#define QMI_IPA_CONFIG_REQ_MAX_MSG_LEN_V01 81
+>>>>>>> p9x
 #define QMI_IPA_CONFIG_RESP_MAX_MSG_LEN_V01 7
 #define QMI_IPA_DISABLE_LINK_LOW_PWR_STATE_REQ_MAX_MSG_LEN_V01 18
 #define QMI_IPA_DISABLE_LINK_LOW_PWR_STATE_RESP_MAX_MSG_LEN_V01 7
@@ -1978,6 +2076,7 @@ struct ipa_configure_ul_firewall_rules_ind_msg_v01 {
 #define QMI_IPA_STOP_DATA_USAGE_QUOTA_REQ_MAX_MSG_LEN_V01 0
 #define QMI_IPA_STOP_DATA_USAGE_QUOTA_RESP_MAX_MSG_LEN_V01 7
 
+<<<<<<< HEAD
 #define QMI_IPA_INIT_MODEM_DRIVER_CMPLT_REQ_MAX_MSG_LEN_V01 4
 #define QMI_IPA_INIT_MODEM_DRIVER_CMPLT_RESP_MAX_MSG_LEN_V01 7
 
@@ -1993,6 +2092,8 @@ struct ipa_configure_ul_firewall_rules_ind_msg_v01 {
 #define QMI_IPA_INSTALL_UL_FIREWALL_RULES_REQ_MAX_MSG_LEN_V01 9875
 #define QMI_IPA_INSTALL_UL_FIREWALL_RULES_RESP_MAX_MSG_LEN_V01 7
 #define QMI_IPA_INSTALL_UL_FIREWALL_RULES_IND_MAX_MSG_LEN_V01 11
+=======
+>>>>>>> p9x
 /* Service Object Accessor */
 
 #endif/* IPA_QMI_SERVICE_V01_H */

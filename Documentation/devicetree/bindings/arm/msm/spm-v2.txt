@@ -17,7 +17,11 @@ is required on only for SPMs that control the CPU. This field is not required
 for SPMs that control L2/CCI/L3
 - qcom,saw2-ver-reg: The location of the version register
 - qcom,name: The name with which a SPM device is identified by the power
+<<<<<<< HEAD
 management code.
+=======
+	management code.
+>>>>>>> p9x
 
 ----------------------------------------------------
 Non-PSCI targets should follow the rules shown below
@@ -25,9 +29,18 @@ Non-PSCI targets should follow the rules shown below
 Required properties for only Non-PSCI targets:
 
 - qcom,saw2-cfg: SAW2 configuration register
+<<<<<<< HEAD
 - qcom,saw2-spm-ctl: The SPM control register
 - qcom,saw2-spm-dly: Provides the values for the SPM delay command in the SPM
 	sequence
+=======
+- qcom,saw2-avs-ctl: The AVS control register
+- qcom,saw2-avs-hysterisis: The AVS hysterisis register to delay the AVS
+	controller requests
+- qcom,saw2-spm-dly: Provides the values for the SPM delay command in the SPM
+	sequence
+- qcom,saw2-spm-ctl: The SPM control register
+>>>>>>> p9x
 
 Optional properties for only Non-PSCI targets
 - reg-names: Register names for the physical address required if spm device
@@ -45,10 +58,22 @@ Optional properties for only Non-PSCI targets
 	index to send the PMIC data to
 - qcom,vctl-port: The PVC (PMIC Virtual Channel) port used for changing
 	voltage
+<<<<<<< HEAD
 - qcom,vctl-port-ub: The PVC (PMIC Virtual Channel) port used for changing
 	voltage
 - qcom,phase-port: The PVC port used for changing the number of phases
 - qcom,pfm-port: The PVC port used for enabling PWM/PFM modes
+=======
+- qcom,phase-port: The PVC port used for changing the number of phases
+- qcom,pfm-port: The PVC port used for enabling PWM/PFM modes
+- qcom,saw2-spm-cmd-wfi: The WFI command sequence
+- qcom,saw2-spm-cmd-ret: The Retention command sequence
+- qcom,saw2-spm-cmd-spc: The Standalone PC command sequence
+- qcom,saw2-spm-cmd-pc-no-rpm: The Power Collapse command sequence where APPS
+	proc won't inform the RPM.
+- qcom,saw2-spm-cmd-pc: The Power Collapse command sequence
+- qcom,saw2-spm-cmd-gdhs: L2 GDHS command sequence
+>>>>>>> p9x
 - qcom,cpu-vctl-mask: Mask of cpus, whose voltage the spm device can control.
 	Depricated: Replaced with cpu-vctl-list when cpu phandles are available.
 - qcom,cpu-vctl-list: List of cpu node phandles, whose voltage the spm device
@@ -66,6 +91,7 @@ only on SAW2 v3.0 and above.
 - qcom,use-qchannel-for-wfi: This boolean property is used to indicate
 	that the SPM gets triggerd by the qchannel and not by means of
 	wfi. So a wfe could trigger a spm for clock gating as well.
+<<<<<<< HEAD
 - qcom,pwr-state-dx: Indicates the power state idx of the core.
 - qcom,wake-config: Indicate SPM wake up signal configuration.
 - modes: Lists all the available low power modes for the device
@@ -93,6 +119,14 @@ Optional properties
 	Sleep without RPM handshake command.
 - qcom,event_sync: Specifies event_sync byte should be set in SPM control
 	register.
+=======
+- qcom,use-c1-exit-fsm-for-wfi: This boolean property is used to indicate
+	that C1 staggered exit FSM will be used insted of the SPM for wfi.
+- qcom,use-spm-legacy-mode-workaround: This boolean property is used to
+	indicate that the SPM_LEGACY_MODE bit in L2 SPM Qchannel configuration
+	needs to be set during system boot, so that CCI SPM can be triggered
+	with one cluster in reset.
+>>>>>>> p9x
 
 ----------------------------------------------------
 PSCI targets should follow the rules shown below
@@ -109,8 +143,11 @@ Optional properties for only PSCI targets:
 	between AVS controller requests
 - qcom,vctl-port: The PVC (PMIC Virtual Channel) port used for changing
 	voltage
+<<<<<<< HEAD
 - qcom,vctl-port-ub: The PVC (PMIC Virtual Channel) port used for changing
 	voltage
+=======
+>>>>>>> p9x
 - qcom,phase-port: The PVC port used for changing the number of phases
 - qcom,pfm-port: The PVC port used for enabling PWM/PFM modes
 - qcom,cpu-vctl-list: List of cpu node phandles, whose voltage the spm device
@@ -123,6 +160,33 @@ Example 1:
 		#address-cells = <1>;
 		#size-cells = <1>;
 		reg = <0xf9089000 0x1000>;
+<<<<<<< HEAD
+=======
+		qcom,core-id = <0>;
+		qcom,saw2-ver-reg = <0xfd0>;
+		qcom,saw2-cfg = <0x1b>;
+		qcom,saw2-avs-ctl = <0>;
+		qcom,saw2-avs-hysteresis = <0>;
+		qcom,saw2-avs-limit = <0>;
+		qcom,saw2-avs-dly= <0>;
+		qcom,saw2-spm-dly= <0x20000400>;
+		qcom,saw2-spm-ctl = <0x1>;
+		qcom,cpu-vctl-mask = <0xf>;
+		qcom,saw2-spm-cmd-wfi = [03 0b 0f];
+		qcom,saw2-spm-cmd-spc = [00 20 50 80 60 70 10 92
+				a0 b0 03 68 70 3b 92 a0 b0
+				82 2b 50 10 30 02 22 30 0f];
+		qcom,saw2-spm-cmd-pc = [00 20 10 92 a0 b0 07 3b 92
+				a0 b0 82 10 30 02 22 30 0f];
+	};
+
+Example 2:
+	qcom,spm@f9089000 {
+		compatible = "qcom,spm-v2";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		reg = <0xf9089000 0x1000>;
+>>>>>>> p9x
 		qcom,cpu = <&CPU0>;
 		qcom,saw2-ver-reg = <0xfd0>;
 		qcom,saw2-cfg = <0x1b>;
@@ -133,6 +197,7 @@ Example 1:
 		qcom,saw2-spm-dly= <0x20000400>;
 		qcom,saw2-spm-ctl = <0x1>;
 		qcom,cpu-vctl-list = <&CPU0 &CPU1 &CPU2 &CPU3>;
+<<<<<<< HEAD
 		qcom,mode0 {
 			qcom,label = "qcom,saw2-spm-cmd-wfi";
 			qcom,sequence = [03 0b 0f];
@@ -158,6 +223,17 @@ Example 1:
 	};
 
 Example 2:
+=======
+		qcom,saw2-spm-cmd-wfi = [03 0b 0f];
+		qcom,saw2-spm-cmd-spc = [00 20 50 80 60 70 10 92
+				a0 b0 03 68 70 3b 92 a0 b0
+				82 2b 50 10 30 02 22 30 0f];
+		qcom,saw2-spm-cmd-pc = [00 20 10 92 a0 b0 07 3b 92
+				a0 b0 82 10 30 02 22 30 0f];
+	};
+
+Example 3:
+>>>>>>> p9x
 	qcom,spm@9A10000 {
 		compatible = "qcom,spm-v2";
 		#address-cells = <1>;
@@ -172,4 +248,7 @@ Example 2:
 		qcom,saw2-avs-ctl = <0x1100>;
 		qcom,pfm-port = <0x2>;
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x

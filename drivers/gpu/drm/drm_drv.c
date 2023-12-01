@@ -929,3 +929,211 @@ static void __exit drm_core_exit(void)
 
 module_init(drm_core_init);
 module_exit(drm_core_exit);
+<<<<<<< HEAD
+=======
+
+/**
+ * Copy and IOCTL return string to user space
+ */
+static int drm_copy_field(char *buf, size_t *buf_len, const char *value)
+{
+	int len;
+
+	/* don't overflow userbuf */
+	len = strlen(value);
+	if (len > *buf_len)
+		len = *buf_len;
+
+	/* let userspace know exact length of driver value (which could be
+	 * larger than the userspace-supplied buffer) */
+	*buf_len = strlen(value);
+
+	/* finally, try filling in the userbuf */
+	if (len && buf)
+		if (copy_to_user(buf, value, len))
+			return -EFAULT;
+	return 0;
+}
+
+/**
+ * Get version information
+ *
+ * \param inode device inode.
+ * \param filp file pointer.
+ * \param cmd command.
+ * \param arg user argument, pointing to a drm_version structure.
+ * \return zero on success or negative number on failure.
+ *
+ * Fills in the version information in \p arg.
+ */
+static int drm_version(struct drm_device *dev, void *data,
+		       struct drm_file *file_priv)
+{
+	struct drm_version *version = data;
+	int err;
+
+	version->version_major = dev->driver->major;
+	version->version_minor = dev->driver->minor;
+	version->version_patchlevel = dev->driver->patchlevel;
+	err = drm_copy_field(version->name, &version->name_len,
+			dev->driver->name);
+	if (!err)
+		err = drm_copy_field(version->date, &version->date_len,
+				dev->driver->date);
+	if (!err)
+		err = drm_copy_field(version->desc, &version->desc_len,
+				dev->driver->desc);
+
+	return err;
+}
+
+/**
+ * Called whenever a process performs an ioctl on /dev/drm.
+ *
+ * \param inode device inode.
+ * \param file_priv DRM file private.
+ * \param cmd command.
+ * \param arg user argument.
+ * \return zero on success or negative number on failure.
+ *
+ * Looks up the ioctl function in the ::ioctls table, checking for root
+ * previleges if so required, and dispatches to the respective function.
+ */
+long drm_ioctl(struct file *filp,
+	      unsigned int cmd, unsigned long arg)
+{
+	struct drm_file *file_priv = filp->private_data;
+	struct drm_device *dev;
+	const struct drm_ioctl_desc *ioctl = NULL;
+	drm_ioctl_t *func;
+	unsigned int nr = DRM_IOCTL_NR(cmd);
+	int retcode = -EINVAL;
+	char stack_kdata[128];
+	char *kdata = NULL;
+	unsigned int usize, asize;
+
+	dev = file_priv->minor->dev;
+
+	if (drm_device_is_unplugged(dev))
+		return -ENODEV;
+
+	atomic_inc(&dev->ioctl_count);
+	atomic_inc(&dev->counts[_DRM_STAT_IOCTLS]);
+	++file_priv->ioctl_count;
+
+	if ((nr >= DRM_CORE_IOCTL_COUNT) &&
+	    ((nr < DRM_COMMAND_BASE) || (nr >= DRM_COMMAND_END)))
+		goto err_i1;
+	if ((nr >= DRM_COMMAND_BASE) && (nr < DRM_COMMAND_END) &&
+	    (nr < DRM_COMMAND_BASE + dev->driver->num_ioctls)) {
+		u32 drv_size;
+		ioctl = &dev->driver->ioctls[nr - DRM_COMMAND_BASE];
+		drv_size = _IOC_SIZE(ioctl->cmd_drv);
+		usize = asize = _IOC_SIZE(cmd);
+		if (drv_size > asize)
+			asize = drv_size;
+		cmd = ioctl->cmd_drv;
+	}
+	else if ((nr >= DRM_COMMAND_END) || (nr < DRM_COMMAND_BASE)) {
+		u32 drv_size;
+
+		ioctl = &drm_ioctls[nr];
+
+		drv_size = _IOC_SIZE(ioctl->cmd);
+		usize = asize = _IOC_SIZE(cmd);
+		if (drv_size > asize)
+			asize = drv_size;
+
+		cmd = ioctl->cmd;
+	} else
+		goto err_i1;
+
+	DRM_DEBUG("pid=%d, dev=0x%lx, auth=%d, %s\n",
+		  task_pid_nr(current),
+		  (long)old_encode_dev(file_priv->minor->device),
+		  file_priv->authenticated, ioctl->name);
+
+	/* Do not trust userspace, use our own definition */
+	func = ioctl->func;
+	/* is there a local override? */
+	if ((nr == DRM_IOCTL_NR(DRM_IOCTL_DMA)) && dev->driver->dma_ioctl)
+		func = dev->driver->dma_ioctl;
+
+	if (!func) {
+		DRM_DEBUG("no function\n");
+		retcode = -EINVAL;
+	} else if (((ioctl->flags & DRM_ROOT_ONLY) && !capable(CAP_SYS_ADMIN)) ||
+		   ((ioctl->flags & DRM_AUTH) && !file_priv->authenticated) ||
+		   ((ioctl->flags & DRM_MASTER) && !file_priv->is_master) ||
+		   (!(ioctl->flags & DRM_CONTROL_ALLOW) && (file_priv->minor->type == DRM_MINOR_CONTROL))) {
+		retcode = -EACCES;
+	} else {
+		if (cmd & (IOC_IN | IOC_OUT)) {
+			if (asize <= sizeof(stack_kdata)) {
+				kdata = stack_kdata;
+			} else {
+				kdata = kmalloc(asize, GFP_KERNEL);
+				if (!kdata) {
+					retcode = -ENOMEM;
+					goto err_i1;
+				}
+			}
+			if (asize > usize)
+				memset(kdata + usize, 0, asize - usize);
+		}
+
+		if (cmd & IOC_IN) {
+			if (copy_from_user(kdata, (void __user *)arg,
+					   usize) != 0) {
+				retcode = -EFAULT;
+				goto err_i1;
+			}
+		} else
+			memset(kdata, 0, usize);
+
+		if (ioctl->flags & DRM_UNLOCKED)
+			retcode = func(dev, kdata, file_priv);
+		else {
+			mutex_lock(&drm_global_mutex);
+			retcode = func(dev, kdata, file_priv);
+			mutex_unlock(&drm_global_mutex);
+		}
+
+		if (cmd & IOC_OUT) {
+			if (copy_to_user((void __user *)arg, kdata,
+					 usize) != 0)
+				retcode = -EFAULT;
+		}
+	}
+
+      err_i1:
+	if (!ioctl)
+		DRM_DEBUG("invalid iotcl: pid=%d, dev=0x%lx, auth=%d, cmd=0x%02x, nr=0x%02x\n",
+			  task_pid_nr(current),
+			  (long)old_encode_dev(file_priv->minor->device),
+			  file_priv->authenticated, cmd, nr);
+
+	if (kdata != stack_kdata)
+		kfree(kdata);
+	atomic_dec(&dev->ioctl_count);
+	if (retcode)
+		DRM_DEBUG("ret = %d\n", retcode);
+	return retcode;
+}
+
+EXPORT_SYMBOL(drm_ioctl);
+
+struct drm_local_map *drm_getsarea(struct drm_device *dev)
+{
+	struct drm_map_list *entry;
+
+	list_for_each_entry(entry, &dev->maplist, head) {
+		if (entry->map && entry->map->type == _DRM_SHM &&
+		    (entry->map->flags & _DRM_CONTAINS_LOCK)) {
+			return entry->map;
+		}
+	}
+	return NULL;
+}
+EXPORT_SYMBOL(drm_getsarea);
+>>>>>>> p9x

@@ -466,6 +466,7 @@ static inline int pte_present(pte_t a)
 			       _PAGE_NUMA);
 }
 
+<<<<<<< HEAD
 #define pte_present_nonuma pte_present_nonuma
 static inline int pte_present_nonuma(pte_t a)
 {
@@ -475,6 +476,11 @@ static inline int pte_present_nonuma(pte_t a)
 #define pte_accessible pte_accessible
 static inline bool pte_accessible(struct mm_struct *mm, pte_t a)
 {
+=======
+#define pte_accessible pte_accessible
+static inline bool pte_accessible(struct mm_struct *mm, pte_t a)
+{
+>>>>>>> p9x
 	if (pte_flags(a) & _PAGE_PRESENT)
 		return true;
 

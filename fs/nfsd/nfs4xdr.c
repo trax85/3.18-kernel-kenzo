@@ -162,7 +162,20 @@ static __be32 *read_buf(struct nfsd4_compoundargs *argp, u32 nbytes)
 	 * guarantee p points to at least nbytes bytes.
 	 */
 	memcpy(p, argp->p, avail);
+<<<<<<< HEAD
 	next_decode_page(argp);
+=======
+	/* step to next page */
+	argp->pagelist++;
+	argp->p = page_address(argp->pagelist[0]);
+	if (argp->pagelen < PAGE_SIZE) {
+		argp->end = argp->p + (argp->pagelen>>2);
+		argp->pagelen = 0;
+	} else {
+		argp->end = argp->p + (PAGE_SIZE>>2);
+		argp->pagelen -= PAGE_SIZE;
+	}
+>>>>>>> p9x
 	memcpy(((char*)p)+avail, argp->p, (nbytes - avail));
 	argp->p += XDR_QUADLEN(nbytes - avail);
 	return p;
@@ -596,11 +609,28 @@ nfsd4_decode_create(struct nfsd4_compoundargs *argp, struct nfsd4_create *create
 	switch (create->cr_type) {
 	case NF4LNK:
 		READ_BUF(4);
+<<<<<<< HEAD
 		create->cr_datalen = be32_to_cpup(p++);
 		READ_BUF(create->cr_datalen);
 		create->cr_data = svcxdr_dupstr(argp, p, create->cr_datalen);
 		if (!create->cr_data)
 			return nfserr_jukebox;
+=======
+		READ32(create->cr_linklen);
+		READ_BUF(create->cr_linklen);
+		/*
+		 * The VFS will want a null-terminated string, and
+		 * null-terminating in place isn't safe since this might
+		 * end on a page boundary:
+		 */
+		create->cr_linkname =
+				kmalloc(create->cr_linklen + 1, GFP_KERNEL);
+		if (!create->cr_linkname)
+			return nfserr_jukebox;
+		memcpy(create->cr_linkname, p, create->cr_linklen);
+		create->cr_linkname[create->cr_linklen] = '\0';
+		defer_free(argp, kfree, create->cr_linkname);
+>>>>>>> p9x
 		break;
 	case NF4BLK:
 	case NF4CHR:
@@ -2531,6 +2561,7 @@ out_acl:
 			goto out;
 	}
 	if (bmval2 & FATTR4_WORD2_SUPPATTR_EXCLCREAT) {
+<<<<<<< HEAD
 		p = xdr_reserve_space(xdr, 16);
 		if (!p)
 			goto out_resource;
@@ -2538,6 +2569,14 @@ out_acl:
 		*p++ = cpu_to_be32(NFSD_SUPPATTR_EXCLCREAT_WORD0);
 		*p++ = cpu_to_be32(NFSD_SUPPATTR_EXCLCREAT_WORD1);
 		*p++ = cpu_to_be32(NFSD_SUPPATTR_EXCLCREAT_WORD2);
+=======
+		if ((buflen -= 16) < 0)
+			goto out_resource;
+		WRITE32(3);
+		WRITE32(NFSD_SUPPATTR_EXCLCREAT_WORD0);
+		WRITE32(NFSD_SUPPATTR_EXCLCREAT_WORD1);
+		WRITE32(NFSD_SUPPATTR_EXCLCREAT_WORD2);
+>>>>>>> p9x
 	}
 
 	attrlen = htonl(xdr->buf->len - attrlen_offset - 4);
@@ -3792,9 +3831,13 @@ nfsd4_encode_test_stateid(struct nfsd4_compoundres *resp, __be32 nfserr,
 	if (nfserr)
 		return nfserr;
 
+<<<<<<< HEAD
 	p = xdr_reserve_space(xdr, 4 + (4 * test_stateid->ts_num_ids));
 	if (!p)
 		return nfserr_resource;
+=======
+	RESERVE_SPACE(4 + (4 * test_stateid->ts_num_ids));
+>>>>>>> p9x
 	*p++ = htonl(test_stateid->ts_num_ids);
 
 	list_for_each_entry_safe(stateid, next, &test_stateid->ts_stateid_list, ts_id_list) {

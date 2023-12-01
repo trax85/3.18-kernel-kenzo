@@ -9,6 +9,7 @@
 #include <net/addrconf.h>
 #include <net/secure_seq.h>
 
+<<<<<<< HEAD
 /* This function exists only for tap drivers that must support broken
  * clients requesting UFO without specifying an IPv6 fragment ID.
  *
@@ -41,6 +42,8 @@ void ipv6_proxy_select_ident(struct sk_buff *skb)
 	skb_shinfo(skb)->ip6_frag_id = htonl(id);
 }
 EXPORT_SYMBOL_GPL(ipv6_proxy_select_ident);
+=======
+>>>>>>> p9x
 
 int ip6_find_1stfragopt(struct sk_buff *skb, u8 **nexthdr)
 {

@@ -147,6 +147,52 @@ void vtime_account_system(struct task_struct *tsk)
 __attribute__((alias("vtime_account_irq_enter")));
 EXPORT_SYMBOL_GPL(vtime_account_system);
 
+<<<<<<< HEAD
+=======
+void __kprobes vtime_stop_cpu(void)
+{
+	struct s390_idle_data *idle = &__get_cpu_var(s390_idle);
+	unsigned long long idle_time;
+	unsigned long psw_mask;
+
+	trace_hardirqs_on();
+
+	/* Wait for external, I/O or machine check interrupt. */
+	psw_mask = psw_kernel_bits | PSW_MASK_WAIT | PSW_MASK_DAT |
+		PSW_MASK_IO | PSW_MASK_EXT | PSW_MASK_MCHECK;
+	idle->nohz_delay = 0;
+
+	/* Call the assembler magic in entry.S */
+	psw_idle(idle, psw_mask);
+
+	/* Account time spent with enabled wait psw loaded as idle time. */
+	idle->sequence++;
+	smp_wmb();
+	idle_time = idle->clock_idle_exit - idle->clock_idle_enter;
+	idle->clock_idle_enter = idle->clock_idle_exit = 0ULL;
+	idle->idle_time += idle_time;
+	idle->idle_count++;
+	account_idle_time(idle_time);
+	smp_wmb();
+	idle->sequence++;
+}
+
+cputime64_t s390_get_idle_time(int cpu)
+{
+	struct s390_idle_data *idle = &per_cpu(s390_idle, cpu);
+	unsigned long long now, idle_enter, idle_exit;
+	unsigned int sequence;
+
+	do {
+		now = get_tod_clock();
+		sequence = ACCESS_ONCE(idle->sequence);
+		idle_enter = ACCESS_ONCE(idle->clock_idle_enter);
+		idle_exit = ACCESS_ONCE(idle->clock_idle_exit);
+	} while ((sequence & 1) || (ACCESS_ONCE(idle->sequence) != sequence));
+	return idle_enter ? ((idle_exit ?: now) - idle_enter) : 0;
+}
+
+>>>>>>> p9x
 /*
  * Sorted add to a list. List is linear searched until first bigger
  * element is found.

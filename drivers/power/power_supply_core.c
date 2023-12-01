@@ -4,6 +4,7 @@
  *  Copyright © 2007  Anton Vorontsov <cbou@mail.ru>
  *  Copyright © 2004  Szabolcs Gyurko
  *  Copyright © 2003  Ian Molton <spyro@f2s.com>
+ *  Copyright (C) 2016 XiaoMi, Inc.
  *
  *  Modified: 2004, Oct     Szabolcs Gyurko
  *
@@ -19,6 +20,7 @@
 #include <linux/err.h>
 #include <linux/power_supply.h>
 #include <linux/thermal.h>
+#include <linux/notifier.h>
 #include "power_supply.h"
 
 /* exported for the APM Power driver, APM emulation */
@@ -29,6 +31,20 @@ ATOMIC_NOTIFIER_HEAD(power_supply_notifier);
 EXPORT_SYMBOL_GPL(power_supply_notifier);
 
 static struct device_type power_supply_dev_type;
+
+static BLOCKING_NOTIFIER_HEAD(power_supply_chain);
+
+int register_power_supply_notifier(struct notifier_block *nb)
+{
+	return blocking_notifier_chain_register(&power_supply_chain, nb);
+}
+EXPORT_SYMBOL(register_power_supply_notifier);
+
+int unregister_power_supply_notifier(struct notifier_block *nb)
+{
+	return blocking_notifier_chain_unregister(&power_supply_chain, nb);
+}
+EXPORT_SYMBOL(unregister_power_supply_notifier);
 
 static bool __power_supply_is_supplied_by(struct power_supply *supplier,
 					 struct power_supply *supply)
@@ -308,6 +324,7 @@ static void power_supply_changed_work(struct work_struct *work)
 	dev_dbg(psy->dev, "%s\n", __func__);
 
 	spin_lock_irqsave(&psy->changed_lock, flags);
+<<<<<<< HEAD
 	/*
 	 * Check 'changed' here to avoid issues due to race between
 	 * power_supply_changed() and this routine. In worst case
@@ -333,6 +350,22 @@ static void power_supply_changed_work(struct work_struct *work)
 	 * to true.
 	 */
 	if (likely(!psy->changed))
+=======
+	if (psy->changed) {
+		psy->changed = false;
+		spin_unlock_irqrestore(&psy->changed_lock, flags);
+
+		class_for_each_device(power_supply_class, NULL, psy,
+				      __power_supply_changed_work);
+
+		power_supply_update_leds(psy);
+		blocking_notifier_call_chain(&power_supply_chain, 0, NULL);
+
+		kobject_uevent(&psy->dev->kobj, KOBJ_CHANGE);
+		spin_lock_irqsave(&psy->changed_lock, flags);
+	}
+	if (!psy->changed)
+>>>>>>> p9x
 		pm_relax(psy->dev);
 	spin_unlock_irqrestore(&psy->changed_lock, flags);
 }
@@ -849,6 +882,11 @@ static int __power_supply_register(struct device *parent,
 	if (rc)
 		goto device_add_failed;
 
+	spin_lock_init(&psy->changed_lock);
+	rc = device_init_wakeup(dev, true);
+	if (rc)
+		goto wakeup_init_failed;
+
 	rc = psy_register_thermal(psy);
 	if (rc)
 		goto register_thermal_failed;
@@ -870,6 +908,7 @@ create_triggers_failed:
 register_cooler_failed:
 	psy_unregister_thermal(psy);
 register_thermal_failed:
+wakeup_init_failed:
 	device_del(dev);
 device_add_failed:
 wakeup_init_failed:

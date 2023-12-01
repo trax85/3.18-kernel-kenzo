@@ -95,7 +95,11 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 
 	/* Print information relevant to grouping pages by mobility */
 	blocktype = get_pageblock_migratetype(page);
+<<<<<<< HEAD
 	pagetype  = gfpflags_to_migratetype(page->gfp_mask);
+=======
+	pagetype  = allocflags_to_migratetype(page->gfp_mask);
+>>>>>>> p9x
 	ret += snprintf(kbuf+ret, count-ret,
 			"PFN %lu Block %lu type %d %s "
 			"Flags %s%s%s%s%s%s%s%s%s%s%s%s\n",

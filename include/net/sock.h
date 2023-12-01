@@ -67,7 +67,10 @@
 #include <linux/atomic.h>
 #include <net/dst.h>
 #include <net/checksum.h>
+<<<<<<< HEAD
 #include <linux/net_tstamp.h>
+=======
+>>>>>>> p9x
 #include <net/tcp_states.h>
 
 struct cgroup;
@@ -241,7 +244,10 @@ struct cg_proto;
   *	@sk_ll_usec: usecs to busypoll when there is no data
   *	@sk_allocation: allocation mode
   *	@sk_pacing_rate: Pacing rate (if supported by transport/packet scheduler)
+<<<<<<< HEAD
   *	@sk_max_pacing_rate: Maximum pacing rate (%SO_MAX_PACING_RATE)
+=======
+>>>>>>> p9x
   *	@sk_sndbuf: size of send buffer in bytes
   *	@sk_flags: %SO_LINGER (l_onoff), %SO_BROADCAST, %SO_KEEPALIVE,
   *		   %SO_OOBINLINE settings, %SO_TIMESTAMPING settings
@@ -380,13 +386,17 @@ struct sock {
 				sk_no_check_rx : 1,
 				sk_userlocks : 4,
 				sk_protocol  : 8,
+#define SK_PROTOCOL_MAX U8_MAX
 				sk_type      : 16;
 #define SK_PROTOCOL_MAX U8_MAX
 	kmemcheck_bitfield_end(flags);
 	int			sk_wmem_queued;
 	gfp_t			sk_allocation;
 	u32			sk_pacing_rate; /* bytes per second */
+<<<<<<< HEAD
 	u32			sk_max_pacing_rate;
+=======
+>>>>>>> p9x
 	netdev_features_t	sk_route_caps;
 	netdev_features_t	sk_route_nocaps;
 	int			sk_gso_type;
@@ -1434,8 +1444,13 @@ static inline struct inode *SOCK_INODE(struct socket *socket)
 /*
  * Functions for memory accounting
  */
+<<<<<<< HEAD
 int __sk_mem_schedule(struct sock *sk, int size, int kind);
 void __sk_mem_reclaim(struct sock *sk);
+=======
+extern int __sk_mem_schedule(struct sock *sk, int size, int kind);
+void __sk_mem_reclaim(struct sock *sk, int amount);
+>>>>>>> p9x
 
 #define SK_MEM_QUANTUM ((int)PAGE_SIZE)
 #define SK_MEM_QUANTUM_SHIFT ilog2(SK_MEM_QUANTUM)
@@ -1476,7 +1491,7 @@ static inline void sk_mem_reclaim(struct sock *sk)
 	if (!sk_has_account(sk))
 		return;
 	if (sk->sk_forward_alloc >= SK_MEM_QUANTUM)
-		__sk_mem_reclaim(sk);
+		__sk_mem_reclaim(sk, sk->sk_forward_alloc);
 }
 
 static inline void sk_mem_reclaim_partial(struct sock *sk)
@@ -1484,7 +1499,7 @@ static inline void sk_mem_reclaim_partial(struct sock *sk)
 	if (!sk_has_account(sk))
 		return;
 	if (sk->sk_forward_alloc > SK_MEM_QUANTUM)
-		__sk_mem_reclaim(sk);
+		__sk_mem_reclaim(sk, sk->sk_forward_alloc - 1);
 }
 
 static inline void sk_mem_charge(struct sock *sk, int size)
@@ -1499,6 +1514,16 @@ static inline void sk_mem_uncharge(struct sock *sk, int size)
 	if (!sk_has_account(sk))
 		return;
 	sk->sk_forward_alloc += size;
+
+	/* Avoid a possible overflow.
+	 * TCP send queues can make this happen, if sk_mem_reclaim()
+	 * is not called and more than 2 GBytes are released at once.
+	 *
+	 * If we reach 2 MBytes, reclaim 1 MBytes right now, there is
+	 * no need to hold that much forward allocation anyway.
+	 */
+	if (unlikely(sk->sk_forward_alloc >= 1 << 21))
+		__sk_mem_reclaim(sk, 1 << 20);
 }
 
 static inline void sk_wmem_free_skb(struct sock *sk, struct sk_buff *skb)
@@ -1755,6 +1780,11 @@ static inline void sock_graft(struct sock *sk, struct socket *parent)
 
 kuid_t sock_i_uid(struct sock *sk);
 unsigned long sock_i_ino(struct sock *sk);
+
+static inline kuid_t sock_net_uid(const struct net *net, const struct sock *sk)
+{
+	return sk ? sk->sk_uid : make_kuid(net->user_ns, 0);
+}
 
 static inline kuid_t sock_net_uid(const struct net *net, const struct sock *sk)
 {
@@ -2334,11 +2364,22 @@ static inline bool sk_fullsock(const struct sock *sk)
 	return (1 << sk->sk_state) & ~(TCPF_TIME_WAIT);
 }
 
+<<<<<<< HEAD
 void sock_enable_timestamp(struct sock *sk, int flag);
 int sock_get_timestamp(struct sock *, struct timeval __user *);
 int sock_get_timestampns(struct sock *, struct timespec __user *);
 int sock_recv_errqueue(struct sock *sk, struct msghdr *msg, int len, int level,
 		       int type);
+
+bool sk_ns_capable(const struct sock *sk,
+		   struct user_namespace *user_ns, int cap);
+bool sk_capable(const struct sock *sk, int cap);
+bool sk_net_capable(const struct sock *sk, int cap);
+=======
+extern void sock_enable_timestamp(struct sock *sk, int flag);
+extern int sock_get_timestamp(struct sock *, struct timeval __user *);
+extern int sock_get_timestampns(struct sock *, struct timespec __user *);
+>>>>>>> p9x
 
 bool sk_ns_capable(const struct sock *sk,
 		   struct user_namespace *user_ns, int cap);

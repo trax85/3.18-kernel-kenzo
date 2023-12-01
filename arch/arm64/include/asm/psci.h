@@ -16,6 +16,7 @@
 
 int psci_init(void);
 
+<<<<<<< HEAD
 struct psci_power_state {
 	u16	id;
 	u8	type;
@@ -36,4 +37,6 @@ struct psci_operations {
 
 extern struct psci_operations psci_ops;
 
+=======
+>>>>>>> p9x
 #endif /* __ASM_PSCI_H */

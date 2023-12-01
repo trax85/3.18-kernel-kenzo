@@ -17,13 +17,19 @@
 #include <linux/clk.h>
 #include <linux/list.h>
 #include <linux/regulator/consumer.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
 #include <linux/idr.h>
+=======
+>>>>>>> p9x
 #include <soc/qcom/socinfo.h>
 
 extern pgprot_t     pgprot_kernel;
 extern struct bus_type msm_iommu_sec_bus_type;
+<<<<<<< HEAD
 extern struct bus_type *msm_iommu_non_sec_bus_type;
+=======
+>>>>>>> p9x
 extern struct iommu_access_ops iommu_access_ops_v0;
 extern struct iommu_access_ops iommu_access_ops_v1;
 
@@ -138,7 +144,10 @@ struct msm_iommu_drvdata {
 	int needs_rem_spinlock;
 	int powered_on;
 	unsigned int model;
+<<<<<<< HEAD
 	struct idr asid_idr;
+=======
+>>>>>>> p9x
 };
 
 /**
@@ -186,7 +195,10 @@ void iommu_resume(const struct msm_iommu_drvdata *iommu_drvdata);
  * @asid		ASID used with this context.
  * @attach_count	Number of time this context has been attached.
  * @report_error_on_fault - true if error is returned back to master
+<<<<<<< HEAD
  * @dynamic		true if any dynamic domain is ever attached to this CB
+=======
+>>>>>>> p9x
  *
  * A msm_iommu_ctx_drvdata holds the driver data for a single context bank
  * within each IOMMU hardware instance
@@ -205,8 +217,11 @@ struct msm_iommu_ctx_drvdata {
 	u32 sid_mask[MAX_NUM_SMR];
 	unsigned int n_sid_mask;
 	bool report_error_on_fault;
+<<<<<<< HEAD
 	unsigned int prefetch_depth;
 	bool dynamic;
+=======
+>>>>>>> p9x
 };
 
 enum dump_reg {
@@ -336,14 +351,18 @@ void msm_iommu_remote_p0_spin_unlock(unsigned int need_lock);
  * their platform devices.
  */
 struct device *msm_iommu_get_ctx(const char *ctx_name);
+<<<<<<< HEAD
 struct bus_type *msm_iommu_get_bus(struct device *dev);
 int msm_iommu_bus_register(void);
 void msm_access_control(void);
+=======
+>>>>>>> p9x
 #else
 static inline struct device *msm_iommu_get_ctx(const char *ctx_name)
 {
 	return NULL;
 }
+<<<<<<< HEAD
 
 static inline struct bus_type *msm_iommu_get_bus(struct device *dev)
 {
@@ -353,6 +372,8 @@ static inline struct bus_type *msm_iommu_get_bus(struct device *dev)
 static inline void msm_access_control(void)
 {
 }
+=======
+>>>>>>> p9x
 #endif
 
 /*

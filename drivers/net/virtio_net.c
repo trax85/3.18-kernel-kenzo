@@ -320,6 +320,7 @@ static struct sk_buff *page_to_skb(struct receive_queue *rq,
 static struct sk_buff *receive_small(void *buf, unsigned int len)
 {
 	struct sk_buff * skb = buf;
+<<<<<<< HEAD
 
 	len -= sizeof(struct virtio_net_hdr);
 	skb_trim(skb, len);
@@ -370,6 +371,58 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
 		if (unlikely(!ctx)) {
 			pr_debug("%s: rx error: %d buffers out of %d missing\n",
 				 dev->name, num_buf, hdr->mhdr.num_buffers);
+=======
+
+	len -= sizeof(struct virtio_net_hdr);
+	skb_trim(skb, len);
+
+	return skb;
+}
+
+static struct sk_buff *receive_big(struct net_device *dev,
+				   struct receive_queue *rq,
+				   void *buf)
+{
+	struct page *page = buf;
+	struct sk_buff *skb = page_to_skb(rq, page, 0);
+
+	if (unlikely(!skb))
+		goto err;
+
+	return skb;
+
+err:
+	dev->stats.rx_dropped++;
+	give_pages(rq, page);
+	return NULL;
+}
+
+static struct sk_buff *receive_mergeable(struct net_device *dev,
+					 struct receive_queue *rq,
+					 void *buf,
+					 unsigned int len)
+{
+	struct skb_vnet_hdr *hdr = page_address(buf);
+	int num_buf = hdr->mhdr.num_buffers;
+	struct page *page = buf;
+	struct sk_buff *skb = page_to_skb(rq, page, len);
+	int i;
+
+	if (unlikely(!skb))
+		goto err_skb;
+
+	while (--num_buf) {
+		i = skb_shinfo(skb)->nr_frags;
+		if (i >= MAX_SKB_FRAGS) {
+			pr_debug("%s: packet too long\n", skb->dev->name);
+			skb->dev->stats.rx_length_errors++;
+			goto err_frags;
+		}
+		page = virtqueue_get_buf(rq->vq, &len);
+		if (!page) {
+			pr_debug("%s: rx error: %d buffers %d missing\n",
+				 dev->name, hdr->mhdr.num_buffers, num_buf);
+>>>>>>> p9x
 			dev->stats.rx_length_errors++;
 			goto err_buf;
 		}
@@ -407,6 +460,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
 					offset, len, truesize);
 		}
 	}
+<<<<<<< HEAD
 
 	ewma_add(&rq->mrg_avg_pkt_len, head_skb->len);
 	return head_skb;
@@ -416,17 +470,36 @@ err_skb:
 	while (--num_buf) {
 		ctx = (unsigned long)virtqueue_get_buf(rq->vq, &len);
 		if (unlikely(!ctx)) {
+=======
+	return skb;
+err_skb:
+	give_pages(rq, page);
+	while (--num_buf) {
+err_frags:
+		buf = virtqueue_get_buf(rq->vq, &len);
+		if (unlikely(!buf)) {
+>>>>>>> p9x
 			pr_debug("%s: rx error: %d buffers missing\n",
 				 dev->name, num_buf);
 			dev->stats.rx_length_errors++;
 			break;
 		}
+<<<<<<< HEAD
 		page = virt_to_head_page(mergeable_ctx_to_buf_address(ctx));
 		put_page(page);
 	}
 err_buf:
 	dev->stats.rx_dropped++;
 	dev_kfree_skb(head_skb);
+=======
+		page = buf;
+		give_pages(rq, page);
+		--rq->num;
+	}
+err_buf:
+	dev->stats.rx_dropped++;
+	dev_kfree_skb(skb);
+>>>>>>> p9x
 	return NULL;
 }
 
@@ -452,7 +525,14 @@ static void receive_buf(struct receive_queue *rq, void *buf, unsigned int len)
 		}
 		return;
 	}
+	if (vi->mergeable_rx_bufs)
+		skb = receive_mergeable(dev, rq, buf, len);
+	else if (vi->big_packets)
+		skb = receive_big(dev, rq, buf);
+	else
+		skb = receive_small(buf, len);
 
+<<<<<<< HEAD
 	if (vi->mergeable_rx_bufs)
 		skb = receive_mergeable(dev, rq, (unsigned long)buf, len);
 	else if (vi->big_packets)
@@ -460,6 +540,8 @@ static void receive_buf(struct receive_queue *rq, void *buf, unsigned int len)
 	else
 		skb = receive_small(buf, len);
 
+=======
+>>>>>>> p9x
 	if (unlikely(!skb))
 		return;
 
@@ -741,8 +823,13 @@ static void refill_work(struct work_struct *work)
 static int virtnet_receive(struct receive_queue *rq, int budget)
 {
 	struct virtnet_info *vi = rq->vq->vdev->priv;
+<<<<<<< HEAD
 	unsigned int len, received = 0;
 	void *buf;
+=======
+	void *buf;
+	unsigned int r, len, received = 0;
+>>>>>>> p9x
 
 	while (received < budget &&
 	       (buf = virtqueue_get_buf(rq->vq, &len)) != NULL) {
@@ -1462,10 +1549,15 @@ static void virtnet_free_queues(struct virtnet_info *vi)
 {
 	int i;
 
+<<<<<<< HEAD
 	for (i = 0; i < vi->max_queue_pairs; i++) {
 		napi_hash_del(&vi->rq[i].napi);
 		netif_napi_del(&vi->rq[i].napi);
 	}
+=======
+	for (i = 0; i < vi->max_queue_pairs; i++)
+		netif_napi_del(&vi->rq[i].napi);
+>>>>>>> p9x
 
 	kfree(vi->rq);
 	kfree(vi->sq);
@@ -1811,7 +1903,8 @@ static int virtnet_probe(struct virtio_device *vdev)
 	/* If we can receive ANY GSO packets, we must allocate large ones. */
 	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
 	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6) ||
-	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_ECN))
+	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_ECN) ||
+	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_UFO))
 		vi->big_packets = true;
 
 	if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
@@ -1944,8 +2037,15 @@ static int virtnet_freeze(struct virtio_device *vdev)
 
 	unregister_hotcpu_notifier(&vi->nb);
 
+<<<<<<< HEAD
 	/* Make sure no work handler is accessing the device */
 	flush_work(&vi->config_work);
+=======
+	/* Prevent config work handler from accessing the device */
+	mutex_lock(&vi->config_lock);
+	vi->config_enable = false;
+	mutex_unlock(&vi->config_lock);
+>>>>>>> p9x
 
 	netif_device_detach(vi->dev);
 	cancel_delayed_work_sync(&vi->refill);
@@ -1969,8 +2069,11 @@ static int virtnet_restore(struct virtio_device *vdev)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	virtio_device_ready(vdev);
 
+=======
+>>>>>>> p9x
 	if (netif_running(vi->dev)) {
 		for (i = 0; i < vi->curr_queue_pairs; i++)
 			if (!try_fill_recv(&vi->rq[i], GFP_KERNEL))
@@ -1982,6 +2085,13 @@ static int virtnet_restore(struct virtio_device *vdev)
 
 	netif_device_attach(vi->dev);
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&vi->config_lock);
+	vi->config_enable = true;
+	mutex_unlock(&vi->config_lock);
+
+>>>>>>> p9x
 	rtnl_lock();
 	virtnet_set_queues(vi, vi->curr_queue_pairs);
 	rtnl_unlock();

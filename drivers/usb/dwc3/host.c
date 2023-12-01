@@ -19,13 +19,18 @@
 #include <linux/usb/xhci_pdriver.h>
 
 #include "core.h"
+#include "xhci.h"
 
 int dwc3_host_init(struct dwc3 *dwc)
 {
 	struct platform_device	*xhci;
 	struct usb_xhci_pdata	pdata;
 	int			ret;
+<<<<<<< HEAD
 	struct device_node	*node = dwc->dev->of_node;
+=======
+	struct xhci_plat_data	pdata;
+>>>>>>> p9x
 
 	xhci = platform_device_alloc("xhci-hcd", PLATFORM_DEVID_AUTO);
 	if (!xhci) {
@@ -41,6 +46,16 @@ int dwc3_host_init(struct dwc3 *dwc)
 	xhci->dev.dma_parms	= dwc->dev->dma_parms;
 
 	dwc->xhci = xhci;
+	pdata.vendor = ((dwc->revision & DWC3_GSNPSID_MASK) >>
+			__ffs(DWC3_GSNPSID_MASK) & DWC3_GSNPSREV_MASK);
+	pdata.revision = dwc->revision & DWC3_GSNPSREV_MASK;
+
+	ret = platform_device_add_data(xhci, (const void *) &pdata,
+			sizeof(struct xhci_plat_data));
+	if (ret) {
+		dev_err(dwc->dev, "couldn't add pdata to xHCI device\n");
+		goto err1;
+	}
 
 	ret = platform_device_add_resources(xhci, dwc->xhci_resources,
 						DWC3_XHCI_RESOURCES_NUM);
@@ -49,6 +64,7 @@ int dwc3_host_init(struct dwc3 *dwc)
 		goto err1;
 	}
 
+<<<<<<< HEAD
 	memset(&pdata, 0, sizeof(pdata));
 
 #ifdef CONFIG_DWC3_HOST_USB3_LPM_ENABLE
@@ -63,6 +79,15 @@ int dwc3_host_init(struct dwc3 *dwc)
 	if (ret) {
 		dev_err(dwc->dev, "couldn't add platform data to xHCI device\n");
 		goto err1;
+=======
+	/* Add XHCI device if !OTG, otherwise OTG takes care of this */
+	if (!dwc->dotg) {
+		ret = platform_device_add(xhci);
+		if (ret) {
+			dev_err(dwc->dev, "failed to register xHCI device\n");
+			goto err1;
+		}
+>>>>>>> p9x
 	}
 
 	/* Platform device gets added as part of state machine */
@@ -77,6 +102,10 @@ err0:
 
 void dwc3_host_exit(struct dwc3 *dwc)
 {
+<<<<<<< HEAD
 	if (!dwc->is_drd)
+=======
+	if (!dwc->dotg)
+>>>>>>> p9x
 		platform_device_unregister(dwc->xhci);
 }

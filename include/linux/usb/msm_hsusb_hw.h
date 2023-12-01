@@ -84,7 +84,10 @@
 
 #define GENCONFIG_BAM_DISABLE (1 << 13)
 #define GENCONFIG_TXFIFO_IDLE_FORCE_DISABLE (1 << 4)
+<<<<<<< HEAD
 #define GENCONFIG_ULPI_SERIAL_EN (1 << 5)
+=======
+>>>>>>> p9x
 
 /* synopsys 28nm phy registers */
 #define ULPI_PWR_CLK_MNG_REG	0x88
@@ -95,6 +98,10 @@
 #define ULPI_MISC_A_VBUSVLDEXT		BIT(0)
 #define ULPI_MISC_A_VBUSVLDEXTSEL	BIT(1)
 
+<<<<<<< HEAD
+=======
+#define PHY_ALT_INT		(1 << 28) /* PHY alternate interrupt */
+>>>>>>> p9x
 #define ASYNC_INTR_CTRL         (1 << 29) /* Enable async interrupt */
 #define ULPI_STP_CTRL           (1 << 30) /* Block communication with PHY */
 #define PHY_RETEN               (1 << 1) /* PHY retention enable/disable */
@@ -104,6 +111,13 @@
 #define PHY_POR_BIT_MASK	BIT(0)
 #define PHY_POR_ASSERT		(1 << 0) /* USB2 28nm PHY POR ASSERT */
 #define PHY_POR_DEASSERT	(0 << 0) /* USB2 28nm PHY POR DEASSERT */
+<<<<<<< HEAD
+=======
+
+#define STS_PCI                 (1 << 2) /* R/WC - Port Change Detect */
+#define STS_URI                 (1 << 6) /* R/WC - RESET recv'd */
+#define STS_SLI                 (1 << 8) /* R/WC - suspend state entered */
+>>>>>>> p9x
 
 /* OTG definitions */
 #define OTGSC_INTSTS_MASK	(0x7f << 16)
@@ -116,6 +130,42 @@
 #define OTGSC_BSVIS		(1 << 19)
 #define OTGSC_IDIE		(1 << 24)
 #define OTGSC_BSVIE		(1 << 27)
+#define OTGSC_DPIE		(1 << 30)
+#define OTGSC_DPIS		(1 << 22)
+
+/* OTG interrupt status mask */
+#define OTG_USBSTS_MASK		(STS_PCI | STS_URI | STS_SLI | PHY_ALT_INT)
+#define OTG_OTGSTS_MASK		(OTGSC_IDIS | OTGSC_BSVIS | OTGSC_DPIS)
+
+
+/* USB PHY CSR registers and bit definitions */
+
+#define USB_PHY_CSR_PHY_CTRL_COMMON0 (MSM_USB_PHY_CSR_BASE + 0x078)
+#define SIDDQ BIT(2)
+
+#define USB_PHY_CSR_PHY_CTRL1 (MSM_USB_PHY_CSR_BASE + 0x08C)
+#define ID_HV_CLAMP_EN_N BIT(1)
+
+#define USB_PHY_CSR_PHY_CTRL3 (MSM_USB_PHY_CSR_BASE + 0x094)
+#define CLAMP_MPM_DPSE_DMSE_EN_N BIT(2)
+
+#define USB2_PHY_USB_PHY_IRQ_CMD (MSM_USB_PHY_CSR_BASE + 0x0D0)
+#define USB2_PHY_USB_PHY_INTERRUPT_SRC_STATUS (MSM_USB_PHY_CSR_BASE + 0x05C)
+
+#define USB2_PHY_USB_PHY_INTERRUPT_STATUS0 (MSM_USB_PHY_CSR_BASE + 0x03C)
+#define USB2_PHY_USB_PHY_INTERRUPT_STATUS1 (MSM_USB_PHY_CSR_BASE + 0x040)
+
+#define USB2_PHY_USB_PHY_INTERRUPT_CLEAR0 (MSM_USB_PHY_CSR_BASE + 0x0DC)
+#define USB2_PHY_USB_PHY_INTERRUPT_CLEAR1 (MSM_USB_PHY_CSR_BASE + 0x0E0)
+
+#define USB2_PHY_USB_PHY_INTERRUPT_MASK0 (MSM_USB_PHY_CSR_BASE + 0x0D4)
+#define USB2_PHY_USB_PHY_INTERRUPT_MASK1 (MSM_USB_PHY_CSR_BASE + 0x0D8)
+
+#define USB_PHY_IDDIG_1_0 BIT(7)
+
+#define USB_PHY_IDDIG_RISE_MASK BIT(0)
+#define USB_PHY_IDDIG_FALL_MASK BIT(1)
+#define USB_PHY_ID_MASK (USB_PHY_IDDIG_RISE_MASK | USB_PHY_IDDIG_FALL_MASK)
 
 /* USB PHY CSR registers and bit definitions */
 

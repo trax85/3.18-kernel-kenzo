@@ -243,7 +243,13 @@ acpi_ut_check_address_range(acpi_adr_space_type space_id,
 								  region_node);
 
 				ACPI_WARNING((AE_INFO,
+<<<<<<< HEAD
 					      "%s range 0x%8.8X%8.8X-0x%8.8X%8.8X conflicts with OpRegion 0x%8.8X%8.8X-0x%8.8X%8.8X (%s)",
+=======
+					      "0x%8.8X%8.8X-0x%8.8X%8.8X %s conflicts with Region %s %d",
+					      ACPI_FORMAT_UINT64(address),
+					      ACPI_FORMAT_UINT64(end_address),
+>>>>>>> p9x
 					      acpi_ut_get_region_name(space_id),
 					      ACPI_FORMAT_UINT64(address),
 					      ACPI_FORMAT_UINT64(end_address),

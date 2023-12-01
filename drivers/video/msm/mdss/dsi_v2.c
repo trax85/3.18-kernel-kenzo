@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2015, 2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -185,8 +189,12 @@ static int dsi_event_handler(struct mdss_panel_data *pdata,
 		rc = dsi_splash_on(pdata);
 		break;
 	case MDSS_EVENT_PANEL_CLK_CTRL:
+<<<<<<< HEAD
 		rc = dsi_clk_ctrl(pdata,
 			(int)(((struct dsi_panel_clk_ctrl *)arg)->state));
+=======
+		rc = dsi_clk_ctrl(pdata, (int)arg);
+>>>>>>> p9x
 		break;
 	case MDSS_EVENT_DSI_UPDATE_PANEL_DATA:
 		rc = dsi_update_pconfig(pdata, (int)(unsigned long) arg);
@@ -334,7 +342,11 @@ static int mdss_dsi_get_dt_vreg_data(struct device *dev,
 				__func__, rc);
 			goto error;
 		}
+<<<<<<< HEAD
 		mp->vreg_config[i].load[DSS_REG_MODE_ENABLE] = tmp;
+=======
+		mp->vreg_config[i].enable_load = tmp;
+>>>>>>> p9x
 
 		/* disable-load */
 		rc = of_property_read_u32(supply_node,
@@ -344,6 +356,7 @@ static int mdss_dsi_get_dt_vreg_data(struct device *dev,
 				__func__, rc);
 			goto error;
 		}
+<<<<<<< HEAD
 		mp->vreg_config[i].load[DSS_REG_MODE_DISABLE] = tmp;
 
 		/* ulp-load */
@@ -355,6 +368,9 @@ static int mdss_dsi_get_dt_vreg_data(struct device *dev,
 
 		mp->vreg_config[i].load[DSS_REG_MODE_ULP] = (!rc ? tmp :
 			mp->vreg_config[i].load[DSS_REG_MODE_ENABLE]);
+=======
+		mp->vreg_config[i].disable_load = tmp;
+>>>>>>> p9x
 
 		/* pre-sleep */
 		rc = of_property_read_u32(supply_node,
@@ -398,14 +414,23 @@ static int mdss_dsi_get_dt_vreg_data(struct device *dev,
 			mp->vreg_config[i].post_off_sleep = tmp;
 		}
 
+<<<<<<< HEAD
 		pr_debug("%s: %s min=%d, max=%d, enable=%d, disable=%d, ulp=%d, preonsleep=%d, postonsleep=%d, preoffsleep=%d, postoffsleep=%d\n",
+=======
+		pr_debug("%s: %s min=%d, max=%d, enable=%d, disable=%d, preonsleep=%d, postonsleep=%d, preoffsleep=%d, postoffsleep=%d\n",
+>>>>>>> p9x
 			__func__,
 			mp->vreg_config[i].vreg_name,
 			mp->vreg_config[i].min_voltage,
 			mp->vreg_config[i].max_voltage,
+<<<<<<< HEAD
 			mp->vreg_config[i].load[DSS_REG_MODE_ENABLE]
 			mp->vreg_config[i].load[DSS_REG_MODE_DISABLE]
 			mp->vreg_config[i].load[DSS_REG_MODE_ULP]
+=======
+			mp->vreg_config[i].enable_load,
+			mp->vreg_config[i].disable_load,
+>>>>>>> p9x
 			mp->vreg_config[i].pre_on_sleep,
 			mp->vreg_config[i].post_on_sleep,
 			mp->vreg_config[i].pre_off_sleep,
@@ -523,6 +548,10 @@ int dsi_panel_device_register_v2(struct platform_device *dev,
 	u8 lanes = 0, bpp;
 	u32 h_period, v_period;
 	struct mdss_panel_info *pinfo = &(ctrl_pdata->panel_data.panel_info);
+<<<<<<< HEAD
+=======
+	struct device_node *fb_node;
+>>>>>>> p9x
 
 	h_period = ((pinfo->lcdc.h_pulse_width)
 			+ (pinfo->lcdc.h_back_porch)
@@ -578,10 +607,23 @@ int dsi_panel_device_register_v2(struct platform_device *dev,
 
 	ctrl_pdata->panel_data.event_handler = dsi_event_handler;
 
+<<<<<<< HEAD
 	/*
 	 * register in mdp driver
 	 */
 	rc = mdss_register_panel(dev, &(ctrl_pdata->panel_data));
+=======
+	fb_node = of_parse_phandle(dev->dev.of_node, "qcom,mdss-fb-map", 0);
+	if (!fb_node) {
+		pr_err("Unable to find fb node for device: %s\n", dev->name);
+		return -ENODEV;
+	}
+
+	/*
+	 * register in mdp driver
+	 */
+	rc = mdss_register_panel(dev, &(ctrl_pdata->panel_data), fb_node);
+>>>>>>> p9x
 	if (rc) {
 		dev_err(&dev->dev, "unable to register MIPI DSI panel\n");
 		return rc;

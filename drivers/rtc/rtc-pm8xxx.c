@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -28,6 +28,7 @@
 /* RTC_CTRL register bit fields */
 #define PM8xxx_RTC_ENABLE		BIT(7)
 #define PM8xxx_RTC_ALARM_CLEAR		BIT(0)
+#define PM8xxx_RTC_ABORT_ENABLE		BIT(0)
 
 #define NUM_8_BIT_RTC_REGS		0x4
 
@@ -469,9 +470,41 @@ static int pm8xxx_rtc_probe(struct platform_device *pdev)
 	rtc_dd->regs = match->data;
 	rtc_dd->rtc_dev = &pdev->dev;
 
+<<<<<<< HEAD
 	rc = pm8xxx_rtc_enable(rtc_dd);
 	if (rc)
 		return rc;
+=======
+	/* Check if the RTC is on, else turn it on */
+	rc = pm8xxx_read_wrapper(rtc_dd, &ctrl_reg, rtc_dd->rtc_base, 1);
+	if (rc < 0) {
+		dev_err(&pdev->dev, "RTC control register read failed!\n");
+		goto fail_rtc_enable;
+	}
+
+	if (!(ctrl_reg & PM8xxx_RTC_ENABLE)) {
+		ctrl_reg |= PM8xxx_RTC_ENABLE;
+		rc = pm8xxx_write_wrapper(rtc_dd, &ctrl_reg, rtc_dd->rtc_base,
+									1);
+		if (rc < 0) {
+			dev_err(&pdev->dev, "Write to RTC control register "
+								"failed\n");
+			goto fail_rtc_enable;
+		}
+	}
+
+	/* Enable abort enable feature */
+	ctrl_reg |= PM8xxx_RTC_ABORT_ENABLE;
+	rc = pm8xxx_write_wrapper(rtc_dd, &ctrl_reg, rtc_dd->rtc_base, 1);
+	if (rc < 0) {
+		dev_err(&pdev->dev, "PM8xxx write failed!\n");
+		goto fail_rtc_enable;
+	}
+
+	rtc_dd->ctrl_reg = ctrl_reg;
+	if (rtc_write_enable == true)
+		pm8xxx_rtc_ops.set_time = pm8xxx_rtc_set_time;
+>>>>>>> p9x
 
 	platform_set_drvdata(pdev, rtc_dd);
 
@@ -527,8 +560,51 @@ static SIMPLE_DEV_PM_OPS(pm8xxx_rtc_pm_ops,
 			 pm8xxx_rtc_suspend,
 			 pm8xxx_rtc_resume);
 
+static void pm8xxx_rtc_shutdown(struct platform_device *pdev)
+{
+	u8 value[4] = {0, 0, 0, 0};
+	u8 reg;
+	int rc;
+	unsigned long irq_flags;
+	bool rtc_alarm_powerup = false;
+	struct pm8xxx_rtc *rtc_dd = platform_get_drvdata(pdev);
+	struct pm8xxx_rtc_platform_data *pdata = pdev->dev.platform_data;
+
+	if (pdata != NULL)
+		rtc_alarm_powerup =  pdata->rtc_alarm_powerup;
+
+	if (!rtc_alarm_powerup) {
+
+		spin_lock_irqsave(&rtc_dd->ctrl_reg_lock, irq_flags);
+		dev_dbg(&pdev->dev, "Disabling alarm interrupts\n");
+
+		/* Disable RTC alarms */
+		reg = rtc_dd->ctrl_reg;
+		reg &= ~PM8xxx_RTC_ALARM_ENABLE;
+		rc = pm8xxx_write_wrapper(rtc_dd, &reg, rtc_dd->rtc_base, 1);
+		if (rc < 0) {
+			dev_err(rtc_dd->rtc_dev, "Disabling alarm failed\n");
+			goto fail_alarm_disable;
+		}
+
+		/* Clear Alarm register */
+		rc = pm8xxx_write_wrapper(rtc_dd, value,
+				rtc_dd->alarm_rw_base, NUM_8_BIT_RTC_REGS);
+		if (rc < 0)
+			dev_err(rtc_dd->rtc_dev, "Clearing alarm failed\n");
+
+fail_alarm_disable:
+		spin_unlock_irqrestore(&rtc_dd->ctrl_reg_lock, irq_flags);
+	}
+}
+
 static struct platform_driver pm8xxx_rtc_driver = {
 	.probe		= pm8xxx_rtc_probe,
+<<<<<<< HEAD
+=======
+	.remove		= pm8xxx_rtc_remove,
+	.shutdown	= pm8xxx_rtc_shutdown,
+>>>>>>> p9x
 	.driver	= {
 		.name		= "rtc-pm8xxx",
 		.owner		= THIS_MODULE,

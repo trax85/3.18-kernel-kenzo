@@ -77,6 +77,7 @@ static int usb_serial_device_probe(struct device *dev)
 	if (retval) {
 		if (driver->port_remove)
 			driver->port_remove(port);
+<<<<<<< HEAD
 		goto exit_with_autopm;
 	}
 
@@ -87,6 +88,8 @@ static int usb_serial_device_probe(struct device *dev)
 		device_remove_file(dev, &dev_attr_port_number);
 		if (driver->port_remove)
 			driver->port_remove(port);
+=======
+>>>>>>> p9x
 		goto exit_with_autopm;
 	}
 

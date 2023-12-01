@@ -18,4 +18,12 @@ struct ds2482_platform_data {
 	int		slpz_gpio;
 };
 
+<<<<<<<< HEAD:include/linux/platform_data/ds2482.h
 #endif /* __PLATFORM_DATA_DS2482__ */
+========
+#ifdef CONFIG_HAVE_ARCH_HAS_CURRENT_TIMER
+#define ARCH_HAS_READ_CURRENT_TIMER
+#endif
+
+#endif
+>>>>>>>> p9x:arch/arm/mach-msm/include/mach/timex.h

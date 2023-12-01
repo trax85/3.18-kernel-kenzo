@@ -45,6 +45,7 @@ config OMAP_INTERCONNECT
 
 config ARM_CCI
 	bool "ARM CCI driver support"
+<<<<<<< HEAD
 	depends on ARM && OF && CPU_V7
 	help
 	  Driver supporting the CCI cache coherent interconnect for ARM
@@ -67,4 +68,10 @@ config VEXPRESS_CONFIG
 	help
 	  Platform configuration infrastructure for the ARM Ltd.
 	  Versatile Express.
+=======
+	depends on ARM64
+	help
+	  Driver supporting the CCI cache coherent interconnect for ARM
+	  platforms.
+>>>>>>> p9x
 endmenu

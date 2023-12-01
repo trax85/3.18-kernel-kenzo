@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -15,6 +19,7 @@
 #ifndef __MSM_SECURE_BUFFER_H__
 #define __MSM_SECURE_BUFFER_H__
 
+<<<<<<< HEAD
 #include <linux/scatterlist.h>
 
 /*
@@ -67,10 +72,36 @@ static inline int msm_unsecure_table(struct sg_table *table)
 	return -ENOSYS;
 }
 static inline int hyp_assign_table(struct sg_table *table,
+=======
+
+#define VMID_HLOS 0x3
+#define VMID_CP_TOUCH 0x8
+#define VMID_CP_BITSTREAM 0x9
+#define VMID_CP_PIXEL 0xA
+#define VMID_CP_NON_PIXEL 0xB
+#define VMID_CP_CAMERA 0xD
+#define VMID_HLOS_FREE 0xE
+#define VMID_MSS_NONMSA 0x10
+#define VMID_INVAL -1
+
+#define PERM_READ                       0x4
+#define PERM_WRITE                      0x2
+
+static inline int msm_secure_table(struct sg_table *table)
+{
+	return -EINVAL;
+}
+static inline int msm_unsecure_table(struct sg_table *table)
+{
+	return -EINVAL;
+}
+int hyp_assign_table(struct sg_table *table,
+>>>>>>> p9x
 			u32 *source_vm_list, int source_nelems,
 			int *dest_vmids, int *dest_perms,
 			int dest_nelems)
 {
+<<<<<<< HEAD
 	return -ENOSYS;
 }
 static inline int hyp_assign_phys(phys_addr_t addr, u64 size,
@@ -78,14 +109,26 @@ static inline int hyp_assign_phys(phys_addr_t addr, u64 size,
 			int *dest_vmids, int *dest_perms, int dest_nelems)
 {
 	return -ENOSYS;
+=======
+	return -EINVAL;
+}
+int hyp_assign_phys(phys_addr_t addr, u64 size,
+			int *dest_vmids, int *dest_perms,
+			int dest_nelems)
+{
+	return -EINVAL;
+>>>>>>> p9x
 }
 static inline bool msm_secure_v2_is_supported(void)
 {
 	return false;
 }
+<<<<<<< HEAD
 static inline const char *msm_secure_vmid_to_string(int secure_vmid)
 {
 	return "N/A";
 }
 #endif
+=======
+>>>>>>> p9x
 #endif

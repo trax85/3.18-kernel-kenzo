@@ -44,7 +44,10 @@ enum {
 	HAS_FSYNCED_INODE,	/* is the inode fsynced before? */
 	HAS_LAST_FSYNC,		/* has the latest node fsync mark? */
 	IS_DIRTY,		/* this nat entry is dirty? */
+<<<<<<< HEAD
 	IS_PREALLOC,		/* nat entry is preallocated */
+=======
+>>>>>>> p9x
 };
 
 /*
@@ -141,7 +144,10 @@ enum mem_type {
 	DIRTY_DENTS,	/* indicates dirty dentry pages */
 	INO_ENTRIES,	/* indicates inode entries */
 	EXTENT_CACHE,	/* indicates extent cache */
+<<<<<<< HEAD
 	INMEM_PAGES,	/* indicates inmemory pages */
+=======
+>>>>>>> p9x
 	BASE_CHECK,	/* check kernel status */
 };
 
@@ -150,6 +156,17 @@ struct nat_entry_set {
 	struct list_head entry_list;	/* link with dirty nat entries */
 	nid_t set;			/* set number*/
 	unsigned int entry_cnt;		/* the # of nat entries in set */
+<<<<<<< HEAD
+=======
+};
+
+/*
+ * For free nid mangement
+ */
+enum nid_state {
+	NID_NEW,	/* newly added to free nid list */
+	NID_ALLOC	/* it is allocated */
+>>>>>>> p9x
 };
 
 struct free_nid {
@@ -164,11 +181,20 @@ static inline void next_free_nid(struct f2fs_sb_info *sbi, nid_t *nid)
 	struct free_nid *fnid;
 
 	spin_lock(&nm_i->nid_list_lock);
+<<<<<<< HEAD
 	if (nm_i->nid_cnt[FREE_NID] <= 0) {
 		spin_unlock(&nm_i->nid_list_lock);
 		return;
 	}
 	fnid = list_first_entry(&nm_i->free_nid_list, struct free_nid, list);
+=======
+	if (nm_i->nid_cnt[FREE_NID_LIST] <= 0) {
+		spin_unlock(&nm_i->nid_list_lock);
+		return;
+	}
+	fnid = list_first_entry(&nm_i->nid_list[FREE_NID_LIST],
+						struct free_nid, list);
+>>>>>>> p9x
 	*nid = fnid->nid;
 	spin_unlock(&nm_i->nid_list_lock);
 }
@@ -306,10 +332,13 @@ static inline bool is_recoverable_dnode(struct page *page)
 	struct f2fs_checkpoint *ckpt = F2FS_CKPT(F2FS_P_SB(page));
 	__u64 cp_ver = cur_cp_version(ckpt);
 
+<<<<<<< HEAD
 	/* Don't care crc part, if fsck.f2fs sets it. */
 	if (__is_set_ckpt_flags(ckpt, CP_NOCRC_RECOVERY_FLAG))
 		return (cp_ver << 32) == (cpver_of_node(page) << 32);
 
+=======
+>>>>>>> p9x
 	if (__is_set_ckpt_flags(ckpt, CP_CRC_RECOVERY_FLAG))
 		cp_ver |= (cur_cp_crc(ckpt) << 32);
 
@@ -416,15 +445,26 @@ static inline int is_inline_node(struct page *page)
 static inline void set_inline_node(struct page *page)
 {
 	SetPageChecked(page);
+<<<<<<< HEAD
+=======
 }
 
 static inline void clear_inline_node(struct page *page)
 {
 	ClearPageChecked(page);
+>>>>>>> p9x
+}
+
+static inline void clear_inline_node(struct page *page)
+{
+<<<<<<< HEAD
+	ClearPageChecked(page);
 }
 
 static inline void set_cold_node(struct page *page, bool is_dir)
 {
+=======
+>>>>>>> p9x
 	struct f2fs_node *rn = F2FS_NODE(page);
 	unsigned int flag = le32_to_cpu(rn->footer.flag);
 

@@ -27,7 +27,11 @@
 
 #include <linux/usb/ch9.h>
 #include <linux/usb/gadget.h>
+<<<<<<< HEAD:drivers/usb/gadget/udc/udc-core.c
 #include <linux/usb.h>
+=======
+#include <linux/usb/composite.h>
+>>>>>>> p9x:drivers/usb/gadget/udc-core.c
 
 /**
  * struct usb_udc - describes one usb device controller
@@ -114,6 +118,7 @@ EXPORT_SYMBOL_GPL(usb_gadget_unmap_request);
 
 /* ------------------------------------------------------------------------- */
 
+<<<<<<< HEAD:drivers/usb/gadget/udc/udc-core.c
 /**
  * usb_gadget_giveback_request - give the request back to the gadget layer
  * Context: in_interrupt()
@@ -150,6 +155,13 @@ found:
 	mutex_unlock(&udc_lock);
 
 	sysfs_notify(&udc->dev.kobj, NULL, "state");
+=======
+static void usb_gadget_state_work(struct work_struct *work)
+{
+	struct usb_gadget	*gadget = work_to_gadget(work);
+
+	sysfs_notify(&gadget->dev.kobj, NULL, "status");
+>>>>>>> p9x:drivers/usb/gadget/udc-core.c
 }
 
 void usb_gadget_set_state(struct usb_gadget *gadget,
@@ -248,16 +260,13 @@ static void usb_udc_nop_release(struct device *dev)
  * @release: a gadget release function.
  *
  * Returns zero on success, negative errno otherwise.
+ * Calls the gadget release function in the latter case.
  */
 int usb_add_gadget_udc_release(struct device *parent, struct usb_gadget *gadget,
 		void (*release)(struct device *dev))
 {
 	struct usb_udc		*udc;
 	int			ret = -ENOMEM;
-
-	udc = kzalloc(sizeof(*udc), GFP_KERNEL);
-	if (!udc)
-		goto err1;
 
 	dev_set_name(&gadget->dev, "gadget");
 	INIT_WORK(&gadget->work, usb_gadget_state_work);
@@ -274,9 +283,11 @@ int usb_add_gadget_udc_release(struct device *parent, struct usb_gadget *gadget,
 	else
 		gadget->dev.release = usb_udc_nop_release;
 
-	ret = device_register(&gadget->dev);
-	if (ret)
-		goto err2;
+	device_initialize(&gadget->dev);
+
+	udc = kzalloc(sizeof(*udc), GFP_KERNEL);
+	if (!udc)
+		goto err_put_gadget;
 
 	device_initialize(&udc->dev);
 	udc->dev.release = usb_udc_release;
@@ -285,7 +296,11 @@ int usb_add_gadget_udc_release(struct device *parent, struct usb_gadget *gadget,
 	udc->dev.parent = parent;
 	ret = dev_set_name(&udc->dev, "%s", kobject_name(&parent->kobj));
 	if (ret)
-		goto err3;
+		goto err_put_udc;
+
+	ret = device_add(&gadget->dev);
+	if (ret)
+		goto err_put_udc;
 
 	udc->gadget = gadget;
 
@@ -294,7 +309,7 @@ int usb_add_gadget_udc_release(struct device *parent, struct usb_gadget *gadget,
 
 	ret = device_add(&udc->dev);
 	if (ret)
-		goto err4;
+		goto err_unlist_udc;
 
 	usb_gadget_set_state(gadget, USB_STATE_NOTATTACHED);
 
@@ -302,18 +317,17 @@ int usb_add_gadget_udc_release(struct device *parent, struct usb_gadget *gadget,
 
 	return 0;
 
-err4:
+ err_unlist_udc:
 	list_del(&udc->list);
 	mutex_unlock(&udc_lock);
 
-err3:
+	device_del(&gadget->dev);
+
+ err_put_udc:
 	put_device(&udc->dev);
 
-err2:
+ err_put_gadget:
 	put_device(&gadget->dev);
-	kfree(udc);
-
-err1:
 	return ret;
 }
 EXPORT_SYMBOL_GPL(usb_add_gadget_udc_release);
@@ -407,6 +421,7 @@ static int udc_bind_to_driver(struct usb_udc *udc, struct usb_gadget_driver *dri
 		driver->unbind(udc->gadget);
 		goto err1;
 	}
+<<<<<<< HEAD:drivers/usb/gadget/udc/udc-core.c
 	/*
 	 * HACK: The Android gadget driver disconnects the gadget
 	 * on bind and expects the gadget to stay disconnected until
@@ -416,6 +431,8 @@ static int udc_bind_to_driver(struct usb_udc *udc, struct usb_gadget_driver *dri
 	 *
 	 * usb_gadget_connect(udc->gadget);
 	 */
+=======
+>>>>>>> p9x:drivers/usb/gadget/udc-core.c
 
 	kobject_uevent(&udc->dev.kobj, KOBJ_CHANGE);
 	return 0;
@@ -466,8 +483,13 @@ int usb_gadget_probe_driver(struct usb_gadget_driver *driver)
 	mutex_lock(&udc_lock);
 	list_for_each_entry(udc, &udc_list, list) {
 		/* Match according to usb_core_id */
+<<<<<<< HEAD:drivers/usb/gadget/udc/udc-core.c
 		if (!udc->driver && udc->gadget
 		    && udc->gadget->usb_core_id == driver->usb_core_id)
+=======
+		if (!udc->driver && udc->gadget &&
+		    udc->gadget->usb_core_id == driver->usb_core_id)
+>>>>>>> p9x:drivers/usb/gadget/udc-core.c
 			goto found;
 	}
 
@@ -504,6 +526,49 @@ int usb_gadget_unregister_driver(struct usb_gadget_driver *driver)
 }
 EXPORT_SYMBOL_GPL(usb_gadget_unregister_driver);
 
+<<<<<<< HEAD:drivers/usb/gadget/udc/udc-core.c
+=======
+int usb_func_ep_queue(struct usb_function *func, struct usb_ep *ep,
+			       struct usb_request *req, gfp_t gfp_flags)
+{
+	int ret;
+	struct usb_gadget *gadget;
+
+	if (!func || !func->config || !func->config->cdev ||
+			!func->config->cdev->gadget || !ep || !req) {
+		ret = -EINVAL;
+		goto done;
+	}
+
+	pr_debug("Function %s queueing new data into ep %u\n",
+		func->name ? func->name : "", ep->address);
+
+	gadget = func->config->cdev->gadget;
+
+	if (func->func_is_suspended && func->func_wakeup_allowed) {
+		ret = usb_gadget_func_wakeup(gadget, func->intf_id);
+		if (ret == -EAGAIN) {
+			pr_debug("bus suspended func wakeup for %s delayed until bus resume.\n",
+				func->name ? func->name : "");
+		} else if (ret < 0 && ret != -ENOTSUPP) {
+			pr_err("Failed to wake function %s from suspend state. ret=%d.\n",
+				func->name ? func->name : "", ret);
+		}
+
+		goto done;
+	}
+
+	if (func->func_is_suspended && !func->func_wakeup_allowed) {
+		ret = -ENOTSUPP;
+		goto done;
+	}
+
+	ret = usb_ep_queue(ep, req, gfp_flags);
+done:
+	return ret;
+}
+
+>>>>>>> p9x:drivers/usb/gadget/udc-core.c
 
 /* ------------------------------------------------------------------------- */
 

@@ -35,7 +35,11 @@
 static void *videomemory;
 static u_long videomemorysize = VIDEOMEMSIZE;
 module_param(videomemorysize, ulong, 0);
+<<<<<<< HEAD:drivers/video/fbdev/vfb.c
 static char *mode_option;
+=======
+static char *mode_option ;
+>>>>>>> p9x:drivers/video/vfb.c
 static int bpp = 8;
 
 module_param(mode_option, charp, 0);

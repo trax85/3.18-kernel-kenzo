@@ -22,6 +22,7 @@
 
 #define BUF_DUMP_LAST_N 10
 
+<<<<<<< HEAD
 static struct debug_bus dbg_bus_8996[] = {
 
 	/*
@@ -927,12 +928,87 @@ static struct debug_bus dbg_bus_8996[] = {
 	{ 0x298, 46, 1},
 	{ 0x298, 46, 3},
 
+=======
+static struct debug_bus dbg_bus_8994[] = {
+	/* VIG QSEED */
+	{ 0x298, 4, 0},
+	{ 0x298, 4, 1},
+	{ 0x298, 24, 0},
+	{ 0x298, 24, 1},
+	{ 0x298, 42, 0},
+	{ 0x298, 42, 1},
+	{ 0x298, 88, 0},
+	{ 0x298, 88, 1},
+	/* RGB SCALE */
+	{ 0x298, 12, 0},
+	{ 0x298, 12, 1},
+	{ 0x298, 34, 0},
+	{ 0x298, 34, 1},
+	{ 0x298, 52, 0},
+	{ 0x298, 52, 1},
+	{ 0x298, 96, 0},
+	{ 0x298, 96, 1},
+	/* VIG CSC */
+	{ 0x298, 5, 0},
+	{ 0x298, 5, 1},
+	{ 0x298, 25, 0},
+	{ 0x298, 25, 1},
+	{ 0x298, 43, 0},
+	{ 0x298, 43, 1},
+	{ 0x298, 89, 0},
+	{ 0x298, 89, 1},
+	/* VIG SPA */
+	{ 0x298, 6, 0},
+	{ 0x298, 26, 0},
+	{ 0x298, 44, 0},
+	{ 0x298, 90, 0},
+	/* DSPP_PA */
+	{ 0x348, 13, 0},
+	{ 0x348, 19, 0},
+	{ 0x348, 25, 0},
+	{ 0x348, 3, 0},
+	/* VIG ISC */
+	{ 0x298, 7, 0},
+	{ 0x298, 7, 1},
+	{ 0x298, 7, 3},
+	{ 0x298, 27, 0},
+	{ 0x298, 27, 1},
+	{ 0x298, 27, 3},
+	{ 0x298, 45, 0},
+	{ 0x298, 45, 1},
+	{ 0x298, 45, 3},
+	{ 0x298, 91, 0},
+	{ 0x298, 91, 1},
+	{ 0x298, 91, 3},
+	/* RGB IGC */
+	{ 0x298, 13, 0},
+	{ 0x298, 13, 1},
+	{ 0x298, 13, 3},
+	{ 0x298, 35, 0},
+	{ 0x298, 35, 1},
+	{ 0x298, 35, 3},
+	{ 0x298, 53, 0},
+	{ 0x298, 53, 1},
+	{ 0x298, 53, 3},
+	{ 0x298, 97, 0},
+	{ 0x298, 97, 1},
+	{ 0x298, 97, 3},
+	/* DMA IGC */
+	{ 0x298, 58, 0},
+	{ 0x298, 58, 1},
+	{ 0x298, 58, 3},
+	{ 0x298, 65, 0},
+	{ 0x298, 65, 1},
+	{ 0x298, 65, 3},
+	/* DSPP IGC */
+>>>>>>> p9x
 	{ 0x348, 14, 0},
 	{ 0x348, 14, 1},
 	{ 0x348, 14, 3},
 	{ 0x348, 20, 0},
 	{ 0x348, 20, 1},
 	{ 0x348, 20, 3},
+<<<<<<< HEAD
 
 	{ 0x418, 60, 0},
 };
@@ -947,6 +1023,29 @@ static struct vbif_debug_bus nrt_vbif_dbg_bus_8996[] = {
 	{0x214, 0x21c, 16, 1, 0x10}, /* arb clients */
 	{0x214, 0x21c, 0, 12, 0x13}, /* xin blocks - axi side */
 	{0x21c, 0x214, 0, 12, 0xc}, /* xin blocks - clock side */
+=======
+	{ 0x348, 26, 0},
+	{ 0x348, 26, 1},
+	{ 0x348, 26, 3},
+	{ 0x348, 4, 0},
+	{ 0x348, 4, 1},
+	{ 0x348, 4, 3},
+	/* DSPP DITHER */
+	{ 0x348, 18, 1},
+	{ 0x348, 24, 1},
+	{ 0x348, 30, 1},
+	{ 0x348, 8, 1},
+	/*PPB 0*/
+	{ 0x348, 31, 0},
+	{ 0x348, 33, 0},
+	{ 0x348, 35, 0},
+	{ 0x348, 42, 0},
+	/*PPB 1*/
+	{ 0x348, 32, 0},
+	{ 0x348, 34, 0},
+	{ 0x348, 36, 0},
+	{ 0x348, 43, 0},
+>>>>>>> p9x
 };
 
 void mdss_mdp_hw_rev_debug_caps_init(struct mdss_data_type *mdata)
@@ -955,6 +1054,7 @@ void mdss_mdp_hw_rev_debug_caps_init(struct mdss_data_type *mdata)
 	mdata->dbg_bus_size = 0;
 
 	switch (mdata->mdp_rev) {
+<<<<<<< HEAD
 	case MDSS_MDP_HW_REV_107:
 	case MDSS_MDP_HW_REV_107_1:
 	case MDSS_MDP_HW_REV_107_2:
@@ -965,10 +1065,17 @@ void mdss_mdp_hw_rev_debug_caps_init(struct mdss_data_type *mdata)
 		mdata->nrt_vbif_dbg_bus = nrt_vbif_dbg_bus_8996;
 		mdata->nrt_vbif_dbg_bus_size =
 			ARRAY_SIZE(nrt_vbif_dbg_bus_8996);
+=======
+	case MDSS_MDP_HW_REV_105:
+	case MDSS_MDP_HW_REV_109:
+		mdata->dbg_bus = dbg_bus_8994;
+		mdata->dbg_bus_size = ARRAY_SIZE(dbg_bus_8994);
+>>>>>>> p9x
 		break;
 	default:
 		break;
 	}
+<<<<<<< HEAD
 }
 
 void mdss_mdp_debug_mid(u32 mid)
@@ -1001,6 +1108,10 @@ void mdss_mdp_debug_mid(u32 mid)
 				&xlog_node->reg_dump, true);
 		}
 	}
+=======
+
+	return;
+>>>>>>> p9x
 }
 
 static void __print_time(char *buf, u32 size, u64 ts)
@@ -1014,13 +1125,18 @@ static void __print_buf(struct seq_file *s, struct mdss_mdp_data *buf,
 		bool show_pipe)
 {
 	char tmpbuf[20];
+<<<<<<< HEAD
 	int i;
 	const char const *buf_stat_stmap[] = {
+=======
+	const char const *stmap[] = {
+>>>>>>> p9x
 		[MDP_BUF_STATE_UNUSED]  = "UNUSED ",
 		[MDP_BUF_STATE_READY]   = "READY  ",
 		[MDP_BUF_STATE_ACTIVE]  = "ACTIVE ",
 		[MDP_BUF_STATE_CLEANUP] = "CLEANUP",
 	};
+<<<<<<< HEAD
 	const char const *domain_stmap[] = {
 		[MDSS_IOMMU_DOMAIN_UNSECURE]     = "mdp_unsecure",
 		[MDSS_IOMMU_DOMAIN_ROT_UNSECURE] = "rot_unsecure",
@@ -1034,21 +1150,34 @@ static void __print_buf(struct seq_file *s, struct mdss_mdp_data *buf,
 		[DMA_FROM_DEVICE]   = "read/write",
 		[DMA_NONE]          = "????",
 	};
+=======
+>>>>>>> p9x
 
 	seq_puts(s, "\t");
 	if (show_pipe && buf->last_pipe)
 		seq_printf(s, "pnum=%d ", buf->last_pipe->num);
 
 	seq_printf(s, "state=%s addr=%pa size=%lu ",
+<<<<<<< HEAD
 		buf->state < ARRAY_SIZE(buf_stat_stmap) &&
 		buf_stat_stmap[buf->state] ? buf_stat_stmap[buf->state] : "?",
 		&buf->p[0].addr, buf->p[0].len);
 
+=======
+		buf->state < ARRAY_SIZE(stmap) && stmap[buf->state] ?
+			stmap[buf->state] : "?",
+		&buf->p[0].addr, buf->p[0].len);
+
+	if (buf->state != MDP_BUF_STATE_UNUSED)
+		seq_printf(s, "ihdl=0x%pK ", buf->p[0].srcp_ihdl);
+
+>>>>>>> p9x
 	__print_time(tmpbuf, sizeof(tmpbuf), buf->last_alloc);
 	seq_printf(s, "alloc_time=%s ", tmpbuf);
 	if (buf->state == MDP_BUF_STATE_UNUSED) {
 		__print_time(tmpbuf, sizeof(tmpbuf), buf->last_freed);
 		seq_printf(s, "freed_time=%s ", tmpbuf);
+<<<<<<< HEAD
 	} else {
 		for (i = 0; i < buf->num_planes; i++) {
 			seq_puts(s, "\n\t\t");
@@ -1057,6 +1186,8 @@ static void __print_buf(struct seq_file *s, struct mdss_mdp_data *buf,
 			seq_printf(s, "permission=%s ",
 				dma_data_dir_stmap[buf->p[i].dir]);
 		}
+=======
+>>>>>>> p9x
 	}
 	seq_puts(s, "\n");
 }
@@ -1066,6 +1197,7 @@ static void __dump_pipe(struct seq_file *s, struct mdss_mdp_pipe *pipe)
 	struct mdss_mdp_data *buf;
 	int format;
 	int smps[4];
+<<<<<<< HEAD
 	int i;
 
 	seq_printf(s, "\nSSPP #%d type=%s ndx=%x flags=0x%08x play_cnt=%u xin_id=%d\n",
@@ -1091,6 +1223,15 @@ static void __dump_pipe(struct seq_file *s, struct mdss_mdp_pipe *pipe)
 				pipe->multirect.num, pipe->multirect.max_rects,
 				mode);
 	}
+=======
+
+	seq_printf(s, "\nSSPP #%d type=%s ndx=%x flags=0x%08x play_cnt=%u\n",
+			pipe->num, mdss_mdp_pipetype2str(pipe->type),
+			pipe->ndx, pipe->flags, pipe->play_cnt);
+	seq_printf(s, "\tstage=%d alpha=0x%x transp=0x%x blend_op=%d\n",
+			pipe->mixer_stage, pipe->alpha,
+			pipe->transp, pipe->blend_op);
+>>>>>>> p9x
 
 	format = pipe->src_fmt->format;
 	seq_printf(s, "\tsrc w=%d h=%d format=%d (%s)\n",
@@ -1114,11 +1255,14 @@ static void __dump_pipe(struct seq_file *s, struct mdss_mdp_pipe *pipe)
 	seq_printf(s, "\tSMP allocated=[%d %d] reserved=[%d %d]\n",
 			smps[0], smps[1], smps[2], smps[3]);
 
+<<<<<<< HEAD
 	seq_puts(s, "\tSupported formats = ");
 	for (i = 0; i < BITS_TO_BYTES(MDP_IMGTYPE_LIMIT1); i++)
 		seq_printf(s, "0x%02X ", pipe->supported_formats[i]);
 	seq_puts(s, "\n");
 
+=======
+>>>>>>> p9x
 	seq_puts(s, "Data:\n");
 
 	list_for_each_entry(buf, &pipe->buf_queue, pipe_list)
@@ -1133,11 +1277,20 @@ static void __dump_mixer(struct seq_file *s, struct mdss_mdp_mixer *mixer)
 	if (!mixer)
 		return;
 
+<<<<<<< HEAD
 	seq_printf(s, "\n%s Mixer #%d  res=%dx%d roi[%d, %d, %d, %d] %s\n",
 		mixer->type == MDSS_MDP_MIXER_TYPE_INTF ? "Intf" : "Writeback",
 		mixer->num, mixer->width, mixer->height,
 		mixer->roi.x, mixer->roi.y, mixer->roi.w, mixer->roi.h,
 		mixer->cursor_enabled ? "w/cursor" : "");
+=======
+	seq_printf(s, "\n%s Mixer #%d  res=%dx%d  %s\n",
+			mixer->type != MDSS_MDP_MIXER_TYPE_WRITEBACK ?
+			(mixer->type != MDSS_MDP_MIXER_TYPE_INTF ?
+			 "Intf without DSPP" : "Intf") : "Writeback",
+			mixer->num, mixer->width, mixer->height,
+			mixer->cursor_enabled ? "w/cursor" : "");
+>>>>>>> p9x
 
 	for (i = 0; i < ARRAY_SIZE(mixer->stage_pipe); i++) {
 		pipe = mixer->stage_pipe[i];
@@ -1160,7 +1313,11 @@ static void __dump_timings(struct seq_file *s, struct mdss_mdp_ctl *ctl)
 	pinfo = &ctl->panel_data->panel_info;
 	seq_printf(s, "Panel #%d %dx%dp%d\n",
 			pinfo->pdest, pinfo->xres, pinfo->yres,
+<<<<<<< HEAD
 			mdss_panel_get_framerate(pinfo, FPS_RESOLUTION_HZ));
+=======
+			mdss_panel_get_framerate(pinfo));
+>>>>>>> p9x
 	seq_printf(s, "\tvbp=%d vfp=%d vpw=%d hbp=%d hfp=%d hpw=%d\n",
 			pinfo->lcdc.v_back_porch,
 			pinfo->lcdc.v_front_porch,
@@ -1341,6 +1498,7 @@ static int mdss_debugfs_buffers_show(struct seq_file *s, void *v)
 }
 DEFINE_MDSS_DEBUGFS_SEQ_FOPS(mdss_debugfs_buffers);
 
+<<<<<<< HEAD
 static int __danger_safe_signal_status(struct seq_file *s, bool danger_status)
 {
 	struct mdss_data_type *mdata = (struct mdss_data_type *)s->private;
@@ -1400,6 +1558,8 @@ static int mdss_debugfs_safe_stats_show(struct seq_file *s, void *v)
 }
 DEFINE_MDSS_DEBUGFS_SEQ_FOPS(mdss_debugfs_safe_stats);
 
+=======
+>>>>>>> p9x
 static void __stats_ctl_dump(struct mdss_mdp_ctl *ctl, struct seq_file *s)
 {
 	if (!ctl->ref_cnt)
@@ -1420,6 +1580,7 @@ static void __stats_ctl_dump(struct mdss_mdp_ctl *ctl, struct seq_file *s)
 	}
 }
 
+<<<<<<< HEAD
 static void __dump_stat(struct seq_file *s, char *ptypestr,
 		struct mdss_mdp_pipe *pipe_list, int count)
 {
@@ -1453,6 +1614,12 @@ static void __dump_stat(struct seq_file *s, char *ptypestr,
 static int mdss_debugfs_stats_show(struct seq_file *s, void *v)
 {
 	struct mdss_data_type *mdata = (struct mdss_data_type *)s->private;
+=======
+static int mdss_debugfs_stats_show(struct seq_file *s, void *v)
+{
+	struct mdss_data_type *mdata = (struct mdss_data_type *)s->private;
+	struct mdss_mdp_pipe *pipe;
+>>>>>>> p9x
 	int i;
 
 	seq_puts(s, "\nmdp:\n");
@@ -1461,10 +1628,30 @@ static int mdss_debugfs_stats_show(struct seq_file *s, void *v)
 		__stats_ctl_dump(mdata->ctl_off + i, s);
 	seq_puts(s, "\n");
 
+<<<<<<< HEAD
 	__dump_stat(s, "VIG", mdata->vig_pipes, mdata->nvig_pipes);
 	__dump_stat(s, "RGB", mdata->rgb_pipes, mdata->nrgb_pipes);
 	__dump_stat(s, "DMA", mdata->dma_pipes, mdata->ndma_pipes);
 	__dump_stat(s, "CURSOR", mdata->cursor_pipes, mdata->ncursor_pipes);
+=======
+	for (i = 0; i < mdata->nvig_pipes; i++) {
+		pipe = mdata->vig_pipes + i;
+		seq_printf(s, "VIG%d :   %08u\t", i, pipe->play_cnt);
+	}
+	seq_puts(s, "\n");
+
+	for (i = 0; i < mdata->nrgb_pipes; i++) {
+		pipe = mdata->rgb_pipes + i;
+		seq_printf(s, "RGB%d :   %08u\t", i, pipe->play_cnt);
+	}
+	seq_puts(s, "\n");
+
+	for (i = 0; i < mdata->ndma_pipes; i++) {
+		pipe = mdata->dma_pipes + i;
+		seq_printf(s, "DMA%d :   %08u\t", i, pipe->play_cnt);
+	}
+	seq_puts(s, "\n");
+>>>>>>> p9x
 
 	return 0;
 }
@@ -1487,6 +1674,7 @@ int mdss_mdp_debugfs_init(struct mdss_data_type *mdata)
 			&mdss_debugfs_buffers_fops);
 	debugfs_create_file("stat", 0644, mdd->root, mdata,
 			&mdss_debugfs_stats_fops);
+<<<<<<< HEAD
 	debugfs_create_file("danger_stat", 0644, mdd->root, mdata,
 			&mdss_debugfs_danger_stats_fops);
 	debugfs_create_file("safe_stat", 0644, mdd->root, mdata,
@@ -1497,6 +1685,10 @@ int mdss_mdp_debugfs_init(struct mdss_data_type *mdata)
 		(u32 *)&mdata->wait4autorefresh);
 	debugfs_create_bool("enable_gate", 0644, mdd->root,
 		(u32 *)&mdata->enable_gate);
+=======
+	debugfs_create_bool("serialize_wait4pp", 0644, mdd->root,
+		(u32 *)&mdata->serialize_wait4pp);
+>>>>>>> p9x
 
 	debugfs_create_u32("color0", 0644, mdd->bordercolor,
 		(u32 *)&mdata->bcolor0);
@@ -1504,8 +1696,11 @@ int mdss_mdp_debugfs_init(struct mdss_data_type *mdata)
 		(u32 *)&mdata->bcolor1);
 	debugfs_create_u32("color2", 0644, mdd->bordercolor,
 		(u32 *)&mdata->bcolor2);
+<<<<<<< HEAD
 	debugfs_create_u32("ad_debugen", 0644, mdd->postproc,
 		(u32 *)&mdata->ad_debugen);
+=======
+>>>>>>> p9x
 
 	return 0;
 }

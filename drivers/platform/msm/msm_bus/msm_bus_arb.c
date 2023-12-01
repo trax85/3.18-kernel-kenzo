@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2014, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -343,8 +347,16 @@ static uint64_t get_vfe_bw(void)
 
 	fabid = GET_FABID(iid);
 	fabdev = msm_bus_get_fabric_device(fabid);
+<<<<<<< HEAD
 	info = fabdev->algo->find_node(fabdev, iid);
 
+=======
+	if (!fabdev) {
+		MSM_BUS_ERR("Fabric not found for: %d\n", fabid);
+		goto exit_get_vfe_bw;
+	}
+	info = fabdev->algo->find_node(fabdev, iid);
+>>>>>>> p9x
 	if (!info) {
 		MSM_BUS_ERR("%s: Can't find node %d", __func__,
 						vfe_id);
@@ -373,8 +385,16 @@ static uint64_t get_mdp_bw(void)
 
 		fabid = GET_FABID(iid);
 		fabdev = msm_bus_get_fabric_device(fabid);
+<<<<<<< HEAD
 		info = fabdev->algo->find_node(fabdev, iid);
 
+=======
+		if (!fabdev) {
+			MSM_BUS_ERR("Fabric not found for: %d\n", fabid);
+			continue;
+		}
+		info = fabdev->algo->find_node(fabdev, iid);
+>>>>>>> p9x
 		if (!info) {
 			MSM_BUS_ERR("%s: Can't find node %d", __func__,
 								ids[i]);

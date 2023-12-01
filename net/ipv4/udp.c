@@ -109,6 +109,7 @@
 #include <net/route.h>
 #include <net/checksum.h>
 #include <net/xfrm.h>
+#include <net/ip.h>
 #include <trace/events/udp.h>
 #include <linux/static_key.h>
 #include <trace/events/skb.h>
@@ -259,7 +260,11 @@ int udp_lib_get_port(struct sock *sk, unsigned short snum,
 		hslot = udp_hashslot(udptable, net, snum);
 		spin_lock_bh(&hslot->lock);
 
+<<<<<<< HEAD
 		if (inet_is_local_reserved_port(net, snum) &&
+=======
+		if (inet_is_reserved_local_port(snum) &&
+>>>>>>> p9x
 		    !sysctl_reserved_port_bind)
 			goto fail_unlock;
 
@@ -809,7 +814,11 @@ static int udp_send_skb(struct sk_buff *skb, struct flowi4 *fl4)
 	if (is_udplite)  				 /*     UDP-Lite      */
 		csum = udplite_csum(skb);
 
+<<<<<<< HEAD
 	else if (sk->sk_no_check_tx && !skb_is_gso(skb)) {   /* UDP csum off */
+=======
+	else if (sk->sk_no_check == UDP_CSUM_NOXMIT && !skb_has_frags(skb)) {   /* UDP csum off */
+>>>>>>> p9x
 
 		skb->ip_summed = CHECKSUM_NONE;
 		goto send;
@@ -1013,7 +1022,11 @@ int udp_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 		fl4 = &fl4_stack;
 		flowi4_init_output(fl4, ipc.oif, sk->sk_mark, tos,
 				   RT_SCOPE_UNIVERSE, sk->sk_protocol,
+<<<<<<< HEAD
 				   inet_sk_flowi_flags(sk),
+=======
+				   inet_sk_flowi_flags(sk)|FLOWI_FLAG_CAN_SLEEP,
+>>>>>>> p9x
 				   faddr, saddr, dport, inet->inet_sport,
 				   sk->sk_uid);
 
@@ -2448,7 +2461,11 @@ static void udp4_format_sock(struct sock *sp, struct seq_file *f,
 		state |= 0x80;
 
 	seq_printf(f, "%5d: %08X:%04X %08X:%04X"
+<<<<<<< HEAD
 		" %02X %08X:%08X %02X:%08lX %08X %5u %8d %lu %d %pK %d",
+=======
+		" %02X %08X:%08X %02X:%08lX %08X %5d %8d %lu %d %pK %d",
+>>>>>>> p9x
 		bucket, src, srcp, dest, destp, state,
 		sk_wmem_alloc_get(sp),
 		sk_rmem_alloc_get(sp),

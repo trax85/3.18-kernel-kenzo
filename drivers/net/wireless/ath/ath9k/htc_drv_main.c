@@ -1353,8 +1353,28 @@ static void ath9k_htc_sta_rc_update(struct ieee80211_hw *hw,
 
 	if (!(changed & IEEE80211_RC_SUPP_RATES_CHANGED))
 		return;
+<<<<<<< HEAD
 
 	schedule_work(&ista->rc_update_work);
+=======
+
+	mutex_lock(&priv->mutex);
+	ath9k_htc_ps_wakeup(priv);
+
+	memset(&trate, 0, sizeof(struct ath9k_htc_target_rate));
+	ath9k_htc_setup_rate(priv, sta, &trate);
+	if (!ath9k_htc_send_rate_cmd(priv, &trate))
+		ath_dbg(common, CONFIG,
+			"Supported rates for sta: %pM updated, rate caps: 0x%X\n",
+			sta->addr, be32_to_cpu(trate.capflags));
+	else
+		ath_dbg(common, CONFIG,
+			"Unable to update supported rates for sta: %pM\n",
+			sta->addr);
+
+	ath9k_htc_ps_restore(priv);
+	mutex_unlock(&priv->mutex);
+>>>>>>> p9x
 }
 
 static int ath9k_htc_conf_tx(struct ieee80211_hw *hw,

@@ -836,7 +836,11 @@ static void __net_exit nf_nat_net_exit(struct net *net)
 {
 	struct nf_nat_proto_clean clean = {};
 
+<<<<<<< HEAD
 	nf_ct_iterate_cleanup(net, nf_nat_proto_clean, &clean, 0, 0);
+=======
+	nf_ct_iterate_cleanup(net, nf_nat_proto_clean, &clean);
+>>>>>>> p9x
 	synchronize_rcu();
 	nf_ct_free_hashtable(net->ct.nat_bysource, net->ct.nat_htable_size);
 }

@@ -327,7 +327,11 @@ void irq_enter(void)
 		 * here, as softirq will be serviced on return from interrupt.
 		 */
 		local_bh_disable();
+<<<<<<< HEAD
 		tick_irq_enter();
+=======
+		tick_check_idle();
+>>>>>>> p9x
 		_local_bh_enable();
 	}
 
@@ -337,6 +341,7 @@ void irq_enter(void)
 static inline void invoke_softirq(void)
 {
 	if (!force_irqthreads) {
+<<<<<<< HEAD
 #ifdef CONFIG_HAVE_IRQ_EXIT_ON_IRQ_STACK
 		/*
 		 * We can safely execute softirq on the current stack if
@@ -352,6 +357,17 @@ static inline void invoke_softirq(void)
 		 */
 		do_softirq_own_stack();
 #endif
+=======
+		/*
+		 * We can safely execute softirq on the current stack if
+		 * it is the irq stack, because it should be near empty
+		 * at this stage. But we have no way to know if the arch
+		 * calls irq_exit() on the irq stack. So call softirq
+		 * in its own stack to prevent from any overrun on top
+		 * of a potentially deep task stack.
+		 */
+		do_softirq();
+>>>>>>> p9x
 	} else {
 		wakeup_softirqd();
 	}
@@ -781,8 +797,11 @@ int __init __weak arch_early_irq_init(void)
 {
 	return 0;
 }
+<<<<<<< HEAD
 
 unsigned int __weak arch_dynirq_lower_bound(unsigned int from)
 {
 	return from;
 }
+=======
+>>>>>>> p9x

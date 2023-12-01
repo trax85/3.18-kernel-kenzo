@@ -157,6 +157,49 @@ static int vmw_fb_check_var(struct fb_var_screeninfo *var,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int vmw_fb_set_par(struct fb_info *info)
+{
+	struct vmw_fb_par *par = info->par;
+	struct vmw_private *vmw_priv = par->vmw_priv;
+	int ret;
+
+	info->fix.line_length = info->var.xres * info->var.bits_per_pixel/8;
+
+	ret = vmw_kms_write_svga(vmw_priv, info->var.xres, info->var.yres,
+				 info->fix.line_length,
+				 par->bpp, par->depth);
+	if (ret)
+		return ret;
+
+	if (vmw_priv->capabilities & SVGA_CAP_DISPLAY_TOPOLOGY) {
+		/* TODO check if pitch and offset changes */
+		vmw_write(vmw_priv, SVGA_REG_NUM_GUEST_DISPLAYS, 1);
+		vmw_write(vmw_priv, SVGA_REG_DISPLAY_ID, 0);
+		vmw_write(vmw_priv, SVGA_REG_DISPLAY_IS_PRIMARY, true);
+		vmw_write(vmw_priv, SVGA_REG_DISPLAY_POSITION_X, info->var.xoffset);
+		vmw_write(vmw_priv, SVGA_REG_DISPLAY_POSITION_Y, info->var.yoffset);
+		vmw_write(vmw_priv, SVGA_REG_DISPLAY_WIDTH, info->var.xres);
+		vmw_write(vmw_priv, SVGA_REG_DISPLAY_HEIGHT, info->var.yres);
+		vmw_write(vmw_priv, SVGA_REG_DISPLAY_ID, SVGA_ID_INVALID);
+	}
+
+	/* This is really helpful since if this fails the user
+	 * can probably not see anything on the screen.
+	 */
+	WARN_ON(vmw_read(vmw_priv, SVGA_REG_FB_OFFSET) != 0);
+
+	return 0;
+}
+
+static int vmw_fb_pan_display(struct fb_var_screeninfo *var,
+			      struct fb_info *info)
+{
+	return 0;
+}
+
+>>>>>>> p9x
 static int vmw_fb_blank(int blank, struct fb_info *info)
 {
 	return 0;

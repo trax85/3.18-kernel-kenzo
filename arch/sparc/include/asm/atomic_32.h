@@ -20,11 +20,19 @@
 
 #define ATOMIC_INIT(i)  { (i) }
 
+<<<<<<< HEAD
 int atomic_add_return(int, atomic_t *);
 int atomic_cmpxchg(atomic_t *, int, int);
 int atomic_xchg(atomic_t *, int);
 int __atomic_add_unless(atomic_t *, int, int);
 void atomic_set(atomic_t *, int);
+=======
+extern int __atomic_add_return(int, atomic_t *);
+extern int atomic_cmpxchg(atomic_t *, int, int);
+extern int atomic_xchg(atomic_t *, int);
+extern int __atomic_add_unless(atomic_t *, int, int);
+extern void atomic_set(atomic_t *, int);
+>>>>>>> p9x
 
 #define atomic_read(v)          ACCESS_ONCE((v)->counter)
 

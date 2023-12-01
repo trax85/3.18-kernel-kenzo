@@ -72,14 +72,29 @@ The decompressed kernel image contains a 64-byte header as follows:
 
   u32 code0;			/* Executable code */
   u32 code1;			/* Executable code */
+<<<<<<< HEAD
   u64 text_offset;		/* Image load offset, little endian */
   u64 image_size;		/* Effective Image size, little endian */
   u64 flags;			/* kernel flags, little endian */
+=======
+  u64 text_offset;		/* Image load offset */
+  u64 res0	= 0;		/* reserved */
+  u64 res1	= 0;		/* reserved */
+>>>>>>> p9x
   u64 res2	= 0;		/* reserved */
   u64 res3	= 0;		/* reserved */
   u64 res4	= 0;		/* reserved */
   u32 magic	= 0x644d5241;	/* Magic number, little endian, "ARM\x64" */
+<<<<<<< HEAD
   u32 res5;      		/* reserved (used for PE COFF offset) */
+=======
+  u32 res5 = 0;      		/* reserved */
+
+
+Header notes:
+
+- code0/code1 are responsible for branching to stext.
+>>>>>>> p9x
 
 
 Header notes:

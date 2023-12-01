@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2007, 2013, 2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2007, 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  * Copyright (C) 2007 Google Incorporated
  *
  * This software is licensed under the terms of the GNU General Public
@@ -52,7 +56,11 @@
 #define PPP_OP_FLIP_LR			BIT(10)
 #define PPP_OP_FLIP_UD			BIT(11)
 #define PPP_OP_BLEND_ON			BIT(12)
+<<<<<<< HEAD
 #define PPP_OP_BLEND_CONSTANT_ALPHA BIT(14)
+=======
+#define PPP_OP_BLEND_CONSTANT_ALPHA	BIT(14)
+>>>>>>> p9x
 #define PPP_OP_BLEND_BG_ALPHA		BIT(13)
 #define PPP_OP_BLEND_EQ_REVERSE		BIT(15)
 #define PPP_OP_DITHER_EN		BIT(16)

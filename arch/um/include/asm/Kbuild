@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 generic-y += barrier.h
+=======
+>>>>>>> p9x
 generic-y += bug.h
 generic-y += clkdev.h
 generic-y += cputime.h
@@ -10,23 +13,35 @@ generic-y += exec.h
 generic-y += ftrace.h
 generic-y += futex.h
 generic-y += hardirq.h
+<<<<<<< HEAD
 generic-y += hash.h
 generic-y += hw_irq.h
 generic-y += io.h
 generic-y += irq_regs.h
 generic-y += irq_work.h
+=======
+generic-y += hw_irq.h
+generic-y += io.h
+generic-y += irq_regs.h
+>>>>>>> p9x
 generic-y += kdebug.h
 generic-y += mcs_spinlock.h
 generic-y += mutex.h
 generic-y += param.h
 generic-y += pci.h
 generic-y += percpu.h
+<<<<<<< HEAD
 generic-y += preempt.h
 generic-y += scatterlist.h
+=======
+>>>>>>> p9x
 generic-y += sections.h
 generic-y += switch_to.h
 generic-y += topology.h
 generic-y += trace_clock.h
+<<<<<<< HEAD
 generic-y += word-at-a-time.h
+=======
+>>>>>>> p9x
 generic-y += xor.h
 generic-y += barrier.h

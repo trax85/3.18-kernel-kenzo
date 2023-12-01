@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2014, 2016 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -45,6 +49,7 @@
 #define VOLTE_RX_CAPTURE_DAI_ID  "VOLTE HOST RX CAPTURE"
 #define VOLTE_RX_PLAYBACK_DAI_ID "VOLTE HOST RX PLAYBACK"
 
+<<<<<<< HEAD
 
 #define VoMMode1_TX_CAPTURE_DAI_ID  "VoiceMMode1 HOST TX CAPTURE"
 #define VoMMode1_TX_PLAYBACK_DAI_ID "VoiceMMode1 HOST TX PLAYBACK"
@@ -56,6 +61,8 @@
 #define VoMMode2_RX_CAPTURE_DAI_ID  "VoiceMMode2 HOST RX CAPTURE"
 #define VoMMode2_RX_PLAYBACK_DAI_ID "VoiceMMode2 HOST RX PLAYBACK"
 
+=======
+>>>>>>> p9x
 enum {
 	RX = 1,
 	TX,
@@ -64,8 +71,11 @@ enum {
 enum {
 	VOICE_INDEX = 0,
 	VOLTE_INDEX,
+<<<<<<< HEAD
 	VOMMODE1_INDEX,
 	VOMMODE2_INDEX,
+=======
+>>>>>>> p9x
 	MAX_SESSION
 };
 
@@ -179,10 +189,13 @@ static char *hpcm_get_sess_name(int sess_indx)
 		sess_name = VOICE_SESSION_NAME;
 	else if (sess_indx == VOLTE_INDEX)
 		sess_name = VOLTE_SESSION_NAME;
+<<<<<<< HEAD
 	else if (sess_indx == VOMMODE1_INDEX)
 		sess_name = VOICEMMODE1_NAME;
 	else if (sess_indx == VOMMODE2_INDEX)
 		sess_name = VOICEMMODE2_NAME;
+=======
+>>>>>>> p9x
 	else
 		pr_err("%s:, Invalid sess_index\n", __func__);
 
@@ -205,7 +218,11 @@ static void hpcm_reset_mixer_config(struct hpcm_drv *prtd)
 static bool hpcm_is_valid_config(int sess_indx, int tap_point,
 				 uint16_t direction, uint16_t samplerate)
 {
+<<<<<<< HEAD
 	if (sess_indx < VOICE_INDEX || sess_indx > VOMMODE2_INDEX) {
+=======
+	if (sess_indx < VOICE_INDEX || sess_indx > VOLTE_INDEX) {
+>>>>>>> p9x
 		pr_err("%s: invalid sess_indx :%d\n", __func__, sess_indx);
 		goto error;
 	}
@@ -268,6 +285,7 @@ static struct dai_data *hpcm_get_dai_data(char *pcm_id, struct hpcm_drv *prtd)
 		} else if (strnstr(pcm_id, VOLTE_RX_PLAYBACK_DAI_ID, size)) {
 			dai_data =
 		&prtd->session[VOLTE_INDEX].rx_tap_point.playback_dai_data;
+<<<<<<< HEAD
 		/* check for VoiceMMode1 DAI */
 		} else if (strnstr(pcm_id, VoMMode1_TX_CAPTURE_DAI_ID, size)) {
 			dai_data =
@@ -295,6 +313,8 @@ static struct dai_data *hpcm_get_dai_data(char *pcm_id, struct hpcm_drv *prtd)
 			dai_data =
 		&prtd->session[VOMMODE2_INDEX].rx_tap_point.playback_dai_data;
 
+=======
+>>>>>>> p9x
 		} else {
 			pr_err("%s: Wrong dai id\n", __func__);
 		}
@@ -329,6 +349,7 @@ static struct tap_point *hpcm_get_tappoint_data(char *pcm_id,
 			tp = &prtd->session[VOLTE_INDEX].rx_tap_point;
 		} else if (strnstr(pcm_id, VOLTE_RX_PLAYBACK_DAI_ID, size)) {
 			tp = &prtd->session[VOLTE_INDEX].rx_tap_point;
+<<<<<<< HEAD
 		/* check for VoiceMMode1 */
 		} else if (strnstr(pcm_id, VoMMode1_TX_CAPTURE_DAI_ID, size)) {
 			tp = &prtd->session[VOMMODE1_INDEX].tx_tap_point;
@@ -347,6 +368,8 @@ static struct tap_point *hpcm_get_tappoint_data(char *pcm_id,
 			tp = &prtd->session[VOMMODE2_INDEX].rx_tap_point;
 		} else if (strnstr(pcm_id, VoMMode2_RX_PLAYBACK_DAI_ID, size)) {
 			tp = &prtd->session[VOMMODE2_INDEX].rx_tap_point;
+=======
+>>>>>>> p9x
 		} else {
 			pr_err("%s: wrong dai id\n", __func__);
 		}
@@ -362,11 +385,15 @@ static struct tappnt_mxr_data *hpcm_get_tappnt_mixer_data(char *pcm_id,
 	if (strnstr(pcm_id, VOICE_TX_CAPTURE_DAI_ID, strlen(pcm_id)) ||
 	    strnstr(pcm_id, VOICE_TX_PLAYBACK_DAI_ID, strlen(pcm_id)) ||
 	    strnstr(pcm_id, VOLTE_TX_CAPTURE_DAI_ID, strlen(pcm_id)) ||
+<<<<<<< HEAD
 	    strnstr(pcm_id, VOLTE_TX_PLAYBACK_DAI_ID, strlen(pcm_id)) ||
 	    strnstr(pcm_id, VoMMode1_TX_CAPTURE_DAI_ID, strlen(pcm_id)) ||
 	    strnstr(pcm_id, VoMMode1_TX_PLAYBACK_DAI_ID, strlen(pcm_id)) ||
 	    strnstr(pcm_id, VoMMode2_TX_CAPTURE_DAI_ID, strlen(pcm_id)) ||
 	    strnstr(pcm_id, VoMMode2_TX_PLAYBACK_DAI_ID, strlen(pcm_id))) {
+=======
+	    strnstr(pcm_id, VOLTE_TX_PLAYBACK_DAI_ID, strlen(pcm_id))) {
+>>>>>>> p9x
 		return &prtd->mixer_conf.tx;
 	} else {
 		return &prtd->mixer_conf.rx;
@@ -379,11 +406,15 @@ static int get_tappnt_value(char *pcm_id)
 	if (strnstr(pcm_id, VOICE_TX_CAPTURE_DAI_ID, strlen(pcm_id)) ||
 	    strnstr(pcm_id, VOICE_TX_PLAYBACK_DAI_ID, strlen(pcm_id)) ||
 	    strnstr(pcm_id, VOLTE_TX_CAPTURE_DAI_ID, strlen(pcm_id)) ||
+<<<<<<< HEAD
 	    strnstr(pcm_id, VOLTE_TX_PLAYBACK_DAI_ID, strlen(pcm_id)) ||
 	    strnstr(pcm_id, VoMMode1_TX_CAPTURE_DAI_ID, strlen(pcm_id)) ||
 	    strnstr(pcm_id, VoMMode1_TX_PLAYBACK_DAI_ID, strlen(pcm_id)) ||
 	    strnstr(pcm_id, VoMMode2_TX_CAPTURE_DAI_ID, strlen(pcm_id)) ||
 	    strnstr(pcm_id, VoMMode2_TX_PLAYBACK_DAI_ID, strlen(pcm_id))) {
+=======
+	    strnstr(pcm_id, VOLTE_TX_PLAYBACK_DAI_ID, strlen(pcm_id))) {
+>>>>>>> p9x
 		return TX;
 	} else {
 		return RX;
@@ -863,6 +894,7 @@ done:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int msm_hpcm_configure_vmmode1_put(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_value *ucontrol)
 {
@@ -935,6 +967,8 @@ done:
 	return ret;
 }
 
+=======
+>>>>>>> p9x
 static int msm_hpcm_configure_volte_put(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
@@ -979,12 +1013,15 @@ static struct snd_kcontrol_new msm_hpcm_controls[] = {
 	SOC_SINGLE_MULTI_EXT("HPCM_VoLTE tappoint direction samplerate",
 			     SND_SOC_NOPM, 0, 16000 , 0, 3,
 			     NULL, msm_hpcm_configure_volte_put),
+<<<<<<< HEAD
 	SOC_SINGLE_MULTI_EXT("HPCM_VMMode1 tappoint direction samplerate",
 			     SND_SOC_NOPM, 0, 16000 , 0, 3,
 			     NULL, msm_hpcm_configure_vmmode1_put),
 	SOC_SINGLE_MULTI_EXT("HPCM_VMMode2 tappoint direction samplerate",
 			     SND_SOC_NOPM, 0, 16000 , 0, 3,
 			     NULL, msm_hpcm_configure_vmmode2_put),
+=======
+>>>>>>> p9x
 };
 
 /* Sample rates supported */

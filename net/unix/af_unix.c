@@ -428,7 +428,11 @@ static int unix_dgram_peer_wake_me(struct sock *sk, struct sock *other)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline int unix_writable(struct sock *sk)
+=======
+static int unix_writable(const struct sock *sk)
+>>>>>>> p9x
 {
 	return (atomic_read(&sk->sk_wmem_alloc) << 2) <= sk->sk_sndbuf;
 }
@@ -479,7 +483,11 @@ static void unix_sock_destructor(struct sock *sk)
 	WARN_ON(!sk_unhashed(sk));
 	WARN_ON(sk->sk_socket);
 	if (!sock_flag(sk, SOCK_DEAD)) {
+<<<<<<< HEAD
 		pr_info("Attempt to release alive unix socket: %p\n", sk);
+=======
+		WARN(1, "Attempt to release alive unix socket: %p\n", sk);
+>>>>>>> p9x
 		return;
 	}
 
@@ -1948,9 +1956,15 @@ static void unix_copy_addr(struct msghdr *msg, struct sock *sk)
 {
 	struct unix_address *addr = smp_load_acquire(&unix_sk(sk)->addr);
 
+<<<<<<< HEAD
 	if (addr) {
 		msg->msg_namelen = addr->len;
 		memcpy(msg->msg_name, addr->name, addr->len);
+=======
+	if (u->addr) {
+		msg->msg_namelen = u->addr->len;
+		memcpy(msg->msg_name, u->addr->name, u->addr->len);
+>>>>>>> p9x
 	}
 }
 
@@ -2133,11 +2147,14 @@ static int unix_stream_recvmsg(struct kiocb *iocb, struct socket *sock,
 	}
 
 	mutex_lock(&u->readlock);
+<<<<<<< HEAD
 
 	if (flags & MSG_PEEK)
 		skip = sk_peek_offset(sk, flags);
 	else
 		skip = 0;
+=======
+>>>>>>> p9x
 
 	do {
 		int chunk;
@@ -2175,6 +2192,7 @@ again:
 
 			if (signal_pending(current)) {
 				err = sock_intr_errno(timeo);
+				scm_destroy(siocb->scm);
 				goto out;
 			}
 
@@ -2246,12 +2264,18 @@ again:
 			if (UNIXCB(skb).fp)
 				siocb->scm->fp = scm_fp_dup(UNIXCB(skb).fp);
 
-			sk_peek_offset_fwd(sk, chunk);
+			if (skip) {
+				sk_peek_offset_fwd(sk, chunk);
+				skip -= chunk;
+			}
 
 			if (UNIXCB(skb).fp)
 				break;
 
+<<<<<<< HEAD
 			skip = 0;
+=======
+>>>>>>> p9x
 			last = skb;
 			unix_state_lock(sk);
 			skb = skb_peek_next(skb, &sk->sk_receive_queue);

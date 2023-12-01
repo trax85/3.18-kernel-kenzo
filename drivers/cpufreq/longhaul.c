@@ -615,7 +615,11 @@ static void longhaul_setup_voltagescaling(void)
 			pos = (speed - min_vid_speed) / kHz_step + minvid.pos;
 		else
 			pos = minvid.pos;
+<<<<<<< HEAD
 		freq_pos->driver_data |= mV_vrm_table[pos] << 8;
+=======
+		longhaul_table[j].driver_data |= mV_vrm_table[pos] << 8;
+>>>>>>> p9x
 		vid = vrm_mV_table[mV_vrm_table[pos]];
 		printk(KERN_INFO PFX "f: %d kHz, index: %d, vid: %d mV\n",
 			speed, (int)(freq_pos - longhaul_table), vid.mV);
@@ -917,7 +921,11 @@ static struct cpufreq_driver longhaul_driver = {
 	.get	= longhaul_get,
 	.init	= longhaul_cpu_init,
 	.name	= "longhaul",
+<<<<<<< HEAD
 	.attr	= cpufreq_generic_attr,
+=======
+	.attr	= longhaul_attr,
+>>>>>>> p9x
 };
 
 static const struct x86_cpu_id longhaul_id[] = {

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2014, 2017 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -96,7 +100,10 @@ static ssize_t sensors_name_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct sensors_classdev *sensors_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return snprintf(buf, PAGE_SIZE, "%s\n", sensors_cdev->name);
 }
 
@@ -104,7 +111,10 @@ static ssize_t sensors_vendor_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct sensors_classdev *sensors_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return snprintf(buf, PAGE_SIZE, "%s\n", sensors_cdev->vendor);
 }
 
@@ -112,7 +122,10 @@ static ssize_t sensors_version_show(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
 	struct sensors_classdev *sensors_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return snprintf(buf, PAGE_SIZE, "%d\n", sensors_cdev->version);
 }
 
@@ -120,7 +133,10 @@ static ssize_t sensors_handle_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct sensors_classdev *sensors_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return snprintf(buf, PAGE_SIZE, "%d\n", sensors_cdev->handle);
 }
 
@@ -128,7 +144,10 @@ static ssize_t sensors_type_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct sensors_classdev *sensors_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return snprintf(buf, PAGE_SIZE, "%d\n", sensors_cdev->type);
 }
 
@@ -136,7 +155,10 @@ static ssize_t sensors_max_delay_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct sensors_classdev *sensors_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return snprintf(buf, PAGE_SIZE, "%d\n", sensors_cdev->max_delay);
 }
 
@@ -144,7 +166,10 @@ static ssize_t sensors_flags_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct sensors_classdev *sensors_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return snprintf(buf, PAGE_SIZE, "%d\n", sensors_cdev->flags);
 }
 
@@ -152,7 +177,10 @@ static ssize_t sensors_max_range_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct sensors_classdev *sensors_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return snprintf(buf, PAGE_SIZE, "%s\n", sensors_cdev->max_range);
 }
 
@@ -160,7 +188,10 @@ static ssize_t sensors_resolution_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct sensors_classdev *sensors_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return snprintf(buf, PAGE_SIZE, "%s\n", sensors_cdev->resolution);
 }
 
@@ -168,7 +199,10 @@ static ssize_t sensors_power_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct sensors_classdev *sensors_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return snprintf(buf, PAGE_SIZE, "%s\n", sensors_cdev->sensor_power);
 }
 
@@ -176,7 +210,10 @@ static ssize_t sensors_min_delay_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct sensors_classdev *sensors_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return snprintf(buf, PAGE_SIZE, "%d\n", sensors_cdev->min_delay);
 }
 
@@ -184,7 +221,10 @@ static ssize_t sensors_fifo_event_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct sensors_classdev *sensors_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return snprintf(buf, PAGE_SIZE, "%d\n",
 			sensors_cdev->fifo_reserved_event_count);
 }
@@ -193,7 +233,10 @@ static ssize_t sensors_fifo_max_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct sensors_classdev *sensors_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return snprintf(buf, PAGE_SIZE, "%d\n",
 			sensors_cdev->fifo_max_event_count);
 }
@@ -230,7 +273,10 @@ static ssize_t sensors_enable_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct sensors_classdev *sensors_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return snprintf(buf, PAGE_SIZE, "%u\n",
 			sensors_cdev->enabled);
 }
@@ -266,7 +312,10 @@ static ssize_t sensors_delay_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct sensors_classdev *sensors_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return snprintf(buf, PAGE_SIZE, "%u\n",
 			sensors_cdev->delay_msec);
 }
@@ -331,7 +380,10 @@ static ssize_t sensors_max_latency_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct sensors_classdev *sensors_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return snprintf(buf, PAGE_SIZE,
 		"%u\n", sensors_cdev->max_latency);
 }
@@ -367,7 +419,10 @@ static ssize_t sensors_flush_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct sensors_classdev *sensors_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return snprintf(buf, PAGE_SIZE,
 		"Flush handler %s\n",
 			(sensors_cdev->sensors_flush == NULL)
@@ -404,7 +459,10 @@ static ssize_t sensors_enable_wakeup_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct sensors_classdev *sensors_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return snprintf(buf, PAGE_SIZE, "%d\n", sensors_cdev->wakeup);
 }
 
@@ -413,7 +471,10 @@ static ssize_t sensors_calibrate_show(struct device *dev,
 		struct device_attribute *atte, char *buf)
 {
 	struct sensors_classdev *sensors_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	if (sensors_cdev->params == NULL) {
 		dev_err(dev, "Invalid sensor params\n");
 		return -EINVAL;
@@ -470,6 +531,7 @@ static ssize_t sensors_calibrate_store(struct device *dev,
 	return size;
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(name, 0444, sensors_name_show, NULL);
 static DEVICE_ATTR(vendor, 0444, sensors_vendor_show, NULL);
 static DEVICE_ATTR(version, 0444, sensors_version_show, NULL);
@@ -519,6 +581,34 @@ static struct attribute *sensors_class_attrs[] = {
 	NULL,
 };
 ATTRIBUTE_GROUPS(sensors_class);
+=======
+static struct device_attribute sensors_class_attrs[] = {
+	__ATTR(name, 0444, sensors_name_show, NULL),
+	__ATTR(vendor, 0444, sensors_vendor_show, NULL),
+	__ATTR(version, 0444, sensors_version_show, NULL),
+	__ATTR(handle, 0444, sensors_handle_show, NULL),
+	__ATTR(type, 0444, sensors_type_show, NULL),
+	__ATTR(max_range, 0444, sensors_max_range_show, NULL),
+	__ATTR(resolution, 0444, sensors_resolution_show, NULL),
+	__ATTR(sensor_power, 0444, sensors_power_show, NULL),
+	__ATTR(min_delay, 0444, sensors_min_delay_show, NULL),
+	__ATTR(fifo_reserved_event_count, 0444, sensors_fifo_event_show, NULL),
+	__ATTR(fifo_max_event_count, 0444, sensors_fifo_max_show, NULL),
+	__ATTR(max_delay, 0444, sensors_max_delay_show, NULL),
+	__ATTR(flags, 0444, sensors_flags_show, NULL),
+	__ATTR(enable, 0664, sensors_enable_show, sensors_enable_store),
+	__ATTR(enable_wakeup, 0664, sensors_enable_wakeup_show,
+			sensors_enable_wakeup_store),
+	__ATTR(poll_delay, 0664, sensors_delay_show, sensors_delay_store),
+	__ATTR(self_test, 0440, sensors_test_show, NULL),
+	__ATTR(max_latency, 0660, sensors_max_latency_show,
+			sensors_max_latency_store),
+	__ATTR(flush, 0660, sensors_flush_show, sensors_flush_store),
+	__ATTR(calibrate, 0664, sensors_calibrate_show,
+			sensors_calibrate_store),
+	__ATTR_NULL,
+};
+>>>>>>> p9x
 
 /**
  * sensors_classdev_register - register a new object of sensors_classdev class.
@@ -562,7 +652,11 @@ static int __init sensors_init(void)
 	sensors_class = class_create(THIS_MODULE, "sensors");
 	if (IS_ERR(sensors_class))
 		return PTR_ERR(sensors_class);
+<<<<<<< HEAD
 	sensors_class->dev_groups = sensors_class_groups;
+=======
+	sensors_class->dev_attrs = sensors_class_attrs;
+>>>>>>> p9x
 	return 0;
 }
 

@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2014, 2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -74,6 +78,11 @@ int ion_cp_secure_buffer(struct ion_buffer *buffer, int version, void *data,
 
 int ion_cp_unsecure_buffer(struct ion_buffer *buffer, int force_unsecure);
 
+<<<<<<< HEAD
+=======
+bool msm_secure_v2_is_supported(void);
+
+>>>>>>> p9x
 #else
 static inline int ion_cp_change_chunks_state(unsigned long chunks,
 			unsigned int nchunks, unsigned int chunk_size,
@@ -108,6 +117,14 @@ static inline int ion_cp_unsecure_buffer(struct ion_buffer *buffer,
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
+=======
+static inline bool msm_secure_v2_is_supported(void)
+{
+	return false;
+}
+
+>>>>>>> p9x
 #endif
 
 #endif

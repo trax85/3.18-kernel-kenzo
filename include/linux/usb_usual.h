@@ -67,6 +67,7 @@
 		/* Initial READ(10) (and others) must be retried */	\
 	US_FLAG(WRITE_CACHE,	0x00200000)			\
 		/* Write Cache status is not available */	\
+<<<<<<< HEAD
 	US_FLAG(NEEDS_CAP16,	0x00400000)			\
 		/* cannot handle READ_CAPACITY_10 */		\
 	US_FLAG(IGNORE_UAS,	0x00800000)			\
@@ -81,6 +82,10 @@
 		/* Sets max_sectors to 240 */			\
 	US_FLAG(NO_REPORT_LUNS,	0x10000000)			\
 		/* Cannot handle REPORT_LUNS */			\
+=======
+	US_FLAG(NEEDS_CAP16,	0x00400000)
+		/* cannot handle READ_CAPACITY_10 */
+>>>>>>> p9x
 
 #define US_FLAG(name, value)	US_FL_##name = value ,
 enum { US_DO_ALL_FLAGS };

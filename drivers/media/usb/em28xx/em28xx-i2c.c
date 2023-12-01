@@ -501,6 +501,7 @@ static int em28xx_i2c_xfer(struct i2c_adapter *i2c_adap,
 	int addr, rc, i;
 	u8 reg;
 
+<<<<<<< HEAD
 	/* prevent i2c xfer attempts after device is disconnected
 	   some fe's try to do i2c writes/reads from their release
 	   interfaces when called in disconnect path */
@@ -510,6 +511,10 @@ static int em28xx_i2c_xfer(struct i2c_adapter *i2c_adap,
 	rc = rt_mutex_trylock(&dev->i2c_bus_lock);
 	if (rc < 0)
 		return rc;
+=======
+	if (!rt_mutex_trylock(&dev->i2c_bus_lock))
+		return -EAGAIN;
+>>>>>>> p9x
 
 	/* Switch I2C bus if needed */
 	if (bus != dev->cur_i2c_bus &&

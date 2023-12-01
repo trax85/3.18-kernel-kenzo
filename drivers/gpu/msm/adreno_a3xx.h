@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -13,6 +17,7 @@
 #ifndef __A3XX_H
 #define __A3XX_H
 
+<<<<<<< HEAD
 #include "a3xx_reg.h"
 
 #define A3XX_IRQ_FLAGS \
@@ -41,6 +46,8 @@
 	{ BIT(A3XX_INT_MISC_HANG_DETECT), "MISC_HANG_DETECT" }, \
 	{ BIT(A3XX_INT_UCHE_OOB_ACCESS), "UCHE_OOB_ACCESS" }
 
+=======
+>>>>>>> p9x
 unsigned int a3xx_irq_pending(struct adreno_device *adreno_dev);
 
 int a3xx_microcode_read(struct adreno_device *adreno_dev);

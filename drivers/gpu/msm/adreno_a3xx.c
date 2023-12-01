@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -27,7 +31,10 @@
 #include "adreno_trace.h"
 #include "adreno_pm4types.h"
 #include "adreno_perfcounter.h"
+<<<<<<< HEAD
 #include "adreno_snapshot.h"
+=======
+>>>>>>> p9x
 
 /*
  * Define registers for a3xx that contain addresses used by the
@@ -110,6 +117,7 @@ const unsigned int a3xx_cp_addr_regs[ADRENO_CP_ADDR_MAX] = {
 				A3XX_SP_FS_OBJ_START_REG),
 };
 
+<<<<<<< HEAD
 static unsigned int adreno_a3xx_rbbm_clock_ctl_default(struct adreno_device
 							*adreno_dev)
 {
@@ -120,6 +128,31 @@ static unsigned int adreno_a3xx_rbbm_clock_ctl_default(struct adreno_device
 	else if (adreno_is_a330(adreno_dev))
 		return A330_RBBM_CLOCK_CTL_DEFAULT;
 	return A3XX_RBBM_CLOCK_CTL_DEFAULT;
+=======
+unsigned int adreno_a3xx_rbbm_clock_ctl_default(struct adreno_device
+							*adreno_dev)
+{
+	if (adreno_is_a304(adreno_dev))
+		return A304_RBBM_CLOCK_CTL_DEFAULT;
+	else if (adreno_is_a305(adreno_dev))
+		return A305_RBBM_CLOCK_CTL_DEFAULT;
+	else if (adreno_is_a305c(adreno_dev))
+		return A305C_RBBM_CLOCK_CTL_DEFAULT;
+	else if (adreno_is_a306(adreno_dev))
+		return A306_RBBM_CLOCK_CTL_DEFAULT;
+	else if (adreno_is_a310(adreno_dev))
+		return A310_RBBM_CLOCK_CTL_DEFAULT;
+	else if (adreno_is_a320(adreno_dev))
+		return A320_RBBM_CLOCK_CTL_DEFAULT;
+	else if (adreno_is_a330v2(adreno_dev))
+		return A330v2_RBBM_CLOCK_CTL_DEFAULT;
+	else if (adreno_is_a330(adreno_dev))
+		return A330_RBBM_CLOCK_CTL_DEFAULT;
+	else if (adreno_is_a305b(adreno_dev))
+		return A305B_RBBM_CLOCK_CTL_DEFAULT;
+
+	BUG_ON(1);
+>>>>>>> p9x
 }
 
 static const unsigned int _a3xx_pwron_fixup_fs_instructions[] = {
@@ -151,6 +184,7 @@ static const unsigned int _a3xx_pwron_fixup_fs_instructions[] = {
 	0x00000000, 0x03000000, 0x00000000, 0x00000000,
 };
 
+<<<<<<< HEAD
 static void a3xx_efuse_speed_bin(struct adreno_device *adreno_dev)
 {
 	unsigned int val;
@@ -190,6 +224,10 @@ static void a3xx_check_features(struct adreno_device *adreno_dev)
 
 /**
  * _a3xx_pwron_fixup() - Initialize a special command buffer to run a
+=======
+/**
+ * adreno_a3xx_pwron_fixup_init() - Initalize a special command buffer to run a
+>>>>>>> p9x
  * post-power collapse shader workaround
  * @adreno_dev: Pointer to a adreno_device struct
  *
@@ -199,7 +237,11 @@ static void a3xx_check_features(struct adreno_device *adreno_dev)
  *
  * Returns: 0 on success or negative on error
  */
+<<<<<<< HEAD
 static int _a3xx_pwron_fixup(struct adreno_device *adreno_dev)
+=======
+int adreno_a3xx_pwron_fixup_init(struct adreno_device *adreno_dev)
+>>>>>>> p9x
 {
 	unsigned int *cmds;
 	int count = ARRAY_SIZE(_a3xx_pwron_fixup_fs_instructions);
@@ -209,9 +251,15 @@ static int _a3xx_pwron_fixup(struct adreno_device *adreno_dev)
 	if (test_bit(ADRENO_DEVICE_PWRON_FIXUP, &adreno_dev->priv))
 		return 0;
 
+<<<<<<< HEAD
 	ret = kgsl_allocate_global(KGSL_DEVICE(adreno_dev),
 		&adreno_dev->pwron_fixup, PAGE_SIZE,
 		KGSL_MEMFLAGS_GPUREADONLY, 0, "pwron_fixup");
+=======
+	ret = kgsl_allocate_global(&adreno_dev->dev,
+		&adreno_dev->pwron_fixup, PAGE_SIZE,
+		KGSL_MEMFLAGS_GPUREADONLY, 0);
+>>>>>>> p9x
 
 	if (ret)
 		return ret;
@@ -631,6 +679,7 @@ static int _a3xx_pwron_fixup(struct adreno_device *adreno_dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void a3xx_platform_setup(struct adreno_device *adreno_dev)
 {
 	struct adreno_gpudev *gpudev;
@@ -652,6 +701,41 @@ static int a3xx_send_me_init(struct adreno_device *adreno_dev,
 	unsigned int *cmds;
 	int ret;
 
+=======
+/*
+ * a3xx_gpudev_init() - Initialize gpudev specific fields
+ * @adreno_dev: Pointer to adreno device
+ */
+void a3xx_gpudev_init(struct adreno_device *adreno_dev)
+{
+	struct adreno_gpudev *gpudev;
+	const struct adreno_reg_offsets *reg_offsets;
+
+	if (adreno_is_a306(adreno_dev)) {
+		gpudev = ADRENO_GPU_DEVICE(adreno_dev);
+		reg_offsets = gpudev->reg_offsets;
+		reg_offsets->offsets[ADRENO_REG_VBIF_XIN_HALT_CTRL0] =
+			A3XX_VBIF2_XIN_HALT_CTRL0;
+		reg_offsets->offsets[ADRENO_REG_VBIF_XIN_HALT_CTRL1] =
+			A3XX_VBIF2_XIN_HALT_CTRL1;
+		gpudev->vbif_xin_halt_ctrl0_mask =
+				A3XX_VBIF2_XIN_HALT_CTRL0_MASK;
+	}
+}
+
+/*
+ * a3xx_rb_init() - Initialize ringbuffer
+ * @adreno_dev: Pointer to adreno device
+ * @rb: Pointer to the ringbuffer of device
+ *
+ * Submit commands for ME initialization, common function shared between
+ * a3xx devices
+ */
+static int a3xx_rb_init(struct adreno_device *adreno_dev,
+			 struct adreno_ringbuffer *rb)
+{
+	unsigned int *cmds;
+>>>>>>> p9x
 	cmds = adreno_ringbuffer_allocspace(rb, 18);
 	if (IS_ERR(cmds))
 		return PTR_ERR(cmds);
@@ -681,6 +765,7 @@ static int a3xx_send_me_init(struct adreno_device *adreno_dev,
 	*cmds++ = 0x00000000;
 	*cmds++ = 0x00000000;
 
+<<<<<<< HEAD
 	ret = adreno_ringbuffer_submit_spin(rb, NULL, 2000);
 	if (ret) {
 		struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
@@ -742,6 +827,11 @@ static void a3xx_init(struct adreno_device *adreno_dev)
 		gpudev->snapshot_data->sect_sizes->cp_merciu =
 					A320_SNAPSHOT_CP_MERCIU_SECTION_SIZE;
 	}
+=======
+	adreno_ringbuffer_submit(rb, NULL);
+
+	return 0;
+>>>>>>> p9x
 }
 
 /*
@@ -749,9 +839,15 @@ static void a3xx_init(struct adreno_device *adreno_dev)
  * @adreno_dev: Pointer to device
  * @bit: Interrupt bit
  */
+<<<<<<< HEAD
 static void a3xx_err_callback(struct adreno_device *adreno_dev, int bit)
 {
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
+=======
+void a3xx_err_callback(struct adreno_device *adreno_dev, int bit)
+{
+	struct kgsl_device *device = &adreno_dev->dev;
+>>>>>>> p9x
 	unsigned int reg;
 
 	switch (bit) {
@@ -762,7 +858,11 @@ static void a3xx_err_callback(struct adreno_device *adreno_dev, int bit)
 		 * Return the word address of the erroring register so that it
 		 * matches the register specification
 		 */
+<<<<<<< HEAD
 		KGSL_DRV_CRIT_RATELIMIT(device,
+=======
+		KGSL_DRV_CRIT(device,
+>>>>>>> p9x
 			"RBBM | AHB bus error | %s | addr=%x | ports=%x:%x\n",
 			reg & (1 << 28) ? "WRITE" : "READ",
 			(reg & 0xFFFFF) >> 2, (reg >> 20) & 0x3,
@@ -770,7 +870,12 @@ static void a3xx_err_callback(struct adreno_device *adreno_dev, int bit)
 
 		/* Clear the error */
 		kgsl_regwrite(device, A3XX_RBBM_AHB_CMD, (1 << 3));
+<<<<<<< HEAD
 		break;
+=======
+
+		return;
+>>>>>>> p9x
 	}
 	case A3XX_INT_RBBM_ATB_BUS_OVERFLOW:
 		KGSL_DRV_CRIT_RATELIMIT(device, "RBBM: ATB bus oveflow\n");
@@ -794,11 +899,19 @@ static void a3xx_err_callback(struct adreno_device *adreno_dev, int bit)
 		break;
 	case A3XX_INT_CP_REG_PROTECT_FAULT:
 		kgsl_regread(device, A3XX_CP_PROTECT_STATUS, &reg);
+<<<<<<< HEAD
 		KGSL_DRV_CRIT_RATELIMIT(device,
 			"CP | Protected mode error| %s | addr=%x\n",
 			reg & (1 << 24) ? "WRITE" : "READ",
 			(reg & 0xFFFFF) >> 2);
 		break;
+=======
+		KGSL_DRV_CRIT(device,
+			"CP | Protected mode error| %s | addr=%x\n",
+			reg & (1 << 24) ? "WRITE" : "READ",
+			(reg & 0xFFFFF) >> 2);
+		return;
+>>>>>>> p9x
 	case A3XX_INT_CP_AHB_ERROR_HALT:
 		KGSL_DRV_CRIT_RATELIMIT(device,
 			"ringbuffer AHB error interrupt\n");
@@ -821,12 +934,19 @@ static void a3xx_err_callback(struct adreno_device *adreno_dev, int bit)
 	 (1 << A3XX_INT_CP_IB1_INT) |            \
 	 (1 << A3XX_INT_CP_IB2_INT) |            \
 	 (1 << A3XX_INT_CP_RB_INT) |             \
+<<<<<<< HEAD
 	 (1 << A3XX_INT_CACHE_FLUSH_TS) |	 \
+=======
+>>>>>>> p9x
 	 (1 << A3XX_INT_CP_REG_PROTECT_FAULT) |  \
 	 (1 << A3XX_INT_CP_AHB_ERROR_HALT) |     \
 	 (1 << A3XX_INT_UCHE_OOB_ACCESS))
 
+<<<<<<< HEAD
 static struct adreno_irq_funcs a3xx_irq_funcs[32] = {
+=======
+static struct adreno_irq_funcs a3xx_irq_funcs[] = {
+>>>>>>> p9x
 	ADRENO_IRQ_CALLBACK(NULL),                    /* 0 - RBBM_GPU_IDLE */
 	ADRENO_IRQ_CALLBACK(a3xx_err_callback),  /* 1 - RBBM_AHB_ERROR */
 	ADRENO_IRQ_CALLBACK(NULL),  /* 2 - RBBM_REG_TIMEOUT */
@@ -849,7 +969,11 @@ static struct adreno_irq_funcs a3xx_irq_funcs[32] = {
 	ADRENO_IRQ_CALLBACK(NULL),	       /* 17 - CP_RB_DONE_TS */
 	ADRENO_IRQ_CALLBACK(NULL),	       /* 18 - CP_VS_DONE_TS */
 	ADRENO_IRQ_CALLBACK(NULL),	       /* 19 - CP_PS_DONE_TS */
+<<<<<<< HEAD
 	ADRENO_IRQ_CALLBACK(adreno_cp_callback), /* 20 - CP_CACHE_FLUSH_TS */
+=======
+	ADRENO_IRQ_CALLBACK(NULL),	       /* 20 - CP_CACHE_FLUSH_TS */
+>>>>>>> p9x
 	/* 21 - CP_AHB_ERROR_FAULT */
 	ADRENO_IRQ_CALLBACK(a3xx_err_callback),
 	ADRENO_IRQ_CALLBACK(NULL),	       /* 22 - Unused */
@@ -857,10 +981,18 @@ static struct adreno_irq_funcs a3xx_irq_funcs[32] = {
 	/* 24 - MISC_HANG_DETECT */
 	ADRENO_IRQ_CALLBACK(adreno_hang_int_callback),
 	ADRENO_IRQ_CALLBACK(a3xx_err_callback),  /* 25 - UCHE_OOB_ACCESS */
+<<<<<<< HEAD
+=======
+	/* 26 to 31 - Unused */
+>>>>>>> p9x
 };
 
 static struct adreno_irq a3xx_irq = {
 	.funcs = a3xx_irq_funcs,
+<<<<<<< HEAD
+=======
+	.funcs_count = ARRAY_SIZE(a3xx_irq_funcs),
+>>>>>>> p9x
 	.mask = A3XX_INT_MASK,
 };
 
@@ -919,6 +1051,7 @@ static const struct adreno_vbif_data a306_vbif[] = {
 	{0, 0},
 };
 
+<<<<<<< HEAD
 static const struct adreno_vbif_data a306a_vbif[] = {
 	{ A3XX_VBIF_ROUND_ROBIN_QOS_ARB, 0x0003 },
 	{ A3XX_VBIF_OUT_RD_LIM_CONF0, 0x00000010 },
@@ -926,6 +1059,8 @@ static const struct adreno_vbif_data a306a_vbif[] = {
 	{0, 0},
 };
 
+=======
+>>>>>>> p9x
 static const struct adreno_vbif_data a310_vbif[] = {
 	{ A3XX_VBIF_ABIT_SORT, 0x0001000F },
 	{ A3XX_VBIF_ABIT_SORT_CONF, 0x000000A4 },
@@ -1022,7 +1157,10 @@ static const struct adreno_vbif_platform a3xx_vbif_platforms[] = {
 	{ adreno_is_a305, a305_vbif },
 	{ adreno_is_a305c, a305c_vbif },
 	{ adreno_is_a306, a306_vbif },
+<<<<<<< HEAD
 	{ adreno_is_a306a, a306a_vbif },
+=======
+>>>>>>> p9x
 	{ adreno_is_a310, a310_vbif },
 	{ adreno_is_a320, a320_vbif },
 	/* A330v2.1 needs to be ahead of A330v2 so the right device matches */
@@ -1253,7 +1391,11 @@ static struct adreno_perfcounters a3xx_perfcounters = {
 	ARRAY_SIZE(a3xx_perfcounter_groups),
 };
 
+<<<<<<< HEAD
 static struct adreno_ft_perf_counters a3xx_ft_perf_counters[] = {
+=======
+struct adreno_ft_perf_counters a3xx_ft_perf_counters[] = {
+>>>>>>> p9x
 	{KGSL_PERFCOUNTER_GROUP_SP, SP_ALU_ACTIVE_CYCLES},
 	{KGSL_PERFCOUNTER_GROUP_SP, SP0_ICL1_MISSES},
 	{KGSL_PERFCOUNTER_GROUP_SP, SP_FS_CFLOW_INSTRUCTIONS},
@@ -1269,8 +1411,12 @@ static void a3xx_perfcounter_init(struct adreno_device *adreno_dev)
 		a3xx_perfcounters_sp[3].countable = KGSL_PERFCOUNTER_BROKEN;
 
 	if (counters &&
+<<<<<<< HEAD
 		(adreno_is_a306(adreno_dev) || adreno_is_a304(adreno_dev) ||
 		adreno_is_a306a(adreno_dev))) {
+=======
+		(adreno_is_a306(adreno_dev) || adreno_is_a304(adreno_dev))) {
+>>>>>>> p9x
 		counters->groups[KGSL_PERFCOUNTER_GROUP_VBIF].regs =
 			a3xx_perfcounters_vbif2;
 		counters->groups[KGSL_PERFCOUNTER_GROUP_VBIF_PWR].regs =
@@ -1299,7 +1445,11 @@ static void a3xx_perfcounter_close(struct adreno_device *adreno_dev)
  */
 static void a3xx_protect_init(struct adreno_device *adreno_dev)
 {
+<<<<<<< HEAD
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
+=======
+	struct kgsl_device *device = &adreno_dev->dev;
+>>>>>>> p9x
 	int index = 0;
 	struct kgsl_protected_registers *iommu_regs;
 
@@ -1338,7 +1488,11 @@ static void a3xx_protect_init(struct adreno_device *adreno_dev)
 
 static void a3xx_start(struct adreno_device *adreno_dev)
 {
+<<<<<<< HEAD
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
+=======
+	struct kgsl_device *device = &adreno_dev->dev;
+>>>>>>> p9x
 	struct adreno_gpudev *gpudev = ADRENO_GPU_DEVICE(adreno_dev);
 
 	adreno_vbif_start(adreno_dev, a3xx_vbif_platforms,
@@ -1404,6 +1558,7 @@ static void a3xx_start(struct adreno_device *adreno_dev)
 	kgsl_regwrite(device, A3XX_RBBM_PERFCTR_CTL, 0x01);
 
 	kgsl_regwrite(device, A3XX_CP_DEBUG, A3XX_CP_DEBUG_DEFAULT);
+<<<<<<< HEAD
 
 	/* CP ROQ queue sizes (bytes) - RB:16, ST:16, IB1:32, IB2:64 */
 	if (adreno_is_a305b(adreno_dev) ||
@@ -1413,6 +1568,8 @@ static void a3xx_start(struct adreno_device *adreno_dev)
 	else
 		kgsl_regwrite(device, A3XX_CP_QUEUE_THRESHOLDS, 0x000E0602);
 
+=======
+>>>>>>> p9x
 }
 
 static struct adreno_coresight_register a3xx_coresight_registers[] = {
@@ -1465,10 +1622,13 @@ static struct adreno_coresight a3xx_coresight = {
 	.groups = a3xx_coresight_groups,
 };
 
+<<<<<<< HEAD
 static unsigned int a3xx_int_bits[ADRENO_INT_BITS_MAX] = {
 	ADRENO_INT_DEFINE(ADRENO_INT_RBBM_AHB_ERROR, A3XX_INT_RBBM_AHB_ERROR),
 };
 
+=======
+>>>>>>> p9x
 /* Register offset defines for A3XX */
 static unsigned int a3xx_register_offsets[ADRENO_REG_REGISTER_MAX] = {
 	ADRENO_REG_DEFINE(ADRENO_REG_CP_ME_RAM_WADDR, A3XX_CP_ME_RAM_WADDR),
@@ -1530,10 +1690,13 @@ static unsigned int a3xx_register_offsets[ADRENO_REG_REGISTER_MAX] = {
 			A3XX_UCHE_CACHE_INVALIDATE0_REG),
 	ADRENO_REG_DEFINE(ADRENO_REG_UCHE_INVALIDATE1,
 			A3XX_UCHE_CACHE_INVALIDATE1_REG),
+<<<<<<< HEAD
 	ADRENO_REG_DEFINE(ADRENO_REG_RBBM_PERFCTR_RBBM_0_LO,
 			A3XX_RBBM_PERFCTR_RBBM_0_LO),
 	ADRENO_REG_DEFINE(ADRENO_REG_RBBM_PERFCTR_RBBM_0_HI,
 			A3XX_RBBM_PERFCTR_RBBM_0_HI),
+=======
+>>>>>>> p9x
 	ADRENO_REG_DEFINE(ADRENO_REG_RBBM_PERFCTR_LOAD_VALUE_LO,
 				A3XX_RBBM_PERFCTR_LOAD_VALUE_LO),
 	ADRENO_REG_DEFINE(ADRENO_REG_RBBM_PERFCTR_LOAD_VALUE_HI,
@@ -1544,7 +1707,11 @@ static unsigned int a3xx_register_offsets[ADRENO_REG_REGISTER_MAX] = {
 				A3XX_VBIF_XIN_HALT_CTRL1),
 };
 
+<<<<<<< HEAD
 static const struct adreno_reg_offsets a3xx_reg_offsets = {
+=======
+const struct adreno_reg_offsets a3xx_reg_offsets = {
+>>>>>>> p9x
 	.offsets = a3xx_register_offsets,
 	.offset_0 = ADRENO_REG_REGISTER_MAX,
 };
@@ -1596,7 +1763,11 @@ static int _load_firmware(struct kgsl_device *device, const char *fwfile,
 
 int a3xx_microcode_read(struct adreno_device *adreno_dev)
 {
+<<<<<<< HEAD
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
+=======
+	struct kgsl_device *device = &adreno_dev->dev;
+>>>>>>> p9x
 
 	if (adreno_dev->pm4_fw == NULL) {
 		int len;
@@ -1651,49 +1822,89 @@ int a3xx_microcode_read(struct adreno_device *adreno_dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 /**
  * load_pm4_ucode() - Load pm4 ucode
  * @adreno_dev: Pointer to an adreno device
+=======
+
+/**
+ * adreno_ringbuffer_load_pm4_ucode() - Load pm4 ucode
+ * @device: Pointer to a KGSL device
+>>>>>>> p9x
  * @start: Starting index in pm4 ucode to load
  * @end: Ending index of pm4 ucode to load
  * @addr: Address to load the pm4 ucode
  *
  * Load the pm4 ucode from @start at @addr.
  */
+<<<<<<< HEAD
 static inline void load_pm4_ucode(struct adreno_device *adreno_dev,
 			unsigned int start, unsigned int end, unsigned int addr)
 {
+=======
+static inline int adreno_ringbuffer_load_pm4_ucode(struct kgsl_device *device,
+			unsigned int start, unsigned int end, unsigned int addr)
+{
+	struct adreno_device *adreno_dev = ADRENO_DEVICE(device);
+>>>>>>> p9x
 	int i;
 
 	adreno_writereg(adreno_dev, ADRENO_REG_CP_ME_RAM_WADDR, addr);
 	for (i = start; i < end; i++)
 		adreno_writereg(adreno_dev, ADRENO_REG_CP_ME_RAM_DATA,
 					adreno_dev->pm4_fw[i]);
+<<<<<<< HEAD
 }
 /**
  * load_pfp_ucode() - Load pfp ucode
  * @adreno_dev: Pointer to an adreno device
+=======
+
+	return 0;
+}
+
+/**
+ * adreno_ringbuffer_load_pfp_ucode() - Load pfp ucode
+ * @device: Pointer to a KGSL device
+>>>>>>> p9x
  * @start: Starting index in pfp ucode to load
  * @end: Ending index of pfp ucode to load
  * @addr: Address to load the pfp ucode
  *
  * Load the pfp ucode from @start at @addr.
  */
+<<<<<<< HEAD
 static inline void load_pfp_ucode(struct adreno_device *adreno_dev,
 			unsigned int start, unsigned int end, unsigned int addr)
 {
+=======
+static inline int adreno_ringbuffer_load_pfp_ucode(struct kgsl_device *device,
+			unsigned int start, unsigned int end, unsigned int addr)
+{
+	struct adreno_device *adreno_dev = ADRENO_DEVICE(device);
+>>>>>>> p9x
 	int i;
 
 	adreno_writereg(adreno_dev, ADRENO_REG_CP_PFP_UCODE_ADDR, addr);
 	for (i = start; i < end; i++)
 		adreno_writereg(adreno_dev, ADRENO_REG_CP_PFP_UCODE_DATA,
 						adreno_dev->pfp_fw[i]);
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> p9x
 }
 
 /**
  * _ringbuffer_bootstrap_ucode() - Bootstrap GPU Ucode
+<<<<<<< HEAD
  * @adreno_dev: Pointer to an adreno device
  * @rb: The ringbuffer to boostrap the code into
+=======
+ * @rb: Pointer to adreno ringbuffer
+>>>>>>> p9x
  * @load_jt: If non zero only load Jump tables
  *
  * Bootstrap ucode for GPU
@@ -1709,6 +1920,7 @@ static inline void load_pfp_ucode(struct adreno_device *adreno_dev,
  * PFP dwords from microcode to bootstrap
  * PM4 size dwords from microcode to bootstrap
  */
+<<<<<<< HEAD
 static int _ringbuffer_bootstrap_ucode(struct adreno_device *adreno_dev,
 		struct adreno_ringbuffer *rb, unsigned int load_jt)
 {
@@ -1716,6 +1928,16 @@ static int _ringbuffer_bootstrap_ucode(struct adreno_device *adreno_dev,
 	unsigned int *cmds, bootstrap_size, rb_size;
 	int i = 0;
 	int ret;
+=======
+static int _ringbuffer_bootstrap_ucode(struct adreno_ringbuffer *rb,
+					unsigned int load_jt)
+{
+	unsigned int *cmds, bootstrap_size, rb_size;
+	int i = 0;
+	int ret;
+	struct kgsl_device *device = rb->device;
+	struct adreno_device *adreno_dev = ADRENO_DEVICE(device);
+>>>>>>> p9x
 	unsigned int pm4_size, pm4_idx, pm4_addr, pfp_size, pfp_idx, pfp_addr;
 
 	/* Only bootstrap jump tables of ucode */
@@ -1804,9 +2026,15 @@ static int _ringbuffer_bootstrap_ucode(struct adreno_device *adreno_dev,
 		*cmds++ = cp_type3_packet(CP_INTERRUPT, 1);
 		*cmds++ = 0;
 
+<<<<<<< HEAD
 		rb->_wptr = rb->_wptr - 2;
 		adreno_ringbuffer_submit(rb, NULL);
 		rb->_wptr = rb->_wptr + 2;
+=======
+		rb->wptr = rb->wptr - 2;
+		adreno_ringbuffer_submit(rb, NULL);
+		rb->wptr = rb->wptr + 2;
+>>>>>>> p9x
 	} else {
 		for (i = pfp_idx; i < adreno_dev->pfp_fw_size; i++)
 			*cmds++ = adreno_dev->pfp_fw[i];
@@ -1816,10 +2044,18 @@ static int _ringbuffer_bootstrap_ucode(struct adreno_device *adreno_dev,
 	}
 
 	/* idle device to validate bootstrap */
+<<<<<<< HEAD
 	ret = adreno_spin_idle(adreno_dev, 2000);
 
 	if (ret) {
 		KGSL_DRV_ERR(device, "microcode bootstrap failed to idle\n");
+=======
+	ret = adreno_spin_idle(device);
+
+	if (ret) {
+		KGSL_DRV_ERR(rb->device,
+		"microcode bootstrap failed to idle\n");
+>>>>>>> p9x
 		kgsl_device_snapshot(device, NULL);
 	}
 
@@ -1836,6 +2072,10 @@ int a3xx_microcode_load(struct adreno_device *adreno_dev,
 {
 	int status;
 	struct adreno_ringbuffer *rb = ADRENO_CURRENT_RINGBUFFER(adreno_dev);
+<<<<<<< HEAD
+=======
+	struct kgsl_device *device = rb->device;
+>>>>>>> p9x
 
 	if (start_type == ADRENO_START_COLD) {
 		/* If bootstrapping if supported to load ucode */
@@ -1851,6 +2091,7 @@ int a3xx_microcode_load(struct adreno_device *adreno_dev,
 			 * microcode.
 			 */
 
+<<<<<<< HEAD
 			load_pm4_ucode(adreno_dev, 1,
 				adreno_dev->gpucore->pm4_bstrp_size+1, 0);
 
@@ -1859,35 +2100,76 @@ int a3xx_microcode_load(struct adreno_device *adreno_dev,
 
 			/* Bootstrap rest of the ucode here */
 			status = _ringbuffer_bootstrap_ucode(adreno_dev, rb, 0);
+=======
+			status = adreno_ringbuffer_load_pm4_ucode(rb->device, 1,
+				adreno_dev->gpucore->pm4_bstrp_size+1, 0);
+			if (status != 0)
+				return status;
+
+			status = adreno_ringbuffer_load_pfp_ucode(rb->device, 1,
+				adreno_dev->gpucore->pfp_bstrp_size+1, 0);
+			if (status != 0)
+				return status;
+
+			/* Bootstrap rest of the ucode here */
+			status = _ringbuffer_bootstrap_ucode(rb, 0);
+>>>>>>> p9x
 			if (status != 0)
 				return status;
 
 		} else {
 			/* load the CP ucode using AHB writes */
+<<<<<<< HEAD
 			load_pm4_ucode(adreno_dev, 1, adreno_dev->pm4_fw_size,
 				0);
 
 			/* load the prefetch parser ucode using AHB writes */
 			load_pfp_ucode(adreno_dev, 1, adreno_dev->pfp_fw_size,
 				0);
+=======
+			status = adreno_ringbuffer_load_pm4_ucode(rb->device, 1,
+						adreno_dev->pm4_fw_size, 0);
+			if (status != 0)
+				return status;
+
+			/* load the prefetch parser ucode using AHB writes */
+			status = adreno_ringbuffer_load_pfp_ucode(rb->device, 1,
+						adreno_dev->pfp_fw_size, 0);
+			if (status != 0)
+				return status;
+>>>>>>> p9x
 		}
 	} else if (start_type == ADRENO_START_WARM) {
 			/* If bootstrapping if supported to load jump tables */
 		if (adreno_bootstrap_ucode(adreno_dev)) {
+<<<<<<< HEAD
 			status = _ringbuffer_bootstrap_ucode(adreno_dev, rb, 1);
+=======
+			status = _ringbuffer_bootstrap_ucode(rb, 1);
+>>>>>>> p9x
 			if (status != 0)
 				return status;
 
 		} else {
 			/* load the CP jump tables using AHB writes */
+<<<<<<< HEAD
 			load_pm4_ucode(adreno_dev,
 				adreno_dev->gpucore->pm4_jt_idx,
 				adreno_dev->pm4_fw_size,
 				adreno_dev->gpucore->pm4_jt_addr);
+=======
+			status = adreno_ringbuffer_load_pm4_ucode(device,
+				adreno_dev->gpucore->pm4_jt_idx,
+				adreno_dev->pm4_fw_size,
+				adreno_dev->gpucore->pm4_jt_addr);
+			if (status != 0)
+				return status;
+>>>>>>> p9x
 
 			/*
 			 * load the prefetch parser jump tables using AHB writes
 			 */
+<<<<<<< HEAD
 			load_pfp_ucode(adreno_dev,
 				adreno_dev->gpucore->pfp_jt_idx,
 				adreno_dev->pfp_fw_size,
@@ -1895,13 +2177,26 @@ int a3xx_microcode_load(struct adreno_device *adreno_dev,
 		}
 	} else
 		return -EINVAL;
+=======
+			status = adreno_ringbuffer_load_pfp_ucode(device,
+				adreno_dev->gpucore->pfp_jt_idx,
+				adreno_dev->pfp_fw_size,
+				adreno_dev->gpucore->pfp_jt_addr);
+			if (status != 0)
+				return status;
+		}
+	}
+>>>>>>> p9x
 
 	return 0;
 }
 
 struct adreno_gpudev adreno_a3xx_gpudev = {
 	.reg_offsets = &a3xx_reg_offsets,
+<<<<<<< HEAD
 	.int_bits = a3xx_int_bits,
+=======
+>>>>>>> p9x
 	.ft_perf_counters = a3xx_ft_perf_counters,
 	.ft_perf_counters_count = ARRAY_SIZE(a3xx_ft_perf_counters),
 	.perfcounters = &a3xx_perfcounters,
@@ -1910,10 +2205,18 @@ struct adreno_gpudev adreno_a3xx_gpudev = {
 	.snapshot_data = &a3xx_snapshot_data,
 	.num_prio_levels = 1,
 	.vbif_xin_halt_ctrl0_mask = A3XX_VBIF_XIN_HALT_CTRL0_MASK,
+<<<<<<< HEAD
 	.platform_setup = a3xx_platform_setup,
 	.rb_start = a3xx_rb_start,
 	.init = a3xx_init,
 	.microcode_read = a3xx_microcode_read,
+=======
+
+	.gpudev_init = a3xx_gpudev_init,
+	.rb_init = a3xx_rb_init,
+	.microcode_read = a3xx_microcode_read,
+	.microcode_load = a3xx_microcode_load,
+>>>>>>> p9x
 	.perfcounter_init = a3xx_perfcounter_init,
 	.perfcounter_close = a3xx_perfcounter_close,
 	.start = a3xx_start,

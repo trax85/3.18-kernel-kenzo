@@ -809,11 +809,20 @@ int mei_cl_read_start(struct mei_cl *cl, size_t length)
 		goto out;
 
 	cb->fop_type = MEI_FOP_READ;
+<<<<<<< HEAD
 	if (mei_hbuf_acquire(dev)) {
 		rets = mei_hbm_cl_flow_control_req(dev, cl);
 		if (rets < 0)
 			goto out;
 
+=======
+	if (dev->hbuf_is_ready) {
+		dev->hbuf_is_ready = false;
+		if (mei_hbm_cl_flow_control_req(dev, cl)) {
+			rets = -ENODEV;
+			goto err;
+		}
+>>>>>>> p9x
 		list_add_tail(&cb->list, &dev->read_list.list);
 	} else {
 		list_add_tail(&cb->list, &dev->ctrl_wr_list.list);
@@ -821,6 +830,7 @@ int mei_cl_read_start(struct mei_cl *cl, size_t length)
 
 	cl->read_cb = cb;
 
+<<<<<<< HEAD
 out:
 	cl_dbg(dev, cl, "rpm: autosuspend\n");
 	pm_runtime_mark_last_busy(dev->dev);
@@ -829,6 +839,11 @@ out:
 	if (rets)
 		mei_io_cb_free(cb);
 
+=======
+	return rets;
+err:
+	mei_io_cb_free(cb);
+>>>>>>> p9x
 	return rets;
 }
 
@@ -1103,8 +1118,25 @@ void mei_cl_all_wakeup(struct mei_device *dev)
  */
 void mei_cl_all_write_clear(struct mei_device *dev)
 {
+<<<<<<< HEAD
 	mei_io_list_free(&dev->write_list, NULL);
 	mei_io_list_free(&dev->write_waiting_list, NULL);
+=======
+	struct mei_cl_cb *cb, *next;
+	struct list_head *list;
+
+	list = &dev->write_list.list;
+	list_for_each_entry_safe(cb, next, list, list) {
+		list_del(&cb->list);
+		mei_io_cb_free(cb);
+	}
+
+	list = &dev->write_waiting_list.list;
+	list_for_each_entry_safe(cb, next, list, list) {
+		list_del(&cb->list);
+		mei_io_cb_free(cb);
+	}
+>>>>>>> p9x
 }
 
 

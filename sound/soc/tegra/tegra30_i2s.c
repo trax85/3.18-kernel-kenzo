@@ -193,7 +193,11 @@ static int tegra30_i2s_hw_params(struct snd_pcm_substream *substream,
 		cif_conf.direction = TEGRA30_AUDIOCIF_DIRECTION_RX;
 		reg = TEGRA30_I2S_CIF_RX_CTRL;
 	} else {
+<<<<<<< HEAD
 		cif_conf.direction = TEGRA30_AUDIOCIF_DIRECTION_TX;
+=======
+		val |= TEGRA30_AUDIOCIF_CTRL_DIRECTION_TX;
+>>>>>>> p9x
 		reg = TEGRA30_I2S_CIF_TX_CTRL;
 	}
 

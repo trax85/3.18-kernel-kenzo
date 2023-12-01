@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -14,7 +18,10 @@
 #include <linux/delay.h>
 #include "msm_jpeg_hw.h"
 #include "msm_jpeg_common.h"
+<<<<<<< HEAD
 #include "msm_camera_io_util.h"
+=======
+>>>>>>> p9x
 
 #include <linux/io.h>
 
@@ -203,6 +210,7 @@ void msm_jpeg_hw_fe_buffer_update(struct msm_jpeg_hw_buf *p_input,
 
 	if (pingpong_index == 0) {
 		hw_cmd_p = &hw_cmd_fe_ping_update[0];
+<<<<<<< HEAD
 		/* ensure write is done */
 		wmb();
 		msm_jpeg_hw_write(hw_cmd_p++, base);
@@ -213,27 +221,48 @@ void msm_jpeg_hw_fe_buffer_update(struct msm_jpeg_hw_buf *p_input,
 		wmb();
 		msm_jpeg_hw_write(hw_cmd_p++, base);
 		/* ensure write is done */
+=======
+		wmb();
+		msm_jpeg_hw_write(hw_cmd_p++, base);
+		wmb();
+		msm_jpeg_hw_write(hw_cmd_p++, base);
+		wmb();
+		msm_jpeg_hw_write(hw_cmd_p++, base);
+>>>>>>> p9x
 		wmb();
 		tmp_hw_cmd = *hw_cmd_p++;
 		tmp_hw_cmd.data = p_input->y_buffer_addr;
 		msm_jpeg_hw_write(&tmp_hw_cmd, base);
+<<<<<<< HEAD
 		/* ensure write is done */
 		wmb();
 		msm_jpeg_hw_write(hw_cmd_p++, base);
 		/* ensure write is done */
+=======
+		wmb();
+		msm_jpeg_hw_write(hw_cmd_p++, base);
+>>>>>>> p9x
 		wmb();
 		tmp_hw_cmd = *hw_cmd_p++;
 		tmp_hw_cmd.data = p_input->cbcr_buffer_addr;
 		msm_jpeg_hw_write(&tmp_hw_cmd, base);
+<<<<<<< HEAD
 		/* ensure write is done */
 		wmb();
 		msm_jpeg_hw_write(hw_cmd_p++, base);
 		/* ensure write is done */
+=======
+		wmb();
+		msm_jpeg_hw_write(hw_cmd_p++, base);
+>>>>>>> p9x
 		wmb();
 		tmp_hw_cmd = *hw_cmd_p++;
 		tmp_hw_cmd.data = p_input->pln2_addr;
 		msm_jpeg_hw_write(&tmp_hw_cmd, base);
+<<<<<<< HEAD
 		/* ensure write is done */
+=======
+>>>>>>> p9x
 		wmb();
 	}
 	return;
@@ -261,6 +290,7 @@ void msm_jpegdma_hw_fe_buffer_update(struct msm_jpeg_hw_buf *p_input,
 		return;
 
 	hw_cmd_p = &hw_dma_cmd_fe_ping_update[0];
+<<<<<<< HEAD
 	/* ensure write is done */
 	wmb();
 	msm_jpeg_hw_write(hw_cmd_p++, base);
@@ -268,16 +298,28 @@ void msm_jpegdma_hw_fe_buffer_update(struct msm_jpeg_hw_buf *p_input,
 	wmb();
 	msm_jpeg_hw_write(hw_cmd_p++, base);
 	/* ensure write is done */
+=======
+	wmb();
+	msm_jpeg_hw_write(hw_cmd_p++, base);
+	wmb();
+	msm_jpeg_hw_write(hw_cmd_p++, base);
+>>>>>>> p9x
 	wmb();
 	tmp_hw_cmd = *hw_cmd_p++;
 	tmp_hw_cmd.data = p_input->y_buffer_addr;
 	msm_jpeg_hw_write(&tmp_hw_cmd, base);
+<<<<<<< HEAD
 	/* ensure write is done */
+=======
+>>>>>>> p9x
 	wmb();
 	tmp_hw_cmd = *hw_cmd_p++;
 	tmp_hw_cmd.data = p_input->cbcr_buffer_addr;
 	msm_jpeg_hw_write(&tmp_hw_cmd, base);
+<<<<<<< HEAD
 	/* ensure write is done */
+=======
+>>>>>>> p9x
 	wmb();
 }
 
@@ -307,6 +349,7 @@ struct msm_jpeg_hw_cmd hw_cmd_we_ping_update[] = {
 void msm_jpeg_decode_status(void *base)
 {
 	uint32_t data;
+<<<<<<< HEAD
 	data = msm_camera_io_r(base + JPEG_DECODE_MCUS_DECODED_STATUS);
 	JPEG_DBG_HIGH("Decode MCUs decode status %u", data);
 	data = msm_camera_io_r(base + JPEG_DECODE_BITS_CONSUMED_STATUS);
@@ -316,6 +359,17 @@ void msm_jpeg_decode_status(void *base)
 	data = msm_camera_io_r(base + JPEG_DECODE_PRED_C_STATE);
 	JPEG_DBG_HIGH("Decode prediction C state %u", data);
 	data = msm_camera_io_r(base + JPEG_DECODE_RSM_STATE);
+=======
+	data = readl_relaxed(base + JPEG_DECODE_MCUS_DECODED_STATUS);
+	JPEG_DBG_HIGH("Decode MCUs decode status %u", data);
+	data = readl_relaxed(base + JPEG_DECODE_BITS_CONSUMED_STATUS);
+	JPEG_DBG_HIGH("Decode bits consumed status %u", data);
+	data = readl_relaxed(base + JPEG_DECODE_PRED_Y_STATE);
+	JPEG_DBG_HIGH("Decode prediction Y state %u", data);
+	data = readl_relaxed(base + JPEG_DECODE_PRED_C_STATE);
+	JPEG_DBG_HIGH("Decode prediction C state %u", data);
+	data = readl_relaxed(base + JPEG_DECODE_RSM_STATE);
+>>>>>>> p9x
 	JPEG_DBG_HIGH("Decode prediction RSM state %u", data);
 }
 
@@ -370,14 +424,20 @@ void msm_jpegdma_hw_we_buffer_update(struct msm_jpeg_hw_buf *p_input,
 	hw_cmd_p = &hw_dma_cmd_we_ping_update[0];
 	msm_jpeg_hw_write(hw_cmd_p++, base);
 
+<<<<<<< HEAD
 	/* ensure write is done */
+=======
+>>>>>>> p9x
 	wmb();
 	tmp_hw_cmd = *hw_cmd_p++;
 	tmp_hw_cmd.data = p_input->y_buffer_addr;
 	JPEG_DBG_HIGH("%s Output we 0 buffer address is %x\n", __func__,
 			p_input->y_buffer_addr);
 	msm_jpeg_hw_write(&tmp_hw_cmd, base);
+<<<<<<< HEAD
 	/* ensure write is done */
+=======
+>>>>>>> p9x
 	wmb();
 
 	tmp_hw_cmd = *hw_cmd_p++;
@@ -385,6 +445,7 @@ void msm_jpegdma_hw_we_buffer_update(struct msm_jpeg_hw_buf *p_input,
 	JPEG_DBG_HIGH("%s Output we 1 buffer address is %x\n", __func__,
 			p_input->cbcr_buffer_addr);
 	msm_jpeg_hw_write(&tmp_hw_cmd, base);
+<<<<<<< HEAD
 	/* ensure write is done */
 	wmb();
 }
@@ -702,6 +763,8 @@ void msm_jpegdma_hw_we_mmu_prefetch(struct msm_jpeg_hw_buf *buf, void *base)
 
 	msm_jpeg_hw_write(&tmp_hw_cmd, base);
 	/* ensure write is done */
+=======
+>>>>>>> p9x
 	wmb();
 }
 
@@ -722,6 +785,7 @@ void msm_jpeg_hw_reset(void *base, int size)
 	struct msm_jpeg_hw_cmd *hw_cmd_p;
 
 	hw_cmd_p = &hw_cmd_reset[0];
+<<<<<<< HEAD
 	/* ensure write is done */
 	wmb();
 	msm_jpeg_hw_write(hw_cmd_p++, base);
@@ -735,6 +799,16 @@ void msm_jpeg_hw_reset(void *base, int size)
 	wmb();
 	msm_jpeg_hw_write(hw_cmd_p, base);
 	/* ensure write is done */
+=======
+	wmb();
+	msm_jpeg_hw_write(hw_cmd_p++, base);
+	wmb();
+	msm_jpeg_hw_write(hw_cmd_p++, base);
+	wmb();
+	msm_jpeg_hw_write(hw_cmd_p++, base);
+	wmb();
+	msm_jpeg_hw_write(hw_cmd_p, base);
+>>>>>>> p9x
 	wmb();
 
 	return;
@@ -756,6 +830,7 @@ void msm_jpeg_hw_reset_dma(void *base, int size)
 	struct msm_jpeg_hw_cmd *hw_cmd_p;
 
 	hw_cmd_p = &hw_cmd_reset_dma[0];
+<<<<<<< HEAD
 	/* ensure write is done */
 	wmb();
 	msm_jpeg_hw_write(hw_cmd_p++, base);
@@ -769,6 +844,16 @@ void msm_jpeg_hw_reset_dma(void *base, int size)
 	wmb();
 	msm_jpeg_hw_write(hw_cmd_p, base);
 	/* ensure write is done */
+=======
+	wmb();
+	msm_jpeg_hw_write(hw_cmd_p++, base);
+	wmb();
+	msm_jpeg_hw_write(hw_cmd_p++, base);
+	wmb();
+	msm_jpeg_hw_write(hw_cmd_p++, base);
+	wmb();
+	msm_jpeg_hw_write(hw_cmd_p, base);
+>>>>>>> p9x
 	wmb();
 
 	return;
@@ -782,7 +867,11 @@ uint32_t msm_jpeg_hw_read(struct msm_jpeg_hw_cmd *hw_cmd_p,
 
 	paddr = jpeg_region_base + hw_cmd_p->offset;
 
+<<<<<<< HEAD
 	data = msm_camera_io_r(paddr);
+=======
+	data = readl_relaxed(paddr);
+>>>>>>> p9x
 	data &= hw_cmd_p->mask;
 
 	return data;
@@ -799,15 +888,23 @@ void msm_jpeg_hw_write(struct msm_jpeg_hw_cmd *hw_cmd_p,
 	if (hw_cmd_p->mask == 0xffffffff) {
 		old_data = 0;
 	} else {
+<<<<<<< HEAD
 		old_data = msm_camera_io_r(paddr);
+=======
+		old_data = readl_relaxed(paddr);
+>>>>>>> p9x
 		old_data &= ~hw_cmd_p->mask;
 	}
 
 	new_data = hw_cmd_p->data & hw_cmd_p->mask;
 	new_data |= old_data;
+<<<<<<< HEAD
 	JPEG_DBG("%s:%d] %pK %08x\n", __func__, __LINE__,
 		paddr, new_data);
 	msm_camera_io_w(new_data, paddr);
+=======
+	writel_relaxed(new_data, paddr);
+>>>>>>> p9x
 }
 
 int msm_jpeg_hw_wait(struct msm_jpeg_hw_cmd *hw_cmd_p, int m_us,
@@ -903,6 +1000,7 @@ int msm_jpeg_hw_exec_cmds(struct msm_jpeg_hw_cmd *hw_cmd_p, uint32_t m_cmds,
 
 void msm_jpeg_io_dump(void *base, int size)
 {
+<<<<<<< HEAD
 	char line_str[128];
 	void __iomem *addr = (void __iomem *)base;
 	int i;
@@ -942,6 +1040,28 @@ void msm_jpeg_io_dump(void *base, int size)
 			JPEG_DBG_HIGH("%s\n", line_str);
 			line_str[0] = '\0';
 			offset = 0;
+=======
+	char line_str[128], *p_str;
+	void __iomem *addr = (void __iomem *)base;
+	int i;
+	u32 *p = (u32 *) addr;
+	u32 data;
+	JPEG_DBG_HIGH("%s:%d] %pK %d", __func__, __LINE__, addr, size);
+	line_str[0] = '\0';
+	p_str = line_str;
+	for (i = 0; i < size/4; i++) {
+		if (i % 4 == 0) {
+			snprintf(p_str, 12, "%08lx: ", (unsigned long)p);
+			p_str += 10;
+		}
+		data = readl_relaxed(p++);
+		snprintf(p_str, 12, "%08x ", data);
+		p_str += 9;
+		if ((i + 1) % 4 == 0) {
+			JPEG_DBG_HIGH("%s\n", line_str);
+			line_str[0] = '\0';
+			p_str = line_str;
+>>>>>>> p9x
 		}
 	}
 	if (line_str[0] != '\0')

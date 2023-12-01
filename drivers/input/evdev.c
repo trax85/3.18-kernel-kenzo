@@ -373,7 +373,10 @@ static int evdev_release(struct inode *inode, struct file *file)
 	mutex_unlock(&evdev->mutex);
 
 	evdev_detach_client(evdev, client);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	if (client->use_wake_lock)
 		wake_lock_destroy(&client->wake_lock);
 
@@ -411,6 +414,7 @@ static int evdev_open(struct inode *inode, struct file *file)
 	if (!client)
 		return -ENOMEM;
 
+	client->clkid = CLOCK_MONOTONIC;
 	client->bufsize = bufsize;
 	spin_lock_init(&client->buffer_lock);
 	snprintf(client->name, sizeof(client->name), "%s-%d",
@@ -806,6 +810,7 @@ static int evdev_handle_mt_request(struct input_dev *dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * HACK: disable conflicting EVIOCREVOKE until Android userspace stops using
  * EVIOCSSUSPENDBLOCK
@@ -823,6 +828,8 @@ static int evdev_revoke(struct evdev *evdev, struct evdev_client *client,
 }
 */
 
+=======
+>>>>>>> p9x
 static int evdev_enable_suspend_block(struct evdev *evdev,
 				      struct evdev_client *client)
 {

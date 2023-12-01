@@ -50,7 +50,11 @@ static void read_arc_build_cfg_regs(void)
 	READ_BCR(AUX_IDENTITY, cpu->core);
 	READ_BCR(ARC_REG_ISA_CFG_BCR, cpu->isa);
 
+<<<<<<< HEAD
 	READ_BCR(ARC_REG_TIMERS_BCR, cpu->timers);
+=======
+	cpu->timers = read_aux_reg(ARC_REG_TIMERS_BCR);
+>>>>>>> p9x
 	cpu->vec_base = read_aux_reg(AUX_INTR_VEC_BASE);
 
 	READ_BCR(ARC_REG_D_UNCACH_BCR, uncached_space);

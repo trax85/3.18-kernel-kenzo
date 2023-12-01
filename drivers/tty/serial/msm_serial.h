@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2007 Google, Inc.
  * Author: Robert Love <rlove@google.com>
- * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
+ * Copyright (c) 2011-2012, The Linux Foundation. All rights reserved.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -38,7 +38,26 @@
 #define UART_MR2_PARITY_MODE_SPACE	0x3
 #define UART_MR2_PARITY_MODE		0x3
 
+<<<<<<< HEAD
 #define UART_CSR			0x0008
+=======
+#define UART_CSR	0x0008
+#define UART_CSR_115200	0xFF
+#define UART_CSR_57600	0xEE
+#define UART_CSR_38400	0xDD
+#define UART_CSR_28800	0xCC
+#define UART_CSR_19200	0xBB
+#define UART_CSR_14400	0xAA
+#define UART_CSR_9600	0x99
+#define UART_CSR_7200	0x88
+#define UART_CSR_4800	0x77
+#define UART_CSR_2400	0x55
+#define UART_CSR_1200	0x44
+#define UART_CSR_600	0x33
+#define UART_CSR_300	0x22
+#define UART_CSR_150	0x11
+#define UART_CSR_75	0x00
+>>>>>>> p9x
 
 #define UART_TF		0x000C
 #define UARTDM_TF	0x0070
@@ -87,6 +106,17 @@
 #define UART_DREG		0x0030
 #define UART_MNDREG		0x0034
 #define UART_IRDA		0x0038
+
+#define UART_SIM_CFG			0x003c
+#define UART_SIM_CFG_UIM_TX_MODE	(1 << 17)
+#define UART_SIM_CFG_UIM_RX_MODE	(1 << 16)
+#define UART_SIM_CFG_STOP_BIT_LEN_N(n)	((n) << 8)
+#define UART_SIM_CFG_SIM_CLK_ON		(1 << 7)
+#define UART_SIM_CFG_SIM_CLK_TD8_SEL	(1 << 6)
+#define UART_SIM_CFG_SIM_CLK_STOP_HIGH	(1 << 5)
+#define UART_SIM_CFG_MASK_RX		(1 << 3)
+#define UART_SIM_CFG_SIM_SEL		(1 << 0)
+
 #define UART_MISR_MODE		0x0040
 #define UART_MISR_RESET		0x0044
 #define UART_MISR_EXPORT	0x0048
@@ -121,6 +151,7 @@
 #define UARTDM_NCF_TX		0x40
 #define UARTDM_RX_TOTAL_SNAP	0x38
 
+<<<<<<< HEAD
 #define UART_TO_MSM(uart_port)	((struct msm_port *) uart_port)
 
 static inline
@@ -179,4 +210,6 @@ void msm_serial_set_mnd_regs_from_uartclk(struct uart_port *port)
 #define msm_serial_set_mnd_regs msm_serial_set_mnd_regs_from_uartclk
 #endif
 
+=======
+>>>>>>> p9x
 #endif	/* __DRIVERS_SERIAL_MSM_SERIAL_H */

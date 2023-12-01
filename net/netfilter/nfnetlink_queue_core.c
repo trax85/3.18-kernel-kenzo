@@ -237,8 +237,64 @@ nfqnl_flush(struct nfqnl_instance *queue, nfqnl_cmpfn cmpfn, unsigned long data)
 }
 
 static int
+<<<<<<< HEAD
 nfqnl_put_packet_info(struct sk_buff *nlskb, struct sk_buff *packet,
 		      bool csum_verify)
+=======
+nfqnl_zcopy(struct sk_buff *to, struct sk_buff *from, int len, int hlen)
+{
+	int i, j = 0;
+	int plen = 0; /* length of skb->head fragment */
+	int ret;
+	struct page *page;
+	unsigned int offset;
+
+	/* dont bother with small payloads */
+	if (len <= skb_tailroom(to))
+		return skb_copy_bits(from, 0, skb_put(to, len), len);
+
+	if (hlen) {
+		ret = skb_copy_bits(from, 0, skb_put(to, hlen), hlen);
+		if (unlikely(ret))
+			return ret;
+		len -= hlen;
+	} else {
+		plen = min_t(int, skb_headlen(from), len);
+		if (plen) {
+			page = virt_to_head_page(from->head);
+			offset = from->data - (unsigned char *)page_address(page);
+			__skb_fill_page_desc(to, 0, page, offset, plen);
+			get_page(page);
+			j = 1;
+			len -= plen;
+		}
+	}
+
+	to->truesize += len + plen;
+	to->len += len + plen;
+	to->data_len += len + plen;
+
+	if (unlikely(skb_orphan_frags(from, GFP_ATOMIC))) {
+		skb_tx_error(from);
+		return -ENOMEM;
+	}
+
+	for (i = 0; i < skb_shinfo(from)->nr_frags; i++) {
+		if (!len)
+			break;
+		skb_shinfo(to)->frags[j] = skb_shinfo(from)->frags[i];
+		skb_shinfo(to)->frags[j].size = min_t(int, skb_shinfo(to)->frags[j].size, len);
+		len -= skb_shinfo(to)->frags[j].size;
+		skb_frag_ref(to, j);
+		j++;
+	}
+	skb_shinfo(to)->nr_frags = j;
+
+	return 0;
+}
+
+static int nfqnl_put_packet_info(struct sk_buff *nlskb, struct sk_buff *packet)
+>>>>>>> p9x
 {
 	__u32 flags = 0;
 
@@ -491,7 +547,11 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
 		nla->nla_type = NFQA_PAYLOAD;
 		nla->nla_len = nla_attr_size(data_len);
 
+<<<<<<< HEAD
 		if (skb_zerocopy(skb, entskb, data_len, hlen))
+=======
+		if (nfqnl_zcopy(skb, entskb, data_len, hlen))
+>>>>>>> p9x
 			goto nla_put_failure;
 	}
 

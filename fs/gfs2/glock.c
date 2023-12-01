@@ -621,7 +621,11 @@ out:
 out_sched:
 	clear_bit(GLF_LOCK, &gl->gl_flags);
 	smp_mb__after_atomic();
+<<<<<<< HEAD
 	gl->gl_lockref.count++;
+=======
+	gfs2_glock_hold(gl);
+>>>>>>> p9x
 	if (queue_delayed_work(glock_workqueue, &gl->gl_work, 0) == 0)
 		gl->gl_lockref.count--;
 	return;

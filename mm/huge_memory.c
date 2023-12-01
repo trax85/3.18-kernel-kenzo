@@ -1126,9 +1126,16 @@ alloc:
 		new_page = NULL;
 
 	if (unlikely(!new_page)) {
+<<<<<<< HEAD
 		if (!page) {
 			split_huge_page_pmd(vma, address, pmd);
 			ret |= VM_FAULT_FALLBACK;
+=======
+		count_vm_event(THP_FAULT_FALLBACK);
+		if (!page) {
+			ret = do_huge_pmd_wp_zero_page_fallback(mm, vma,
+					address, pmd, orig_pmd, haddr);
+>>>>>>> p9x
 		} else {
 			ret = do_huge_pmd_wp_page_fallback(mm, vma, address,
 					pmd, orig_pmd, page, haddr);
@@ -1155,8 +1162,11 @@ alloc:
 		goto out;
 	}
 
+<<<<<<< HEAD
 	count_vm_event(THP_FAULT_ALLOC);
 
+=======
+>>>>>>> p9x
 	if (!page)
 		clear_huge_page(new_page, haddr, HPAGE_PMD_NR);
 	else
@@ -1206,6 +1216,7 @@ out_unlock:
 }
 
 /*
+<<<<<<< HEAD
  * FOLL_FORCE can write to even unwritable pmd's, but only
  * after we've gone through a COW cycle and they are dirty.
  */
@@ -1213,6 +1224,17 @@ static inline bool can_follow_write_pmd(pmd_t pmd, unsigned int flags)
 {
 	return pmd_write(pmd) ||
 	       ((flags & FOLL_FORCE) && (flags & FOLL_COW) && pmd_dirty(pmd));
+=======
+ * foll_force can write to even unwritable pmd's, but only
+ * after we've gone through a cow cycle and they are dirty.
+ */
+static inline bool can_follow_write_pmd(pmd_t pmd, struct page *page,
+					unsigned int flags)
+{
+	return pmd_write(pmd) ||
+		((flags & FOLL_FORCE) && (flags & FOLL_COW) &&
+		 page && PageAnon(page));
+>>>>>>> p9x
 }
 
 struct page *follow_trans_huge_pmd(struct vm_area_struct *vma,
@@ -1225,9 +1247,12 @@ struct page *follow_trans_huge_pmd(struct vm_area_struct *vma,
 
 	assert_spin_locked(pmd_lockptr(mm, pmd));
 
+<<<<<<< HEAD
 	if (flags & FOLL_WRITE && !can_follow_write_pmd(*pmd, flags))
 		goto out;
 
+=======
+>>>>>>> p9x
 	/* Avoid dumping huge zero page */
 	if ((flags & FOLL_DUMP) && is_huge_zero_pmd(*pmd))
 		return ERR_PTR(-EFAULT);
@@ -1237,7 +1262,15 @@ struct page *follow_trans_huge_pmd(struct vm_area_struct *vma,
 		goto out;
 
 	page = pmd_page(*pmd);
+<<<<<<< HEAD
 	VM_BUG_ON_PAGE(!PageHead(page), page);
+=======
+	VM_BUG_ON(!PageHead(page));
+
+	if (flags & FOLL_WRITE && !can_follow_write_pmd(*pmd, page, flags))
+		return NULL;
+
+>>>>>>> p9x
 	if (flags & FOLL_TOUCH) {
 		pmd_t _pmd;
 		_pmd = pmd_mkyoung(*pmd);
@@ -1268,20 +1301,30 @@ out:
 int do_huge_pmd_numa_page(struct mm_struct *mm, struct vm_area_struct *vma,
 				unsigned long addr, pmd_t pmd, pmd_t *pmdp)
 {
+<<<<<<< HEAD
 	spinlock_t *ptl;
+=======
+>>>>>>> p9x
 	struct anon_vma *anon_vma = NULL;
 	struct page *page;
 	unsigned long haddr = addr & HPAGE_PMD_MASK;
 	int page_nid = -1, this_nid = numa_node_id();
+<<<<<<< HEAD
 	int target_nid, last_cpupid = -1;
 	bool page_locked;
 	bool migrated = false;
 	int flags = 0;
+=======
+	int target_nid;
+	bool page_locked;
+	bool migrated = false;
+>>>>>>> p9x
 
 	ptl = pmd_lock(mm, pmdp);
 	if (unlikely(!pmd_same(pmd, *pmdp)))
 		goto out_unlock;
 
+<<<<<<< HEAD
 	/*
 	 * If there are potential migrations, wait for completion and retry
 	 * without disrupting NUMA hinting information. Do not relock and
@@ -1306,6 +1349,42 @@ int do_huge_pmd_numa_page(struct mm_struct *mm, struct vm_area_struct *vma,
 		count_vm_numa_event(NUMA_HINT_FAULTS_LOCAL);
 		flags |= TNF_FAULT_LOCAL;
 	}
+=======
+	page = pmd_page(pmd);
+	page_nid = page_to_nid(page);
+	count_vm_numa_event(NUMA_HINT_FAULTS);
+	if (page_nid == this_nid)
+		count_vm_numa_event(NUMA_HINT_FAULTS_LOCAL);
+
+	/*
+	 * Acquire the page lock to serialise THP migrations but avoid dropping
+	 * page_table_lock if at all possible
+	 */
+	page_locked = trylock_page(page);
+	target_nid = mpol_misplaced(page, vma, haddr);
+	if (target_nid == -1) {
+		/* If the page was locked, there are no parallel migrations */
+		if (page_locked)
+			goto clear_pmdnuma;
+
+		/*
+		 * Otherwise wait for potential migrations and retry. We do
+		 * relock and check_same as the page may no longer be mapped.
+		 * As the fault is being retried, do not account for it.
+		 */
+		spin_unlock(&mm->page_table_lock);
+		wait_on_page_locked(page);
+		page_nid = -1;
+		goto out;
+	}
+
+	/* Page is misplaced, serialise migrations and parallel THP splits */
+	get_page(page);
+	spin_unlock(&mm->page_table_lock);
+	if (!page_locked)
+		lock_page(page);
+	anon_vma = page_lock_anon_vma_read(page);
+>>>>>>> p9x
 
 	/*
 	 * Avoid grouping on DSO/COW pages in specific and RO pages
@@ -1363,6 +1442,7 @@ int do_huge_pmd_numa_page(struct mm_struct *mm, struct vm_area_struct *vma,
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Migrate the THP to the requested node, returns with page unlocked
 	 * and pmd_numa cleared.
 	 */
@@ -1373,6 +1453,23 @@ int do_huge_pmd_numa_page(struct mm_struct *mm, struct vm_area_struct *vma,
 		flags |= TNF_MIGRATED;
 		page_nid = target_nid;
 	}
+=======
+	 * The page_table_lock above provides a memory barrier
+	 * with change_protection_range.
+	 */
+	if (mm_tlb_flush_pending(mm))
+		flush_tlb_range(vma, haddr, haddr + HPAGE_PMD_SIZE);
+
+	/*
+	 * Migrate the THP to the requested node, returns with page unlocked
+	 * and pmd_numa cleared.
+	 */
+	spin_unlock(&mm->page_table_lock);
+	migrated = migrate_misplaced_transhuge_page(mm, vma,
+				pmdp, pmd, addr, page, target_nid);
+	if (migrated)
+		page_nid = target_nid;
+>>>>>>> p9x
 
 	goto out;
 clear_pmdnuma:
@@ -1383,14 +1480,22 @@ clear_pmdnuma:
 	update_mmu_cache_pmd(vma, addr, pmdp);
 	unlock_page(page);
 out_unlock:
+<<<<<<< HEAD
 	spin_unlock(ptl);
+=======
+	spin_unlock(&mm->page_table_lock);
+>>>>>>> p9x
 
 out:
 	if (anon_vma)
 		page_unlock_anon_vma_read(anon_vma);
 
 	if (page_nid != -1)
+<<<<<<< HEAD
 		task_numa_fault(last_cpupid, page_nid, HPAGE_PMD_NR, flags);
+=======
+		task_numa_fault(page_nid, HPAGE_PMD_NR, migrated);
+>>>>>>> p9x
 
 	return 0;
 }

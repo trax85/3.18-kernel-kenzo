@@ -160,7 +160,11 @@ static int sysvipc_sem_proc_show(struct seq_file *s, void *it);
  *	sem_array.pending{_alter,_cont},
  *	sem_array.sem_undo: global sem_lock() for read/write
  *	sem_undo.proc_next: only "current" is allowed to read/write that field.
+<<<<<<< HEAD
  *
+=======
+ *	
+>>>>>>> p9x
  *	sem_array.sem_base[i].pending_{const,alter}:
  *		global or semaphore sem_lock() for read/write
  */
@@ -225,7 +229,11 @@ static void unmerge_queues(struct sem_array *sma)
 }
 
 /**
+<<<<<<< HEAD
  * merge_queues - merge single semop queues into global queue
+=======
+ * merge_queues - Merge single semop queues into global queue
+>>>>>>> p9x
  * @sma: semaphore array
  *
  * This function merges all per-semaphore queues into the global queue.
@@ -267,13 +275,17 @@ static void sem_rcu_free(struct rcu_head *head)
  * Caller must own sem_perm.lock.
  * New simple ops cannot start, because simple ops first check
  * that sem_perm.lock is free.
+<<<<<<< HEAD
  * that a) sem_perm.lock is free and b) complex_count is 0.
+=======
+>>>>>>> p9x
  */
 static void sem_wait_array(struct sem_array *sma)
 {
 	int i;
 	struct sem *sem;
 
+<<<<<<< HEAD
 	if (sma->complex_count)  {
 		/* The thread that increased sma->complex_count waited on
 		 * all sem->lock locks. Thus we don't need to wait again.
@@ -281,6 +293,8 @@ static void sem_wait_array(struct sem_array *sma)
 		return;
 	}
 
+=======
+>>>>>>> p9x
 	for (i = 0; i < sma->sem_nsems; i++) {
 		sem = sma->sem_base + i;
 		spin_unlock_wait(&sem->lock);
@@ -441,7 +455,11 @@ static inline struct sem_array *sem_obtain_object_check(struct ipc_namespace *ns
 static inline void sem_lock_and_putref(struct sem_array *sma)
 {
 	sem_lock(sma, NULL, -1);
+<<<<<<< HEAD
 	ipc_rcu_putref(sma, sem_rcu_free);
+=======
+	ipc_rcu_putref(sma, ipc_rcu_free);
+>>>>>>> p9x
 }
 
 static inline void sem_rmid(struct ipc_namespace *ns, struct sem_array *s)
@@ -600,16 +618,31 @@ SYSCALL_DEFINE3(semget, key_t, key, int, nsems, int, semflg)
 	return ipcget(ns, &sem_ids(ns), &sem_ops, &sem_params);
 }
 
+<<<<<<< HEAD
 /**
  * perform_atomic_semop - Perform (if possible) a semaphore operation
  * @sma: semaphore array
  * @q: struct sem_queue that describes the operation
+=======
+/** perform_atomic_semop - Perform (if possible) a semaphore operation
+ * @sma: semaphore array
+ * @sops: array with operations that should be checked
+ * @nsems: number of sops
+ * @un: undo array
+ * @pid: pid that did the change
+>>>>>>> p9x
  *
  * Returns 0 if the operation was possible.
  * Returns 1 if the operation is impossible, the caller must sleep.
  * Negative values are error codes.
  */
+<<<<<<< HEAD
 static int perform_atomic_semop(struct sem_array *sma, struct sem_queue *q)
+=======
+
+static int perform_atomic_semop(struct sem_array *sma, struct sembuf *sops,
+			     int nsops, struct sem_undo *un, int pid)
+>>>>>>> p9x
 {
 	int result, sem_op, nsops, pid;
 	struct sembuf *sop;
@@ -769,7 +802,11 @@ static int check_restart(struct sem_array *sma, struct sem_queue *q)
 }
 
 /**
+<<<<<<< HEAD
  * wake_const_ops - wake up non-alter tasks
+=======
+ * wake_const_ops(sma, semnum, pt) - Wake up non-alter tasks
+>>>>>>> p9x
  * @sma: semaphore array.
  * @semnum: semaphore that was modified.
  * @pt: list head for the tasks that must be woken up.
@@ -802,7 +839,12 @@ static int wake_const_ops(struct sem_array *sma, int semnum,
 		q = container_of(walk, struct sem_queue, list);
 		walk = walk->next;
 
+<<<<<<< HEAD
 		error = perform_atomic_semop(sma, q);
+=======
+		error = perform_atomic_semop(sma, q->sops, q->nsops,
+						 q->undo, q->pid);
+>>>>>>> p9x
 
 		if (error <= 0) {
 			/* operation completed, remove from queue & wakeup */
@@ -818,14 +860,24 @@ static int wake_const_ops(struct sem_array *sma, int semnum,
 }
 
 /**
+<<<<<<< HEAD
  * do_smart_wakeup_zero - wakeup all wait for zero tasks
+=======
+ * do_smart_wakeup_zero(sma, sops, nsops, pt) - wakeup all wait for zero tasks
+>>>>>>> p9x
  * @sma: semaphore array
  * @sops: operations that were performed
  * @nsops: number of operations
  * @pt: list head of the tasks that must be woken up.
  *
+<<<<<<< HEAD
  * Checks all required queue for wait-for-zero operations, based
  * on the actual changes that were performed on the semaphore array.
+=======
+ * do_smart_wakeup_zero() checks all required queue for wait-for-zero
+ * operations, based on the actual changes that were performed on the
+ * semaphore array.
+>>>>>>> p9x
  * The function returns 1 if at least one operation was completed successfully.
  */
 static int do_smart_wakeup_zero(struct sem_array *sma, struct sembuf *sops,
@@ -914,7 +966,12 @@ again:
 		if (semnum != -1 && sma->sem_base[semnum].semval == 0)
 			break;
 
+<<<<<<< HEAD
 		error = perform_atomic_semop(sma, q);
+=======
+		error = perform_atomic_semop(sma, q->sops, q->nsops,
+					 q->undo, q->pid);
+>>>>>>> p9x
 
 		/* Does q->sleeper still need to sleep? */
 		if (error > 0)
@@ -938,7 +995,11 @@ again:
 }
 
 /**
+<<<<<<< HEAD
  * set_semotime - set sem_otime
+=======
+ * set_semotime(sma, sops) - set sem_otime
+>>>>>>> p9x
  * @sma: semaphore array
  * @sops: operations that modified the array, may be NULL
  *
@@ -956,7 +1017,11 @@ static void set_semotime(struct sem_array *sma, struct sembuf *sops)
 }
 
 /**
+<<<<<<< HEAD
  * do_smart_update - optimized update_queue
+=======
+ * do_smart_update(sma, sops, nsops, otime, pt) - optimized update_queue
+>>>>>>> p9x
  * @sma: semaphore array
  * @sops: operations that were performed
  * @nsops: number of operations
@@ -1009,6 +1074,7 @@ static void do_smart_update(struct sem_array *sma, struct sembuf *sops, int nsop
 		set_semotime(sma, sops);
 }
 
+<<<<<<< HEAD
 /*
  * check_qop: Test if a queued operation sleeps on the semaphore semnum
  */
@@ -1039,6 +1105,8 @@ static int check_qop(struct sem_array *sma, int semnum, struct sem_queue *q,
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 /* The following counts are associated to each semaphore:
  *   semncnt        number of tasks waiting on semval being nonzero
  *   semzcnt        number of tasks waiting on semval being zero
@@ -1053,6 +1121,7 @@ static int count_semcnt(struct sem_array *sma, ushort semnum,
 	struct sem_queue *q;
 	int semcnt;
 
+<<<<<<< HEAD
 	semcnt = 0;
 	/* First: check the simple operations. They are easy to evaluate */
 	if (count_zero)
@@ -1070,6 +1139,25 @@ static int count_semcnt(struct sem_array *sma, ushort semnum,
 	/* Then: check the complex operations. */
 	list_for_each_entry(q, &sma->pending_alter, list) {
 		semcnt += check_qop(sma, semnum, q, count_zero);
+=======
+	semncnt = 0;
+	list_for_each_entry(q, &sma->sem_base[semnum].pending_alter, list) {
+		struct sembuf * sops = q->sops;
+		BUG_ON(sops->sem_num != semnum);
+		if ((sops->sem_op < 0) && !(sops->sem_flg & IPC_NOWAIT))
+			semncnt++;
+	}
+
+	list_for_each_entry(q, &sma->pending_alter, list) {
+		struct sembuf * sops = q->sops;
+		int nsops = q->nsops;
+		int i;
+		for (i = 0; i < nsops; i++)
+			if (sops[i].sem_num == semnum
+			    && (sops[i].sem_op < 0)
+			    && !(sops[i].sem_flg & IPC_NOWAIT))
+				semncnt++;
+>>>>>>> p9x
 	}
 	if (count_zero) {
 		list_for_each_entry(q, &sma->pending_const, list) {
@@ -1079,6 +1167,35 @@ static int count_semcnt(struct sem_array *sma, ushort semnum,
 	return semcnt;
 }
 
+<<<<<<< HEAD
+=======
+static int count_semzcnt (struct sem_array * sma, ushort semnum)
+{
+	int semzcnt;
+	struct sem_queue * q;
+
+	semzcnt = 0;
+	list_for_each_entry(q, &sma->sem_base[semnum].pending_const, list) {
+		struct sembuf * sops = q->sops;
+		BUG_ON(sops->sem_num != semnum);
+		if ((sops->sem_op == 0) && !(sops->sem_flg & IPC_NOWAIT))
+			semzcnt++;
+	}
+
+	list_for_each_entry(q, &sma->pending_const, list) {
+		struct sembuf * sops = q->sops;
+		int nsops = q->nsops;
+		int i;
+		for (i = 0; i < nsops; i++)
+			if (sops[i].sem_num == semnum
+			    && (sops[i].sem_op == 0)
+			    && !(sops[i].sem_flg & IPC_NOWAIT))
+				semzcnt++;
+	}
+	return semzcnt;
+}
+
+>>>>>>> p9x
 /* Free a semaphore set. freeary() is called with sem_ids.rwsem locked
  * as a writer and the spinlock for this semaphore set hold. sem_ids.rwsem
  * remains locked on exit.
@@ -1210,7 +1327,11 @@ static int semctl_nolock(struct ipc_namespace *ns, int semid,
 		}
 		max_id = ipc_get_maxid(&sem_ids(ns));
 		up_read(&sem_ids(ns).rwsem);
+<<<<<<< HEAD
 		if (copy_to_user(p, &seminfo, sizeof(struct seminfo)))
+=======
+		if (copy_to_user(p, &seminfo, sizeof(struct seminfo))) 
+>>>>>>> p9x
 			return -EFAULT;
 		return (max_id < 0) ? 0 : max_id;
 	}
@@ -1311,7 +1432,11 @@ static int semctl_setval(struct ipc_namespace *ns, int semid, int semnum,
 
 	sem_lock(sma, NULL, -1);
 
+<<<<<<< HEAD
 	if (!ipc_valid_object(&sma->sem_perm)) {
+=======
+	if (sma->sem_perm.deleted) {
+>>>>>>> p9x
 		sem_unlock(sma, -1);
 		rcu_read_unlock();
 		return -EIDRM;
@@ -1371,11 +1496,19 @@ static int semctl_main(struct ipc_namespace *ns, int semid, int semnum,
 		int i;
 
 		sem_lock(sma, NULL, -1);
+<<<<<<< HEAD
 		if (!ipc_valid_object(&sma->sem_perm)) {
 			err = -EIDRM;
 			goto out_unlock;
 		}
 		if (nsems > SEMMSL_FAST) {
+=======
+		if (sma->sem_perm.deleted) {
+			err = -EIDRM;
+			goto out_unlock;
+		}
+		if(nsems > SEMMSL_FAST) {
+>>>>>>> p9x
 			if (!ipc_rcu_getref(sma)) {
 				err = -EIDRM;
 				goto out_unlock;
@@ -1383,14 +1516,23 @@ static int semctl_main(struct ipc_namespace *ns, int semid, int semnum,
 			sem_unlock(sma, -1);
 			rcu_read_unlock();
 			sem_io = ipc_alloc(sizeof(ushort)*nsems);
+<<<<<<< HEAD
 			if (sem_io == NULL) {
 				ipc_rcu_putref(sma, sem_rcu_free);
+=======
+			if(sem_io == NULL) {
+				ipc_rcu_putref(sma, ipc_rcu_free);
+>>>>>>> p9x
 				return -ENOMEM;
 			}
 
 			rcu_read_lock();
 			sem_lock_and_putref(sma);
+<<<<<<< HEAD
 			if (!ipc_valid_object(&sma->sem_perm)) {
+=======
+			if (sma->sem_perm.deleted) {
+>>>>>>> p9x
 				err = -EIDRM;
 				goto out_unlock;
 			}
@@ -1417,28 +1559,46 @@ static int semctl_main(struct ipc_namespace *ns, int semid, int semnum,
 
 		if (nsems > SEMMSL_FAST) {
 			sem_io = ipc_alloc(sizeof(ushort)*nsems);
+<<<<<<< HEAD
 			if (sem_io == NULL) {
 				ipc_rcu_putref(sma, sem_rcu_free);
+=======
+			if(sem_io == NULL) {
+				ipc_rcu_putref(sma, ipc_rcu_free);
+>>>>>>> p9x
 				return -ENOMEM;
 			}
 		}
 
+<<<<<<< HEAD
 		if (copy_from_user(sem_io, p, nsems*sizeof(ushort))) {
 			ipc_rcu_putref(sma, sem_rcu_free);
+=======
+		if (copy_from_user (sem_io, p, nsems*sizeof(ushort))) {
+			ipc_rcu_putref(sma, ipc_rcu_free);
+>>>>>>> p9x
 			err = -EFAULT;
 			goto out_free;
 		}
 
 		for (i = 0; i < nsems; i++) {
 			if (sem_io[i] > SEMVMX) {
+<<<<<<< HEAD
 				ipc_rcu_putref(sma, sem_rcu_free);
+=======
+				ipc_rcu_putref(sma, ipc_rcu_free);
+>>>>>>> p9x
 				err = -ERANGE;
 				goto out_free;
 			}
 		}
 		rcu_read_lock();
 		sem_lock_and_putref(sma);
+<<<<<<< HEAD
 		if (!ipc_valid_object(&sma->sem_perm)) {
+=======
+		if (sma->sem_perm.deleted) {
+>>>>>>> p9x
 			err = -EIDRM;
 			goto out_unlock;
 		}
@@ -1464,7 +1624,11 @@ static int semctl_main(struct ipc_namespace *ns, int semid, int semnum,
 		goto out_rcu_wakeup;
 
 	sem_lock(sma, NULL, -1);
+<<<<<<< HEAD
 	if (!ipc_valid_object(&sma->sem_perm)) {
+=======
+	if (sma->sem_perm.deleted) {
+>>>>>>> p9x
 		err = -EIDRM;
 		goto out_unlock;
 	}
@@ -1721,7 +1885,11 @@ static struct sem_undo *find_alloc_undo(struct ipc_namespace *ns, int semid)
 	/* step 2: allocate new undo structure */
 	new = kzalloc(sizeof(struct sem_undo) + sizeof(short)*nsems, GFP_KERNEL);
 	if (!new) {
+<<<<<<< HEAD
 		ipc_rcu_putref(sma, sem_rcu_free);
+=======
+		ipc_rcu_putref(sma, ipc_rcu_free);
+>>>>>>> p9x
 		return ERR_PTR(-ENOMEM);
 	}
 
@@ -1875,6 +2043,7 @@ SYSCALL_DEFINE4(semtimedop, int, semid, struct sembuf __user *, tsops,
 
 	error = -EIDRM;
 	locknum = sem_lock(sma, sops, nsops);
+<<<<<<< HEAD
 	/*
 	 * We eventually might perform the following check in a lockless
 	 * fashion, considering ipc_valid_object() locking constraints.
@@ -1884,6 +2053,9 @@ SYSCALL_DEFINE4(semtimedop, int, semid, struct sembuf __user *, tsops,
 	 * entangled here and why it's RMID race safe on comments at sem_lock()
 	 */
 	if (!ipc_valid_object(&sma->sem_perm))
+=======
+	if (sma->sem_perm.deleted)
+>>>>>>> p9x
 		goto out_unlock_free;
 	/*
 	 * semid identifiers are not unique - find_alloc_undo may have
@@ -1895,6 +2067,27 @@ SYSCALL_DEFINE4(semtimedop, int, semid, struct sembuf __user *, tsops,
 	if (un && un->semid == -1)
 		goto out_unlock_free;
 
+<<<<<<< HEAD
+=======
+	error = perform_atomic_semop(sma, sops, nsops, un,
+					task_tgid_vnr(current));
+	if (error == 0) {
+		/* If the operation was successful, then do
+		 * the required updates.
+		 */
+		if (alter)
+			do_smart_update(sma, sops, nsops, 1, &tasks);
+		else
+			set_semotime(sma, sops);
+	}
+	if (error <= 0)
+		goto out_unlock_free;
+
+	/* We need to sleep on this operation, so we put the current
+	 * task into the pending queue and go to sleep.
+	 */
+		
+>>>>>>> p9x
 	queue.sops = sops;
 	queue.nsops = nsops;
 	queue.undo = un;
@@ -2113,7 +2306,11 @@ void exit_sem(struct task_struct *tsk)
 
 		sem_lock(sma, NULL, -1);
 		/* exit_sem raced with IPC_RMID, nothing to do */
+<<<<<<< HEAD
 		if (!ipc_valid_object(&sma->sem_perm)) {
+=======
+		if (sma->sem_perm.deleted) {
+>>>>>>> p9x
 			sem_unlock(sma, -1);
 			rcu_read_unlock();
 			continue;

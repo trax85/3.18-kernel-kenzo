@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 Qualcomm Technologies, Inc. BAM Data Multiplexer Driver
+=======
+Qualcomm BAM Data Multiplexer Driver
+>>>>>>> p9x
 
 Required properties:
 - compatible : should be "qcom,bam_dmux"

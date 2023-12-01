@@ -99,6 +99,13 @@
 #define END_MEM     		(UL(CONFIG_DRAM_BASE) + CONFIG_DRAM_SIZE)
 #endif
 
+<<<<<<< HEAD
+=======
+#ifndef PAGE_OFFSET
+#define PAGE_OFFSET		PLAT_PHYS_OFFSET
+#endif
+
+>>>>>>> p9x
 /*
  * The module can be at any place in ram in nommu mode.
  */
@@ -126,11 +133,21 @@
 
 /*
  * PLAT_PHYS_OFFSET is the offset (from zero) of the start of physical
+<<<<<<< HEAD
  * memory.  This is used for XIP and NoMMU kernels, and on platforms that don't
  * have CONFIG_ARM_PATCH_PHYS_VIRT. Assembly code must always use
  * PLAT_PHYS_OFFSET and not PHYS_OFFSET.
  */
 #define PLAT_PHYS_OFFSET	UL(CONFIG_PHYS_OFFSET)
+=======
+ * memory.  This is used for XIP and NoMMU kernels, or by kernels which
+ * have their own mach/memory.h.  Assembly code must always use
+ * PLAT_PHYS_OFFSET and not PHYS_OFFSET.
+ */
+#ifndef PLAT_PHYS_OFFSET
+#define PLAT_PHYS_OFFSET	UL(CONFIG_PHYS_OFFSET)
+#endif
+>>>>>>> p9x
 
 #ifndef __ASSEMBLY__
 
@@ -226,6 +243,7 @@ static inline unsigned long __phys_to_virt(phys_addr_t x)
 }
 
 #else
+<<<<<<< HEAD
 
 #define PHYS_OFFSET	PLAT_PHYS_OFFSET
 #define PHYS_PFN_OFFSET	((unsigned long)(PHYS_OFFSET >> PAGE_SHIFT))
@@ -245,6 +263,26 @@ static inline unsigned long __phys_to_virt(phys_addr_t x)
 	 PHYS_PFN_OFFSET)
 
 #endif
+=======
+
+#define PHYS_OFFSET	PLAT_PHYS_OFFSET
+
+#define __virt_to_phys(x)	((x) - PAGE_OFFSET + PHYS_OFFSET)
+#define __phys_to_virt(x)	((x) - PHYS_OFFSET + PAGE_OFFSET)
+
+#endif
+#endif
+
+/*
+ * PFNs are used to describe any physical page; this means
+ * PFN 0 == physical address 0.
+ *
+ * This is the PFN of the first RAM page in the kernel
+ * direct-mapped view.  We assume this is the first page
+ * of RAM in the mem_map as well.
+ */
+#define PHYS_PFN_OFFSET	((unsigned long)(PHYS_OFFSET >> PAGE_SHIFT))
+>>>>>>> p9x
 
 /*
  * These are *only* valid on the kernel direct mapped RAM memory.
@@ -322,10 +360,22 @@ static inline __deprecated void *bus_to_virt(unsigned long x)
  */
 #define ARCH_PFN_OFFSET		PHYS_PFN_OFFSET
 
+<<<<<<< HEAD
 #define virt_to_page(kaddr)	pfn_to_page(virt_to_pfn(kaddr))
 #define virt_addr_valid(kaddr)	(((unsigned long)(kaddr) >= PAGE_OFFSET && (unsigned long)(kaddr) < (unsigned long)high_memory) \
 					&& pfn_valid(virt_to_pfn(kaddr)))
+=======
+#define virt_to_page(kaddr)	pfn_to_page(__pa(kaddr) >> PAGE_SHIFT)
+#define virt_addr_valid(kaddr)	(((unsigned long)(kaddr) >= PAGE_OFFSET && (unsigned long)(kaddr) < (unsigned long)high_memory) \
+					&& pfn_valid(__pa(kaddr) >> PAGE_SHIFT) )
+>>>>>>> p9x
 
+/*
+ * Set if the architecture speculatively fetches data into cache.
+ */
+#ifndef arch_has_speculative_dfetch
+#define arch_has_speculative_dfetch()	0
+#endif
 #endif
 
 #include <asm-generic/memory_model.h>

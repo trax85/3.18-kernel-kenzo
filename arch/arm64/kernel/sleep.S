@@ -82,6 +82,10 @@ ENTRY(__cpu_suspend_enter)
 	str	x2, [x0, #CPU_CTX_SP]
 	ldr	x1, =sleep_save_sp
 	ldr	x1, [x1, #SLEEP_SAVE_SP_VIRT]
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SMP
+>>>>>>> p9x
 	mrs	x7, mpidr_el1
 	ldr	x9, =mpidr_hash
 	ldr	x10, [x9, #MPIDR_HASH_MASK]
@@ -93,6 +97,10 @@ ENTRY(__cpu_suspend_enter)
 	ldp	w5, w6, [x9, #(MPIDR_HASH_SHIFTS + 8)]
 	compute_mpidr_hash x8, x3, x4, x5, x6, x7, x10
 	add	x1, x1, x8, lsl #3
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> p9x
 	bl	__cpu_suspend_save
 	/*
 	 * Grab suspend finisher in x20 and its argument in x19
@@ -125,6 +133,7 @@ ENTRY(__cpu_suspend_enter)
 ENDPROC(__cpu_suspend_enter)
 	.ltorg
 
+<<<<<<< HEAD
 /*
  * x0 must contain the sctlr value retrieved from restored context
  */
@@ -158,12 +167,28 @@ ENTRY(cpu_resume)
 	mrs	x1, mpidr_el1
 	adrp	x8, mpidr_hash
 	add x8, x8, #:lo12:mpidr_hash // x8 = struct mpidr_hash phys address
+=======
+ENTRY(cpu_resume)
+	bl	el2_setup		// if in EL2 drop to EL1 cleanly
+#ifdef CONFIG_SMP
+	mrs	x1, mpidr_el1
+	adrp	x4, mpidr_hash_ptr
+	add	x4, x4, #:lo12:mpidr_hash_ptr
+	ldr	x5, [x4]
+	add	x8, x4, x5		// x8 = struct mpidr_hash phys address
+>>>>>>> p9x
         /* retrieve mpidr_hash members to compute the hash */
 	ldr	x2, [x8, #MPIDR_HASH_MASK]
 	ldp	w3, w4, [x8, #MPIDR_HASH_SHIFTS]
 	ldp	w5, w6, [x8, #(MPIDR_HASH_SHIFTS + 8)]
 	compute_mpidr_hash x7, x3, x4, x5, x6, x1, x2
         /* x7 contains hash index, let's use it to grab context pointer */
+<<<<<<< HEAD
+=======
+#else
+	mov	x7, xzr
+#endif
+>>>>>>> p9x
 	adrp	x0, sleep_save_sp
 	add	x0, x0, #:lo12:sleep_save_sp
 	ldr	x0, [x0, #SLEEP_SAVE_SP_PHYS]
@@ -174,9 +199,12 @@ ENTRY(cpu_resume)
 	/* load physical address of identity map page table in x1 */
 	ldr	x1, [x1, #:lo12:sleep_idmap_phys]
 	mov	sp, x2
+<<<<<<< HEAD
 	/* save thread_info */
 	and	x2, x2, #~(THREAD_SIZE - 1)
 	msr	sp_el0, x2
+=======
+>>>>>>> p9x
 	/*
 	 * cpu_do_resume expects x0 to contain context physical address
 	 * pointer and x1 to contain physical address of 1:1 page tables
@@ -184,3 +212,30 @@ ENTRY(cpu_resume)
 	bl	cpu_do_resume		// PC relative jump, MMU off
 	b	cpu_resume_mmu		// Resume MMU, never returns
 ENDPROC(cpu_resume)
+<<<<<<< HEAD
+=======
+
+	.data
+	.align 3
+mpidr_hash_ptr:
+	/*
+	 * offset of mpidr_hash symbol from current location
+	 * used to obtain run-time mpidr_hash address with MMU off
+         */
+	.quad	mpidr_hash - .
+/*
+ * physical address of identity mapped page tables
+ */
+	.type	sleep_idmap_phys, #object
+ENTRY(sleep_idmap_phys)
+	.quad	0
+/*
+ * struct sleep_save_sp {
+ *	phys_addr_t *save_ptr_stash;
+ *	phys_addr_t save_ptr_stash_phys;
+ * };
+ */
+	.type	sleep_save_sp, #object
+ENTRY(sleep_save_sp)
+	.space	SLEEP_SAVE_SP_SZ	// struct sleep_save_sp
+>>>>>>> p9x

@@ -224,6 +224,7 @@ static inline __be16 udp_flow_src_port(struct net *net, struct sk_buff *skb,
 }
 
 /* net/ipv4/udp.c */
+<<<<<<< HEAD
 void udp_v4_early_demux(struct sk_buff *skb);
 int udp_get_port(struct sock *sk, unsigned short snum,
 		 int (*saddr_cmp)(const struct sock *,
@@ -260,6 +261,39 @@ struct sock *__udp6_lib_lookup(struct net *net,
 			       const struct in6_addr *saddr, __be16 sport,
 			       const struct in6_addr *daddr, __be16 dport,
 			       int dif, struct udp_table *tbl);
+=======
+extern int udp_get_port(struct sock *sk, unsigned short snum,
+			int (*saddr_cmp)(const struct sock *,
+					 const struct sock *));
+extern void udp_err(struct sk_buff *, u32);
+int udp_abort(struct sock *sk, int err);
+extern int udp_sendmsg(struct kiocb *iocb, struct sock *sk,
+			    struct msghdr *msg, size_t len);
+extern int udp_push_pending_frames(struct sock *sk);
+extern void udp_flush_pending_frames(struct sock *sk);
+extern int udp_rcv(struct sk_buff *skb);
+extern int udp_ioctl(struct sock *sk, int cmd, unsigned long arg);
+extern int udp_disconnect(struct sock *sk, int flags);
+extern unsigned int udp_poll(struct file *file, struct socket *sock,
+			     poll_table *wait);
+extern int udp_lib_getsockopt(struct sock *sk, int level, int optname,
+			      char __user *optval, int __user *optlen);
+extern int udp_lib_setsockopt(struct sock *sk, int level, int optname,
+			      char __user *optval, unsigned int optlen,
+			      int (*push_pending_frames)(struct sock *));
+extern struct sock *udp4_lib_lookup(struct net *net, __be32 saddr, __be16 sport,
+				    __be32 daddr, __be16 dport,
+				    int dif);
+extern struct sock *__udp4_lib_lookup(struct net *net, __be32 saddr, __be16 sport,
+				    __be32 daddr, __be16 dport,
+				    int dif, struct udp_table *tbl);
+extern struct sock *udp6_lib_lookup(struct net *net, const struct in6_addr *saddr, __be16 sport,
+				    const struct in6_addr *daddr, __be16 dport,
+				    int dif);
+extern struct sock *__udp6_lib_lookup(struct net *net, const struct in6_addr *saddr, __be16 sport,
+				    const struct in6_addr *daddr, __be16 dport,
+				    int dif, struct udp_table *tbl);
+>>>>>>> p9x
 
 /*
  * 	SNMP statistics for UDP and UDP-Lite

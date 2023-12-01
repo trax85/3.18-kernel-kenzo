@@ -155,7 +155,10 @@ static inline int arch_irqs_disabled(void)
 	lr	\scratch, [status32]
 	bic	\scratch, \scratch, (STATUS_E1_MASK | STATUS_E2_MASK)
 	flag	\scratch
+<<<<<<< HEAD
 	TRACE_ASM_IRQ_DISABLE
+=======
+>>>>>>> p9x
 .endm
 
 .macro IRQ_ENABLE  scratch

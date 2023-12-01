@@ -6,12 +6,21 @@
 #include <linux/mutex.h>
 #include <net/sock.h>
 
+<<<<<<< HEAD
 void unix_inflight(struct user_struct *user, struct file *fp);
 void unix_notinflight(struct user_struct *user, struct file *fp);
 void unix_gc(void);
 void wait_for_unix_gc(void);
 struct sock *unix_get_socket(struct file *filp);
 struct sock *unix_peer_get(struct sock *);
+=======
+extern void unix_inflight(struct user_struct *user, struct file *fp);
+extern void unix_notinflight(struct user_struct *user, struct file *fp);
+extern void unix_gc(void);
+extern void wait_for_unix_gc(void);
+extern struct sock *unix_get_socket(struct file *filp);
+extern struct sock *unix_peer_get(struct sock *);
+>>>>>>> p9x
 
 #define UNIX_HASH_SIZE	256
 #define UNIX_HASH_BITS	8

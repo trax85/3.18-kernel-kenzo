@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014, 2016 The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -74,12 +78,16 @@ static int devfreq_vbif_ev_handler(struct devfreq *devfreq,
 	int ret;
 	struct devfreq_dev_status stat;
 
+<<<<<<< HEAD
 	memset(&stat, 0, sizeof(stat));
 
+=======
+>>>>>>> p9x
 	switch (event) {
 	case DEVFREQ_GOV_START:
 		mutex_lock(&df_lock);
 		df = devfreq;
+<<<<<<< HEAD
 		if (df->profile->get_dev_status &&
 			!df->profile->get_dev_status(df->dev.parent, &stat) &&
 			stat.private_data)
@@ -87,6 +95,17 @@ static int devfreq_vbif_ev_handler(struct devfreq *devfreq,
 		else
 			pr_warn("Device doesn't take AB votes!\n");
 
+=======
+		if (df->profile->get_dev_status)
+			ret = df->profile->get_dev_status(df->dev.parent,
+					&stat);
+		else
+			ret = 0;
+		if (ret || !stat.private_data)
+			pr_warn("Device doesn't take AB votes!\n");
+		else
+			dev_ab = stat.private_data;
+>>>>>>> p9x
 		mutex_unlock(&df_lock);
 
 		ret = devfreq_vbif_update_bw(0, 0);

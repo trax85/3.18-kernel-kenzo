@@ -238,6 +238,7 @@ static void update_pecoff_bss(unsigned int file_sz, unsigned int init_sz)
 	update_pecoff_section_header_fields(".bss", file_sz, bss_sz, 0, 0);
 }
 
+<<<<<<< HEAD
 static int reserve_pecoff_reloc_section(int c)
 {
 	/* Reserve 0x20 bytes for .reloc section */
@@ -286,6 +287,8 @@ static inline int reserve_pecoff_reloc_section(int c)
 {
 	return 0;
 }
+=======
+>>>>>>> p9x
 #endif /* CONFIG_EFI_STUB */
 
 
@@ -338,6 +341,9 @@ int main(int argc, char ** argv)
 	int fd;
 	void *kernel;
 	u32 crc = 0xffffffffUL;
+#ifdef CONFIG_EFI_STUB
+	unsigned int init_sz;
+#endif
 
 	efi_stub_defaults();
 
@@ -403,6 +409,10 @@ int main(int argc, char ** argv)
 	buf[0x1f1] = setup_sectors-1;
 	put_unaligned_le32(sys_size, &buf[0x1f4]);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_EFI_STUB
+>>>>>>> p9x
 	update_pecoff_text(setup_sectors * 512, i + (sys_size * 16));
 	init_sz = get_unaligned_le32(&buf[0x260]);
 	update_pecoff_bss(i + (sys_size * 16), init_sz);

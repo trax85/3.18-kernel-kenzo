@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 # Any varying coverage in these files is non-deterministic
 # and is generally not a function of system call inputs.
 KCOV_INSTRUMENT		:= n
 
 obj-y += mutex.o semaphore.o rwsem.o mcs_spinlock.o
+=======
+
+obj-y += mutex.o semaphore.o rwsem.o lglock.o
+>>>>>>> p9x
 
 ifdef CONFIG_FUNCTION_TRACER
 CFLAGS_REMOVE_lockdep.o = -pg
@@ -17,7 +22,10 @@ ifeq ($(CONFIG_PROC_FS),y)
 obj-$(CONFIG_LOCKDEP) += lockdep_proc.o
 endif
 obj-$(CONFIG_SMP) += spinlock.o
+<<<<<<< HEAD
 obj-$(CONFIG_SMP) += lglock.o
+=======
+>>>>>>> p9x
 obj-$(CONFIG_PROVE_LOCKING) += spinlock.o
 obj-$(CONFIG_RT_MUTEXES) += rtmutex.o
 obj-$(CONFIG_DEBUG_RT_MUTEXES) += rtmutex-debug.o
@@ -27,5 +35,8 @@ obj-$(CONFIG_DEBUG_SPINLOCK) += spinlock_debug.o
 obj-$(CONFIG_RWSEM_GENERIC_SPINLOCK) += rwsem-spinlock.o
 obj-$(CONFIG_RWSEM_XCHGADD_ALGORITHM) += rwsem-xadd.o
 obj-$(CONFIG_PERCPU_RWSEM) += percpu-rwsem.o
+<<<<<<< HEAD
 obj-$(CONFIG_QUEUE_RWLOCK) += qrwlock.o
 obj-$(CONFIG_LOCK_TORTURE_TEST) += locktorture.o
+=======
+>>>>>>> p9x

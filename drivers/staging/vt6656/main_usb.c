@@ -1015,6 +1015,395 @@ err_nomem:
 	return rc;
 }
 
+<<<<<<< HEAD
+=======
+static void device_free_tx_bufs(struct vnt_private *pDevice)
+{
+    PUSB_SEND_CONTEXT pTxContext;
+    int ii;
+
+    for (ii = 0; ii < pDevice->cbTD; ii++) {
+
+        pTxContext = pDevice->apTD[ii];
+	/* deallocate URBs */
+        if (pTxContext->pUrb) {
+            usb_kill_urb(pTxContext->pUrb);
+            usb_free_urb(pTxContext->pUrb);
+        }
+        kfree(pTxContext);
+    }
+    return;
+}
+
+static void device_free_rx_bufs(struct vnt_private *pDevice)
+{
+    PRCB pRCB;
+    int ii;
+
+    for (ii = 0; ii < pDevice->cbRD; ii++) {
+
+        pRCB = pDevice->apRCB[ii];
+	/* deallocate URBs */
+        if (pRCB->pUrb) {
+            usb_kill_urb(pRCB->pUrb);
+            usb_free_urb(pRCB->pUrb);
+        }
+	/* deallocate skb */
+        if (pRCB->skb)
+            dev_kfree_skb(pRCB->skb);
+    }
+    kfree(pDevice->pRCBMem);
+
+    return;
+}
+
+static void usb_device_reset(struct vnt_private *pDevice)
+{
+ int status;
+ status = usb_reset_device(pDevice->usb);
+	if (status)
+            printk("usb_device_reset fail status=%d\n",status);
+	return ;
+}
+
+static void device_free_int_bufs(struct vnt_private *pDevice)
+{
+    kfree(pDevice->intBuf.pDataBuf);
+    return;
+}
+
+static bool device_alloc_bufs(struct vnt_private *pDevice)
+{
+
+    PUSB_SEND_CONTEXT pTxContext;
+    PRCB pRCB;
+    int ii;
+
+    for (ii = 0; ii < pDevice->cbTD; ii++) {
+
+        pTxContext = kmalloc(sizeof(USB_SEND_CONTEXT), GFP_KERNEL);
+        if (pTxContext == NULL) {
+            DBG_PRT(MSG_LEVEL_ERR,KERN_ERR "%s : allocate tx usb context failed\n", pDevice->dev->name);
+            goto free_tx;
+        }
+        pDevice->apTD[ii] = pTxContext;
+	pTxContext->pDevice = (void *) pDevice;
+	/* allocate URBs */
+        pTxContext->pUrb = usb_alloc_urb(0, GFP_ATOMIC);
+        if (pTxContext->pUrb == NULL) {
+            DBG_PRT(MSG_LEVEL_ERR,KERN_ERR "alloc tx urb failed\n");
+            goto free_tx;
+        }
+        pTxContext->bBoolInUse = false;
+    }
+
+    /* allocate RCB mem */
+	pDevice->pRCBMem = kzalloc((sizeof(RCB) * pDevice->cbRD), GFP_KERNEL);
+    if (pDevice->pRCBMem == NULL) {
+        DBG_PRT(MSG_LEVEL_ERR,KERN_ERR "%s : alloc rx usb context failed\n", pDevice->dev->name);
+        goto free_tx;
+    }
+
+    pDevice->FirstRecvFreeList = NULL;
+    pDevice->LastRecvFreeList = NULL;
+    pDevice->FirstRecvMngList = NULL;
+    pDevice->LastRecvMngList = NULL;
+    pDevice->NumRecvFreeList = 0;
+    pRCB = (PRCB) pDevice->pRCBMem;
+
+    for (ii = 0; ii < pDevice->cbRD; ii++) {
+
+        pDevice->apRCB[ii] = pRCB;
+	pRCB->pDevice = (void *) pDevice;
+	/* allocate URBs */
+        pRCB->pUrb = usb_alloc_urb(0, GFP_ATOMIC);
+
+        if (pRCB->pUrb == NULL) {
+            DBG_PRT(MSG_LEVEL_ERR,KERN_ERR" Failed to alloc rx urb\n");
+            goto free_rx_tx;
+        }
+        pRCB->skb = dev_alloc_skb((int)pDevice->rx_buf_sz);
+        if (pRCB->skb == NULL) {
+            DBG_PRT(MSG_LEVEL_ERR,KERN_ERR" Failed to alloc rx skb\n");
+            goto free_rx_tx;
+        }
+        pRCB->skb->dev = pDevice->dev;
+        pRCB->bBoolInUse = false;
+        EnqueueRCB(pDevice->FirstRecvFreeList, pDevice->LastRecvFreeList, pRCB);
+        pDevice->NumRecvFreeList++;
+        pRCB++;
+    }
+
+	pDevice->pControlURB = usb_alloc_urb(0, GFP_ATOMIC);
+	if (pDevice->pControlURB == NULL) {
+	    DBG_PRT(MSG_LEVEL_ERR,KERN_ERR"Failed to alloc control urb\n");
+	    goto free_rx_tx;
+	}
+
+	pDevice->pInterruptURB = usb_alloc_urb(0, GFP_ATOMIC);
+	if (pDevice->pInterruptURB == NULL) {
+	    DBG_PRT(MSG_LEVEL_ERR,KERN_ERR"Failed to alloc int urb\n");
+	    usb_free_urb(pDevice->pControlURB);
+	    goto free_rx_tx;
+	}
+
+    pDevice->intBuf.pDataBuf = kmalloc(MAX_INTERRUPT_SIZE, GFP_KERNEL);
+	if (pDevice->intBuf.pDataBuf == NULL) {
+	    DBG_PRT(MSG_LEVEL_ERR,KERN_ERR"Failed to alloc int buf\n");
+	    usb_free_urb(pDevice->pControlURB);
+	    usb_free_urb(pDevice->pInterruptURB);
+	    goto free_rx_tx;
+	}
+
+    return true;
+
+free_rx_tx:
+    device_free_rx_bufs(pDevice);
+
+free_tx:
+    device_free_tx_bufs(pDevice);
+
+	return false;
+}
+
+static bool device_init_defrag_cb(struct vnt_private *pDevice)
+{
+	int i;
+	PSDeFragControlBlock pDeF;
+
+    /* Init the fragment ctl entries */
+    for (i = 0; i < CB_MAX_RX_FRAG; i++) {
+        pDeF = &(pDevice->sRxDFCB[i]);
+        if (!device_alloc_frag_buf(pDevice, pDeF)) {
+            DBG_PRT(MSG_LEVEL_ERR,KERN_ERR "%s: can not alloc frag bufs\n",
+                pDevice->dev->name);
+            goto free_frag;
+        }
+    }
+    pDevice->cbDFCB = CB_MAX_RX_FRAG;
+    pDevice->cbFreeDFCB = pDevice->cbDFCB;
+    return true;
+
+free_frag:
+    device_free_frag_bufs(pDevice);
+    return false;
+}
+
+static void device_free_frag_bufs(struct vnt_private *pDevice)
+{
+	PSDeFragControlBlock pDeF;
+	int i;
+
+    for (i = 0; i < CB_MAX_RX_FRAG; i++) {
+
+        pDeF = &(pDevice->sRxDFCB[i]);
+
+        if (pDeF->skb)
+            dev_kfree_skb(pDeF->skb);
+    }
+}
+
+int device_alloc_frag_buf(struct vnt_private *pDevice,
+		PSDeFragControlBlock pDeF)
+{
+
+    pDeF->skb = dev_alloc_skb((int)pDevice->rx_buf_sz);
+    if (pDeF->skb == NULL)
+        return false;
+    ASSERT(pDeF->skb);
+    pDeF->skb->dev = pDevice->dev;
+
+    return true;
+}
+
+static int  device_open(struct net_device *dev)
+{
+	struct vnt_private *pDevice = netdev_priv(dev);
+
+     pDevice->fWPA_Authened = false;
+
+    DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO " device_open...\n");
+
+    pDevice->rx_buf_sz = MAX_TOTAL_SIZE_WITH_ALL_HEADERS;
+
+    if (device_alloc_bufs(pDevice) == false) {
+        DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO " device_alloc_bufs fail... \n");
+        return -ENOMEM;
+    }
+
+    if (device_init_defrag_cb(pDevice)== false) {
+        DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO " Initial defragment cb fail \n");
+        goto free_rx_tx;
+    }
+
+    MP_CLEAR_FLAG(pDevice, fMP_DISCONNECTED);
+    MP_CLEAR_FLAG(pDevice, fMP_CONTROL_READS);
+    MP_CLEAR_FLAG(pDevice, fMP_CONTROL_WRITES);
+    MP_SET_FLAG(pDevice, fMP_POST_READS);
+    MP_SET_FLAG(pDevice, fMP_POST_WRITES);
+
+    /* read config file */
+    Read_config_file(pDevice);
+
+    if (device_init_registers(pDevice, DEVICE_INIT_COLD) == false) {
+        DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO " init register fail\n");
+        goto free_all;
+    }
+
+    device_set_multi(pDevice->dev);
+
+    /* init for key management */
+    KeyvInitTable(pDevice,&pDevice->sKey);
+	memcpy(pDevice->vnt_mgmt.abyMACAddr,
+		pDevice->abyCurrentNetAddr, ETH_ALEN);
+    memcpy(pDevice->dev->dev_addr, pDevice->abyCurrentNetAddr, ETH_ALEN);
+    pDevice->bStopTx0Pkt = false;
+    pDevice->bStopDataPkt = false;
+    pDevice->bRoaming = false;
+    pDevice->bIsRoaming = false;
+    pDevice->bEnableRoaming = false;
+    if (pDevice->bDiversityRegCtlON) {
+        device_init_diversity_timer(pDevice);
+    }
+
+    vMgrObjectInit(pDevice);
+    tasklet_init(&pDevice->RxMngWorkItem, (void *)RXvMngWorkItem, (unsigned long)pDevice);
+    tasklet_init(&pDevice->ReadWorkItem, (void *)RXvWorkItem, (unsigned long)pDevice);
+    tasklet_init(&pDevice->EventWorkItem, (void *)INTvWorkItem, (unsigned long)pDevice);
+	add_timer(&pDevice->vnt_mgmt.sTimerSecondCallback);
+	pDevice->int_interval = 100;  /* max 100 microframes */
+    pDevice->eEncryptionStatus = Ndis802_11EncryptionDisabled;
+
+    pDevice->bIsRxWorkItemQueued = true;
+    pDevice->fKillEventPollingThread = false;
+    pDevice->bEventAvailable = false;
+
+   pDevice->bWPADEVUp = false;
+     pDevice->bwextstep0 = false;
+     pDevice->bwextstep1 = false;
+     pDevice->bwextstep2 = false;
+     pDevice->bwextstep3 = false;
+     pDevice->bWPASuppWextEnabled = false;
+    pDevice->byReAssocCount = 0;
+
+    RXvWorkItem(pDevice);
+    INTvWorkItem(pDevice);
+
+    /* if WEP key already set by iwconfig but device not yet open */
+    if ((pDevice->bEncryptionEnable == true) && (pDevice->bTransmitKey == true)) {
+         spin_lock_irq(&pDevice->lock);
+         KeybSetDefaultKey( pDevice,
+                            &(pDevice->sKey),
+                            pDevice->byKeyIndex | (1 << 31),
+                            pDevice->uKeyLength,
+                            NULL,
+                            pDevice->abyKey,
+                            KEY_CTL_WEP
+                          );
+         spin_unlock_irq(&pDevice->lock);
+         pDevice->eEncryptionStatus = Ndis802_11Encryption1Enabled;
+    }
+
+	if (pDevice->vnt_mgmt.eConfigMode == WMAC_CONFIG_AP)
+		bScheduleCommand((void *) pDevice, WLAN_CMD_RUN_AP, NULL);
+	else
+		bScheduleCommand((void *) pDevice, WLAN_CMD_BSSID_SCAN, NULL);
+
+    netif_stop_queue(pDevice->dev);
+    pDevice->flags |= DEVICE_FLAGS_OPENED;
+
+	DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO "device_open success..\n");
+	return 0;
+
+free_all:
+    device_free_frag_bufs(pDevice);
+free_rx_tx:
+    device_free_rx_bufs(pDevice);
+    device_free_tx_bufs(pDevice);
+    device_free_int_bufs(pDevice);
+	usb_kill_urb(pDevice->pControlURB);
+	usb_kill_urb(pDevice->pInterruptURB);
+    usb_free_urb(pDevice->pControlURB);
+    usb_free_urb(pDevice->pInterruptURB);
+
+    DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO "device_open fail.. \n");
+    return -ENOMEM;
+}
+
+static int device_close(struct net_device *dev)
+{
+	struct vnt_private *pDevice = netdev_priv(dev);
+	struct vnt_manager *pMgmt = &pDevice->vnt_mgmt;
+	int uu;
+
+	DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO "device_close1\n");
+    if (pDevice == NULL)
+        return -ENODEV;
+
+    if (pDevice->bLinkPass) {
+	bScheduleCommand((void *) pDevice, WLAN_CMD_DISASSOCIATE, NULL);
+        mdelay(30);
+    }
+
+        memset(pMgmt->abyDesireSSID, 0, WLAN_IEHDR_LEN + WLAN_SSID_MAXLEN + 1);
+        pMgmt->bShareKeyAlgorithm = false;
+        pDevice->bEncryptionEnable = false;
+        pDevice->eEncryptionStatus = Ndis802_11EncryptionDisabled;
+	spin_lock_irq(&pDevice->lock);
+	for (uu = 0; uu < MAX_KEY_TABLE; uu++)
+                MACvDisableKeyEntry(pDevice,uu);
+	spin_unlock_irq(&pDevice->lock);
+
+    if ((pDevice->flags & DEVICE_FLAGS_UNPLUG) == false) {
+        MACbShutdown(pDevice);
+    }
+    netif_stop_queue(pDevice->dev);
+    MP_SET_FLAG(pDevice, fMP_DISCONNECTED);
+    MP_CLEAR_FLAG(pDevice, fMP_POST_WRITES);
+    MP_CLEAR_FLAG(pDevice, fMP_POST_READS);
+    pDevice->fKillEventPollingThread = true;
+    del_timer(&pDevice->sTimerCommand);
+    del_timer(&pMgmt->sTimerSecondCallback);
+
+    del_timer(&pDevice->sTimerTxData);
+
+    if (pDevice->bDiversityRegCtlON) {
+        del_timer(&pDevice->TimerSQ3Tmax1);
+        del_timer(&pDevice->TimerSQ3Tmax2);
+        del_timer(&pDevice->TimerSQ3Tmax3);
+    }
+    tasklet_kill(&pDevice->RxMngWorkItem);
+    tasklet_kill(&pDevice->ReadWorkItem);
+    tasklet_kill(&pDevice->EventWorkItem);
+
+   pDevice->bRoaming = false;
+   pDevice->bIsRoaming = false;
+   pDevice->bEnableRoaming = false;
+    pDevice->bCmdRunning = false;
+    pDevice->bLinkPass = false;
+    memset(pMgmt->abyCurrBSSID, 0, 6);
+    pMgmt->eCurrState = WMAC_STATE_IDLE;
+
+	pDevice->flags &= ~DEVICE_FLAGS_OPENED;
+
+    device_free_tx_bufs(pDevice);
+    device_free_rx_bufs(pDevice);
+    device_free_int_bufs(pDevice);
+    device_free_frag_bufs(pDevice);
+
+	usb_kill_urb(pDevice->pControlURB);
+	usb_kill_urb(pDevice->pInterruptURB);
+    usb_free_urb(pDevice->pControlURB);
+    usb_free_urb(pDevice->pInterruptURB);
+
+    BSSvClearNodeDBTable(pDevice, 0);
+
+    DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO "device_close2 \n");
+
+    return 0;
+}
+
+>>>>>>> p9x
 static void vt6656_disconnect(struct usb_interface *intf)
 {
 	struct vnt_private *priv = usb_get_intfdata(intf);

@@ -2321,6 +2321,16 @@ static int isp_probe(struct platform_device *pdev)
 		goto error_isp;
 	}
 
+<<<<<<< HEAD
+=======
+	ret = iommu_attach_device(isp->domain, &pdev->dev);
+	if (ret) {
+		dev_err(&pdev->dev, "can't attach iommu device: %d\n", ret);
+		ret = -EPROBE_DEFER;
+		goto free_domain;
+	}
+
+>>>>>>> p9x
 	/* Interrupt */
 	isp->irq_num = platform_get_irq(pdev, 0);
 	if (isp->irq_num <= 0) {
@@ -2352,8 +2362,16 @@ static int isp_probe(struct platform_device *pdev)
 
 error_modules:
 	isp_cleanup_modules(isp);
+<<<<<<< HEAD
 error_iommu:
 	isp_detach_iommu(isp);
+=======
+detach_dev:
+	iommu_detach_device(isp->domain, &pdev->dev);
+free_domain:
+	iommu_domain_free(isp->domain);
+	isp->domain = NULL;
+>>>>>>> p9x
 error_isp:
 	isp_xclk_cleanup(isp);
 	__omap3isp_put(isp, false);

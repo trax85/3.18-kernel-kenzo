@@ -85,7 +85,11 @@ struct ion_platform_data {
  *		size
  *
  * Calls memblock reserve to set aside memory for heaps that are
+<<<<<<< HEAD
  * located at specific memory addresses or of specific sizes not
+=======
+ * located at specific memory addresses or of specfic sizes not
+>>>>>>> p9x
  * managed by the kernel
  */
 void ion_reserve(struct ion_platform_data *data);
@@ -93,6 +97,10 @@ void ion_reserve(struct ion_platform_data *data);
 /**
  * ion_client_create() -  allocate a client and returns it
  * @dev:		the global ion device
+<<<<<<< HEAD
+=======
+ * @heap_type_mask:	mask of heaps this client can allocate from
+>>>>>>> p9x
  * @name:		used for debugging
  */
 struct ion_client *ion_client_create(struct ion_device *dev,

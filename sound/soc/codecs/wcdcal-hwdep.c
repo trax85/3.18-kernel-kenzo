@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2015, 2018, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -24,8 +28,11 @@ const int cal_size_info[WCD9XXX_MAX_CAL] = {
 	[WCD9XXX_MBHC_CAL] = 4096,
 	[WCD9XXX_MAD_CAL] = 4096,
 	[WCD9XXX_VBAT_CAL] = 72,
+<<<<<<< HEAD
 	[BG_CODEC_MIC_CAL] = 20,
 	[BG_CODEC_SPEAKER_CAL] = 3077,
+=======
+>>>>>>> p9x
 };
 
 const char *cal_name_info[WCD9XXX_MAX_CAL] = {
@@ -33,8 +40,11 @@ const char *cal_name_info[WCD9XXX_MAX_CAL] = {
 	[WCD9XXX_MBHC_CAL] = "mbhc",
 	[WCD9XXX_MAD_CAL] = "mad",
 	[WCD9XXX_VBAT_CAL] = "vbat",
+<<<<<<< HEAD
 	[BG_CODEC_MIC_CAL] = "bgmic",
 	[BG_CODEC_SPEAKER_CAL] = "bgspk",
+=======
+>>>>>>> p9x
 };
 
 struct firmware_cal *wcdcal_get_fw_cal(struct fw_info *fw_data,
@@ -175,17 +185,26 @@ int wcd_cal_create_hwdep(void *data, int node, struct snd_soc_codec *codec)
 	}
 
 	fw = fw_data->fw;
+<<<<<<< HEAD
 	snprintf(hwname, strlen("Codec %s"), "Codec %s",
 		 codec->component.name);
 	err = snd_hwdep_new(codec->component.card->snd_card,
 			    hwname, node, &hwdep);
+=======
+	snprintf(hwname, strlen("Codec %s"), "Codec %s", codec->name);
+	err = snd_hwdep_new(codec->card->snd_card, hwname, node, &hwdep);
+>>>>>>> p9x
 	if (err < 0) {
 		dev_err(codec->dev, "%s: new hwdep failed %d\n",
 				__func__, err);
 		return err;
 	}
+<<<<<<< HEAD
 	snprintf(hwdep->name, strlen("Codec %s"), "Codec %s",
 		 codec->component.name);
+=======
+	snprintf(hwdep->name, strlen("Codec %s"), "Codec %s", codec->name);
+>>>>>>> p9x
 	hwdep->iface = SNDRV_HWDEP_IFACE_AUDIO_CODEC;
 	hwdep->private_data = fw_data;
 	hwdep->ops.ioctl_compat = wcdcal_hwdep_ioctl_compat;

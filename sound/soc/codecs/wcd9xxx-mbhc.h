@@ -157,8 +157,13 @@ enum wcd9xxx_mbhc_clk_freq {
 enum wcd9xxx_mbhc_event_state {
 	MBHC_EVENT_PA_HPHL,
 	MBHC_EVENT_PA_HPHR,
+<<<<<<< HEAD
 	MBHC_EVENT_PRE_TX_3_ON,
 	MBHC_EVENT_POST_TX_3_OFF,
+=======
+	MBHC_EVENT_PRE_TX_1_3_ON,
+	MBHC_EVENT_POST_TX_1_3_OFF,
+>>>>>>> p9x
 };
 
 enum mbhc_hph_type {
@@ -408,6 +413,11 @@ struct wcd9xxx_mbhc {
 	/* Holds type of Headset - Mono/Stereo */
 	enum mbhc_hph_type hph_type;
 
+<<<<<<< HEAD
+=======
+	bool is_jack_type_swchd;
+
+>>>>>>> p9x
 #ifdef CONFIG_DEBUG_FS
 	struct dentry *debugfs_poke;
 	struct dentry *debugfs_mbhc;

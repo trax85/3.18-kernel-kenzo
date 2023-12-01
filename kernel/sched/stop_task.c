@@ -31,6 +31,7 @@ dec_hmp_sched_stats_stop(struct rq *rq, struct task_struct *p)
 	dec_cumulative_runnable_avg(&rq->hmp_stats, p);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_QHMP
 static void
 fixup_hmp_sched_stats_stop(struct rq *rq, struct task_struct *p,
@@ -51,6 +52,8 @@ fixup_hmp_sched_stats_stop(struct rq *rq, struct task_struct *p,
 }
 #endif
 
+=======
+>>>>>>> p9x
 #else	/* CONFIG_SCHED_HMP */
 
 static inline void
@@ -72,8 +75,15 @@ pick_next_task_stop(struct rq *rq, struct task_struct *prev)
 {
 	struct task_struct *stop = rq->stop;
 
+<<<<<<< HEAD
 	if (!stop || !task_on_rq_queued(stop))
 		return NULL;
+=======
+	if (stop && stop->on_rq) {
+		stop->se.exec_start = rq_clock_task(rq);
+		return stop;
+	}
+>>>>>>> p9x
 
 	put_prev_task(rq, prev);
 
@@ -85,14 +95,22 @@ pick_next_task_stop(struct rq *rq, struct task_struct *prev)
 static void
 enqueue_task_stop(struct rq *rq, struct task_struct *p, int flags)
 {
+<<<<<<< HEAD
 	add_nr_running(rq, 1);
+=======
+	inc_nr_running(rq);
+>>>>>>> p9x
 	inc_hmp_sched_stats_stop(rq, p);
 }
 
 static void
 dequeue_task_stop(struct rq *rq, struct task_struct *p, int flags)
 {
+<<<<<<< HEAD
 	sub_nr_running(rq, 1);
+=======
+	dec_nr_running(rq);
+>>>>>>> p9x
 	dec_hmp_sched_stats_stop(rq, p);
 }
 
@@ -178,10 +196,16 @@ const struct sched_class stop_sched_class = {
 
 	.prio_changed		= prio_changed_stop,
 	.switched_to		= switched_to_stop,
+<<<<<<< HEAD
 	.update_curr		= update_curr_stop,
 #ifdef CONFIG_SCHED_HMP
 	.inc_hmp_sched_stats	= inc_hmp_sched_stats_stop,
 	.dec_hmp_sched_stats	= dec_hmp_sched_stats_stop,
 	.fixup_hmp_sched_stats	= fixup_hmp_sched_stats_stop,
+=======
+#ifdef CONFIG_SCHED_HMP
+	.inc_hmp_sched_stats	= inc_hmp_sched_stats_stop,
+	.dec_hmp_sched_stats	= dec_hmp_sched_stats_stop,
+>>>>>>> p9x
 #endif
 };

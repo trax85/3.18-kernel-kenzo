@@ -883,7 +883,11 @@ SYSCALL_DEFINE1(mq_unlink, const char __user *, u_name)
 		err = -ENOENT;
 	} else {
 		ihold(inode);
+<<<<<<< HEAD
 		err = vfs_unlink2(mnt, dentry->d_parent->d_inode, dentry, NULL);
+=======
+		err = vfs_unlink2(mnt, dentry->d_parent->d_inode, dentry);
+>>>>>>> p9x
 	}
 	dput(dentry);
 

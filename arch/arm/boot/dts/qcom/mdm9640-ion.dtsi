@@ -1,4 +1,12 @@
+<<<<<<< HEAD
+<<<<<<<< HEAD:arch/arm/boot/dts/qcom/mdm9640-ion.dtsi
 /* Copyright (c) 2014, Linux Foundation. All rights reserved.
+========
+/* Copyright (c) 2012, The Linux Foundation. All rights reserved.
+>>>>>>>> p9x:arch/arm/mach-msm/test-lpm.h
+=======
+/* Copyright (c) 2014, Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -8,6 +16,10 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
+<<<<<<<< HEAD:arch/arm/boot/dts/qcom/mdm9640-ion.dtsi
+=======
+>>>>>>> p9x
  */
 
 &soc {
@@ -21,6 +33,7 @@
 			qcom,ion-heap-type = "SYSTEM";
 		};
 
+<<<<<<< HEAD
 	qcom,ion-heap@28 { /* AUDIO HEAP */
 		reg = <28>;
 		memory-region = <&audio_mem>;
@@ -28,3 +41,27 @@
 		};
 	};
 };
+========
+ *
+ */
+
+#ifndef __ARCH_ARM_MACH_MSM_TEST_LPM_H
+#define __ARCH_ARM_MACH_MSM_TEST_LPM_H
+
+struct lpm_test_platform_data {
+	struct msm_rpmrs_level *msm_lpm_test_levels;
+	int msm_lpm_test_level_count;
+	bool use_qtimer;
+};
+#endif
+>>>>>>>> p9x:arch/arm/mach-msm/test-lpm.h
+=======
+		qcom,ion-heap@28 { /* AUDIO HEAP */
+			compatible = "qcom,msm-ion-reserve";
+			reg = <28>;
+			linux,contiguous-region = <&audio_mem>;
+			qcom,ion-heap-type = "DMA";
+		};
+	};
+};
+>>>>>>> p9x

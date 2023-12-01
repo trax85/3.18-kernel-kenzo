@@ -65,4 +65,7 @@ extern int memcmp(const void *, const void *, size_t);
 #define memset(s, c, n) __memset(s, c, n)
 #endif
 
+#define __HAVE_ARCH_MEMCMP
+extern int memcmp(const void *, const void *, size_t);
+
 #endif

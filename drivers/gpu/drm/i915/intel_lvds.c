@@ -760,6 +760,7 @@ static const struct dmi_system_id intel_no_lvds[] = {
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "D510MO"),
 		},
 	},
+<<<<<<< HEAD
 	{
 		.callback = intel_no_lvds_dmi_callback,
 		.ident = "Intel D525MW",
@@ -776,6 +777,8 @@ static const struct dmi_system_id intel_no_lvds[] = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "P845"),
 		},
 	},
+=======
+>>>>>>> p9x
 
 	{ }	/* terminating entry */
 };
@@ -959,7 +962,11 @@ void intel_lvds_init(struct drm_device *dev)
 	if (HAS_PCH_SPLIT(dev)) {
 		I915_WRITE(PCH_PP_CONTROL,
 			   I915_READ(PCH_PP_CONTROL) | PANEL_UNLOCK_REGS);
+<<<<<<< HEAD
 	} else if (INTEL_INFO(dev_priv)->gen < 5) {
+=======
+	} else {
+>>>>>>> p9x
 		I915_WRITE(PP_CONTROL,
 			   I915_READ(PP_CONTROL) | PANEL_UNLOCK_REGS);
 	}
@@ -1172,9 +1179,12 @@ out:
 	DRM_DEBUG_KMS("detected %s-link lvds configuration\n",
 		      lvds_encoder->is_dual_link ? "dual" : "single");
 
+<<<<<<< HEAD
 	lvds_encoder->a3_power = I915_READ(lvds_encoder->reg) &
 				 LVDS_A3_POWER_MASK;
 
+=======
+>>>>>>> p9x
 	lvds_connector->lid_notifier.notifier_call = intel_lid_notify;
 	if (acpi_lid_notifier_register(&lvds_connector->lid_notifier)) {
 		DRM_DEBUG_KMS("lid notifier registration failed\n");

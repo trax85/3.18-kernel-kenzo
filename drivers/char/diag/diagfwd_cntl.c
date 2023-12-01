@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2017, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -22,8 +26,11 @@
 #include "diag_dci.h"
 #include "diagmem.h"
 #include "diag_masks.h"
+<<<<<<< HEAD
 #include "diag_ipc_logging.h"
 #include "diag_mux.h"
+=======
+>>>>>>> p9x
 
 #define FEATURE_SUPPORTED(x)	((feature_mask << (i * 8)) & (1 << x))
 
@@ -111,6 +118,7 @@ void diag_notify_md_client(uint8_t peripheral, int data)
 	int stat = 0;
 	struct siginfo info;
 
+<<<<<<< HEAD
 	if (peripheral > NUM_PERIPHERALS)
 		return;
 
@@ -118,10 +126,16 @@ void diag_notify_md_client(uint8_t peripheral, int data)
 		return;
 
 	mutex_lock(&driver->md_session_lock);
+=======
+	if (driver->logging_mode != MEMORY_DEVICE_MODE)
+		return;
+
+>>>>>>> p9x
 	memset(&info, 0, sizeof(struct siginfo));
 	info.si_code = SI_QUEUE;
 	info.si_int = (PERIPHERAL_MASK(peripheral) | data);
 	info.si_signo = SIGCONT;
+<<<<<<< HEAD
 	if (driver->md_session_map[peripheral] &&
 		driver->md_session_map[peripheral]->task) {
 		if (driver->md_session_map[peripheral]->pid ==
@@ -142,6 +156,16 @@ void diag_notify_md_client(uint8_t peripheral, int data)
 				peripheral, info.si_int, stat);
 	}
 	mutex_unlock(&driver->md_session_lock);
+=======
+	if (driver->md_proc[DIAG_LOCAL_PROC].mdlog_process) {
+		stat = send_sig_info(info.si_signo, &info,
+			driver->md_proc[DIAG_LOCAL_PROC].mdlog_process);
+		if (stat)
+			pr_err("diag: Err sending signal to memory device client, signal data: 0x%x, stat: %d\n",
+			       info.si_int, stat);
+	}
+
+>>>>>>> p9x
 }
 
 static void process_pd_status(uint8_t *buf, uint32_t len,
@@ -358,8 +382,11 @@ static void process_incoming_feature_mask(uint8_t *buf, uint32_t len,
 		feature_mask_len = FEATURE_MASK_LEN;
 	}
 
+<<<<<<< HEAD
 	diag_cmd_remove_reg_by_proc(peripheral);
 
+=======
+>>>>>>> p9x
 	driver->feature[peripheral].rcvd_feature_mask = 1;
 
 	for (i = 0; i < feature_mask_len && read_len < len; i++) {
@@ -404,8 +431,13 @@ static void process_last_event_report(uint8_t *buf, uint32_t len,
 	header = (struct diag_ctrl_last_event_report *)ptr;
 	event_size = ((header->event_last_id / 8) + 1);
 	if (event_size >= driver->event_mask_size) {
+<<<<<<< HEAD
 		DIAG_LOG(DIAG_DEBUG_MASKS,
 		"diag: receiving event mask size more that Apps can handle\n");
+=======
+		pr_debug("diag: In %s, receiving event mask size more that Apps can handle\n",
+			 __func__);
+>>>>>>> p9x
 		temp = krealloc(driver->event_mask->ptr, event_size,
 				GFP_KERNEL);
 		if (!temp) {
@@ -431,6 +463,11 @@ static void process_log_range_report(uint8_t *buf, uint32_t len,
 	int read_len = 0;
 	int header_len = sizeof(struct diag_ctrl_log_range_report);
 	uint8_t *ptr = buf;
+<<<<<<< HEAD
+=======
+	uint8_t *temp = NULL;
+	uint32_t mask_size;
+>>>>>>> p9x
 	struct diag_ctrl_log_range_report *header = NULL;
 	struct diag_ctrl_log_range *log_range = NULL;
 	struct diag_log_mask_t *mask_ptr = NULL;
@@ -456,10 +493,30 @@ static void process_log_range_report(uint8_t *buf, uint32_t len,
 		}
 		mask_ptr = (struct diag_log_mask_t *)log_mask.ptr;
 		mask_ptr = &mask_ptr[log_range->equip_id];
+<<<<<<< HEAD
 
 		mutex_lock(&(mask_ptr->lock));
 		mask_ptr->num_items = log_range->num_items;
 		mask_ptr->range = LOG_ITEMS_TO_SIZE(log_range->num_items);
+=======
+		mutex_lock(&(mask_ptr->lock));
+		mask_size = LOG_ITEMS_TO_SIZE(log_range->num_items);
+		if (mask_size < mask_ptr->range)
+			goto proceed;
+
+		temp = krealloc(mask_ptr->ptr, mask_size, GFP_KERNEL);
+		if (!temp) {
+			pr_err("diag: In %s, Unable to reallocate log mask ptr to size: %d, equip_id: %d\n",
+			       __func__, mask_size, log_range->equip_id);
+			mutex_unlock(&(mask_ptr->lock));
+			continue;
+		}
+		mask_ptr->ptr = temp;
+		mask_ptr->range = mask_size;
+proceed:
+		if (log_range->num_items > mask_ptr->num_items)
+			mask_ptr->num_items = log_range->num_items;
+>>>>>>> p9x
 		mutex_unlock(&(mask_ptr->lock));
 	}
 }
@@ -478,12 +535,16 @@ static int update_msg_mask_tbl_entry(struct diag_msg_mask_t *mask,
 	}
 	if (range->ssid_last >= mask->ssid_last) {
 		temp_range = range->ssid_last - mask->ssid_first + 1;
+<<<<<<< HEAD
 		if (temp_range > MAX_SSID_PER_RANGE) {
 			temp_range = MAX_SSID_PER_RANGE;
 			mask->ssid_last = mask->ssid_first + temp_range - 1;
 		} else
 			mask->ssid_last = range->ssid_last;
 		mask->ssid_last_tools = mask->ssid_last;
+=======
+		mask->ssid_last = range->ssid_last;
+>>>>>>> p9x
 		mask->range = temp_range;
 	}
 
@@ -514,7 +575,10 @@ static void process_ssid_range_report(uint8_t *buf, uint32_t len,
 	ptr += header_len;
 	/* Don't account for pkt_id and length */
 	read_len += header_len - (2 * sizeof(uint32_t));
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	mutex_lock(&driver->msg_mask_lock);
 	driver->max_ssid_count[peripheral] = header->count;
 	for (i = 0; i < header->count && read_len < len; i++) {
@@ -524,10 +588,13 @@ static void process_ssid_range_report(uint8_t *buf, uint32_t len,
 		mask_ptr = (struct diag_msg_mask_t *)msg_mask.ptr;
 		found = 0;
 		for (j = 0; j < driver->msg_mask_tbl_count; j++, mask_ptr++) {
+<<<<<<< HEAD
 			if (!mask_ptr->ptr || !ssid_range) {
 				found = 1;
 				break;
 			}
+=======
+>>>>>>> p9x
 			if (mask_ptr->ssid_first != ssid_range->ssid_first)
 				continue;
 			mutex_lock(&mask_ptr->lock);
@@ -546,8 +613,11 @@ static void process_ssid_range_report(uint8_t *buf, uint32_t len,
 
 		new_size = (driver->msg_mask_tbl_count + 1) *
 			   sizeof(struct diag_msg_mask_t);
+<<<<<<< HEAD
 		DIAG_LOG(DIAG_DEBUG_MASKS,
 			"diag: receiving msg mask size more that Apps can handle\n");
+=======
+>>>>>>> p9x
 		temp = krealloc(msg_mask.ptr, new_size, GFP_KERNEL);
 		if (!temp) {
 			pr_err("diag: In %s, Unable to add new ssid table to msg mask, ssid first: %d, last: %d\n",
@@ -556,7 +626,10 @@ static void process_ssid_range_report(uint8_t *buf, uint32_t len,
 			continue;
 		}
 		msg_mask.ptr = temp;
+<<<<<<< HEAD
 		mask_ptr = (struct diag_msg_mask_t *)msg_mask.ptr;
+=======
+>>>>>>> p9x
 		err = diag_create_msg_mask_table_entry(mask_ptr, ssid_range);
 		if (err) {
 			pr_err("diag: In %s, Unable to create a new msg mask table entry, first: %d last: %d err: %d\n",
@@ -596,10 +669,13 @@ static void diag_build_time_mask_update(uint8_t *buf,
 	num_items = range->ssid_last - range->ssid_first + 1;
 
 	for (i = 0; i < driver->bt_msg_mask_tbl_count; i++, build_mask++) {
+<<<<<<< HEAD
 		if (!build_mask->ptr) {
 			found = 1;
 			break;
 		}
+=======
+>>>>>>> p9x
 		if (build_mask->ssid_first != range->ssid_first)
 			continue;
 		found = 1;
@@ -610,8 +686,12 @@ static void diag_build_time_mask_update(uint8_t *buf,
 			       __func__);
 		}
 		dest_ptr = build_mask->ptr;
+<<<<<<< HEAD
 		for (j = 0; (j < build_mask->range) && mask_ptr && dest_ptr;
 			j++, mask_ptr++, dest_ptr++)
+=======
+		for (j = 0; j < build_mask->range; j++, mask_ptr++, dest_ptr++)
+>>>>>>> p9x
 			*(uint32_t *)dest_ptr |= *mask_ptr;
 		mutex_unlock(&build_mask->lock);
 		break;
@@ -619,12 +699,17 @@ static void diag_build_time_mask_update(uint8_t *buf,
 
 	if (found)
 		goto end;
+<<<<<<< HEAD
 
 	new_size = (driver->bt_msg_mask_tbl_count + 1) *
 		   sizeof(struct diag_msg_mask_t);
 	DIAG_LOG(DIAG_DEBUG_MASKS,
 		"diag: receiving build time mask size more that Apps can handle\n");
 
+=======
+	new_size = (driver->bt_msg_mask_tbl_count + 1) *
+		   sizeof(struct diag_msg_mask_t);
+>>>>>>> p9x
 	temp = krealloc(driver->build_time_mask->ptr, new_size, GFP_KERNEL);
 	if (!temp) {
 		pr_err("diag: In %s, unable to create a new entry for build time mask\n",
@@ -632,7 +717,10 @@ static void diag_build_time_mask_update(uint8_t *buf,
 		goto end;
 	}
 	driver->build_time_mask->ptr = temp;
+<<<<<<< HEAD
 	build_mask = (struct diag_msg_mask_t *)driver->build_time_mask->ptr;
+=======
+>>>>>>> p9x
 	err = diag_create_msg_mask_table_entry(build_mask, range);
 	if (err) {
 		pr_err("diag: In %s, Unable to create a new msg mask table entry, err: %d\n",
@@ -642,7 +730,10 @@ static void diag_build_time_mask_update(uint8_t *buf,
 	driver->bt_msg_mask_tbl_count += 1;
 end:
 	mutex_unlock(&driver->msg_mask_lock);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return;
 }
 
@@ -679,8 +770,13 @@ static void process_build_mask_report(uint8_t *buf, uint32_t len,
 void diag_cntl_process_read_data(struct diagfwd_info *p_info, void *buf,
 				 int len)
 {
+<<<<<<< HEAD
 	uint32_t read_len = 0;
 	uint32_t header_len = sizeof(struct diag_ctrl_pkt_header_t);
+=======
+	int read_len = 0;
+	int header_len = sizeof(struct diag_ctrl_pkt_header_t);
+>>>>>>> p9x
 	uint8_t *ptr = buf;
 	struct diag_ctrl_pkt_header_t *ctrl_pkt = NULL;
 
@@ -828,7 +924,11 @@ void diag_update_real_time_vote(uint16_t proc, uint8_t real_time, int index)
 {
 	int i;
 
+<<<<<<< HEAD
 	if (index >= DIAG_NUM_PROC) {
+=======
+	if (index > DIAG_NUM_PROC) {
+>>>>>>> p9x
 		pr_err("diag: In %s, invalid index %d\n", __func__, index);
 		return;
 	}
@@ -993,7 +1093,11 @@ void diag_real_time_work_fn(struct work_struct *work)
 }
 #endif
 
+<<<<<<< HEAD
 static int __diag_send_real_time_update(uint8_t peripheral, int real_time)
+=======
+int diag_send_real_time_update(uint8_t peripheral, int real_time)
+>>>>>>> p9x
 {
 	char buf[sizeof(struct diag_ctrl_msg_diagmode)];
 	int msg_size = sizeof(struct diag_ctrl_msg_diagmode);
@@ -1032,6 +1136,7 @@ static int __diag_send_real_time_update(uint8_t peripheral, int real_time)
 	return err;
 }
 
+<<<<<<< HEAD
 int diag_send_real_time_update(uint8_t peripheral, int real_time)
 {
 	int i;
@@ -1049,6 +1154,8 @@ int diag_send_real_time_update(uint8_t peripheral, int real_time)
 	return __diag_send_real_time_update(peripheral, real_time);
 }
 
+=======
+>>>>>>> p9x
 int diag_send_peripheral_buffering_mode(struct diag_buffering_mode_t *params)
 {
 	int err = 0;
@@ -1065,9 +1172,12 @@ int diag_send_peripheral_buffering_mode(struct diag_buffering_mode_t *params)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (!driver->buffering_flag[peripheral])
 		return -EINVAL;
 
+=======
+>>>>>>> p9x
 	switch (params->mode) {
 	case DIAG_BUFFERING_MODE_STREAMING:
 		mode = MODE_REALTIME;
@@ -1085,7 +1195,10 @@ int diag_send_peripheral_buffering_mode(struct diag_buffering_mode_t *params)
 	if (!driver->feature[peripheral].peripheral_buffering) {
 		pr_debug("diag: In %s, peripheral %d doesn't support buffering\n",
 			 __func__, peripheral);
+<<<<<<< HEAD
 		driver->buffering_flag[peripheral] = 0;
+=======
+>>>>>>> p9x
 		return -EIO;
 	}
 
@@ -1117,7 +1230,11 @@ int diag_send_peripheral_buffering_mode(struct diag_buffering_mode_t *params)
 		       __func__, peripheral, err);
 		goto fail;
 	}
+<<<<<<< HEAD
 	err = __diag_send_real_time_update(peripheral, mode);
+=======
+	err = diag_send_real_time_update(peripheral, mode);
+>>>>>>> p9x
 	if (err) {
 		pr_err("diag: In %s, unable to send mode update to peripheral %d, mode: %d, err: %d\n",
 		       __func__, peripheral, mode, err);
@@ -1127,8 +1244,11 @@ int diag_send_peripheral_buffering_mode(struct diag_buffering_mode_t *params)
 	driver->buffering_mode[peripheral].mode = params->mode;
 	driver->buffering_mode[peripheral].low_wm_val = params->low_wm_val;
 	driver->buffering_mode[peripheral].high_wm_val = params->high_wm_val;
+<<<<<<< HEAD
 	if (params->mode == DIAG_BUFFERING_MODE_STREAMING)
 		driver->buffering_flag[peripheral] = 0;
+=======
+>>>>>>> p9x
 fail:
 	mutex_unlock(&driver->mode_lock);
 	return err;
@@ -1310,16 +1430,22 @@ int diag_send_buffering_wm_values(uint8_t peripheral,
 
 int diagfwd_cntl_init(void)
 {
+<<<<<<< HEAD
 	uint8_t peripheral = 0;
 
+=======
+>>>>>>> p9x
 	reg_dirty = 0;
 	driver->polling_reg_flag = 0;
 	driver->log_on_demand_support = 1;
 	driver->stm_peripheral = 0;
 	driver->close_transport = 0;
+<<<<<<< HEAD
 	for (peripheral = 0; peripheral < NUM_PERIPHERALS; peripheral++)
 		driver->buffering_flag[peripheral] = 0;
 
+=======
+>>>>>>> p9x
 	mutex_init(&driver->cntl_lock);
 	INIT_WORK(&(driver->stm_update_work), diag_stm_update_work_fn);
 	INIT_WORK(&(driver->mask_update_work), diag_mask_update_work_fn);

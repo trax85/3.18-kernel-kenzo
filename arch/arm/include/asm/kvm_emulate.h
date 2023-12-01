@@ -205,6 +205,7 @@ static inline unsigned long vcpu_data_guest_to_host(struct kvm_vcpu *vcpu,
 		default:
 			return be32_to_cpu(data);
 		}
+<<<<<<< HEAD
 	} else {
 		switch (len) {
 		case 1:
@@ -215,6 +216,11 @@ static inline unsigned long vcpu_data_guest_to_host(struct kvm_vcpu *vcpu,
 			return le32_to_cpu(data);
 		}
 	}
+=======
+	}
+
+	return data;		/* Leave LE untouched */
+>>>>>>> p9x
 }
 
 static inline unsigned long vcpu_data_host_to_guest(struct kvm_vcpu *vcpu,
@@ -230,6 +236,7 @@ static inline unsigned long vcpu_data_host_to_guest(struct kvm_vcpu *vcpu,
 		default:
 			return cpu_to_be32(data);
 		}
+<<<<<<< HEAD
 	} else {
 		switch (len) {
 		case 1:
@@ -240,6 +247,11 @@ static inline unsigned long vcpu_data_host_to_guest(struct kvm_vcpu *vcpu,
 			return cpu_to_le32(data);
 		}
 	}
+=======
+	}
+
+	return data;		/* Leave LE untouched */
+>>>>>>> p9x
 }
 
 #endif /* __ARM_KVM_EMULATE_H__ */

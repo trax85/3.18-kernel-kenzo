@@ -27,12 +27,15 @@
 #include <linux/of_address.h>
 #include <linux/io.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
 #include "common.h"
 #include "mvebu-soc-id.h"
 #include "pmsu.h"
 
 #define ARMADA_375_CRYPT0_ENG_TARGET 41
 #define ARMADA_375_CRYPT0_ENG_ATTR    1
+=======
+>>>>>>> p9x
 
 static void __iomem *system_controller_base;
 static phys_addr_t system_controller_phys_base;

@@ -19,8 +19,13 @@
 #include <linux/of_irq.h>
 #include <linux/of_address.h>
 #include <linux/sched_clock.h>
+<<<<<<< HEAD
 
 #define MARCO_CLOCK_FREQ 1000000
+=======
+#include <asm/localtimer.h>
+#include <asm/mach/time.h>
+>>>>>>> p9x
 
 #define SIRFSOC_TIMER_32COUNTER_0_CTRL			0x0000
 #define SIRFSOC_TIMER_32COUNTER_1_CTRL			0x0004

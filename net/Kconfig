@@ -95,7 +95,11 @@ endif # if INET
 
 config ANDROID_PARANOID_NETWORK
 	bool "Only allow certain groups to create sockets"
+<<<<<<< HEAD
 	default ANDROID
+=======
+	default y
+>>>>>>> p9x
 	help
 		none
 
@@ -250,12 +254,19 @@ source "net/batman-adv/Kconfig"
 source "net/openvswitch/Kconfig"
 source "net/vmw_vsock/Kconfig"
 source "net/netlink/Kconfig"
+<<<<<<< HEAD
 source "net/mpls/Kconfig"
 source "net/hsr/Kconfig"
 source "net/rmnet_data/Kconfig"
 
 config RPS
 	boolean "RPS"
+=======
+source "net/rmnet_data/Kconfig"
+
+config RPS
+	boolean
+>>>>>>> p9x
 	depends on SMP && SYSFS
 	default y
 
@@ -305,6 +316,7 @@ config BPF_JIT
 	  packet sniffing (libpcap/tcpdump). Note : Admin should enable
 	  this feature changing /proc/sys/net/core/bpf_jit_enable
 
+<<<<<<< HEAD
 config NET_FLOW_LIMIT
 	boolean
 	depends on RPS
@@ -317,6 +329,8 @@ config NET_FLOW_LIMIT
 	  with many clients some protection against DoS by a single (spoofed)
 	  flow that greatly exceeds average workload.
 
+=======
+>>>>>>> p9x
 config SOCKEV_NLMCAST
 	bool "Enable SOCKEV Netlink Multicast"
 	default n
@@ -404,6 +418,10 @@ source "net/caif/Kconfig"
 source "net/ceph/Kconfig"
 source "net/nfc/Kconfig"
 source "net/ipc_router/Kconfig"
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 
 endif   # if NET
 

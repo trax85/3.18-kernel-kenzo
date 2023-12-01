@@ -54,18 +54,37 @@
 #include <asm/rtc.h>
 #include <asm/uv/uv.h>
 
+<<<<<<< HEAD
 #define EFI_DEBUG
+=======
+#define EFI_DEBUG	1
+
+#define EFI_MIN_RESERVE 5120
+
+#define EFI_DUMMY_GUID \
+	EFI_GUID(0x4424ac57, 0xbe4b, 0x47dd, 0x9e, 0x97, 0xed, 0x50, 0xf0, 0x9f, 0x92, 0xa9)
+
+static efi_char16_t efi_dummy_name[6] = { 'D', 'U', 'M', 'M', 'Y', 0 };
+>>>>>>> p9x
 
 struct efi_memory_map memmap;
 
 static struct efi efi_phys __initdata;
 static efi_system_table_t efi_systab __initdata;
 
+<<<<<<< HEAD
 static efi_config_table_type_t arch_tables[] __initdata = {
 #ifdef CONFIG_X86_UV
 	{UV_SYSTEM_TABLE_GUID, "UVsystab", &efi.uv_systab},
 #endif
 	{NULL_GUID, NULL, NULL},
+=======
+static __initdata efi_config_table_type_t arch_tables[] = {
+#ifdef CONFIG_X86_UV
+	{UV_SYSTEM_TABLE_GUID, "UVsystab", &efi.uv_systab},
+#endif
+	{NULL_GUID, NULL, 0},
+>>>>>>> p9x
 };
 
 u64 efi_setup;		/* efi setup_data physical address */
@@ -85,12 +104,26 @@ static efi_status_t __init phys_efi_set_virtual_address_map(
 	efi_memory_desc_t *virtual_map)
 {
 	efi_status_t status;
+	unsigned long flags;
 
+<<<<<<< HEAD
 	efi_call_phys_prolog();
 	status = efi_call_phys(efi_phys.set_virtual_address_map,
 			       memory_map_size, descriptor_size,
 			       descriptor_version, virtual_map);
+=======
+	efi_call_phys_prelog();
+
+	/* Disable interrupts around EFI calls: */
+	local_irq_save(flags);
+	status = efi_call_phys4(efi_phys.set_virtual_address_map,
+				memory_map_size, descriptor_size,
+				descriptor_version, virtual_map);
+	local_irq_restore(flags);
+
+>>>>>>> p9x
 	efi_call_phys_epilog();
+
 	return status;
 }
 
@@ -210,6 +243,40 @@ static void __init print_efi_memmap(void)
 			(md->num_pages >> (20 - EFI_PAGE_SHIFT)));
 	}
 #endif  /*  EFI_DEBUG  */
+<<<<<<< HEAD
+=======
+
+void __init efi_reserve_boot_services(void)
+{
+	void *p;
+
+	for (p = memmap.map; p < memmap.map_end; p += memmap.desc_size) {
+		efi_memory_desc_t *md = p;
+		u64 start = md->phys_addr;
+		u64 size = md->num_pages << EFI_PAGE_SHIFT;
+
+		if (md->type != EFI_BOOT_SERVICES_CODE &&
+		    md->type != EFI_BOOT_SERVICES_DATA)
+			continue;
+		/* Only reserve where possible:
+		 * - Not within any already allocated areas
+		 * - Not over any memory area (really needed, if above?)
+		 * - Not within any part of the kernel
+		 * - Not the bios reserved area
+		*/
+		if ((start + size > __pa_symbol(_text)
+				&& start <= __pa_symbol(_end)) ||
+			!e820_all_mapped(start, start+size, E820_RAM) ||
+			memblock_is_region_reserved(start, size)) {
+			/* Could not reserve, skip it */
+			md->num_pages = 0;
+			memblock_dbg("Could not reserve boot range "
+					"[0x%010llx-0x%010llx]\n",
+						start, start+size-1);
+		} else
+			memblock_reserve(start, size);
+	}
+>>>>>>> p9x
 }
 
 void __init efi_unmap_memmap(void)
@@ -325,6 +392,7 @@ static int __init efi_systab_init(void *phys)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __init efi_runtime_init32(void)
 {
 	efi_runtime_services_32_t *runtime;
@@ -373,6 +441,8 @@ static int __init efi_runtime_init64(void)
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 static int __init efi_runtime_init(void)
 {
 	int rv;
@@ -451,9 +521,13 @@ void __init efi_init(void)
 	if (efi_systab_init(efi_phys.systab))
 		return;
 
+<<<<<<< HEAD
 	efi.config_table = (unsigned long)efi.systab->tables;
 	efi.fw_vendor	 = (unsigned long)efi.systab->fw_vendor;
 	efi.runtime	 = (unsigned long)efi.systab->runtime;
+=======
+	set_bit(EFI_SYSTEM_TABLES, &efi.flags);
+>>>>>>> p9x
 
 	/*
 	 * Show what we know for posterity
@@ -471,11 +545,18 @@ void __init efi_init(void)
 		efi.systab->hdr.revision >> 16,
 		efi.systab->hdr.revision & 0xffff, vendor);
 
+<<<<<<< HEAD
 	if (efi_reuse_config(efi.systab->tables, efi.systab->nr_tables))
 		return;
 
 	if (efi_config_init(arch_tables))
 		return;
+=======
+	if (efi_config_init(arch_tables))
+		return;
+
+	set_bit(EFI_CONFIG_TABLES, &efi.flags);
+>>>>>>> p9x
 
 	/*
 	 * Note: We currently don't support runtime services on an EFI
@@ -487,10 +568,20 @@ void __init efi_init(void)
 	else {
 		if (efi_runtime_disabled() || efi_runtime_init())
 			return;
+<<<<<<< HEAD
+=======
+		set_bit(EFI_RUNTIME_SERVICES, &efi.flags);
+>>>>>>> p9x
 	}
 	if (efi_memmap_init())
 		return;
 
+<<<<<<< HEAD
+=======
+	set_bit(EFI_MEMMAP, &efi.flags);
+
+#if EFI_DEBUG
+>>>>>>> p9x
 	print_efi_memmap();
 }
 
@@ -530,7 +621,11 @@ void __init runtime_code_page_mkexec(void)
 	}
 }
 
+<<<<<<< HEAD
 void __init efi_memory_uc(u64 addr, unsigned long size)
+=======
+void efi_memory_uc(u64 addr, unsigned long size)
+>>>>>>> p9x
 {
 	unsigned long page_shift = 1UL << EFI_PAGE_SHIFT;
 	u64 npages;
@@ -625,6 +720,7 @@ static void __init save_runtime_map(void)
 
 	for (p = memmap.map; p < memmap.map_end; p += memmap.desc_size) {
 		md = p;
+<<<<<<< HEAD
 
 		if (!(md->attribute & EFI_MEMORY_RUNTIME) ||
 		    (md->type == EFI_BOOT_SERVICES_CODE) ||
@@ -634,6 +730,15 @@ static void __init save_runtime_map(void)
 		if (!tmp)
 			goto out;
 		q = tmp;
+=======
+		if (!(md->attribute & EFI_MEMORY_RUNTIME)) {
+#ifdef CONFIG_X86_64
+			if (md->type != EFI_BOOT_SERVICES_CODE &&
+			    md->type != EFI_BOOT_SERVICES_DATA)
+#endif
+				continue;
+		}
+>>>>>>> p9x
 
 		memcpy(q + count * memmap.desc_size, md, memmap.desc_size);
 		count++;

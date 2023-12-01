@@ -1745,7 +1745,11 @@ EXPORT_SYMBOL_GPL(regmap_bulk_write);
  *
  * the (register,newvalue) pairs in regs have not been formatted, but
  * they are all in the same page and have been changed to being page
+<<<<<<< HEAD
  * relative. The page register has been written if that was neccessary.
+=======
+ * relative. The page register has been written if that was necessary.
+>>>>>>> p9x
  */
 int _regmap_raw_multi_reg_write(struct regmap *map,
 				       const struct reg_default *regs,
@@ -1761,9 +1765,12 @@ int _regmap_raw_multi_reg_write(struct regmap *map,
 	size_t pair_size = reg_bytes + pad_bytes + val_bytes;
 	size_t len = pair_size * num_regs;
 
+<<<<<<< HEAD
 	if (!len)
 		return -EINVAL;
 
+=======
+>>>>>>> p9x
 	buf = kzalloc(len, GFP_KERNEL);
 	if (!buf)
 		return -ENOMEM;
@@ -1775,7 +1782,12 @@ int _regmap_raw_multi_reg_write(struct regmap *map,
 	for (i = 0; i < num_regs; i++) {
 		int reg = regs[i].reg;
 		int val = regs[i].def;
+<<<<<<< HEAD
 		trace_regmap_hw_write_start(map, reg, 1);
+=======
+
+		trace_regmap_hw_write_start(map->dev, reg, 1);
+>>>>>>> p9x
 		map->format.format_reg(u8, reg, map->reg_shift);
 		u8 += reg_bytes + pad_bytes;
 		map->format.format_val(u8, val, 0);
@@ -1790,7 +1802,12 @@ int _regmap_raw_multi_reg_write(struct regmap *map,
 
 	for (i = 0; i < num_regs; i++) {
 		int reg = regs[i].reg;
+<<<<<<< HEAD
 		trace_regmap_hw_write_done(map, reg, 1);
+=======
+
+		trace_regmap_hw_write_done(map->dev, reg, 1);
+>>>>>>> p9x
 	}
 	return ret;
 }
@@ -1811,7 +1828,11 @@ static int _regmap_range_multi_paged_reg_write(struct regmap *map,
 	int ret;
 	int i, n;
 	struct reg_default *base;
+<<<<<<< HEAD
 	unsigned int this_page = 0;
+=======
+	unsigned int this_page;
+>>>>>>> p9x
 	/*
 	 * the set of registers are not neccessarily in order, but
 	 * since the order of write must be preserved this algorithm
@@ -1847,6 +1868,10 @@ static int _regmap_range_multi_paged_reg_write(struct regmap *map,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 static int _regmap_multi_reg_write(struct regmap *map,
 				   const struct reg_default *regs,
 				   size_t num_regs)
@@ -1869,6 +1894,10 @@ static int _regmap_multi_reg_write(struct regmap *map,
 	if (map->writeable_reg)
 		for (i = 0; i < num_regs; i++) {
 			int reg = regs[i].reg;
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 			if (!map->writeable_reg(map->dev, reg))
 				return -EINVAL;
 			if (reg % map->reg_stride)
@@ -1879,6 +1908,10 @@ static int _regmap_multi_reg_write(struct regmap *map,
 		for (i = 0; i < num_regs; i++) {
 			unsigned int val = regs[i].def;
 			unsigned int reg = regs[i].reg;
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 			ret = regcache_write(map, reg, val);
 			if (ret) {
 				dev_err(map->dev,
@@ -1895,9 +1928,17 @@ static int _regmap_multi_reg_write(struct regmap *map,
 
 	WARN_ON(!map->bus);
 
+<<<<<<< HEAD
 	for (i = 0; i < num_regs; i++) {
 		unsigned int reg = regs[i].reg;
 		struct regmap_range_node *range;
+=======
+
+	for (i = 0; i < num_regs; i++) {
+		unsigned int reg = regs[i].reg;
+		struct regmap_range_node *range;
+
+>>>>>>> p9x
 		range = _regmap_range_lookup(map, reg);
 		if (range) {
 			size_t len = sizeof(struct reg_default)*num_regs;
@@ -1947,7 +1988,11 @@ int regmap_multi_reg_write(struct regmap *map, const struct reg_default *regs,
 
 	return ret;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(regmap_multi_reg_write);
+=======
+EXPORT_SYMBOL(regmap_multi_reg_write);
+>>>>>>> p9x
 
 /*
  * regmap_multi_reg_write_bypassed(): Write multiple registers to the
@@ -1986,7 +2031,11 @@ int regmap_multi_reg_write_bypassed(struct regmap *map,
 
 	return ret;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(regmap_multi_reg_write_bypassed);
+=======
+EXPORT_SYMBOL(regmap_multi_reg_write_bypassed);
+>>>>>>> p9x
 
 /**
  * regmap_raw_write_async(): Write raw values to one or more registers

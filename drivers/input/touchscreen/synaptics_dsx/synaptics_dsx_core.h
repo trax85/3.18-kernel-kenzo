@@ -249,7 +249,10 @@ struct synaptics_rmi4_data {
 	struct mutex rmi4_reset_mutex;
 	struct mutex rmi4_io_ctrl_mutex;
 #if defined(CONFIG_FB)
+<<<<<<< HEAD
 	struct work_struct fb_notify_work;
+=======
+>>>>>>> p9x
 	struct notifier_block fb_notif;
 #elif defined(CONFIG_HAS_EARLYSUSPEND)
 	struct early_suspend early_suspend;

@@ -11,8 +11,11 @@
 #include <net/cfg80211.h>
 #include <net/ip.h>
 #include <net/dsfield.h>
+<<<<<<< HEAD
 #include <linux/if_vlan.h>
 #include <linux/mpls.h>
+=======
+>>>>>>> p9x
 #include <net/ndisc.h>
 #include <linux/if_arp.h>
 #include "core.h"
@@ -261,6 +264,10 @@ int cfg80211_validate_key_settings(struct cfg80211_registered_device *rdev,
 		break;
 	case WLAN_CIPHER_SUITE_AES_CMAC:
 		if (params->key_len != WLAN_KEY_LEN_AES_CMAC)
+			return -EINVAL;
+		break;
+	case WLAN_CIPHER_SUITE_SMS4:
+		if (params->key_len != WLAN_KEY_LEN_WAPI_SMS4)
 			return -EINVAL;
 		break;
 	default:
@@ -897,9 +904,13 @@ int cfg80211_change_iface(struct cfg80211_registered_device *rdev,
 	if (ntype != otype && netif_running(dev)) {
 		dev->ieee80211_ptr->use_4addr = false;
 		dev->ieee80211_ptr->mesh_id_up_len = 0;
+<<<<<<< HEAD
 		wdev_lock(dev->ieee80211_ptr);
 		rdev_set_qos_map(rdev, dev, NULL);
 		wdev_unlock(dev->ieee80211_ptr);
+=======
+		rdev_set_qos_map(rdev, dev, NULL);
+>>>>>>> p9x
 
 		switch (otype) {
 		case NL80211_IFTYPE_AP:
@@ -1436,7 +1447,35 @@ int cfg80211_can_use_iftype_chan(struct cfg80211_registered_device *rdev,
 	if (WARN_ON(hweight32(radar_detect) > 1))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (WARN_ON(iftype >= NUM_NL80211_IFTYPES))
+=======
+	switch (iftype) {
+	case NL80211_IFTYPE_ADHOC:
+	case NL80211_IFTYPE_AP:
+	case NL80211_IFTYPE_AP_VLAN:
+	case NL80211_IFTYPE_MESH_POINT:
+	case NL80211_IFTYPE_P2P_GO:
+	case NL80211_IFTYPE_WDS:
+		radar_required = !!(chan &&
+				    (chan->flags & IEEE80211_CHAN_RADAR) &&
+				    !(rdev->wiphy.flags &
+				      WIPHY_FLAG_DFS_OFFLOAD));
+		break;
+	case NL80211_IFTYPE_P2P_CLIENT:
+	case NL80211_IFTYPE_STATION:
+	case NL80211_IFTYPE_P2P_DEVICE:
+	case NL80211_IFTYPE_MONITOR:
+		radar_required = false;
+		break;
+	case NUM_NL80211_IFTYPES:
+	case NL80211_IFTYPE_UNSPECIFIED:
+	default:
+		return -EINVAL;
+	}
+
+	if (radar_required && !radar_detect)
+>>>>>>> p9x
 		return -EINVAL;
 
 	/* Always allow software iftypes */

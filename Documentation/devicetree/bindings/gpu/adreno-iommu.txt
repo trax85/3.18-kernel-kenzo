@@ -4,11 +4,19 @@ Required properties:
 
 Required properties:
 - compatible : one of:
+<<<<<<< HEAD
 	- "qcom,kgsl-smmu-v1"
+=======
+>>>>>>> p9x
 	- "qcom,kgsl-smmu-v2"
 
 - reg		: Base address and size of the SMMU.
 
+<<<<<<< HEAD
+=======
+- num_cb	: Number of context banks
+
+>>>>>>> p9x
 - clocks	: List of clocks to be used during SMMU register access. See
 		  Documentation/devicetree/bindings/clock/clock-bindings.txt
 		  for information about the format. For each clock specified
@@ -19,6 +27,7 @@ Required properties:
 		  the "clocks" property (above). See
 		  Documentation/devicetree/bindings/clock/clock-bindings.txt
 		  for more info.
+<<<<<<< HEAD
 - qcom,protect  : The GPU register region which must be protected by a CP
 		  protected mode. On some targets this region must cover
 		  the entire SMMU register space, on others there
@@ -58,18 +67,42 @@ Optional properties:
 		   part of the GPU's register space, and a separate register aperture
 		   is used. Otherwise the same register offsets may be used for CPU
 		   or GPU side programming.
+=======
+
+
+Optional properties:
+- List of sub nodes, one for each of the translation context banks supported.
+  Each sub node has the following required properties:
+
+	- compatible : "qcom,smmu-kgsl-cb"
+	- label : Name of the context bank
+	- iommus : Specifies the SID's used by this context bank, this needs to be
+		   <kgsl_smmu SID> pair, kgsl_smmu is the string parsed by iommu
+		   driver to match this context bank with the kgsl_smmu device
+		   defined in iommu device tree.
+	 - retention :  A boolean specifying if retention is supported on this
+			target
+	 - qcom,global_pt :  A boolean specifying if global pagetable should be used.
+			     When not set we use per process pagetables
+	 - qcom,hyp_secure_alloc : A bool specifying if the hypervisor is used on
+				   this target for secure buffer allocation
+>>>>>>> p9x
 
 Example:
 
 	msm_iommu: qcom,kgsl-iommu {
 		compatible = "qcom,kgsl-smmu-v2";
 		reg = <0xb40000 0x20000>;
+<<<<<<< HEAD
 		qcom,protect = <0x40000 0x20000>;
+=======
+>>>>>>> p9x
 		clocks = <&clock_mmss clk_gpu_ahb_clk>,
 			<&clock_gcc clk_gcc_mmss_bimc_gfx_clk>,
 			<&clock_mmss clk_mmss_mmagic_ahb_clk>,
 			<&clock_mmss clk_mmss_mmagic_cfg_ahb_clk>;
 		clock-names = "gpu_ahb_clk", "bimc_gfx_clk", "mmagic_ahb_clk", "mmagic_cfg_ahb_clk";
+<<<<<<< HEAD
 		qcom,secure_align_mask = <0xfff>;
 		qcom,retention;
 		qcom,global_pt;
@@ -83,6 +116,22 @@ Example:
 
 		gfx3d_secure: gfx3d_secure {
 			compatible = "qcom,smmu-kgsl-cb";
+=======
+		num_cb = <2>;
+		retention;
+		qcom,global_pt;
+
+		iommu_kgsl_cb2: iommu_kgsl_cb2 {
+			compatible = "qcom,smmu-kgsl-cb";
+			label = "gfx3d_user";
+			iommus = <&kgsl_smmu 0>,
+				 <&kgsl_smmu 1>;
+		};
+
+		iommu_kgsl_cb3: iommu_kgsl_cb3 {
+			compatible = "qcom,smmu-kgsl-cb";
+			label = "gfx3d_secure";
+>>>>>>> p9x
 			iommus = <&kgsl_smmu 2>;
 		};
 	};

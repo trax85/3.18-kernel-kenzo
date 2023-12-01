@@ -163,7 +163,11 @@ static int eps_target(struct cpufreq_policy *policy, unsigned int index)
 	centaur = eps_cpu[cpu];
 
 	/* Make frequency transition */
+<<<<<<< HEAD
 	dest_state = centaur->freq_table[index].driver_data & 0xffff;
+=======
+	dest_state = centaur->freq_table[newstate].driver_data & 0xffff;
+>>>>>>> p9x
 	ret = eps_set_state(centaur, policy, dest_state);
 	if (ret)
 		printk(KERN_ERR "eps: Timeout!\n");
@@ -394,7 +398,11 @@ static struct cpufreq_driver eps_driver = {
 	.exit		= eps_cpu_exit,
 	.get		= eps_get,
 	.name		= "e_powersaver",
+<<<<<<< HEAD
 	.attr		= cpufreq_generic_attr,
+=======
+	.attr		= eps_attr,
+>>>>>>> p9x
 };
 
 

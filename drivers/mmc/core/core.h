@@ -15,6 +15,22 @@
 
 #define MMC_CMD_RETRIES        3
 
+<<<<<<< HEAD
+=======
+struct mmc_bus_ops {
+	int (*awake)(struct mmc_host *);
+	int (*sleep)(struct mmc_host *);
+	void (*remove)(struct mmc_host *);
+	void (*detect)(struct mmc_host *);
+	int (*suspend)(struct mmc_host *);
+	int (*resume)(struct mmc_host *);
+	int (*power_save)(struct mmc_host *);
+	int (*power_restore)(struct mmc_host *);
+	int (*alive)(struct mmc_host *);
+	int (*change_bus_speed)(struct mmc_host *, unsigned long *);
+};
+
+>>>>>>> p9x
 void mmc_attach_bus(struct mmc_host *host, const struct mmc_bus_ops *ops);
 void mmc_detach_bus(struct mmc_host *host);
 
@@ -23,6 +39,8 @@ struct device_node *mmc_of_find_child_device(struct mmc_host *host,
 
 void mmc_init_erase(struct mmc_card *card);
 
+void mmc_power_up(struct mmc_host *host);
+void mmc_power_off(struct mmc_host *host);
 void mmc_set_chip_select(struct mmc_host *host, int mode);
 void mmc_set_clock(struct mmc_host *host, unsigned int hz);
 int mmc_clk_update_freq(struct mmc_host *host,
@@ -75,6 +93,7 @@ void mmc_remove_card_debugfs(struct mmc_card *card);
 
 void mmc_init_context_info(struct mmc_host *host);
 
+<<<<<<< HEAD
 int mmc_execute_tuning(struct mmc_card *card);
 
 extern bool mmc_can_scale_clk(struct mmc_host *host);
@@ -82,6 +101,13 @@ extern int mmc_init_clk_scaling(struct mmc_host *host);
 extern int mmc_suspend_clk_scaling(struct mmc_host *host);
 extern int mmc_resume_clk_scaling(struct mmc_host *host);
 extern int mmc_exit_clk_scaling(struct mmc_host *host);
+=======
+extern void mmc_disable_clk_scaling(struct mmc_host *host);
+extern bool mmc_can_scale_clk(struct mmc_host *host);
+extern void mmc_init_clk_scaling(struct mmc_host *host);
+extern void mmc_exit_clk_scaling(struct mmc_host *host);
+extern void mmc_reset_clk_scale_stats(struct mmc_host *host);
+>>>>>>> p9x
 extern unsigned long mmc_get_max_frequency(struct mmc_host *host);
 #endif
 

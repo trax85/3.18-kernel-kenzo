@@ -69,11 +69,14 @@
 #define Q6_EAC3_DECODER 0x00010C3C
 #define Q6_DTS		0x00010D88
 #define Q6_DTS_LBR	0x00010DBB
+<<<<<<< HEAD
 
 /* Timestamp flsg */
 /* Bit-0 - 1 : Enable Timestamp mode */
 /* Bit-0 - 0 : Disable Timestamp mode */
 #define COMPRESSED_TIMESTAMP_FLAG 0x0001
+=======
+>>>>>>> p9x
 
 /* Codecs are listed linearly to allow for extensibility */
 #define SND_AUDIOCODEC_PCM                   ((__u32) 0x00000001)
@@ -102,10 +105,14 @@
 #define SND_AUDIOCODEC_EAC3                  ((__u32) 0x00000018)
 #define SND_AUDIOCODEC_ALAC                  ((__u32) 0x00000019)
 #define SND_AUDIOCODEC_APE                   ((__u32) 0x00000020)
+<<<<<<< HEAD
 #define SND_AUDIOCODEC_DSD                   ((__u32) 0x00000021)
 #define SND_AUDIOCODEC_APTX                  ((__u32) 0x00000022)
 #define SND_AUDIOCODEC_TRUEHD                ((__u32) 0x00000023)
 #define SND_AUDIOCODEC_MAX                   SND_AUDIOCODEC_TRUEHD
+=======
+#define SND_AUDIOCODEC_MAX                   SND_AUDIOCODEC_APE
+>>>>>>> p9x
 /*
  * Profile and modes are listed with bit masks. This allows for a
  * more compact representation of fields that will not evolve
@@ -403,6 +410,50 @@ struct snd_dec_aptx {
 	__u32 uap;
 	__u32 nap;
 };
+struct snd_dec_ddp {
+	__u32 params_length;
+	__u32 params_id[18];
+	__u32 params_value[18];
+};
+struct snd_dec_flac {
+	__u16 sample_size;
+	__u16 min_blk_size;
+	__u16 max_blk_size;
+	__u16 min_frame_size;
+	__u16 max_frame_size;
+};
+
+struct snd_dec_vorbis {
+	__u32 bit_stream_fmt;
+};
+
+struct snd_dec_alac {
+	__u32 frame_length;
+	__u8 compatible_version;
+	__u8 bit_depth;
+	__u8 pb;
+	__u8 mb;
+	__u8 kb;
+	__u8 num_channels;
+	__u16 max_run;
+	__u32 max_frame_bytes;
+	__u32 avg_bit_rate;
+	__u32 sample_rate;
+	__u32 channel_layout_tag;
+};
+
+struct snd_dec_ape {
+	__u16 compatible_version;
+	__u16 compression_level;
+	__u32 format_flags;
+	__u32 blocks_per_frame;
+	__u32 final_frame_blocks;
+	__u32 total_frames;
+	__u16 bits_per_sample;
+	__u16 num_channels;
+	__u32 sample_rate;
+	__u32 seek_table_present;
+};
 
 union snd_codec_options {
 	struct snd_enc_wma wma;
@@ -415,8 +466,12 @@ union snd_codec_options {
 	struct snd_dec_vorbis vorbis_dec;
 	struct snd_dec_alac alac;
 	struct snd_dec_ape ape;
+<<<<<<< HEAD
 	struct snd_dec_aptx aptx_dec;
 } __attribute__((packed, aligned(4)));
+=======
+};
+>>>>>>> p9x
 
 /** struct snd_codec_desc - description of codec capabilities
  * @max_ch: Maximum number of audio channels

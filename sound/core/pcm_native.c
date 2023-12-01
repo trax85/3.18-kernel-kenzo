@@ -1765,6 +1765,33 @@ static int snd_pcm_drain(struct snd_pcm_substream *substream,
 	return result;
 }
 
+static int snd_compressed_ioctl(struct snd_pcm_substream *substream,
+				 unsigned int cmd, void __user *arg)
+{
+	struct snd_pcm_runtime *runtime;
+	int err = 0;
+
+	if (PCM_RUNTIME_CHECK(substream))
+		return -ENXIO;
+	runtime = substream->runtime;
+	pr_debug("%s called with cmd = %d\n", __func__, cmd);
+	err = substream->ops->ioctl(substream, cmd, arg);
+	return err;
+}
+
+static int snd_user_ioctl(struct snd_pcm_substream *substream,
+			  unsigned int cmd, void __user *arg)
+{
+	struct snd_pcm_runtime *runtime;
+	int err = 0;
+
+	if (PCM_RUNTIME_CHECK(substream))
+		return -ENXIO;
+	runtime = substream->runtime;
+	err = substream->ops->ioctl(substream, cmd, arg);
+	return err;
+}
+
 /*
  * drop ioctl
  *
@@ -1993,9 +2020,15 @@ static int snd_pcm_hw_rule_sample_bits(struct snd_pcm_hw_params *params,
 #error "Change this table"
 #endif
 
+<<<<<<< HEAD
 static unsigned int rates[] = { 5512, 8000, 11025, 16000, 22050,
 		32000, 44100, 48000, 64000, 88200,
 		96000, 176400, 192000, 352800, 384000 };
+=======
+static unsigned int rates[] = { 5512, 8000, 11025, 16000, 22050, 32000, 44100,
+				48000, 64000, 88200, 96000, 176400, 192000,
+				384000 };
+>>>>>>> p9x
 
 const struct snd_pcm_hw_constraint_list snd_pcm_known_rates = {
 	.count = ARRAY_SIZE(rates),
@@ -2772,7 +2805,7 @@ static int snd_pcm_tstamp(struct snd_pcm_substream *substream, int __user *_arg)
 	runtime->tstamp_type = arg;
 	return 0;
 }
-		
+
 static int snd_pcm_common_ioctl1(struct file *file,
 				 struct snd_pcm_substream *substream,
 				 unsigned int cmd, void __user *arg)

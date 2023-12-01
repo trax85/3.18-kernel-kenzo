@@ -1865,7 +1865,52 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
 #endif
 	}
 
+<<<<<<< HEAD
 	return;
+=======
+	memset(&(IPCB(skb)->opt), 0, sizeof(IPCB(skb)->opt));
+	IPCB(skb)->flags &= ~(IPSKB_XFRM_TUNNEL_SIZE | IPSKB_XFRM_TRANSFORMED |
+			      IPSKB_REROUTED);
+	skb_dst_drop(skb);
+	skb_dst_set(skb, &rt->dst);
+
+	vxh = (struct vxlanhdr *) __skb_push(skb, sizeof(*vxh));
+	vxh->vx_flags = htonl(VXLAN_FLAGS);
+	vxh->vx_vni = htonl(vni << 8);
+
+	__skb_push(skb, sizeof(*uh));
+	skb_reset_transport_header(skb);
+	uh = udp_hdr(skb);
+
+	uh->dest = dst_port;
+	uh->source = src_port;
+
+	uh->len = htons(skb->len);
+	uh->check = 0;
+
+	__skb_push(skb, sizeof(*iph));
+	skb_reset_network_header(skb);
+	iph		= ip_hdr(skb);
+	iph->version	= 4;
+	iph->ihl	= sizeof(struct iphdr) >> 2;
+	iph->frag_off	= df;
+	iph->protocol	= IPPROTO_UDP;
+	iph->tos	= ip_tunnel_ecn_encap(tos, old_iph, skb);
+	iph->daddr	= dst;
+	iph->saddr	= fl4.saddr;
+	iph->ttl	= ttl ? : ip4_dst_hoplimit(&rt->dst);
+	__ip_select_ident(iph, skb_shinfo(skb)->gso_segs ?: 1);
+
+	nf_reset(skb);
+
+	vxlan_set_owner(dev, skb);
+
+	if (handle_offloads(skb))
+		goto drop;
+
+	iptunnel_xmit(skb, dev);
+	return NETDEV_TX_OK;
+>>>>>>> p9x
 
 drop:
 	dev->stats.tx_dropped++;
@@ -2199,10 +2244,14 @@ static void vxlan_setup(struct net_device *dev)
 
 	eth_hw_addr_random(dev);
 	ether_setup(dev);
+<<<<<<< HEAD
 	if (vxlan->default_dst.remote_ip.sa.sa_family == AF_INET6)
 		dev->needed_headroom = ETH_HLEN + VXLAN6_HEADROOM;
 	else
 		dev->needed_headroom = ETH_HLEN + VXLAN_HEADROOM;
+=======
+	dev->needed_headroom = ETH_HLEN + VXLAN_HEADROOM;
+>>>>>>> p9x
 
 	dev->netdev_ops = &vxlan_netdev_ops;
 	dev->destructor = free_netdev;
@@ -2515,6 +2564,7 @@ static int vxlan_newlink(struct net *net, struct net_device *dev,
 		}
 #endif
 
+<<<<<<< HEAD
 		if (!tb[IFLA_MTU])
 			dev->mtu = lowerdev->mtu - (use_ipv6 ? VXLAN6_HEADROOM : VXLAN_HEADROOM);
 
@@ -2522,6 +2572,12 @@ static int vxlan_newlink(struct net *net, struct net_device *dev,
 				       (use_ipv6 ? VXLAN6_HEADROOM : VXLAN_HEADROOM);
 	} else if (use_ipv6)
 		vxlan->flags |= VXLAN_F_IPV6;
+=======
+		/* update header length based on lower device */
+		dev->needed_headroom = lowerdev->hard_header_len +
+				       VXLAN_HEADROOM;
+	}
+>>>>>>> p9x
 
 	if (data[IFLA_VXLAN_TOS])
 		vxlan->tos  = nla_get_u8(data[IFLA_VXLAN_TOS]);

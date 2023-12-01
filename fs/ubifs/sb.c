@@ -335,7 +335,11 @@ static int create_default_filesystem(struct ubifs_info *c)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	ubifs_msg(c, "default file-system created");
+=======
+	ubifs_msg("default file-system created", c->vi.ubi_num);
+>>>>>>> p9x
 	return 0;
 }
 
@@ -365,14 +369,26 @@ static int validate_sb(struct ubifs_info *c, struct ubifs_sb_node *sup)
 	}
 
 	if (le32_to_cpu(sup->min_io_size) != c->min_io_size) {
+<<<<<<< HEAD
 		ubifs_err(c, "min. I/O unit mismatch: %d in superblock, %d real",
 			  le32_to_cpu(sup->min_io_size), c->min_io_size);
+=======
+		ubifs_err("min. I/O unit mismatch: %d in superblock, %d real",
+				c->vi.ubi_num, le32_to_cpu(sup->min_io_size),
+				c->min_io_size);
+>>>>>>> p9x
 		goto failed;
 	}
 
 	if (le32_to_cpu(sup->leb_size) != c->leb_size) {
+<<<<<<< HEAD
 		ubifs_err(c, "LEB size mismatch: %d in superblock, %d real",
 			  le32_to_cpu(sup->leb_size), c->leb_size);
+=======
+		ubifs_err("LEB size mismatch: %d in superblock, %d real",
+				c->vi.ubi_num, le32_to_cpu(sup->leb_size),
+				c->leb_size);
+>>>>>>> p9x
 		goto failed;
 	}
 
@@ -393,34 +409,59 @@ static int validate_sb(struct ubifs_info *c, struct ubifs_sb_node *sup)
 	min_leb_cnt += c->lpt_lebs + c->orph_lebs + c->jhead_cnt + 6;
 
 	if (c->leb_cnt < min_leb_cnt || c->leb_cnt > c->vi.size) {
+<<<<<<< HEAD
 		ubifs_err(c, "bad LEB count: %d in superblock, %d on UBI volume, %d minimum required",
 			  c->leb_cnt, c->vi.size, min_leb_cnt);
+=======
+		ubifs_err("bad LEB count: %d in superblock, %d on UBI volume, %d minimum required",
+			  c->vi.ubi_num, c->leb_cnt, c->vi.size, min_leb_cnt);
+>>>>>>> p9x
 		goto failed;
 	}
 
 	if (c->max_leb_cnt < c->leb_cnt) {
+<<<<<<< HEAD
 		ubifs_err(c, "max. LEB count %d less than LEB count %d",
 			  c->max_leb_cnt, c->leb_cnt);
+=======
+		ubifs_err("max. LEB count %d less than LEB count %d",
+			  c->vi.ubi_num, c->max_leb_cnt, c->leb_cnt);
+>>>>>>> p9x
 		goto failed;
 	}
 
 	if (c->main_lebs < UBIFS_MIN_MAIN_LEBS) {
+<<<<<<< HEAD
 		ubifs_err(c, "too few main LEBs count %d, must be at least %d",
 			  c->main_lebs, UBIFS_MIN_MAIN_LEBS);
+=======
+		ubifs_err("too few main LEBs count %d, must be at least %d",
+			  c->vi.ubi_num, c->main_lebs, UBIFS_MIN_MAIN_LEBS);
+>>>>>>> p9x
 		goto failed;
 	}
 
 	max_bytes = (long long)c->leb_size * UBIFS_MIN_BUD_LEBS;
 	if (c->max_bud_bytes < max_bytes) {
+<<<<<<< HEAD
 		ubifs_err(c, "too small journal (%lld bytes), must be at least %lld bytes",
 			  c->max_bud_bytes, max_bytes);
+=======
+		ubifs_err("too small journal (%lld bytes), must be at least %lld bytes",
+			  c->vi.ubi_num, c->max_bud_bytes, max_bytes);
+>>>>>>> p9x
 		goto failed;
 	}
 
 	max_bytes = (long long)c->leb_size * c->main_lebs;
 	if (c->max_bud_bytes > max_bytes) {
+<<<<<<< HEAD
 		ubifs_err(c, "too large journal size (%lld bytes), only %lld bytes available in the main area",
 			  c->max_bud_bytes, max_bytes);
+=======
+		ubifs_err("too large journal size (%lld bytes), only %lld bytes available in the main area",
+			  c->vi.ubi_num, c->max_bud_bytes, max_bytes);
+>>>>>>> p9x
 		goto failed;
 	}
 
@@ -468,7 +509,11 @@ static int validate_sb(struct ubifs_info *c, struct ubifs_sb_node *sup)
 	return 0;
 
 failed:
+<<<<<<< HEAD
 	ubifs_err(c, "bad superblock, error %d", err);
+=======
+	ubifs_err("bad superblock, error %d", c->vi.ubi_num, err);
+>>>>>>> p9x
 	ubifs_dump_node(c, sup);
 	return -EINVAL;
 }
@@ -549,12 +594,23 @@ int ubifs_read_superblock(struct ubifs_info *c)
 		ubifs_assert(!c->ro_media || c->ro_mount);
 		if (!c->ro_mount ||
 		    c->ro_compat_version > UBIFS_RO_COMPAT_VERSION) {
+<<<<<<< HEAD
 			ubifs_err(c, "on-flash format version is w%d/r%d, but software only supports up to version w%d/r%d",
 				  c->fmt_version, c->ro_compat_version,
 				  UBIFS_FORMAT_VERSION,
 				  UBIFS_RO_COMPAT_VERSION);
 			if (c->ro_compat_version <= UBIFS_RO_COMPAT_VERSION) {
 				ubifs_msg(c, "only R/O mounting is possible");
+=======
+			ubifs_err("on-flash format version is w%d/r%d, but software only supports up to version w%d/r%d",
+					c->vi.ubi_num, c->fmt_version,
+					c->ro_compat_version,
+				  UBIFS_FORMAT_VERSION,
+				  UBIFS_RO_COMPAT_VERSION);
+			if (c->ro_compat_version <= UBIFS_RO_COMPAT_VERSION) {
+				ubifs_msg("only R/O mounting is possible",
+						c->vi.ubi_num);
+>>>>>>> p9x
 				err = -EROFS;
 			} else
 				err = -EINVAL;
@@ -570,8 +626,13 @@ int ubifs_read_superblock(struct ubifs_info *c)
 	}
 
 	if (c->fmt_version < 3) {
+<<<<<<< HEAD
 		ubifs_err(c, "on-flash format version %d is not supported",
 			  c->fmt_version);
+=======
+		ubifs_err("on-flash format version %d is not supported",
+				c->vi.ubi_num, c->fmt_version);
+>>>>>>> p9x
 		err = -EINVAL;
 		goto out;
 	}
@@ -595,7 +656,11 @@ int ubifs_read_superblock(struct ubifs_info *c)
 		c->key_len = UBIFS_SK_LEN;
 		break;
 	default:
+<<<<<<< HEAD
 		ubifs_err(c, "unsupported key format");
+=======
+		ubifs_err("unsupported key format", c->vi.ubi_num);
+>>>>>>> p9x
 		err = -EINVAL;
 		goto out;
 	}
@@ -785,7 +850,11 @@ int ubifs_fixup_free_space(struct ubifs_info *c)
 	ubifs_assert(c->space_fixup);
 	ubifs_assert(!c->ro_mount);
 
+<<<<<<< HEAD
 	ubifs_msg(c, "start fixing up free space");
+=======
+	ubifs_msg("start fixing up free space", c->vi.ubi_num);
+>>>>>>> p9x
 
 	err = fixup_free_space(c);
 	if (err)
@@ -804,6 +873,10 @@ int ubifs_fixup_free_space(struct ubifs_info *c)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	ubifs_msg(c, "free space fixup complete");
+=======
+	ubifs_msg("free space fixup complete", c->vi.ubi_num);
+>>>>>>> p9x
 	return err;
 }

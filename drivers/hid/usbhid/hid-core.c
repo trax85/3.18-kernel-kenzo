@@ -909,6 +909,7 @@ static int usbhid_set_raw_report(struct hid_device *hid, unsigned int reportnum,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int usbhid_output_report(struct hid_device *hid, __u8 *buf, size_t count)
 {
 	struct usbhid_device *usbhid = hid->driver_data;
@@ -939,6 +940,8 @@ static int usbhid_output_report(struct hid_device *hid, __u8 *buf, size_t count)
 	return ret;
 }
 
+=======
+>>>>>>> p9x
 static void hid_free_buffers(struct usb_device *dev, struct hid_device *hid)
 {
 	struct usbhid_device *usbhid = hid->driver_data;

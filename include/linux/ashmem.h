@@ -14,4 +14,11 @@
 
 #include <uapi/linux/ashmem.h>
 
+<<<<<<< HEAD
+=======
+int get_ashmem_file(int fd, struct file **filp, struct file **vm_file,
+			unsigned long *len);
+void put_ashmem_file(struct file *file);
+
+>>>>>>> p9x
 #endif	/* _LINUX_ASHMEM_H */

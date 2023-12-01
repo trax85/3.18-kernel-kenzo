@@ -104,6 +104,10 @@ struct mt_device {
 	int cc_value_index;	/* contact count value index in the field */
 	unsigned last_slot_field;	/* the last field of a slot */
 	unsigned mt_report_id;	/* the report ID of the multitouch device */
+<<<<<<< HEAD
+=======
+	unsigned pen_report_id;	/* the report ID of the pen device */
+>>>>>>> p9x
 	__s16 inputmode;	/* InputMode HID feature, -1 if non-existent */
 	__s16 inputmode_index;	/* InputMode HID feature index in the report */
 	__s16 maxcontact_report_id;	/* Maximum Contact Number HID feature,
@@ -310,6 +314,7 @@ static void mt_feature_mapping(struct hid_device *hdev,
 		if (usage->usage_index >= field->report_count) {
 			dev_err(&hdev->dev, "HID_DG_INPUTMODE out of range\n");
 			break;
+<<<<<<< HEAD
 		}
 
 		if (td->inputmode < 0) {
@@ -324,7 +329,12 @@ static void mt_feature_mapping(struct hid_device *hdev,
 			 */
 			dev_info(&hdev->dev,
 				 "Ignoring the extra HID_DG_INPUTMODE\n");
+=======
+>>>>>>> p9x
 		}
+
+		td->inputmode = field->report->id;
+		td->inputmode_index = usage->usage_index;
 
 		break;
 	case HID_DG_CONTACTMAX:
@@ -382,6 +392,16 @@ static int mt_touch_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 		td->mt_flags |= INPUT_MT_POINTER;
 		td->inputmode_value = MT_INPUTMODE_TOUCHPAD;
 	}
+
+	/* Only map fields from TouchScreen or TouchPad collections.
+         * We need to ignore fields that belong to other collections
+         * such as Mouse that might have the same GenericDesktop usages. */
+	if (field->application == HID_DG_TOUCHSCREEN)
+		set_bit(INPUT_PROP_DIRECT, hi->input->propbit);
+	else if (field->application == HID_DG_TOUCHPAD)
+		set_bit(INPUT_PROP_POINTER, hi->input->propbit);
+	else
+		return 0;
 
 	/* Only map fields from TouchScreen or TouchPad collections.
          * We need to ignore fields that belong to other collections
@@ -905,10 +925,15 @@ static void mt_post_parse(struct mt_device *td)
 static int mt_input_configured(struct hid_device *hdev, struct hid_input *hi)
 {
 	struct mt_device *td = hid_get_drvdata(hdev);
+<<<<<<< HEAD
 	char *name;
 	const char *suffix = NULL;
 	struct hid_field *field = hi->report->field[0];
 	int ret;
+=======
+	char *name = kstrdup(hdev->name, GFP_KERNEL);
+	int ret = 0;
+>>>>>>> p9x
 
 	if (hi->report->id == td->mt_report_id) {
 		ret = mt_touch_input_configured(hdev, hi);
@@ -916,6 +941,7 @@ static int mt_input_configured(struct hid_device *hdev, struct hid_input *hi)
 			return ret;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * some egalax touchscreens have "application == HID_DG_TOUCHSCREEN"
 	 * for the stylus. Check this first, and then rely on the application
@@ -967,6 +993,14 @@ static int mt_input_configured(struct hid_device *hdev, struct hid_input *hi)
 	}
 
 	return 0;
+=======
+	if (hi->report->id == td->mt_report_id)
+		ret = mt_touch_input_configured(hdev, hi);
+
+	if (hi->report->id == td->pen_report_id)
+		mt_pen_input_configured(hdev, hi);
+	return ret;
+>>>>>>> p9x
 }
 
 static int mt_probe(struct hid_device *hdev, const struct hid_device_id *id)
@@ -1288,6 +1322,14 @@ static const struct hid_device_id mt_devices[] = {
 	{ .driver_data = MT_CLS_CONFIDENCE_CONTACT_ID,
 		MT_USB_DEVICE(USB_VENDOR_ID_QUANTA,
 			USB_DEVICE_ID_QUANTA_OPTICAL_TOUCH_3001) },
+
+	/* SiS panels */
+	{ .driver_data = MT_CLS_DEFAULT,
+		HID_USB_DEVICE(USB_VENDOR_ID_SIS2_TOUCH,
+		USB_DEVICE_ID_SIS9200_TOUCH) },
+	{ .driver_data = MT_CLS_DEFAULT,
+		HID_USB_DEVICE(USB_VENDOR_ID_SIS2_TOUCH,
+		USB_DEVICE_ID_SIS817_TOUCH) },
 
 	/* Stantum panels */
 	{ .driver_data = MT_CLS_CONFIDENCE,

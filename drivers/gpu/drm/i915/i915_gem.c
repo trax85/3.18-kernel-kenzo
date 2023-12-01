@@ -1592,10 +1592,23 @@ i915_gem_object_wait_rendering__nonblocking(struct drm_i915_gem_object *obj,
 					  NULL, rps);
 	mutex_lock(&dev->struct_mutex);
 
+<<<<<<< HEAD
 	for (i = 0; i < n; i++) {
 		if (ret == 0)
 			i915_gem_object_retire_request(obj, requests[i]);
 		i915_gem_request_unreference(requests[i]);
+=======
+	i915_gem_retire_requests_ring(ring);
+
+	/* Manually manage the write flush as we may have not yet
+	 * retired the buffer.
+	 */
+	if (ret == 0 &&
+	    obj->last_write_seqno &&
+	    i915_seqno_passed(seqno, obj->last_write_seqno)) {
+		obj->last_write_seqno = 0;
+		obj->base.write_domain &= ~I915_GEM_GPU_DOMAINS;
+>>>>>>> p9x
 	}
 
 	return ret;
@@ -2404,7 +2417,16 @@ void i915_vma_move_to_active(struct i915_vma *vma,
 	struct drm_i915_gem_object *obj = vma->obj;
 	struct intel_engine_cs *ring;
 
+<<<<<<< HEAD
 	ring = i915_gem_request_get_ring(req);
+=======
+	BUG_ON(ring == NULL);
+	if (obj->ring != ring && obj->last_write_seqno) {
+		/* Keep the seqno relative to the current ring */
+		obj->last_write_seqno = seqno;
+	}
+	obj->ring = ring;
+>>>>>>> p9x
 
 	/* Add a reference if we're newly entering the active list. */
 	if (obj->active == 0)
@@ -2840,7 +2862,44 @@ static void i915_gem_reset_ring_cleanup(struct drm_i915_private *dev_priv,
 					   struct drm_i915_gem_request,
 					   list);
 
+<<<<<<< HEAD
 		i915_gem_request_retire(request);
+=======
+		list_del(&request->list);
+		i915_gem_request_remove_from_client(request);
+		kfree(request);
+	}
+
+	while (!list_empty(&ring->active_list)) {
+		struct drm_i915_gem_object *obj;
+
+		obj = list_first_entry(&ring->active_list,
+				       struct drm_i915_gem_object,
+				       ring_list);
+
+		i915_gem_object_move_to_inactive(obj);
+	}
+}
+
+void i915_gem_restore_fences(struct drm_device *dev)
+{
+	struct drm_i915_private *dev_priv = dev->dev_private;
+	int i;
+
+	for (i = 0; i < dev_priv->num_fence_regs; i++) {
+		struct drm_i915_fence_reg *reg = &dev_priv->fence_regs[i];
+
+		/*
+		 * Commit delayed tiling changes if we have an object still
+		 * attached to the fence, otherwise just clear the fence.
+		 */
+		if (reg->obj) {
+			i915_gem_object_update_fence(reg->obj, reg,
+						     reg->obj->tiling_mode);
+		} else {
+			i915_gem_write_fence(dev, i, NULL);
+		}
+>>>>>>> p9x
 	}
 }
 
@@ -3378,7 +3437,353 @@ int i915_gpu_idle(struct drm_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static bool i915_gem_valid_gtt_space(struct i915_vma *vma,
+=======
+static void i965_write_fence_reg(struct drm_device *dev, int reg,
+				 struct drm_i915_gem_object *obj)
+{
+	drm_i915_private_t *dev_priv = dev->dev_private;
+	int fence_reg;
+	int fence_pitch_shift;
+
+	if (INTEL_INFO(dev)->gen >= 6) {
+		fence_reg = FENCE_REG_SANDYBRIDGE_0;
+		fence_pitch_shift = SANDYBRIDGE_FENCE_PITCH_SHIFT;
+	} else {
+		fence_reg = FENCE_REG_965_0;
+		fence_pitch_shift = I965_FENCE_PITCH_SHIFT;
+	}
+
+	fence_reg += reg * 8;
+
+	/* To w/a incoherency with non-atomic 64-bit register updates,
+	 * we split the 64-bit update into two 32-bit writes. In order
+	 * for a partial fence not to be evaluated between writes, we
+	 * precede the update with write to turn off the fence register,
+	 * and only enable the fence as the last step.
+	 *
+	 * For extra levels of paranoia, we make sure each step lands
+	 * before applying the next step.
+	 */
+	I915_WRITE(fence_reg, 0);
+	POSTING_READ(fence_reg);
+
+	if (obj) {
+		u32 size = obj->gtt_space->size;
+		uint64_t val;
+
+		val = (uint64_t)((obj->gtt_offset + size - 4096) &
+				 0xfffff000) << 32;
+		val |= obj->gtt_offset & 0xfffff000;
+		val |= (uint64_t)((obj->stride / 128) - 1) << fence_pitch_shift;
+		if (obj->tiling_mode == I915_TILING_Y)
+			val |= 1 << I965_FENCE_TILING_Y_SHIFT;
+		val |= I965_FENCE_REG_VALID;
+
+		I915_WRITE(fence_reg + 4, val >> 32);
+		POSTING_READ(fence_reg + 4);
+
+		I915_WRITE(fence_reg + 0, val);
+		POSTING_READ(fence_reg);
+	} else {
+		I915_WRITE(fence_reg + 4, 0);
+		POSTING_READ(fence_reg + 4);
+	}
+}
+
+static void i915_write_fence_reg(struct drm_device *dev, int reg,
+				 struct drm_i915_gem_object *obj)
+{
+	drm_i915_private_t *dev_priv = dev->dev_private;
+	u32 val;
+
+	if (obj) {
+		u32 size = obj->gtt_space->size;
+		int pitch_val;
+		int tile_width;
+
+		WARN((obj->gtt_offset & ~I915_FENCE_START_MASK) ||
+		     (size & -size) != size ||
+		     (obj->gtt_offset & (size - 1)),
+		     "object 0x%08x [fenceable? %d] not 1M or pot-size (0x%08x) aligned\n",
+		     obj->gtt_offset, obj->map_and_fenceable, size);
+
+		if (obj->tiling_mode == I915_TILING_Y && HAS_128_BYTE_Y_TILING(dev))
+			tile_width = 128;
+		else
+			tile_width = 512;
+
+		/* Note: pitch better be a power of two tile widths */
+		pitch_val = obj->stride / tile_width;
+		pitch_val = ffs(pitch_val) - 1;
+
+		val = obj->gtt_offset;
+		if (obj->tiling_mode == I915_TILING_Y)
+			val |= 1 << I830_FENCE_TILING_Y_SHIFT;
+		val |= I915_FENCE_SIZE_BITS(size);
+		val |= pitch_val << I830_FENCE_PITCH_SHIFT;
+		val |= I830_FENCE_REG_VALID;
+	} else
+		val = 0;
+
+	if (reg < 8)
+		reg = FENCE_REG_830_0 + reg * 4;
+	else
+		reg = FENCE_REG_945_8 + (reg - 8) * 4;
+
+	I915_WRITE(reg, val);
+	POSTING_READ(reg);
+}
+
+static void i830_write_fence_reg(struct drm_device *dev, int reg,
+				struct drm_i915_gem_object *obj)
+{
+	drm_i915_private_t *dev_priv = dev->dev_private;
+	uint32_t val;
+
+	if (obj) {
+		u32 size = obj->gtt_space->size;
+		uint32_t pitch_val;
+
+		WARN((obj->gtt_offset & ~I830_FENCE_START_MASK) ||
+		     (size & -size) != size ||
+		     (obj->gtt_offset & (size - 1)),
+		     "object 0x%08x not 512K or pot-size 0x%08x aligned\n",
+		     obj->gtt_offset, size);
+
+		pitch_val = obj->stride / 128;
+		pitch_val = ffs(pitch_val) - 1;
+
+		val = obj->gtt_offset;
+		if (obj->tiling_mode == I915_TILING_Y)
+			val |= 1 << I830_FENCE_TILING_Y_SHIFT;
+		val |= I830_FENCE_SIZE_BITS(size);
+		val |= pitch_val << I830_FENCE_PITCH_SHIFT;
+		val |= I830_FENCE_REG_VALID;
+	} else
+		val = 0;
+
+	I915_WRITE(FENCE_REG_830_0 + reg * 4, val);
+	POSTING_READ(FENCE_REG_830_0 + reg * 4);
+}
+
+inline static bool i915_gem_object_needs_mb(struct drm_i915_gem_object *obj)
+{
+	return obj && obj->base.read_domains & I915_GEM_DOMAIN_GTT;
+}
+
+static void i915_gem_write_fence(struct drm_device *dev, int reg,
+				 struct drm_i915_gem_object *obj)
+{
+	struct drm_i915_private *dev_priv = dev->dev_private;
+
+	/* Ensure that all CPU reads are completed before installing a fence
+	 * and all writes before removing the fence.
+	 */
+	if (i915_gem_object_needs_mb(dev_priv->fence_regs[reg].obj))
+		mb();
+
+	WARN(obj && (!obj->stride || !obj->tiling_mode),
+	     "bogus fence setup with stride: 0x%x, tiling mode: %i\n",
+	     obj->stride, obj->tiling_mode);
+
+	switch (INTEL_INFO(dev)->gen) {
+	case 7:
+	case 6:
+	case 5:
+	case 4: i965_write_fence_reg(dev, reg, obj); break;
+	case 3: i915_write_fence_reg(dev, reg, obj); break;
+	case 2: i830_write_fence_reg(dev, reg, obj); break;
+	default: BUG();
+	}
+
+	/* And similarly be paranoid that no direct access to this region
+	 * is reordered to before the fence is installed.
+	 */
+	if (i915_gem_object_needs_mb(obj))
+		mb();
+}
+
+static inline int fence_number(struct drm_i915_private *dev_priv,
+			       struct drm_i915_fence_reg *fence)
+{
+	return fence - dev_priv->fence_regs;
+}
+
+static void i915_gem_write_fence__ipi(void *data)
+{
+	wbinvd();
+}
+
+static void i915_gem_object_update_fence(struct drm_i915_gem_object *obj,
+					 struct drm_i915_fence_reg *fence,
+					 bool enable)
+{
+	struct drm_device *dev = obj->base.dev;
+	struct drm_i915_private *dev_priv = dev->dev_private;
+	int fence_reg = fence_number(dev_priv, fence);
+
+	/* In order to fully serialize access to the fenced region and
+	 * the update to the fence register we need to take extreme
+	 * measures on SNB+. In theory, the write to the fence register
+	 * flushes all memory transactions before, and coupled with the
+	 * mb() placed around the register write we serialise all memory
+	 * operations with respect to the changes in the tiler. Yet, on
+	 * SNB+ we need to take a step further and emit an explicit wbinvd()
+	 * on each processor in order to manually flush all memory
+	 * transactions before updating the fence register.
+	 */
+	if (HAS_LLC(obj->base.dev))
+		on_each_cpu(i915_gem_write_fence__ipi, NULL, 1);
+	i915_gem_write_fence(dev, fence_reg, enable ? obj : NULL);
+
+	if (enable) {
+		obj->fence_reg = fence_reg;
+		fence->obj = obj;
+		list_move_tail(&fence->lru_list, &dev_priv->mm.fence_list);
+	} else {
+		obj->fence_reg = I915_FENCE_REG_NONE;
+		fence->obj = NULL;
+		list_del_init(&fence->lru_list);
+	}
+	obj->fence_dirty = false;
+}
+
+static int
+i915_gem_object_wait_fence(struct drm_i915_gem_object *obj)
+{
+	if (obj->last_fenced_seqno) {
+		int ret = i915_wait_seqno(obj->ring, obj->last_fenced_seqno);
+		if (ret)
+			return ret;
+
+		obj->last_fenced_seqno = 0;
+	}
+
+	obj->fenced_gpu_access = false;
+	return 0;
+}
+
+int
+i915_gem_object_put_fence(struct drm_i915_gem_object *obj)
+{
+	struct drm_i915_private *dev_priv = obj->base.dev->dev_private;
+	struct drm_i915_fence_reg *fence;
+	int ret;
+
+	ret = i915_gem_object_wait_fence(obj);
+	if (ret)
+		return ret;
+
+	if (obj->fence_reg == I915_FENCE_REG_NONE)
+		return 0;
+
+	fence = &dev_priv->fence_regs[obj->fence_reg];
+
+	i915_gem_object_fence_lost(obj);
+	i915_gem_object_update_fence(obj, fence, false);
+
+	return 0;
+}
+
+static struct drm_i915_fence_reg *
+i915_find_fence_reg(struct drm_device *dev)
+{
+	struct drm_i915_private *dev_priv = dev->dev_private;
+	struct drm_i915_fence_reg *reg, *avail;
+	int i;
+
+	/* First try to find a free reg */
+	avail = NULL;
+	for (i = dev_priv->fence_reg_start; i < dev_priv->num_fence_regs; i++) {
+		reg = &dev_priv->fence_regs[i];
+		if (!reg->obj)
+			return reg;
+
+		if (!reg->pin_count)
+			avail = reg;
+	}
+
+	if (avail == NULL)
+		return NULL;
+
+	/* None available, try to steal one or wait for a user to finish */
+	list_for_each_entry(reg, &dev_priv->mm.fence_list, lru_list) {
+		if (reg->pin_count)
+			continue;
+
+		return reg;
+	}
+
+	return NULL;
+}
+
+/**
+ * i915_gem_object_get_fence - set up fencing for an object
+ * @obj: object to map through a fence reg
+ *
+ * When mapping objects through the GTT, userspace wants to be able to write
+ * to them without having to worry about swizzling if the object is tiled.
+ * This function walks the fence regs looking for a free one for @obj,
+ * stealing one if it can't find any.
+ *
+ * It then sets up the reg based on the object's properties: address, pitch
+ * and tiling format.
+ *
+ * For an untiled surface, this removes any existing fence.
+ */
+int
+i915_gem_object_get_fence(struct drm_i915_gem_object *obj)
+{
+	struct drm_device *dev = obj->base.dev;
+	struct drm_i915_private *dev_priv = dev->dev_private;
+	bool enable = obj->tiling_mode != I915_TILING_NONE;
+	struct drm_i915_fence_reg *reg;
+	int ret;
+
+	/* Have we updated the tiling parameters upon the object and so
+	 * will need to serialise the write to the associated fence register?
+	 */
+	if (obj->fence_dirty) {
+		ret = i915_gem_object_wait_fence(obj);
+		if (ret)
+			return ret;
+	}
+
+	/* Just update our place in the LRU if our fence is getting reused. */
+	if (obj->fence_reg != I915_FENCE_REG_NONE) {
+		reg = &dev_priv->fence_regs[obj->fence_reg];
+		if (!obj->fence_dirty) {
+			list_move_tail(&reg->lru_list,
+				       &dev_priv->mm.fence_list);
+			return 0;
+		}
+	} else if (enable) {
+		reg = i915_find_fence_reg(dev);
+		if (reg == NULL)
+			return -EDEADLK;
+
+		if (reg->obj) {
+			struct drm_i915_gem_object *old = reg->obj;
+
+			ret = i915_gem_object_wait_fence(old);
+			if (ret)
+				return ret;
+
+			i915_gem_object_fence_lost(old);
+		}
+	} else
+		return 0;
+
+	i915_gem_object_update_fence(obj, reg, enable);
+
+	return 0;
+}
+
+static bool i915_gem_valid_gtt_space(struct drm_device *dev,
+				     struct drm_mm_node *gtt_space,
+>>>>>>> p9x
 				     unsigned long cache_level)
 {
 	struct drm_mm_node *gtt_space = &vma->node;
@@ -5181,6 +5586,13 @@ bool i915_gem_obj_bound(struct drm_i915_gem_object *o,
 			return true;
 	}
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_SMP) && !defined(CONFIG_DEBUG_MUTEXES)
+	return mutex->owner == task;
+#else
+	/* Since UP may be pre-empted, we cannot assume that we own the lock */
+>>>>>>> p9x
 	return false;
 }
 
@@ -5196,6 +5608,7 @@ bool i915_gem_obj_ggtt_bound_view(struct drm_i915_gem_object *o,
 		    drm_mm_node_allocated(&vma->node))
 			return true;
 
+<<<<<<< HEAD
 	return false;
 }
 
@@ -5278,4 +5691,32 @@ i915_gem_object_create_from_data(struct drm_device *dev,
 fail:
 	drm_gem_object_unreference(&obj->base);
 	return ERR_PTR(ret);
+=======
+		if (dev_priv->mm.shrinker_no_lock_stealing)
+			return 0;
+
+		unlock = false;
+	}
+
+	if (nr_to_scan) {
+		nr_to_scan -= i915_gem_purge(dev_priv, nr_to_scan);
+		if (nr_to_scan > 0)
+			nr_to_scan -= __i915_gem_shrink(dev_priv, nr_to_scan,
+							false);
+		if (nr_to_scan > 0)
+			i915_gem_shrink_all(dev_priv);
+	}
+
+	cnt = 0;
+	list_for_each_entry(obj, &dev_priv->mm.unbound_list, gtt_list)
+		if (obj->pages_pin_count == 0)
+			cnt += obj->base.size >> PAGE_SHIFT;
+	list_for_each_entry(obj, &dev_priv->mm.inactive_list, mm_list)
+		if (obj->pin_count == 0 && obj->pages_pin_count == 0)
+			cnt += obj->base.size >> PAGE_SHIFT;
+
+	if (unlock)
+		mutex_unlock(&dev->struct_mutex);
+	return cnt;
+>>>>>>> p9x
 }

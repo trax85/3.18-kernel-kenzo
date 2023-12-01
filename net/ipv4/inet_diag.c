@@ -238,8 +238,12 @@ static int inet_csk_diag_fill(struct sock *sk,
 			      bool net_admin)
 {
 	return inet_sk_diag_fill(sk, inet_csk(sk),
+<<<<<<< HEAD
 			skb, req, user_ns, portid, seq, nlmsg_flags, unlh,
 			net_admin);
+=======
+			skb, req, user_ns, portid, seq, nlmsg_flags, unlh, net_admin);
+>>>>>>> p9x
 }
 
 static int inet_twsk_diag_fill(struct inet_timewait_sock *tw,
@@ -302,11 +306,19 @@ static int sk_diag_fill(struct sock *sk, struct sk_buff *skb,
 			const struct nlmsghdr *unlh, bool net_admin)
 {
 	if (sk->sk_state == TCP_TIME_WAIT)
+<<<<<<< HEAD
 		return inet_twsk_diag_fill(inet_twsk(sk), skb, r, portid, seq,
 					   nlmsg_flags, unlh);
 
 	return inet_csk_diag_fill(sk, skb, r, user_ns, portid, seq,
 				  nlmsg_flags, unlh, net_admin);
+=======
+		return inet_twsk_diag_fill((struct inet_timewait_sock *)sk,
+					   skb, r, portid, seq, nlmsg_flags,
+					   unlh);
+	return inet_csk_diag_fill(sk, skb, r, user_ns, portid, seq, nlmsg_flags,
+				  unlh, net_admin);
+>>>>>>> p9x
 }
 
 struct sock *inet_diag_find_one_icsk(struct net *net,
@@ -344,7 +356,15 @@ struct sock *inet_diag_find_one_icsk(struct net *net,
 		return ERR_PTR(-ENOENT);
 
 	if (sock_diag_check_cookie(sk, req->id.idiag_cookie)) {
+<<<<<<< HEAD
 		sock_gen_put(sk);
+=======
+		/* NOTE: forward-ports should use sock_gen_put(sk) instead. */
+		if (sk->sk_state == TCP_TIME_WAIT)
+			inet_twsk_put((struct inet_timewait_sock *)sk);
+		else
+			sock_put(sk);
+>>>>>>> p9x
 		return ERR_PTR(-ENOENT);
 	}
 
@@ -376,7 +396,12 @@ int inet_diag_dump_one_icsk(struct inet_hashinfo *hashinfo,
 			   sk_user_ns(NETLINK_CB(in_skb).sk),
 			   NETLINK_CB(in_skb).portid,
 			   nlh->nlmsg_seq, 0, nlh,
+<<<<<<< HEAD
 			   netlink_net_capable(in_skb, CAP_NET_ADMIN));
+=======
+			   ns_capable(sock_net(in_skb->sk)->user_ns,
+				      CAP_NET_ADMIN));
+>>>>>>> p9x
 	if (err < 0) {
 		WARN_ON(err == -EMSGSIZE);
 		nlmsg_free(rep);
@@ -388,9 +413,18 @@ int inet_diag_dump_one_icsk(struct inet_hashinfo *hashinfo,
 		err = 0;
 
 out:
+<<<<<<< HEAD
 	if (sk)
 		sock_gen_put(sk);
 
+=======
+	if (sk) {
+		if (sk->sk_state == TCP_TIME_WAIT)
+			inet_twsk_put((struct inet_timewait_sock *)sk);
+		else
+			sock_put(sk);
+	}
+>>>>>>> p9x
 	return err;
 }
 EXPORT_SYMBOL_GPL(inet_diag_dump_one_icsk);
@@ -566,8 +600,12 @@ int inet_diag_bc_sk(const struct nlattr *bc, struct sock *sk)
 	}
 	entry.sport = inet->inet_num;
 	entry.dport = ntohs(inet->inet_dport);
-	entry.userlocks = sk->sk_userlocks;
 	entry.ifindex = sk->sk_bound_dev_if;
+	entry.userlocks = sk->sk_userlocks;
+<<<<<<< HEAD
+	entry.ifindex = sk->sk_bound_dev_if;
+=======
+>>>>>>> p9x
 	entry.mark = sk->sk_mark;
 
 	return inet_diag_bc_run(bc, &entry);
@@ -661,7 +699,11 @@ static bool valid_markcond(const struct inet_diag_bc_op *op, int len,
 static int inet_diag_bc_audit(const struct nlattr *attr,
 			      const struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	bool net_admin = netlink_net_capable(skb, CAP_NET_ADMIN);
+=======
+	bool net_admin = ns_capable(sock_net(skb->sk)->user_ns, CAP_NET_ADMIN);
+>>>>>>> p9x
 	const void *bytecode, *bc;
 	int bytecode_len, len;
 
@@ -837,13 +879,22 @@ static int inet_diag_fill_req(struct sk_buff *skb, struct sock *sk,
 		tmo = 0;
 
 	r->id.idiag_sport = inet->inet_sport;
+<<<<<<< HEAD
 	r->id.idiag_dport = ireq->ir_rmt_port;
+=======
+	r->id.idiag_dport = ireq->rmt_port;
+>>>>>>> p9x
 
 	memset(&r->id.idiag_src, 0, sizeof(r->id.idiag_src));
 	memset(&r->id.idiag_dst, 0, sizeof(r->id.idiag_dst));
 
+<<<<<<< HEAD
 	r->id.idiag_src[0] = ireq->ir_loc_addr;
 	r->id.idiag_dst[0] = ireq->ir_rmt_addr;
+=======
+	r->id.idiag_src[0] = ireq->loc_addr;
+	r->id.idiag_dst[0] = ireq->rmt_addr;
+>>>>>>> p9x
 
 	r->idiag_expires = jiffies_to_msecs(tmo);
 	r->idiag_rqueue = 0;
@@ -942,7 +993,11 @@ void inet_diag_dump_icsk(struct inet_hashinfo *hashinfo, struct sk_buff *skb,
 	int i, num;
 	int s_i, s_num;
 	struct net *net = sock_net(skb->sk);
+<<<<<<< HEAD
 	bool net_admin = netlink_net_capable(cb->skb, CAP_NET_ADMIN);
+=======
+	bool net_admin = ns_capable(net->user_ns, CAP_NET_ADMIN);
+>>>>>>> p9x
 
 	s_i = cb->args[1];
 	s_num = num = cb->args[2];
@@ -1053,12 +1108,17 @@ skip_listen_ht:
 			if (r->id.idiag_dport != sk->sk_dport &&
 			    r->id.idiag_dport)
 				goto next_normal;
+<<<<<<< HEAD
 			if (sk->sk_state == TCP_TIME_WAIT)
 				res = inet_twsk_diag_dump(sk, skb, cb, r, bc);
 			else
 				res = inet_csk_diag_dump(sk, skb, cb, r, bc,
 							 net_admin);
 			if (res < 0) {
+=======
+			if (inet_csk_diag_dump(sk, skb, cb, r,
+					       bc, net_admin) < 0) {
+>>>>>>> p9x
 				spin_unlock_bh(lock);
 				goto done;
 			}
@@ -1066,6 +1126,38 @@ next_normal:
 			++num;
 		}
 
+<<<<<<< HEAD
+=======
+		if (r->idiag_states & (TCPF_TIME_WAIT | TCPF_FIN_WAIT2)) {
+			struct inet_timewait_sock *tw;
+
+			inet_twsk_for_each(tw, node,
+				    &head->twchain) {
+				if (!net_eq(twsk_net(tw), net))
+					continue;
+
+				if (num < s_num)
+					goto next_dying;
+				if (!(r->idiag_states & (1 << tw->tw_substate)))
+					goto next_dying;
+				if (r->sdiag_family != AF_UNSPEC &&
+						tw->tw_family != r->sdiag_family)
+					goto next_dying;
+				if (r->id.idiag_sport != tw->tw_sport &&
+				    r->id.idiag_sport)
+					goto next_dying;
+				if (r->id.idiag_dport != tw->tw_dport &&
+				    r->id.idiag_dport)
+					goto next_dying;
+				if (inet_twsk_diag_dump(tw, skb, cb, r, bc) < 0) {
+					spin_unlock_bh(lock);
+					goto done;
+				}
+next_dying:
+				++num;
+			}
+		}
+>>>>>>> p9x
 		spin_unlock_bh(lock);
 	}
 

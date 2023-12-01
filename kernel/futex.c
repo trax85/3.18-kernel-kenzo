@@ -61,14 +61,20 @@
 #include <linux/nsproxy.h>
 #include <linux/ptrace.h>
 #include <linux/sched/rt.h>
+<<<<<<< HEAD
 #include <linux/hugetlb.h>
 #include <linux/freezer.h>
 #include <linux/bootmem.h>
+=======
+#include <linux/freezer.h>
+#include <linux/hugetlb.h>
+>>>>>>> p9x
 
 #include <asm/futex.h>
 
 #include "locking/rtmutex_common.h"
 
+<<<<<<< HEAD
 /*
  * READ this before attempting to hack on futexes!
  *
@@ -173,6 +179,13 @@
 #ifndef CONFIG_HAVE_FUTEX_CMPXCHG
 int __read_mostly futex_cmpxchg_enabled;
 #endif
+=======
+#ifndef CONFIG_HAVE_FUTEX_CMPXCHG
+int __read_mostly futex_cmpxchg_enabled;
+#endif
+
+#define FUTEX_HASHBITS (CONFIG_BASE_SMALL ? 4 : 8)
+>>>>>>> p9x
 
 /*
  * Futex flags used to encode options to functions and preserve them across
@@ -612,9 +625,14 @@ again:
 		}
 
 		key->both.offset |= FUT_OFF_INODE; /* inode-based key */
+<<<<<<< HEAD
 		key->shared.inode = inode;
 		key->shared.pgoff = basepage_index(page);
 		rcu_read_unlock();
+=======
+		key->shared.inode = page_head->mapping->host;
+		key->shared.pgoff = basepage_index(page);
+>>>>>>> p9x
 	}
 
 out:
@@ -890,6 +908,7 @@ void exit_pi_state_list(struct task_struct *curr)
  * [10] There is no transient state which leaves owner and user space
  *	TID out of sync.
  */
+<<<<<<< HEAD
 
 /*
  * Validate that the existing waiter has a pi_state and sanity check
@@ -898,6 +917,11 @@ void exit_pi_state_list(struct task_struct *curr)
  */
 static int attach_to_pi_state(u32 uval, struct futex_pi_state *pi_state,
 			      struct futex_pi_state **ps)
+=======
+static int
+lookup_pi_state(u32 uval, struct futex_hash_bucket *hb,
+		union futex_key *key, struct futex_pi_state **ps)
+>>>>>>> p9x
 {
 	pid_t pid = uval & FUTEX_TID_MASK;
 
@@ -920,15 +944,88 @@ static int attach_to_pi_state(u32 uval, struct futex_pi_state *pi_state,
 		 */
 		if (!pi_state->owner) {
 			/*
+<<<<<<< HEAD
 			 * No pi state owner, but the user space TID
 			 * is not 0. Inconsistent state. [5]
 			 */
 			if (pid)
+=======
+			 * Sanity check the waiter before increasing
+			 * the refcount and attaching to it.
+			 */
+			pi_state = this->pi_state;
+			/*
+			 * Userspace might have messed up non-PI and
+			 * PI futexes [3]
+			 */
+			if (unlikely(!pi_state))
+>>>>>>> p9x
 				return -EINVAL;
 			/*
+<<<<<<< HEAD
 			 * Take a ref on the state and return success. [4]
 			 */
 			goto out_state;
+=======
+			 * Handle the owner died case:
+			 */
+			if (uval & FUTEX_OWNER_DIED) {
+				/*
+				 * exit_pi_state_list sets owner to NULL and
+				 * wakes the topmost waiter. The task which
+				 * acquires the pi_state->rt_mutex will fixup
+				 * owner.
+				 */
+				if (!pi_state->owner) {
+					/*
+					 * No pi state owner, but the user
+					 * space TID is not 0. Inconsistent
+					 * state. [5]
+					 */
+					if (pid)
+						return -EINVAL;
+					/*
+					 * Take a ref on the state and
+					 * return. [4]
+					 */
+					goto out_state;
+				}
+
+				/*
+				 * If TID is 0, then either the dying owner
+				 * has not yet executed exit_pi_state_list()
+				 * or some waiter acquired the rtmutex in the
+				 * pi state, but did not yet fixup the TID in
+				 * user space.
+				 *
+				 * Take a ref on the state and return. [6]
+				 */
+				if (!pid)
+					goto out_state;
+			} else {
+				/*
+				 * If the owner died bit is not set,
+				 * then the pi_state must have an
+				 * owner. [7]
+				 */
+				if (!pi_state->owner)
+					return -EINVAL;
+			}
+
+			/*
+			 * Bail out if user space manipulated the
+			 * futex value. If pi state exists then the
+			 * owner TID must be the same as the user
+			 * space TID. [9/10]
+			 */
+			if (pid != task_pid_vnr(pi_state->owner))
+				return -EINVAL;
+
+		out_state:
+			atomic_inc(&pi_state->refcount);
+			*ps = pi_state;
+			return 0;
+>>>>>>> p9x
 		}
 
 		/*
@@ -1106,12 +1203,29 @@ static int futex_lock_pi_atomic(u32 __user *uaddr, struct futex_hash_bucket *hb,
 		return -EDEADLK;
 
 	/*
+<<<<<<< HEAD
 	 * Lookup existing state first. If it exists, try to attach to
 	 * its pi_state.
 	 */
 	match = futex_top_waiter(hb, key);
 	if (match)
 		return attach_to_pi_state(uval, match->pi_state, ps);
+=======
+	 * Surprise - we got the lock, but we do not trust user space at all.
+	 */
+	if (unlikely(!curval)) {
+		/*
+		 * We verify whether there is kernel state for this
+		 * futex. If not, we can safely assume, that the 0 ->
+		 * TID transition is correct. If state exists, we do
+		 * not bother to fixup the user space state as it was
+		 * corrupted already.
+		 */
+		return futex_top_waiter(hb, key) ? -EINVAL : 1;
+	}
+
+	uval = curval;
+>>>>>>> p9x
 
 	/*
 	 * No waiter and user TID is 0. We are here because the
@@ -1241,6 +1355,7 @@ static int wake_futex_pi(u32 __user *uaddr, u32 uval, struct futex_q *this)
 	 */
 	newval = FUTEX_WAITERS | task_pid_vnr(new_owner);
 
+<<<<<<< HEAD
 	if (cmpxchg_futex_value_locked(&curval, uaddr, uval, newval)) {
 		ret = -EFAULT;
 	} else if (curval != uval) {
@@ -1255,6 +1370,12 @@ static int wake_futex_pi(u32 __user *uaddr, u32 uval, struct futex_q *this)
 		else
 			ret = -EINVAL;
 	}
+=======
+	if (cmpxchg_futex_value_locked(&curval, uaddr, uval, newval))
+		ret = -EFAULT;
+	else if (curval != uval)
+		ret = -EINVAL;
+>>>>>>> p9x
 	if (ret) {
 		raw_spin_unlock(&pi_state->pi_mutex.wait_lock);
 		return ret;
@@ -1597,9 +1718,12 @@ static int futex_requeue(u32 __user *uaddr1, unsigned int flags,
 	struct futex_pi_state *pi_state = NULL;
 	struct futex_hash_bucket *hb1, *hb2;
 	struct futex_q *this, *next;
+<<<<<<< HEAD
 
 	if (nr_wake < 0 || nr_requeue < 0)
 		return -EINVAL;
+=======
+>>>>>>> p9x
 
 	if (requeue_pi) {
 		/*
@@ -2503,6 +2627,7 @@ retry:
 	spin_lock(&hb->lock);
 
 	/*
+<<<<<<< HEAD
 	 * Check waiters first. We do not trust user space values at
 	 * all and we at least want to know if user space fiddled
 	 * with the futex value instead of blindly unlocking.
@@ -2510,6 +2635,33 @@ retry:
 	match = futex_top_waiter(hb, &key);
 	if (match) {
 		ret = wake_futex_pi(uaddr, uval, match);
+=======
+	 * To avoid races, try to do the TID -> 0 atomic transition
+	 * again. If it succeeds then we can return without waking
+	 * anyone else up. We only try this if neither the waiters nor
+	 * the owner died bit are set.
+	 */
+	if (!(uval & ~FUTEX_TID_MASK) &&
+	    cmpxchg_futex_value_locked(&uval, uaddr, vpid, 0))
+		goto pi_faulted;
+	/*
+	 * Rare case: we managed to release the lock atomically,
+	 * no need to wake anyone else up:
+	 */
+	if (unlikely(uval == vpid))
+		goto out_unlock;
+
+	/*
+	 * Ok, other tasks may need to be woken up - check waiters
+	 * and do the wakeup if necessary:
+	 */
+	head = &hb->chain;
+
+	plist_for_each_entry_safe(this, next, head, list) {
+		if (!match_futex (&this->key, &key))
+			continue;
+		ret = wake_futex_pi(uaddr, uval, this);
+>>>>>>> p9x
 		/*
 		 * The atomic access to the futex value generated a
 		 * pagefault, so retry the user-access and the wakeup:
@@ -2535,6 +2687,7 @@ retry:
 	 * preserve the WAITERS bit not the OWNER_DIED one. We are the
 	 * owner.
 	 */
+<<<<<<< HEAD
 	if (cmpxchg_futex_value_locked(&curval, uaddr, uval, 0))
 		goto pi_faulted;
 
@@ -2542,6 +2695,11 @@ retry:
 	 * If uval has changed, let user space handle it.
 	 */
 	ret = (curval == uval) ? 0 : -EAGAIN;
+=======
+	ret = unlock_futex_pi(uaddr, uval);
+	if (ret == -EFAULT)
+		goto pi_faulted;
+>>>>>>> p9x
 
 out_unlock:
 	spin_unlock(&hb->lock);
@@ -2705,7 +2863,10 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
 	 * shared futexes. We need to compare the keys:
 	 */
 	if (match_futex(&q.key, &key2)) {
+<<<<<<< HEAD
 		queue_unlock(hb);
+=======
+>>>>>>> p9x
 		ret = -EINVAL;
 		goto out_put_keys;
 	}
@@ -3140,6 +3301,15 @@ static void __init futex_detect_cmpxchg(void)
 		futex_cmpxchg_enabled = 1;
 #endif
 }
+<<<<<<< HEAD
+=======
+
+static int __init futex_init(void)
+{
+	int i;
+
+	futex_detect_cmpxchg();
+>>>>>>> p9x
 
 static int __init futex_init(void)
 {
@@ -3169,4 +3339,4 @@ static int __init futex_init(void)
 
 	return 0;
 }
-__initcall(futex_init);
+core_initcall(futex_init);

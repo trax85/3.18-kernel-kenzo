@@ -725,6 +725,11 @@ static int acpi_idle_enter_c1(struct cpuidle_device *dev,
 	if (unlikely(!pr))
 		return -EINVAL;
 
+	if (cx->entry_method == ACPI_CSTATE_FFH) {
+		if (current_set_polling_and_test())
+			return -EINVAL;
+	}
+
 	lapic_timer_state_broadcast(pr, cx, 1);
 	acpi_idle_do_entry(cx);
 
@@ -778,12 +783,19 @@ static int acpi_idle_enter_simple(struct cpuidle_device *dev,
 	if (unlikely(!pr))
 		return -EINVAL;
 
+<<<<<<< HEAD
 #ifdef CONFIG_HOTPLUG_CPU
 	if ((cx->type != ACPI_STATE_C1) && (num_online_cpus() > 1) &&
 	    !pr->flags.has_cst &&
 	    !(acpi_gbl_FADT.flags & ACPI_FADT_C2_MP_SUPPORTED))
 		return acpi_idle_enter_c1(dev, drv, CPUIDLE_DRIVER_STATE_START);
 #endif
+=======
+	if (cx->entry_method == ACPI_CSTATE_FFH) {
+		if (current_set_polling_and_test())
+			return -EINVAL;
+	}
+>>>>>>> p9x
 
 	/*
 	 * Must be done before busmaster disable as we might need to
@@ -843,6 +855,14 @@ static int acpi_idle_enter_bm(struct cpuidle_device *dev,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	if (cx->entry_method == ACPI_CSTATE_FFH) {
+		if (current_set_polling_and_test())
+			return -EINVAL;
+	}
+
+>>>>>>> p9x
 	acpi_unlazy_tlb(smp_processor_id());
 
 	/* Tell the scheduler that we are going deep-idle: */

@@ -42,7 +42,16 @@
 #define MAX_SES_INFO 2
 #define MAX_TCON_INFO 4
 
+<<<<<<< HEAD
 #define MAX_TREE_SIZE (2 + CIFS_NI_MAXHOST + 1 + CIFS_MAX_SHARE_LEN + 1)
+=======
+#define MAX_TREE_SIZE (2 + MAX_SERVER_SIZE + 1 + MAX_SHARE_SIZE + 1)
+#define MAX_SERVER_SIZE 15
+#define MAX_SHARE_SIZE 80
+#define CIFS_MAX_DOMAINNAME_LEN 256 /* max domain name length */
+#define MAX_USERNAME_SIZE 256	/* reasonable maximum for current servers */
+#define MAX_PASSWORD_SIZE 512	/* max for windows seems to be 256 wide chars */
+>>>>>>> p9x
 
 #define CIFS_MIN_RCV_POOL 4
 
@@ -368,6 +377,7 @@ struct smb_version_operations {
 	/* set lease key of the inode */
 	void (*set_lease_key)(struct inode *, struct cifs_fid *);
 	/* generate new lease key */
+<<<<<<< HEAD
 	void (*new_lease_key)(struct cifs_fid *);
 	int (*generate_signingkey)(struct cifs_ses *);
 	int (*calc_signature)(struct smb_rqst *, struct TCP_Server_Info *);
@@ -390,6 +400,11 @@ struct smb_version_operations {
 			struct cifsFileInfo *target_file, u64 src_off, u64 len,
 			u64 dest_off);
 	int (*validate_negotiate)(const unsigned int, struct cifs_tcon *);
+=======
+	void (*new_lease_key)(struct cifs_fid *fid);
+	int (*calc_signature)(struct smb_rqst *rqst,
+				   struct TCP_Server_Info *server);
+>>>>>>> p9x
 	ssize_t (*query_all_EAs)(const unsigned int, struct cifs_tcon *,
 			const unsigned char *, const unsigned char *, char *,
 			size_t, const struct nls_table *, int);
@@ -398,6 +413,7 @@ struct smb_version_operations {
 			const struct nls_table *, int);
 	struct cifs_ntsd * (*get_acl)(struct cifs_sb_info *, struct inode *,
 			const char *, u32 *);
+<<<<<<< HEAD
 	struct cifs_ntsd * (*get_acl_by_fid)(struct cifs_sb_info *,
 			const struct cifs_fid *, u32 *);
 	int (*set_acl)(struct cifs_ntsd *, __u32, struct inode *, const char *,
@@ -411,6 +427,12 @@ struct smb_version_operations {
 	bool (*dir_needs_close)(struct cifsFileInfo *);
 	long (*fallocate)(struct file *, struct cifs_tcon *, int, loff_t,
 			  loff_t);
+=======
+	int (*set_acl)(struct cifs_ntsd *, __u32, struct inode *, const char *,
+			int);
+	/* check if we need to issue closedir */
+	bool (*dir_needs_close)(struct cifsFileInfo *);
+>>>>>>> p9x
 };
 
 struct smb_version_values {
@@ -894,7 +916,11 @@ struct cifs_tcon {
 	bool need_reconnect:1; /* connection reset, tid now invalid */
 #ifdef CONFIG_CIFS_SMB2
 	bool print:1;		/* set if connection to printer share */
+<<<<<<< HEAD
 	__le32 capabilities;
+=======
+	__u32 capabilities;
+>>>>>>> p9x
 	__u32 share_flags;
 	__u32 maximal_access;
 	__u32 vol_serial_number;

@@ -193,12 +193,63 @@ extern void irq_wake_thread(unsigned int irq, void *dev_id);
 /* The following three functions are for the core kernel use only. */
 extern void suspend_device_irqs(void);
 extern void resume_device_irqs(void);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+extern int check_wakeup_irqs(void);
+#else
+static inline int check_wakeup_irqs(void) { return 0; }
+#endif
+
+#if defined(CONFIG_SMP)
+
+extern cpumask_var_t irq_default_affinity;
+
+/* Internal implementation. Use the helpers below */
+extern int __irq_set_affinity(unsigned int irq, const struct cpumask *cpumask,
+			      bool force);
+
+/**
+ * irq_set_affinity - Set the irq affinity of a given irq
+ * @irq:	Interrupt to set affinity
+ * @mask:	cpumask
+ *
+ * Fails if cpumask does not contain an online CPU
+ */
+static inline int
+irq_set_affinity(unsigned int irq, const struct cpumask *cpumask)
+{
+	return __irq_set_affinity(irq, cpumask, false);
+}
+
+/**
+ * irq_force_affinity - Force the irq affinity of a given irq
+ * @irq:	Interrupt to set affinity
+ * @mask:	cpumask
+ *
+ * Same as irq_set_affinity, but without checking the mask against
+ * online cpus.
+ *
+ * Solely for low level cpu hotplug code, where we need to make per
+ * cpu interrupts affine before the cpu becomes online.
+ */
+static inline int
+irq_force_affinity(unsigned int irq, const struct cpumask *cpumask)
+{
+	return __irq_set_affinity(irq, cpumask, true);
+}
+
+extern int irq_can_set_affinity(unsigned int irq);
+extern int irq_select_affinity(unsigned int irq);
+
+extern int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m);
+>>>>>>> p9x
 
 /**
  * struct irq_affinity_notify - context for notification of IRQ affinity changes
  * @irq:		Interrupt to which notification applies
  * @kref:		Reference count, for internal use
- * @work:		Work item, for internal use
+ * @list:		Add to the notifier list, for internal use
  * @notify:		Function to be called on change.  This will be
  *			called in process context.
  * @release:		Function to be called on release.  This will be
@@ -209,7 +260,7 @@ extern void resume_device_irqs(void);
 struct irq_affinity_notify {
 	unsigned int irq;
 	struct kref kref;
-	struct work_struct work;
+	struct list_head list;
 	void (*notify)(struct irq_affinity_notify *, const cpumask_t *mask);
 	void (*release)(struct kref *ref);
 };
@@ -260,6 +311,8 @@ extern int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m);
 extern int
 irq_set_affinity_notifier(unsigned int irq, struct irq_affinity_notify *notify);
 
+extern int
+irq_release_affinity_notifier(struct irq_affinity_notify *notify);
 #else /* CONFIG_SMP */
 
 static inline int irq_set_affinity(unsigned int irq, const struct cpumask *m)
@@ -284,6 +337,7 @@ static inline int irq_set_affinity_hint(unsigned int irq,
 {
 	return -EINVAL;
 }
+<<<<<<< HEAD
 
 static inline int
 irq_set_affinity_notifier(unsigned int irq, struct irq_affinity_notify *notify)
@@ -292,6 +346,10 @@ irq_set_affinity_notifier(unsigned int irq, struct irq_affinity_notify *notify)
 }
 #endif /* CONFIG_SMP */
 
+=======
+#endif /* CONFIG_SMP */
+
+>>>>>>> p9x
 /*
  * Special lockdep variants of irq disabling/enabling.
  * These should be used for locking constructs that

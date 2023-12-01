@@ -218,6 +218,7 @@ extern int _cond_resched(void);
 		(__x < 0) ? -__x : __x;		\
 	})
 
+<<<<<<< HEAD
 /**
  * reciprocal_scale - "scale" a value into range [0, ep_ro)
  * @val: value
@@ -239,6 +240,9 @@ static inline u32 reciprocal_scale(u32 val, u32 ep_ro)
 
 #if defined(CONFIG_MMU) && \
 	(defined(CONFIG_PROVE_LOCKING) || defined(CONFIG_DEBUG_ATOMIC_SLEEP))
+=======
+#if defined(CONFIG_PROVE_LOCKING) || defined(CONFIG_DEBUG_ATOMIC_SLEEP)
+>>>>>>> p9x
 void might_fault(void);
 #else
 static inline void might_fault(void) { }
@@ -609,7 +613,7 @@ do {									\
 	__trace_printk_check_format(fmt, ##args);			\
 									\
 	if (__builtin_constant_p(fmt))					\
-		__trace_bprintk(_THIS_IP_, trace_printk_fmt, ##args);	\
+		__trace_printk(_THIS_IP_, trace_printk_fmt, ##args);	\
 	else								\
 		__trace_printk(_THIS_IP_, fmt, ##args);			\
 } while (0)
@@ -816,6 +820,7 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
 # define REBUILD_DUE_TO_FTRACE_MCOUNT_RECORD
 #endif
 
+<<<<<<< HEAD
 /* Permissions on a sysfs file: you didn't miss the 0 prefix did you? */
 #define VERIFY_OCTAL_PERMISSIONS(perms)					\
 	(BUILD_BUG_ON_ZERO((perms) < 0) +				\
@@ -826,4 +831,9 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
 	 /* Other writable?  Generally considered a bad idea. */	\
 	 BUILD_BUG_ON_ZERO((perms) & 2) +				\
 	 (perms))
+=======
+/* To identify board information in panic logs, set this */
+extern char *mach_panic_string;
+
+>>>>>>> p9x
 #endif

@@ -62,12 +62,23 @@ static struct resource scif##index##_resources[] = {		\
 	R8A73A4_SCIF(PORT_SCIFB, SCSCR_RE | SCSCR_TE, \
 		     index, baseaddr, irq)
 
+<<<<<<< HEAD
 R8A73A4_SCIFA(0, 0xe6c40000, gic_spi(144)); /* SCIFA0 */
 R8A73A4_SCIFA(1, 0xe6c50000, gic_spi(145)); /* SCIFA1 */
 R8A73A4_SCIFB(2, 0xe6c20000, gic_spi(148)); /* SCIFB0 */
 R8A73A4_SCIFB(3, 0xe6c30000, gic_spi(149)); /* SCIFB1 */
 R8A73A4_SCIFB(4, 0xe6ce0000, gic_spi(150)); /* SCIFB2 */
 R8A73A4_SCIFB(5, 0xe6cf0000, gic_spi(151)); /* SCIFB3 */
+=======
+static const struct plat_sci_port scif[] = {
+	SCIFA_DATA(SCIFA0, 0xe6c40000, gic_spi(144)), /* SCIFA0 */
+	SCIFA_DATA(SCIFA1, 0xe6c50000, gic_spi(145)), /* SCIFA1 */
+	SCIFB_DATA(SCIFB0, 0xe6c20000, gic_spi(148)), /* SCIFB0 */
+	SCIFB_DATA(SCIFB1, 0xe6c30000, gic_spi(149)), /* SCIFB1 */
+	SCIFB_DATA(SCIFB2, 0xe6ce0000, gic_spi(150)), /* SCIFB2 */
+	SCIFB_DATA(SCIFB3, 0xe6cf0000, gic_spi(151)), /* SCIFB3 */
+};
+>>>>>>> p9x
 
 #define r8a73a4_register_scif(index)					       \
 	platform_device_register_resndata(NULL, "sh-sci", index,	       \

@@ -6,8 +6,12 @@ to be reset.
 
 Required Properties:
 - compatible:	The bus devices need to be compatible with
+<<<<<<< HEAD
 		"qcom,mdm2-modem", "qcom,ext-mdm9x25", "qcom,ext-mdm9x35", "qcom,ext-mdm9x45",
 		"qcom,ext-mdm9x55", "qcom,ext-apq8096".
+=======
+		"qcom,mdm2-modem", "qcom,ext-mdm9x25", "qcom,ext-mdm9x35".
+>>>>>>> p9x
 
 Required named gpio properties:
 - qcom,mdm2ap-errfatal-gpio: gpio for the external modem to indicate to the apps processor
@@ -102,18 +106,25 @@ Optional driver parameters:
 		gpio mux function. The only currently supported modes string is "normal" and
 		corresponds to the value 0x03 that is passed to RPM.
 - qcom,restart-group: List of subsystems that will need to restart together.
+<<<<<<< HEAD
 - qcom,mdm-dual-link: Boolean indicates whether both links can used for
+=======
+- qcom,mdm-dual-link: Boolean indicates wheter both links can used for
+>>>>>>> p9x
 		communication.
 - qcom,ssctl-instance-id: Instance id used by the subsystem to connect with the SSCTL service.
 - qcom,sysmon-id: platform device id that sysmon is probed with for the subsystem.
 - qcom,pil-force-shutdown: Boolean. If set, the SSR framework will not trigger graceful shutdown
 			   on behalf of the subsystem driver.
+<<<<<<< HEAD
 - qcom,mdm-auto-boot: Boolean. To indicate this instance of esoc boots independently.
 - qcom,mdm-statusline-not-a-powersource: Boolean. If set, status line to esoc device is not a
 		power source.
 - qcom,mdm-userspace-handle-shutdown: Boolean. If set, userspace handles shutdown requests.
 - qcom,mdm-link-info: a string indicating additional info about the physical link.
 			For example: "devID_domain.bus.slot" in case of PCIe.
+=======
+>>>>>>> p9x
 
 Example:
 	mdm0: qcom,mdm0 {

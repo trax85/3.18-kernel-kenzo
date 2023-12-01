@@ -3,9 +3,12 @@
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
 #define MSM_VIDC_HAL_INTERLACE_COLOR_FORMAT_NV12	0x2
 #define MSM_VIDC_HAL_INTERLACE_COLOR_FORMAT_NV12_UBWC	0x8002
 
+=======
+>>>>>>> p9x
 struct msm_vidc_extradata_header {
 	unsigned int size;
 	unsigned int:32; /** Keeping binary compatibility */
@@ -14,6 +17,7 @@ struct msm_vidc_extradata_header {
 	unsigned int data_size;
 	unsigned char data[1];
 };
+<<<<<<< HEAD
 
 struct msm_vidc_interlace_payload {
 	unsigned int format;
@@ -24,10 +28,19 @@ struct msm_vidc_framerate_payload {
 	unsigned int frame_rate;
 };
 
+=======
+struct msm_vidc_interlace_payload {
+	unsigned int format;
+};
+struct msm_vidc_framerate_payload {
+	unsigned int frame_rate;
+};
+>>>>>>> p9x
 struct msm_vidc_ts_payload {
 	unsigned int timestamp_lo;
 	unsigned int timestamp_hi;
 };
+<<<<<<< HEAD
 
 struct msm_vidc_concealmb_payload {
 	unsigned int num_mbs;
@@ -37,6 +50,14 @@ struct msm_vidc_recoverysei_payload {
 	unsigned int flags;
 };
 
+=======
+struct msm_vidc_concealmb_payload {
+	unsigned int num_mbs;
+};
+struct msm_vidc_recoverysei_payload {
+	unsigned int flags;
+};
+>>>>>>> p9x
 struct msm_vidc_aspect_ratio_payload {
 	unsigned int size;
 	unsigned int version;
@@ -44,7 +65,10 @@ struct msm_vidc_aspect_ratio_payload {
 	unsigned int aspect_width;
 	unsigned int aspect_height;
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 struct msm_vidc_mpeg2_seqdisp_payload {
 	unsigned int video_format;
 	unsigned int color_descp;
@@ -76,6 +100,7 @@ struct msm_vidc_input_crop_payload {
 	unsigned int width;
 	unsigned int height;
 };
+<<<<<<< HEAD
 
 struct msm_vidc_output_crop_payload {
 	unsigned int size;
@@ -90,6 +115,8 @@ struct msm_vidc_output_crop_payload {
 };
 
 
+=======
+>>>>>>> p9x
 struct msm_vidc_digital_zoom_payload {
 	unsigned int size;
 	unsigned int version;
@@ -97,7 +124,10 @@ struct msm_vidc_digital_zoom_payload {
 	unsigned int zoom_width;
 	unsigned int zoom_height;
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 struct msm_vidc_extradata_index {
 	unsigned int type;
 	union {
@@ -106,39 +136,61 @@ struct msm_vidc_extradata_index {
 		struct msm_vidc_aspect_ratio_payload aspect_ratio;
 	};
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 struct msm_vidc_panscan_window {
 	unsigned int panscan_height_offset;
 	unsigned int panscan_width_offset;
 	unsigned int panscan_window_width;
 	unsigned int panscan_window_height;
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 struct msm_vidc_panscan_window_payload {
 	unsigned int num_panscan_windows;
 	struct msm_vidc_panscan_window wnd[1];
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 struct msm_vidc_stream_userdata_payload {
 	unsigned int type;
 	unsigned int data[1];
 };
+<<<<<<< HEAD
 
 struct msm_vidc_frame_qp_payload {
 	unsigned int frame_qp;
 };
 
+=======
+struct msm_vidc_frame_qp_payload {
+	unsigned int frame_qp;
+};
+>>>>>>> p9x
 struct msm_vidc_frame_bits_info_payload {
 	unsigned int frame_bits;
 	unsigned int header_bits;
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 struct msm_vidc_s3d_frame_packing_payload {
 	unsigned int fpa_id;
 	unsigned int cancel_flag;
 	unsigned int fpa_type;
 	unsigned int quin_cunx_flag;
+<<<<<<< HEAD
 	unsigned int content_interprtation_type;
+=======
+	unsigned int content_interpretation_type;
+>>>>>>> p9x
 	unsigned int spatial_flipping_flag;
 	unsigned int frame0_flipped_flag;
 	unsigned int field_views_flag;
@@ -154,6 +206,7 @@ struct msm_vidc_s3d_frame_packing_payload {
 	unsigned int fpa_extension_flag;
 };
 
+<<<<<<< HEAD
 struct msm_vidc_vqzip_sei_payload {
 	unsigned int size;
 	unsigned int data[1];
@@ -166,6 +219,8 @@ struct msm_vidc_yuv_stats_payload {
 	unsigned int frame_difference;
 };
 
+=======
+>>>>>>> p9x
 struct msm_vidc_vpx_colorspace_payload {
 	unsigned int color_space;
 	unsigned int yuv_range_flag;
@@ -173,6 +228,7 @@ struct msm_vidc_vpx_colorspace_payload {
 	unsigned int sumsampling_y;
 };
 
+<<<<<<< HEAD
 struct msm_vidc_roi_qp_payload {
 	int upper_qp_offset;
 	int lower_qp_offset;
@@ -181,6 +237,8 @@ struct msm_vidc_roi_qp_payload {
 	unsigned int data[1];
 };
 
+=======
+>>>>>>> p9x
 struct msm_vidc_mastering_display_colour_sei_payload {
 	unsigned int nDisplayPrimariesX[3];
 	unsigned int nDisplayPrimariesY[3];
@@ -227,14 +285,18 @@ enum msm_vidc_extradata_type {
 	MSM_VIDC_EXTRADATA_STREAM_USERDATA = 0x0000000E,
 	MSM_VIDC_EXTRADATA_FRAME_QP = 0x0000000F,
 	MSM_VIDC_EXTRADATA_FRAME_BITS_INFO = 0x00000010,
+<<<<<<< HEAD
 	MSM_VIDC_EXTRADATA_VQZIP_SEI = 0x00000011,
 	MSM_VIDC_EXTRADATA_ROI_QP = 0x00000013,
+=======
+>>>>>>> p9x
 #define MSM_VIDC_EXTRADATA_MASTERING_DISPLAY_COLOUR_SEI \
 	MSM_VIDC_EXTRADATA_MASTERING_DISPLAY_COLOUR_SEI
 	MSM_VIDC_EXTRADATA_MASTERING_DISPLAY_COLOUR_SEI = 0x00000015,
 #define MSM_VIDC_EXTRADATA_CONTENT_LIGHT_LEVEL_SEI \
 	MSM_VIDC_EXTRADATA_CONTENT_LIGHT_LEVEL_SEI
 	MSM_VIDC_EXTRADATA_CONTENT_LIGHT_LEVEL_SEI = 0x00000016,
+<<<<<<< HEAD
 #define MSM_VIDC_EXTRADATA_PQ_INFO \
 	MSM_VIDC_EXTRADATA_PQ_INFO
 	MSM_VIDC_EXTRADATA_PQ_INFO = 0x00000017,
@@ -246,6 +308,13 @@ enum msm_vidc_extradata_type {
 #define MSM_VIDC_EXTRADATA_VPX_COLORSPACE_INFO \
 	MSM_VIDC_EXTRADATA_VPX_COLORSPACE_INFO
 	MSM_VIDC_EXTRADATA_VPX_COLORSPACE_INFO = 0x00000014,
+=======
+	MSM_VIDC_EXTRADATA_INPUT_CROP = 0x0700000E,
+	MSM_VIDC_EXTRADATA_DIGITAL_ZOOM = 0x07000010,
+#define MSM_VIDC_EXTRADATA_VPX_COLORSPACE_INFO \
+	MSM_VIDC_EXTRADATA_VPX_COLORSPACE_INFO
+	MSM_VIDC_EXTRADATA_VPX_COLORSPACE_INFO = 0x070000011,
+>>>>>>> p9x
 	MSM_VIDC_EXTRADATA_MULTISLICE_INFO = 0x7F100000,
 	MSM_VIDC_EXTRADATA_NUM_CONCEALED_MB = 0x7F100001,
 	MSM_VIDC_EXTRADATA_INDEX = 0x7F100002,
@@ -256,7 +325,10 @@ enum msm_vidc_extradata_type {
 #define MSM_VIDC_EXTRADATA_VUI_DISPLAY_INFO \
 	MSM_VIDC_EXTRADATA_VUI_DISPLAY_INFO
 	MSM_VIDC_EXTRADATA_VUI_DISPLAY_INFO = 0x7F100006,
+<<<<<<< HEAD
 	MSM_VIDC_EXTRADATA_YUVSTATS_INFO = 0x7F100007,
+=======
+>>>>>>> p9x
 };
 enum msm_vidc_interlace_type {
 	MSM_VIDC_INTERLACE_FRAME_PROGRESSIVE = 0x01,
@@ -265,6 +337,7 @@ enum msm_vidc_interlace_type {
 	MSM_VIDC_INTERLACE_FRAME_TOPFIELDFIRST = 0x08,
 	MSM_VIDC_INTERLACE_FRAME_BOTTOMFIELDFIRST = 0x10,
 };
+<<<<<<< HEAD
 
 /* enum msm_vidc_framepack_type */
 #define MSM_VIDC_FRAMEPACK_CHECKERBOARD 0x00
@@ -274,6 +347,16 @@ enum msm_vidc_interlace_type {
 #define MSM_VIDC_FRAMEPACK_TOP_BOTTOM 0x04
 #define MSM_VIDC_FRAMEPACK_TEMPORAL_INTERLEAVE 0x05
 
+=======
+enum msm_vidc_framepack_type {
+	MSM_VIDC_FRAMEPACK_CHECKERBOARD = 0x00,
+	MSM_VIDC_FRAMEPACK_COLUMN_INTERLEAVE = 0x01,
+	MSM_VIDC_FRAMEPACK_ROW_INTERLEAVE = 0x02,
+	MSM_VIDC_FRAMEPACK_SIDE_BY_SIDE = 0x03,
+	MSM_VIDC_FRAMEPACK_TOP_BOTTOM = 0x04,
+	MSM_VIDC_FRAMEPACK_TEMPORAL_INTERLEAVE = 0x05,
+};
+>>>>>>> p9x
 enum msm_vidc_recovery_sei {
 	MSM_VIDC_FRAME_RECONSTRUCTION_INCORRECT = 0x0,
 	MSM_VIDC_FRAME_RECONSTRUCTION_CORRECT = 0x01,
@@ -284,7 +367,10 @@ enum msm_vidc_userdata_type {
 	MSM_VIDC_USERDATA_TYPE_TOP_FIELD = 0x2,
 	MSM_VIDC_USERDATA_TYPE_BOTTOM_FIELD = 0x3,
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 /* See colour_primaries of ISO/IEC 14496 for significance */
 enum msm_vidc_h264_color_primaries_values {
 	MSM_VIDC_RESERVED_1 = 0,
@@ -345,6 +431,7 @@ enum msm_vidc_h264_transfer_chars_values {
 	MSM_VIDC_TRANSFER_SRGB = 13,
 	MSM_VIDC_TRANSFER_BT_2020_10 = 14,
 	MSM_VIDC_TRANSFER_BT_2020_12 = 15,
+<<<<<<< HEAD
 #define MSM_VIDC_TRANSFER_SMPTE_ST2084 \
 	MSM_VIDC_TRANSFER_SMPTE_ST2084
 	MSM_VIDC_TRANSFER_SMPTE_ST2084 = 16,
@@ -362,6 +449,9 @@ enum msm_vidc_pixel_depth {
 	MSM_VIDC_BIT_DEPTH_UNSUPPORTED = 0XFFFFFFFF,
 };
 
+=======
+};
+>>>>>>> p9x
 enum msm_vidc_video_format {
 	MSM_VIDC_COMPONENT,
 	MSM_VIDC_PAL,
@@ -372,15 +462,21 @@ enum msm_vidc_video_format {
 	MSM_VIDC_RESERVED_1_FORMAT,
 	MSM_VIDC_RESERVED_2_FORMAT,
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 enum msm_vidc_color_desc_flag {
 	MSM_VIDC_COLOR_DESC_NOT_PRESENT,
 	MSM_VIDC_COLOR_DESC_PRESENT,
 };
+<<<<<<< HEAD
 
 /*enum msm_vidc_pic_struct */
 #define MSM_VIDC_PIC_STRUCT_MAYBE_INTERLACED 0x0
 #define MSM_VIDC_PIC_STRUCT_PROGRESSIVE 0x1
 #define MSM_VIDC_PIC_STRUCT_UNKNOWN 0XFFFFFFFF
 
+=======
+>>>>>>> p9x
 #endif

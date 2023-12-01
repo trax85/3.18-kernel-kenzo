@@ -32,6 +32,7 @@
 #define MPIDR_AFFINITY_LEVEL(mpidr, level) \
 	((mpidr >> MPIDR_LEVEL_SHIFT(level)) & MPIDR_LEVEL_MASK)
 
+<<<<<<< HEAD
 #define MMFR0_16KGRAN_SIZE	15
 #define MMFR0_16KGRAN_SHFT	20
 #define MMFR0_EL1_16KGRAN_MASK	(MMFR0_16KGRAN_SIZE << MMFR0_16KGRAN_SHFT)
@@ -85,6 +86,27 @@
 	__val;								\
 })
 
+=======
+#define read_cpuid(reg) ({						\
+	u64 __val;							\
+	asm("mrs	%0, " #reg : "=r" (__val));			\
+	__val;								\
+})
+
+#define ARM_CPU_IMP_ARM		0x41
+#define ARM_CPU_IMP_APM		0x50
+
+#define ARM_CPU_PART_AEM_V8	0xD0F0
+#define ARM_CPU_PART_FOUNDATION	0xD000
+#define ARM_CPU_PART_CORTEX_A53	0xD030
+#define ARM_CPU_PART_CORTEX_A57	0xD070
+#define ARM_CPU_PART_CORTEX_A72	0xD080
+
+#define APM_CPU_PART_POTENZA	0x0000
+
+#ifndef __ASSEMBLY__
+
+>>>>>>> p9x
 /*
  * The CPU ID never changes at run time, so we might as well tell the
  * compiler that it's constant.  Use this function to read the CPU ID
@@ -92,12 +114,20 @@
  */
 static inline u32 __attribute_const__ read_cpuid_id(void)
 {
+<<<<<<< HEAD
 	return read_cpuid(SYS_MIDR_EL1);
+=======
+	return read_cpuid(MIDR_EL1);
+>>>>>>> p9x
 }
 
 static inline u64 __attribute_const__ read_cpuid_mpidr(void)
 {
+<<<<<<< HEAD
 	return read_cpuid(SYS_MPIDR_EL1);
+=======
+	return read_cpuid(MPIDR_EL1);
+>>>>>>> p9x
 }
 
 static inline unsigned int __attribute_const__ read_cpuid_implementor(void)
@@ -112,7 +142,11 @@ static inline unsigned int __attribute_const__ read_cpuid_part_number(void)
 
 static inline u32 __attribute_const__ read_cpuid_cachetype(void)
 {
+<<<<<<< HEAD
 	return read_cpuid(SYS_CTR_EL0);
+=======
+	return read_cpuid(CTR_EL0);
+>>>>>>> p9x
 }
 #endif /* __ASSEMBLY__ */
 

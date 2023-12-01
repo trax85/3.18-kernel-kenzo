@@ -154,12 +154,12 @@ void inet_sock_destruct(struct sock *sk)
 	sk_mem_reclaim(sk);
 
 	if (sk->sk_type == SOCK_STREAM && sk->sk_state != TCP_CLOSE) {
-		pr_err("Attempt to release TCP socket in state %d %p\n",
+		WARN(1, "Attempt to release TCP socket in state %d %p\n",
 		       sk->sk_state, sk);
 		return;
 	}
 	if (!sock_flag(sk, SOCK_DEAD)) {
-		pr_err("Attempt to release alive inet socket %p\n", sk);
+		WARN(1, "Attempt to release alive inet socket %p\n", sk);
 		return;
 	}
 
@@ -260,6 +260,32 @@ out:
 }
 EXPORT_SYMBOL(inet_listen);
 
+<<<<<<< HEAD
+=======
+u32 inet_ehash_secret __read_mostly;
+EXPORT_SYMBOL(inet_ehash_secret);
+
+u32 ipv6_hash_secret __read_mostly;
+EXPORT_SYMBOL(ipv6_hash_secret);
+
+/*
+ * inet_ehash_secret must be set exactly once, and to a non nul value
+ * ipv6_hash_secret must be set exactly once.
+ */
+void build_ehash_secret(void)
+{
+	u32 rnd;
+
+	do {
+		get_random_bytes(&rnd, sizeof(rnd));
+	} while (rnd == 0);
+
+	if (cmpxchg(&inet_ehash_secret, 0, rnd) == 0)
+		get_random_bytes(&ipv6_hash_secret, sizeof(ipv6_hash_secret));
+}
+EXPORT_SYMBOL(build_ehash_secret);
+
+>>>>>>> p9x
 /*
  *	Create an inet socket.
  */
@@ -277,6 +303,15 @@ static int inet_create(struct net *net, struct socket *sock, int protocol,
 
 	if (!current_has_network())
 		return -EACCES;
+
+<<<<<<< HEAD
+	if (protocol < 0 || protocol >= IPPROTO_MAX)
+		return -EINVAL;
+=======
+	if (unlikely(!inet_ehash_secret))
+		if (sock->type != SOCK_RAW && sock->type != SOCK_DGRAM)
+			build_ehash_secret();
+>>>>>>> p9x
 
 	if (protocol < 0 || protocol >= IPPROTO_MAX)
 		return -EINVAL;
@@ -894,6 +929,7 @@ int inet_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 	case SIOCSIFPFLAGS:
 	case SIOCGIFPFLAGS:
 	case SIOCSIFFLAGS:
+	case SIOCKILLADDR:
 		err = devinet_ioctl(net, cmd, (void __user *)arg);
 		break;
 	default:
@@ -1038,6 +1074,10 @@ static struct inet_protosw inetsw_array[] =
 		.protocol =   IPPROTO_ICMP,
 		.prot =       &ping_prot,
 		.ops =        &inet_sockraw_ops,
+<<<<<<< HEAD
+=======
+		.no_check =   UDP_CSUM_DEFAULT,
+>>>>>>> p9x
 		.flags =      INET_PROTOSW_REUSE,
        },
 

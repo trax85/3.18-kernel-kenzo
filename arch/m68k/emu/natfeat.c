@@ -19,11 +19,19 @@
 #include <asm/machdep.h>
 #include <asm/natfeat.h>
 
+<<<<<<< HEAD
 extern long nf_get_id_phys(unsigned long feature_name);
 
 asm("\n"
 "	.global nf_get_id_phys,nf_call\n"
 "nf_get_id_phys:\n"
+=======
+extern long nf_get_id2(const char *feature_name);
+
+asm("\n"
+"	.global nf_get_id2,nf_call\n"
+"nf_get_id2:\n"
+>>>>>>> p9x
 "	.short	0x7300\n"
 "	rts\n"
 "nf_call:\n"
@@ -32,7 +40,11 @@ asm("\n"
 "1:	moveq.l	#0,%d0\n"
 "	rts\n"
 "	.section __ex_table,\"a\"\n"
+<<<<<<< HEAD
 "	.long	nf_get_id_phys,1b\n"
+=======
+"	.long	nf_get_id2,1b\n"
+>>>>>>> p9x
 "	.long	nf_call,1b\n"
 "	.previous");
 EXPORT_SYMBOL_GPL(nf_call);
@@ -47,7 +59,11 @@ long nf_get_id(const char *feature_name)
 	if (n >= sizeof(name_copy))
 		return 0;
 
+<<<<<<< HEAD
 	return nf_get_id_phys(virt_to_phys(name_copy));
+=======
+	return nf_get_id2(name_copy);
+>>>>>>> p9x
 }
 EXPORT_SYMBOL_GPL(nf_get_id);
 

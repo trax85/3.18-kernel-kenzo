@@ -15,18 +15,27 @@
 #define _MSM_VIDC_DCVS_H_
 #include "msm_vidc_internal.h"
 
+<<<<<<< HEAD
+=======
+/* Minimum number of display buffers */
+#define DCVS_MIN_DISPLAY_BUFF 4
+>>>>>>> p9x
 /* Low threshold for encoder dcvs */
 #define DCVS_ENC_LOW_THR 4
 /* High threshold for encoder dcvs */
 #define DCVS_ENC_HIGH_THR 9
 /* extra o/p buffers in case of encoder dcvs */
 #define DCVS_ENC_EXTRA_OUTPUT_BUFFERS 2
+<<<<<<< HEAD
 /* extra o/p buffers in case of decoder dcvs */
 #define DCVS_DEC_EXTRA_OUTPUT_BUFFERS 4
+=======
+>>>>>>> p9x
 /* Default threshold to reduce the core frequency */
 #define DCVS_NOMINAL_THRESHOLD 8
 /* Default threshold to increase the core frequency */
 #define DCVS_TURBO_THRESHOLD 4
+<<<<<<< HEAD
 
 /* Considering one safeguard buffer */
 #define DCVS_BUFFER_SAFEGUARD (DCVS_DEC_EXTRA_OUTPUT_BUFFERS - 1)
@@ -36,6 +45,18 @@ void msm_dcvs_init_load(struct msm_vidc_inst *inst);
 void msm_dcvs_monitor_buffer(struct msm_vidc_inst *inst);
 void msm_dcvs_check_and_scale_clocks(struct msm_vidc_inst *inst, bool is_etb);
 int  msm_dcvs_get_extra_buff_count(struct msm_vidc_inst *inst);
+=======
+/* Considering one safeguard buffer */
+#define DCVS_BUFFER_SAFEGUARD 1
+
+void msm_dcvs_init(struct msm_vidc_inst *inst);
+void msm_dcvs_init_load(struct msm_vidc_inst *inst);
+bool msm_dcvs_enc_check(struct msm_vidc_inst *inst);
+void msm_dcvs_monitor_buffer(struct msm_vidc_inst *inst);
+void msm_dcvs_check_and_scale_clocks(struct msm_vidc_inst *inst, bool is_etb);
+int  msm_dcvs_get_extra_buff_count(struct msm_vidc_inst *inst);
+void msm_dcvs_set_buff_req_handled(struct msm_vidc_inst *inst);
+>>>>>>> p9x
 void msm_dcvs_enc_set_power_save_mode(struct msm_vidc_inst *inst,
 		bool is_power_save_mode);
 #endif

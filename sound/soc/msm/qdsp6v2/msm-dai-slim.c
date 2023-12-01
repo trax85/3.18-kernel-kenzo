@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -346,6 +350,7 @@ static int msm_dai_slim_prepare(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (dai_data->status & DAI_STATE_PREPARED) {
 		dev_dbg(dai->dev,
 			"%s: dai id (%d) has already prepared.\n",
@@ -353,6 +358,8 @@ static int msm_dai_slim_prepare(struct snd_pcm_substream *substream,
 		return 0;
 	}
 
+=======
+>>>>>>> p9x
 	dma_data = &dai_data->dma_data;
 	snd_soc_dai_set_dma_data(dai, substream, dma_data);
 

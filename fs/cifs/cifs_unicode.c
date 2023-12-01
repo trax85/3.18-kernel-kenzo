@@ -437,9 +437,14 @@ cifsConvertToUTF16(__le16 *target, const char *source, int srclen,
 	for (i = 0; i < srclen; j++) {
 		src_char = source[i];
 		charlen = 1;
+<<<<<<< HEAD
 
 		/* check if end of string */
 		if (src_char == 0)
+=======
+		switch (src_char) {
+		case 0:
+>>>>>>> p9x
 			goto ctoUTF16_out;
 
 		/* see if we must remap this char */

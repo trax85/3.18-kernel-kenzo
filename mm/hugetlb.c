@@ -23,7 +23,10 @@
 #include <linux/swap.h>
 #include <linux/swapops.h>
 #include <linux/page-isolation.h>
+<<<<<<< HEAD
 #include <linux/jhash.h>
+=======
+>>>>>>> p9x
 
 #include <asm/page.h>
 #include <asm/pgtable.h>
@@ -606,6 +609,177 @@ err:
 	return NULL;
 }
 
+<<<<<<< HEAD
+=======
+static void update_and_free_page(struct hstate *h, struct page *page)
+{
+	int i;
+
+	VM_BUG_ON(h->order >= MAX_ORDER);
+
+	h->nr_huge_pages--;
+	h->nr_huge_pages_node[page_to_nid(page)]--;
+	for (i = 0; i < pages_per_huge_page(h); i++) {
+		page[i].flags &= ~(1 << PG_locked | 1 << PG_error |
+				1 << PG_referenced | 1 << PG_dirty |
+				1 << PG_active | 1 << PG_reserved |
+				1 << PG_private | 1 << PG_writeback);
+	}
+	VM_BUG_ON(hugetlb_cgroup_from_page(page));
+	set_compound_page_dtor(page, NULL);
+	set_page_refcounted(page);
+	arch_release_hugepage(page);
+	__free_pages(page, huge_page_order(h));
+}
+
+struct hstate *size_to_hstate(unsigned long size)
+{
+	struct hstate *h;
+
+	for_each_hstate(h) {
+		if (huge_page_size(h) == size)
+			return h;
+	}
+	return NULL;
+}
+
+static void free_huge_page(struct page *page)
+{
+	/*
+	 * Can't pass hstate in here because it is called from the
+	 * compound page destructor.
+	 */
+	struct hstate *h = page_hstate(page);
+	int nid = page_to_nid(page);
+	struct hugepage_subpool *spool =
+		(struct hugepage_subpool *)page_private(page);
+
+	set_page_private(page, 0);
+	page->mapping = NULL;
+	BUG_ON(page_count(page));
+	BUG_ON(page_mapcount(page));
+
+	spin_lock(&hugetlb_lock);
+	hugetlb_cgroup_uncharge_page(hstate_index(h),
+				     pages_per_huge_page(h), page);
+	if (h->surplus_huge_pages_node[nid] && huge_page_order(h) < MAX_ORDER) {
+		/* remove the page from active list */
+		list_del(&page->lru);
+		update_and_free_page(h, page);
+		h->surplus_huge_pages--;
+		h->surplus_huge_pages_node[nid]--;
+	} else {
+		arch_clear_hugepage_flags(page);
+		enqueue_huge_page(h, page);
+	}
+	spin_unlock(&hugetlb_lock);
+	hugepage_subpool_put_pages(spool, 1);
+}
+
+static void prep_new_huge_page(struct hstate *h, struct page *page, int nid)
+{
+	INIT_LIST_HEAD(&page->lru);
+	set_compound_page_dtor(page, free_huge_page);
+	spin_lock(&hugetlb_lock);
+	set_hugetlb_cgroup(page, NULL);
+	h->nr_huge_pages++;
+	h->nr_huge_pages_node[nid]++;
+	spin_unlock(&hugetlb_lock);
+	put_page(page); /* free it into the hugepage allocator */
+}
+
+static void prep_compound_gigantic_page(struct page *page, unsigned long order)
+{
+	int i;
+	int nr_pages = 1 << order;
+	struct page *p = page + 1;
+
+	/* we rely on prep_new_huge_page to set the destructor */
+	set_compound_order(page, order);
+	__SetPageHead(page);
+	for (i = 1; i < nr_pages; i++, p = mem_map_next(p, page, i)) {
+		__SetPageTail(p);
+		set_page_count(p, 0);
+		p->first_page = page;
+	}
+}
+
+/*
+ * PageHuge() only returns true for hugetlbfs pages, but not for normal or
+ * transparent huge pages.  See the PageTransHuge() documentation for more
+ * details.
+ */
+int PageHuge(struct page *page)
+{
+	compound_page_dtor *dtor;
+
+	if (!PageCompound(page))
+		return 0;
+
+	page = compound_head(page);
+	dtor = get_compound_page_dtor(page);
+
+	return dtor == free_huge_page;
+}
+EXPORT_SYMBOL_GPL(PageHuge);
+
+/*
+ * PageHeadHuge() only returns true for hugetlbfs head page, but not for
+ * normal or transparent huge pages.
+ */
+int PageHeadHuge(struct page *page_head)
+{
+	compound_page_dtor *dtor;
+
+	if (!PageHead(page_head))
+		return 0;
+
+	dtor = get_compound_page_dtor(page_head);
+
+	return dtor == free_huge_page;
+}
+EXPORT_SYMBOL_GPL(PageHeadHuge);
+
+pgoff_t __basepage_index(struct page *page)
+{
+	struct page *page_head = compound_head(page);
+	pgoff_t index = page_index(page_head);
+	unsigned long compound_idx;
+
+	if (!PageHuge(page_head))
+		return page_index(page);
+
+	if (compound_order(page_head) >= MAX_ORDER)
+		compound_idx = page_to_pfn(page) - page_to_pfn(page_head);
+	else
+		compound_idx = page - page_head;
+
+	return (index << compound_order(page_head)) + compound_idx;
+}
+
+static struct page *alloc_fresh_huge_page_node(struct hstate *h, int nid)
+{
+	struct page *page;
+
+	if (h->order >= MAX_ORDER)
+		return NULL;
+
+	page = alloc_pages_exact_node(nid,
+		htlb_alloc_mask|__GFP_COMP|__GFP_THISNODE|
+						__GFP_REPEAT|__GFP_NOWARN,
+		huge_page_order(h));
+	if (page) {
+		if (arch_prepare_hugepage(page)) {
+			__free_pages(page, huge_page_order(h));
+			return NULL;
+		}
+		prep_new_huge_page(h, page, nid);
+	}
+
+	return page;
+}
+
+>>>>>>> p9x
 /*
  * common helper functions for hstate_next_node_to_{alloc|free}.
  * We may have allocated or freed a huge page based on a different
@@ -1310,23 +1484,37 @@ free:
 }
 
 /*
- * When releasing a hugetlb pool reservation, any surplus pages that were
- * allocated to satisfy the reservation must be explicitly freed if they were
- * never used.
- * Called with hugetlb_lock held.
+ * This routine has two main purposes:
+ * 1) Decrement the reservation count (resv_huge_pages) by the value passed
+ *    in unused_resv_pages.  This corresponds to the prior adjustments made
+ *    to the associated reservation map.
+ * 2) Free any unused surplus pages that may have been allocated to satisfy
+ *    the reservation.  As many as unused_resv_pages may be freed.
+ *
+ * Called with hugetlb_lock held.  However, the lock could be dropped (and
+ * reacquired) during calls to cond_resched_lock.  Whenever dropping the lock,
+ * we must make sure nobody else can claim pages we are in the process of
+ * freeing.  Do this by ensuring resv_huge_page always is greater than the
+ * number of huge pages we plan to free when dropping the lock.
  */
 static void return_unused_surplus_pages(struct hstate *h,
 					unsigned long unused_resv_pages)
 {
 	unsigned long nr_pages;
 
-	/* Uncommit the reservation */
-	h->resv_huge_pages -= unused_resv_pages;
-
 	/* Cannot return gigantic pages currently */
+<<<<<<< HEAD
 	if (hstate_is_gigantic(h))
 		return;
+=======
+	if (h->order >= MAX_ORDER)
+		goto out;
+>>>>>>> p9x
 
+	/*
+	 * Part (or even all) of the reservation could have been backed
+	 * by pre-allocated pages. Only free surplus pages.
+	 */
 	nr_pages = min(unused_resv_pages, h->surplus_huge_pages);
 
 	/*
@@ -1336,12 +1524,26 @@ static void return_unused_surplus_pages(struct hstate *h,
 	 * when the nodes with surplus pages have no free pages.
 	 * free_pool_huge_page() will balance the the freed pages across the
 	 * on-line nodes with memory and will handle the hstate accounting.
+	 *
+	 * Note that we decrement resv_huge_pages as we free the pages.  If
+	 * we drop the lock, resv_huge_pages will still be sufficiently large
+	 * to cover subsequent pages we may free.
 	 */
 	while (nr_pages--) {
+		h->resv_huge_pages--;
+		unused_resv_pages--;
 		if (!free_pool_huge_page(h, &node_states[N_MEMORY], 1))
+<<<<<<< HEAD
 			break;
+=======
+			goto out;
+>>>>>>> p9x
 		cond_resched_lock(&hugetlb_lock);
 	}
+
+out:
+	/* Fully uncommit the reservation */
+	h->resv_huge_pages -= unused_resv_pages;
 }
 
 /*
@@ -1525,7 +1727,11 @@ static void __init gather_bootmem_prealloc(void)
 		 * fix confusing memory reports from free(1) and another
 		 * side-effects, like CommitLimit going negative.
 		 */
+<<<<<<< HEAD
 		if (hstate_is_gigantic(h))
+=======
+		if (h->order > (MAX_ORDER - 1))
+>>>>>>> p9x
 			adjust_managed_page_count(page, 1 << h->order);
 	}
 }
@@ -1774,7 +1980,16 @@ static ssize_t __nr_hugepages_store_common(bool obey_mempolicy,
 	int err;
 	NODEMASK_ALLOC(nodemask_t, nodes_allowed, GFP_KERNEL | __GFP_NORETRY);
 
+<<<<<<< HEAD
 	if (hstate_is_gigantic(h) && !gigantic_page_supported()) {
+=======
+	err = kstrtoul(buf, 10, &count);
+	if (err)
+		goto out;
+
+	h = kobj_to_hstate(kobj, &nid);
+	if (h->order >= MAX_ORDER) {
+>>>>>>> p9x
 		err = -EINVAL;
 		goto out;
 	}
@@ -2576,12 +2791,17 @@ static int is_hugetlb_entry_hwpoisoned(pte_t pte)
 int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
 			    struct vm_area_struct *vma)
 {
+<<<<<<< HEAD
 	pte_t *src_pte, *dst_pte, entry, dst_entry;
+=======
+	pte_t *src_pte, *dst_pte, entry;
+>>>>>>> p9x
 	struct page *ptepage;
 	unsigned long addr;
 	int cow;
 	struct hstate *h = hstate_vma(vma);
 	unsigned long sz = huge_page_size(h);
+<<<<<<< HEAD
 	unsigned long mmun_start;	/* For mmu_notifiers */
 	unsigned long mmun_end;		/* For mmu_notifiers */
 	int ret = 0;
@@ -2595,10 +2815,17 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
 
 	for (addr = vma->vm_start; addr < vma->vm_end; addr += sz) {
 		spinlock_t *src_ptl, *dst_ptl;
+=======
+
+	cow = (vma->vm_flags & (VM_SHARED | VM_MAYWRITE)) == VM_MAYWRITE;
+
+	for (addr = vma->vm_start; addr < vma->vm_end; addr += sz) {
+>>>>>>> p9x
 		src_pte = huge_pte_offset(src, addr);
 		if (!src_pte)
 			continue;
 		dst_pte = huge_pte_alloc(dst, addr, sz);
+<<<<<<< HEAD
 		if (!dst_pte) {
 			ret = -ENOMEM;
 			break;
@@ -2628,6 +2855,19 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
 			 * unlikely case dst entry !none as this implies
 			 * sharing with another vma.
 			 */
+=======
+		if (!dst_pte)
+			goto nomem;
+
+		/* If the pagetables are shared don't copy or take references */
+		if (dst_pte == src_pte)
+			continue;
+
+		spin_lock(&dst->page_table_lock);
+		spin_lock_nested(&src->page_table_lock, SINGLE_DEPTH_NESTING);
+		entry = huge_ptep_get(src_pte);
+		if (huge_pte_none(entry)) { /* skip none entry */
+>>>>>>> p9x
 			;
 		} else if (unlikely(is_hugetlb_entry_migration(entry) ||
 				    is_hugetlb_entry_hwpoisoned(entry))) {
@@ -2652,6 +2892,7 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
 			page_dup_rmap(ptepage);
 			set_huge_pte_at(dst, addr, dst_pte, entry);
 		}
+<<<<<<< HEAD
 		spin_unlock(src_ptl);
 		spin_unlock(dst_ptl);
 	}
@@ -2660,6 +2901,15 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
 		mmu_notifier_invalidate_range_end(src, mmun_start, mmun_end);
 
 	return ret;
+=======
+		spin_unlock(&src->page_table_lock);
+		spin_unlock(&dst->page_table_lock);
+	}
+	return 0;
+
+nomem:
+	return -ENOMEM;
+>>>>>>> p9x
 }
 
 void __unmap_hugepage_range(struct mmu_gather *tlb, struct vm_area_struct *vma,

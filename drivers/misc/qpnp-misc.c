@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2014, 2016-2017 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -17,13 +21,17 @@
 #include <linux/spmi.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
+<<<<<<< HEAD
 #include <linux/notifier.h>
+=======
+>>>>>>> p9x
 #include <linux/qpnp-misc.h>
 
 #define QPNP_MISC_DEV_NAME "qcom,qpnp-misc"
 
 #define REG_DIG_MAJOR_REV	0x01
 #define REG_SUBTYPE		0x05
+<<<<<<< HEAD
 #define REG_PWM_SEL		0x49
 #define REG_GP_DRIVER_EN	0x4C
 
@@ -49,6 +57,11 @@ struct qpnp_misc_version {
 	u8	subtype;
 	u8	dig_major_rev;
 };
+=======
+
+static DEFINE_MUTEX(qpnp_misc_dev_list_mutex);
+static LIST_HEAD(qpnp_misc_dev_list);
+>>>>>>> p9x
 
 /**
  * struct qpnp_misc_dev - holds controller device specific information
@@ -60,8 +73,11 @@ struct qpnp_misc_version {
  * @dev:			Device pointer to the misc device
  * @resource:			Resource pointer that holds base address
  * @spmi:			Spmi pointer which holds spmi information
+<<<<<<< HEAD
  * @version:			struct that holds the subtype and dig_major_rev
  *				of the chip.
+=======
+>>>>>>> p9x
  */
 struct qpnp_misc_dev {
 	struct list_head		list;
@@ -69,6 +85,7 @@ struct qpnp_misc_dev {
 	struct device			*dev;
 	struct resource			*resource;
 	struct spmi_device		*spmi;
+<<<<<<< HEAD
 	struct qpnp_misc_version	version;
 	struct class			twm_class;
 
@@ -77,6 +94,13 @@ struct qpnp_misc_dev {
 	bool				enable_gp_driver;
 	bool				support_twm_config;
 	bool				twm_enable;
+=======
+};
+
+struct qpnp_misc_version {
+	u8				subtype;
+	u8				dig_major_rev;
+>>>>>>> p9x
 };
 
 static struct of_device_id qpnp_misc_match_table[] = {
@@ -84,6 +108,7 @@ static struct of_device_id qpnp_misc_match_table[] = {
 	{}
 };
 
+<<<<<<< HEAD
 enum qpnp_misc_version_name {
 	INVALID,
 	PM8941,
@@ -183,6 +208,44 @@ int qpnp_misc_read_reg(struct device_node *node, u16 addr, u8 *val)
 	}
 
 	*val = temp;
+=======
+static u8 qpnp_read_byte(struct spmi_device *spmi, u16 addr)
+{
+	int rc;
+	u8 val;
+
+	rc = spmi_ext_register_readl(spmi->ctrl, spmi->sid, addr, &val, 1);
+	if (rc) {
+		pr_err("SPMI read failed rc=%d\n", rc);
+		return 0;
+	}
+	return val;
+}
+
+static struct qpnp_misc_version irq_support_version[] = {
+	{0x01, 0x02}, /* PM8941 */
+	{0x07, 0x00}, /* PM8226 */
+	{0x09, 0x00}, /* PMA8084 */
+};
+
+static bool __misc_irqs_available(struct qpnp_misc_dev *dev)
+{
+	int i;
+	u8 subtype, dig_major_rev;
+
+	subtype = qpnp_read_byte(dev->spmi, dev->resource->start + REG_SUBTYPE);
+	pr_debug("subtype = 0x%02X\n", subtype);
+
+	dig_major_rev = qpnp_read_byte(dev->spmi,
+		dev->resource->start + REG_DIG_MAJOR_REV);
+	pr_debug("dig_major rev = 0x%02X\n", dig_major_rev);
+
+	for (i = 0; i < ARRAY_SIZE(irq_support_version); i++)
+		if (subtype == irq_support_version[i].subtype
+		    && dig_major_rev >= irq_support_version[i].dig_major_rev)
+			return 1;
+
+>>>>>>> p9x
 	return 0;
 }
 
@@ -224,6 +287,7 @@ int qpnp_misc_irqs_available(struct device *consumer_dev)
 	return __misc_irqs_available(mdev_found);
 }
 
+<<<<<<< HEAD
 #define MISC_SPARE_1		0x50
 #define MISC_SPARE_2		0x51
 #define ENABLE_TWM_MODE		0x80
@@ -383,11 +447,16 @@ static int qpnp_misc_config(struct qpnp_misc_dev *mdev)
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 static int qpnp_misc_probe(struct spmi_device *spmi)
 {
 	struct resource *resource;
 	struct qpnp_misc_dev *mdev = ERR_PTR(-EINVAL);
+<<<<<<< HEAD
 	int rc;
+=======
+>>>>>>> p9x
 
 	resource = spmi_get_resource(spmi, NULL, IORESOURCE_MEM, 0);
 	if (!resource) {
@@ -396,12 +465,20 @@ static int qpnp_misc_probe(struct spmi_device *spmi)
 	}
 
 	mdev = kzalloc(sizeof(*mdev), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!mdev)
 		return -ENOMEM;
+=======
+	if (!mdev) {
+		pr_err("allocation failed\n");
+		return -ENOMEM;
+	}
+>>>>>>> p9x
 
 	mdev->spmi = spmi;
 	mdev->dev = &(spmi->dev);
 	mdev->resource = resource;
+<<<<<<< HEAD
 	dev_set_drvdata(&spmi->dev, mdev);
 
 	rc = qpnp_read_byte(spmi, resource->start + REG_SUBTYPE,
@@ -417,11 +494,14 @@ static int qpnp_misc_probe(struct spmi_device *spmi)
 		dev_err(mdev->dev, "Failed to read dig_major_rev, rc=%d\n", rc);
 		return rc;
 	}
+=======
+>>>>>>> p9x
 
 	mutex_lock(&qpnp_misc_dev_list_mutex);
 	list_add_tail(&mdev->list, &qpnp_misc_dev_list);
 	mutex_unlock(&qpnp_misc_dev_list_mutex);
 
+<<<<<<< HEAD
 	rc = qpnp_misc_dt_init(mdev);
 	if (rc < 0) {
 		dev_err(mdev->dev,
@@ -469,6 +549,14 @@ static void qpnp_misc_shutdown(struct spmi_device *spmi)
 static struct spmi_driver qpnp_misc_driver = {
 	.probe	= qpnp_misc_probe,
 	.shutdown = qpnp_misc_shutdown,
+=======
+	pr_debug("probed successfully\n");
+	return 0;
+}
+
+static struct spmi_driver qpnp_misc_driver = {
+	.probe	= qpnp_misc_probe,
+>>>>>>> p9x
 	.driver	= {
 		.name		= QPNP_MISC_DEV_NAME,
 		.owner		= THIS_MODULE,
@@ -486,7 +574,11 @@ static void __exit qpnp_misc_exit(void)
 	return spmi_driver_unregister(&qpnp_misc_driver);
 }
 
+<<<<<<< HEAD
 subsys_initcall(qpnp_misc_init);
+=======
+module_init(qpnp_misc_init);
+>>>>>>> p9x
 module_exit(qpnp_misc_exit);
 
 MODULE_DESCRIPTION(QPNP_MISC_DEV_NAME);

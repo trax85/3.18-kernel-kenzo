@@ -190,8 +190,12 @@ int bch_journal_read(struct cache_set *c, struct list_head *list)
 			if (read_bucket(l))
 				goto bsearch;
 
+<<<<<<< HEAD
 		/* no journal entries on this device? */
 		if (l == ca->sb.njournal_buckets)
+=======
+		if (list_empty(list))
+>>>>>>> p9x
 			continue;
 bsearch:
 		BUG_ON(list_empty(list));
@@ -625,7 +629,11 @@ static void journal_write_unlocked(struct closure *cl)
 		bio->bi_iter.bi_sector	= PTR_OFFSET(k, i);
 		bio->bi_bdev	= ca->bdev;
 		bio->bi_rw	= REQ_WRITE|REQ_SYNC|REQ_META|REQ_FLUSH|REQ_FUA;
+<<<<<<< HEAD
 		bio->bi_iter.bi_size = sectors << 9;
+=======
+		bio->bi_size	= sectors << 9;
+>>>>>>> p9x
 
 		bio->bi_end_io	= journal_write_endio;
 		bio->bi_private = w;
@@ -725,7 +733,19 @@ static struct journal_write *journal_wait_for_write(struct cache_set *c,
 
 		closure_sync(&cl);
 		spin_lock(&c->journal.lock);
+<<<<<<< HEAD
 		wait = true;
+=======
+
+		w = c->journal.cur;
+		w->need_write = true;
+
+		if (cl)
+			BUG_ON(!closure_wait(&w->wait, cl));
+
+		closure_flush(&c->journal.io);
+		__journal_try_write(c, true);
+>>>>>>> p9x
 	}
 }
 

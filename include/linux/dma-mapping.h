@@ -56,8 +56,14 @@ struct dma_map_ops {
 	int (*mapping_error)(struct device *dev, dma_addr_t dma_addr);
 	int (*dma_supported)(struct device *dev, u64 mask);
 	int (*set_dma_mask)(struct device *dev, u64 mask);
+<<<<<<< HEAD
 	void *(*remap)(struct device *dev, void *cpu_addr, dma_addr_t handle,
 			size_t size, struct dma_attrs *attrs);
+=======
+	void *(*remap)(struct device *dev, void *cpu_addr,
+			dma_addr_t dma_handle, size_t size,
+			struct dma_attrs *attrs);
+>>>>>>> p9x
 	void (*unremap)(struct device *dev, void *remapped_address,
 			size_t size);
 #ifdef ARCH_HAS_DMA_GET_REQUIRED_MASK
@@ -121,7 +127,10 @@ static inline void dma_unremap(struct device *dev, void *remapped_addr,
 }
 #endif
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 static inline u64 dma_get_mask(struct device *dev)
 {
 	if (dev && dev->dma_mask && *dev->dma_mask)

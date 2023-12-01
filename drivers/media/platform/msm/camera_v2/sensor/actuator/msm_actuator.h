@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -25,7 +29,11 @@
 #define DEFINE_MSM_MUTEX(mutexname) \
 	static struct mutex mutexname = __MUTEX_INITIALIZER(mutexname)
 
+<<<<<<< HEAD
 #define	MSM_ACTUATOR_MAX_VREGS (10)
+=======
+#define	MSM_ACTUATOT_MAX_VREGS (10)
+>>>>>>> p9x
 #define	ACTUATOR_MAX_POLL_COUNT 10
 
 struct msm_actuator_ctrl_t;
@@ -45,9 +53,15 @@ struct msm_actuator_func_tbl {
 		struct msm_actuator_set_info_t *);
 	int32_t (*actuator_init_focus)(struct msm_actuator_ctrl_t *,
 		uint16_t, struct reg_settings_t *);
+<<<<<<< HEAD
 	int32_t (*actuator_set_default_focus)(struct msm_actuator_ctrl_t *,
 			struct msm_actuator_move_params_t *);
 	int32_t (*actuator_move_focus)(struct msm_actuator_ctrl_t *,
+=======
+	int32_t (*actuator_set_default_focus) (struct msm_actuator_ctrl_t *,
+			struct msm_actuator_move_params_t *);
+	int32_t (*actuator_move_focus) (struct msm_actuator_ctrl_t *,
+>>>>>>> p9x
 			struct msm_actuator_move_params_t *);
 	void (*actuator_parse_i2c_params)(struct msm_actuator_ctrl_t *,
 			int16_t, uint32_t, uint16_t);
@@ -68,7 +82,11 @@ struct msm_actuator {
 
 struct msm_actuator_vreg {
 	struct camera_vreg_t *cam_vreg;
+<<<<<<< HEAD
 	void *data[MSM_ACTUATOR_MAX_VREGS];
+=======
+	void *data[MSM_ACTUATOT_MAX_VREGS];
+>>>>>>> p9x
 	int num_vreg;
 };
 
@@ -78,11 +96,20 @@ struct msm_actuator_ctrl_t {
 	struct platform_device *pdev;
 	struct msm_camera_i2c_client i2c_client;
 	enum msm_camera_device_type_t act_device_type;
+<<<<<<< HEAD
+=======
+	uint16_t deinit_setting_size;
+	struct reg_settings_t *deinit_settings;
+>>>>>>> p9x
 	struct msm_sd_subdev msm_sd;
 	enum af_camera_name cam_name;
 	struct mutex *actuator_mutex;
 	struct msm_actuator_func_tbl *func_tbl;
+<<<<<<< HEAD
 	enum msm_camera_i2c_data_type i2c_data_type;
+=======
+	enum msm_actuator_data_type i2c_data_type;
+>>>>>>> p9x
 	struct v4l2_subdev sdev;
 	struct v4l2_subdev_ops *act_v4l2_subdev_ops;
 
@@ -105,9 +132,12 @@ struct msm_actuator_ctrl_t {
 	struct msm_actuator_vreg vreg_cfg;
 	struct park_lens_data_t park_lens;
 	uint32_t max_code_size;
+<<<<<<< HEAD
 	struct msm_camera_gpio_conf *gconf;
 	struct msm_pinctrl_info pinctrl_info;
 	uint8_t cam_pinctrl_status;
+=======
+>>>>>>> p9x
 };
 
 #endif

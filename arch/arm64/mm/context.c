@@ -176,12 +176,99 @@ void check_and_switch_context(struct mm_struct *mm, unsigned int cpu)
 	    && atomic64_xchg_relaxed(&per_cpu(active_asids, cpu), asid))
 		goto switch_mm_fastpath;
 
+<<<<<<< HEAD
 	raw_spin_lock_irqsave(&cpu_asid_lock, flags);
 	/* Check that our ASID belongs to the current generation. */
 	asid = atomic64_read(&mm->context.id);
 	if ((asid ^ atomic64_read(&asid_generation)) >> asid_bits) {
 		asid = new_context(mm, cpu);
 		atomic64_set(&mm->context.id, asid);
+=======
+	/*
+	 * Set the mm_cpumask(mm) bit for the current CPU.
+	 */
+	cpumask_set_cpu(smp_processor_id(), mm_cpumask(mm));
+}
+
+/*
+ * Reset the ASID on the current CPU. This function call is broadcast from the
+ * CPU handling the ASID rollover and holding cpu_asid_lock.
+ */
+static void reset_context(void *info)
+{
+	unsigned int asid;
+	unsigned int cpu = smp_processor_id();
+	struct mm_struct *mm = current->active_mm;
+
+	/*
+	 * current->active_mm could be init_mm for the idle thread immediately
+	 * after secondary CPU boot or hotplug. TTBR0_EL1 is already set to
+	 * the reserved value, so no need to reset any context.
+	 */
+	if (mm == &init_mm)
+		return;
+
+	smp_rmb();
+	asid = cpu_last_asid + cpu;
+
+	flush_context();
+	set_mm_context(mm, asid);
+
+	/* set the new ASID */
+	cpu_switch_mm(mm->pgd, mm);
+}
+
+#else
+
+static inline void set_mm_context(struct mm_struct *mm, unsigned int asid)
+{
+	mm->context.id = asid;
+	cpumask_copy(mm_cpumask(mm), cpumask_of(smp_processor_id()));
+}
+
+#endif
+
+void __new_context(struct mm_struct *mm)
+{
+	unsigned int asid;
+	unsigned int bits = asid_bits();
+
+	raw_spin_lock(&cpu_asid_lock);
+#ifdef CONFIG_SMP
+	/*
+	 * Check the ASID again, in case the change was broadcast from another
+	 * CPU before we acquired the lock.
+	 */
+	if (!unlikely((mm->context.id ^ cpu_last_asid) >> MAX_ASID_BITS)) {
+		cpumask_set_cpu(smp_processor_id(), mm_cpumask(mm));
+		raw_spin_unlock(&cpu_asid_lock);
+		return;
+	}
+#endif
+	/*
+	 * At this point, it is guaranteed that the current mm (with an old
+	 * ASID) isn't active on any other CPU since the ASIDs are changed
+	 * simultaneously via IPI.
+	 */
+	asid = ++cpu_last_asid;
+
+	/*
+	 * If we've used up all our ASIDs, we need to start a new version and
+	 * flush the TLB.
+	 */
+	if (unlikely((asid & ((1 << bits) - 1)) == 0)) {
+		/* increment the ASID version */
+		cpu_last_asid += (1 << MAX_ASID_BITS) - (1 << bits);
+		if (cpu_last_asid == 0)
+			cpu_last_asid = ASID_FIRST_VERSION;
+		asid = cpu_last_asid + smp_processor_id();
+		flush_context();
+#ifdef CONFIG_SMP
+		smp_wmb();
+		smp_call_function(reset_context, NULL, 1);
+#endif
+		cpu_last_asid += NR_CPUS - 1;
+>>>>>>> p9x
 	}
 
 	if (cpumask_test_and_clear_cpu(cpu, &tlb_flush_pending))

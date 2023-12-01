@@ -2,6 +2,7 @@
  * Persistent Storage - ramfs parts.
  *
  * Copyright (C) 2010 Intel Corporation <tony.luck@intel.com>
+ * Copyright (C) 2016 XiaoMi, Inc.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
@@ -37,8 +38,13 @@
 #include <linux/spinlock.h>
 #include <linux/uaccess.h>
 #ifdef CONFIG_PSTORE_LAST_KMSG
+<<<<<<< HEAD
 	#include <linux/proc_fs.h>
 	#endif
+=======
+#include <linux/proc_fs.h>
+#endif
+>>>>>>> p9x
 
 #include "internal.h"
 
@@ -274,6 +280,7 @@ int pstore_is_mounted(void)
 }
 
 #ifdef CONFIG_PSTORE_LAST_KMSG
+<<<<<<< HEAD
 	static char *console_buffer;
 	static ssize_t console_bufsize;
 	
@@ -291,6 +298,24 @@ int pstore_is_mounted(void)
 	};
 #endif
 	
+=======
+static char *console_buffer;
+static ssize_t console_bufsize;
+
+static ssize_t last_kmsg_read(struct file *file, char __user *buf,
+			      size_t len, loff_t *offset)
+{
+	return simple_read_from_buffer(buf, len, offset,
+				       console_buffer, console_bufsize);
+}
+
+static const struct file_operations last_kmsg_fops = {
+	.owner		= THIS_MODULE,
+	.read		= last_kmsg_read,
+	.llseek		= default_llseek,
+};
+#endif
+>>>>>>> p9x
 
 /*
  * Make a regular file in the root directory of our file system.
@@ -338,6 +363,7 @@ int pstore_mkfile(enum pstore_type_id type, char *psname, u64 id, int count,
 
 	switch (type) {
 	case PSTORE_TYPE_DMESG:
+<<<<<<< HEAD
 		scnprintf(name, sizeof(name), "dmesg-%s-%lld%s",
 			  psname, id, compressed ? ".enc.z" : "");
 		break;
@@ -346,10 +372,21 @@ int pstore_mkfile(enum pstore_type_id type, char *psname, u64 id, int count,
 		break;
 	case PSTORE_TYPE_FTRACE:
 		scnprintf(name, sizeof(name), "ftrace-%s", psname);
+=======
+		scnprintf(name, sizeof(name), "dmesg-%s-%lld",
+			  psname, id);
+		break;
+	case PSTORE_TYPE_CONSOLE:
+		scnprintf(name, sizeof(name), "console-%s-%lld", psname, id);
+		break;
+	case PSTORE_TYPE_FTRACE:
+		scnprintf(name, sizeof(name), "ftrace-%s-%lld", psname, id);
+>>>>>>> p9x
 		break;
 	case PSTORE_TYPE_MCE:
 		scnprintf(name, sizeof(name), "mce-%s-%lld", psname, id);
 		break;
+<<<<<<< HEAD
 	case PSTORE_TYPE_PPC_RTAS:
 		scnprintf(name, sizeof(name), "rtas-%s-%lld", psname, id);
 		break;
@@ -361,6 +398,8 @@ int pstore_mkfile(enum pstore_type_id type, char *psname, u64 id, int count,
 		scnprintf(name, sizeof(name), "powerpc-common-%s-%lld",
 			  psname, id);
 		break;
+=======
+>>>>>>> p9x
 	case PSTORE_TYPE_PMSG:
 		scnprintf(name, sizeof(name), "pmsg-%s-%lld", psname, id);
 		break;
@@ -394,10 +433,17 @@ int pstore_mkfile(enum pstore_type_id type, char *psname, u64 id, int count,
 	spin_unlock_irqrestore(&allpstore_lock, flags);
 
 #ifdef CONFIG_PSTORE_LAST_KMSG
+<<<<<<< HEAD
 		if (type == PSTORE_TYPE_CONSOLE) {
 			console_buffer = private->data;
 			console_bufsize = size;
 		}
+=======
+	if (type == PSTORE_TYPE_CONSOLE) {
+		console_buffer = private->data;
+		console_bufsize = size;
+	}
+>>>>>>> p9x
 #endif
 
 	mutex_unlock(&root->d_inode->i_mutex);
@@ -470,6 +516,9 @@ static struct kobject *pstore_kobj;
 static int __init init_pstore_fs(void)
 {
 	int err = 0;
+#ifdef CONFIG_PSTORE_LAST_KMSG
+	struct proc_dir_entry *last_kmsg_entry = NULL;
+#endif
 
 #ifdef CONFIG_PSTORE_LAST_KMSG
 		struct proc_dir_entry *last_kmsg_entry = NULL;
@@ -485,6 +534,7 @@ static int __init init_pstore_fs(void)
 	err = register_filesystem(&pstore_fs_type);
 	if (err < 0)
 		kobject_put(pstore_kobj);
+<<<<<<< HEAD
 #ifdef CONFIG_PSTORE_LAST_KMSG
 		last_kmsg_entry = proc_create_data("last_kmsg", S_IFREG | S_IRUGO,
 						   NULL, &last_kmsg_fops, NULL);
@@ -492,6 +542,17 @@ static int __init init_pstore_fs(void)
 			pr_err("Failed to create last_kmsg\n");
 			goto out;
 #endif
+=======
+
+#ifdef CONFIG_PSTORE_LAST_KMSG
+	last_kmsg_entry = proc_create_data("last_kmsg", S_IFREG | S_IRUGO,
+					   NULL, &last_kmsg_fops, NULL);
+	if (!last_kmsg_entry)
+		pr_err("Failed to create last_kmsg\n");
+		goto out;
+#endif
+
+>>>>>>> p9x
 out:
 	return err;
 }

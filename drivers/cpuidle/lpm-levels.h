@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -14,6 +18,11 @@
 #include <soc/qcom/spm.h>
 
 #define NR_LPM_LEVELS 8
+<<<<<<< HEAD
+=======
+#define MAXSAMPLES 5
+#define CLUST_SMPL_INVLD_TIME 40000
+>>>>>>> p9x
 
 extern bool use_psci;
 
@@ -28,6 +37,10 @@ struct power_params {
 	uint32_t energy_overhead;	/* Enter + exit over head */
 	uint32_t time_overhead_us;	/* Enter + exit overhead */
 	uint32_t residencies[NR_LPM_LEVELS];
+<<<<<<< HEAD
+=======
+	uint32_t min_residency;
+>>>>>>> p9x
 	uint32_t max_residency;
 };
 
@@ -38,9 +51,12 @@ struct lpm_cpu_level {
 	struct power_params pwr;
 	unsigned int psci_id;
 	bool is_reset;
+<<<<<<< HEAD
 	bool jtag_save_restore;
 	bool hyp_psci;
 	int reset_level;
+=======
+>>>>>>> p9x
 };
 
 struct lpm_cpu {
@@ -75,17 +91,40 @@ struct lpm_cluster_level {
 	struct lpm_level_avail available;
 	unsigned int psci_id;
 	bool is_reset;
+<<<<<<< HEAD
 	int reset_level;
 	bool no_cache_flush;
+=======
+>>>>>>> p9x
 };
 
 struct low_power_ops {
 	struct msm_spm_device *spm;
+<<<<<<< HEAD
 	int (*set_mode)(struct low_power_ops *ops, int mode,
 				struct lpm_cluster_level *level);
 	enum msm_pm_l2_scm_flag tz_flag;
 };
 
+=======
+	int (*set_mode)(struct low_power_ops *ops, int mode, bool notify_rpm);
+	enum msm_pm_l2_scm_flag tz_flag;
+};
+
+struct cluster_history {
+	uint32_t resi[MAXSAMPLES];
+	int mode[MAXSAMPLES];
+	int64_t stime[MAXSAMPLES];
+	uint32_t hptr;
+	bool hinvalid;
+	bool htmr_wkup;
+	uint64_t entry_time;
+	int entry_idx;
+	int nsamp;
+	int flag;
+};
+
+>>>>>>> p9x
 struct lpm_cluster {
 	struct list_head list;
 	struct list_head child;
@@ -110,6 +149,7 @@ struct lpm_cluster {
 	unsigned int psci_mode_shift;
 	unsigned int psci_mode_mask;
 	bool no_saw_devices;
+<<<<<<< HEAD
 };
 
 int set_l2_mode(struct low_power_ops *ops, int mode,
@@ -119,6 +159,16 @@ int set_system_mode(struct low_power_ops *ops, int mode,
 int set_l3_mode(struct low_power_ops *ops, int mode,
 				struct lpm_cluster_level *level);
 void lpm_suspend_wake_time(uint64_t wakeup_time);
+=======
+	struct cluster_history history;
+	struct hrtimer histtimer;
+};
+
+int set_l2_mode(struct low_power_ops *ops, int mode, bool notify_rpm);
+void lpm_suspend_wake_time(uint64_t wakeup_time);
+int set_system_mode(struct low_power_ops *ops, int mode, bool notify_rpm);
+int set_l3_mode(struct low_power_ops *ops, int mode, bool notify_rpm);
+>>>>>>> p9x
 
 struct lpm_cluster *lpm_of_parse_cluster(struct platform_device *pdev);
 void free_cluster_node(struct lpm_cluster *cluster);
@@ -130,6 +180,10 @@ bool lpm_cpu_mode_allow(unsigned int cpu,
 bool lpm_cluster_mode_allow(struct lpm_cluster *cluster,
 		unsigned int mode, bool from_idle);
 uint32_t *get_per_cpu_max_residency(int cpu);
+<<<<<<< HEAD
+=======
+uint32_t *get_per_cpu_min_residency(int cpu);
+>>>>>>> p9x
 extern struct lpm_cluster *lpm_root_node;
 
 #ifdef CONFIG_SMP

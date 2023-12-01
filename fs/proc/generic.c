@@ -162,6 +162,25 @@ void proc_free_inum(unsigned int inum)
 	spin_unlock_irqrestore(&proc_inum_lock, flags);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * As some entries in /proc are volatile, we want to 
+ * get rid of unused dentries.  This could be made 
+ * smarter: we could keep a "volatile" flag in the 
+ * inode to indicate which ones to keep.
+ */
+static int proc_delete_dentry(const struct dentry * dentry)
+{
+	return 1;
+}
+
+static const struct dentry_operations proc_dentry_operations =
+{
+	.d_delete	= proc_delete_dentry,
+};
+
+>>>>>>> p9x
 /*
  * Don't create negative dentries here, return -ENOENT by hand
  * instead.
@@ -340,8 +359,13 @@ static struct proc_dir_entry *__proc_create(struct proc_dir_entry **parent,
 		goto out;
 
 	kmemleak_not_leak(ent);
+<<<<<<< HEAD
 	memcpy(ent->name, fn, qstr.len + 1);
 	ent->namelen = qstr.len;
+=======
+	memcpy(ent->name, fn, len + 1);
+	ent->namelen = len;
+>>>>>>> p9x
 	ent->mode = mode;
 	ent->nlink = nlink;
 	atomic_set(&ent->count, 1);

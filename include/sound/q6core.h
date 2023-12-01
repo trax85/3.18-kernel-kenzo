@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2014, 2016 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -13,17 +17,99 @@
 #ifndef __Q6CORE_H__
 #define __Q6CORE_H__
 #include <linux/qdsp6v2/apr.h>
+<<<<<<< HEAD
 #include <sound/apr_audio-v2.h>
 
 
+=======
+#include <soc/qcom/ocmem.h>
+
+
+#define AVCS_CMD_GET_LOW_POWER_SEGMENTS_INFO              0x00012903
+
+struct avcs_cmd_get_low_power_segments_info {
+	struct apr_hdr hdr;
+} __packed;
+
+
+#define AVCS_CMDRSP_GET_LOW_POWER_SEGMENTS_INFO           0x00012904
+>>>>>>> p9x
 
 #define AVCS_CMD_ADSP_EVENT_GET_STATE		0x0001290C
 #define AVCS_CMDRSP_ADSP_EVENT_GET_STATE	0x0001290D
 
+<<<<<<< HEAD
 bool q6core_is_adsp_ready(void);
 
 int q6core_get_avcs_fwk_ver_info(uint32_t service_id,
 				 struct avcs_fwk_ver_info *ver_info);
+=======
+/* @brief AVCS_CMDRSP_GET_LOW_POWER_SEGMENTS_INFO payload
+ * structure. Payload for this event comprises one instance of
+ * avcs_cmd_rsp_get_low_power_segments_info_t, followed
+ * immediately by num_segments number of instances of the
+ * avcs_mem_segment_t structure.
+ */
+
+/* Types of Low Power Memory Segments. */
+#define READ_ONLY_SEGMENT      1
+/*< Read Only memory segment. */
+#define READ_WRITE_SEGMENT     2
+/*< Read Write memory segment. */
+/*Category indicates whether audio/os/sensor segments. */
+#define AUDIO_SEGMENT          1
+/*< Audio memory segment. */
+#define OS_SEGMENT             2
+/*< QDSP6's OS memory segment. */
+
+/* @brief Payload structure for AVS low power memory segment
+ *  structure.
+ */
+struct avcs_mem_segment_t {
+	uint16_t              type;
+/*< Indicates which type of memory this segment is.
+ *Allowed values: READ_ONLY_SEGMENT or READ_WRITE_SEGMENT only.
+ */
+	uint16_t              category;
+/*< Indicates whether audio or OS segments.
+ *Allowed values: AUDIO_SEGMENT or OS_SEGMENT only.
+ */
+	uint32_t              size;
+/*< Size (in bytes) of this segment.
+ * Will be a non-zero value.
+ */
+	uint32_t              start_address_lsw;
+/*< Lower 32 bits of the 64-bit physical start address
+ * of this segment.
+ */
+	uint32_t              start_address_msw;
+/*< Upper 32 bits of the 64-bit physical start address
+ * of this segment.
+ */
+};
+
+struct avcs_cmd_rsp_get_low_power_segments_info_t {
+	uint32_t              num_segments;
+/*< Number of segments in this response.
+ * 0: there are no known sections that should be mapped
+ * from DDR to OCMEM.
+ * >0: the number of memory segments in the following list.
+ */
+
+	uint32_t              bandwidth;
+/*< Required OCMEM read/write bandwidth (in bytes per second)
+ * if OCMEM is granted.
+ * 0 if num_segments = 0
+ * >0 if num_segments > 0.
+ */
+	struct avcs_mem_segment_t mem_segment[OCMEM_MAX_CHUNKS];
+};
+
+
+int core_get_low_power_segments(
+			struct avcs_cmd_rsp_get_low_power_segments_info_t **);
+bool q6core_is_adsp_ready(void);
+>>>>>>> p9x
 
 #define ADSP_CMD_SET_DTS_EAGLE_DATA_ID 0x00012919
 #define DTS_EAGLE_LICENSE_ID           0x00028346
@@ -83,6 +169,7 @@ struct avcs_cmdrsp_get_license_validation_result {
 	/* Length in bytes of the result that follows this structure*/
 };
 
+<<<<<<< HEAD
 /* Set Q6 topologies */
 /*
  *	Registers custom topologies in the aDSP for
@@ -154,6 +241,8 @@ struct avcs_cmd_deregister_topologies {
 #define AVCS_MODE_DEREGISTER_ALL_CUSTOM_TOPOLOGIES	2
 
 
+=======
+>>>>>>> p9x
 int32_t core_set_license(uint32_t key, uint32_t module_id);
 int32_t core_get_license_status(uint32_t module_id);
 
@@ -166,12 +255,19 @@ struct avcs_cmd_get_version_result {
 
 #define AVCS_CMDRSP_Q6_ID_2_6	0x00040000
 #define AVCS_CMDRSP_Q6_ID_2_7	0x00040001
+<<<<<<< HEAD
 #define AVCS_CMDRSP_Q6_ID_2_8   0x00040002
 
 enum q6_subsys_image {
 	Q6_SUBSYS_AVS2_6 = 1,
 	Q6_SUBSYS_AVS2_7,
 	Q6_SUBSYS_AVS2_8,
+=======
+
+enum q6_subsys_image {
+	Q6_SUBSYS_AVS2_6,
+	Q6_SUBSYS_AVS2_7,
+>>>>>>> p9x
 	Q6_SUBSYS_INVALID,
 };
 enum q6_subsys_image q6core_get_avs_version(void);

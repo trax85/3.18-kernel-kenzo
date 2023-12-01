@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014-2018, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014,2017 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -30,12 +34,15 @@
 		_IOWR('R', 4, struct compat_fastrpc_ioctl_invoke_fd)
 #define COMPAT_FASTRPC_IOCTL_INIT \
 		_IOWR('R', 6, struct compat_fastrpc_ioctl_init)
+<<<<<<< HEAD
 #define COMPAT_FASTRPC_IOCTL_MMAP_64 \
 		_IOWR('R', 14, struct compat_fastrpc_ioctl_mmap_64)
 #define COMPAT_FASTRPC_IOCTL_MUNMAP_64 \
 		_IOWR('R', 15, struct compat_fastrpc_ioctl_munmap_64)
 #define COMPAT_FASTRPC_IOCTL_CONTROL \
 		_IOWR('R', 12, struct compat_fastrpc_ioctl_control)
+=======
+>>>>>>> p9x
 
 struct compat_remote_buf {
 	compat_uptr_t pv;	/* buffer pointer */
@@ -66,6 +73,7 @@ struct compat_fastrpc_ioctl_mmap {
 	compat_uptr_t vaddrout;	/* dsps virtual address */
 };
 
+<<<<<<< HEAD
 struct compat_fastrpc_ioctl_mmap_64 {
 	compat_int_t fd;	/* ion fd */
 	compat_uint_t flags;	/* flags for dsp to map with */
@@ -74,16 +82,21 @@ struct compat_fastrpc_ioctl_mmap_64 {
 	compat_u64 vaddrout;	/* dsps virtual address */
 };
 
+=======
+>>>>>>> p9x
 struct compat_fastrpc_ioctl_munmap {
 	compat_uptr_t vaddrout;	/* address to unmap */
 	compat_size_t size;	/* size */
 };
 
+<<<<<<< HEAD
 struct compat_fastrpc_ioctl_munmap_64 {
 	compat_u64 vaddrout;	/* address to unmap */
 	compat_size_t size;	/* size */
 };
 
+=======
+>>>>>>> p9x
 struct compat_fastrpc_ioctl_init {
 	compat_uint_t flags;	/* one of FASTRPC_INIT_* macros */
 	compat_uptr_t file;	/* pointer to elf file */
@@ -94,6 +107,7 @@ struct compat_fastrpc_ioctl_init {
 	compat_int_t memfd;	/* ION fd for the mem */
 };
 
+<<<<<<< HEAD
 #define FASTRPC_CONTROL_LATENCY		(1)
 struct compat_fastrpc_ctrl_latency {
 	compat_uint_t enable;		/* !latency control enable */
@@ -119,6 +133,8 @@ struct compat_fastrpc_ioctl_control {
 	};
 };
 
+=======
+>>>>>>> p9x
 static int compat_get_fastrpc_ioctl_invoke(
 			struct compat_fastrpc_ioctl_invoke_fd __user *inv32,
 			struct fastrpc_ioctl_invoke_fd __user **inva,
@@ -224,6 +240,7 @@ static int compat_get_fastrpc_ioctl_mmap(
 	return err;
 }
 
+<<<<<<< HEAD
 static int compat_get_fastrpc_ioctl_mmap_64(
 			struct compat_fastrpc_ioctl_mmap_64 __user *map32,
 			struct fastrpc_ioctl_mmap __user *map)
@@ -246,6 +263,8 @@ static int compat_get_fastrpc_ioctl_mmap_64(
 	return err;
 }
 
+=======
+>>>>>>> p9x
 static int compat_put_fastrpc_ioctl_mmap(
 			struct compat_fastrpc_ioctl_mmap __user *map32,
 			struct fastrpc_ioctl_mmap __user *map)
@@ -259,6 +278,7 @@ static int compat_put_fastrpc_ioctl_mmap(
 	return err;
 }
 
+<<<<<<< HEAD
 static int compat_put_fastrpc_ioctl_mmap_64(
 			struct compat_fastrpc_ioctl_mmap_64 __user *map32,
 			struct fastrpc_ioctl_mmap __user *map)
@@ -272,6 +292,8 @@ static int compat_put_fastrpc_ioctl_mmap_64(
 	return err;
 }
 
+=======
+>>>>>>> p9x
 static int compat_get_fastrpc_ioctl_munmap(
 			struct compat_fastrpc_ioctl_munmap __user *unmap32,
 			struct fastrpc_ioctl_munmap __user *unmap)
@@ -288,6 +310,7 @@ static int compat_get_fastrpc_ioctl_munmap(
 	return err;
 }
 
+<<<<<<< HEAD
 static int compat_get_fastrpc_ioctl_munmap_64(
 			struct compat_fastrpc_ioctl_munmap_64 __user *unmap32,
 			struct fastrpc_ioctl_munmap __user *unmap)
@@ -317,6 +340,8 @@ static int compat_get_fastrpc_ioctl_control(
 	return err;
 }
 
+=======
+>>>>>>> p9x
 static int compat_get_fastrpc_ioctl_init(
 			struct compat_fastrpc_ioctl_init __user *init32,
 			struct fastrpc_ioctl_init __user *init)
@@ -393,6 +418,7 @@ long compat_fastrpc_device_ioctl(struct file *filp, unsigned int cmd,
 		VERIFY(err, 0 == compat_put_fastrpc_ioctl_mmap(map32, map));
 		return err;
 	}
+<<<<<<< HEAD
 	case COMPAT_FASTRPC_IOCTL_MMAP_64:
 	{
 		struct compat_fastrpc_ioctl_mmap_64  __user *map32;
@@ -414,6 +440,8 @@ long compat_fastrpc_device_ioctl(struct file *filp, unsigned int cmd,
 		VERIFY(err, 0 == compat_put_fastrpc_ioctl_mmap_64(map32, map));
 		return err;
 	}
+=======
+>>>>>>> p9x
 	case COMPAT_FASTRPC_IOCTL_MUNMAP:
 	{
 		struct compat_fastrpc_ioctl_munmap __user *unmap32;
@@ -431,6 +459,7 @@ long compat_fastrpc_device_ioctl(struct file *filp, unsigned int cmd,
 		return filp->f_op->unlocked_ioctl(filp, FASTRPC_IOCTL_MUNMAP,
 							(unsigned long)unmap);
 	}
+<<<<<<< HEAD
 	case COMPAT_FASTRPC_IOCTL_MUNMAP_64:
 	{
 		struct compat_fastrpc_ioctl_munmap_64 __user *unmap32;
@@ -448,6 +477,8 @@ long compat_fastrpc_device_ioctl(struct file *filp, unsigned int cmd,
 		return filp->f_op->unlocked_ioctl(filp, FASTRPC_IOCTL_MUNMAP_64,
 							(unsigned long)unmap);
 	}
+=======
+>>>>>>> p9x
 	case COMPAT_FASTRPC_IOCTL_INIT:
 	{
 		struct compat_fastrpc_ioctl_init __user *init32;
@@ -465,6 +496,7 @@ long compat_fastrpc_device_ioctl(struct file *filp, unsigned int cmd,
 		return filp->f_op->unlocked_ioctl(filp, FASTRPC_IOCTL_INIT,
 							(unsigned long)init);
 	}
+<<<<<<< HEAD
 	case FASTRPC_IOCTL_GETINFO:
 	{
 		compat_uptr_t __user *info32;
@@ -516,6 +548,11 @@ long compat_fastrpc_device_ioctl(struct file *filp, unsigned int cmd,
 		}
 		return err;
 	}
+=======
+	case FASTRPC_IOCTL_SETMODE:
+		return filp->f_op->unlocked_ioctl(filp, cmd,
+						(unsigned long)compat_ptr(arg));
+>>>>>>> p9x
 	default:
 		return -ENOIOCTLCMD;
 	}

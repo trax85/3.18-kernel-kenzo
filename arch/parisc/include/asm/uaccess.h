@@ -9,7 +9,10 @@
 #include <asm/errno.h>
 #include <asm-generic/uaccess-unaligned.h>
 
+<<<<<<< HEAD
 #include <linux/bug.h>
+=======
+>>>>>>> p9x
 #include <linux/string.h>
 
 #define VERIFY_READ 0

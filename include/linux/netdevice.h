@@ -2196,14 +2196,19 @@ static inline int skb_gro_header_hard(struct sk_buff *skb, unsigned int hlen)
 	return NAPI_GRO_CB(skb)->frag0_len < hlen;
 }
 
+static inline void skb_gro_frag0_invalidate(struct sk_buff *skb)
+{
+	NAPI_GRO_CB(skb)->frag0 = NULL;
+	NAPI_GRO_CB(skb)->frag0_len = 0;
+}
+
 static inline void *skb_gro_header_slow(struct sk_buff *skb, unsigned int hlen,
 					unsigned int offset)
 {
 	if (!pskb_may_pull(skb, hlen))
 		return NULL;
 
-	NAPI_GRO_CB(skb)->frag0 = NULL;
-	NAPI_GRO_CB(skb)->frag0_len = 0;
+	skb_gro_frag0_invalidate(skb);
 	return skb->data + offset;
 }
 
@@ -2864,6 +2869,7 @@ static inline void dev_consume_skb_irq(struct sk_buff *skb)
 	__dev_kfree_skb_irq(skb, SKB_REASON_CONSUMED);
 }
 
+<<<<<<< HEAD
 static inline void dev_kfree_skb_any(struct sk_buff *skb)
 {
 	__dev_kfree_skb_any(skb, SKB_REASON_DROPPED);
@@ -2883,6 +2889,16 @@ struct sk_buff *napi_get_frags(struct napi_struct *napi);
 gro_result_t napi_gro_frags(struct napi_struct *napi);
 struct packet_offload *gro_find_receive_by_type(__be16 type);
 struct packet_offload *gro_find_complete_by_type(__be16 type);
+=======
+extern int		netif_rx(struct sk_buff *skb);
+extern int		netif_rx_ni(struct sk_buff *skb);
+extern int		netif_receive_skb(struct sk_buff *skb);
+extern gro_result_t	napi_gro_receive(struct napi_struct *napi,
+					 struct sk_buff *skb);
+extern void		napi_gro_flush(struct napi_struct *napi, bool flush_old);
+extern struct sk_buff *	napi_get_frags(struct napi_struct *napi);
+extern gro_result_t	napi_gro_frags(struct napi_struct *napi);
+>>>>>>> p9x
 extern struct napi_struct *get_current_napi_context(void);
 
 static inline void napi_free_frags(struct napi_struct *napi)
@@ -2891,10 +2907,18 @@ static inline void napi_free_frags(struct napi_struct *napi)
 	napi->skb = NULL;
 }
 
+<<<<<<< HEAD
 int netdev_rx_handler_register(struct net_device *dev,
 			       rx_handler_func_t *rx_handler,
 			       void *rx_handler_data);
 void netdev_rx_handler_unregister(struct net_device *dev);
+=======
+bool netdev_is_rx_handler_busy(struct net_device *dev);
+extern int netdev_rx_handler_register(struct net_device *dev,
+				      rx_handler_func_t *rx_handler,
+				      void *rx_handler_data);
+extern void netdev_rx_handler_unregister(struct net_device *dev);
+>>>>>>> p9x
 
 bool dev_valid_name(const char *name);
 int dev_ioctl(struct net *net, unsigned int cmd, void __user *);
@@ -3605,7 +3629,12 @@ void netdev_change_features(struct net_device *dev);
 void netif_stacked_transfer_operstate(const struct net_device *rootdev,
 					struct net_device *dev);
 
-netdev_features_t netif_skb_features(struct sk_buff *skb);
+netdev_features_t netif_skb_dev_features(struct sk_buff *skb,
+					 const struct net_device *dev);
+static inline netdev_features_t netif_skb_features(struct sk_buff *skb)
+{
+	return netif_skb_dev_features(skb, skb->dev);
+}
 
 static inline bool net_gso_ok(netdev_features_t features, int gso_type)
 {

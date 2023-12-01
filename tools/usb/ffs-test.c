@@ -134,6 +134,11 @@ static const struct {
 		.flags = cpu_to_le32(FUNCTIONFS_HAS_FS_DESC |
 				     FUNCTIONFS_HAS_HS_DESC),
 		.length = cpu_to_le32(sizeof descriptors),
+<<<<<<< HEAD
+=======
+		.fs_count = cpu_to_le32(3),
+		.hs_count = cpu_to_le32(3),
+>>>>>>> p9x
 	},
 	.fs_count = cpu_to_le32(3),
 	.fs_descs = {

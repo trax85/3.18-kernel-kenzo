@@ -110,11 +110,21 @@ static long audio_ioctl_shared(struct file *file, unsigned int cmd,
 			pr_err("cmd media format block failed\n");
 			break;
 		}
+<<<<<<< HEAD
 		rc = q6asm_set_encdec_chan_map(audio->ac, 2);
 		if (rc < 0) {
 			pr_err("%s: cmd set encdec_chan_map failed\n",
 				__func__);
 			break;
+=======
+		if (!cpu_is_msm8x60()) {
+			rc = q6asm_set_encdec_chan_map(audio->ac, 2);
+			if (rc < 0) {
+				pr_err("%s: cmd set encdec_chan_map failed\n",
+					__func__);
+				break;
+			}
+>>>>>>> p9x
 		}
 		rc = audio_aio_enable(audio);
 		audio->eos_rsp = 0;
@@ -427,8 +437,11 @@ static int audio_open(struct inode *inode, struct file *file)
 	audio->audio_ws_mgr = &audio_multiaac_ws_mgr;
 	aac_config->dual_mono_mode = AUDIO_AAC_DUAL_MONO_INVALID;
 
+<<<<<<< HEAD
 	init_waitqueue_head(&audio->event_wait);
 
+=======
+>>>>>>> p9x
 	audio->ac = q6asm_audio_client_alloc((app_cb) q6_audio_cb,
 					     (void *)audio);
 

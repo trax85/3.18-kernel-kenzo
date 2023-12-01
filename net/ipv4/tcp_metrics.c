@@ -22,8 +22,12 @@
 
 int sysctl_tcp_nometrics_save __read_mostly;
 
+<<<<<<< HEAD
 static struct tcp_metrics_block *__tcp_get_metrics(const struct inetpeer_addr *saddr,
 						   const struct inetpeer_addr *daddr,
+=======
+static struct tcp_metrics_block *__tcp_get_metrics(const struct inetpeer_addr *addr,
+>>>>>>> p9x
 						   struct net *net, unsigned int hash);
 
 struct tcp_fastopen_metrics {
@@ -144,8 +148,12 @@ static void tcpm_check_stamp(struct tcp_metrics_block *tm, struct dst_entry *dst
 #define TCP_METRICS_RECLAIM_PTR		(struct tcp_metrics_block *) 0x1UL
 
 static struct tcp_metrics_block *tcpm_new(struct dst_entry *dst,
+<<<<<<< HEAD
 					  struct inetpeer_addr *saddr,
 					  struct inetpeer_addr *daddr,
+=======
+					  struct inetpeer_addr *addr,
+>>>>>>> p9x
 					  unsigned int hash)
 {
 	struct tcp_metrics_block *tm;
@@ -158,7 +166,11 @@ static struct tcp_metrics_block *tcpm_new(struct dst_entry *dst,
 	/* While waiting for the spin-lock the cache might have been populated
 	 * with this entry and so we have to check again.
 	 */
+<<<<<<< HEAD
 	tm = __tcp_get_metrics(saddr, daddr, net, hash);
+=======
+	tm = __tcp_get_metrics(addr, net, hash);
+>>>>>>> p9x
 	if (tm == TCP_METRICS_RECLAIM_PTR) {
 		reclaim = true;
 		tm = NULL;
@@ -349,11 +361,19 @@ static struct tcp_metrics_block *tcp_get_metrics(struct sock *sk,
 	net = dev_net(dst->dev);
 	hash = hash_32(hash, net->ipv4.tcp_metrics_hash_log);
 
+<<<<<<< HEAD
 	tm = __tcp_get_metrics(&saddr, &daddr, net, hash);
 	if (tm == TCP_METRICS_RECLAIM_PTR)
 		tm = NULL;
 	if (!tm && create)
 		tm = tcpm_new(dst, &saddr, &daddr, hash);
+=======
+	tm = __tcp_get_metrics(&addr, net, hash);
+	if (tm == TCP_METRICS_RECLAIM_PTR)
+		tm = NULL;
+	if (!tm && create)
+		tm = tcpm_new(dst, &addr, hash);
+>>>>>>> p9x
 	else
 		tcpm_check_stamp(tm, dst);
 

@@ -234,6 +234,7 @@ static int mei_me_hw_reset(struct mei_device *dev, bool intr_enable)
 	struct mei_me_hw *hw = to_me_hw(dev);
 	u32 hcsr = mei_hcsr_read(hw);
 
+<<<<<<< HEAD
 	/* H_RST may be found lit before reset is started,
 	 * for example if preceding reset flow hasn't completed.
 	 * In that case asserting H_RST will be ignored, therefore
@@ -246,6 +247,8 @@ static int mei_me_hw_reset(struct mei_device *dev, bool intr_enable)
 		hcsr = mei_hcsr_read(hw);
 	}
 
+=======
+>>>>>>> p9x
 	hcsr |= H_RST | H_IG | H_IS;
 
 	if (intr_enable)
@@ -263,10 +266,17 @@ static int mei_me_hw_reset(struct mei_device *dev, bool intr_enable)
 	hcsr = mei_hcsr_read(hw);
 
 	if ((hcsr & H_RST) == 0)
+<<<<<<< HEAD
 		dev_warn(dev->dev, "H_RST is not set = 0x%08X", hcsr);
 
 	if ((hcsr & H_RDY) == H_RDY)
 		dev_warn(dev->dev, "H_RDY is not cleared 0x%08X", hcsr);
+=======
+		dev_warn(&dev->pdev->dev, "H_RST is not set = 0x%08X", hcsr);
+
+	if ((hcsr & H_RDY) == H_RDY)
+		dev_warn(&dev->pdev->dev, "H_RDY is not cleared 0x%08X", hcsr);
+>>>>>>> p9x
 
 	if (intr_enable == false)
 		mei_me_hw_reset_release(dev);
@@ -282,7 +292,10 @@ static int mei_me_hw_reset(struct mei_device *dev, bool intr_enable)
 static void mei_me_host_set_ready(struct mei_device *dev)
 {
 	struct mei_me_hw *hw = to_me_hw(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	hw->host_hw_state = mei_hcsr_read(hw);
 	hw->host_hw_state |= H_IE | H_IG | H_RDY;
 	mei_hcsr_set(hw, hw->host_hw_state);
@@ -325,6 +338,7 @@ static bool mei_me_hw_is_ready(struct mei_device *dev)
  */
 static int mei_me_hw_ready_wait(struct mei_device *dev)
 {
+<<<<<<< HEAD
 	mutex_unlock(&dev->device_lock);
 	wait_event_timeout(dev->wait_hw_ready,
 			dev->recvd_hw_ready,
@@ -333,6 +347,21 @@ static int mei_me_hw_ready_wait(struct mei_device *dev)
 	if (!dev->recvd_hw_ready) {
 		dev_err(dev->dev, "wait hw ready failed\n");
 		return -ETIME;
+=======
+	int err;
+
+	mutex_unlock(&dev->device_lock);
+	err = wait_event_interruptible_timeout(dev->wait_hw_ready,
+			dev->recvd_hw_ready,
+			mei_secs_to_jiffies(MEI_INTEROP_TIMEOUT));
+	mutex_lock(&dev->device_lock);
+	if (!err && !dev->recvd_hw_ready) {
+		if (!err)
+			err = -ETIMEDOUT;
+		dev_err(&dev->pdev->dev,
+			"wait hw ready failed. status = %d\n", err);
+		return err;
+>>>>>>> p9x
 	}
 
 	mei_me_hw_reset_release(dev);
@@ -768,10 +797,22 @@ irqreturn_t mei_me_irq_thread_handler(int irq, void *dev_id)
 		mei_clear_interrupts(dev);
 
 	/* check if ME wants a reset */
+<<<<<<< HEAD
 	if (!mei_hw_is_ready(dev) && dev->dev_state != MEI_DEV_RESETTING) {
 		dev_warn(dev->dev, "FW not ready: resetting.\n");
 		schedule_work(&dev->reset_work);
 		goto end;
+=======
+	if (!mei_hw_is_ready(dev) &&
+	    dev->dev_state != MEI_DEV_RESETTING &&
+	    dev->dev_state != MEI_DEV_INITIALIZING &&
+	    dev->dev_state != MEI_DEV_POWER_DOWN &&
+	    dev->dev_state != MEI_DEV_POWER_UP) {
+		dev_dbg(&dev->pdev->dev, "FW not ready.\n");
+		mei_reset(dev, 1);
+		mutex_unlock(&dev->device_lock);
+		return IRQ_HANDLED;
+>>>>>>> p9x
 	}
 
 	mei_me_pg_intr(dev);
@@ -779,11 +820,21 @@ irqreturn_t mei_me_irq_thread_handler(int irq, void *dev_id)
 	/*  check if we need to start the dev */
 	if (!mei_host_is_ready(dev)) {
 		if (mei_hw_is_ready(dev)) {
+<<<<<<< HEAD
 			dev_dbg(dev->dev, "we need to start the dev.\n");
 			dev->recvd_hw_ready = true;
 			wake_up(&dev->wait_hw_ready);
 		} else {
 			dev_dbg(dev->dev, "Spurious Interrupt\n");
+=======
+			mei_me_hw_reset_release(dev);
+			dev_dbg(&dev->pdev->dev, "we need to start the dev.\n");
+
+			dev->recvd_hw_ready = true;
+			wake_up_interruptible(&dev->wait_hw_ready);
+		} else {
+			dev_dbg(&dev->pdev->dev, "Spurious Interrupt\n");
+>>>>>>> p9x
 		}
 		goto end;
 	}

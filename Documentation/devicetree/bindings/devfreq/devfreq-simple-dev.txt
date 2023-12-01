@@ -14,7 +14,10 @@ Required properties:
 Optional properties:
 - polling-ms:	Polling interval for the device in milliseconds. Default: 50
 - governor:	Initial governor to user for the device. Default: "performance"
+<<<<<<< HEAD
 - qcom,prepare-clk:	Prepare the device clock during initialization.
+=======
+>>>>>>> p9x
 
 Example:
 

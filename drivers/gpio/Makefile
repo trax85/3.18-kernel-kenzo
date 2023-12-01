@@ -55,8 +55,7 @@ obj-$(CONFIG_GPIO_MOXART)	+= gpio-moxart.o
 obj-$(CONFIG_GPIO_MPC5200)	+= gpio-mpc5200.o
 obj-$(CONFIG_GPIO_MPC8XXX)	+= gpio-mpc8xxx.o
 obj-$(CONFIG_GPIO_MSIC)		+= gpio-msic.o
-obj-$(CONFIG_GPIO_MSM_V1)	+= gpio-msm-v1.o
-obj-$(CONFIG_GPIO_MSM_V2)	+= gpio-msm-v2.o
+obj-$(CONFIG_GPIO_MSM_V3)	+= gpio-msm-common.o gpio-msm-v3.o
 obj-$(CONFIG_GPIO_MVEBU)        += gpio-mvebu.o
 obj-$(CONFIG_GPIO_MXC)		+= gpio-mxc.o
 obj-$(CONFIG_GPIO_MXS)		+= gpio-mxs.o
@@ -69,6 +68,7 @@ obj-$(CONFIG_GPIO_PL061)	+= gpio-pl061.o
 obj-$(CONFIG_GPIO_PXA)		+= gpio-pxa.o
 obj-$(CONFIG_GPIO_QPNP_PIN)	+= qpnp-pin.o
 obj-$(CONFIG_GPIO_RC5T583)	+= gpio-rc5t583.o
+obj-$(CONFIG_GPIO_QPNP_PIN)	+= qpnp-pin.o
 obj-$(CONFIG_GPIO_RDC321X)	+= gpio-rdc321x.o
 obj-$(CONFIG_GPIO_RCAR)		+= gpio-rcar.o
 obj-$(CONFIG_GPIO_SAMSUNG)	+= gpio-samsung.o
@@ -104,7 +104,12 @@ obj-$(CONFIG_GPIO_WM8350)	+= gpio-wm8350.o
 obj-$(CONFIG_GPIO_WM8994)	+= gpio-wm8994.o
 obj-$(CONFIG_GPIO_XGENE)	+= gpio-xgene.o
 obj-$(CONFIG_GPIO_XILINX)	+= gpio-xilinx.o
+<<<<<<< HEAD
 obj-$(CONFIG_GPIO_XTENSA)	+= gpio-xtensa.o
 obj-$(CONFIG_GPIO_ZEVIO)	+= gpio-zevio.o
 obj-$(CONFIG_GPIO_ZYNQ)		+= gpio-zynq.o
 obj-$(CONFIG_MSM_SMP2P)         += gpio-msm-smp2p.o
+=======
+obj-$(CONFIG_MSM_SMP2P)		+= gpio-msm-smp2p.o
+obj-$(CONFIG_MSM_SMP2P_TEST)	+= gpio-msm-smp2p-test.o
+>>>>>>> p9x

@@ -538,9 +538,15 @@ int tpm_get_timeouts(struct tpm_chip *chip)
 	 * Provide ability for vendor overrides of timeout values in case
 	 * of misreporting.
 	 */
+<<<<<<< HEAD:drivers/char/tpm/tpm-interface.c
 	if (chip->ops->update_timeouts != NULL)
 		chip->vendor.timeout_adjusted =
 			chip->ops->update_timeouts(chip, new_timeout);
+=======
+	if (chip->vendor.update_timeouts != NULL)
+		chip->vendor.timeout_adjusted =
+			chip->vendor.update_timeouts(chip, new_timeout);
+>>>>>>> p9x:drivers/char/tpm/tpm.c
 
 	if (!chip->vendor.timeout_adjusted) {
 		/* Don't overwrite default if value is 0 */

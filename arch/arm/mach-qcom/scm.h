@@ -1,4 +1,5 @@
-/* Copyright (c) 2010, Code Aurora Forum. All rights reserved.
+/*
+ * Copyright (c) 2014, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -9,17 +10,26 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#ifndef __MACH_SCM_H
-#define __MACH_SCM_H
 
-#define SCM_SVC_BOOT			0x1
-#define SCM_SVC_PIL			0x2
+#ifndef __VMEM_H__
+#define __VMEM_H__
 
-extern int scm_call(u32 svc_id, u32 cmd_id, const void *cmd_buf, size_t cmd_len,
-		void *resp_buf, size_t resp_len);
+#ifdef CONFIG_MSM_VIDC_VMEM
 
-#define SCM_VERSION(major, minor) (((major) << 16) | ((minor) & 0xFF))
+int vmem_allocate(size_t size, phys_addr_t *addr);
+void vmem_free(phys_addr_t to_free);
 
-extern u32 scm_get_version(void);
+#else
+
+int vmem_allocate(size_t size, phys_addr_t *addr)
+{
+	return -ENODEV;
+}
+
+void vmem_free(phys_addr_t to_free)
+{
+}
 
 #endif
+
+#endif /* __VMEM_H__ */

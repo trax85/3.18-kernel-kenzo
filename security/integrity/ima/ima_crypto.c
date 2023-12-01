@@ -32,6 +32,7 @@ struct ahash_completion {
 	int err;
 };
 
+<<<<<<< HEAD
 /* minimum file size for ahash use */
 static unsigned long ima_ahash_minsize;
 module_param_named(ahash_minsize, ima_ahash_minsize, ulong, 0644);
@@ -42,6 +43,39 @@ static int ima_maxorder;
 static unsigned int ima_bufsize = PAGE_SIZE;
 
 static int param_set_bufsize(const char *val, const struct kernel_param *kp)
+=======
+/**
+ * ima_kernel_read - read file content
+ *
+ * This is a function for reading file content instead of kernel_read().
+ * It does not perform locking checks to ensure it cannot be blocked.
+ * It does not perform security checks because it is irrelevant for IMA.
+ *
+ */
+static int ima_kernel_read(struct file *file, loff_t offset,
+			   char *addr, unsigned long count)
+{
+	mm_segment_t old_fs;
+	char __user *buf = addr;
+	ssize_t ret;
+
+	if (!(file->f_mode & FMODE_READ))
+		return -EBADF;
+	if (!file->f_op->read && !file->f_op->aio_read)
+		return -EINVAL;
+
+	old_fs = get_fs();
+	set_fs(get_ds());
+	if (file->f_op->read)
+		ret = file->f_op->read(file, buf, count, &offset);
+	else
+		ret = do_sync_read(file, buf, count, &offset);
+	set_fs(old_fs);
+	return ret;
+}
+
+int ima_init_crypto(void)
+>>>>>>> p9x
 {
 	unsigned long long size;
 	int order;

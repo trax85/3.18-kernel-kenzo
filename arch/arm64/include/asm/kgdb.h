@@ -29,7 +29,11 @@
 
 static inline void arch_kgdb_breakpoint(void)
 {
+<<<<<<< HEAD
 	asm ("brk %0" : : "I" (KGDB_COMPILED_DBG_BRK_IMM));
+=======
+	asm ("brk %0" : : "I" (KDBG_COMPILED_DBG_BRK_IMM));
+>>>>>>> p9x
 }
 
 extern void kgdb_handle_bus_error(void);

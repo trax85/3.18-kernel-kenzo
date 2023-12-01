@@ -43,6 +43,7 @@ ip_no_pmtu_disc - INTEGER
 min_pmtu - INTEGER
 	default 552 - minimum discovered Path MTU
 
+<<<<<<< HEAD
 ip_forward_use_pmtu - BOOLEAN
 	By default we don't trust protocol path MTUs while forwarding
 	because they could be easily forged and can lead to unwanted
@@ -56,6 +57,8 @@ ip_forward_use_pmtu - BOOLEAN
 	0 - disabled
 	1 - enabled
 
+=======
+>>>>>>> p9x
 fwmark_reflect - BOOLEAN
 	Controls the fwmark of kernel-generated IPv4 reply packets that are not
 	associated with a socket for example, TCP RSTs or ICMP echo replies).
@@ -1222,9 +1225,18 @@ conf/all/forwarding - BOOLEAN
 
 	This referred to as global forwarding.
 
-proxy_ndp - BOOLEAN
+proxy_ndp - INTEGER
 	Do proxy ndp.
 
+<<<<<<< HEAD
+=======
+	Possible values are:
+		0 Proxy NDP is disabled
+		1 Proxy NDP is enabled
+		2 NDP packets are sent to userspace, where a userspace proxy
+                  can be implemented
+
+>>>>>>> p9x
 fwmark_reflect - BOOLEAN
 	Controls the fwmark of kernel-generated IPv6 reply packets that are not
 	associated with a socket for example, TCP RSTs or ICMPv6 echo replies).
@@ -1492,6 +1504,7 @@ ndisc_notify - BOOLEAN
 	1 - Generate unsolicited neighbour advertisements when device is brought
 	    up or hardware address changes.
 
+<<<<<<< HEAD
 mldv1_unsolicited_report_interval - INTEGER
 	The interval in milliseconds in which the next unsolicited
 	MLDv1 report retransmit will take place.
@@ -1513,6 +1526,8 @@ suppress_frag_ndisc - INTEGER
 	1 - (default) discard fragmented neighbor discovery packets
 	0 - allow fragmented neighbor discovery packets
 
+=======
+>>>>>>> p9x
 optimistic_dad - BOOLEAN
 	Whether to perform Optimistic Duplicate Address Detection (RFC 4429).
 		0: disabled (default)

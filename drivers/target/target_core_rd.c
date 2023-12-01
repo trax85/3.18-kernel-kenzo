@@ -158,7 +158,7 @@ static int rd_allocate_sgl_table(struct rd_dev *rd_dev, struct rd_dev_sg_table *
 						- 1;
 
 		for (j = 0; j < sg_per_table; j++) {
-			pg = alloc_pages(GFP_KERNEL, 0);
+			pg = alloc_pages(GFP_KERNEL | __GFP_ZERO, 0);
 			if (!pg) {
 				pr_err("Unable to allocate scatterlist"
 					" pages for struct rd_dev_sg_table\n");
@@ -219,6 +219,7 @@ static int rd_build_device_space(struct rd_dev *rd_dev)
 		 " %u pages in %u tables\n", rd_dev->rd_host->rd_host_id,
 		 rd_dev->rd_dev_id, rd_dev->rd_page_count,
 		 rd_dev->sg_table_count);
+<<<<<<< HEAD
 
 	return 0;
 }
@@ -279,6 +280,8 @@ static int rd_build_prot_space(struct rd_dev *rd_dev, int prot_length, int block
 	pr_debug("CORE_RD[%u] - Built Ramdisk Device ID: %u prot space of"
 		 " %u pages in %u tables\n", rd_dev->rd_host->rd_host_id,
 		 rd_dev->rd_dev_id, total_sg_needed, rd_dev->sg_prot_count);
+=======
+>>>>>>> p9x
 
 	return 0;
 }

@@ -139,7 +139,11 @@ static struct ftdi_sio_quirk ftdi_8u2232c_quirk = {
  * Device ID not listed? Test it using
  * /sys/bus/usb-serial/drivers/ftdi_sio/new_id and send a patch or report.
  */
+<<<<<<< HEAD
 static const struct usb_device_id id_table_combined[] = {
+=======
+static struct usb_device_id id_table_combined [] = {
+>>>>>>> p9x
 	{ USB_DEVICE(FTDI_VID, FTDI_BRICK_PID) },
 	{ USB_DEVICE(FTDI_VID, FTDI_ZEITCONTROL_TAGTRACE_MIFARE_PID) },
 	{ USB_DEVICE(FTDI_VID, FTDI_CTI_MINI_PID) },
@@ -604,9 +608,17 @@ static const struct usb_device_id id_table_combined[] = {
 		.driver_info = (kernel_ulong_t)&ftdi_jtag_quirk },
 	{ USB_DEVICE(FTDI_VID, FTDI_NT_ORIONLXM_PID),
 		.driver_info = (kernel_ulong_t)&ftdi_jtag_quirk },
+<<<<<<< HEAD
 	{ USB_DEVICE(FTDI_VID, FTDI_NT_ORIONLX_PLUS_PID) },
 	{ USB_DEVICE(FTDI_VID, FTDI_NT_ORION_IO_PID) },
 	{ USB_DEVICE(FTDI_VID, FTDI_SYNAPSE_SS200_PID) },
+=======
+	{ USB_DEVICE(FTDI_VID, FTDI_SYNAPSE_SS200_PID) },
+	{ USB_DEVICE(FTDI_VID, FTDI_CUSTOMWARE_MINIPLEX_PID) },
+	{ USB_DEVICE(FTDI_VID, FTDI_CUSTOMWARE_MINIPLEX2_PID) },
+	{ USB_DEVICE(FTDI_VID, FTDI_CUSTOMWARE_MINIPLEX2WI_PID) },
+	{ USB_DEVICE(FTDI_VID, FTDI_CUSTOMWARE_MINIPLEX3_PID) },
+>>>>>>> p9x
 	/*
 	 * ELV devices:
 	 */
@@ -822,6 +834,7 @@ static const struct usb_device_id id_table_combined[] = {
 	{ USB_DEVICE(FTDI_VID, FTDI_TURTELIZER_PID),
 		.driver_info = (kernel_ulong_t)&ftdi_jtag_quirk },
 	{ USB_DEVICE(RATOC_VENDOR_ID, RATOC_PRODUCT_ID_USB60F) },
+	{ USB_DEVICE(RATOC_VENDOR_ID, RATOC_PRODUCT_ID_SCU18) },
 	{ USB_DEVICE(FTDI_VID, FTDI_REU_TINY_PID) },
 
 	/* Papouch devices based on FTDI chip */
@@ -982,6 +995,7 @@ static const struct usb_device_id id_table_combined[] = {
 	{ USB_DEVICE(FTDI_VID, FTDI_EKEY_CONV_USB_PID) },
 	/* Infineon Devices */
 	{ USB_DEVICE_INTERFACE_NUMBER(INFINEON_VID, INFINEON_TRIBOARD_PID, 1) },
+<<<<<<< HEAD
 	/* GE Healthcare devices */
 	{ USB_DEVICE(GE_HEALTHCARE_VID, GE_HEALTHCARE_NEMO_TRACKER_PID) },
 	/* Active Research (Actisense) devices */
@@ -1001,6 +1015,9 @@ static const struct usb_device_id id_table_combined[] = {
 	{ USB_DEVICE(FTDI_VID, CHETCO_SEASMART_DISPLAY_PID) },
 	{ USB_DEVICE(FTDI_VID, CHETCO_SEASMART_LITE_PID) },
 	{ USB_DEVICE(FTDI_VID, CHETCO_SEASMART_ANALOG_PID) },
+=======
+	{ },					/* Optional parameter entry */
+>>>>>>> p9x
 	{ }					/* Terminating entry */
 };
 
@@ -1621,8 +1638,17 @@ static void ftdi_determine_type(struct usb_serial_port *port)
 static void ftdi_set_max_packet_size(struct usb_serial_port *port)
 {
 	struct ftdi_private *priv = usb_get_serial_port_data(port);
+<<<<<<< HEAD
 	struct usb_interface *interface = port->serial->interface;
 	struct usb_endpoint_descriptor *ep_desc;
+=======
+	struct usb_serial *serial = port->serial;
+	struct usb_device *udev = serial->dev;
+
+	struct usb_interface *interface = serial->interface;
+	struct usb_endpoint_descriptor *ep_desc;
+
+>>>>>>> p9x
 	unsigned num_endpoints;
 	unsigned i;
 
@@ -1630,9 +1656,17 @@ static void ftdi_set_max_packet_size(struct usb_serial_port *port)
 	if (!num_endpoints)
 		return;
 
+<<<<<<< HEAD
 	/*
 	 * NOTE: Some customers have programmed FT232R/FT245R devices
 	 * with an endpoint size of 0 - not good. In this case, we
+=======
+	if (!num_endpoints)
+		return;
+
+	/* NOTE: some customers have programmed FT232R/FT245R devices
+	 * with an endpoint size of 0 - not good.  In this case, we
+>>>>>>> p9x
 	 * want to override the endpoint descriptor setting and use a
 	 * value of 64 for wMaxPacketSize.
 	 */
@@ -1793,8 +1827,6 @@ static int ftdi_sio_port_probe(struct usb_serial_port *port)
 		return -ENOMEM;
 
 	mutex_init(&priv->cfg_lock);
-
-	priv->flags = ASYNC_LOW_LATENCY;
 
 	if (quirk && quirk->port_probe)
 		quirk->port_probe(priv);
@@ -2059,6 +2091,20 @@ static int ftdi_process_packet(struct usb_serial_port *port,
 		priv->prev_status = status;
 	}
 
+	/* save if the transmitter is empty or not */
+	if (packet[1] & FTDI_RS_TEMT)
+		priv->transmit_empty = 1;
+	else
+		priv->transmit_empty = 0;
+
+	len -= 2;
+	if (!len)
+		return 0;	/* status only */
+
+	/*
+	 * Break and error status must only be processed for packets with
+	 * data payload to avoid over-reporting.
+	 */
 	flag = TTY_NORMAL;
 	if (packet[1] & FTDI_RS_ERR_MASK) {
 		/* Break takes precedence over parity, which takes precedence
@@ -2081,15 +2127,6 @@ static int ftdi_process_packet(struct usb_serial_port *port,
 		}
 	}
 
-	/* save if the transmitter is empty or not */
-	if (packet[1] & FTDI_RS_TEMT)
-		priv->transmit_empty = 1;
-	else
-		priv->transmit_empty = 0;
-
-	len -= 2;
-	if (!len)
-		return 0;	/* status only */
 	port->icount.rx += len;
 	ch = packet + 2;
 
@@ -2420,8 +2457,12 @@ static int ftdi_get_modem_status(struct usb_serial_port *port,
 			FTDI_SIO_GET_MODEM_STATUS_REQUEST_TYPE,
 			0, priv->interface,
 			buf, len, WDR_TIMEOUT);
-	if (ret < 0) {
+
+	/* NOTE: We allow short responses and handle that below. */
+	if (ret < 1) {
 		dev_err(&port->dev, "failed to get modem status: %d\n", ret);
+		if (ret >= 0)
+			ret = -EIO;
 		ret = usb_translate_errors(ret);
 		goto out;
 	}

@@ -49,7 +49,6 @@
 struct rfkill {
 	spinlock_t		lock;
 
-	const char		*name;
 	enum rfkill_type	type;
 
 	unsigned long		state;
@@ -73,6 +72,7 @@ struct rfkill {
 	struct delayed_work	poll_work;
 	struct work_struct	uevent_work;
 	struct work_struct	sync_work;
+	char			name[];
 };
 #define to_rfkill(d)	container_of(d, struct rfkill, dev)
 
@@ -782,6 +782,7 @@ void rfkill_pause_polling(struct rfkill *rfkill)
 }
 EXPORT_SYMBOL(rfkill_pause_polling);
 
+#ifdef CONFIG_RFKILL_PM
 void rfkill_resume_polling(struct rfkill *rfkill)
 {
 	BUG_ON(!rfkill);
@@ -817,6 +818,7 @@ static __maybe_unused int rfkill_resume(struct device *dev)
 
 	return 0;
 }
+#endif
 
 
 static struct class rfkill_class = {
@@ -824,8 +826,15 @@ static struct class rfkill_class = {
 	.dev_release	= rfkill_release,
 	.dev_groups	= rfkill_dev_groups,
 	.dev_uevent	= rfkill_dev_uevent,
+<<<<<<< HEAD
 	.suspend	= IS_ENABLED(CONFIG_RFKILL_PM) ? rfkill_suspend : NULL,
 	.resume		= IS_ENABLED(CONFIG_RFKILL_PM) ? rfkill_resume : NULL,
+=======
+#ifdef CONFIG_RFKILL_PM
+	.suspend	= rfkill_suspend,
+	.resume		= rfkill_resume,
+#endif
+>>>>>>> p9x
 };
 
 bool rfkill_blocked(struct rfkill *rfkill)
@@ -863,14 +872,14 @@ struct rfkill * __must_check rfkill_alloc(const char *name,
 	if (WARN_ON(type == RFKILL_TYPE_ALL || type >= NUM_RFKILL_TYPES))
 		return NULL;
 
-	rfkill = kzalloc(sizeof(*rfkill), GFP_KERNEL);
+	rfkill = kzalloc(sizeof(*rfkill) + strlen(name) + 1, GFP_KERNEL);
 	if (!rfkill)
 		return NULL;
 
 	spin_lock_init(&rfkill->lock);
 	INIT_LIST_HEAD(&rfkill->node);
 	rfkill->type = type;
-	rfkill->name = name;
+	strcpy(rfkill->name, name);
 	rfkill->ops = ops;
 	rfkill->data = ops_data;
 

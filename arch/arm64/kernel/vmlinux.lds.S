@@ -9,11 +9,18 @@
 #include <asm/thread_info.h>
 #include <asm/memory.h>
 #include <asm/page.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
 #include <asm/cache.h>
 
 #include "image.h"
 
+=======
+#ifdef CONFIG_STRICT_MEMORY_RWX
+#include <asm/pgtable.h>
+#endif
+
+>>>>>>> p9x
 #if (!defined(CONFIG_DEBUG_SPINLOCK)) || defined(CONFIG_GENERIC_BUG)
 #define ARM_EXIT_KEEP(x)	x
 #define ARM_EXIT_DISCARD(x)
@@ -40,6 +47,7 @@ jiffies = jiffies_64;
 	*(.hyp.text)					\
 	VMLINUX_SYMBOL(__hyp_text_end) = .;
 
+<<<<<<< HEAD
 #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
 #define TRAMP_TEXT					\
 	. = ALIGN(PAGE_SIZE);				\
@@ -75,6 +83,8 @@ PECOFF_FILE_ALIGNMENT = 0x200;
 #define ALIGN_DEBUG_RO_MIN(min)		. = ALIGN(min);
 #endif
 
+=======
+>>>>>>> p9x
 SECTIONS
 {
 	/*
@@ -97,9 +107,18 @@ SECTIONS
 		_text = .;
 		HEAD_TEXT
 	}
+<<<<<<< HEAD
 	ALIGN_DEBUG_RO
 	.text : {			/* Real text segment		*/
 		_stext = .;		/* Text and read-only data	*/
+=======
+#ifdef CONFIG_STRICT_MEMORY_RWX
+	. = ALIGN(1<<SECTION_SHIFT);
+#endif
+	.text : {			/* Real text segment		*/
+		_stext = .;		/* Text and read-only data	*/
+			*(.latehead.text)
+>>>>>>> p9x
 			__exception_text_start = .;
 			*(.exception.text)
 			__exception_text_end = .;
@@ -108,13 +127,17 @@ SECTIONS
 			SCHED_TEXT
 			LOCK_TEXT
 			HYPERVISOR_TEXT
+<<<<<<< HEAD
 			TRAMP_TEXT
+=======
+>>>>>>> p9x
 			*(.fixup)
 			*(.gnu.warning)
 		. = ALIGN(16);
 		*(.got)			/* Global offset table		*/
 	}
 
+<<<<<<< HEAD
 	ALIGN_DEBUG_RO
 	_etext = .;			/* End of text section */
 
@@ -124,14 +147,38 @@ SECTIONS
 	ALIGN_DEBUG_RO
 
 	ALIGN_DEBUG_RO_MIN(PAGE_SIZE)
+=======
+#ifdef CONFIG_STRICT_MEMORY_RWX
+	. = ALIGN(1<<SECTION_SHIFT);
+#endif
+	RO_DATA(PAGE_SIZE)
+	EXCEPTION_TABLE(8)
+	NOTES
+	_etext = .;			/* End of text and rodata section */
+
+#ifdef CONFIG_STRICT_MEMORY_RWX
+	. = ALIGN(1<<SECTION_SHIFT);
+#else
+	. = ALIGN(PAGE_SIZE);
+#endif
+>>>>>>> p9x
 	__init_begin = .;
 
 	INIT_TEXT_SECTION(8)
 	.exit.text : {
 		ARM_EXIT_KEEP(EXIT_TEXT)
 	}
+<<<<<<< HEAD
 
 	ALIGN_DEBUG_RO_MIN(16)
+=======
+#ifdef CONFIG_STRICT_MEMORY_RWX
+	. = ALIGN(1<<SECTION_SHIFT);
+	__init_data_begin = .;
+#else
+	. = ALIGN(16);
+#endif
+>>>>>>> p9x
 	.init.data : {
 		INIT_DATA
 		INIT_SETUP(16)
@@ -149,6 +196,7 @@ SECTIONS
 	. = ALIGN(PAGE_SIZE);
 	__init_end = .;
 
+<<<<<<< HEAD
 	. = ALIGN(4);
 	.altinstructions : {
 		__alt_instructions = .;
@@ -164,6 +212,12 @@ SECTIONS
 	_sdata = .;
 	RW_DATA_SECTION(L1_CACHE_BYTES, PAGE_SIZE, THREAD_SIZE)
 	PECOFF_EDATA_PADDING
+=======
+	. = ALIGN(PAGE_SIZE);
+	_data = .;
+	_sdata = .;
+	RW_DATA_SECTION(64, PAGE_SIZE, THREAD_SIZE)
+>>>>>>> p9x
 	_edata = .;
 
 	BSS_SECTION(0, 0, 0)
@@ -187,8 +241,11 @@ SECTIONS
 	_end = .;
 
 	STABS_DEBUG
+<<<<<<< HEAD
 
 	HEAD_SYMBOLS
+=======
+>>>>>>> p9x
 }
 
 /*
@@ -196,6 +253,7 @@ SECTIONS
  */
 ASSERT(((__hyp_idmap_text_start + PAGE_SIZE) > __hyp_idmap_text_end),
        "HYP init code too big")
+<<<<<<< HEAD
 
 #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
 ASSERT((__entry_tramp_text_end - __entry_tramp_text_start) == PAGE_SIZE,
@@ -205,3 +263,5 @@ ASSERT((__entry_tramp_text_end - __entry_tramp_text_start) == PAGE_SIZE,
  * If padding is applied before .head.text, virt<->phys conversions will fail.
  */
 ASSERT(_text == (PAGE_OFFSET + TEXT_OFFSET), "HEAD is misaligned")
+=======
+>>>>>>> p9x

@@ -272,6 +272,7 @@ static int get_name(const struct path *path, char *name, struct dentry *child)
 	struct inode *dir = path->dentry->d_inode;
 	int error;
 	struct file *file;
+<<<<<<< HEAD
 	struct kstat stat;
 	struct path child_path = {
 		.mnt = path->mnt,
@@ -280,6 +281,12 @@ static int get_name(const struct path *path, char *name, struct dentry *child)
 	struct getdents_callback buffer = {
 		.ctx.actor = filldir_one,
 		.name = name,
+=======
+	struct getdents_callback buffer = {
+		.ctx.actor = filldir_one,
+		.name = name,
+		.ino = child->d_inode->i_ino
+>>>>>>> p9x
 	};
 
 	error = -ENOTDIR;
@@ -307,7 +314,11 @@ static int get_name(const struct path *path, char *name, struct dentry *child)
 		goto out;
 
 	error = -EINVAL;
+<<<<<<< HEAD
 	if (!file->f_op->iterate)
+=======
+	if (!file->f_op->readdir && !file->f_op->iterate)
+>>>>>>> p9x
 		goto out_close;
 
 	buffer.sequence = 0;

@@ -41,8 +41,13 @@ const struct cred *override_fsids(struct sdcardfs_sb_info *sbi,
 	} else {
 		uid = sbi->options.fs_low_uid;
 	}
+<<<<<<< HEAD
 	cred->fsuid = make_kuid(&init_user_ns, uid);
 	cred->fsgid = make_kgid(&init_user_ns, sbi->options.fs_low_gid);
+=======
+	cred->fsuid = uid;
+	cred->fsgid = sbi->options.fs_low_gid;
+>>>>>>> p9x
 
 	old_cred = override_creds(cred);
 
@@ -61,7 +66,11 @@ void revert_fsids(const struct cred *old_cred)
 static int sdcardfs_create(struct inode *dir, struct dentry *dentry,
 			 umode_t mode, bool want_excl)
 {
+<<<<<<< HEAD
 	int err;
+=======
+	int err = 0;
+>>>>>>> p9x
 	struct dentry *lower_dentry;
 	struct vfsmount *lower_dentry_mnt;
 	struct dentry *lower_parent_dentry = NULL;
@@ -153,7 +162,11 @@ static int sdcardfs_unlink(struct inode *dir, struct dentry *dentry)
 	dget(lower_dentry);
 	lower_dir_dentry = lock_parent(lower_dentry);
 
+<<<<<<< HEAD
 	err = vfs_unlink2(lower_mnt, lower_dir_inode, lower_dentry, NULL);
+=======
+	err = vfs_unlink2(lower_mnt, lower_dir_inode, lower_dentry);
+>>>>>>> p9x
 
 	/*
 	 * Note: unlinking on top of NFS can cause silly-renamed files.
@@ -200,7 +213,11 @@ static int touch(char *abs_path, mode_t mode)
 
 static int sdcardfs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 {
+<<<<<<< HEAD
 	int err;
+=======
+	int err = 0;
+>>>>>>> p9x
 	int make_nomedia_in_obb = 0;
 	struct dentry *lower_dentry;
 	struct vfsmount *lower_mnt;
@@ -438,8 +455,12 @@ static int sdcardfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 
 	err = vfs_rename2(lower_mnt,
 			 lower_old_dir_dentry->d_inode, lower_old_dentry,
+<<<<<<< HEAD
 			 lower_new_dir_dentry->d_inode, lower_new_dentry,
 			 NULL, 0);
+=======
+			 lower_new_dir_dentry->d_inode, lower_new_dentry);
+>>>>>>> p9x
 	if (err)
 		goto out;
 
@@ -525,9 +546,26 @@ out:
 }
 #endif
 
+<<<<<<< HEAD
 static int sdcardfs_permission_wrn(struct inode *inode, int mask)
 {
 	pr_debug("sdcardfs does not support permission. Use permission2.\n");
+=======
+#if 0
+/* this @nd *IS* still used */
+static void sdcardfs_put_link(struct dentry *dentry, struct nameidata *nd,
+			    void *cookie)
+{
+	char *buf = nd_get_link(nd);
+	if (!IS_ERR(buf))	/* free the char* */
+		kfree(buf);
+}
+#endif
+
+static int sdcardfs_permission_wrn(struct inode *inode, int mask)
+{
+	WARN_RATELIMIT(1, "sdcardfs does not support permission. Use permission2.\n");
+>>>>>>> p9x
 	return -EINVAL;
 }
 
@@ -593,7 +631,11 @@ static int sdcardfs_setattr_wrn(struct dentry *dentry, struct iattr *ia)
 
 static int sdcardfs_setattr(struct vfsmount *mnt, struct dentry *dentry, struct iattr *ia)
 {
+<<<<<<< HEAD
 	int err;
+=======
+	int err = 0;
+>>>>>>> p9x
 	struct dentry *lower_dentry;
 	struct vfsmount *lower_mnt;
 	struct inode *inode;
@@ -680,9 +722,19 @@ static int sdcardfs_setattr(struct vfsmount *mnt, struct dentry *dentry, struct 
 	 * afterwards in the other cases: we fsstack_copy_inode_size from
 	 * the lower level.
 	 */
+<<<<<<< HEAD
 	if (ia->ia_valid & ATTR_SIZE) {
 		err = inode_newsize_ok(&tmp, ia->ia_size);
 		if (err) {
+=======
+	if (current->mm)
+		down_write(&current->mm->mmap_sem);
+	if (ia->ia_valid & ATTR_SIZE) {
+		err = inode_newsize_ok(&tmp, ia->ia_size);
+		if (err) {
+			if (current->mm)
+				up_write(&current->mm->mmap_sem);
+>>>>>>> p9x
 			goto out;
 		}
 		truncate_setsize(inode, ia->ia_size);
@@ -702,9 +754,17 @@ static int sdcardfs_setattr(struct vfsmount *mnt, struct dentry *dentry, struct 
 	 * tries to open(), unlink(), then ftruncate() a file.
 	 */
 	mutex_lock(&lower_dentry->d_inode->i_mutex);
+<<<<<<< HEAD
 	err = notify_change2(lower_mnt, lower_dentry, &lower_ia, /* note: lower_ia */
 			NULL);
 	mutex_unlock(&lower_dentry->d_inode->i_mutex);
+=======
+	err = notify_change2(lower_mnt, lower_dentry, &lower_ia); /* note: lower_ia */
+
+	mutex_unlock(&lower_dentry->d_inode->i_mutex);
+	if (current->mm)
+		up_write(&current->mm->mmap_sem);
+>>>>>>> p9x
 	if (err)
 		goto out;
 
@@ -786,7 +846,11 @@ const struct inode_operations sdcardfs_symlink_iops = {
 	 *     These methods are *NOT* perfectly tested.
 	.readlink	= sdcardfs_readlink,
 	.follow_link	= sdcardfs_follow_link,
+<<<<<<< HEAD
 	.put_link	= kfree_put_link,
+=======
+	.put_link	= sdcardfs_put_link,
+>>>>>>> p9x
 	 */
 };
 

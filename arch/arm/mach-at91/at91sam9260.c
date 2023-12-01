@@ -355,6 +355,8 @@ static void __init at91sam9260_initialize(void)
 
 	at91_sysirq_mask_rtt(AT91SAM9260_BASE_RTT);
 
+	at91_sysirq_mask_rtt(AT91SAM9260_BASE_RTT);
+
 	/* Register GPIO subsystem */
 	at91_gpio_init(at91sam9260_gpio, 3);
 }

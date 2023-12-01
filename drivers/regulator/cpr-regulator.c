@@ -15,7 +15,10 @@
 
 #include <linux/module.h>
 #include <linux/cpu.h>
+<<<<<<< HEAD
 #include <linux/cpu_pm.h>
+=======
+>>>>>>> p9x
 #include <linux/cpumask.h>
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -397,15 +400,21 @@ struct cpr_regulator {
 	bool			adj_cpus_open_loop_volt_as_ceiling;
 	struct notifier_block	cpu_notifier;
 	cpumask_t		cpu_mask;
+<<<<<<< HEAD
 	bool			cpr_disabled_in_pc;
 	struct notifier_block	pm_notifier;
+=======
+>>>>>>> p9x
 
 	bool		is_cpr_suspended;
 	bool		skip_voltage_change_during_suspend;
 
 	struct cpr_aging_info	*aging_info;
+<<<<<<< HEAD
 
 	struct notifier_block	panic_notifier;
+=======
+>>>>>>> p9x
 };
 
 #define CPR_DEBUG_MASK_IRQ	BIT(0)
@@ -1301,8 +1310,11 @@ _exit:
 	val = (cpr_vreg->ref_clk_khz * cpr_vreg->timer_delay_us) / 1000;
 	cpr_write(cpr_vreg, REG_RBCPR_TIMER_INTERVAL, val);
 
+<<<<<<< HEAD
 	kfree(quot_delta_results);
 
+=======
+>>>>>>> p9x
 	return rc;
 }
 
@@ -2279,7 +2291,11 @@ static int cpr_apc_init(struct platform_device *pdev,
 	int i, rc = 0;
 
 	for (i = 0; i < ARRAY_SIZE(vdd_apc_name); i++) {
+<<<<<<< HEAD
 		cpr_vreg->vdd_apc = devm_regulator_get_optional(&pdev->dev,
+=======
+		cpr_vreg->vdd_apc = devm_regulator_get(&pdev->dev,
+>>>>>>> p9x
 					vdd_apc_name[i]);
 		rc = PTR_RET(cpr_vreg->vdd_apc);
 		if (!IS_ERR_OR_NULL(cpr_vreg->vdd_apc))
@@ -3811,8 +3827,13 @@ static int cpr_aging_init(struct platform_device *pdev,
 			i, cpr_vreg->cpr_fuse_target_quot[i]);
 	}
 
+<<<<<<< HEAD
 	kfree(fuse_sel_orig);
 err:
+=======
+err:
+	kfree(fuse_sel_orig);
+>>>>>>> p9x
 	kfree(aging_sensor_id);
 	return rc;
 }
@@ -4612,6 +4633,7 @@ done:
 	return NOTIFY_OK;
 }
 
+<<<<<<< HEAD
 static void cpr_pm_disable(struct cpr_regulator *cpr_vreg, bool disable)
 {
 	u32 reg_val;
@@ -4662,6 +4684,8 @@ static int cpr_pm_callback(struct notifier_block *nb,
 	return NOTIFY_OK;
 }
 
+=======
+>>>>>>> p9x
 static int cpr_parse_adj_cpus_init_voltage(struct cpr_regulator *cpr_vreg,
 		struct device *dev)
 {
@@ -4972,6 +4996,7 @@ static int cpr_init_per_cpu_adjustments(struct cpr_regulator *cpr_vreg,
 	return rc;
 }
 
+<<<<<<< HEAD
 static int cpr_init_pm_notification(struct cpr_regulator *cpr_vreg)
 {
 	int rc;
@@ -4991,6 +5016,8 @@ static int cpr_init_pm_notification(struct cpr_regulator *cpr_vreg)
 	return rc;
 }
 
+=======
+>>>>>>> p9x
 static int cpr_rpm_apc_init(struct platform_device *pdev,
 			       struct cpr_regulator *cpr_vreg)
 {
@@ -6024,6 +6051,7 @@ static void cpr_debugfs_base_remove(void)
 
 #endif
 
+<<<<<<< HEAD
 /**
  * cpr_panic_callback() - panic notification callback function. This function
  *		is invoked when a kernel panic occurs.
@@ -6053,6 +6081,8 @@ static int cpr_panic_callback(struct notifier_block *nfb,
 	return NOTIFY_OK;
 }
 
+=======
+>>>>>>> p9x
 static int cpr_regulator_probe(struct platform_device *pdev)
 {
 	struct regulator_config reg_config = {};
@@ -6188,6 +6218,7 @@ static int cpr_regulator_probe(struct platform_device *pdev)
 		return rc;
 	}
 
+<<<<<<< HEAD
 	if (of_property_read_bool(pdev->dev.of_node,
 				"qcom,disable-closed-loop-in-pc")) {
 		rc = cpr_init_pm_notification(cpr_vreg);
@@ -6198,6 +6229,8 @@ static int cpr_regulator_probe(struct platform_device *pdev)
 		}
 	}
 
+=======
+>>>>>>> p9x
 	/* Load per-online CPU adjustment data */
 	rc = cpr_init_per_cpu_adjustments(cpr_vreg, &pdev->dev);
 	if (rc) {
@@ -6258,11 +6291,14 @@ static int cpr_regulator_probe(struct platform_device *pdev)
 		}
 	}
 
+<<<<<<< HEAD
 	/* Register panic notification call back */
 	cpr_vreg->panic_notifier.notifier_call = cpr_panic_callback;
 	atomic_notifier_chain_register(&panic_notifier_list,
 			&cpr_vreg->panic_notifier);
 
+=======
+>>>>>>> p9x
 	mutex_lock(&cpr_regulator_list_mutex);
 	list_add(&cpr_vreg->list, &cpr_regulator_list);
 	mutex_unlock(&cpr_regulator_list_mutex);
@@ -6294,12 +6330,18 @@ static int cpr_regulator_remove(struct platform_device *pdev)
 			unregister_hotcpu_notifier(&cpr_vreg->cpu_notifier);
 
 		if (cpr_vreg->cpr_disable_on_temperature)
+<<<<<<< HEAD
 			sensor_mgr_remove_threshold(
 				&cpr_vreg->tsens_threshold_config);
 
 		atomic_notifier_chain_unregister(&panic_notifier_list,
 			&cpr_vreg->panic_notifier);
 
+=======
+			sensor_mgr_remove_threshold(cpr_vreg->dev,
+				&cpr_vreg->tsens_threshold_config);
+
+>>>>>>> p9x
 		cpr_apc_exit(cpr_vreg);
 		cpr_debugfs_remove(cpr_vreg);
 		regulator_unregister(cpr_vreg->rdev);
@@ -6335,7 +6377,12 @@ static int initialize_tsens_monitor(struct cpr_regulator *cpr_vreg)
 		return rc;
 	}
 
+<<<<<<< HEAD
 	rc = sensor_mgr_init_threshold(&cpr_vreg->tsens_threshold_config,
+=======
+	rc = sensor_mgr_init_threshold(cpr_vreg->dev,
+				&cpr_vreg->tsens_threshold_config,
+>>>>>>> p9x
 				cpr_vreg->tsens_id,
 				cpr_vreg->cpr_enable_temp_threshold, /* high */
 				cpr_vreg->cpr_disable_temp_threshold, /* low */

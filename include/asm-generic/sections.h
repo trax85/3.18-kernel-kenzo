@@ -5,6 +5,7 @@
 
 #include <linux/compiler.h>
 
+<<<<<<< HEAD
 /*
  * Usage guidelines:
  * _text, _data: architecture specific, don't use them in arch-independent code
@@ -25,6 +26,8 @@
  *	__entry_text_start, __entry_text_end
  *	__ctors_start, __ctors_end
  */
+=======
+>>>>>>> p9x
 extern char _text[], _stext[], _etext[];
 extern char _data[], _sdata[], _edata[];
 extern char __bss_start[], __bss_stop[];

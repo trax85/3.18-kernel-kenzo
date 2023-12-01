@@ -721,8 +721,12 @@ struct nand_chip {
 #define NAND_MFR_AMD		0x01
 #define NAND_MFR_MACRONIX	0xc2
 #define NAND_MFR_EON		0x92
+<<<<<<< HEAD
 #define NAND_MFR_SANDISK	0x45
 #define NAND_MFR_INTEL		0x89
+=======
+#define NAND_MFR_ESMT		0xc8
+>>>>>>> p9x
 
 /* The maximum expected count of bytes in the NAND ID sequence */
 #define NAND_MAX_ID_LEN 8
@@ -799,11 +803,15 @@ struct nand_flash_dev {
 	unsigned int options;
 	uint16_t id_len;
 	uint16_t oobsize;
+<<<<<<< HEAD
 	struct {
 		uint16_t strength_ds;
 		uint16_t step_ds;
 	} ecc;
 	int onfi_timing_mode_default;
+=======
+	unsigned int ecc_correctable_bits;
+>>>>>>> p9x
 };
 
 /**

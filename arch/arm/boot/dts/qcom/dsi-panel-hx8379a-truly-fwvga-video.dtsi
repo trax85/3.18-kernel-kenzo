@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -11,7 +15,11 @@
  */
 
 &mdss_mdp {
+<<<<<<< HEAD
 	dsi_hx8379a_fwvga_truly_vid: qcom,mdss_dsi_hx8379a_truly_fwvga_video {
+=======
+	dsi_hx8379a_fwvga_truly_vid: qcom,mdss_dsi_hx8379a_fwvga_truly_vid {
+>>>>>>> p9x
 		qcom,mdss-dsi-panel-name = "HX8379A fwvga video mode dsi panel";
 		qcom,mdss-dsi-panel-type = "dsi_video_mode";
 		qcom,mdss-dsi-panel-framerate = <60>;
@@ -127,8 +135,12 @@
 		qcom,mdss-dsi-bllp-power-mode;
 		qcom,mdss-dsi-lane-0-state;
 		qcom,mdss-dsi-lane-1-state;
+<<<<<<< HEAD
 		qcom,mdss-dsi-panel-timings =
 					[8B 1f 14 00 45 4A 19 23 23 03 04 00];
+=======
+		qcom,mdss-dsi-panel-timings = [8B 1f 14 00 45 4A 19 23 23 03 04 00];
+>>>>>>> p9x
 		qcom,mdss-dsi-t-clk-post = <0x04>;
 		qcom,mdss-dsi-t-clk-pre = <0x1D>;
 		qcom,mdss-dsi-dma-trigger = "trigger_sw";

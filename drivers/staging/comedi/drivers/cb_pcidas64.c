@@ -462,6 +462,29 @@ static const uint8_t ai_range_code_64_mx[7] = {
 	0x9, 0xa, 0xb		/* unipolar 5, 2.5, 1.25 */
 };
 
+static const uint8_t ai_range_code_64xx[8] = {
+	0x0, 0x1, 0x2, 0x3,	/* bipolar 10, 5, 2,5, 1.25 */
+	0x8, 0x9, 0xa, 0xb	/* unipolar 10, 5, 2.5, 1.25 */
+};
+
+/* analog input ranges for 64-Mx boards */
+static const struct comedi_lrange ai_ranges_64_mx = {
+	7, {
+		BIP_RANGE(5),
+		BIP_RANGE(2.5),
+		BIP_RANGE(1.25),
+		BIP_RANGE(0.625),
+		UNI_RANGE(5),
+		UNI_RANGE(2.5),
+		UNI_RANGE(1.25)
+	}
+};
+
+static const uint8_t ai_range_code_64_mx[7] = {
+	0x0, 0x1, 0x2, 0x3,	/* bipolar 5, 2.5, 1.25, 0.625 */
+	0x9, 0xa, 0xb		/* unipolar 5, 2.5, 1.25 */
+};
+
 /* analog input ranges for 60xx boards */
 static const struct comedi_lrange ai_ranges_60xx = {
 	4, {
@@ -470,6 +493,10 @@ static const struct comedi_lrange ai_ranges_60xx = {
 		BIP_RANGE(0.5),
 		BIP_RANGE(0.05)
 	}
+};
+
+static const uint8_t ai_range_code_60xx[4] = {
+	0x0, 0x1, 0x4, 0x7	/* bipolar 10, 5, 0.5, 0.05 */
 };
 
 static const uint8_t ai_range_code_60xx[4] = {
@@ -501,6 +528,11 @@ static const uint8_t ai_range_code_6030[14] = {
 	0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf  /* uni 10, 5, 2, 1, 0.5, 0.2, 0.1 */
 };
 
+static const uint8_t ai_range_code_6030[14] = {
+	0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, /* bip 10, 5, 2, 1, 0.5, 0.2, 0.1 */
+	0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf  /* uni 10, 5, 2, 1, 0.5, 0.2, 0.1 */
+};
+
 /* analog input ranges for 6052, etc boards */
 static const struct comedi_lrange ai_ranges_6052 = {
 	15, {
@@ -520,6 +552,11 @@ static const struct comedi_lrange ai_ranges_6052 = {
 		UNI_RANGE(0.2),
 		UNI_RANGE(0.1)
 	}
+};
+
+static const uint8_t ai_range_code_6052[15] = {
+	0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7,	/* bipolar 10 ... 0.05 */
+	0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf	/* unipolar 10 ... 0.1 */
 };
 
 static const uint8_t ai_range_code_6052[15] = {
@@ -1186,7 +1223,11 @@ struct pcidas64_private {
 static unsigned int ai_range_bits_6xxx(const struct comedi_device *dev,
 				       unsigned int range_index)
 {
+<<<<<<< HEAD
 	const struct pcidas64_board *thisboard = dev->board_ptr;
+=======
+	const struct pcidas64_board *thisboard = comedi_board(dev);
+>>>>>>> p9x
 
 	return thisboard->ai_range_code[range_index] << 8;
 }

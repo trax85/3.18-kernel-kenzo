@@ -242,11 +242,17 @@ static void cfg80211_set_chans_dfs_state(struct wiphy *wiphy, u32 center_freq,
 					 enum nl80211_dfs_state dfs_state)
 {
 	struct ieee80211_channel *c;
-	u32 freq;
+	u32 freq, start_freq, end_freq;
 
-	for (freq = center_freq - bandwidth/2 + 10;
-	     freq <= center_freq + bandwidth/2 - 10;
-	     freq += 20) {
+	if (bandwidth <= 20) {
+		start_freq = center_freq;
+		end_freq = center_freq;
+	} else {
+		start_freq = center_freq - bandwidth/2 + 10;
+		end_freq = center_freq + bandwidth/2 - 10;
+	}
+
+	for (freq = start_freq; freq <= end_freq; freq += 20) {
 		c = ieee80211_get_channel(wiphy, freq);
 		if (!c || !(c->flags & IEEE80211_CHAN_RADAR))
 			continue;
@@ -587,8 +593,18 @@ static bool cfg80211_secondary_chans_ok(struct wiphy *wiphy,
 	struct ieee80211_channel *c;
 	u32 freq, start_freq, end_freq;
 
+<<<<<<< HEAD
 	start_freq = cfg80211_get_start_freq(center_freq, bandwidth);
 	end_freq = cfg80211_get_end_freq(center_freq, bandwidth);
+=======
+	if (bandwidth <= 20) {
+		start_freq = center_freq;
+		end_freq = center_freq;
+	} else {
+		start_freq = center_freq - bandwidth/2 + 10;
+		end_freq = center_freq + bandwidth/2 - 10;
+	}
+>>>>>>> p9x
 
 	for (freq = start_freq; freq <= end_freq; freq += 20) {
 		c = ieee80211_get_channel(wiphy, freq);
@@ -596,8 +612,15 @@ static bool cfg80211_secondary_chans_ok(struct wiphy *wiphy,
 		if (!c)
 			return false;
 
+<<<<<<< HEAD
 		if ((!(wiphy->flags & WIPHY_FLAG_DFS_OFFLOAD)) &&
 		    (c->flags & prohibited_flags & IEEE80211_CHAN_RADAR))
+=======
+		/* check for radar flags */
+		if ((!(wiphy->flags & WIPHY_FLAG_DFS_OFFLOAD)) &&
+		    (prohibited_flags & c->flags & IEEE80211_CHAN_RADAR) &&
+		    (c->dfs_state != NL80211_DFS_AVAILABLE))
+>>>>>>> p9x
 			return false;
 
 		if (c->flags & prohibited_flags & ~IEEE80211_CHAN_RADAR)

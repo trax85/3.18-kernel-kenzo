@@ -58,7 +58,11 @@ static struct cpufreq_driver cris_freq_driver = {
 	.target_index = cris_freq_target,
 	.init = cris_freq_cpu_init,
 	.name = "cris_freq",
+<<<<<<< HEAD
 	.attr = cpufreq_generic_attr,
+=======
+	.attr = cris_freq_attr,
+>>>>>>> p9x
 };
 
 static int __init cris_freq_init(void)

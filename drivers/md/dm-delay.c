@@ -44,6 +44,11 @@ struct dm_delay_info {
 
 static DEFINE_MUTEX(delayed_bios_lock);
 
+<<<<<<< HEAD
+=======
+static struct kmem_cache *delayed_cache;
+
+>>>>>>> p9x
 static void handle_delayed_timer(unsigned long data)
 {
 	struct delay_c *dc = (struct delay_c *)data;
@@ -188,6 +193,12 @@ out:
 		goto bad_queue;
 	}
 
+	dc->kdelayd_wq = alloc_workqueue("kdelayd", WQ_MEM_RECLAIM, 0);
+	if (!dc->kdelayd_wq) {
+		DMERR("Couldn't start kdelayd");
+		goto bad_queue;
+	}
+
 	setup_timer(&dc->delay_timer, handle_delayed_timer, (unsigned long)dc);
 
 	INIT_WORK(&dc->flush_expired_bios, flush_expired_bios);
@@ -202,6 +213,11 @@ out:
 	return 0;
 
 bad_queue:
+<<<<<<< HEAD
+=======
+	mempool_destroy(dc->delayed_pool);
+bad_dev_write:
+>>>>>>> p9x
 	if (dc->dev_write)
 		dm_put_device(ti, dc->dev_write);
 bad_dev_read:
@@ -345,7 +361,17 @@ static struct target_type delay_target = {
 
 static int __init dm_delay_init(void)
 {
+<<<<<<< HEAD
 	int r;
+=======
+	int r = -ENOMEM;
+
+	delayed_cache = KMEM_CACHE(dm_delay_info, 0);
+	if (!delayed_cache) {
+		DMERR("Couldn't create delayed bio cache.");
+		goto bad_memcache;
+	}
+>>>>>>> p9x
 
 	r = dm_register_target(&delay_target);
 	if (r < 0) {
@@ -356,12 +382,21 @@ static int __init dm_delay_init(void)
 	return 0;
 
 bad_register:
+<<<<<<< HEAD
+=======
+	kmem_cache_destroy(delayed_cache);
+bad_memcache:
+>>>>>>> p9x
 	return r;
 }
 
 static void __exit dm_delay_exit(void)
 {
 	dm_unregister_target(&delay_target);
+<<<<<<< HEAD
+=======
+	kmem_cache_destroy(delayed_cache);
+>>>>>>> p9x
 }
 
 /* Module hooks */

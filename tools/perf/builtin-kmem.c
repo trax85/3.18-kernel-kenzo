@@ -53,6 +53,79 @@ static struct rb_root root_caller_sorted;
 static unsigned long total_requested, total_allocated;
 static unsigned long nr_allocs, nr_cross_allocs;
 
+<<<<<<< HEAD
+=======
+#define PATH_SYS_NODE	"/sys/devices/system/node"
+
+static int init_cpunode_map(void)
+{
+	FILE *fp;
+	int i, err = -1;
+
+	fp = fopen("/sys/devices/system/cpu/kernel_max", "r");
+	if (!fp) {
+		max_cpu_num = 4096;
+		return 0;
+	}
+
+	if (fscanf(fp, "%d", &max_cpu_num) < 1) {
+		pr_err("Failed to read 'kernel_max' from sysfs");
+		goto out_close;
+	}
+
+	max_cpu_num++;
+
+	cpunode_map = calloc(max_cpu_num, sizeof(int));
+	if (!cpunode_map) {
+		pr_err("%s: calloc failed\n", __func__);
+		goto out_close;
+	}
+
+	for (i = 0; i < max_cpu_num; i++)
+		cpunode_map[i] = -1;
+
+	err = 0;
+out_close:
+	fclose(fp);
+	return err;
+}
+
+static int setup_cpunode_map(void)
+{
+	struct dirent *dent1, *dent2;
+	DIR *dir1, *dir2;
+	unsigned int cpu, mem;
+	char buf[PATH_MAX];
+
+	if (init_cpunode_map())
+		return -1;
+
+	dir1 = opendir(PATH_SYS_NODE);
+	if (!dir1)
+		return 0;
+
+	while ((dent1 = readdir(dir1)) != NULL) {
+		if (dent1->d_type != DT_DIR ||
+		    sscanf(dent1->d_name, "node%u", &mem) < 1)
+			continue;
+
+		snprintf(buf, PATH_MAX, "%s/%s", PATH_SYS_NODE, dent1->d_name);
+		dir2 = opendir(buf);
+		if (!dir2)
+			continue;
+		while ((dent2 = readdir(dir2)) != NULL) {
+			if (dent2->d_type != DT_LNK ||
+			    sscanf(dent2->d_name, "cpu%u", &cpu) < 1)
+				continue;
+			cpunode_map[cpu] = mem;
+		}
+		closedir(dir2);
+	}
+	closedir(dir1);
+	return 0;
+}
+
+>>>>>>> p9x
 static int insert_alloc_stat(unsigned long call_site, unsigned long ptr,
 			     int bytes_req, int bytes_alloc, int cpu)
 {

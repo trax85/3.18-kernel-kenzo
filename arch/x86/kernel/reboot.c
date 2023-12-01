@@ -37,6 +37,25 @@ void (*pm_power_off)(void);
 EXPORT_SYMBOL(pm_power_off);
 
 static const struct desc_ptr no_idt = {};
+<<<<<<< HEAD
+=======
+static enum reboot_mode reboot_mode;
+enum reboot_type reboot_type = BOOT_ACPI;
+int reboot_force;
+
+/*
+ * This variable is used privately to keep track of whether or not
+ * reboot_type is still set to its default value (i.e., reboot= hasn't
+ * been set on the command line).  This is needed so that we can
+ * suppress DMI scanning for reboot quirks.  Without it, it's
+ * impossible to override a faulty reboot quirk without recompiling.
+ */
+static int reboot_default = 1;
+
+#ifdef CONFIG_SMP
+static int reboot_cpu = -1;
+#endif
+>>>>>>> p9x
 
 /*
  * This is set if we need to go through the 'emergency' path.
@@ -49,6 +68,82 @@ static int reboot_emergency;
 bool port_cf9_safe = false;
 
 /*
+<<<<<<< HEAD
+=======
+ * reboot=b[ios] | s[mp] | t[riple] | k[bd] | e[fi] [, [w]arm | [c]old] | p[ci]
+ * warm   Don't set the cold reboot flag
+ * cold   Set the cold reboot flag
+ * bios   Reboot by jumping through the BIOS
+ * smp    Reboot by executing reset on BSP or other CPU
+ * triple Force a triple fault (init)
+ * kbd    Use the keyboard controller. cold reset (default)
+ * acpi   Use the RESET_REG in the FADT
+ * efi    Use efi reset_system runtime service
+ * pci    Use the so-called "PCI reset register", CF9
+ * force  Avoid anything that could hang.
+ */
+static int __init reboot_setup(char *str)
+{
+	for (;;) {
+		/*
+		 * Having anything passed on the command line via
+		 * reboot= will cause us to disable DMI checking
+		 * below.
+		 */
+		reboot_default = 0;
+
+		switch (*str) {
+		case 'w':
+			reboot_mode = REBOOT_WARM;
+			break;
+
+		case 'c':
+			reboot_mode = REBOOT_COLD;
+			break;
+
+#ifdef CONFIG_SMP
+		case 's':
+			if (isdigit(*(str+1))) {
+				reboot_cpu = (int) (*(str+1) - '0');
+				if (isdigit(*(str+2)))
+					reboot_cpu = reboot_cpu*10 + (int)(*(str+2) - '0');
+			}
+			/*
+			 * We will leave sorting out the final value
+			 * when we are ready to reboot, since we might not
+			 * have detected BSP APIC ID or smp_num_cpu
+			 */
+			break;
+#endif /* CONFIG_SMP */
+
+		case 'b':
+		case 'a':
+		case 'k':
+		case 't':
+		case 'e':
+		case 'p':
+			reboot_type = *str;
+			break;
+
+		case 'f':
+			reboot_force = 1;
+			break;
+		}
+
+		str = strchr(str, ',');
+		if (str)
+			str++;
+		else
+			break;
+	}
+	return 1;
+}
+
+__setup("reboot=", reboot_setup);
+
+
+/*
+>>>>>>> p9x
  * Reboot options and system auto-detection code provided by
  * Dell Inc. so their systems "just work". :-)
  */
@@ -137,6 +232,158 @@ static int __init set_kbd_reboot(const struct dmi_system_id *d)
  * This is a single dmi_table handling all reboot quirks.
  */
 static struct dmi_system_id __initdata reboot_dmi_table[] = {
+<<<<<<< HEAD
+=======
+	{	/* Handle problems with rebooting on Dell E520's */
+		.callback = set_bios_reboot,
+		.ident = "Dell E520",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "Dell DM061"),
+		},
+	},
+	{	/* Handle problems with rebooting on Dell 1300's */
+		.callback = set_bios_reboot,
+		.ident = "Dell PowerEdge 1300",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Computer Corporation"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "PowerEdge 1300/"),
+		},
+	},
+	{	/* Handle problems with rebooting on Dell 300's */
+		.callback = set_bios_reboot,
+		.ident = "Dell PowerEdge 300",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Computer Corporation"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "PowerEdge 300/"),
+		},
+	},
+	{	/* Handle problems with rebooting on Dell Optiplex 745's SFF */
+		.callback = set_bios_reboot,
+		.ident = "Dell OptiPlex 745",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "OptiPlex 745"),
+		},
+	},
+	{	/* Handle problems with rebooting on Dell Optiplex 745's DFF */
+		.callback = set_bios_reboot,
+		.ident = "Dell OptiPlex 745",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "OptiPlex 745"),
+			DMI_MATCH(DMI_BOARD_NAME, "0MM599"),
+		},
+	},
+	{	/* Handle problems with rebooting on Dell Optiplex 745 with 0KW626 */
+		.callback = set_bios_reboot,
+		.ident = "Dell OptiPlex 745",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "OptiPlex 745"),
+			DMI_MATCH(DMI_BOARD_NAME, "0KW626"),
+		},
+	},
+	{	/* Handle problems with rebooting on Dell Optiplex 330 with 0KP561 */
+		.callback = set_bios_reboot,
+		.ident = "Dell OptiPlex 330",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "OptiPlex 330"),
+			DMI_MATCH(DMI_BOARD_NAME, "0KP561"),
+		},
+	},
+	{	/* Handle problems with rebooting on Dell Optiplex 360 with 0T656F */
+		.callback = set_bios_reboot,
+		.ident = "Dell OptiPlex 360",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "OptiPlex 360"),
+			DMI_MATCH(DMI_BOARD_NAME, "0T656F"),
+		},
+	},
+	{	/* Handle problems with rebooting on Dell OptiPlex 760 with 0G919G */
+		.callback = set_bios_reboot,
+		.ident = "Dell OptiPlex 760",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "OptiPlex 760"),
+			DMI_MATCH(DMI_BOARD_NAME, "0G919G"),
+		},
+	},
+	{	/* Handle problems with rebooting on Dell 2400's */
+		.callback = set_bios_reboot,
+		.ident = "Dell PowerEdge 2400",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Computer Corporation"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "PowerEdge 2400"),
+		},
+	},
+	{	/* Handle problems with rebooting on Dell T5400's */
+		.callback = set_bios_reboot,
+		.ident = "Dell Precision T5400",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "Precision WorkStation T5400"),
+		},
+	},
+	{	/* Handle problems with rebooting on Dell T7400's */
+		.callback = set_bios_reboot,
+		.ident = "Dell Precision T7400",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "Precision WorkStation T7400"),
+		},
+	},
+	{	/* Handle problems with rebooting on HP laptops */
+		.callback = set_bios_reboot,
+		.ident = "HP Compaq Laptop",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "HP Compaq"),
+		},
+	},
+	{	/* Handle problems with rebooting on Dell XPS710 */
+		.callback = set_bios_reboot,
+		.ident = "Dell XPS710",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "Dell XPS710"),
+		},
+	},
+	{	/* Handle problems with rebooting on Dell DXP061 */
+		.callback = set_bios_reboot,
+		.ident = "Dell DXP061",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "Dell DXP061"),
+		},
+	},
+	{	/* Handle problems with rebooting on Sony VGN-Z540N */
+		.callback = set_bios_reboot,
+		.ident = "Sony VGN-Z540N",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Sony Corporation"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "VGN-Z540N"),
+		},
+	},
+	{	/* Handle problems with rebooting on ASUS P4S800 */
+		.callback = set_bios_reboot,
+		.ident = "ASUS P4S800",
+		.matches = {
+			DMI_MATCH(DMI_BOARD_VENDOR, "ASUSTeK Computer INC."),
+			DMI_MATCH(DMI_BOARD_NAME, "P4S800"),
+		},
+	},
+	{	/* Handle problems with rebooting on the iMac10,1. */
+		.callback = set_pci_reboot,
+		.ident = "Apple iMac10,1",
+		.matches = {
+		    DMI_MATCH(DMI_SYS_VENDOR, "Apple Inc."),
+		    DMI_MATCH(DMI_PRODUCT_NAME, "iMac10,1"),
+		},
+	},
+>>>>>>> p9x
 
 	/* Acer */
 	{	/* Handle reboot issue on Acer Aspire one */
@@ -362,6 +609,7 @@ static struct dmi_system_id __initdata reboot_dmi_table[] = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Precision M6600"),
 		},
 	},
+<<<<<<< HEAD
 	{	/* Handle problems with rebooting on Dell T5400's */
 		.callback = set_bios_reboot,
 		.ident = "Dell Precision T5400",
@@ -407,6 +655,24 @@ static struct dmi_system_id __initdata reboot_dmi_table[] = {
 		},
 	},
 
+=======
+	{	/* Handle problems with rebooting on the Dell PowerEdge C6100. */
+		.callback = set_pci_reboot,
+		.ident = "Dell PowerEdge C6100",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "C6100"),
+		},
+	},
+	{	/* Some C6100 machines were shipped with vendor being 'Dell'. */
+		.callback = set_pci_reboot,
+		.ident = "Dell PowerEdge C6100",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "C6100"),
+		},
+	},
+>>>>>>> p9x
 	{ }
 };
 
@@ -584,7 +850,45 @@ static void native_machine_emergency_restart(void)
 			load_idt(&no_idt);
 			__asm__ __volatile__("int3");
 
+<<<<<<< HEAD
 			/* We're probably dead after this, but... */
+=======
+			reboot_type = BOOT_KBD;
+			break;
+
+		case BOOT_BIOS:
+			machine_real_restart(MRR_BIOS);
+
+			reboot_type = BOOT_KBD;
+			break;
+
+		case BOOT_ACPI:
+			acpi_reboot();
+			reboot_type = BOOT_KBD;
+			break;
+
+		case BOOT_EFI:
+			if (efi_enabled(EFI_RUNTIME_SERVICES))
+				efi.reset_system(reboot_mode == REBOOT_WARM ?
+						 EFI_RESET_WARM :
+						 EFI_RESET_COLD,
+						 EFI_SUCCESS, 0, NULL);
+			reboot_type = BOOT_KBD;
+			break;
+
+		case BOOT_CF9:
+			port_cf9_safe = true;
+			/* Fall through */
+
+		case BOOT_CF9_COND:
+			if (port_cf9_safe) {
+				u8 cf9 = inb(0xcf9) & ~6;
+				outb(cf9|2, 0xcf9); /* Request hard reset */
+				udelay(50);
+				outb(cf9|6, 0xcf9); /* Actually do the reset */
+				udelay(50);
+			}
+>>>>>>> p9x
 			reboot_type = BOOT_KBD;
 			break;
 		}

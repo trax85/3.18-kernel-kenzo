@@ -1,6 +1,6 @@
 /*
  *
- * Definitions for mount interface. This describes the in the kernel build 
+ * Definitions for mount interface. This describes the in the kernel build
  * linkedlist with mounted filesystems.
  *
  * Author:  Marco van Wieringen <mvw@planets.elm.net>
@@ -45,10 +45,18 @@ struct mnt_namespace;
 #define MNT_USER_SETTABLE_MASK  (MNT_NOSUID | MNT_NODEV | MNT_NOEXEC \
 				 | MNT_NOATIME | MNT_NODIRATIME | MNT_RELATIME \
 				 | MNT_READONLY)
+<<<<<<< HEAD
 #define MNT_ATIME_MASK (MNT_NOATIME | MNT_NODIRATIME | MNT_RELATIME )
 
 #define MNT_INTERNAL_FLAGS (MNT_SHARED | MNT_WRITE_HOLD | MNT_INTERNAL | \
 			    MNT_DOOMED | MNT_SYNC_UMOUNT | MNT_MARKED)
+=======
+
+#define MNT_ATIME_MASK (MNT_NOATIME | MNT_NODIRATIME | MNT_RELATIME )
+
+#define MNT_INTERNAL_FLAGS (MNT_SHARED | MNT_WRITE_HOLD | MNT_INTERNAL | \
+			    MNT_MARKED)
+>>>>>>> p9x
 
 #define MNT_INTERNAL	0x4000
 
@@ -57,9 +65,12 @@ struct mnt_namespace;
 #define MNT_LOCK_NOSUID		0x100000
 #define MNT_LOCK_NODEV		0x200000
 #define MNT_LOCK_READONLY	0x400000
+<<<<<<< HEAD
 #define MNT_LOCKED		0x800000
 #define MNT_DOOMED		0x1000000
 #define MNT_SYNC_UMOUNT		0x2000000
+=======
+>>>>>>> p9x
 #define MNT_MARKED		0x4000000
 
 struct vfsmount {

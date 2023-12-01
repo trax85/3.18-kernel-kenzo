@@ -2515,7 +2515,11 @@ static unsigned int ata_scsiop_read_cap(struct ata_scsi_args *args, u8 *rbuf)
 
 		if (ata_id_has_trim(args->id) &&
 		    !(dev->horkage & ATA_HORKAGE_NOTRIM)) {
+<<<<<<< HEAD
 			rbuf[14] |= 0x80; /* LBPME */
+=======
+			rbuf[14] |= 0x80; /* TPE */
+>>>>>>> p9x
 
 			if (ata_id_has_zero_after_trim(args->id) &&
 			    dev->horkage & ATA_HORKAGE_ZERO_AFTER_TRIM) {

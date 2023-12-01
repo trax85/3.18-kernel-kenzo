@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014-2016 Qualcomm Atheros, Inc.
+=======
+ * Copyright (c) 2014 Qualcomm Atheros, Inc.
+>>>>>>> p9x
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -19,6 +23,7 @@
 
 struct device;
 
+<<<<<<< HEAD
 enum wil_platform_event {
 	WIL_PLATFORM_EVT_FW_CRASH = 0,
 	WIL_PLATFORM_EVT_PRE_RESET = 1,
@@ -30,12 +35,17 @@ enum wil_platform_event {
 /**
  * struct wil_platform_ops - wil platform module calls from this
  * driver to platform driver
+=======
+/**
+ * struct wil_platform_ops - wil platform module callbacks
+>>>>>>> p9x
  */
 struct wil_platform_ops {
 	int (*bus_request)(void *handle, uint32_t kbps /* KBytes/Sec */);
 	int (*suspend)(void *handle);
 	int (*resume)(void *handle);
 	void (*uninit)(void *handle);
+<<<<<<< HEAD
 	int (*notify)(void *handle, enum wil_platform_event evt);
 };
 
@@ -73,5 +83,10 @@ void *wil_platform_init(struct device *dev, struct wil_platform_ops *ops,
 
 int __init wil_platform_modinit(void);
 void wil_platform_modexit(void);
+=======
+};
+
+void *wil_platform_init(struct device *dev, struct wil_platform_ops *ops);
+>>>>>>> p9x
 
 #endif /* __WIL_PLATFORM_H__ */

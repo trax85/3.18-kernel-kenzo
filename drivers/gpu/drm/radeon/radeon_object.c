@@ -801,6 +801,7 @@ int radeon_bo_fault_reserve_notify(struct ttm_buffer_object *bo)
 
 	/* hurrah the memory is not visible ! */
 	radeon_ttm_placement_from_domain(rbo, RADEON_GEM_DOMAIN_VRAM);
+<<<<<<< HEAD
 	lpfn =	rdev->mc.visible_vram_size >> PAGE_SHIFT;
 	for (i = 0; i < rbo->placement.num_placement; i++) {
 		/* Force into visible VRAM */
@@ -815,6 +816,16 @@ int radeon_bo_fault_reserve_notify(struct ttm_buffer_object *bo)
 	} else if (unlikely(r != 0)) {
 		return r;
 	}
+=======
+	rbo->placement.lpfn = rdev->mc.visible_vram_size >> PAGE_SHIFT;
+	r = ttm_bo_validate(bo, &rbo->placement, false, false);
+	if (unlikely(r == -ENOMEM)) {
+		radeon_ttm_placement_from_domain(rbo, RADEON_GEM_DOMAIN_GTT);
+		return ttm_bo_validate(bo, &rbo->placement, false, false);
+	} else if (unlikely(r != 0)) {
+		return r;
+	}
+>>>>>>> p9x
 
 	offset = bo->mem.start << PAGE_SHIFT;
 	/* this should never happen */

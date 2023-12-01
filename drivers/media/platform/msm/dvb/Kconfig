@@ -8,3 +8,8 @@ config DVB_MPQ
 	  Say Y or M if you own such a device and want to use it.
 
 source "drivers/media/platform/msm/dvb/demux/Kconfig"
+<<<<<<< HEAD
+=======
+source "drivers/media/platform/msm/dvb/video/Kconfig"
+
+>>>>>>> p9x

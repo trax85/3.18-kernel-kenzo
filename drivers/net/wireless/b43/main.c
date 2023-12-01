@@ -5747,8 +5747,18 @@ static void b43_ssb_remove(struct ssb_device *sdev)
 	/* Unregister HW RNG driver */
 	b43_rng_exit(wl);
 
+<<<<<<< HEAD
 	b43_leds_unregister(wl);
 	b43_wireless_exit(dev, wl);
+=======
+	if (list_empty(&wl->devlist)) {
+		b43_leds_unregister(wl);
+		/* Last core on the chip unregistered.
+		 * We can destroy common struct b43_wl.
+		 */
+		b43_wireless_exit(dev, wl);
+	}
+>>>>>>> p9x
 }
 
 static struct ssb_driver b43_ssb_driver = {

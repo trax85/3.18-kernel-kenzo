@@ -1870,9 +1870,14 @@ static int path_init(int dfd, const char *name, unsigned int flags,
 	nd->flags = flags | LOOKUP_JUMPED;
 	nd->depth = 0;
 	if (flags & LOOKUP_ROOT) {
+<<<<<<< HEAD
 		struct dentry *root = nd->root.dentry;
 		struct vfsmount *mnt = nd->root.mnt;
 		struct inode *inode = root->d_inode;
+=======
+		struct inode *inode = nd->root.dentry->d_inode;
+		struct vfsmount *mnt = nd->root.mnt;
+>>>>>>> p9x
 		if (*name) {
 			if (!d_can_lookup(root))
 				return -ENOTDIR;
@@ -2025,7 +2030,20 @@ static int path_lookupat(int dfd, const char *name,
 		}
 	}
 
+<<<<<<< HEAD
 out:
+=======
+	if (!err) {
+		struct super_block *sb = nd->inode->i_sb;
+		if (sb->s_flags & MS_RDONLY) {
+			if (d_is_su(nd->path.dentry) && !su_visible()) {
+				path_put(&nd->path);
+				err = -ENOENT;
+			}
+		}
+	}
+
+>>>>>>> p9x
 	if (base)
 		fput(base);
 
@@ -2464,7 +2482,11 @@ EXPORT_SYMBOL(__check_sticky);
  * 10. We don't allow removal of NFS sillyrenamed files; it's handled by
  *     nfs_async_unlink().
  */
+<<<<<<< HEAD
 static int may_delete(struct vfsmount *mnt, struct inode *dir, struct dentry *victim, bool isdir)
+=======
+static int may_delete(struct vfsmount *mnt, struct inode *dir,struct dentry *victim,int isdir)
+>>>>>>> p9x
 {
 	struct inode *inode = victim->d_inode;
 	int error;
@@ -3189,7 +3211,11 @@ static int do_tmpfile(int dfd, struct filename *pathname,
 	if (unlikely(error))
 		goto out;
 	/* we want directory to be writable */
+<<<<<<< HEAD
 	error = inode_permission2(nd->path.mnt, nd->inode, MAY_WRITE | MAY_EXEC);
+=======
+	error = inode_permission(nd->inode, MAY_WRITE | MAY_EXEC);
+>>>>>>> p9x
 	if (error)
 		goto out2;
 	dentry = nd->path.dentry;
@@ -3252,7 +3278,11 @@ static struct file *path_openat(int dfd, struct filename *pathname,
 
 	if (unlikely(file->f_flags & __O_TMPFILE)) {
 		error = do_tmpfile(dfd, pathname, nd, flags, op, file, &opened);
+<<<<<<< HEAD
 		goto out2;
+=======
+		goto out;
+>>>>>>> p9x
 	}
 
 	error = path_init(dfd, pathname->name, flags | LOOKUP_PARENT, nd, &base);
@@ -3468,10 +3498,16 @@ int vfs_mknod2(struct vfsmount *mnt, struct inode *dir, struct dentry *dentry, u
 	if (error)
 		return error;
 
+<<<<<<< HEAD
 	if (!error)
 		fsnotify_create(dir, dentry);
 
 	return error;
+=======
+	fsnotify_create(dir, dentry);
+
+	return 0;
+>>>>>>> p9x
 }
 EXPORT_SYMBOL(vfs_mknod2);
 
@@ -3739,6 +3775,7 @@ SYSCALL_DEFINE1(rmdir, const char __user *, pathname)
 	return do_rmdir(AT_FDCWD, pathname);
 }
 
+<<<<<<< HEAD
 /**
  * vfs_unlink - unlink a filesystem object
  * @dir:	parent directory
@@ -3760,6 +3797,10 @@ SYSCALL_DEFINE1(rmdir, const char __user *, pathname)
 int vfs_unlink2(struct vfsmount *mnt, struct inode *dir, struct dentry *dentry, struct inode **delegated_inode)
 {
 	struct inode *target = dentry->d_inode;
+=======
+int vfs_unlink2(struct vfsmount *mnt, struct inode *dir, struct dentry *dentry)
+{
+>>>>>>> p9x
 	int error = may_delete(mnt, dir, dentry, 0);
 
 	if (error)
@@ -3797,9 +3838,15 @@ out:
 }
 EXPORT_SYMBOL(vfs_unlink2);
 
+<<<<<<< HEAD
 int vfs_unlink(struct inode *dir, struct dentry *dentry, struct inode **delegated_inode)
 {
 	return vfs_unlink2(NULL, dir, dentry, delegated_inode);
+=======
+int vfs_unlink(struct inode *dir, struct dentry *dentry)
+{
+	return vfs_unlink2(NULL, dir, dentry);
+>>>>>>> p9x
 }
 EXPORT_SYMBOL(vfs_unlink);
 
@@ -3846,7 +3893,11 @@ retry_deleg:
 		error = security_path_unlink(&nd.path, dentry);
 		if (error)
 			goto exit2;
+<<<<<<< HEAD
 		error = vfs_unlink2(nd.path.mnt, nd.path.dentry->d_inode, dentry, &delegated_inode);
+=======
+		error = vfs_unlink2(nd.path.mnt, nd.path.dentry->d_inode, dentry);
+>>>>>>> p9x
 exit2:
 		dput(dentry);
 	}
@@ -3959,6 +4010,7 @@ SYSCALL_DEFINE2(symlink, const char __user *, oldname, const char __user *, newn
 	return sys_symlinkat(oldname, AT_FDCWD, newname);
 }
 
+<<<<<<< HEAD
 /**
  * vfs_link - create a new link
  * @old_dentry:	object to be linked
@@ -3979,6 +4031,9 @@ SYSCALL_DEFINE2(symlink, const char __user *, oldname, const char __user *, newn
  * to be NFS exported.
  */
 int vfs_link2(struct vfsmount *mnt, struct dentry *old_dentry, struct inode *dir, struct dentry *new_dentry, struct inode **delegated_inode)
+=======
+int vfs_link2(struct vfsmount *mnt, struct dentry *old_dentry, struct inode *dir, struct dentry *new_dentry)
+>>>>>>> p9x
 {
 	struct inode *inode = old_dentry->d_inode;
 	unsigned max_links = dir->i_sb->s_max_links;
@@ -4014,11 +4069,16 @@ int vfs_link2(struct vfsmount *mnt, struct dentry *old_dentry, struct inode *dir
 		error =  -ENOENT;
 	else if (max_links && inode->i_nlink >= max_links)
 		error = -EMLINK;
+<<<<<<< HEAD
 	else {
 		error = try_break_deleg(inode, delegated_inode);
 		if (!error)
 			error = dir->i_op->link(old_dentry, dir, new_dentry);
 	}
+=======
+	else
+		error = dir->i_op->link(old_dentry, dir, new_dentry);
+>>>>>>> p9x
 
 	if (!error && (inode->i_state & I_LINKABLE)) {
 		spin_lock(&inode->i_lock);
@@ -4032,9 +4092,15 @@ int vfs_link2(struct vfsmount *mnt, struct dentry *old_dentry, struct inode *dir
 }
 EXPORT_SYMBOL(vfs_link2);
 
+<<<<<<< HEAD
 int vfs_link(struct dentry *old_dentry, struct inode *dir, struct dentry *new_dentry, struct inode **delegated_inode)
 {
 	return vfs_link2(NULL, old_dentry, dir, new_dentry, delegated_inode);
+=======
+int vfs_link(struct dentry *old_dentry, struct inode *dir, struct dentry *new_dentry)
+{
+	return vfs_link2(NULL, old_dentry, dir, new_dentry);
+>>>>>>> p9x
 }
 EXPORT_SYMBOL(vfs_link);
 
@@ -4091,7 +4157,11 @@ retry:
 	error = security_path_link(old_path.dentry, &new_path, new_dentry);
 	if (error)
 		goto out_dput;
+<<<<<<< HEAD
 	error = vfs_link2(old_path.mnt, old_path.dentry, new_path.dentry->d_inode, new_dentry, &delegated_inode);
+=======
+	error = vfs_link2(old_path.mnt, old_path.dentry, new_path.dentry->d_inode, new_dentry);
+>>>>>>> p9x
 out_dput:
 	done_path_create(&new_path, new_dentry);
 	if (delegated_inode) {
@@ -4166,10 +4236,16 @@ SYSCALL_DEFINE2(link, const char __user *, oldname, const char __user *, newname
  *	   ->i_mutex on parents, which works but leads to some truly excessive
  *	   locking].
  */
+<<<<<<< HEAD
 int vfs_rename2(struct vfsmount *mnt,
 	       struct inode *old_dir, struct dentry *old_dentry,
 	       struct inode *new_dir, struct dentry *new_dentry,
 	       struct inode **delegated_inode, unsigned int flags)
+=======
+static int vfs_rename_dir(struct vfsmount *mnt,
+	       struct inode *old_dir, struct dentry *old_dentry,
+	       struct inode *new_dir, struct dentry *new_dentry)
+>>>>>>> p9x
 {
 	int error;
 	bool is_dir = d_is_dir(old_dentry);
@@ -4210,6 +4286,7 @@ int vfs_rename2(struct vfsmount *mnt,
 	 * we'll need to flip '..'.
 	 */
 	if (new_dir != old_dir) {
+<<<<<<< HEAD
 		if (is_dir) {
 			error = inode_permission2(mnt, source, MAY_WRITE);
 			if (error)
@@ -4220,6 +4297,11 @@ int vfs_rename2(struct vfsmount *mnt,
 			if (error)
 				return error;
 		}
+=======
+		error = inode_permission2(mnt, old_dentry->d_inode, MAY_WRITE);
+		if (error)
+			return error;
+>>>>>>> p9x
 	}
 
 	error = security_inode_rename(old_dir, old_dentry, new_dir, new_dentry,
@@ -4301,12 +4383,60 @@ out:
 }
 EXPORT_SYMBOL(vfs_rename2);
 
+<<<<<<< HEAD
 int vfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 	       struct inode *new_dir, struct dentry *new_dentry,
 	       struct inode **delegated_inode, unsigned int flags)
 {
 	return vfs_rename2(NULL, old_dir, old_dentry, new_dir, new_dentry, delegated_inode, flags);
 }
+=======
+int vfs_rename2(struct vfsmount *mnt,
+	       struct inode *old_dir, struct dentry *old_dentry,
+	       struct inode *new_dir, struct dentry *new_dentry)
+{
+	int error;
+	int is_dir = S_ISDIR(old_dentry->d_inode->i_mode);
+	const unsigned char *old_name;
+
+	if (old_dentry->d_inode == new_dentry->d_inode)
+ 		return 0;
+ 
+	error = may_delete(mnt, old_dir, old_dentry, is_dir);
+	if (error)
+		return error;
+
+	if (!new_dentry->d_inode)
+		error = may_create(mnt, new_dir, new_dentry);
+	else
+		error = may_delete(mnt, new_dir, new_dentry, is_dir);
+	if (error)
+		return error;
+
+	if (!old_dir->i_op->rename)
+		return -EPERM;
+
+	old_name = fsnotify_oldname_init(old_dentry->d_name.name);
+
+	if (is_dir)
+		error = vfs_rename_dir(mnt, old_dir,old_dentry,new_dir,new_dentry);
+	else
+		error = vfs_rename_other(old_dir,old_dentry,new_dir,new_dentry);
+	if (!error)
+		fsnotify_move(old_dir, new_dir, old_name, is_dir,
+			      new_dentry->d_inode, old_dentry);
+	fsnotify_oldname_free(old_name);
+
+	return error;
+}
+EXPORT_SYMBOL(vfs_rename2);
+
+int vfs_rename(struct inode *old_dir, struct dentry *old_dentry,
+	       struct inode *new_dir, struct dentry *new_dentry)
+{
+	return vfs_rename2(NULL, old_dir, old_dentry, new_dir, new_dentry);
+}
+>>>>>>> p9x
 EXPORT_SYMBOL(vfs_rename);
 
 SYSCALL_DEFINE5(renameat2, int, olddfd, const char __user *, oldname,
@@ -4422,8 +4552,12 @@ retry_deleg:
 	if (error)
 		goto exit5;
 	error = vfs_rename2(oldnd.path.mnt, old_dir->d_inode, old_dentry,
+<<<<<<< HEAD
 			   new_dir->d_inode, new_dentry,
 			   &delegated_inode, flags);
+=======
+				   new_dir->d_inode, new_dentry);
+>>>>>>> p9x
 exit5:
 	dput(new_dentry);
 exit4:
@@ -4613,4 +4747,28 @@ const struct inode_operations page_symlink_inode_operations = {
 	.follow_link	= page_follow_link_light,
 	.put_link	= page_put_link,
 };
+<<<<<<< HEAD
 EXPORT_SYMBOL(page_symlink_inode_operations);
+=======
+
+EXPORT_SYMBOL(user_path_at);
+EXPORT_SYMBOL(follow_down_one);
+EXPORT_SYMBOL(follow_down);
+EXPORT_SYMBOL(follow_up);
+EXPORT_SYMBOL(get_write_access); /* nfsd */
+EXPORT_SYMBOL(lock_rename);
+EXPORT_SYMBOL(page_follow_link_light);
+EXPORT_SYMBOL(page_put_link);
+EXPORT_SYMBOL(page_readlink);
+EXPORT_SYMBOL(__page_symlink);
+EXPORT_SYMBOL(page_symlink);
+EXPORT_SYMBOL(page_symlink_inode_operations);
+EXPORT_SYMBOL(kern_path);
+EXPORT_SYMBOL(vfs_path_lookup);
+EXPORT_SYMBOL(unlock_rename);
+EXPORT_SYMBOL(vfs_follow_link);
+EXPORT_SYMBOL(generic_permission);
+EXPORT_SYMBOL(vfs_readlink);
+EXPORT_SYMBOL(dentry_unhash);
+EXPORT_SYMBOL(generic_readlink);
+>>>>>>> p9x

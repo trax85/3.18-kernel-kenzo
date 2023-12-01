@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -448,7 +452,11 @@ int sysmon_send_shutdown(struct subsys_desc *dest_desc)
 	resp_desc.max_msg_len = QMI_SSCTL_RESP_MSG_LENGTH;
 	resp_desc.ei_array = qmi_ssctl_shutdown_resp_msg_ei;
 
+<<<<<<< HEAD
 	reinit_completion(&data->ind_recv);
+=======
+	INIT_COMPLETION(data->ind_recv);
+>>>>>>> p9x
 	mutex_lock(&sysmon_lock);
 	ret = qmi_send_req_wait(data->clnt_handle, &req_desc, &req,
 		sizeof(req), &resp_desc, &resp, sizeof(resp), SERVER_TIMEOUT);
@@ -465,6 +473,14 @@ int sysmon_send_shutdown(struct subsys_desc *dest_desc)
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Subsystem SSCTL service might not be able to send the QMI
+	 * acknowledgment. Wait for the shutdown_ack SMP2P bit to be
+	 * set by the service if that's the case.
+	 */
+>>>>>>> p9x
 	shutdown_ack_ret = wait_for_shutdown_ack(dest_desc);
 	if (shutdown_ack_ret < 0) {
 		pr_err("shutdown_ack SMP2P bit for %s not set\n", data->name);
@@ -473,8 +489,15 @@ int sysmon_send_shutdown(struct subsys_desc *dest_desc)
 			ret = shutdown_ack_ret;
 		}
 		goto out;
+<<<<<<< HEAD
 	} else if (shutdown_ack_ret > 0)
 		goto out;
+=======
+	} else if (shutdown_ack_ret > 0) {
+		ret = 0;
+		goto out;
+	}
+>>>>>>> p9x
 
 	if (!wait_for_completion_timeout(&data->ind_recv,
 					msecs_to_jiffies(SHUTDOWN_TIMEOUT))) {
@@ -659,12 +682,19 @@ int sysmon_notifier_register(struct subsys_desc *desc)
 	data->clnt_handle = NULL;
 	data->legacy_version = false;
 
+<<<<<<< HEAD
 	mutex_lock(&sysmon_list_lock);
+=======
+>>>>>>> p9x
 	if (data->instance_id <= 0) {
 		pr_debug("SSCTL instance id not defined\n");
 		goto add_list;
 	}
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&sysmon_list_lock);
+>>>>>>> p9x
 	if (sysmon_wq)
 		goto notif_register;
 

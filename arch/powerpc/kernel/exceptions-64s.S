@@ -366,14 +366,20 @@ vsx_unavailable_pseries_trampoline:
 	EXCEPTION_PROLOG_0(PACA_EXGEN)
 	b	vsx_unavailable_pSeries
 
+facility_unavailable_trampoline:
 	. = 0xf60
 facility_unavailable_trampoline:
 	SET_SCRATCH0(r13)
 	EXCEPTION_PROLOG_0(PACA_EXGEN)
 	b	facility_unavailable_pSeries
 
+<<<<<<< HEAD
 	. = 0xf80
 hv_facility_unavailable_trampoline:
+=======
+hv_facility_unavailable_trampoline:
+	. = 0xf80
+>>>>>>> p9x
 	SET_SCRATCH0(r13)
 	EXCEPTION_PROLOG_0(PACA_EXGEN)
 	b	facility_unavailable_hv
@@ -919,14 +925,23 @@ vsx_unavailable_relon_pseries_trampoline:
 	EXCEPTION_PROLOG_0(PACA_EXGEN)
 	b	vsx_unavailable_relon_pSeries
 
+<<<<<<< HEAD
+=======
+facility_unavailable_relon_trampoline:
+>>>>>>> p9x
 	. = 0x4f60
 facility_unavailable_relon_trampoline:
 	SET_SCRATCH0(r13)
 	EXCEPTION_PROLOG_0(PACA_EXGEN)
 	b	facility_unavailable_relon_pSeries
 
+<<<<<<< HEAD
 	. = 0x4f80
 hv_facility_unavailable_relon_trampoline:
+=======
+hv_facility_unavailable_relon_trampoline:
+	. = 0x4f80
+>>>>>>> p9x
 	SET_SCRATCH0(r13)
 	EXCEPTION_PROLOG_0(PACA_EXGEN)
 	b	hv_facility_unavailable_relon_hv
@@ -1697,3 +1712,593 @@ END_FTR_SECTION_IFSET(CPU_FTR_CFAR)
 1:	addi	r3,r1,STACK_FRAME_OVERHEAD
 	bl	kernel_bad_stack
 	b	1b
+<<<<<<< HEAD
+=======
+
+/*
+ * Here r13 points to the paca, r9 contains the saved CR,
+ * SRR0 and SRR1 are saved in r11 and r12,
+ * r9 - r13 are saved in paca->exgen.
+ */
+	.align	7
+	.globl data_access_common
+data_access_common:
+	mfspr	r10,SPRN_DAR
+	std	r10,PACA_EXGEN+EX_DAR(r13)
+	mfspr	r10,SPRN_DSISR
+	stw	r10,PACA_EXGEN+EX_DSISR(r13)
+	EXCEPTION_PROLOG_COMMON(0x300, PACA_EXGEN)
+	DISABLE_INTS
+	ld	r12,_MSR(r1)
+	ld	r3,PACA_EXGEN+EX_DAR(r13)
+	lwz	r4,PACA_EXGEN+EX_DSISR(r13)
+	li	r5,0x300
+	b	.do_hash_page		/* Try to handle as hpte fault */
+
+	.align  7
+	.globl  h_data_storage_common
+h_data_storage_common:
+	mfspr   r10,SPRN_HDAR
+	std     r10,PACA_EXGEN+EX_DAR(r13)
+	mfspr   r10,SPRN_HDSISR
+	stw     r10,PACA_EXGEN+EX_DSISR(r13)
+	EXCEPTION_PROLOG_COMMON(0xe00, PACA_EXGEN)
+	bl      .save_nvgprs
+	DISABLE_INTS
+	addi    r3,r1,STACK_FRAME_OVERHEAD
+	bl      .unknown_exception
+	b       .ret_from_except
+
+	.align	7
+	.globl instruction_access_common
+instruction_access_common:
+	EXCEPTION_PROLOG_COMMON(0x400, PACA_EXGEN)
+	DISABLE_INTS
+	ld	r12,_MSR(r1)
+	ld	r3,_NIP(r1)
+	andis.	r4,r12,0x5820
+	li	r5,0x400
+	b	.do_hash_page		/* Try to handle as hpte fault */
+
+	STD_EXCEPTION_COMMON(0xe20, h_instr_storage, .unknown_exception)
+
+/*
+ * Here is the common SLB miss user that is used when going to virtual
+ * mode for SLB misses, that is currently not used
+ */
+#ifdef __DISABLED__
+	.align	7
+	.globl	slb_miss_user_common
+slb_miss_user_common:
+	mflr	r10
+	std	r3,PACA_EXGEN+EX_DAR(r13)
+	stw	r9,PACA_EXGEN+EX_CCR(r13)
+	std	r10,PACA_EXGEN+EX_LR(r13)
+	std	r11,PACA_EXGEN+EX_SRR0(r13)
+	bl	.slb_allocate_user
+
+	ld	r10,PACA_EXGEN+EX_LR(r13)
+	ld	r3,PACA_EXGEN+EX_R3(r13)
+	lwz	r9,PACA_EXGEN+EX_CCR(r13)
+	ld	r11,PACA_EXGEN+EX_SRR0(r13)
+	mtlr	r10
+	beq-	slb_miss_fault
+
+	andi.	r10,r12,MSR_RI		/* check for unrecoverable exception */
+	beq-	unrecov_user_slb
+	mfmsr	r10
+
+.machine push
+.machine "power4"
+	mtcrf	0x80,r9
+.machine pop
+
+	clrrdi	r10,r10,2		/* clear RI before setting SRR0/1 */
+	mtmsrd	r10,1
+
+	mtspr	SRR0,r11
+	mtspr	SRR1,r12
+
+	ld	r9,PACA_EXGEN+EX_R9(r13)
+	ld	r10,PACA_EXGEN+EX_R10(r13)
+	ld	r11,PACA_EXGEN+EX_R11(r13)
+	ld	r12,PACA_EXGEN+EX_R12(r13)
+	ld	r13,PACA_EXGEN+EX_R13(r13)
+	rfid
+	b	.
+
+slb_miss_fault:
+	EXCEPTION_PROLOG_COMMON(0x380, PACA_EXGEN)
+	ld	r4,PACA_EXGEN+EX_DAR(r13)
+	li	r5,0
+	std	r4,_DAR(r1)
+	std	r5,_DSISR(r1)
+	b	handle_page_fault
+
+unrecov_user_slb:
+	EXCEPTION_PROLOG_COMMON(0x4200, PACA_EXGEN)
+	DISABLE_INTS
+	bl	.save_nvgprs
+1:	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	.unrecoverable_exception
+	b	1b
+
+#endif /* __DISABLED__ */
+
+
+	.align	7
+	.globl alignment_common
+alignment_common:
+	mfspr	r10,SPRN_DAR
+	std	r10,PACA_EXGEN+EX_DAR(r13)
+	mfspr	r10,SPRN_DSISR
+	stw	r10,PACA_EXGEN+EX_DSISR(r13)
+	EXCEPTION_PROLOG_COMMON(0x600, PACA_EXGEN)
+	ld	r3,PACA_EXGEN+EX_DAR(r13)
+	lwz	r4,PACA_EXGEN+EX_DSISR(r13)
+	std	r3,_DAR(r1)
+	std	r4,_DSISR(r1)
+	bl	.save_nvgprs
+	DISABLE_INTS
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	.alignment_exception
+	b	.ret_from_except
+
+	.align	7
+	.globl program_check_common
+program_check_common:
+	EXCEPTION_PROLOG_COMMON(0x700, PACA_EXGEN)
+	bl	.save_nvgprs
+	DISABLE_INTS
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	.program_check_exception
+	b	.ret_from_except
+
+	.align	7
+	.globl fp_unavailable_common
+fp_unavailable_common:
+	EXCEPTION_PROLOG_COMMON(0x800, PACA_EXGEN)
+	bne	1f			/* if from user, just load it up */
+	bl	.save_nvgprs
+	DISABLE_INTS
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	.kernel_fp_unavailable_exception
+	BUG_OPCODE
+1:
+#ifdef CONFIG_PPC_TRANSACTIONAL_MEM
+BEGIN_FTR_SECTION
+	/* Test if 2 TM state bits are zero.  If non-zero (ie. userspace was in
+	 * transaction), go do TM stuff
+	 */
+	rldicl.	r0, r12, (64-MSR_TS_LG), (64-2)
+	bne-	2f
+END_FTR_SECTION_IFSET(CPU_FTR_TM)
+#endif
+	bl	.load_up_fpu
+	b	fast_exception_return
+#ifdef CONFIG_PPC_TRANSACTIONAL_MEM
+2:	/* User process was in a transaction */
+	bl	.save_nvgprs
+	DISABLE_INTS
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	.fp_unavailable_tm
+	b	.ret_from_except
+#endif
+	.align	7
+	.globl altivec_unavailable_common
+altivec_unavailable_common:
+	EXCEPTION_PROLOG_COMMON(0xf20, PACA_EXGEN)
+#ifdef CONFIG_ALTIVEC
+BEGIN_FTR_SECTION
+	beq	1f
+#ifdef CONFIG_PPC_TRANSACTIONAL_MEM
+  BEGIN_FTR_SECTION_NESTED(69)
+	/* Test if 2 TM state bits are zero.  If non-zero (ie. userspace was in
+	 * transaction), go do TM stuff
+	 */
+	rldicl.	r0, r12, (64-MSR_TS_LG), (64-2)
+	bne-	2f
+  END_FTR_SECTION_NESTED(CPU_FTR_TM, CPU_FTR_TM, 69)
+#endif
+	bl	.load_up_altivec
+	b	fast_exception_return
+#ifdef CONFIG_PPC_TRANSACTIONAL_MEM
+2:	/* User process was in a transaction */
+	bl	.save_nvgprs
+	DISABLE_INTS
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	.altivec_unavailable_tm
+	b	.ret_from_except
+#endif
+1:
+END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+#endif
+	bl	.save_nvgprs
+	DISABLE_INTS
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	.altivec_unavailable_exception
+	b	.ret_from_except
+
+	.align	7
+	.globl vsx_unavailable_common
+vsx_unavailable_common:
+	EXCEPTION_PROLOG_COMMON(0xf40, PACA_EXGEN)
+#ifdef CONFIG_VSX
+BEGIN_FTR_SECTION
+	beq	1f
+#ifdef CONFIG_PPC_TRANSACTIONAL_MEM
+  BEGIN_FTR_SECTION_NESTED(69)
+	/* Test if 2 TM state bits are zero.  If non-zero (ie. userspace was in
+	 * transaction), go do TM stuff
+	 */
+	rldicl.	r0, r12, (64-MSR_TS_LG), (64-2)
+	bne-	2f
+  END_FTR_SECTION_NESTED(CPU_FTR_TM, CPU_FTR_TM, 69)
+#endif
+	b	.load_up_vsx
+#ifdef CONFIG_PPC_TRANSACTIONAL_MEM
+2:	/* User process was in a transaction */
+	bl	.save_nvgprs
+	DISABLE_INTS
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	.vsx_unavailable_tm
+	b	.ret_from_except
+#endif
+1:
+END_FTR_SECTION_IFSET(CPU_FTR_VSX)
+#endif
+	bl	.save_nvgprs
+	DISABLE_INTS
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	.vsx_unavailable_exception
+	b	.ret_from_except
+
+	STD_EXCEPTION_COMMON(0xf60, facility_unavailable, .facility_unavailable_exception)
+	STD_EXCEPTION_COMMON(0xf80, hv_facility_unavailable, .facility_unavailable_exception)
+
+	.align	7
+	.globl	__end_handlers
+__end_handlers:
+
+	/* Equivalents to the above handlers for relocation-on interrupt vectors */
+	STD_RELON_EXCEPTION_HV_OOL(0xe40, emulation_assist)
+	MASKABLE_RELON_EXCEPTION_HV_OOL(0xe80, h_doorbell)
+
+	STD_RELON_EXCEPTION_PSERIES_OOL(0xf00, performance_monitor)
+	STD_RELON_EXCEPTION_PSERIES_OOL(0xf20, altivec_unavailable)
+	STD_RELON_EXCEPTION_PSERIES_OOL(0xf40, vsx_unavailable)
+	STD_RELON_EXCEPTION_PSERIES_OOL(0xf60, facility_unavailable)
+	STD_RELON_EXCEPTION_HV_OOL(0xf80, hv_facility_unavailable)
+
+	/*
+	 * The __end_interrupts marker must be past the out-of-line (OOL)
+	 * handlers, so that they are copied to real address 0x100 when running
+	 * a relocatable kernel. This ensures they can be reached from the short
+	 * trampoline handlers (like 0x4f00, 0x4f20, etc.) which branch
+	 * directly, without using LOAD_HANDLER().
+	 */
+	.align	7
+	.globl	__end_interrupts
+__end_interrupts:
+
+#if defined(CONFIG_PPC_PSERIES) || defined(CONFIG_PPC_POWERNV)
+/*
+ * Data area reserved for FWNMI option.
+ * This address (0x7000) is fixed by the RPA.
+ */
+	.= 0x7000
+	.globl fwnmi_data_area
+fwnmi_data_area:
+
+	/* pseries and powernv need to keep the whole page from
+	 * 0x7000 to 0x8000 free for use by the firmware
+	 */
+	. = 0x8000
+#endif /* defined(CONFIG_PPC_PSERIES) || defined(CONFIG_PPC_POWERNV) */
+
+/* Space for CPU0's segment table */
+	.balign 4096
+	.globl initial_stab
+initial_stab:
+	.space	4096
+
+#ifdef CONFIG_PPC_POWERNV
+_GLOBAL(opal_mc_secondary_handler)
+	HMT_MEDIUM_PPR_DISCARD
+	SET_SCRATCH0(r13)
+	GET_PACA(r13)
+	clrldi	r3,r3,2
+	tovirt(r3,r3)
+	std	r3,PACA_OPAL_MC_EVT(r13)
+	ld	r13,OPAL_MC_SRR0(r3)
+	mtspr	SPRN_SRR0,r13
+	ld	r13,OPAL_MC_SRR1(r3)
+	mtspr	SPRN_SRR1,r13
+	ld	r3,OPAL_MC_GPR3(r3)
+	GET_SCRATCH0(r13)
+	b	machine_check_pSeries
+#endif /* CONFIG_PPC_POWERNV */
+
+
+/*
+ * r13 points to the PACA, r9 contains the saved CR,
+ * r12 contain the saved SRR1, SRR0 is still ready for return
+ * r3 has the faulting address
+ * r9 - r13 are saved in paca->exslb.
+ * r3 is saved in paca->slb_r3
+ * We assume we aren't going to take any exceptions during this procedure.
+ */
+_GLOBAL(slb_miss_realmode)
+	mflr	r10
+#ifdef CONFIG_RELOCATABLE
+	mtctr	r11
+#endif
+
+	stw	r9,PACA_EXSLB+EX_CCR(r13)	/* save CR in exc. frame */
+	std	r10,PACA_EXSLB+EX_LR(r13)	/* save LR */
+
+	bl	.slb_allocate_realmode
+
+	/* All done -- return from exception. */
+
+	ld	r10,PACA_EXSLB+EX_LR(r13)
+	ld	r3,PACA_EXSLB+EX_R3(r13)
+	lwz	r9,PACA_EXSLB+EX_CCR(r13)	/* get saved CR */
+
+	mtlr	r10
+
+	andi.	r10,r12,MSR_RI	/* check for unrecoverable exception */
+	beq-	2f
+
+.machine	push
+.machine	"power4"
+	mtcrf	0x80,r9
+	mtcrf	0x01,r9		/* slb_allocate uses cr0 and cr7 */
+.machine	pop
+
+	RESTORE_PPR_PACA(PACA_EXSLB, r9)
+	ld	r9,PACA_EXSLB+EX_R9(r13)
+	ld	r10,PACA_EXSLB+EX_R10(r13)
+	ld	r11,PACA_EXSLB+EX_R11(r13)
+	ld	r12,PACA_EXSLB+EX_R12(r13)
+	ld	r13,PACA_EXSLB+EX_R13(r13)
+	rfid
+	b	.	/* prevent speculative execution */
+
+2:	mfspr	r11,SPRN_SRR0
+	ld	r10,PACAKBASE(r13)
+	LOAD_HANDLER(r10,unrecov_slb)
+	mtspr	SPRN_SRR0,r10
+	ld	r10,PACAKMSR(r13)
+	mtspr	SPRN_SRR1,r10
+	rfid
+	b	.
+
+unrecov_slb:
+	EXCEPTION_PROLOG_COMMON(0x4100, PACA_EXSLB)
+	DISABLE_INTS
+	bl	.save_nvgprs
+1:	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	.unrecoverable_exception
+	b	1b
+
+
+#ifdef CONFIG_PPC_970_NAP
+power4_fixup_nap:
+	andc	r9,r9,r10
+	std	r9,TI_LOCAL_FLAGS(r11)
+	ld	r10,_LINK(r1)		/* make idle task do the */
+	std	r10,_NIP(r1)		/* equivalent of a blr */
+	blr
+#endif
+
+/*
+ * Hash table stuff
+ */
+	.align	7
+_STATIC(do_hash_page)
+	std	r3,_DAR(r1)
+	std	r4,_DSISR(r1)
+
+	andis.	r0,r4,0xa410		/* weird error? */
+	bne-	handle_page_fault	/* if not, try to insert a HPTE */
+	andis.  r0,r4,DSISR_DABRMATCH@h
+	bne-    handle_dabr_fault
+
+BEGIN_FTR_SECTION
+	andis.	r0,r4,0x0020		/* Is it a segment table fault? */
+	bne-	do_ste_alloc		/* If so handle it */
+END_MMU_FTR_SECTION_IFCLR(MMU_FTR_SLB)
+
+	CURRENT_THREAD_INFO(r11, r1)
+	lwz	r0,TI_PREEMPT(r11)	/* If we're in an "NMI" */
+	andis.	r0,r0,NMI_MASK@h	/* (i.e. an irq when soft-disabled) */
+	bne	77f			/* then don't call hash_page now */
+	/*
+	 * We need to set the _PAGE_USER bit if MSR_PR is set or if we are
+	 * accessing a userspace segment (even from the kernel). We assume
+	 * kernel addresses always have the high bit set.
+	 */
+	rlwinm	r4,r4,32-25+9,31-9,31-9	/* DSISR_STORE -> _PAGE_RW */
+	rotldi	r0,r3,15		/* Move high bit into MSR_PR posn */
+	orc	r0,r12,r0		/* MSR_PR | ~high_bit */
+	rlwimi	r4,r0,32-13,30,30	/* becomes _PAGE_USER access bit */
+	ori	r4,r4,1			/* add _PAGE_PRESENT */
+	rlwimi	r4,r5,22+2,31-2,31-2	/* Set _PAGE_EXEC if trap is 0x400 */
+
+	/*
+	 * r3 contains the faulting address
+	 * r4 contains the required access permissions
+	 * r5 contains the trap number
+	 *
+	 * at return r3 = 0 for success, 1 for page fault, negative for error
+	 */
+	bl	.hash_page		/* build HPTE if possible */
+	cmpdi	r3,0			/* see if hash_page succeeded */
+
+	/* Success */
+	beq	fast_exc_return_irq	/* Return from exception on success */
+
+	/* Error */
+	blt-	13f
+
+/* Here we have a page fault that hash_page can't handle. */
+handle_page_fault:
+11:	ld	r4,_DAR(r1)
+	ld	r5,_DSISR(r1)
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	.do_page_fault
+	cmpdi	r3,0
+	beq+	12f
+	bl	.save_nvgprs
+	mr	r5,r3
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	lwz	r4,_DAR(r1)
+	bl	.bad_page_fault
+	b	.ret_from_except
+
+/* We have a data breakpoint exception - handle it */
+handle_dabr_fault:
+	bl	.save_nvgprs
+	ld      r4,_DAR(r1)
+	ld      r5,_DSISR(r1)
+	addi    r3,r1,STACK_FRAME_OVERHEAD
+	bl      .do_break
+12:	b       .ret_from_except_lite
+
+
+/* We have a page fault that hash_page could handle but HV refused
+ * the PTE insertion
+ */
+13:	bl	.save_nvgprs
+	mr	r5,r3
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	ld	r4,_DAR(r1)
+	bl	.low_hash_fault
+	b	.ret_from_except
+
+/*
+ * We come here as a result of a DSI at a point where we don't want
+ * to call hash_page, such as when we are accessing memory (possibly
+ * user memory) inside a PMU interrupt that occurred while interrupts
+ * were soft-disabled.  We want to invoke the exception handler for
+ * the access, or panic if there isn't a handler.
+ */
+77:	bl	.save_nvgprs
+	mr	r4,r3
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	li	r5,SIGSEGV
+	bl	.bad_page_fault
+	b	.ret_from_except
+
+	/* here we have a segment miss */
+do_ste_alloc:
+	bl	.ste_allocate		/* try to insert stab entry */
+	cmpdi	r3,0
+	bne-	handle_page_fault
+	b	fast_exception_return
+
+/*
+ * r13 points to the PACA, r9 contains the saved CR,
+ * r11 and r12 contain the saved SRR0 and SRR1.
+ * r9 - r13 are saved in paca->exslb.
+ * We assume we aren't going to take any exceptions during this procedure.
+ * We assume (DAR >> 60) == 0xc.
+ */
+	.align	7
+_GLOBAL(do_stab_bolted)
+	stw	r9,PACA_EXSLB+EX_CCR(r13)	/* save CR in exc. frame */
+	std	r11,PACA_EXSLB+EX_SRR0(r13)	/* save SRR0 in exc. frame */
+	mfspr	r11,SPRN_DAR			/* ea */
+
+	/*
+	 * check for bad kernel/user address
+	 * (ea & ~REGION_MASK) >= PGTABLE_RANGE
+	 */
+	rldicr. r9,r11,4,(63 - 46 - 4)
+	li	r9,0	/* VSID = 0 for bad address */
+	bne-	0f
+
+	/*
+	 * Calculate VSID:
+	 * This is the kernel vsid, we take the top for context from
+	 * the range. context = (MAX_USER_CONTEXT) + ((ea >> 60) - 0xc) + 1
+	 * Here we know that (ea >> 60) == 0xc
+	 */
+	lis	r9,(MAX_USER_CONTEXT + 1)@ha
+	addi	r9,r9,(MAX_USER_CONTEXT + 1)@l
+
+	srdi	r10,r11,SID_SHIFT
+	rldimi  r10,r9,ESID_BITS,0 /* proto vsid */
+	ASM_VSID_SCRAMBLE(r10, r9, 256M)
+	rldic	r9,r10,12,16	/* r9 = vsid << 12 */
+
+0:
+	/* Hash to the primary group */
+	ld	r10,PACASTABVIRT(r13)
+	srdi	r11,r11,SID_SHIFT
+	rldimi	r10,r11,7,52	/* r10 = first ste of the group */
+
+	/* Search the primary group for a free entry */
+1:	ld	r11,0(r10)	/* Test valid bit of the current ste	*/
+	andi.	r11,r11,0x80
+	beq	2f
+	addi	r10,r10,16
+	andi.	r11,r10,0x70
+	bne	1b
+
+	/* Stick for only searching the primary group for now.		*/
+	/* At least for now, we use a very simple random castout scheme */
+	/* Use the TB as a random number ;  OR in 1 to avoid entry 0	*/
+	mftb	r11
+	rldic	r11,r11,4,57	/* r11 = (r11 << 4) & 0x70 */
+	ori	r11,r11,0x10
+
+	/* r10 currently points to an ste one past the group of interest */
+	/* make it point to the randomly selected entry			*/
+	subi	r10,r10,128
+	or 	r10,r10,r11	/* r10 is the entry to invalidate	*/
+
+	isync			/* mark the entry invalid		*/
+	ld	r11,0(r10)
+	rldicl	r11,r11,56,1	/* clear the valid bit */
+	rotldi	r11,r11,8
+	std	r11,0(r10)
+	sync
+
+	clrrdi	r11,r11,28	/* Get the esid part of the ste		*/
+	slbie	r11
+
+2:	std	r9,8(r10)	/* Store the vsid part of the ste	*/
+	eieio
+
+	mfspr	r11,SPRN_DAR		/* Get the new esid			*/
+	clrrdi	r11,r11,28	/* Permits a full 32b of ESID		*/
+	ori	r11,r11,0x90	/* Turn on valid and kp			*/
+	std	r11,0(r10)	/* Put new entry back into the stab	*/
+
+	sync
+
+	/* All done -- return from exception. */
+	lwz	r9,PACA_EXSLB+EX_CCR(r13)	/* get saved CR */
+	ld	r11,PACA_EXSLB+EX_SRR0(r13)	/* get saved SRR0 */
+
+	andi.	r10,r12,MSR_RI
+	beq-	unrecov_slb
+
+	mtcrf	0x80,r9			/* restore CR */
+
+	mfmsr	r10
+	clrrdi	r10,r10,2
+	mtmsrd	r10,1
+
+	mtspr	SPRN_SRR0,r11
+	mtspr	SPRN_SRR1,r12
+	ld	r9,PACA_EXSLB+EX_R9(r13)
+	ld	r10,PACA_EXSLB+EX_R10(r13)
+	ld	r11,PACA_EXSLB+EX_R11(r13)
+	ld	r12,PACA_EXSLB+EX_R12(r13)
+	ld	r13,PACA_EXSLB+EX_R13(r13)
+	rfid
+	b	.	/* prevent speculative execution */
+>>>>>>> p9x

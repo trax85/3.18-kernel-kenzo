@@ -23,19 +23,26 @@
 #include <linux/of.h>
 #include <linux/of_fdt.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
+=======
+>>>>>>> p9x
 
 struct efi __read_mostly efi = {
 	.mps        = EFI_INVALID_TABLE_ADDR,
 	.acpi       = EFI_INVALID_TABLE_ADDR,
 	.acpi20     = EFI_INVALID_TABLE_ADDR,
 	.smbios     = EFI_INVALID_TABLE_ADDR,
+<<<<<<< HEAD
 	.smbios3    = EFI_INVALID_TABLE_ADDR,
+=======
+>>>>>>> p9x
 	.sal_systab = EFI_INVALID_TABLE_ADDR,
 	.boot_info  = EFI_INVALID_TABLE_ADDR,
 	.hcdp       = EFI_INVALID_TABLE_ADDR,
 	.uga        = EFI_INVALID_TABLE_ADDR,
 	.uv_systab  = EFI_INVALID_TABLE_ADDR,
+<<<<<<< HEAD
 	.fw_vendor  = EFI_INVALID_TABLE_ADDR,
 	.runtime    = EFI_INVALID_TABLE_ADDR,
 	.config_table  = EFI_INVALID_TABLE_ADDR,
@@ -63,6 +70,10 @@ static int __init parse_efi_cmdline(char *str)
 	return 0;
 }
 early_param("efi", parse_efi_cmdline);
+=======
+};
+EXPORT_SYMBOL(efi);
+>>>>>>> p9x
 
 static struct kobject *efi_kobj;
 static struct kobject *efivars_kobj;
@@ -263,9 +274,14 @@ static __initdata efi_config_table_type_t common_tables[] = {
 	{MPS_TABLE_GUID, "MPS", &efi.mps},
 	{SAL_SYSTEM_TABLE_GUID, "SALsystab", &efi.sal_systab},
 	{SMBIOS_TABLE_GUID, "SMBIOS", &efi.smbios},
+<<<<<<< HEAD
 	{SMBIOS3_TABLE_GUID, "SMBIOS 3.0", &efi.smbios3},
 	{UGA_IO_PROTOCOL_GUID, "UGA", &efi.uga},
 	{NULL_GUID, NULL, NULL},
+=======
+	{UGA_IO_PROTOCOL_GUID, "UGA", &efi.uga},
+	{NULL_GUID, NULL, 0},
+>>>>>>> p9x
 };
 
 static __init int match_config_table(efi_guid_t *guid,
@@ -293,6 +309,7 @@ static __init int match_config_table(efi_guid_t *guid,
 	return 0;
 }
 
+<<<<<<< HEAD
 int __init efi_config_parse_tables(void *config_tables, int count, int sz,
 				   efi_config_table_type_t *arch_tables)
 {
@@ -336,6 +353,12 @@ int __init efi_config_init(efi_config_table_type_t *arch_tables)
 {
 	void *config_tables;
 	int sz, ret;
+=======
+int __init efi_config_init(efi_config_table_type_t *arch_tables)
+{
+	void *config_tables, *tablep;
+	int i, sz;
+>>>>>>> p9x
 
 	if (efi_enabled(EFI_64BIT))
 		sz = sizeof(efi_config_table_64_t);
@@ -352,6 +375,7 @@ int __init efi_config_init(efi_config_table_type_t *arch_tables)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	ret = efi_config_parse_tables(config_tables, efi.systab->nr_tables, sz,
 				      arch_tables);
 
@@ -372,6 +396,42 @@ static int __init efi_load_efivars(void)
 }
 device_initcall(efi_load_efivars);
 #endif
+=======
+	tablep = config_tables;
+	pr_info("");
+	for (i = 0; i < efi.systab->nr_tables; i++) {
+		efi_guid_t guid;
+		unsigned long table;
+
+		if (efi_enabled(EFI_64BIT)) {
+			u64 table64;
+			guid = ((efi_config_table_64_t *)tablep)->guid;
+			table64 = ((efi_config_table_64_t *)tablep)->table;
+			table = table64;
+#ifndef CONFIG_64BIT
+			if (table64 >> 32) {
+				pr_cont("\n");
+				pr_err("Table located above 4GB, disabling EFI.\n");
+				early_iounmap(config_tables,
+					       efi.systab->nr_tables * sz);
+				return -EINVAL;
+			}
+#endif
+		} else {
+			guid = ((efi_config_table_32_t *)tablep)->guid;
+			table = ((efi_config_table_32_t *)tablep)->table;
+		}
+
+		if (!match_config_table(&guid, table, common_tables))
+			match_config_table(&guid, table, arch_tables);
+
+		tablep += sz;
+	}
+	pr_cont("\n");
+	early_iounmap(config_tables, efi.systab->nr_tables * sz);
+	return 0;
+}
+>>>>>>> p9x
 
 #ifdef CONFIG_EFI_PARAMS_FROM_FDT
 
@@ -398,7 +458,10 @@ static __initdata struct {
 
 struct param_info {
 	int verbose;
+<<<<<<< HEAD
 	int found;
+=======
+>>>>>>> p9x
 	void *params;
 };
 
@@ -406,21 +469,41 @@ static int __init fdt_find_uefi_params(unsigned long node, const char *uname,
 				       int depth, void *data)
 {
 	struct param_info *info = data;
+<<<<<<< HEAD
 	const void *prop;
 	void *dest;
 	u64 val;
 	int i, len;
+=======
+	void *prop, *dest;
+	unsigned long len;
+	u64 val;
+	int i;
+>>>>>>> p9x
 
 	if (depth != 1 ||
 	    (strcmp(uname, "chosen") != 0 && strcmp(uname, "chosen@0") != 0))
 		return 0;
 
+<<<<<<< HEAD
 	for (i = 0; i < ARRAY_SIZE(dt_params); i++) {
 		prop = of_get_flat_dt_prop(node, dt_params[i].propname, &len);
 		if (!prop)
 			return 0;
 		dest = info->params + dt_params[i].offset;
 		info->found++;
+=======
+	pr_info("Getting parameters from FDT:\n");
+
+	for (i = 0; i < ARRAY_SIZE(dt_params); i++) {
+		prop = of_get_flat_dt_prop(node, dt_params[i].propname, &len);
+		if (!prop) {
+			pr_err("Can't find %s in device tree!\n",
+			       dt_params[i].name);
+			return 0;
+		}
+		dest = info->params + dt_params[i].offset;
+>>>>>>> p9x
 
 		val = of_read_number(prop, len / sizeof(u32));
 
@@ -439,6 +522,7 @@ static int __init fdt_find_uefi_params(unsigned long node, const char *uname,
 int __init efi_get_fdt_params(struct efi_fdt_params *params, int verbose)
 {
 	struct param_info info;
+<<<<<<< HEAD
 	int ret;
 
 	pr_info("Getting EFI parameters from FDT:\n");
@@ -514,3 +598,12 @@ char * __init efi_md_typeattr_format(char *buf, size_t size,
 			 attr & EFI_MEMORY_UC      ? "UC"  : "");
 	return buf;
 }
+=======
+
+	info.verbose = verbose;
+	info.params = params;
+
+	return of_scan_flat_dt(fdt_find_uefi_params, &info);
+}
+#endif /* CONFIG_EFI_PARAMS_FROM_FDT */
+>>>>>>> p9x

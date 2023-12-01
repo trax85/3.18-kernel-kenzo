@@ -20,6 +20,10 @@
 #include <linux/jiffies.h>
 #include <linux/delay.h>
 #include <linux/err.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_data/clocksource-nomadik-mtu.h>
+>>>>>>> p9x
 #include <linux/sched_clock.h>
 #include <asm/mach/time.h>
 

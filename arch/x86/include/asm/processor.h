@@ -662,7 +662,13 @@ static inline void cpu_relax(void)
 	rep_nop();
 }
 
+<<<<<<< HEAD
 #define cpu_relax_lowlatency() cpu_relax()
+=======
+#ifndef cpu_read_relax
+#define cpu_read_relax() cpu_relax()
+#endif
+>>>>>>> p9x
 
 /* Stop speculative execution and prefetching of modified code. */
 static inline void sync_core(void)

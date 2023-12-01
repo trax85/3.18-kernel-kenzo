@@ -195,6 +195,7 @@ int ulist_add_merge(struct ulist *ulist, u64 val, u64 aux,
 	if (!node)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	node->val = val;
 	node->aux = aux;
 #ifdef CONFIG_BTRFS_DEBUG
@@ -205,6 +206,52 @@ int ulist_add_merge(struct ulist *ulist, u64 val, u64 aux,
 	ASSERT(!ret);
 	list_add_tail(&node->list, &ulist->nodes);
 	ulist->nnodes++;
+=======
+	if (ulist->nnodes >= ulist->nodes_alloced) {
+		u64 new_alloced = ulist->nodes_alloced + 128;
+		struct ulist_node *new_nodes;
+		void *old = NULL;
+		int i;
+
+		for (i = 0; i < ulist->nnodes; i++)
+			rb_erase(&ulist->nodes[i].rb_node, &ulist->root);
+
+		/*
+		 * if nodes_alloced == ULIST_SIZE no memory has been allocated
+		 * yet, so pass NULL to krealloc
+		 */
+		if (ulist->nodes_alloced > ULIST_SIZE)
+			old = ulist->nodes;
+
+		new_nodes = krealloc(old, sizeof(*new_nodes) * new_alloced,
+				     gfp_mask);
+		if (!new_nodes)
+			return -ENOMEM;
+
+		if (!old)
+			memcpy(new_nodes, ulist->int_nodes,
+			       sizeof(ulist->int_nodes));
+
+		ulist->nodes = new_nodes;
+		ulist->nodes_alloced = new_alloced;
+
+		/*
+		 * krealloc actually uses memcpy, which does not copy rb_node
+		 * pointers, so we have to do it ourselves.  Otherwise we may
+		 * be bitten by crashes.
+		 */
+		for (i = 0; i < ulist->nnodes; i++) {
+			ret = ulist_rbtree_insert(ulist, &ulist->nodes[i]);
+			if (ret < 0)
+				return ret;
+		}
+	}
+	ulist->nodes[ulist->nnodes].val = val;
+	ulist->nodes[ulist->nnodes].aux = aux;
+	ret = ulist_rbtree_insert(ulist, &ulist->nodes[ulist->nnodes]);
+	BUG_ON(ret);
+	++ulist->nnodes;
+>>>>>>> p9x
 
 	return 1;
 }

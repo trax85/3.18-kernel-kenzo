@@ -2269,6 +2269,72 @@ static int mlx4_load_one(struct pci_dev *pdev, int pci_dev_data,
 
 	dev = &priv->dev;
 
+<<<<<<< HEAD
+=======
+	err = pci_enable_device(pdev);
+	if (err) {
+		dev_err(&pdev->dev, "Cannot enable PCI device, "
+			"aborting.\n");
+		return err;
+	}
+	if (num_vfs > MLX4_MAX_NUM_VF) {
+		printk(KERN_ERR "There are more VF's (%d) than allowed(%d)\n",
+		       num_vfs, MLX4_MAX_NUM_VF);
+		return -EINVAL;
+	}
+	/*
+	 * Check for BARs.
+	 */
+	if (!(pci_dev_data & MLX4_PCI_DEV_IS_VF) &&
+	    !(pci_resource_flags(pdev, 0) & IORESOURCE_MEM)) {
+		dev_err(&pdev->dev, "Missing DCS, aborting."
+			"(driver_data: 0x%x, pci_resource_flags(pdev, 0):0x%lx)\n",
+			pci_dev_data, pci_resource_flags(pdev, 0));
+		err = -ENODEV;
+		goto err_disable_pdev;
+	}
+	if (!(pci_resource_flags(pdev, 2) & IORESOURCE_MEM)) {
+		dev_err(&pdev->dev, "Missing UAR, aborting.\n");
+		err = -ENODEV;
+		goto err_disable_pdev;
+	}
+
+	err = pci_request_regions(pdev, DRV_NAME);
+	if (err) {
+		dev_err(&pdev->dev, "Couldn't get PCI resources, aborting\n");
+		goto err_disable_pdev;
+	}
+
+	pci_set_master(pdev);
+
+	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
+	if (err) {
+		dev_warn(&pdev->dev, "Warning: couldn't set 64-bit PCI DMA mask.\n");
+		err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
+		if (err) {
+			dev_err(&pdev->dev, "Can't set PCI DMA mask, aborting.\n");
+			goto err_release_regions;
+		}
+	}
+	err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
+	if (err) {
+		dev_warn(&pdev->dev, "Warning: couldn't set 64-bit "
+			 "consistent PCI DMA mask.\n");
+		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
+		if (err) {
+			dev_err(&pdev->dev, "Can't set consistent PCI DMA mask, "
+				"aborting.\n");
+			goto err_release_regions;
+		}
+	}
+
+	/* Allow large DMA segments, up to the firmware limit of 1 GB */
+	dma_set_max_seg_size(&pdev->dev, 1024 * 1024 * 1024);
+
+	dev       = pci_get_drvdata(pdev);
+	priv      = mlx4_priv(dev);
+	dev->pdev = pdev;
+>>>>>>> p9x
 	INIT_LIST_HEAD(&priv->ctx_list);
 	spin_lock_init(&priv->ctx_lock);
 
@@ -2490,9 +2556,12 @@ slave_start:
 	mlx4_start_sense(dev);
 
 	priv->removed = 0;
+<<<<<<< HEAD
 
 	if (mlx4_is_master(dev) && dev->num_vfs)
 		atomic_dec(&pf_loading);
+=======
+>>>>>>> p9x
 
 	return 0;
 
@@ -2708,7 +2777,10 @@ static int mlx4_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 {
 	struct mlx4_priv *priv;
 	struct mlx4_dev *dev;
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> p9x
 
 	printk_once(KERN_INFO "%s", mlx4_version);
 
@@ -2717,6 +2789,7 @@ static int mlx4_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 		return -ENOMEM;
 
 	dev       = &priv->dev;
+<<<<<<< HEAD
 	dev->pdev = pdev;
 	pci_set_drvdata(pdev, dev);
 	priv->pci_dev_data = id->driver_data;
@@ -2810,6 +2883,92 @@ static void mlx4_unload_one(struct pci_dev *pdev)
 	memset(priv, 0, sizeof(*priv));
 	priv->pci_dev_data = pci_dev_data;
 	priv->removed = 1;
+=======
+	pci_set_drvdata(pdev, dev);
+	priv->pci_dev_data = id->driver_data;
+
+	return __mlx4_init_one(pdev, id->driver_data);
+>>>>>>> p9x
+}
+
+static void __mlx4_remove_one(struct pci_dev *pdev)
+{
+	struct mlx4_dev  *dev  = pci_get_drvdata(pdev);
+	struct mlx4_priv *priv = mlx4_priv(dev);
+	int               pci_dev_data;
+	int p;
+
+	if (priv->removed)
+		return;
+
+	pci_dev_data = priv->pci_dev_data;
+
+	/* in SRIOV it is not allowed to unload the pf's
+	 * driver while there are alive vf's */
+	if (mlx4_is_master(dev)) {
+		if (mlx4_how_many_lives_vf(dev))
+			printk(KERN_ERR "Removing PF when there are assigned VF's !!!\n");
+	}
+	mlx4_stop_sense(dev);
+	mlx4_unregister_device(dev);
+
+	for (p = 1; p <= dev->caps.num_ports; p++) {
+		mlx4_cleanup_port_info(&priv->port[p]);
+		mlx4_CLOSE_PORT(dev, p);
+	}
+
+	if (mlx4_is_master(dev))
+		mlx4_free_resource_tracker(dev,
+					   RES_TR_FREE_SLAVES_ONLY);
+
+	mlx4_cleanup_counters_table(dev);
+	mlx4_cleanup_qp_table(dev);
+	mlx4_cleanup_srq_table(dev);
+	mlx4_cleanup_cq_table(dev);
+	mlx4_cmd_use_polling(dev);
+	mlx4_cleanup_eq_table(dev);
+	mlx4_cleanup_mcg_table(dev);
+	mlx4_cleanup_mr_table(dev);
+	mlx4_cleanup_xrcd_table(dev);
+	mlx4_cleanup_pd_table(dev);
+
+	if (mlx4_is_master(dev))
+		mlx4_free_resource_tracker(dev,
+					   RES_TR_FREE_STRUCTS_ONLY);
+
+	iounmap(priv->kar);
+	mlx4_uar_free(dev, &priv->driver_uar);
+	mlx4_cleanup_uar_table(dev);
+	if (!mlx4_is_slave(dev))
+		mlx4_clear_steering(dev);
+	mlx4_free_eq_table(dev);
+	if (mlx4_is_master(dev))
+		mlx4_multi_func_cleanup(dev);
+	mlx4_close_hca(dev);
+	if (mlx4_is_slave(dev))
+		mlx4_multi_func_cleanup(dev);
+	mlx4_cmd_cleanup(dev);
+
+	if (dev->flags & MLX4_FLAG_MSI_X)
+		pci_disable_msix(pdev);
+	if (dev->flags & MLX4_FLAG_SRIOV) {
+		mlx4_warn(dev, "Disabling SR-IOV\n");
+		pci_disable_sriov(pdev);
+	}
+
+	if (!mlx4_is_slave(dev))
+		mlx4_free_ownership(dev);
+
+	kfree(dev->caps.qp0_tunnel);
+	kfree(dev->caps.qp0_proxy);
+	kfree(dev->caps.qp1_tunnel);
+	kfree(dev->caps.qp1_proxy);
+
+	pci_release_regions(pdev);
+	pci_disable_device(pdev);
+	memset(priv, 0, sizeof(*priv));
+	priv->pci_dev_data = pci_dev_data;
+	priv->removed = 1;
 }
 
 static void mlx4_remove_one(struct pci_dev *pdev)
@@ -2817,9 +2976,13 @@ static void mlx4_remove_one(struct pci_dev *pdev)
 	struct mlx4_dev  *dev  = pci_get_drvdata(pdev);
 	struct mlx4_priv *priv = mlx4_priv(dev);
 
+<<<<<<< HEAD
 	mlx4_unload_one(pdev);
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
+=======
+	__mlx4_remove_one(pdev);
+>>>>>>> p9x
 	kfree(priv);
 	pci_set_drvdata(pdev, NULL);
 }
@@ -2832,6 +2995,7 @@ int mlx4_restart_one(struct pci_dev *pdev)
 	int pci_dev_data, err, total_vfs;
 
 	pci_dev_data = priv->pci_dev_data;
+<<<<<<< HEAD
 	total_vfs = dev->num_vfs;
 	memcpy(nvfs, dev->nvfs, sizeof(dev->nvfs));
 
@@ -2844,6 +3008,10 @@ int mlx4_restart_one(struct pci_dev *pdev)
 	}
 
 	return err;
+=======
+	__mlx4_remove_one(pdev);
+	return __mlx4_init_one(pdev, pci_dev_data);
+>>>>>>> p9x
 }
 
 static const struct pci_device_id mlx4_pci_table[] = {
@@ -2897,7 +3065,11 @@ MODULE_DEVICE_TABLE(pci, mlx4_pci_table);
 static pci_ers_result_t mlx4_pci_err_detected(struct pci_dev *pdev,
 					      pci_channel_state_t state)
 {
+<<<<<<< HEAD
 	mlx4_unload_one(pdev);
+=======
+	__mlx4_remove_one(pdev);
+>>>>>>> p9x
 
 	return state == pci_channel_io_perm_failure ?
 		PCI_ERS_RESULT_DISCONNECT : PCI_ERS_RESULT_NEED_RESET;
@@ -2909,7 +3081,11 @@ static pci_ers_result_t mlx4_pci_slot_reset(struct pci_dev *pdev)
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	int               ret;
 
+<<<<<<< HEAD
 	ret = __mlx4_init_one(pdev, priv->pci_dev_data, priv);
+=======
+	ret = __mlx4_init_one(pdev, priv->pci_dev_data);
+>>>>>>> p9x
 
 	return ret ? PCI_ERS_RESULT_DISCONNECT : PCI_ERS_RESULT_RECOVERED;
 }

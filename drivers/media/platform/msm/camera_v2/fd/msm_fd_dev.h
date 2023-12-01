@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -18,22 +22,32 @@
 #include <media/v4l2-ctrls.h>
 #include <linux/msm-bus.h>
 #include <media/msm_fd.h>
+<<<<<<< HEAD
 #include <linux/dma-buf.h>
 #include <linux/msm_ion.h>
 #include "cam_soc_api.h"
 #include "cam_hw_ops.h"
 #include "msm_cpp.h"
+=======
+>>>>>>> p9x
 
 /* Maximum number of result buffers */
 #define MSM_FD_MAX_RESULT_BUFS 5
 /* Max number of clocks defined in device tree */
+<<<<<<< HEAD
 #define MSM_FD_MAX_CLK_NUM 15
+=======
+#define MSM_FD_MAX_CLK_NUM 10
+>>>>>>> p9x
 /* Max number of clock rates defined in device tree */
 #define MSM_FD_MAX_CLK_RATES 5
 /* Max number of faces which can be detected in one hw processing */
 #define MSM_FD_MAX_FACES_DETECTED 32
+<<<<<<< HEAD
 /* Max number of regulators defined in device tree */
 #define MSM_FD_MAX_REGULATOR_NUM 3
+=======
+>>>>>>> p9x
 
 /*
  * struct msm_fd_size - Structure contain FD size related values.
@@ -84,8 +98,11 @@ struct msm_fd_format {
 /*
  * struct msm_fd_mem_pool - Structure contain FD memory pool information.
  * @fd_device: Pointer to fd device.
+<<<<<<< HEAD
  * @client: Pointer to ion client.
  * @domain_num: Domain number associated with FD hw.
+=======
+>>>>>>> p9x
  */
 struct msm_fd_mem_pool {
 	struct msm_fd_device *fd_device;
@@ -102,7 +119,12 @@ struct msm_fd_mem_pool {
 struct msm_fd_buf_handle {
 	int fd;
 	struct msm_fd_mem_pool *pool;
+<<<<<<< HEAD
 	size_t size;
+=======
+	void *handle;
+	unsigned long size;
+>>>>>>> p9x
 	ion_phys_addr_t addr;
 };
 
@@ -161,6 +183,10 @@ struct fd_ctx {
 	struct msm_fd_mem_pool mem_pool;
 	struct msm_fd_stats *stats;
 	struct msm_fd_buf_handle work_buf;
+<<<<<<< HEAD
+=======
+	struct completion *wait_stop_stream;
+>>>>>>> p9x
 	struct mutex lock;
 };
 
@@ -216,7 +242,10 @@ enum msm_fd_mem_resources {
  * @work_queue: Pointer to FD device IRQ bottom half workqueue.
  * @work: IRQ bottom half work struct.
  * @hw_halt_completion: Completes when face detection hw halt completes.
+<<<<<<< HEAD
  * @recovery_mode: Indicates if FD is in recovery mode
+=======
+>>>>>>> p9x
  */
 struct msm_fd_device {
 	u32 hw_revision;
@@ -227,6 +256,7 @@ struct msm_fd_device {
 	int ref_count;
 
 	int irq_num;
+<<<<<<< HEAD
 	void __iomem *iomem_base[MSM_FD_IOMEM_LAST];
 	struct msm_cam_clk_info *clk_info;
 	struct msm_cam_regulator *vdd_info;
@@ -237,13 +267,31 @@ struct msm_fd_device {
 	size_t clk_rates_num;
 	struct clk **clk;
 	uint32_t **clk_rates;
+=======
+	struct resource *res_mem[MSM_FD_IOMEM_LAST];
+	void __iomem *iomem_base[MSM_FD_IOMEM_LAST];
+	struct resource *ioarea[MSM_FD_IOMEM_LAST];
+	struct regulator *vdd;
+
+	unsigned int clk_num;
+	struct clk *clk[MSM_FD_MAX_CLK_NUM];
+	unsigned int clk_rates_num;
+	unsigned int clk_rates[MSM_FD_MAX_CLK_RATES][MSM_FD_MAX_CLK_NUM];
+
+	struct msm_bus_vectors *bus_vectors;
+	struct msm_bus_paths *bus_paths;
+	struct msm_bus_scale_pdata bus_scale_data;
+>>>>>>> p9x
 	uint32_t bus_client;
 
 	unsigned int iommu_attached_cnt;
 
 	int iommu_hdl;
 	struct device *dev;
+<<<<<<< HEAD
 	struct platform_device *pdev;
+=======
+>>>>>>> p9x
 	struct v4l2_device v4l2_dev;
 	struct video_device video;
 
@@ -252,8 +300,11 @@ struct msm_fd_device {
 	struct workqueue_struct *work_queue;
 	struct work_struct work;
 	struct completion hw_halt_completion;
+<<<<<<< HEAD
 	int recovery_mode;
 	uint32_t clk_rate_idx;
+=======
+>>>>>>> p9x
 };
 
 #endif /* __MSM_FD_DEV_H__ */

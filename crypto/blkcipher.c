@@ -70,8 +70,13 @@ static inline u8 *blkcipher_get_spot(u8 *start, unsigned int len)
 	return max(start, end_page);
 }
 
+<<<<<<< HEAD
 static inline void blkcipher_done_slow(struct blkcipher_walk *walk,
 				       unsigned int bsize)
+=======
+static inline unsigned int blkcipher_done_slow(struct blkcipher_walk *walk,
+					       unsigned int bsize)
+>>>>>>> p9x
 {
 	u8 *addr;
 
@@ -100,8 +105,12 @@ static inline void blkcipher_done_fast(struct blkcipher_walk *walk,
 int blkcipher_walk_done(struct blkcipher_desc *desc,
 			struct blkcipher_walk *walk, int err)
 {
+<<<<<<< HEAD
 	unsigned int n; /* bytes processed */
 	bool more;
+=======
+	unsigned int nbytes = 0;
+>>>>>>> p9x
 
 	if (unlikely(err < 0))
 		goto finish;
@@ -116,9 +125,18 @@ int blkcipher_walk_done(struct blkcipher_desc *desc,
 		if (WARN_ON(err)) {
 			/* unexpected case; didn't process all bytes */
 			err = -EINVAL;
+<<<<<<< HEAD
 			goto finish;
 		}
 		blkcipher_done_slow(walk, n);
+=======
+			goto err;
+		} else
+			n = blkcipher_done_slow(walk, n);
+
+		nbytes = walk->total - n;
+		err = 0;
+>>>>>>> p9x
 	}
 
 	scatterwalk_done(&walk->in, 0, more);
@@ -470,6 +488,7 @@ static int crypto_init_blkcipher_ops_async(struct crypto_tfm *tfm)
 	}
 	crt->base = __crypto_ablkcipher_cast(tfm);
 	crt->ivsize = alg->ivsize;
+	crt->has_setkey = alg->max_keysize;
 
 	return 0;
 }

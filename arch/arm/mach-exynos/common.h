@@ -18,10 +18,20 @@
 #define EXYNOS3250_SOC_ID	0xE3472000
 #define EXYNOS3_SOC_MASK	0xFFFFF000
 
+<<<<<<< HEAD
 #define EXYNOS4210_CPU_ID	0x43210000
 #define EXYNOS4212_CPU_ID	0x43220000
 #define EXYNOS4412_CPU_ID	0xE4412200
 #define EXYNOS4_CPU_MASK	0xFFFE0000
+=======
+struct map_desc;
+void exynos_init_io(struct map_desc *mach_desc, int size);
+void exynos4_init_irq(void);
+void exynos5_init_irq(void);
+void exynos4_restart(enum reboot_mode mode, const char *cmd);
+void exynos5_restart(enum reboot_mode mode, const char *cmd);
+void exynos_init_late(void);
+>>>>>>> p9x
 
 #define EXYNOS5250_SOC_ID	0x43520000
 #define EXYNOS5410_SOC_ID	0xE5410000

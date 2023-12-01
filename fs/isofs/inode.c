@@ -113,7 +113,10 @@ static void destroy_inodecache(void)
 
 static int isofs_remount(struct super_block *sb, int *flags, char *data)
 {
+<<<<<<< HEAD
 	sync_filesystem(sb);
+=======
+>>>>>>> p9x
 	if (!(*flags & MS_RDONLY))
 		return -EROFS;
 	return 0;

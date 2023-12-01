@@ -1044,10 +1044,16 @@ static int anysee_tuner_attach(struct dvb_usb_adapter *adap)
 						sizeof(struct dvb_tuner_ops));
 			}
 
+<<<<<<< HEAD
 			return 0;
 		} else {
 			/* attach tuner */
 			fe = dvb_attach(dvb_pll_attach, adap->fe[0],
+=======
+		if (fe && adap->fe[1]) {
+			/* attach tuner for 2nd FE */
+			fe = dvb_attach(dvb_pll_attach, adap->fe[1],
+>>>>>>> p9x
 					(0xc0 >> 1), &d->i2c_adap,
 					DVB_PLL_SAMSUNG_DTOS403IH102A);
 

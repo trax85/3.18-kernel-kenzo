@@ -167,7 +167,10 @@ static inline unsigned long global_page_state_snapshot(enum zone_stat_item item)
 #ifdef CONFIG_SMP
 	struct zone *zone;
 	int cpu;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	for_each_online_cpu(cpu) {
 		for_each_populated_zone(zone)
 			x += per_cpu_ptr(zone->pageset,

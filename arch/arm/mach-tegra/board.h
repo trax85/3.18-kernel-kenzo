@@ -25,6 +25,12 @@
 #include <linux/types.h>
 #include <linux/reboot.h>
 
+<<<<<<< HEAD
+=======
+void tegra_assert_system_reset(enum reboot_mode mode, const char *cmd);
+
+void __init tegra_init_early(void);
+>>>>>>> p9x
 void __init tegra_map_common_io(void);
 void __init tegra_init_irq(void);
 

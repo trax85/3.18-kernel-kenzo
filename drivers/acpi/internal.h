@@ -51,8 +51,11 @@ void acpi_cmos_rtc_init(void);
 #else
 static inline void acpi_cmos_rtc_init(void) {}
 #endif
+<<<<<<< HEAD
 
 extern bool acpi_force_hot_remove;
+=======
+>>>>>>> p9x
 
 void acpi_sysfs_add_hotplug_profile(struct acpi_hotplug_profile *hotplug,
 				    const char *name);

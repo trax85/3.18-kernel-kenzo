@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015,2017, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -26,8 +30,11 @@
 #include "adreno_perfcounter.h"
 
 #define SP_TP_PWR_ON BIT(20)
+<<<<<<< HEAD
 /* A4XX_RBBM_CLOCK_CTL_IP */
 #define CNTL_IP_SW_COLLAPSE		BIT(0)
+=======
+>>>>>>> p9x
 
 /*
  * Define registers for a4xx that contain addresses used by the
@@ -180,6 +187,113 @@ static const struct adreno_vbif_platform a4xx_vbif_platforms[] = {
 	{ adreno_is_a418, a430_vbif },
 };
 
+<<<<<<< HEAD
+=======
+/* a4xx_preemption_start() - Setup state to start preemption */
+static void a4xx_preemption_start(struct adreno_device *adreno_dev,
+		struct adreno_ringbuffer *rb)
+{
+	struct kgsl_device *device = &adreno_dev->dev;
+	uint32_t val;
+
+	/*
+	 * Setup scratch registers from which the GPU will program the
+	 * registers required to start execution of new ringbuffer
+	 * set ringbuffer address
+	 */
+	kgsl_regwrite(device, A4XX_CP_SCRATCH_REG8,
+		rb->buffer_desc.gpuaddr);
+	kgsl_regread(device, A4XX_CP_RB_CNTL, &val);
+	/* scratch REG9 corresponds to CP_RB_CNTL register */
+	kgsl_regwrite(device, A4XX_CP_SCRATCH_REG9, val);
+	/* scratch REG10 corresponds to rptr address */
+	kgsl_regwrite(device, A4XX_CP_SCRATCH_REG10, 0);
+	/* scratch REG11 corresponds to rptr */
+	kgsl_regwrite(device, A4XX_CP_SCRATCH_REG11, rb->rptr);
+	/* scratch REG12 corresponds to wptr */
+	kgsl_regwrite(device, A4XX_CP_SCRATCH_REG12, rb->wptr);
+	/*
+	 * scratch REG13 corresponds to  IB1_BASE,
+	 * 0 since we do not do switches in between IB's
+	 */
+	kgsl_regwrite(device, A4XX_CP_SCRATCH_REG13, 0);
+	/* scratch REG14 corresponds to IB1_BUFSZ */
+	kgsl_regwrite(device, A4XX_CP_SCRATCH_REG14, 0);
+	/* scratch REG15 corresponds to IB2_BASE */
+	kgsl_regwrite(device, A4XX_CP_SCRATCH_REG15, 0);
+	/* scratch REG16 corresponds to  IB2_BUFSZ */
+	kgsl_regwrite(device, A4XX_CP_SCRATCH_REG16, 0);
+	/* scratch REG17 corresponds to GPR11 */
+	kgsl_regwrite(device, A4XX_CP_SCRATCH_REG17, rb->gpr11);
+}
+
+/* a4xx_preemption_save() - Save the state after preemption is done */
+static void a4xx_preemption_save(struct adreno_device *adreno_dev,
+		struct adreno_ringbuffer *rb)
+{
+	struct kgsl_device *device = &adreno_dev->dev;
+
+	kgsl_regread(device, A4XX_CP_SCRATCH_REG18, &rb->rptr);
+	kgsl_regread(device, A4XX_CP_SCRATCH_REG23, &rb->gpr11);
+}
+
+static int a4xx_preemption_token(struct adreno_device *adreno_dev,
+			struct adreno_ringbuffer *rb, unsigned int *cmds,
+			uint64_t gpuaddr)
+{
+	unsigned int *cmds_orig = cmds;
+
+	/* Turn on preemption flag */
+	/* preemption token - fill when pt switch command size is known */
+	*cmds++ = cp_type3_packet(CP_PREEMPT_TOKEN, 3);
+	*cmds++ = (uint)gpuaddr;
+	*cmds++ = 1;
+	/* generate interrupt on preemption completion */
+	*cmds++ = 1 << CP_PREEMPT_ORDINAL_INTERRUPT;
+
+	return cmds - cmds_orig;
+
+}
+
+static int a4xx_preemption_pre_ibsubmit(
+			struct adreno_device *adreno_dev,
+			struct adreno_ringbuffer *rb, unsigned int *cmds,
+			struct kgsl_context *context, uint64_t cond_addr,
+			struct kgsl_memobj_node *ib)
+{
+	unsigned int *cmds_orig = cmds;
+	int exec_ib = 0;
+
+	cmds += a4xx_preemption_token(adreno_dev, rb, cmds,
+				rb->device->memstore.gpuaddr +
+				KGSL_MEMSTORE_OFFSET(context->id, preempted));
+
+	if (ib)
+		exec_ib = 1;
+
+	*cmds++ = cp_type3_packet(CP_COND_EXEC, 4);
+	*cmds++ = cond_addr;
+	*cmds++ = cond_addr;
+	*cmds++ = 1;
+	*cmds++ = 7 + exec_ib * 3;
+	if (exec_ib) {
+		*cmds++ = cp_type3_packet(CP_INDIRECT_BUFFER_PFE, 2);
+		*cmds++ = ib->gpuaddr;
+		*cmds++ = (unsigned int) ib->size >> 2;
+	}
+	/* clear preemption flag */
+	*cmds++ = cp_type3_packet(CP_MEM_WRITE, 2);
+	*cmds++ = cond_addr;
+	*cmds++ = 0;
+	*cmds++ = cp_type3_packet(CP_WAIT_MEM_WRITES, 1);
+	*cmds++ = 0;
+	*cmds++ = cp_type3_packet(CP_WAIT_FOR_ME, 1);
+	*cmds++ = 0;
+
+	return cmds - cmds_orig;
+}
+
+>>>>>>> p9x
 /*
  * a4xx_is_sptp_idle() - A430 SP/TP should be off to be considered idle
  * @adreno_dev: The adreno device pointer
@@ -187,8 +301,12 @@ static const struct adreno_vbif_platform a4xx_vbif_platforms[] = {
 static bool a4xx_is_sptp_idle(struct adreno_device *adreno_dev)
 {
 	unsigned int reg;
+<<<<<<< HEAD
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
 
+=======
+	struct kgsl_device *device = &adreno_dev->dev;
+>>>>>>> p9x
 	if (!ADRENO_FEATURE(adreno_dev, ADRENO_SPTP_PC))
 		return true;
 
@@ -203,13 +321,145 @@ static bool a4xx_is_sptp_idle(struct adreno_device *adreno_dev)
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * a4xx_regulator_enable() - Enable any necessary HW regulators
+ * @adreno_dev: The adreno device pointer
+ *
+ * Some HW blocks may need their regulators explicitly enabled
+ * on a restart.  Clocks must be on during this call.
+ */
+static int a4xx_regulator_enable(struct adreno_device *adreno_dev)
+{
+	unsigned int reg;
+	struct kgsl_device *device = &adreno_dev->dev;
+	if (!(adreno_is_a430(adreno_dev) || adreno_is_a418(adreno_dev)))
+		return 0;
+
+	/* Set the default register values; set SW_COLLAPSE to 0 */
+	kgsl_regwrite(device, A4XX_RBBM_POWER_CNTL_IP, 0x778000);
+	do {
+		udelay(5);
+		kgsl_regread(device, A4XX_RBBM_POWER_STATUS, &reg);
+	} while (!(reg & SP_TP_PWR_ON));
+	return 0;
+}
+
+/*
+ * a4xx_regulator_disable() - Disable any necessary HW regulators
+ * @adreno_dev: The adreno device pointer
+ *
+ * Some HW blocks may need their regulators explicitly disabled
+ * on a power down to prevent current spikes.  Clocks must be on
+ * during this call.
+ */
+static void a4xx_regulator_disable(struct adreno_device *adreno_dev)
+{
+	struct kgsl_device *device = &adreno_dev->dev;
+	if (!(adreno_is_a430(adreno_dev) || adreno_is_a418(adreno_dev)))
+		return;
+
+	/* Set the default register values; set SW_COLLAPSE to 1 */
+	kgsl_regwrite(device, A4XX_RBBM_POWER_CNTL_IP, 0x778001);
+}
+
+/*
+ * a4xx_enable_pc() - Enable the SP/TP block power collapse
+ * @adreno_dev: The adreno device pointer
+ */
+static void a4xx_enable_pc(struct adreno_device *adreno_dev)
+{
+	struct kgsl_device *device = &adreno_dev->dev;
+	if (!ADRENO_FEATURE(adreno_dev, ADRENO_SPTP_PC) ||
+		!test_bit(ADRENO_SPTP_PC_CTRL, &adreno_dev->pwrctrl_flag))
+		return;
+
+	kgsl_regwrite(device, A4XX_CP_POWER_COLLAPSE_CNTL, 0x00400010);
+	trace_adreno_sp_tp((unsigned long) __builtin_return_address(0));
+};
+
+/*
+ * a4xx_enable_ppd() - Enable the Peak power detect logic in the h/w
+ * @adreno_dev: The adreno device pointer
+ *
+ * A430 can detect peak current conditions inside h/w and throttle
+ * the workload to ALUs to mitigate it.
+ */
+static void a4xx_enable_ppd(struct adreno_device *adreno_dev)
+{
+	struct kgsl_device *device = &adreno_dev->dev;
+
+	if (!ADRENO_FEATURE(adreno_dev, ADRENO_PPD) ||
+		!test_bit(ADRENO_PPD_CTRL, &adreno_dev->pwrctrl_flag) ||
+		!adreno_is_a430v2(adreno_dev))
+		return;
+
+	/* Program thresholds */
+	kgsl_regwrite(device, A4XX_RBBM_PPD_EPOCH_INTER_TH_HIGH_CLEAR_THR,
+								0x003F0101);
+	kgsl_regwrite(device, A4XX_RBBM_PPD_EPOCH_INTER_TH_LOW, 0x00000101);
+	kgsl_regwrite(device, A4XX_RBBM_PPD_V2_SP_PWR_WEIGHTS, 0x00085014);
+	kgsl_regwrite(device, A4XX_RBBM_PPD_V2_SP_RB_EPOCH_TH, 0x00000B46);
+	kgsl_regwrite(device, A4XX_RBBM_PPD_V2_TP_CONFIG, 0xE4525111);
+	kgsl_regwrite(device, A4XX_RBBM_PPD_RAMP_V2_CONTROL, 0x0000000B);
+
+	/* Enable PPD*/
+	kgsl_regwrite(device, A4XX_RBBM_PPD_CTRL, 0x1002E40C);
+};
+
+/*
+ * a4xx_pwrlevel_change_settings() - Program the hardware during power level
+ * transitions
+ * @adreno_dev: The adreno device pointer
+ * @prelevel: The previous power level
+ * @postlevel: The new power level
+ * @post: True if called after the clock change has taken effect
+ */
+static void a4xx_pwrlevel_change_settings(struct adreno_device *adreno_dev,
+				unsigned int prelevel, unsigned int postlevel,
+				bool post)
+{
+	struct kgsl_device *device = &adreno_dev->dev;
+	static int pre;
+
+	/* PPD programming only for A430v2 */
+	if (!ADRENO_FEATURE(adreno_dev, ADRENO_PPD) ||
+		!test_bit(ADRENO_PPD_CTRL, &adreno_dev->pwrctrl_flag) ||
+		!adreno_is_a430v2(adreno_dev))
+		return;
+
+	/* if this is a real pre, or a post without a previous pre, set pre */
+	if ((post == 0) || (pre == 0 && post == 1))
+		pre = 1;
+	else if (post == 1)
+		pre = 0;
+
+	if ((prelevel == 0) && pre) {
+		/* Going to Non-Turbo mode - mask the throttle and reset */
+		kgsl_regwrite(device, A4XX_RBBM_PPD_CTRL, 0x1002E40E);
+		kgsl_regwrite(device, A4XX_RBBM_PPD_CTRL, 0x1002E40C);
+	} else if ((postlevel == 0) && post) {
+		/* Going to Turbo mode - unmask the throttle and reset */
+		kgsl_regwrite(device, A4XX_RBBM_PPD_CTRL, 0x1002E40A);
+		kgsl_regwrite(device, A4XX_RBBM_PPD_CTRL, 0x1002E408);
+	}
+
+	if (post)
+		pre = 0;
+}
+
+/*
+>>>>>>> p9x
  * a4xx_enable_hwcg() - Program the clock control registers
  * @device: The adreno device pointer
  */
 static void a4xx_enable_hwcg(struct kgsl_device *device)
 {
 	struct adreno_device *adreno_dev = ADRENO_DEVICE(device);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	kgsl_regwrite(device, A4XX_RBBM_CLOCK_CTL_TP0, 0x02222202);
 	kgsl_regwrite(device, A4XX_RBBM_CLOCK_CTL_TP1, 0x02222202);
 	kgsl_regwrite(device, A4XX_RBBM_CLOCK_CTL_TP2, 0x02222202);
@@ -327,6 +577,7 @@ static void a4xx_enable_hwcg(struct kgsl_device *device)
 		kgsl_regwrite(device, A4XX_RBBM_CLOCK_CTL, 0xAAAAAAAA);
 	kgsl_regwrite(device, A4XX_RBBM_CLOCK_CTL2, 0);
 }
+<<<<<<< HEAD
 /*
  * a4xx_regulator_enable() - Enable any necessary HW regulators
  * @adreno_dev: The adreno device pointer
@@ -465,6 +716,8 @@ static void a4xx_pwrlevel_change_settings(struct adreno_device *adreno_dev,
 	if (post)
 		pre = 0;
 }
+=======
+>>>>>>> p9x
 
 /**
  * a4xx_protect_init() - Initializes register protection on a4xx
@@ -474,7 +727,11 @@ static void a4xx_pwrlevel_change_settings(struct adreno_device *adreno_dev,
  */
 static void a4xx_protect_init(struct adreno_device *adreno_dev)
 {
+<<<<<<< HEAD
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
+=======
+	struct kgsl_device *device = &adreno_dev->dev;
+>>>>>>> p9x
 	int index = 0;
 	struct kgsl_protected_registers *iommu_regs;
 
@@ -539,7 +796,11 @@ static struct adreno_snapshot_sizes a4xx_snap_sizes = {
 
 static void a4xx_start(struct adreno_device *adreno_dev)
 {
+<<<<<<< HEAD
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
+=======
+	struct kgsl_device *device = &adreno_dev->dev;
+>>>>>>> p9x
 	struct adreno_gpudev *gpudev = ADRENO_GPU_DEVICE(adreno_dev);
 	unsigned int cp_debug = A4XX_CP_DEBUG_DEFAULT;
 
@@ -574,7 +835,11 @@ static void a4xx_start(struct adreno_device *adreno_dev)
 	set_bit(ADRENO_DEVICE_HANG_INTR, &adreno_dev->priv);
 	gpudev->irq->mask |= (1 << A4XX_INT_MISC_HANG_DETECT);
 	kgsl_regwrite(device, A4XX_RBBM_INTERFACE_HANG_INT_CTL,
+<<<<<<< HEAD
 			(1 << 30) | 0xFFFF);
+=======
+			(1 << 30) | 0x1FFFF);
+>>>>>>> p9x
 
 	/* Set the GMEM/OCMEM base address for A4XX */
 	kgsl_regwrite(device, A4XX_RB_GMEM_BASE_ADDR,
@@ -610,6 +875,10 @@ static void a4xx_start(struct adreno_device *adreno_dev)
 				0x00000441);
 	}
 
+<<<<<<< HEAD
+=======
+	a4xx_enable_hwcg(device);
+>>>>>>> p9x
 	/*
 	 * For A420 set RBBM_CLOCK_DELAY_HLSQ.CGC_HLSQ_TP_EARLY_CYC >= 2
 	 * due to timing issue with HLSQ_TP_CLK_EN
@@ -630,8 +899,11 @@ static void a4xx_start(struct adreno_device *adreno_dev)
 		gpudev->vbif_xin_halt_ctrl0_mask =
 			A405_VBIF_XIN_HALT_CTRL0_MASK;
 
+<<<<<<< HEAD
 	adreno_set_preempt_state(adreno_dev, ADRENO_PREEMPT_NONE);
 
+=======
+>>>>>>> p9x
 	a4xx_protect_init(adreno_dev);
 }
 
@@ -640,9 +912,15 @@ static void a4xx_start(struct adreno_device *adreno_dev)
  * @adreno_dev: Pointer to device
  * @bit: Interrupt bit
  */
+<<<<<<< HEAD
 static void a4xx_err_callback(struct adreno_device *adreno_dev, int bit)
 {
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
+=======
+void a4xx_err_callback(struct adreno_device *adreno_dev, int bit)
+{
+	struct kgsl_device *device = &adreno_dev->dev;
+>>>>>>> p9x
 	unsigned int reg;
 
 	switch (bit) {
@@ -653,7 +931,11 @@ static void a4xx_err_callback(struct adreno_device *adreno_dev, int bit)
 		 * Return the word address of the erroring register so that it
 		 * matches the register specification
 		 */
+<<<<<<< HEAD
 		KGSL_DRV_CRIT_RATELIMIT(device,
+=======
+		KGSL_DRV_CRIT(device,
+>>>>>>> p9x
 			"RBBM | AHB bus error | %s | addr=%x | ports=%x:%x\n",
 			reg & (1 << 28) ? "WRITE" : "READ",
 			(reg & 0xFFFFF) >> 2, (reg >> 20) & 0x3,
@@ -661,7 +943,11 @@ static void a4xx_err_callback(struct adreno_device *adreno_dev, int bit)
 
 		/* Clear the error */
 		kgsl_regwrite(device, A4XX_RBBM_AHB_CMD, (1 << 4));
+<<<<<<< HEAD
 		break;
+=======
+		return;
+>>>>>>> p9x
 	}
 	case A4XX_INT_RBBM_REG_TIMEOUT:
 		KGSL_DRV_CRIT_RATELIMIT(device, "RBBM: AHB register timeout\n");
@@ -707,11 +993,19 @@ static void a4xx_err_callback(struct adreno_device *adreno_dev, int bit)
 	}
 	case A4XX_INT_CP_REG_PROTECT_FAULT:
 		kgsl_regread(device, A4XX_CP_PROTECT_STATUS, &reg);
+<<<<<<< HEAD
 		KGSL_DRV_CRIT_RATELIMIT(device,
 			"CP | Protected mode error| %s | addr=%x\n",
 			reg & (1 << 24) ? "WRITE" : "READ",
 			(reg & 0xFFFFF) >> 2);
 		break;
+=======
+		KGSL_DRV_CRIT(device,
+			"CP | Protected mode error| %s | addr=%x\n",
+			reg & (1 << 24) ? "WRITE" : "READ",
+			(reg & 0xFFFFF) >> 2);
+		return;
+>>>>>>> p9x
 	case A4XX_INT_CP_AHB_ERROR_HALT:
 		KGSL_DRV_CRIT_RATELIMIT(device,
 			"ringbuffer AHB error interrupt\n");
@@ -739,10 +1033,13 @@ static void a4xx_err_callback(struct adreno_device *adreno_dev, int bit)
 	}
 }
 
+<<<<<<< HEAD
 static unsigned int a4xx_int_bits[ADRENO_INT_BITS_MAX] = {
 	ADRENO_INT_DEFINE(ADRENO_INT_RBBM_AHB_ERROR, A4XX_INT_RBBM_AHB_ERROR),
 };
 
+=======
+>>>>>>> p9x
 /* Register offset defines for A4XX, in order of enum adreno_regs */
 static unsigned int a4xx_register_offsets[ADRENO_REG_REGISTER_MAX] = {
 	ADRENO_REG_DEFINE(ADRENO_REG_CP_ME_RAM_WADDR, A4XX_CP_ME_RAM_WADDR),
@@ -752,7 +1049,10 @@ static unsigned int a4xx_register_offsets[ADRENO_REG_REGISTER_MAX] = {
 	ADRENO_REG_DEFINE(ADRENO_REG_CP_WFI_PEND_CTR, A4XX_CP_WFI_PEND_CTR),
 	ADRENO_REG_DEFINE(ADRENO_REG_CP_RB_BASE, A4XX_CP_RB_BASE),
 	ADRENO_REG_DEFINE(ADRENO_REG_CP_RB_BASE_HI, ADRENO_REG_SKIP),
+<<<<<<< HEAD
 	ADRENO_REG_DEFINE(ADRENO_REG_CP_RB_RPTR_ADDR_LO, A4XX_CP_RB_RPTR_ADDR),
+=======
+>>>>>>> p9x
 	ADRENO_REG_DEFINE(ADRENO_REG_CP_RB_RPTR, A4XX_CP_RB_RPTR),
 	ADRENO_REG_DEFINE(ADRENO_REG_CP_RB_WPTR, A4XX_CP_RB_WPTR),
 	ADRENO_REG_DEFINE(ADRENO_REG_CP_CNTL, A4XX_CP_CNTL),
@@ -774,6 +1074,10 @@ static unsigned int a4xx_register_offsets[ADRENO_REG_REGISTER_MAX] = {
 	ADRENO_REG_DEFINE(ADRENO_REG_CP_MEQ_DATA, A4XX_CP_MEQ_DATA),
 	ADRENO_REG_DEFINE(ADRENO_REG_CP_HW_FAULT, A4XX_CP_HW_FAULT),
 	ADRENO_REG_DEFINE(ADRENO_REG_CP_PROTECT_STATUS, A4XX_CP_PROTECT_STATUS),
+<<<<<<< HEAD
+=======
+	ADRENO_REG_DEFINE(ADRENO_REG_CP_SCRATCH_REG0, A4XX_CP_SCRATCH_REG0),
+>>>>>>> p9x
 	ADRENO_REG_DEFINE(ADRENO_REG_CP_SCRATCH_REG6, A4XX_CP_SCRATCH_REG6),
 	ADRENO_REG_DEFINE(ADRENO_REG_CP_SCRATCH_REG7, A4XX_CP_SCRATCH_REG7),
 	ADRENO_REG_DEFINE(ADRENO_REG_CP_PREEMPT, A4XX_CP_PREEMPT),
@@ -806,10 +1110,13 @@ static unsigned int a4xx_register_offsets[ADRENO_REG_REGISTER_MAX] = {
 	ADRENO_REG_DEFINE(ADRENO_REG_RBBM_SW_RESET_CMD, A4XX_RBBM_SW_RESET_CMD),
 	ADRENO_REG_DEFINE(ADRENO_REG_UCHE_INVALIDATE0, A4XX_UCHE_INVALIDATE0),
 	ADRENO_REG_DEFINE(ADRENO_REG_UCHE_INVALIDATE1, A4XX_UCHE_INVALIDATE1),
+<<<<<<< HEAD
 	ADRENO_REG_DEFINE(ADRENO_REG_RBBM_PERFCTR_RBBM_0_LO,
 				A4XX_RBBM_PERFCTR_RBBM_0_LO),
 	ADRENO_REG_DEFINE(ADRENO_REG_RBBM_PERFCTR_RBBM_0_HI,
 				A4XX_RBBM_PERFCTR_RBBM_0_HI),
+=======
+>>>>>>> p9x
 	ADRENO_REG_DEFINE(ADRENO_REG_RBBM_PERFCTR_LOAD_VALUE_LO,
 				A4XX_RBBM_PERFCTR_LOAD_VALUE_LO),
 	ADRENO_REG_DEFINE(ADRENO_REG_RBBM_PERFCTR_LOAD_VALUE_HI,
@@ -832,11 +1139,17 @@ static unsigned int a4xx_register_offsets[ADRENO_REG_REGISTER_MAX] = {
 				A4XX_VBIF_XIN_HALT_CTRL0),
 	ADRENO_REG_DEFINE(ADRENO_REG_VBIF_XIN_HALT_CTRL1,
 				A4XX_VBIF_XIN_HALT_CTRL1),
+<<<<<<< HEAD
 	ADRENO_REG_DEFINE(ADRENO_REG_VBIF_VERSION,
 				A4XX_VBIF_VERSION),
 };
 
 static const struct adreno_reg_offsets a4xx_reg_offsets = {
+=======
+};
+
+const struct adreno_reg_offsets a4xx_reg_offsets = {
+>>>>>>> p9x
 	.offsets = a4xx_register_offsets,
 	.offset_0 = ADRENO_REG_REGISTER_MAX,
 };
@@ -1156,7 +1469,11 @@ static struct adreno_perfcounters a4xx_perfcounters = {
 	ARRAY_SIZE(a4xx_perfcounter_groups),
 };
 
+<<<<<<< HEAD
 static struct adreno_ft_perf_counters a4xx_ft_perf_counters[] = {
+=======
+struct adreno_ft_perf_counters a4xx_ft_perf_counters[] = {
+>>>>>>> p9x
 	{KGSL_PERFCOUNTER_GROUP_SP, A4XX_SP_ALU_ACTIVE_CYCLES},
 	{KGSL_PERFCOUNTER_GROUP_SP, A4XX_SP0_ICL1_MISSES},
 	{KGSL_PERFCOUNTER_GROUP_SP, A4XX_SP_FS_CFLOW_INSTRUCTIONS},
@@ -1357,7 +1674,11 @@ static const unsigned int _a4xx_pwron_fixup_fs_instructions[] = {
 };
 
 /**
+<<<<<<< HEAD
  * _a4xx_pwron_fixup() - Initialize a special command buffer to run a
+=======
+ * adreno_a4xx_pwron_fixup_init() - Initalize a special command buffer to run a
+>>>>>>> p9x
  * post-power collapse shader workaround
  * @adreno_dev: Pointer to a adreno_device struct
  *
@@ -1367,7 +1688,11 @@ static const unsigned int _a4xx_pwron_fixup_fs_instructions[] = {
  *
  * Returns: 0 on success or negative on error
  */
+<<<<<<< HEAD
 static int _a4xx_pwron_fixup(struct adreno_device *adreno_dev)
+=======
+int adreno_a4xx_pwron_fixup_init(struct adreno_device *adreno_dev)
+>>>>>>> p9x
 {
 	unsigned int *cmds;
 	unsigned int count = ARRAY_SIZE(_a4xx_pwron_fixup_fs_instructions);
@@ -1378,9 +1703,15 @@ static int _a4xx_pwron_fixup(struct adreno_device *adreno_dev)
 	if (test_bit(ADRENO_DEVICE_PWRON_FIXUP, &adreno_dev->priv))
 			return 0;
 
+<<<<<<< HEAD
 	ret = kgsl_allocate_global(KGSL_DEVICE(adreno_dev),
 		&adreno_dev->pwron_fixup, PAGE_SIZE,
 		KGSL_MEMFLAGS_GPUREADONLY, 0, "pwron_fixup");
+=======
+	ret = kgsl_allocate_global(&adreno_dev->dev,
+		&adreno_dev->pwron_fixup, PAGE_SIZE,
+		KGSL_MEMFLAGS_GPUREADONLY, 0);
+>>>>>>> p9x
 
 	if (ret)
 		return ret;
@@ -1479,6 +1810,7 @@ static int _a4xx_pwron_fixup(struct adreno_device *adreno_dev)
 }
 
 /*
+<<<<<<< HEAD
  * a4xx_init() - Initialize gpu specific data
  * @adreno_dev: Pointer to adreno device
  */
@@ -1494,6 +1826,19 @@ static int a4xx_send_me_init(struct adreno_device *adreno_dev,
 	unsigned int *cmds;
 	int ret;
 
+=======
+ * a4xx_rb_init() - Initialize ringbuffer
+ * @adreno_dev: Pointer to adreno device
+ * @rb: Pointer to the ringbuffer of device
+ *
+ * Submit commands for ME initialization, common function shared between
+ * a4xx devices
+ */
+static int a4xx_rb_init(struct adreno_device *adreno_dev,
+			 struct adreno_ringbuffer *rb)
+{
+	unsigned int *cmds;
+>>>>>>> p9x
 	cmds = adreno_ringbuffer_allocspace(rb, 20);
 	if (IS_ERR(cmds))
 		return PTR_ERR(cmds);
@@ -1532,6 +1877,7 @@ static int a4xx_send_me_init(struct adreno_device *adreno_dev,
 	*cmds++ = cp_type3_packet(CP_PREEMPT_ENABLE, 1);
 	*cmds++ = 1;
 
+<<<<<<< HEAD
 	ret = adreno_ringbuffer_submit_spin(rb, NULL, 2000);
 	if (ret) {
 		struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
@@ -1589,6 +1935,10 @@ static int a4xx_rb_start(struct adreno_device *adreno_dev,
 	}
 
 	return ret;
+=======
+	adreno_ringbuffer_submit(rb, NULL);
+	return 0;
+>>>>>>> p9x
 }
 
 static ADRENO_CORESIGHT_ATTR(cfg_debbus_ctrlt, &a4xx_coresight_registers[0]);
@@ -1680,6 +2030,7 @@ static struct adreno_coresight a4xx_coresight = {
 	.groups = a4xx_coresight_groups,
 };
 
+<<<<<<< HEAD
 static void a4xx_preempt_callback(struct adreno_device *adreno_dev, int bit)
 {
 	if (atomic_read(&adreno_dev->preempt.state) != ADRENO_PREEMPT_TRIGGERED)
@@ -1693,6 +2044,8 @@ static void a4xx_preempt_callback(struct adreno_device *adreno_dev, int bit)
 	adreno_dispatcher_schedule(KGSL_DEVICE(adreno_dev));
 }
 
+=======
+>>>>>>> p9x
 #define A4XX_INT_MASK \
 	((1 << A4XX_INT_RBBM_AHB_ERROR) |		\
 	 (1 << A4XX_INT_RBBM_REG_TIMEOUT) |		\
@@ -1707,7 +2060,10 @@ static void a4xx_preempt_callback(struct adreno_device *adreno_dev, int bit)
 	 (1 << A4XX_INT_CP_IB1_INT) |			\
 	 (1 << A4XX_INT_CP_IB2_INT) |			\
 	 (1 << A4XX_INT_CP_RB_INT) |			\
+<<<<<<< HEAD
 	 (1 << A4XX_INT_CACHE_FLUSH_TS) |		\
+=======
+>>>>>>> p9x
 	 (1 << A4XX_INT_CP_REG_PROTECT_FAULT) |		\
 	 (1 << A4XX_INT_CP_AHB_ERROR_HALT) |		\
 	 (1 << A4XX_INT_RBBM_ATB_BUS_OVERFLOW) |	\
@@ -1718,7 +2074,11 @@ static void a4xx_preempt_callback(struct adreno_device *adreno_dev, int bit)
 	 (1 << A4XX_INT_RBBM_DPM_THERMAL_RED_ERR))
 
 
+<<<<<<< HEAD
 static struct adreno_irq_funcs a4xx_irq_funcs[32] = {
+=======
+static struct adreno_irq_funcs a4xx_irq_funcs[] = {
+>>>>>>> p9x
 	ADRENO_IRQ_CALLBACK(NULL),                   /* 0 - RBBM_GPU_IDLE */
 	ADRENO_IRQ_CALLBACK(a4xx_err_callback), /* 1 - RBBM_AHB_ERROR */
 	ADRENO_IRQ_CALLBACK(a4xx_err_callback), /* 2 - RBBM_REG_TIMEOUT */
@@ -1730,7 +2090,11 @@ static struct adreno_irq_funcs a4xx_irq_funcs[32] = {
 	/* 6 - RBBM_ATB_ASYNC_OVERFLOW */
 	ADRENO_IRQ_CALLBACK(a4xx_err_callback),
 	ADRENO_IRQ_CALLBACK(NULL), /* 7 - RBBM_GPC_ERR */
+<<<<<<< HEAD
 	ADRENO_IRQ_CALLBACK(a4xx_preempt_callback), /* 8 - CP_SW */
+=======
+	ADRENO_IRQ_CALLBACK(adreno_dispatcher_preempt_callback), /* 8 - CP_SW */
+>>>>>>> p9x
 	ADRENO_IRQ_CALLBACK(a4xx_err_callback), /* 9 - CP_OPCODE_ERROR */
 	/* 10 - CP_RESERVED_BIT_ERROR */
 	ADRENO_IRQ_CALLBACK(a4xx_err_callback),
@@ -1744,7 +2108,11 @@ static struct adreno_irq_funcs a4xx_irq_funcs[32] = {
 	ADRENO_IRQ_CALLBACK(NULL), /* 17 - CP_RB_DONE_TS */
 	ADRENO_IRQ_CALLBACK(NULL), /* 18 - CP_VS_DONE_TS */
 	ADRENO_IRQ_CALLBACK(NULL), /* 19 - CP_PS_DONE_TS */
+<<<<<<< HEAD
 	ADRENO_IRQ_CALLBACK(adreno_cp_callback), /* 20 - CP_CACHE_FLUSH_TS */
+=======
+	ADRENO_IRQ_CALLBACK(NULL), /* 20 - CP_CACHE_FLUSH_TS */
+>>>>>>> p9x
 	/* 21 - CP_AHB_ERROR_FAULT */
 	ADRENO_IRQ_CALLBACK(a4xx_err_callback),
 	ADRENO_IRQ_CALLBACK(a4xx_err_callback), /* 22 - RBBM_ATB_BUS_OVERFLOW */
@@ -1764,6 +2132,10 @@ static struct adreno_irq_funcs a4xx_irq_funcs[32] = {
 
 static struct adreno_irq a4xx_irq = {
 	.funcs = a4xx_irq_funcs,
+<<<<<<< HEAD
+=======
+	.funcs_count = ARRAY_SIZE(a4xx_irq_funcs),
+>>>>>>> p9x
 	.mask = A4XX_INT_MASK,
 };
 
@@ -1773,29 +2145,53 @@ static struct adreno_snapshot_data a4xx_snapshot_data = {
 
 struct adreno_gpudev adreno_a4xx_gpudev = {
 	.reg_offsets = &a4xx_reg_offsets,
+<<<<<<< HEAD
 	.int_bits = a4xx_int_bits,
+=======
+>>>>>>> p9x
 	.ft_perf_counters = a4xx_ft_perf_counters,
 	.ft_perf_counters_count = ARRAY_SIZE(a4xx_ft_perf_counters),
 	.perfcounters = &a4xx_perfcounters,
 	.irq = &a4xx_irq,
 	.irq_trace = trace_kgsl_a4xx_irq_status,
 	.snapshot_data = &a4xx_snapshot_data,
+<<<<<<< HEAD
 	.num_prio_levels = KGSL_PRIORITY_MAX_RB_LEVELS,
+=======
+	.num_prio_levels = ADRENO_PRIORITY_MAX_RB_LEVELS,
+>>>>>>> p9x
 	.vbif_xin_halt_ctrl0_mask = A4XX_VBIF_XIN_HALT_CTRL0_MASK,
 
 	.perfcounter_init = a4xx_perfcounter_init,
 	.perfcounter_close = a4xx_perfcounter_close,
+<<<<<<< HEAD
 	.rb_start = a4xx_rb_start,
 	.init = a4xx_init,
 	.microcode_read = a3xx_microcode_read,
+=======
+	.rb_init = a4xx_rb_init,
+	.microcode_read = a3xx_microcode_read,
+	.microcode_load = a3xx_microcode_load,
+>>>>>>> p9x
 	.coresight = &a4xx_coresight,
 	.start = a4xx_start,
 	.snapshot = a4xx_snapshot,
 	.is_sptp_idle = a4xx_is_sptp_idle,
+<<<<<<< HEAD
+=======
+	.enable_pc = a4xx_enable_pc,
+	.enable_ppd = a4xx_enable_ppd,
+>>>>>>> p9x
 	.pwrlevel_change_settings = a4xx_pwrlevel_change_settings,
 	.regulator_enable = a4xx_regulator_enable,
 	.regulator_disable = a4xx_regulator_disable,
 	.preemption_pre_ibsubmit = a4xx_preemption_pre_ibsubmit,
+<<<<<<< HEAD
 	.preemption_schedule = a4xx_preemption_schedule,
 	.preemption_init = a4xx_preemption_init,
+=======
+	.preemption_token = a4xx_preemption_token,
+	.preemption_start = a4xx_preemption_start,
+	.preemption_save = a4xx_preemption_save,
+>>>>>>> p9x
 };

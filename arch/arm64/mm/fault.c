@@ -34,7 +34,10 @@
 #include <asm/exception.h>
 #include <asm/debug-monitors.h>
 #include <asm/esr.h>
+<<<<<<< HEAD
 #include <asm/sysreg.h>
+=======
+>>>>>>> p9x
 #include <asm/system_misc.h>
 #include <asm/pgtable.h>
 #include <asm/tlbflush.h>
@@ -164,6 +167,11 @@ static void do_bad_area(unsigned long addr, unsigned int esr, struct pt_regs *re
 #define VM_FAULT_BADMAP		0x010000
 #define VM_FAULT_BADACCESS	0x020000
 
+<<<<<<< HEAD
+=======
+#define ESR_LNX_EXEC		(1 << 24)
+
+>>>>>>> p9x
 static int __do_page_fault(struct mm_struct *mm, unsigned long addr,
 			   unsigned int mm_flags, unsigned long vm_flags,
 			   struct task_struct *tsk)
@@ -248,14 +256,22 @@ static int __kprobes do_page_fault(unsigned long addr, unsigned int esr,
 	if (user_mode(regs))
 		mm_flags |= FAULT_FLAG_USER;
 
+<<<<<<< HEAD
 	if (is_el0_instruction_abort(esr)) {
 		vm_flags = VM_EXEC;
 	} else if (((esr & ESR_ELx_WNR) && !(esr & ESR_ELx_CM)) ||
 			((esr & ESR_ELx_CM) && !(mm_flags & FAULT_FLAG_USER))) {
+=======
+	if (esr & ESR_LNX_EXEC) {
+		vm_flags = VM_EXEC;
+	} else if (((esr & ESR_EL1_WRITE) && !(esr & ESR_EL1_CM)) ||
+			((esr & ESR_EL1_CM) && !(mm_flags & FAULT_FLAG_USER))) {
+>>>>>>> p9x
 		vm_flags = VM_WRITE;
 		mm_flags |= FAULT_FLAG_WRITE;
 	}
 
+<<<<<<< HEAD
 	if (addr < USER_DS && is_permission_fault(esr, regs)) {
 		if (is_el1_instruction_abort(esr))
 			die("Attempting to execute userspace memory", regs, esr);
@@ -264,6 +280,8 @@ static int __kprobes do_page_fault(unsigned long addr, unsigned int esr,
 			panic("Accessing user space memory outside uaccess.h routines");
 	}
 
+=======
+>>>>>>> p9x
 	/*
 	 * As per x86, we may deadlock here. However, since the kernel only
 	 * validly references user space from well defined areas of the code,

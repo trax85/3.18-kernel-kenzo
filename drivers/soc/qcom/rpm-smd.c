@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -11,8 +15,11 @@
  *
  */
 
+<<<<<<< HEAD
 #define pr_fmt(fmt) "%s: " fmt, __func__
 
+=======
+>>>>>>> p9x
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -30,6 +37,10 @@
 #include <linux/device.h>
 #include <linux/notifier.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/workqueue.h>
+>>>>>>> p9x
 #include <linux/platform_device.h>
 #include <linux/of.h>
 #include <linux/of_platform.h>
@@ -37,9 +48,12 @@
 #include <soc/qcom/rpm-notifier.h>
 #include <soc/qcom/rpm-smd.h>
 #include <soc/qcom/smd.h>
+<<<<<<< HEAD
 #include <soc/qcom/glink_rpm_xprt.h>
 #include <soc/qcom/glink.h>
 
+=======
+>>>>>>> p9x
 #define CREATE_TRACE_POINTS
 #include <trace/events/trace_rpm_smd.h>
 
@@ -65,6 +79,7 @@ struct msm_rpm_driver_data {
 	struct completion smd_open;
 };
 
+<<<<<<< HEAD
 struct glink_apps_rpm_data {
 	const char *name;
 	const char *edge;
@@ -82,6 +97,12 @@ static struct glink_apps_rpm_data *glink_data;
 #define DEBUG_PRINT_BUFFER_SIZE 512
 #define MAX_SLEEP_BUFFER 128
 #define GFP_FLAG(noirq) (noirq ? GFP_ATOMIC : GFP_NOIO)
+=======
+#define DEFAULT_BUFFER_SIZE 256
+#define DEBUG_PRINT_BUFFER_SIZE 512
+#define MAX_SLEEP_BUFFER 128
+#define GFP_FLAG(noirq) (noirq ? GFP_ATOMIC : GFP_KERNEL)
+>>>>>>> p9x
 #define INV_RSC "resource does not exist"
 #define ERR "err\0"
 #define MAX_ERR_BUFFER_SIZE 128
@@ -91,8 +112,11 @@ static struct glink_apps_rpm_data *glink_data;
 static ATOMIC_NOTIFIER_HEAD(msm_rpm_sleep_notifier);
 static bool standalone;
 static int probe_status = -EPROBE_DEFER;
+<<<<<<< HEAD
 static int msm_rpm_read_smd_data(char *buf);
 static void msm_rpm_process_ack(uint32_t msg_id, int errno);
+=======
+>>>>>>> p9x
 
 int msm_rpm_register_notifier(struct notifier_block *nb)
 {
@@ -104,6 +128,11 @@ int msm_rpm_unregister_notifier(struct notifier_block *nb)
 	return atomic_notifier_chain_unregister(&msm_rpm_sleep_notifier, nb);
 }
 
+<<<<<<< HEAD
+=======
+static struct workqueue_struct *msm_rpm_smd_wq;
+
+>>>>>>> p9x
 enum {
 	MSM_RPM_MSG_REQUEST_TYPE = 0,
 	MSM_RPM_MSG_TYPE_NR,
@@ -146,9 +175,13 @@ struct slp_buf {
 	bool valid;
 };
 static struct rb_root tr_root = RB_ROOT;
+<<<<<<< HEAD
 static int (*msm_rpm_send_buffer)(char *buf, uint32_t size, bool noirq);
 static int msm_rpm_send_smd_buffer(char *buf, uint32_t size, bool noirq);
 static int msm_rpm_glink_send_buffer(char *buf, uint32_t size, bool noirq);
+=======
+static int msm_rpm_send_smd_buffer(char *buf, uint32_t size, bool noirq);
+>>>>>>> p9x
 static uint32_t msm_rpm_get_next_msg_id(void);
 
 static inline unsigned int get_rsc_type(char *buf)
@@ -341,7 +374,11 @@ struct msm_rpm_request {
 };
 
 /*
+<<<<<<< HEAD
  * Data related to message acknowledgment
+=======
+ * Data related to message acknowledgement
+>>>>>>> p9x
  */
 
 LIST_HEAD(msm_rpm_wait_list);
@@ -352,7 +389,10 @@ struct msm_rpm_wait_data {
 	bool ack_recd;
 	int errno;
 	struct completion ack;
+<<<<<<< HEAD
 	bool delete_on_ack;
+=======
+>>>>>>> p9x
 };
 DEFINE_SPINLOCK(msm_rpm_list_lock);
 
@@ -366,7 +406,11 @@ struct msm_rpm_ack_msg {
 
 LIST_HEAD(msm_rpm_ack_list);
 
+<<<<<<< HEAD
 static struct tasklet_struct data_tasklet;
+=======
+static DECLARE_COMPLETION(data_ready);
+>>>>>>> p9x
 
 static inline uint32_t msm_rpm_get_msg_id_from_ack(uint8_t *buf)
 {
@@ -416,7 +460,10 @@ int msm_rpm_smd_buffer_request(struct msm_rpm_request *cdata,
 	static DEFINE_SPINLOCK(slp_buffer_lock);
 	unsigned long flags;
 	char *buf;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	buf = cdata->buf;
 
 	if (size > MAX_SLEEP_BUFFER)
@@ -434,7 +481,12 @@ int msm_rpm_smd_buffer_request(struct msm_rpm_request *cdata,
 		slp->buf = PTR_ALIGN(&slp->ubuf[0], sizeof(u32));
 		memcpy(slp->buf, buf, size);
 		if (tr_insert(&tr_root, slp))
+<<<<<<< HEAD
 			pr_err("Error updating sleep request\n");
+=======
+			pr_err("%s(): Error updating sleep request\n",
+					__func__);
+>>>>>>> p9x
 	} else {
 		/* handle unsent requests */
 		tr_update(slp, buf);
@@ -494,6 +546,7 @@ static struct msm_rpm_driver_data msm_rpm_data = {
 	.smd_open = COMPLETION_INITIALIZER(msm_rpm_data.smd_open),
 };
 
+<<<<<<< HEAD
 static int msm_rpm_glink_rx_poll(void *glink_handle)
 {
 	int ret;
@@ -559,10 +612,17 @@ static int msm_rpm_read_sleep_ack(void)
 	return ret;
 }
 
+=======
+>>>>>>> p9x
 static int msm_rpm_flush_requests(bool print)
 {
 	struct rb_node *t;
 	int ret;
+<<<<<<< HEAD
+=======
+	int pkt_sz;
+	char buf[MAX_ERR_BUFFER_SIZE] = {0};
+>>>>>>> p9x
 	int count = 0;
 
 	for (t = rb_first(&tr_root); t; t = rb_next(t)) {
@@ -576,6 +636,7 @@ static int msm_rpm_flush_requests(bool print)
 			msm_rpm_print_sleep_buffer(s);
 
 		get_msg_id(s->buf) = msm_rpm_get_next_msg_id();
+<<<<<<< HEAD
 
 		if (!glink_enabled)
 			ret = msm_rpm_send_smd_buffer(s->buf,
@@ -583,6 +644,10 @@ static int msm_rpm_flush_requests(bool print)
 		else
 			ret = msm_rpm_glink_send_buffer(s->buf,
 					get_buf_len(s->buf), true);
+=======
+		ret = msm_rpm_send_smd_buffer(s->buf,
+				get_buf_len(s->buf), true);
+>>>>>>> p9x
 
 		WARN_ON(ret != get_buf_len(s->buf));
 		trace_rpm_smd_send_sleep_set(get_msg_id(s->buf),
@@ -600,6 +665,7 @@ static int msm_rpm_flush_requests(bool print)
 		 * process these sleep set acks.
 		 */
 		if (count >= MAX_WAIT_ON_ACK) {
+<<<<<<< HEAD
 			int ret = msm_rpm_read_sleep_ack();
 
 			if (ret >= 0)
@@ -608,11 +674,47 @@ static int msm_rpm_flush_requests(bool print)
 				pr_err("Timed out waiting for RPM ACK\n");
 				return ret;
 			}
+=======
+			int len;
+			int timeout = 10;
+
+			while (timeout) {
+				if (smd_is_pkt_avail(msm_rpm_data.ch_info))
+					break;
+				/*
+				 * Sleep for 50us at a time before checking
+				 * for packet availability. The 50us is based
+				 * on the the time rpm could take to process
+				 * and send an ack for the sleep set request.
+				 */
+				udelay(50);
+				timeout--;
+			}
+			/*
+			 * On timeout return an error and exit the spinlock
+			 * control on this cpu. This will allow any other
+			 * core that has wokenup and trying to acquire the
+			 * spinlock from being locked out.
+			 */
+			if (!timeout) {
+				pr_err("%s: Timed out waiting for RPM ACK\n",
+					__func__);
+				return -EAGAIN;
+			}
+
+			pkt_sz = smd_cur_packet_size(msm_rpm_data.ch_info);
+			len = smd_read(msm_rpm_data.ch_info, buf, pkt_sz);
+			count--;
+>>>>>>> p9x
 		}
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 static void msm_rpm_notify_sleep_chain(struct rpm_message_header *hdr,
 		struct msm_rpm_kvp_data *kvp)
 {
@@ -660,7 +762,12 @@ static int msm_rpm_add_kvp_data_common(struct msm_rpm_request *handle,
 	}
 
 	if (i >= handle->num_elements) {
+<<<<<<< HEAD
 		pr_err("Number of resources exceeds max allocated\n");
+=======
+		pr_err("%s(): Number of resources exceeds max allocated\n",
+				__func__);
+>>>>>>> p9x
 		return -ENOMEM;
 	}
 
@@ -671,7 +778,11 @@ static int msm_rpm_add_kvp_data_common(struct msm_rpm_request *handle,
 		handle->kvp[i].value = kzalloc(data_size, GFP_FLAG(noirq));
 
 		if (!handle->kvp[i].value) {
+<<<<<<< HEAD
 			pr_err("Failed malloc\n");
+=======
+			pr_err("%s(): Failed malloc\n", __func__);
+>>>>>>> p9x
 			return -ENOMEM;
 		}
 	} else {
@@ -709,7 +820,12 @@ static struct msm_rpm_request *msm_rpm_create_request_common(
 			GFP_FLAG(noirq));
 
 	if (!cdata) {
+<<<<<<< HEAD
 		pr_err("Cannot allocate memory for client data\n");
+=======
+		pr_err("%s():Cannot allocate memory for client data\n",
+				__func__);
+>>>>>>> p9x
 		goto cdata_alloc_fail;
 	}
 
@@ -805,8 +921,13 @@ static void msm_rpm_notify(void *data, unsigned event)
 
 	switch (event) {
 	case SMD_EVENT_DATA:
+<<<<<<< HEAD
 		tasklet_schedule(&data_tasklet);
 		trace_rpm_smd_interrupt_notify("interrupt notification");
+=======
+		trace_rpm_smd_interrupt_notify("interrupt notification");
+		complete(&data_ready);
+>>>>>>> p9x
 		break;
 	case SMD_EVENT_OPEN:
 		complete(&pdata->smd_open);
@@ -869,7 +990,11 @@ static uint32_t msm_rpm_get_next_msg_id(void)
 	return id;
 }
 
+<<<<<<< HEAD
 static int msm_rpm_add_wait_list(uint32_t msg_id, bool delete_on_ack)
+=======
+static int msm_rpm_add_wait_list(uint32_t msg_id)
+>>>>>>> p9x
 {
 	unsigned long flags;
 	struct msm_rpm_wait_data *data =
@@ -882,12 +1007,17 @@ static int msm_rpm_add_wait_list(uint32_t msg_id, bool delete_on_ack)
 	data->ack_recd = false;
 	data->msg_id = msg_id;
 	data->errno = INIT_ERROR;
+<<<<<<< HEAD
 	data->delete_on_ack = delete_on_ack;
 	spin_lock_irqsave(&msm_rpm_list_lock, flags);
 	if (delete_on_ack)
 		list_add_tail(&data->list, &msm_rpm_wait_list);
 	else
 		list_add(&data->list, &msm_rpm_wait_list);
+=======
+	spin_lock_irqsave(&msm_rpm_list_lock, flags);
+	list_add(&data->list, &msm_rpm_wait_list);
+>>>>>>> p9x
 	spin_unlock_irqrestore(&msm_rpm_list_lock, flags);
 
 	return 0;
@@ -905,22 +1035,33 @@ static void msm_rpm_free_list_entry(struct msm_rpm_wait_data *elem)
 
 static void msm_rpm_process_ack(uint32_t msg_id, int errno)
 {
+<<<<<<< HEAD
 	struct list_head *ptr, *next;
+=======
+	struct list_head *ptr;
+>>>>>>> p9x
 	struct msm_rpm_wait_data *elem = NULL;
 	unsigned long flags;
 
 	spin_lock_irqsave(&msm_rpm_list_lock, flags);
 
+<<<<<<< HEAD
 	list_for_each_safe(ptr, next, &msm_rpm_wait_list) {
+=======
+	list_for_each(ptr, &msm_rpm_wait_list) {
+>>>>>>> p9x
 		elem = list_entry(ptr, struct msm_rpm_wait_data, list);
 		if (elem && (elem->msg_id == msg_id)) {
 			elem->errno = errno;
 			elem->ack_recd = true;
 			complete(&elem->ack);
+<<<<<<< HEAD
 			if (elem->delete_on_ack) {
 				list_del(&elem->list);
 				kfree(elem);
 			}
+=======
+>>>>>>> p9x
 			break;
 		}
 		elem = NULL;
@@ -941,6 +1082,10 @@ struct msm_rpm_kvp_packet {
 	uint32_t val;
 };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 static int msm_rpm_read_smd_data(char *buf)
 {
 	int pkt_sz;
@@ -979,12 +1124,17 @@ error:
 	return 0;
 }
 
+<<<<<<< HEAD
 static void data_fn_tasklet(unsigned long data)
+=======
+static void msm_rpm_smd_work(struct work_struct *work)
+>>>>>>> p9x
 {
 	uint32_t msg_id;
 	int errno;
 	char buf[MAX_ERR_BUFFER_SIZE] = {0};
 
+<<<<<<< HEAD
 	spin_lock(&msm_rpm_data.smd_lock_read);
 	while (smd_is_pkt_avail(msm_rpm_data.ch_info)) {
 		if (msm_rpm_read_smd_data(buf))
@@ -995,6 +1145,22 @@ static void data_fn_tasklet(unsigned long data)
 		msm_rpm_process_ack(msg_id, errno);
 	}
 	spin_unlock(&msm_rpm_data.smd_lock_read);
+=======
+	while (1) {
+		wait_for_completion_interruptible(&data_ready);
+
+		spin_lock(&msm_rpm_data.smd_lock_read);
+		while (smd_is_pkt_avail(msm_rpm_data.ch_info)) {
+			if (msm_rpm_read_smd_data(buf))
+				break;
+			msg_id = msm_rpm_get_msg_id_from_ack(buf);
+			errno = msm_rpm_get_error_from_ack((uint8_t *)buf);
+			trace_rpm_smd_ack_recvd(0, msg_id, errno);
+			msm_rpm_process_ack(msg_id, errno);
+		}
+		spin_unlock(&msm_rpm_data.smd_lock_read);
+	}
+>>>>>>> p9x
 }
 
 static void msm_rpm_log_request(struct msm_rpm_request *cdata)
@@ -1129,7 +1295,10 @@ static void msm_rpm_log_request(struct msm_rpm_request *cdata)
 	pos += scnprintf(buf + pos, buflen - pos, "\n");
 	printk(buf);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 static int msm_rpm_send_smd_buffer(char *buf, uint32_t size, bool noirq)
 {
 	unsigned long flags;
@@ -1142,25 +1311,38 @@ static int msm_rpm_send_smd_buffer(char *buf, uint32_t size, bool noirq)
 		if (ret < 0)
 			break;
 		if (!noirq) {
+<<<<<<< HEAD
 			spin_unlock_irqrestore(
 				&msm_rpm_data.smd_lock_write, flags);
 			cpu_relax();
 			spin_lock_irqsave(
 				&msm_rpm_data.smd_lock_write, flags);
+=======
+			spin_unlock_irqrestore(&msm_rpm_data.smd_lock_write,
+					flags);
+			cpu_relax();
+			spin_lock_irqsave(&msm_rpm_data.smd_lock_write, flags);
+>>>>>>> p9x
 		} else
 			udelay(5);
 	}
 
 	if (ret < 0) {
+<<<<<<< HEAD
 		pr_err("SMD not initialized\n");
 		spin_unlock_irqrestore(
 			&msm_rpm_data.smd_lock_write, flags);
+=======
+		pr_err("%s(): SMD not initialized\n", __func__);
+		spin_unlock_irqrestore(&msm_rpm_data.smd_lock_write, flags);
+>>>>>>> p9x
 		return ret;
 	}
 
 	ret = smd_write(msm_rpm_data.ch_info, buf, size);
 	spin_unlock_irqrestore(&msm_rpm_data.smd_lock_write, flags);
 	return ret;
+<<<<<<< HEAD
 }
 
 static int msm_rpm_glink_send_buffer(char *buf, uint32_t size, bool noirq)
@@ -1198,6 +1380,12 @@ static int msm_rpm_glink_send_buffer(char *buf, uint32_t size, bool noirq)
 
 static int msm_rpm_send_data(struct msm_rpm_request *cdata,
 		int msg_type, bool noirq, bool noack)
+=======
+
+}
+static int msm_rpm_send_data(struct msm_rpm_request *cdata,
+		int msg_type, bool noirq)
+>>>>>>> p9x
 {
 	uint8_t *tmpbuff;
 	int ret;
@@ -1227,7 +1415,11 @@ static int msm_rpm_send_data(struct msm_rpm_request *cdata,
 	}
 
 	if (!cdata->buf) {
+<<<<<<< HEAD
 		pr_err("Failed malloc\n");
+=======
+		pr_err("%s(): Failed malloc\n", __func__);
+>>>>>>> p9x
 		return 0;
 	}
 
@@ -1281,9 +1473,15 @@ static int msm_rpm_send_data(struct msm_rpm_request *cdata,
 		return ret;
 	}
 
+<<<<<<< HEAD
 	msm_rpm_add_wait_list(cdata->msg_hdr.msg_id, noack);
 
 	ret = msm_rpm_send_buffer(&cdata->buf[0], msg_size, noirq);
+=======
+	msm_rpm_add_wait_list(cdata->msg_hdr.msg_id);
+
+	ret = msm_rpm_send_smd_buffer(&cdata->buf[0], msg_size, noirq);
+>>>>>>> p9x
 
 	if (ret == msg_size) {
 		for (i = 0; (i < cdata->write_idx); i++)
@@ -1305,26 +1503,38 @@ static int msm_rpm_send_data(struct msm_rpm_request *cdata,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int _msm_rpm_send_request(struct msm_rpm_request *handle, bool noack)
+=======
+int msm_rpm_send_request(struct msm_rpm_request *handle)
+>>>>>>> p9x
 {
 	int ret;
 	static DEFINE_MUTEX(send_mtx);
 
 	mutex_lock(&send_mtx);
+<<<<<<< HEAD
 	ret = msm_rpm_send_data(handle, MSM_RPM_MSG_REQUEST_TYPE, false, noack);
+=======
+	ret = msm_rpm_send_data(handle, MSM_RPM_MSG_REQUEST_TYPE, false);
+>>>>>>> p9x
 	mutex_unlock(&send_mtx);
 
 	return ret;
 }
+<<<<<<< HEAD
 
 int msm_rpm_send_request(struct msm_rpm_request *handle)
 {
 	return _msm_rpm_send_request(handle, false);
 }
+=======
+>>>>>>> p9x
 EXPORT_SYMBOL(msm_rpm_send_request);
 
 int msm_rpm_send_request_noirq(struct msm_rpm_request *handle)
 {
+<<<<<<< HEAD
 	return msm_rpm_send_data(handle, MSM_RPM_MSG_REQUEST_TYPE, true, false);
 }
 EXPORT_SYMBOL(msm_rpm_send_request_noirq);
@@ -1339,13 +1549,23 @@ void *msm_rpm_send_request_noack(struct msm_rpm_request *handle)
 }
 EXPORT_SYMBOL(msm_rpm_send_request_noack);
 
+=======
+	return msm_rpm_send_data(handle, MSM_RPM_MSG_REQUEST_TYPE, true);
+}
+EXPORT_SYMBOL(msm_rpm_send_request_noirq);
+
+>>>>>>> p9x
 int msm_rpm_wait_for_ack(uint32_t msg_id)
 {
 	struct msm_rpm_wait_data *elem;
 	int rc = 0;
 
 	if (!msg_id) {
+<<<<<<< HEAD
 		pr_err("Invalid msg id\n");
+=======
+		pr_err("%s(): Invalid msg id\n", __func__);
+>>>>>>> p9x
 		return -ENOMEM;
 	}
 
@@ -1369,6 +1589,7 @@ int msm_rpm_wait_for_ack(uint32_t msg_id)
 }
 EXPORT_SYMBOL(msm_rpm_wait_for_ack);
 
+<<<<<<< HEAD
 static void msm_rpm_smd_read_data_noirq(uint32_t msg_id)
 {
 	uint32_t id = 0;
@@ -1409,14 +1630,23 @@ static void msm_rpm_glink_read_data_noirq(struct msm_rpm_wait_data *elem)
 	}
 }
 
+=======
+>>>>>>> p9x
 int msm_rpm_wait_for_ack_noirq(uint32_t msg_id)
 {
 	struct msm_rpm_wait_data *elem;
 	unsigned long flags;
 	int rc = 0;
+<<<<<<< HEAD
 
 	if (!msg_id)  {
 		pr_err("Invalid msg id\n");
+=======
+	uint32_t id = 0;
+
+	if (!msg_id)  {
+		pr_err("%s(): Invalid msg id\n", __func__);
+>>>>>>> p9x
 		return -ENOMEM;
 	}
 
@@ -1442,10 +1672,25 @@ int msm_rpm_wait_for_ack_noirq(uint32_t msg_id)
 		goto wait_ack_cleanup;
 	}
 
+<<<<<<< HEAD
 	if (!glink_enabled)
 		msm_rpm_smd_read_data_noirq(msg_id);
 	else
 		msm_rpm_glink_read_data_noirq(elem);
+=======
+	while (id != msg_id) {
+		if (smd_is_pkt_avail(msm_rpm_data.ch_info)) {
+			int errno;
+			char buf[MAX_ERR_BUFFER_SIZE] = {};
+
+			msm_rpm_read_smd_data(buf);
+			id = msm_rpm_get_msg_id_from_ack(buf);
+			errno = msm_rpm_get_error_from_ack(buf);
+			trace_rpm_smd_ack_recvd(1, msg_id, errno);
+			msm_rpm_process_ack(id, errno);
+		}
+	}
+>>>>>>> p9x
 
 	rc = elem->errno;
 
@@ -1453,13 +1698,19 @@ int msm_rpm_wait_for_ack_noirq(uint32_t msg_id)
 wait_ack_cleanup:
 	spin_unlock_irqrestore(&msm_rpm_data.smd_lock_read, flags);
 
+<<<<<<< HEAD
 	if (!glink_enabled)
 		if (smd_is_pkt_avail(msm_rpm_data.ch_info))
 			tasklet_schedule(&data_tasklet);
+=======
+	if (smd_is_pkt_avail(msm_rpm_data.ch_info))
+		complete(&data_ready);
+>>>>>>> p9x
 	return rc;
 }
 EXPORT_SYMBOL(msm_rpm_wait_for_ack_noirq);
 
+<<<<<<< HEAD
 void *msm_rpm_send_message_noack(enum msm_rpm_set set, uint32_t rsc_type,
 		uint32_t rsc_id, struct msm_rpm_kvp *kvp, int nelems)
 {
@@ -1488,6 +1739,8 @@ bail:
 }
 EXPORT_SYMBOL(msm_rpm_send_message_noack);
 
+=======
+>>>>>>> p9x
 int msm_rpm_send_message(enum msm_rpm_set set, uint32_t rsc_type,
 		uint32_t rsc_id, struct msm_rpm_kvp *kvp, int nelems)
 {
@@ -1553,6 +1806,7 @@ int msm_rpm_enter_sleep(bool print, const struct cpumask *cpumask)
 	if (standalone)
 		return 0;
 
+<<<<<<< HEAD
 	if (!glink_enabled)
 		ret = smd_mask_receive_interrupt(msm_rpm_data.ch_info,
 								true, cpumask);
@@ -1571,6 +1825,14 @@ int msm_rpm_enter_sleep(bool print, const struct cpumask *cpumask)
 				glink_rpm_mask_rx_interrupt(
 					glink_data->glink_handle, false, NULL);
 		}
+=======
+	ret = smd_mask_receive_interrupt(msm_rpm_data.ch_info, true, cpumask);
+	if (!ret) {
+		ret = msm_rpm_flush_requests(print);
+		if (ret)
+			smd_mask_receive_interrupt(msm_rpm_data.ch_info,
+							false, NULL);
+>>>>>>> p9x
 	}
 	return ret;
 }
@@ -1582,6 +1844,7 @@ EXPORT_SYMBOL(msm_rpm_enter_sleep);
  */
 void msm_rpm_exit_sleep(void)
 {
+<<<<<<< HEAD
 	int ret;
 
 	if (standalone)
@@ -1830,11 +2093,21 @@ static int msm_rpm_dev_glink_probe(struct platform_device *pdev)
 	return ret;
 }
 
+=======
+	if (standalone)
+		return;
+
+	smd_mask_receive_interrupt(msm_rpm_data.ch_info, false, NULL);
+}
+EXPORT_SYMBOL(msm_rpm_exit_sleep);
+
+>>>>>>> p9x
 static int msm_rpm_dev_probe(struct platform_device *pdev)
 {
 	char *key = NULL;
 	int ret = 0;
 
+<<<<<<< HEAD
 	/*
 	 * Check for standalone support
 	 */
@@ -1857,6 +2130,8 @@ static int msm_rpm_dev_probe(struct platform_device *pdev)
 		pr_info("APSS-RPM communication over SMD\n");
 	}
 
+=======
+>>>>>>> p9x
 	key = "rpm-channel-name";
 	ret = of_property_read_string(pdev->dev.of_node, key,
 					&msm_rpm_data.ch_name);
@@ -1875,6 +2150,16 @@ static int msm_rpm_dev_probe(struct platform_device *pdev)
 		goto fail;
 	}
 
+<<<<<<< HEAD
+=======
+	key = "rpm-standalone";
+	standalone = of_property_read_bool(pdev->dev.of_node, key);
+	if (standalone) {
+		probe_status = 0;
+		goto skip_smd_init;
+	}
+
+>>>>>>> p9x
 	ret = smd_named_open_on_edge(msm_rpm_data.ch_name,
 				msm_rpm_data.ch_type,
 				&msm_rpm_data.ch_info,
@@ -1891,25 +2176,50 @@ static int msm_rpm_dev_probe(struct platform_device *pdev)
 
 	spin_lock_init(&msm_rpm_data.smd_lock_write);
 	spin_lock_init(&msm_rpm_data.smd_lock_read);
+<<<<<<< HEAD
 	tasklet_init(&data_tasklet, data_fn_tasklet, 0);
+=======
+	INIT_WORK(&msm_rpm_data.work, msm_rpm_smd_work);
+>>>>>>> p9x
 
 	wait_for_completion(&msm_rpm_data.smd_open);
 
 	smd_disable_read_intr(msm_rpm_data.ch_info);
 
+<<<<<<< HEAD
 	probe_status = ret;
 skip_init:
 	of_platform_populate(pdev->dev.of_node, NULL, NULL, &pdev->dev);
 
 	if (standalone)
 		pr_info("RPM running in standalone mode\n");
+=======
+	msm_rpm_smd_wq = alloc_workqueue("rpm-smd",
+			WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_HIGHPRI, 1);
+	if (!msm_rpm_smd_wq) {
+		pr_err("%s: Unable to alloc rpm-smd workqueue\n", __func__);
+		ret = -EINVAL;
+		goto fail;
+	}
+	queue_work(msm_rpm_smd_wq, &msm_rpm_data.work);
+
+	probe_status = ret;
+skip_smd_init:
+	of_platform_populate(pdev->dev.of_node, NULL, NULL, &pdev->dev);
+
+	if (standalone)
+		pr_info("%s: RPM running in standalone mode\n", __func__);
+>>>>>>> p9x
 fail:
 	return probe_status;
 }
 
 static struct of_device_id msm_rpm_match_table[] =  {
 	{.compatible = "qcom,rpm-smd"},
+<<<<<<< HEAD
 	{.compatible = "qcom,rpm-glink"},
+=======
+>>>>>>> p9x
 	{},
 };
 

@@ -1538,6 +1538,20 @@ static void macb_configure_dma(struct macb *bp)
 	}
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Configure peripheral capacities according to integration options used
+ */
+static void macb_configure_caps(struct macb *bp)
+{
+	if (macb_is_gem(bp)) {
+		if (GEM_BFEXT(IRQCOR, gem_readl(bp, DCFG1)) == 0)
+			bp->caps |= MACB_CAPS_ISR_CLEAR_ON_WRITE;
+	}
+}
+
+>>>>>>> p9x
 static void macb_init_hw(struct macb *bp)
 {
 	u32 config;

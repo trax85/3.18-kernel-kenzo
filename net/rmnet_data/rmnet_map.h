@@ -19,6 +19,7 @@
 
 struct rmnet_map_control_command_s {
 	uint8_t command_name;
+<<<<<<< HEAD
 #ifndef RMNET_USE_BIG_ENDIAN_STRUCTS
 	uint8_t  cmd_type:2;
 	uint8_t  reserved:6;
@@ -26,11 +27,23 @@ struct rmnet_map_control_command_s {
 	uint8_t  reserved:6;
 	uint8_t  cmd_type:2;
 #endif /* RMNET_USE_BIG_ENDIAN_STRUCTS */
+=======
+#if defined(__LITTLE_ENDIAN_BITFIELD)
+	uint8_t  cmd_type:2;
+	uint8_t  reserved:6;
+#elif defined(__BIG_ENDIAN_BITFIELD)
+	uint8_t  reserved:6;
+	uint8_t  cmd_type:2;
+#else
+#error "Please fix <asm/byteorder.h>"
+#endif
+>>>>>>> p9x
 	uint16_t reserved2;
 	uint32_t   transaction_id;
 	union {
 		uint8_t  data[65528];
 		struct {
+<<<<<<< HEAD
 #ifndef RMNET_USE_BIG_ENDIAN_STRUCTS
 			uint16_t  ip_family:2;
 			uint16_t  reserved:14;
@@ -38,6 +51,17 @@ struct rmnet_map_control_command_s {
 			uint16_t  reserved:14;
 			uint16_t  ip_family:2;
 #endif /* RMNET_USE_BIG_ENDIAN_STRUCTS */
+=======
+#if defined(__LITTLE_ENDIAN_BITFIELD)
+			uint16_t  ip_family:2;
+			uint16_t  reserved:14;
+#elif defined(__BIG_ENDIAN_BITFIELD)
+			uint16_t  reserved:14;
+			uint16_t  ip_family:2;
+#else
+#error "Please fix <asm/byteorder.h>"
+#endif
+>>>>>>> p9x
 			uint16_t  flow_control_seq_num;
 			uint32_t  qos_id;
 		} flow_control;

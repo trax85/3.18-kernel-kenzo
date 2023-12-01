@@ -1735,7 +1735,11 @@ i915_gem_execbuffer2(struct drm_device *dev, void *data,
 	ret = i915_gem_do_execbuffer(dev, data, file, args, exec2_list);
 	if (!ret) {
 		/* Copy the new buffer offsets back to the user's exec list. */
+<<<<<<< HEAD
 		struct drm_i915_gem_exec_object2 __user *user_exec_list =
+=======
+		struct drm_i915_gem_exec_object2 *user_exec_list =
+>>>>>>> p9x
 				   to_user_ptr(args->buffers_ptr);
 		int i;
 

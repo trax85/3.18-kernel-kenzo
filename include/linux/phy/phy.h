@@ -18,7 +18,10 @@
 #include <linux/of.h>
 #include <linux/device.h>
 #include <linux/pm_runtime.h>
+<<<<<<< HEAD
 #include <linux/regulator/consumer.h>
+=======
+>>>>>>> p9x
 
 struct phy;
 
@@ -66,7 +69,10 @@ struct phy {
 	int			init_count;
 	int			power_count;
 	struct phy_attrs	attrs;
+<<<<<<< HEAD
 	struct regulator	*pwr;
+=======
+>>>>>>> p9x
 };
 
 /**

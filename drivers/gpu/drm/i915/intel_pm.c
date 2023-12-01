@@ -7142,16 +7142,131 @@ void intel_init_pm(struct drm_device *dev)
 			dev_priv->display.get_fifo_size = i830_get_fifo_size;
 		}
 
+<<<<<<< HEAD
 		if (IS_I85X(dev) || IS_I865G(dev))
 			dev_priv->display.init_clock_gating = i85x_init_clock_gating;
 		else
 			dev_priv->display.init_clock_gating = i830_init_clock_gating;
 	} else {
 		DRM_ERROR("unexpected fall-through in intel_init_pm\n");
+=======
+	return ret;
+}
+
+static void vlv_force_wake_reset(struct drm_i915_private *dev_priv)
+{
+	I915_WRITE_NOTRACE(FORCEWAKE_VLV, _MASKED_BIT_DISABLE(0xffff));
+	/* something from same cacheline, but !FORCEWAKE_VLV */
+	POSTING_READ(FORCEWAKE_ACK_VLV);
+}
+
+static void vlv_force_wake_get(struct drm_i915_private *dev_priv)
+{
+	if (wait_for_atomic((I915_READ_NOTRACE(FORCEWAKE_ACK_VLV) & FORCEWAKE_KERNEL) == 0,
+			    FORCEWAKE_ACK_TIMEOUT_MS))
+		DRM_ERROR("Timed out waiting for forcewake old ack to clear.\n");
+
+	I915_WRITE_NOTRACE(FORCEWAKE_VLV, _MASKED_BIT_ENABLE(FORCEWAKE_KERNEL));
+	I915_WRITE_NOTRACE(FORCEWAKE_MEDIA_VLV,
+			   _MASKED_BIT_ENABLE(FORCEWAKE_KERNEL));
+
+	if (wait_for_atomic((I915_READ_NOTRACE(FORCEWAKE_ACK_VLV) & FORCEWAKE_KERNEL),
+			    FORCEWAKE_ACK_TIMEOUT_MS))
+		DRM_ERROR("Timed out waiting for GT to ack forcewake request.\n");
+
+	if (wait_for_atomic((I915_READ_NOTRACE(FORCEWAKE_ACK_MEDIA_VLV) &
+			     FORCEWAKE_KERNEL),
+			    FORCEWAKE_ACK_TIMEOUT_MS))
+		DRM_ERROR("Timed out waiting for media to ack forcewake request.\n");
+
+	__gen6_gt_wait_for_thread_c0(dev_priv);
+}
+
+static void vlv_force_wake_put(struct drm_i915_private *dev_priv)
+{
+	I915_WRITE_NOTRACE(FORCEWAKE_VLV, _MASKED_BIT_DISABLE(FORCEWAKE_KERNEL));
+	I915_WRITE_NOTRACE(FORCEWAKE_MEDIA_VLV,
+			   _MASKED_BIT_DISABLE(FORCEWAKE_KERNEL));
+	/* The below doubles as a POSTING_READ */
+	gen6_gt_check_fifodbg(dev_priv);
+}
+
+void intel_gt_sanitize(struct drm_device *dev)
+{
+	struct drm_i915_private *dev_priv = dev->dev_private;
+
+	if (IS_VALLEYVIEW(dev)) {
+		vlv_force_wake_reset(dev_priv);
+	} else if (INTEL_INFO(dev)->gen >= 6) {
+		__gen6_gt_force_wake_reset(dev_priv);
+		if (IS_IVYBRIDGE(dev) || IS_HASWELL(dev))
+			__gen6_gt_force_wake_mt_reset(dev_priv);
+>>>>>>> p9x
+	}
+
+	/* BIOS often leaves RC6 enabled, but disable it for hw init */
+	if (INTEL_INFO(dev)->gen >= 6)
+		intel_disable_gt_powersave(dev);
+}
+
+<<<<<<< HEAD
+int sandybridge_pcode_read(struct drm_i915_private *dev_priv, u32 mbox, u32 *val)
+=======
+void intel_gt_init(struct drm_device *dev)
+{
+	struct drm_i915_private *dev_priv = dev->dev_private;
+
+	if (IS_VALLEYVIEW(dev)) {
+		dev_priv->gt.force_wake_get = vlv_force_wake_get;
+		dev_priv->gt.force_wake_put = vlv_force_wake_put;
+	} else if (IS_HASWELL(dev)) {
+		dev_priv->gt.force_wake_get = __gen6_gt_force_wake_mt_get;
+		dev_priv->gt.force_wake_put = __gen6_gt_force_wake_mt_put;
+	} else if (IS_IVYBRIDGE(dev)) {
+		u32 ecobus;
+
+		/* IVB configs may use multi-threaded forcewake */
+
+		/* A small trick here - if the bios hasn't configured
+		 * MT forcewake, and if the device is in RC6, then
+		 * force_wake_mt_get will not wake the device and the
+		 * ECOBUS read will return zero. Which will be
+		 * (correctly) interpreted by the test below as MT
+		 * forcewake being disabled.
+		 */
+		mutex_lock(&dev->struct_mutex);
+		__gen6_gt_force_wake_mt_get(dev_priv);
+		ecobus = I915_READ_NOTRACE(ECOBUS);
+		__gen6_gt_force_wake_mt_put(dev_priv);
+		mutex_unlock(&dev->struct_mutex);
+
+		if (ecobus & FORCEWAKE_MT_ENABLE) {
+			dev_priv->gt.force_wake_get =
+						__gen6_gt_force_wake_mt_get;
+			dev_priv->gt.force_wake_put =
+						__gen6_gt_force_wake_mt_put;
+		} else {
+			DRM_INFO("No MT forcewake available on Ivybridge, this can result in issues\n");
+			DRM_INFO("when using vblank-synced partial screen updates.\n");
+			dev_priv->gt.force_wake_get = __gen6_gt_force_wake_get;
+			dev_priv->gt.force_wake_put = __gen6_gt_force_wake_put;
+		}
+	} else if (IS_GEN6(dev)) {
+		dev_priv->gt.force_wake_get = __gen6_gt_force_wake_get;
+		dev_priv->gt.force_wake_put = __gen6_gt_force_wake_put;
 	}
 }
 
-int sandybridge_pcode_read(struct drm_i915_private *dev_priv, u32 mbox, u32 *val)
+void intel_pm_init(struct drm_device *dev)
+{
+	struct drm_i915_private *dev_priv = dev->dev_private;
+
+	INIT_DELAYED_WORK(&dev_priv->rps.delayed_resume_work,
+			  intel_gen6_powersave_work);
+}
+
+int sandybridge_pcode_read(struct drm_i915_private *dev_priv, u8 mbox, u32 *val)
+>>>>>>> p9x
 {
 	WARN_ON(!mutex_is_locked(&dev_priv->rps.hw_lock));
 

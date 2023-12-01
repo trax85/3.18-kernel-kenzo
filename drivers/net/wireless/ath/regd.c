@@ -647,7 +647,12 @@ ath_regd_init_wiphy(struct ath_regulatory *reg,
 		 * saved on the wiphy orig_* parameters
 		 */
 		regd = ath_world_regdomain(reg);
+<<<<<<< HEAD
 		wiphy->regulatory_flags |= REGULATORY_COUNTRY_IE_FOLLOW_POWER;
+=======
+		wiphy->flags |= WIPHY_FLAG_CUSTOM_REGULATORY;
+		wiphy->country_ie_pref = NL80211_COUNTRY_IE_FOLLOW_POWER;
+>>>>>>> p9x
 	} else {
 		/*
 		 * This gets applied in the case of the absence of CRDA,

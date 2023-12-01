@@ -475,6 +475,12 @@ static int crypto_user_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 	type -= CRYPTO_MSG_BASE;
 	link = &crypto_dispatch[type];
 
+<<<<<<< HEAD
+=======
+	if (!netlink_capable(skb, CAP_NET_ADMIN))
+		return -EPERM;
+
+>>>>>>> p9x
 	if ((type == (CRYPTO_MSG_GETALG - CRYPTO_MSG_BASE) &&
 	    (nlh->nlmsg_flags & NLM_F_DUMP))) {
 		struct crypto_alg *alg;

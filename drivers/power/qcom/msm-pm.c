@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2010-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2010-2015,2017, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -28,6 +32,10 @@
 #include <linux/msm-bus.h>
 #include <linux/uaccess.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
+=======
+#include <soc/qcom/avs.h>
+>>>>>>> p9x
 #include <soc/qcom/spm.h>
 #include <soc/qcom/pm.h>
 #include <soc/qcom/scm.h>
@@ -39,7 +47,10 @@
 #ifdef CONFIG_VFP
 #include <asm/vfp.h>
 #endif
+<<<<<<< HEAD
 #include <soc/qcom/jtag.h>
+=======
+>>>>>>> p9x
 #include "idle.h"
 #include "pm-boot.h"
 
@@ -210,6 +221,7 @@ static bool msm_pm_pc_hotplug(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 static bool msm_pm_fastpc(bool from_idle)
 {
 	int ret = 0;
@@ -229,6 +241,8 @@ static bool msm_pm_fastpc(bool from_idle)
 	return true;
 }
 
+=======
+>>>>>>> p9x
 int msm_pm_collapse(unsigned long unused)
 {
 	uint32_t cpu = smp_processor_id();
@@ -261,7 +275,11 @@ int msm_pm_collapse(unsigned long unused)
 EXPORT_SYMBOL(msm_pm_collapse);
 
 static bool __ref msm_pm_spm_power_collapse(
+<<<<<<< HEAD
 	unsigned int cpu, int mode, bool from_idle, bool notify_rpm)
+=======
+	unsigned int cpu, bool from_idle, bool notify_rpm)
+>>>>>>> p9x
 {
 	void *entry;
 	bool collapsed = 0;
@@ -272,7 +290,12 @@ static bool __ref msm_pm_spm_power_collapse(
 		pr_info("CPU%u: %s: notify_rpm %d\n",
 			cpu, __func__, (int) notify_rpm);
 
+<<<<<<< HEAD
 	ret = msm_spm_set_low_power_mode(mode, notify_rpm);
+=======
+	ret = msm_spm_set_low_power_mode(
+			MSM_SPM_MODE_POWER_COLLAPSE, notify_rpm);
+>>>>>>> p9x
 	WARN_ON(ret);
 
 	entry = save_cpu_regs ?  cpu_resume : msm_secondary_startup;
@@ -283,6 +306,7 @@ static bool __ref msm_pm_spm_power_collapse(
 		pr_info("CPU%u: %s: program vector to %p\n",
 			cpu, __func__, entry);
 
+<<<<<<< HEAD
 	msm_jtag_save_state();
 
 	collapsed = save_cpu_regs ?
@@ -290,6 +314,11 @@ static bool __ref msm_pm_spm_power_collapse(
 
 	msm_jtag_restore_state();
 
+=======
+	collapsed = save_cpu_regs ?
+		!__cpu_suspend(0, msm_pm_collapse) : msm_pm_pc_hotplug();
+
+>>>>>>> p9x
 	if (collapsed)
 		local_fiq_enable();
 
@@ -308,12 +337,27 @@ static bool msm_pm_power_collapse_standalone(
 		bool from_idle)
 {
 	unsigned int cpu = smp_processor_id();
+<<<<<<< HEAD
 	bool collapsed;
 
 	collapsed = msm_pm_spm_power_collapse(cpu,
 			MSM_SPM_MODE_STANDALONE_POWER_COLLAPSE,
 			from_idle, false);
 
+=======
+	unsigned int avsdscr;
+	unsigned int avscsr;
+	bool collapsed;
+
+	avsdscr = avs_get_avsdscr();
+	avscsr = avs_get_avscsr();
+	avs_set_avscsr(0); /* Disable AVS */
+
+	collapsed = msm_pm_spm_power_collapse(cpu, from_idle, false);
+
+	avs_set_avsdscr(avsdscr);
+	avs_set_avscsr(avscsr);
+>>>>>>> p9x
 	return collapsed;
 }
 
@@ -356,6 +400,11 @@ static bool msm_pm_power_collapse(bool from_idle)
 {
 	unsigned int cpu = smp_processor_id();
 	unsigned long saved_acpuclk_rate = 0;
+<<<<<<< HEAD
+=======
+	unsigned int avsdscr;
+	unsigned int avscsr;
+>>>>>>> p9x
 	bool collapsed;
 
 	if (MSM_PM_DEBUG_POWER_COLLAPSE & msm_pm_debug_mask)
@@ -365,15 +414,32 @@ static bool msm_pm_power_collapse(bool from_idle)
 	if (MSM_PM_DEBUG_POWER_COLLAPSE & msm_pm_debug_mask)
 		pr_info("CPU%u: %s: pre power down\n", cpu, __func__);
 
+<<<<<<< HEAD
 	if (cpu_online(cpu) && !msm_no_ramp_down_pc)
 		saved_acpuclk_rate = ramp_down_last_cpu(cpu);
 
 	collapsed = msm_pm_spm_power_collapse(cpu, MSM_SPM_MODE_POWER_COLLAPSE,
 			from_idle, true);
+=======
+	avsdscr = avs_get_avsdscr();
+	avscsr = avs_get_avscsr();
+	avs_set_avscsr(0); /* Disable AVS */
+
+	if (cpu_online(cpu) && !msm_no_ramp_down_pc)
+		saved_acpuclk_rate = ramp_down_last_cpu(cpu);
+
+	collapsed = msm_pm_spm_power_collapse(cpu, from_idle, true);
+>>>>>>> p9x
 
 	if (cpu_online(cpu) && !msm_no_ramp_down_pc)
 		ramp_up_first_cpu(cpu, saved_acpuclk_rate);
 
+<<<<<<< HEAD
+=======
+	avs_set_avsdscr(avsdscr);
+	avs_set_avscsr(avscsr);
+
+>>>>>>> p9x
 	if (MSM_PM_DEBUG_POWER_COLLAPSE & msm_pm_debug_mask)
 		pr_info("CPU%u: %s: post power up\n", cpu, __func__);
 
@@ -395,7 +461,10 @@ static bool (*execute[MSM_PM_SLEEP_MODE_NR])(bool idle) = {
 	[MSM_PM_SLEEP_MODE_POWER_COLLAPSE_STANDALONE] =
 		msm_pm_power_collapse_standalone,
 	[MSM_PM_SLEEP_MODE_RETENTION] = msm_pm_retention,
+<<<<<<< HEAD
 	[MSM_PM_SLEEP_MODE_FASTPC] = msm_pm_fastpc,
+=======
+>>>>>>> p9x
 	[MSM_PM_SLEEP_MODE_POWER_COLLAPSE] = msm_pm_power_collapse,
 };
 
@@ -550,7 +619,11 @@ static int msm_cpu_status_probe(struct platform_device *pdev)
 	u32 cpu;
 	int rc;
 
+<<<<<<< HEAD
 	if (!pdev || !pdev->dev.of_node)
+=======
+	if (!pdev | !pdev->dev.of_node)
+>>>>>>> p9x
 		return -EFAULT;
 
 	msm_pm_slp_sts = devm_kzalloc(&pdev->dev,

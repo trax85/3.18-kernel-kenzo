@@ -39,11 +39,20 @@ nva3_hda_eld(NV50_DISP_MTHD_V1)
 	const u32 soff = outp->or * 0x800;
 	int ret, i;
 
+<<<<<<< HEAD
 	nv_ioctl(object, "disp sor hda eld size %d\n", size);
 	if (nvif_unpack(args->v0, 0, 0, true)) {
 		nv_ioctl(object, "disp sor hda eld vers %d\n", args->v0.version);
 		if (size > 0x60)
 			return -E2BIG;
+=======
+	if (data && data[0]) {
+		for (i = 0; i < size; i++)
+			nv_wr32(priv, 0x61c440 + soff, (i << 8) | data[i]);
+		for (; i < 0x60; i++)
+			nv_wr32(priv, 0x61c440 + soff, (i << 8));
+		nv_mask(priv, 0x61c448 + soff, 0x80000003, 0x80000003);
+>>>>>>> p9x
 	} else
 		return ret;
 

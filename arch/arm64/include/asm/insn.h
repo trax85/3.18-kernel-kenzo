@@ -2,8 +2,11 @@
  * Copyright (C) 2013 Huawei Ltd.
  * Author: Jiang Liu <liuj97@gmail.com>
  *
+<<<<<<< HEAD
  * Copyright (C) 2014 Zi Shen Lim <zlim.lnx@gmail.com>
  *
+=======
+>>>>>>> p9x
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
@@ -18,12 +21,20 @@
  */
 #ifndef	__ASM_INSN_H
 #define	__ASM_INSN_H
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 #include <linux/types.h>
 
 /* A64 instructions are always 32 bits. */
 #define	AARCH64_INSN_SIZE		4
 
 #ifndef __ASSEMBLY__
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 /*
  * ARM Architecture Reference Manual for ARMv8 Profile-A, Issue A.a
  * Section C3.1 "A64 instruction index by encoding":
@@ -66,6 +77,7 @@ enum aarch64_insn_imm_type {
 	AARCH64_INSN_IMM_14,
 	AARCH64_INSN_IMM_12,
 	AARCH64_INSN_IMM_9,
+<<<<<<< HEAD
 	AARCH64_INSN_IMM_7,
 	AARCH64_INSN_IMM_6,
 	AARCH64_INSN_IMM_S,
@@ -215,6 +227,14 @@ enum aarch64_insn_logic_type {
 	AARCH64_INSN_LOGIC_EON,
 	AARCH64_INSN_LOGIC_AND_SETFLAGS,
 	AARCH64_INSN_LOGIC_BIC_SETFLAGS
+=======
+	AARCH64_INSN_IMM_MAX
+};
+
+enum aarch64_insn_branch_type {
+	AARCH64_INSN_BRANCH_NOLINK,
+	AARCH64_INSN_BRANCH_LINK,
+>>>>>>> p9x
 };
 
 #define	__AARCH64_INSN_FUNCS(abbr, mask, val)	\
@@ -223,6 +243,7 @@ static __always_inline bool aarch64_insn_is_##abbr(u32 code) \
 static __always_inline u32 aarch64_insn_get_##abbr##_value(void) \
 { return (val); }
 
+<<<<<<< HEAD
 __AARCH64_INSN_FUNCS(str_reg,	0x3FE0EC00, 0x38206800)
 __AARCH64_INSN_FUNCS(ldr_reg,	0x3FE0EC00, 0x38606800)
 __AARCH64_INSN_FUNCS(stp_post,	0x7FC00000, 0x28800000)
@@ -269,28 +290,42 @@ __AARCH64_INSN_FUNCS(cbnz,	0x7F000000, 0x35000000)
 __AARCH64_INSN_FUNCS(tbz,	0x7F000000, 0x36000000)
 __AARCH64_INSN_FUNCS(tbnz,	0x7F000000, 0x37000000)
 __AARCH64_INSN_FUNCS(bcond,	0xFF000010, 0x54000000)
+=======
+__AARCH64_INSN_FUNCS(b,		0xFC000000, 0x14000000)
+__AARCH64_INSN_FUNCS(bl,	0xFC000000, 0x94000000)
+>>>>>>> p9x
 __AARCH64_INSN_FUNCS(svc,	0xFFE0001F, 0xD4000001)
 __AARCH64_INSN_FUNCS(hvc,	0xFFE0001F, 0xD4000002)
 __AARCH64_INSN_FUNCS(smc,	0xFFE0001F, 0xD4000003)
 __AARCH64_INSN_FUNCS(brk,	0xFFE0001F, 0xD4200000)
 __AARCH64_INSN_FUNCS(hint,	0xFFFFF01F, 0xD503201F)
+<<<<<<< HEAD
 __AARCH64_INSN_FUNCS(br,	0xFFFFFC1F, 0xD61F0000)
 __AARCH64_INSN_FUNCS(blr,	0xFFFFFC1F, 0xD63F0000)
 __AARCH64_INSN_FUNCS(ret,	0xFFFFFC1F, 0xD65F0000)
+=======
+>>>>>>> p9x
 
 #undef	__AARCH64_INSN_FUNCS
 
 bool aarch64_insn_is_nop(u32 insn);
+<<<<<<< HEAD
 bool aarch64_insn_is_branch_imm(u32 insn);
+=======
+>>>>>>> p9x
 
 int aarch64_insn_read(void *addr, u32 *insnp);
 int aarch64_insn_write(void *addr, u32 insn);
 enum aarch64_insn_encoding_class aarch64_get_insn_class(u32 insn);
+<<<<<<< HEAD
 u64 aarch64_insn_decode_immediate(enum aarch64_insn_imm_type type, u32 insn);
+=======
+>>>>>>> p9x
 u32 aarch64_insn_encode_immediate(enum aarch64_insn_imm_type type,
 				  u32 insn, u64 imm);
 u32 aarch64_insn_gen_branch_imm(unsigned long pc, unsigned long addr,
 				enum aarch64_insn_branch_type type);
+<<<<<<< HEAD
 u32 aarch64_insn_gen_comp_branch_imm(unsigned long pc, unsigned long addr,
 				     enum aarch64_insn_register reg,
 				     enum aarch64_insn_variant variant,
@@ -354,6 +389,10 @@ u32 aarch64_insn_gen_logical_shifted_reg(enum aarch64_insn_register dst,
 					 enum aarch64_insn_logic_type type);
 s32 aarch64_get_branch_offset(u32 insn);
 u32 aarch64_set_branch_offset(u32 insn, s32 offset);
+=======
+u32 aarch64_insn_gen_hint(enum aarch64_insn_hint_op op);
+u32 aarch64_insn_gen_nop(void);
+>>>>>>> p9x
 
 bool aarch64_insn_hotpatch_safe(u32 old_insn, u32 new_insn);
 
@@ -361,6 +400,7 @@ int aarch64_insn_patch_text_nosync(void *addr, u32 insn);
 int aarch64_insn_patch_text_sync(void *addrs[], u32 insns[], int cnt);
 int aarch64_insn_patch_text(void *addrs[], u32 insns[], int cnt);
 
+<<<<<<< HEAD
 bool aarch32_insn_is_wide(u32 insn);
 
 #define A32_RN_OFFSET	16
@@ -371,5 +411,8 @@ u32 aarch32_insn_extract_reg_num(u32 insn, int offset);
 u32 aarch32_insn_mcr_extract_opc2(u32 insn);
 u32 aarch32_insn_mcr_extract_crm(u32 insn);
 #endif /* __ASSEMBLY__ */
+=======
+#endif  /* __ASSEMBLY__ */
+>>>>>>> p9x
 
 #endif	/* __ASM_INSN_H */

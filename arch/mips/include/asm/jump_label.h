@@ -28,7 +28,11 @@
 
 static __always_inline bool arch_static_branch(struct static_key *key)
 {
+<<<<<<< HEAD
 	asm_volatile_goto("1:\t" NOP_INSN "\n\t"
+=======
+	asm_volatile_goto("1:\tnop\n\t"
+>>>>>>> p9x
 		"nop\n\t"
 		".pushsection __jump_table,  \"aw\"\n\t"
 		WORD_INSN " 1b, %l[l_yes], %0\n\t"

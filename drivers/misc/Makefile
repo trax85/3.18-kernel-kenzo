@@ -29,8 +29,10 @@ obj-$(CONFIG_SGI_GRU)		+= sgi-gru/
 obj-$(CONFIG_CS5535_MFGPT)	+= cs5535-mfgpt.o
 obj-$(CONFIG_HP_ILO)		+= hpilo.o
 obj-$(CONFIG_APDS9802ALS)	+= apds9802als.o
+obj-$(CONFIG_APDS9930)		+= apds993x.o
 obj-$(CONFIG_ISL29003)		+= isl29003.o
 obj-$(CONFIG_ISL29020)		+= isl29020.o
+obj-$(CONFIG_USB_HSIC_SMSC_HUB) += smsc_hub.o
 obj-$(CONFIG_SENSORS_TSL2550)	+= tsl2550.o
 obj-$(CONFIG_DS1682)		+= ds1682.o
 obj-$(CONFIG_TI_DAC7512)	+= ti_dac7512.o
@@ -52,6 +54,7 @@ obj-$(CONFIG_INTEL_MEI)		+= mei/
 obj-$(CONFIG_VMWARE_VMCI)	+= vmw_vmci/
 obj-$(CONFIG_LATTICE_ECP3_CONFIG)	+= lattice-ecp3-config.o
 obj-$(CONFIG_SRAM)		+= sram.o
+<<<<<<< HEAD
 obj-y				+= mic/
 obj-$(CONFIG_GENWQE)		+= genwqe/
 obj-$(CONFIG_QSEECOM) += qseecom.o
@@ -73,3 +76,19 @@ obj-$(CONFIG_MEMORY_STATE_TIME) += memory_state_time.o
 obj-$(CONFIG_APDS9930)		+= apds993x.o
 obj-$(CONFIG_UID_SYS_STATS) += uid_sys_stats.o
 obj-$(CONFIG_MEMORY_STATE_TIME) += memory_state_time.o
+=======
+obj-$(CONFIG_TSIF) += msm_tsif.o
+obj-$(CONFIG_HAPTIC_ISA1200)		+= isa1200.o
+obj-$(CONFIG_QSEECOM) += qseecom.o
+ifdef CONFIG_COMPAT
+obj-$(CONFIG_QSEECOM) += compat_qseecom.o
+endif
+obj-$(CONFIG_QFP_FUSE) += qfp_fuse.o
+obj-$(CONFIG_TI_DRV2667) += ti_drv2667.o
+obj-$(CONFIG_QPNP_MISC) += qpnp-misc.o
+obj-$(CONFIG_QCOM_LIQUID_DOCK)	+= qcom_liquid_dock.o
+obj-y				+= qcom/
+obj-$(CONFIG_USB_EXT_TYPE_C_PERICOM)	+= type-c-pericom.o
+obj-$(CONFIG_USB_EXT_TYPE_C_TI)		+= type-c-ti.o
+obj-$(CONFIG_UID_SYS_STATS) += uid_sys_stats.o
+>>>>>>> p9x

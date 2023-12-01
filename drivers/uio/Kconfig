@@ -122,6 +122,7 @@ config UIO_PRUSS
 	  To compile this driver as a module, choose M here: the module
 	  will be called uio_pruss.
 
+<<<<<<< HEAD
 config UIO_MF624
 	tristate "Humusoft MF624 DAQ PCI card driver"
 	depends on PCI
@@ -135,6 +136,8 @@ config UIO_MF624
 
 	  If you compile this as a module, it will be called uio_mf624.
 
+=======
+>>>>>>> p9x
 config UIO_MSM_SHAREDMEM
 	bool "MSM shared memory driver"
 	default n

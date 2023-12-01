@@ -618,6 +618,11 @@ static int uio_vma_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 }
 
 static const struct vm_operations_struct uio_logical_vm_ops = {
+<<<<<<< HEAD
+=======
+	.open = uio_vma_open,
+	.close = uio_vma_close,
+>>>>>>> p9x
 	.fault = uio_vma_fault,
 };
 
@@ -625,6 +630,10 @@ static int uio_mmap_logical(struct vm_area_struct *vma)
 {
 	vma->vm_flags |= VM_DONTEXPAND | VM_DONTDUMP;
 	vma->vm_ops = &uio_logical_vm_ops;
+<<<<<<< HEAD
+=======
+	uio_vma_open(vma);
+>>>>>>> p9x
 	return 0;
 }
 
@@ -643,8 +652,11 @@ static int uio_mmap_physical(struct vm_area_struct *vma)
 		return -EINVAL;
 	mem = idev->info->mem + mi;
 
+<<<<<<< HEAD
 	if (mem->addr & ~PAGE_MASK)
 		return -ENODEV;
+=======
+>>>>>>> p9x
 	if (vma->vm_end - vma->vm_start > mem->size)
 		return -EINVAL;
 

@@ -401,7 +401,11 @@ static void apb_fake_ranges(struct pci_dev *dev,
 	res->flags = IORESOURCE_MEM;
 	region.start = (first << 29);
 	region.end = (last << 29) + ((1 << 29) - 1);
+<<<<<<< HEAD
 	pcibios_bus_to_resource(dev->bus, res, &region);
+=======
+	pcibios_bus_to_resource(dev, res, &region);
+>>>>>>> p9x
 }
 
 static void pci_of_scan_bus(struct pci_pbm_info *pbm,

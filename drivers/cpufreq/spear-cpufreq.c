@@ -201,9 +201,18 @@ static int spear_cpufreq_probe(struct platform_device *pdev)
 		goto out_put_node;
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < cnt; i++)
+=======
+	for (i = 0; i < cnt; i++) {
+		freq_tbl[i].driver_data = i;
+>>>>>>> p9x
 		freq_tbl[i].frequency = be32_to_cpup(val++);
 
+<<<<<<< HEAD
+=======
+	freq_tbl[i].driver_data = i;
+>>>>>>> p9x
 	freq_tbl[i].frequency = CPUFREQ_TABLE_END;
 
 	spear_cpufreq.freq_tbl = freq_tbl;

@@ -60,9 +60,14 @@ static void rcu_idle_enter_common(long long newval)
 		rcu_dynticks_nesting = newval;
 		return;
 	}
+<<<<<<< HEAD
 	RCU_TRACE(trace_rcu_dyntick(TPS("Start"),
 				    rcu_dynticks_nesting, newval));
 	if (IS_ENABLED(CONFIG_RCU_TRACE) && !is_idle_task(current)) {
+=======
+	RCU_TRACE(trace_rcu_dyntick("Start", rcu_dynticks_nesting, newval));
+	if (!is_idle_task(current)) {
+>>>>>>> p9x
 		struct task_struct *idle __maybe_unused = idle_task(smp_processor_id());
 
 		RCU_TRACE(trace_rcu_dyntick(TPS("Entry error: not idle task"),
@@ -122,8 +127,13 @@ static void rcu_idle_exit_common(long long oldval)
 					    oldval, rcu_dynticks_nesting));
 		return;
 	}
+<<<<<<< HEAD
 	RCU_TRACE(trace_rcu_dyntick(TPS("End"), oldval, rcu_dynticks_nesting));
 	if (IS_ENABLED(CONFIG_RCU_TRACE) && !is_idle_task(current)) {
+=======
+	RCU_TRACE(trace_rcu_dyntick("End", oldval, rcu_dynticks_nesting));
+	if (!is_idle_task(current)) {
+>>>>>>> p9x
 		struct task_struct *idle __maybe_unused = idle_task(smp_processor_id());
 
 		RCU_TRACE(trace_rcu_dyntick(TPS("Exit error: not idle task"),

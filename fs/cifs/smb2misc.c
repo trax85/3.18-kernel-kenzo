@@ -448,13 +448,20 @@ smb2_tcon_has_lease(struct cifs_tcon *tcon, struct smb2_lease_break *rsp,
 	__u8 lease_state;
 	struct list_head *tmp;
 	struct cifsFileInfo *cfile;
+<<<<<<< HEAD
 	struct TCP_Server_Info *server = tcon->ses->server;
+=======
+>>>>>>> p9x
 	struct cifs_pending_open *open;
 	struct cifsInodeInfo *cinode;
 	int ack_req = le32_to_cpu(rsp->Flags &
 				  SMB2_NOTIFY_BREAK_LEASE_FLAG_ACK_REQUIRED);
 
+<<<<<<< HEAD
 	lease_state = le32_to_cpu(rsp->NewLeaseState);
+=======
+	lease_state = smb2_map_lease_to_oplock(rsp->NewLeaseState);
+>>>>>>> p9x
 
 	list_for_each(tmp, &tcon->openFileList) {
 		cfile = list_entry(tmp, struct cifsFileInfo, tlist);
@@ -465,10 +472,17 @@ smb2_tcon_has_lease(struct cifs_tcon *tcon, struct smb2_lease_break *rsp,
 			continue;
 
 		cifs_dbg(FYI, "found in the open list\n");
+<<<<<<< HEAD
 		cifs_dbg(FYI, "lease key match, lease break 0x%x\n",
 			 le32_to_cpu(rsp->NewLeaseState));
 
 		server->ops->set_oplock_level(cinode, lease_state, 0, NULL);
+=======
+		cifs_dbg(FYI, "lease key match, lease break 0x%d\n",
+			 le32_to_cpu(rsp->NewLeaseState));
+
+		smb2_set_oplock_level(cinode, lease_state);
+>>>>>>> p9x
 
 		if (ack_req)
 			cfile->oplock_break_cancelled = false;
@@ -495,7 +509,11 @@ smb2_tcon_has_lease(struct cifs_tcon *tcon, struct smb2_lease_break *rsp,
 		}
 
 		cifs_dbg(FYI, "found in the pending open list\n");
+<<<<<<< HEAD
 		cifs_dbg(FYI, "lease key match, lease break 0x%x\n",
+=======
+		cifs_dbg(FYI, "lease key match, lease break 0x%d\n",
+>>>>>>> p9x
 			 le32_to_cpu(rsp->NewLeaseState));
 
 		open->oplock = lease_state;

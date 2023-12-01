@@ -186,6 +186,7 @@ static inline void ipc_unlock(struct kern_ipc_perm *perm)
 	rcu_read_unlock();
 }
 
+<<<<<<< HEAD
 /*
  * ipc_valid_object() - helper to sort out IPC_RMID races for codepaths
  * where the respective ipc_ids.rwsem is not being held down.
@@ -199,6 +200,8 @@ static inline bool ipc_valid_object(struct kern_ipc_perm *perm)
 	return !perm->deleted;
 }
 
+=======
+>>>>>>> p9x
 struct kern_ipc_perm *ipc_obtain_object_check(struct ipc_ids *ids, int id);
 int ipcget(struct ipc_namespace *ns, struct ipc_ids *ids,
 			const struct ipc_ops *ops, struct ipc_params *params);

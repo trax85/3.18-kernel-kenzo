@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2011-2013, 2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2011-2013, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -38,17 +42,25 @@ enum qpnp_tm_registers {
 };
 
 #define QPNP_TM_TYPE			0x09
+<<<<<<< HEAD
 #define QPNP_TM_SUBTYPE_GEN1		0x08
 #define QPNP_TM_SUBTYPE_GEN2		0x09
 
 #define STATUS_STATE_MASK		0x70
 #define STATUS_STATE_SHIFT		4
+=======
+#define QPNP_TM_SUBTYPE			0x08
+
+>>>>>>> p9x
 #define STATUS_STAGE_MASK		0x03
 
 #define SHUTDOWN_CTRL1_OVERRIDE_STAGE3	0x80
 #define SHUTDOWN_CTRL1_OVERRIDE_STAGE2	0x40
+<<<<<<< HEAD
 #define SHUTDOWN_CTRL1_CLK_RATE_MASK	0x0C
 #define SHUTDOWN_CTRL1_CLK_RATE_SHIFT	2
+=======
+>>>>>>> p9x
 #define SHUTDOWN_CTRL1_THRESHOLD_MASK	0x03
 
 #define SHUTDOWN_CTRL2_CLEAR_STAGE3	0x80
@@ -66,9 +78,12 @@ enum qpnp_tm_registers {
 #define THRESH_MIN			0
 #define THRESH_MAX			3
 
+<<<<<<< HEAD
 #define CLOCK_RATE_MIN			0
 #define CLOCK_RATE_MAX			3
 
+=======
+>>>>>>> p9x
 /* Trip points from most critical to least critical */
 #define TRIP_STAGE3			0
 #define TRIP_STAGE2			1
@@ -91,12 +106,18 @@ struct qpnp_tm_chip {
 	struct spmi_device		*spmi_dev;
 	struct thermal_zone_device	*tz_dev;
 	const char			*tm_name;
+<<<<<<< HEAD
 	unsigned int			subtype;
+=======
+>>>>>>> p9x
 	enum qpnp_tm_adc_type		adc_type;
 	unsigned long			temperature;
 	enum thermal_device_mode	mode;
 	unsigned int			thresh;
+<<<<<<< HEAD
 	unsigned int			clock_rate;
+=======
+>>>>>>> p9x
 	unsigned int			stage;
 	unsigned int			prev_stage;
 	int				irq;
@@ -114,9 +135,12 @@ enum pmic_thermal_override_mode {
 	SOFTWARE_OVERRIDE_ENABLED,
 };
 
+<<<<<<< HEAD
 /* This array maps from GEN2 alarm state to GEN1 alarm stage */
 const unsigned int alarm_state_map[8] = {0, 1, 1, 2, 2, 3, 3, 3};
 
+=======
+>>>>>>> p9x
 static inline int qpnp_tm_read(struct qpnp_tm_chip *chip, u16 addr, u8 *buf,
 				int len)
 {
@@ -158,8 +182,11 @@ static inline int qpnp_tm_shutdown_override(struct qpnp_tm_chip *chip,
 
 	if (chip->allow_software_override) {
 		reg = chip->thresh & SHUTDOWN_CTRL1_THRESHOLD_MASK;
+<<<<<<< HEAD
 		reg |= (chip->clock_rate << SHUTDOWN_CTRL1_CLK_RATE_SHIFT)
 			& SHUTDOWN_CTRL1_CLK_RATE_MASK;
+=======
+>>>>>>> p9x
 
 		if (mode == SOFTWARE_OVERRIDE_ENABLED)
 			reg |= SHUTDOWN_CTRL1_OVERRIDE_STAGE2
@@ -186,8 +213,16 @@ static int qpnp_tm_update_temp(struct qpnp_tm_chip *chip)
 	return rc;
 }
 
+<<<<<<< HEAD
 static int qpnp_tm_get_temp_stage(struct qpnp_tm_chip *chip,
 			unsigned int *stage)
+=======
+/*
+ * This function initializes the internal temperature value based on only the
+ * current thermal stage and threshold.
+ */
+static int qpnp_tm_init_temp_no_adc(struct qpnp_tm_chip *chip)
+>>>>>>> p9x
 {
 	int rc;
 	u8 reg;
@@ -196,6 +231,7 @@ static int qpnp_tm_get_temp_stage(struct qpnp_tm_chip *chip,
 	if (rc < 0)
 		return rc;
 
+<<<<<<< HEAD
 	if (chip->subtype == QPNP_TM_SUBTYPE_GEN1)
 		*stage = reg & STATUS_STAGE_MASK;
 	else
@@ -223,6 +259,13 @@ static int qpnp_tm_init_temp_no_adc(struct qpnp_tm_chip *chip)
 	if (stage)
 		chip->temperature = chip->thresh * TEMP_THRESH_STEP +
 			   (stage - 1) * TEMP_STAGE_STEP +
+=======
+	chip->stage = reg & STATUS_STAGE_MASK;
+
+	if (chip->stage)
+		chip->temperature = chip->thresh * TEMP_THRESH_STEP +
+			   (chip->stage - 1) * TEMP_STAGE_STEP +
+>>>>>>> p9x
 			   TEMP_THRESH_MIN;
 
 	return 0;
@@ -234,6 +277,7 @@ static int qpnp_tm_init_temp_no_adc(struct qpnp_tm_chip *chip)
  */
 static int qpnp_tm_update_temp_no_adc(struct qpnp_tm_chip *chip)
 {
+<<<<<<< HEAD
 	unsigned int stage, stage_new, stage_old;
 	int rc;
 
@@ -257,6 +301,26 @@ static int qpnp_tm_update_temp_no_adc(struct qpnp_tm_chip *chip)
 	} else if (stage_new < stage_old) {
 		/* decreasing stage, use upper bound */
 		chip->temperature = stage_new * TEMP_STAGE_STEP
+=======
+	unsigned int stage;
+	int rc;
+	u8 reg;
+
+	rc = qpnp_tm_read(chip, QPNP_TM_REG_STATUS, &reg, 1);
+	if (rc < 0)
+		return rc;
+
+	stage = reg & STATUS_STAGE_MASK;
+
+	if (stage > chip->stage) {
+		/* increasing stage, use lower bound */
+		chip->temperature = (stage - 1) * TEMP_STAGE_STEP
+				+ chip->thresh * TEMP_THRESH_STEP
+				+ TEMP_STAGE_HYSTERESIS + TEMP_THRESH_MIN;
+	} else if (stage < chip->stage) {
+		/* decreasing stage, use upper bound */
+		chip->temperature = stage * TEMP_STAGE_STEP
+>>>>>>> p9x
 				+ chip->thresh * TEMP_THRESH_STEP
 				- TEMP_STAGE_HYSTERESIS + TEMP_THRESH_MIN;
 	}
@@ -428,23 +492,38 @@ static void qpnp_tm_work(struct work_struct *work)
 		= container_of(work, struct delayed_work, work);
 	struct qpnp_tm_chip *chip
 		= container_of(dwork, struct qpnp_tm_chip, irq_work);
+<<<<<<< HEAD
 	unsigned int stage_new, stage_old;
 	int rc;
+=======
+	int rc;
+	u8 reg;
+>>>>>>> p9x
 
 	if (chip->adc_type == QPNP_TM_ADC_NONE) {
 		rc = qpnp_tm_update_temp_no_adc(chip);
 		if (rc < 0)
 			goto bail;
 	} else {
+<<<<<<< HEAD
 		rc = qpnp_tm_get_temp_stage(chip, &chip->stage);
 		if (rc < 0)
 			goto bail;
 
+=======
+		rc = qpnp_tm_read(chip, QPNP_TM_REG_STATUS, &reg, 1);
+		if (rc < 0)
+			goto bail;
+
+		chip->stage = reg & STATUS_STAGE_MASK;
+
+>>>>>>> p9x
 		rc = qpnp_tm_update_temp(chip);
 		if (rc < 0)
 			goto bail;
 	}
 
+<<<<<<< HEAD
 	if (chip->subtype == QPNP_TM_SUBTYPE_GEN1) {
 		stage_new = chip->stage;
 		stage_old = chip->prev_stage;
@@ -464,6 +543,14 @@ static void qpnp_tm_work(struct work_struct *work)
 			pr_crit("%s: PMIC Temp Alarm - stage=%u, state=%u, threshold=%u, temperature=%lu mC\n",
 				chip->tm_name, stage_new, chip->stage,
 				chip->thresh, chip->temperature);
+=======
+	if (chip->stage != chip->prev_stage) {
+		chip->prev_stage = chip->stage;
+
+		pr_crit("%s: PMIC Temp Alarm - stage=%u, threshold=%u, temperature=%lu mC\n",
+			chip->tm_name, chip->stage, chip->thresh,
+			chip->temperature);
+>>>>>>> p9x
 
 		thermal_zone_device_update(chip->tz_dev);
 
@@ -490,6 +577,7 @@ static int qpnp_tm_init_reg(struct qpnp_tm_chip *chip)
 	int rc = 0;
 	u8 reg;
 
+<<<<<<< HEAD
 	rc = qpnp_tm_read(chip, QPNP_TM_REG_SHUTDOWN_CTRL1, &reg, 1);
 	if (rc < 0)
 		return rc;
@@ -513,6 +601,21 @@ static int qpnp_tm_init_reg(struct qpnp_tm_chip *chip)
 	reg = chip->thresh & SHUTDOWN_CTRL1_THRESHOLD_MASK;
 	reg |= (chip->clock_rate << SHUTDOWN_CTRL1_CLK_RATE_SHIFT)
 		& SHUTDOWN_CTRL1_CLK_RATE_MASK;
+=======
+	if (chip->thresh < THRESH_MIN || chip->thresh > THRESH_MAX) {
+		/* Read hardware threshold value if configuration is invalid. */
+		rc = qpnp_tm_read(chip, QPNP_TM_REG_SHUTDOWN_CTRL1, &reg, 1);
+		if (rc < 0)
+			return rc;
+		chip->thresh = reg & SHUTDOWN_CTRL1_THRESHOLD_MASK;
+	}
+
+	/*
+	 * Set threshold and disable software override of stage 2 and 3
+	 * shutdowns.
+	 */
+	reg = chip->thresh & SHUTDOWN_CTRL1_THRESHOLD_MASK;
+>>>>>>> p9x
 	rc = qpnp_tm_write(chip, QPNP_TM_REG_SHUTDOWN_CTRL1, &reg, 1);
 	if (rc < 0)
 		return rc;
@@ -596,6 +699,7 @@ static int qpnp_tm_probe(struct spmi_device *spmi)
 		dev_err(&spmi->dev, "%s: invalid qcom,threshold-set=%u specified\n",
 			__func__, chip->thresh);
 
+<<<<<<< HEAD
 	chip->clock_rate = CLOCK_RATE_MAX + 1;
 	rc = of_property_read_u32(node, "qcom,clock-rate", &chip->clock_rate);
 	if (!rc && (chip->clock_rate < CLOCK_RATE_MIN
@@ -604,6 +708,8 @@ static int qpnp_tm_probe(struct spmi_device *spmi)
 			"%s: invalid qcom,clock-rate=%u specified\n", __func__,
 			chip->clock_rate);
 
+=======
+>>>>>>> p9x
 	chip->adc_type = QPNP_TM_ADC_NONE;
 	rc = of_property_read_u32(node, "qcom,channel-num", &chip->adc_channel);
 	if (!rc) {
@@ -645,16 +751,23 @@ static int qpnp_tm_probe(struct spmi_device *spmi)
 	type = raw_type[0];
 	subtype = raw_type[1];
 
+<<<<<<< HEAD
 	if (type != QPNP_TM_TYPE || (subtype != QPNP_TM_SUBTYPE_GEN1
 				     && subtype != QPNP_TM_SUBTYPE_GEN2)) {
+=======
+	if (type != QPNP_TM_TYPE || subtype != QPNP_TM_SUBTYPE) {
+>>>>>>> p9x
 		dev_err(&spmi->dev, "%s: invalid type=%02X or subtype=%02X register value\n",
 			__func__, type, subtype);
 		rc = -ENODEV;
 		goto err_cancel_work;
 	}
 
+<<<<<<< HEAD
 	chip->subtype = subtype;
 
+=======
+>>>>>>> p9x
 	rc = qpnp_tm_init_reg(chip);
 	if (rc) {
 		dev_err(&spmi->dev, "%s: qpnp_tm_init_reg() failed, rc=%d\n",
@@ -725,6 +838,7 @@ static int qpnp_tm_remove(struct spmi_device *spmi)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void qpnp_tm_shutdown(struct spmi_device *spmi)
 {
 	struct qpnp_tm_chip *chip = dev_get_drvdata(&spmi->dev);
@@ -738,6 +852,8 @@ static void qpnp_tm_shutdown(struct spmi_device *spmi)
 		pr_err("Failed to cfg. TEMP_ALARM to follow HW_EN rc=%d\n", rc);
 }
 
+=======
+>>>>>>> p9x
 #ifdef CONFIG_PM
 static int qpnp_tm_suspend(struct device *dev)
 {
@@ -789,7 +905,10 @@ static struct spmi_driver qpnp_tm_driver = {
 	},
 	.probe	  = qpnp_tm_probe,
 	.remove	  = qpnp_tm_remove,
+<<<<<<< HEAD
 	.shutdown = qpnp_tm_shutdown,
+=======
+>>>>>>> p9x
 	.id_table = qpnp_tm_id,
 };
 

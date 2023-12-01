@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2016,2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -13,7 +17,10 @@
 #include "msm8909.dtsi"
 #include "msm8909-pm8909.dtsi"
 #include "msm8909-pinctrl.dtsi"
+<<<<<<< HEAD
 #include "msm8909-qrd_qseev4.dtsi"
+=======
+>>>>>>> p9x
 
 / {
 	model = "Qualcomm Technologies, Inc. MSM8909 QRD";
@@ -148,5 +155,9 @@
 };
 
 &android_usb {
+<<<<<<< HEAD
 	qcom,android-usb-cdrom;
+=======
+        qcom,android-usb-cdrom;
+>>>>>>> p9x
 };

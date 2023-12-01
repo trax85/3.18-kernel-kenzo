@@ -81,7 +81,10 @@ static void cirrus_pci_remove(struct pci_dev *pdev)
 	drm_put_dev(dev);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
+=======
+>>>>>>> p9x
 static int cirrus_pm_suspend(struct device *dev)
 {
 	struct pci_dev *pdev = to_pci_dev(dev);
@@ -92,7 +95,11 @@ static int cirrus_pm_suspend(struct device *dev)
 
 	if (cdev->mode_info.gfbdev) {
 		console_lock();
+<<<<<<< HEAD
 		drm_fb_helper_set_suspend(&cdev->mode_info.gfbdev->helper, 1);
+=======
+		fb_set_suspend(cdev->mode_info.gfbdev->helper.fbdev, 1);
+>>>>>>> p9x
 		console_unlock();
 	}
 
@@ -109,14 +116,21 @@ static int cirrus_pm_resume(struct device *dev)
 
 	if (cdev->mode_info.gfbdev) {
 		console_lock();
+<<<<<<< HEAD
 		drm_fb_helper_set_suspend(&cdev->mode_info.gfbdev->helper, 0);
+=======
+		fb_set_suspend(cdev->mode_info.gfbdev->helper.fbdev, 0);
+>>>>>>> p9x
 		console_unlock();
 	}
 
 	drm_kms_helper_poll_enable(drm_dev);
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> p9x
 
 static const struct file_operations cirrus_driver_fops = {
 	.owner = THIS_MODULE,
@@ -145,6 +159,11 @@ static struct drm_driver driver = {
 	.dumb_create = cirrus_dumb_create,
 	.dumb_map_offset = cirrus_dumb_mmap_offset,
 	.dumb_destroy = drm_gem_dumb_destroy,
+};
+
+static const struct dev_pm_ops cirrus_pm_ops = {
+	SET_SYSTEM_SLEEP_PM_OPS(cirrus_pm_suspend,
+				cirrus_pm_resume)
 };
 
 static const struct dev_pm_ops cirrus_pm_ops = {

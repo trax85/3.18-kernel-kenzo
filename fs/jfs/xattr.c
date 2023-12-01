@@ -668,6 +668,75 @@ static int ea_put(tid_t tid, struct inode *inode, struct ea_buffer *ea_buf,
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * can_set_system_xattr
+ *
+ * This code is specific to the system.* namespace.  It contains policy
+ * which doesn't belong in the main xattr codepath.
+ */
+static int can_set_system_xattr(struct inode *inode, const char *name,
+				const void *value, size_t value_len)
+{
+#ifdef CONFIG_JFS_POSIX_ACL
+	struct posix_acl *acl;
+	int rc;
+
+	if (!inode_owner_or_capable(inode))
+		return -EPERM;
+
+	/*
+	 * POSIX_ACL_XATTR_ACCESS is tied to i_mode
+	 */
+	if (strcmp(name, POSIX_ACL_XATTR_ACCESS) == 0) {
+		acl = posix_acl_from_xattr(&init_user_ns, value, value_len);
+		if (IS_ERR(acl)) {
+			rc = PTR_ERR(acl);
+			printk(KERN_ERR "posix_acl_from_xattr returned %d\n",
+			       rc);
+			return rc;
+		}
+		if (acl) {
+			struct posix_acl *old_acl = acl;
+			rc = posix_acl_update_mode(inode, &inode->i_mode, &acl);
+			posix_acl_release(old_acl);
+			if (rc < 0) {
+				printk(KERN_ERR
+				       "posix_acl_equiv_mode returned %d\n",
+				       rc);
+				return rc;
+			}
+			mark_inode_dirty(inode);
+		}
+		/*
+		 * We're changing the ACL.  Get rid of the cached one
+		 */
+		forget_cached_acl(inode, ACL_TYPE_ACCESS);
+
+		return 0;
+	} else if (strcmp(name, POSIX_ACL_XATTR_DEFAULT) == 0) {
+		acl = posix_acl_from_xattr(&init_user_ns, value, value_len);
+		if (IS_ERR(acl)) {
+			rc = PTR_ERR(acl);
+			printk(KERN_ERR "posix_acl_from_xattr returned %d\n",
+			       rc);
+			return rc;
+		}
+		posix_acl_release(acl);
+
+		/*
+		 * We're changing the default ACL.  Get rid of the cached one
+		 */
+		forget_cached_acl(inode, ACL_TYPE_DEFAULT);
+
+		return 0;
+	}
+#endif			/* CONFIG_JFS_POSIX_ACL */
+	return -EOPNOTSUPP;
+}
+
+/*
+>>>>>>> p9x
  * Most of the permission checking is done by xattr_permission in the vfs.
  * We also need to verify that this is a namespace that we recognize.
  */

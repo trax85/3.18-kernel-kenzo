@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  * Copyright (c) 2013 ARM Ltd.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -75,7 +79,11 @@ static int secondary_pen_release(unsigned int cpu)
 	 */
 	arch_send_wakeup_ipi_mask(cpumask_of(cpu));
 
+<<<<<<< HEAD
 	timeout = jiffies + (1 * HZ);
+=======
+	timeout = jiffies + msecs_to_jiffies(1000);
+>>>>>>> p9x
 	while (time_before(jiffies, timeout)) {
 		if (secondary_holding_pen_release == INVALID_HWID)
 			break;
@@ -126,6 +134,7 @@ static int __init msm_cpu_prepare(unsigned int cpu)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int msm8953_cpu_boot(unsigned int cpu)
 {
 	int ret = 0;
@@ -193,6 +202,21 @@ static void msm8937_wfi_cpu_die(unsigned int cpu)
 }
 #endif
 
+=======
+static int __init msm8994_cpu_prepare(unsigned int cpu)
+{
+	int ret;
+
+	if (per_cpu(cold_boot_done, 0) == false) {
+		ret = msm8994_cpu_ldo_config(0);
+		if (ret)
+			return ret;
+	}
+
+	return msm_cpu_prepare(cpu);
+}
+
+>>>>>>> p9x
 static int msm_cpu_boot(unsigned int cpu)
 {
 	int ret = 0;
@@ -213,6 +237,7 @@ static int msm_cpu_boot(unsigned int cpu)
 }
 
 static int msm8976_cpu_boot(unsigned int cpu)
+<<<<<<< HEAD
 	{
 		int ret = 0;
 		u32 mpidr = cpu_logical_map(cpu);
@@ -236,6 +261,53 @@ static int msm8976_cpu_boot(unsigned int cpu)
 		}
 		return secondary_pen_release(cpu);
 	}
+=======
+{
+	int ret = 0;
+	u32 mpidr = cpu_logical_map(cpu);
+
+	if (per_cpu(cold_boot_done, cpu) == false) {
+		if (of_board_is_sim()) {
+			ret = msm_unclamp_secondary_arm_cpu_sim(cpu);
+			if (ret)
+				return ret;
+		} else {
+			ret = msm8976_unclamp_secondary_arm_cpu(cpu);
+			if (ret)
+				return ret;
+		}
+		if (MPIDR_AFFINITY_LEVEL(mpidr, 1)) {
+			ret = msm8976_cpu_ldo_config(cpu);
+			if (ret)
+				return ret;
+		}
+		per_cpu(cold_boot_done, cpu) = true;
+	}
+	return secondary_pen_release(cpu);
+}
+
+static int msm8994_cpu_boot(unsigned int cpu)
+{
+	int ret = 0;
+
+	if (per_cpu(cold_boot_done, cpu) == false) {
+		if (of_board_is_sim()) {
+			ret = msm_unclamp_secondary_arm_cpu_sim(cpu);
+			if (ret)
+				return ret;
+		} else {
+			ret = msm8994_unclamp_secondary_arm_cpu(cpu);
+			if (ret)
+				return ret;
+		}
+		ret = msm8994_cpu_ldo_config(cpu);
+		if (ret)
+			return ret;
+		per_cpu(cold_boot_done, cpu) = true;
+	}
+	return secondary_pen_release(cpu);
+}
+>>>>>>> p9x
 
 void msm_cpu_postboot(void)
 {
@@ -274,7 +346,11 @@ static void msm_wfi_cpu_die(unsigned int cpu)
 }
 #endif
 
+<<<<<<< HEAD
 static struct cpu_operations msm_cortex_a_ops = {
+=======
+static const struct cpu_operations msm_cortex_a_ops = {
+>>>>>>> p9x
 	.name		= "qcom,arm-cortex-acc",
 	.cpu_init	= msm_cpu_init,
 	.cpu_prepare	= msm_cpu_prepare,
@@ -285,6 +361,7 @@ static struct cpu_operations msm_cortex_a_ops = {
 #endif
 	.cpu_suspend       = msm_pm_collapse,
 };
+<<<<<<< HEAD
 CPU_METHOD_OF_DECLARE(msm_cortex_a_ops,
 		"qcom,arm-cortex-acc", &msm_cortex_a_ops);
 
@@ -296,11 +373,37 @@ static struct cpu_operations msm8953_cortex_a_ops = {
 	.cpu_postboot	= msm_cpu_postboot,
 #ifdef CONFIG_HOTPLUG_CPU
 	.cpu_die        = msm8953_wfi_cpu_die,
+=======
+CPU_METHOD_OF_DECLARE(msm_cortex_a_ops, &msm_cortex_a_ops);
+
+static const struct cpu_operations msm8994_cortex_a_ops = {
+	.name		= "qcom,8994-arm-cortex-acc",
+	.cpu_init	= msm_cpu_init,
+	.cpu_prepare	= msm8994_cpu_prepare,
+	.cpu_boot	= msm8994_cpu_boot,
+	.cpu_postboot	= msm_cpu_postboot,
+#ifdef CONFIG_HOTPLUG_CPU
+	.cpu_die        = msm_wfi_cpu_die,
+#endif
+	.cpu_suspend       = msm_pm_collapse,
+};
+CPU_METHOD_OF_DECLARE(msm8994_cortex_a_ops, &msm8994_cortex_a_ops);
+
+static const struct cpu_operations msm8976_cortex_a_ops = {
+	.name		= "qcom,8976-arm-cortex-acc",
+	.cpu_init	= msm_cpu_init,
+	.cpu_prepare	= msm_cpu_prepare,
+	.cpu_boot	= msm8976_cpu_boot,
+	.cpu_postboot	= msm_cpu_postboot,
+#ifdef CONFIG_HOTPLUG_CPU
+	.cpu_die        = msm_wfi_cpu_die,
+>>>>>>> p9x
 #endif
 #ifdef CONFIG_ARM64_CPU_SUSPEND
 	.cpu_suspend       = msm_pm_collapse,
 #endif
 };
+<<<<<<< HEAD
 CPU_METHOD_OF_DECLARE(msm8953_cortex_a_ops,
 	"qcom,8953-arm-cortex-acc", &msm8953_cortex_a_ops);
 
@@ -335,3 +438,6 @@ CPU_METHOD_OF_DECLARE(msm8937_cortex_a_ops,
 		};
 CPU_METHOD_OF_DECLARE(msm8976_cortex_a_ops,
 	"qcom,8976-arm-cortex-acc", &msm8976_cortex_a_ops);
+=======
+CPU_METHOD_OF_DECLARE(msm8976_cortex_a_ops, &msm8976_cortex_a_ops);
+>>>>>>> p9x

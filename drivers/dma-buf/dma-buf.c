@@ -328,8 +328,11 @@ struct dma_buf *dma_buf_export_named(void *priv, const struct dma_buf_ops *ops,
 		kfree(dmabuf);
 		return ERR_CAST(file);
 	}
+<<<<<<< HEAD:drivers/dma-buf/dma-buf.c
 
 	file->f_mode |= FMODE_LSEEK;
+=======
+>>>>>>> p9x:drivers/base/dma-buf.c
 	dmabuf->file = file;
 
 	mutex_init(&dmabuf->lock);

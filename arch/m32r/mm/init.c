@@ -122,9 +122,29 @@ void __init mem_init(void)
 	/* clear the zero-page */
 	memset(empty_zero_page, 0, PAGE_SIZE);
 
+<<<<<<< HEAD
 	set_max_mapnr(get_num_physpages());
 	free_all_bootmem();
 	mem_init_print_info(NULL);
+=======
+	/* this will put all low memory onto the freelists */
+	for_each_online_node(nid)
+		free_all_bootmem_node(NODE_DATA(nid));
+
+	reservedpages = reservedpages_count() - hole_pages;
+	codesize = (unsigned long) &_etext - (unsigned long)&_text;
+	datasize = (unsigned long) &_edata - (unsigned long)&_etext;
+	initsize = (unsigned long) &__init_end - (unsigned long)&__init_begin;
+
+	printk(KERN_INFO "Memory: %luk/%luk available (%dk kernel code, "
+		"%dk reserved, %dk data, %dk init)\n",
+		nr_free_pages() << (PAGE_SHIFT-10),
+		num_physpages << (PAGE_SHIFT-10),
+		codesize >> 10,
+		reservedpages << (PAGE_SHIFT-10),
+		datasize >> 10,
+		initsize >> 10);
+>>>>>>> p9x
 }
 
 /*======================================================================*

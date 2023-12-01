@@ -405,7 +405,11 @@ static int s3c_cpufreq_suspend(struct cpufreq_policy *policy)
 {
 	suspend_pll.frequency = clk_get_rate(_clk_mpll);
 	suspend_pll.driver_data = __raw_readl(S3C2410_MPLLCON);
+<<<<<<< HEAD:drivers/cpufreq/s3c24xx-cpufreq.c
 	suspend_freq = clk_get_rate(clk_arm);
+=======
+	suspend_freq = s3c_cpufreq_get(0) * 1000;
+>>>>>>> p9x:arch/arm/mach-s3c24xx/cpufreq.c
 
 	return 0;
 }

@@ -247,6 +247,7 @@ static inline struct page *page_cache_alloc_readahead(struct address_space *x)
 
 typedef int filler_t(void *, struct page *);
 
+<<<<<<< HEAD
 pgoff_t page_cache_next_hole(struct address_space *mapping,
 			     pgoff_t index, unsigned long max_scan);
 pgoff_t page_cache_prev_hole(struct address_space *mapping,
@@ -357,6 +358,17 @@ struct page *find_lock_entry(struct address_space *mapping, pgoff_t offset);
 unsigned find_get_entries(struct address_space *mapping, pgoff_t start,
 			  unsigned int nr_entries, struct page **entries,
 			  pgoff_t *indices);
+=======
+extern struct page * find_get_page(struct address_space *mapping,
+				pgoff_t index);
+pgoff_t page_cache_next_hole(struct address_space *mapping,
+                             pgoff_t index, unsigned long max_scan);
+
+extern struct page * find_lock_page(struct address_space *mapping,
+				pgoff_t index);
+extern struct page * find_or_create_page(struct address_space *mapping,
+				pgoff_t index, gfp_t gfp_mask);
+>>>>>>> p9x
 unsigned find_get_pages(struct address_space *mapping, pgoff_t start,
 			unsigned int nr_pages, struct page **pages);
 unsigned find_get_pages_contig(struct address_space *mapping, pgoff_t start,
@@ -512,6 +524,7 @@ static inline int wait_on_page_locked_killable(struct page *page)
 	return 0;
 }
 
+<<<<<<< HEAD
 extern wait_queue_head_t *page_waitqueue(struct page *page);
 static inline void wake_up_page(struct page *page, int bit)
 {
@@ -519,6 +532,9 @@ static inline void wake_up_page(struct page *page, int bit)
 }
 
 /* 
+=======
+/*
+>>>>>>> p9x
  * Wait for a page to be unlocked.
  *
  * This must be called with the caller "holding" the page,
@@ -531,7 +547,7 @@ static inline void wait_on_page_locked(struct page *page)
 		wait_on_page_bit(page, PG_locked);
 }
 
-/* 
+/*
  * Wait for a page to complete writeback
  */
 static inline void wait_on_page_writeback(struct page *page)

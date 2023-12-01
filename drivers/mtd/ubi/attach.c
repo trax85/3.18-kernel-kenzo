@@ -208,7 +208,11 @@ static int validate_vid_hdr(const struct ubi_device *ubi,
 		 */
 
 		if (vol_id != av->vol_id) {
+<<<<<<< HEAD
 			ubi_err(ubi, "inconsistent vol_id");
+=======
+			ubi_err(ubi->ubi_num, "inconsistent vol_id");
+>>>>>>> p9x
 			goto bad;
 		}
 
@@ -218,17 +222,29 @@ static int validate_vid_hdr(const struct ubi_device *ubi,
 			av_vol_type = UBI_VID_DYNAMIC;
 
 		if (vol_type != av_vol_type) {
+<<<<<<< HEAD
 			ubi_err(ubi, "inconsistent vol_type");
+=======
+			ubi_err(ubi->ubi_num, "inconsistent vol_type");
+>>>>>>> p9x
 			goto bad;
 		}
 
 		if (used_ebs != av->used_ebs) {
+<<<<<<< HEAD
 			ubi_err(ubi, "inconsistent used_ebs");
+=======
+			ubi_err(ubi->ubi_num, "inconsistent used_ebs");
+>>>>>>> p9x
 			goto bad;
 		}
 
 		if (data_pad != av->data_pad) {
+<<<<<<< HEAD
 			ubi_err(ubi, "inconsistent data_pad");
+=======
+			ubi_err(ubi->ubi_num, "inconsistent data_pad");
+>>>>>>> p9x
 			goto bad;
 		}
 	}
@@ -236,7 +252,11 @@ static int validate_vid_hdr(const struct ubi_device *ubi,
 	return 0;
 
 bad:
+<<<<<<< HEAD
 	ubi_err(ubi, "inconsistent VID header at PEB %d", pnum);
+=======
+	ubi_err(ubi->ubi_num, "inconsistent VID header at PEB %d", pnum);
+>>>>>>> p9x
 	ubi_dump_vid_hdr(vid_hdr);
 	ubi_dump_av(av);
 	return -EINVAL;
@@ -338,7 +358,11 @@ int ubi_compare_lebs(struct ubi_device *ubi, const struct ubi_ainf_peb *aeb,
 		 * support these images anymore. Well, those images still work,
 		 * but only if no unclean reboots happened.
 		 */
+<<<<<<< HEAD
 		ubi_err(ubi, "unsupported on-flash UBI format");
+=======
+		ubi_err(ubi->ubi_num, "unsupported on-flash UBI format");
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
@@ -379,7 +403,11 @@ int ubi_compare_lebs(struct ubi_device *ubi, const struct ubi_ainf_peb *aeb,
 			if (err == UBI_IO_BITFLIPS)
 				bitflips = 1;
 			else {
+<<<<<<< HEAD
 				ubi_err(ubi, "VID of PEB %d header is bad, but it was OK earlier, err %d",
+=======
+				ubi_err(ubi->ubi_num, "VID of PEB %d header is bad, but it was OK earlier, err %d",
+>>>>>>> p9x
 					pnum, err);
 				if (err > 0)
 					err = -EIO;
@@ -509,7 +537,11 @@ int ubi_add_to_av(struct ubi_device *ubi, struct ubi_attach_info *ai, int pnum,
 		 * logical eraseblocks because there was an unclean reboot.
 		 */
 		if (aeb->sqnum == sqnum && sqnum != 0) {
+<<<<<<< HEAD
 			ubi_err(ubi, "two LEBs with same sequence number %llu",
+=======
+			ubi_err(ubi->ubi_num, "two LEBs with same sequence number %llu",
+>>>>>>> p9x
 				sqnum);
 			ubi_dump_aeb(aeb, 0);
 			ubi_dump_vid_hdr(vid_hdr);
@@ -670,8 +702,13 @@ static int early_erase_peb(struct ubi_device *ubi,
 		 * Erase counter overflow. Upgrade UBI and use 64-bit
 		 * erase counters internally.
 		 */
+<<<<<<< HEAD
 		ubi_err(ubi, "erase counter overflow at PEB %d, EC %d",
 			pnum, ec);
+=======
+		ubi_err(ubi->ubi_num,
+			"erase counter overflow at PEB %d, EC %d", pnum, ec);
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
@@ -752,7 +789,11 @@ struct ubi_ainf_peb *ubi_early_get_peb(struct ubi_device *ubi,
 		return aeb;
 	}
 
+<<<<<<< HEAD
 	ubi_err(ubi, "no free eraseblocks");
+=======
+	ubi_err(ubi->ubi_num, "no free eraseblocks");
+>>>>>>> p9x
 	return ERR_PTR(-ENOSPC);
 }
 
@@ -801,9 +842,15 @@ static int check_corruption(struct ubi_device *ubi, struct ubi_vid_hdr *vid_hdr,
 	if (ubi_check_pattern(ubi->peb_buf, 0xFF, ubi->leb_size))
 		goto out_unlock;
 
+<<<<<<< HEAD
 	ubi_err(ubi, "PEB %d contains corrupted VID header, and the data does not contain all 0xFF",
 		pnum);
 	ubi_err(ubi, "this may be a non-UBI PEB or a severe VID header corruption which requires manual inspection");
+=======
+	ubi_err(ubi->ubi_num, "PEB %d contains corrupted VID header, and the data does not contain all 0xFF",
+		pnum);
+	ubi_err(ubi->ubi_num, "this may be a non-UBI PEB or a severe VID header corruption which requires manual inspection");
+>>>>>>> p9x
 	ubi_dump_vid_hdr(vid_hdr);
 	pr_err("hexdump of PEB %d offset %d, length %d",
 	       pnum, ubi->leb_start, ubi->leb_size);
@@ -875,8 +922,13 @@ static int scan_peb(struct ubi_device *ubi, struct ubi_attach_info *ai,
 		bitflips = 1;
 		break;
 	default:
+<<<<<<< HEAD
 		ubi_err(ubi, "'ubi_io_read_ec_hdr()' returned unknown code %d",
 			err);
+=======
+		ubi_err(ubi->ubi_num,
+		  "'ubi_io_read_ec_hdr()' returned unknown code %d", err);
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
@@ -885,7 +937,11 @@ static int scan_peb(struct ubi_device *ubi, struct ubi_attach_info *ai,
 
 		/* Make sure UBI version is OK */
 		if (ech->version != UBI_VERSION) {
+<<<<<<< HEAD
 			ubi_err(ubi, "this UBI version is %d, image version is %d",
+=======
+			ubi_err(ubi->ubi_num, "this UBI version is %d, image version is %d",
+>>>>>>> p9x
 				UBI_VERSION, (int)ech->version);
 			return -EINVAL;
 		}
@@ -899,7 +955,11 @@ static int scan_peb(struct ubi_device *ubi, struct ubi_attach_info *ai,
 			 * flash. Upgrade UBI and use 64-bit erase counters
 			 * internally.
 			 */
+<<<<<<< HEAD
 			ubi_err(ubi, "erase counter overflow, max is %d",
+=======
+			ubi_err(ubi->ubi_num, "erase counter overflow, max is %d",
+>>>>>>> p9x
 				UBI_MAX_ERASECOUNTER);
 			ubi_dump_ec_hdr(ech);
 			return -EINVAL;
@@ -919,8 +979,14 @@ static int scan_peb(struct ubi_device *ubi, struct ubi_attach_info *ai,
 		image_seq = be32_to_cpu(ech->image_seq);
 		if (!ubi->image_seq)
 			ubi->image_seq = image_seq;
+<<<<<<< HEAD
 		if (image_seq && ubi->image_seq != image_seq) {
 			ubi_err(ubi, "bad image sequence number %d in PEB %d, expected %d",
+=======
+		if (ubi->image_seq && image_seq &&
+		    ubi->image_seq != image_seq) {
+			ubi_err(ubi->ubi_num, "bad image sequence number %d in PEB %d, expected %d",
+>>>>>>> p9x
 				image_seq, pnum, ubi->image_seq);
 			ubi_dump_ec_hdr(ech);
 			return -EINVAL;
@@ -998,7 +1064,11 @@ static int scan_peb(struct ubi_device *ubi, struct ubi_attach_info *ai,
 			return err;
 		goto adjust_mean_ec;
 	default:
+<<<<<<< HEAD
 		ubi_err(ubi, "'ubi_io_read_vid_hdr()' returned unknown code %d",
+=======
+		ubi_err(ubi->ubi_num, "'ubi_io_read_vid_hdr()' returned unknown code %d",
+>>>>>>> p9x
 			err);
 		return -EINVAL;
 	}
@@ -1016,7 +1086,13 @@ static int scan_peb(struct ubi_device *ubi, struct ubi_attach_info *ai,
 		case UBI_COMPAT_DELETE:
 			if (vol_id != UBI_FM_SB_VOLUME_ID
 			    && vol_id != UBI_FM_DATA_VOLUME_ID) {
+<<<<<<< HEAD
 				ubi_msg(ubi, "\"delete\" compatible internal volume %d:%d found, will remove it",
+=======
+				ubi_msg(ubi->ubi_num,
+				   "\"delete\" compatible internal volume %d:%d"
+				   " found, will remove it",
+>>>>>>> p9x
 					vol_id, lnum);
 			}
 			err = add_to_list(ai, pnum, vol_id, lnum,
@@ -1026,13 +1102,25 @@ static int scan_peb(struct ubi_device *ubi, struct ubi_attach_info *ai,
 			return 0;
 
 		case UBI_COMPAT_RO:
+<<<<<<< HEAD
 			ubi_msg(ubi, "read-only compatible internal volume %d:%d found, switch to read-only mode",
+=======
+			ubi_msg(ubi->ubi_num,
+				"read-only compatible internal "
+				"volume %d:%d found, switch to read-only mode",
+>>>>>>> p9x
 				vol_id, lnum);
 			ubi->ro_mode = 1;
 			break;
 
 		case UBI_COMPAT_PRESERVE:
+<<<<<<< HEAD
 			ubi_msg(ubi, "\"preserve\" compatible internal volume %d:%d found",
+=======
+			ubi_msg(ubi->ubi_num,
+				"\"preserve\" compatible internal "
+				"volume %d:%d found",
+>>>>>>> p9x
 				vol_id, lnum);
 			err = add_to_list(ai, pnum, vol_id, lnum,
 					  ec, 0, &ai->alien);
@@ -1041,14 +1129,22 @@ static int scan_peb(struct ubi_device *ubi, struct ubi_attach_info *ai,
 			return 0;
 
 		case UBI_COMPAT_REJECT:
+<<<<<<< HEAD
 			ubi_err(ubi, "incompatible internal volume %d:%d found",
+=======
+			ubi_err(ubi->ubi_num, "incompatible internal volume %d:%d found",
+>>>>>>> p9x
 				vol_id, lnum);
 			return -EINVAL;
 		}
 	}
 
 	if (ec_err)
+<<<<<<< HEAD
 		ubi_warn(ubi, "valid VID header but corrupted EC header at PEB %d",
+=======
+		ubi_warn(ubi->ubi_num, "valid VID header but corrupted EC header at PEB %d",
+>>>>>>> p9x
 			 pnum);
 	err = ubi_add_to_av(ubi, ai, pnum, ec, vidh, bitflips);
 	if (err)
@@ -1092,7 +1188,11 @@ static int late_analysis(struct ubi_device *ubi, struct ubi_attach_info *ai)
 	 * with the flash HW or driver.
 	 */
 	if (ai->corr_peb_count) {
+<<<<<<< HEAD
 		ubi_err(ubi, "%d PEBs are corrupted and preserved",
+=======
+		ubi_err(ubi->ubi_num, "%d PEBs are corrupted and preserved",
+>>>>>>> p9x
 			ai->corr_peb_count);
 		pr_err("Corrupted PEBs are:");
 		list_for_each_entry(aeb, &ai->corr, u.list)
@@ -1104,7 +1204,11 @@ static int late_analysis(struct ubi_device *ubi, struct ubi_attach_info *ai)
 		 * otherwise, only print a warning.
 		 */
 		if (ai->corr_peb_count >= max_corr) {
+<<<<<<< HEAD
 			ubi_err(ubi, "too many corrupted PEBs, refusing");
+=======
+			ubi_err(ubi->ubi_num, "too many corrupted PEBs, refusing");
+>>>>>>> p9x
 			return -EINVAL;
 		}
 	}
@@ -1127,11 +1231,19 @@ static int late_analysis(struct ubi_device *ubi, struct ubi_attach_info *ai)
 		 */
 		if (ai->maybe_bad_peb_count <= 2) {
 			ai->is_empty = 1;
+<<<<<<< HEAD
 			ubi_msg(ubi, "empty MTD device detected");
 			get_random_bytes(&ubi->image_seq,
 					 sizeof(ubi->image_seq));
 		} else {
 			ubi_err(ubi, "MTD device is not UBI-formatted and possibly contains non-UBI data - refusing it");
+=======
+			ubi_msg(ubi->ubi_num, "empty MTD device detected");
+			get_random_bytes(&ubi->image_seq,
+					 sizeof(ubi->image_seq));
+		} else {
+			ubi_err(ubi->ubi_num, "MTD device is not UBI-formatted and possibly contains non-UBI data - refusing it");
+>>>>>>> p9x
 			return -EINVAL;
 		}
 
@@ -1263,7 +1375,11 @@ static int scan_all(struct ubi_device *ubi, struct ubi_attach_info *ai,
 			goto out_vidh;
 	}
 
+<<<<<<< HEAD
 	ubi_msg(ubi, "scanning is finished");
+=======
+	ubi_msg(ubi->ubi_num, "scanning is finished");
+>>>>>>> p9x
 
 	/* Calculate mean erase counter */
 	if (ai->ec_count)
@@ -1438,6 +1554,10 @@ int ubi_attach(struct ubi_device *ubi, int force_scan)
 					return -ENOMEM;
 
 				err = scan_all(ubi, ai, 0);
+<<<<<<< HEAD
+=======
+				ai->failed_fm = 1;
+>>>>>>> p9x
 			} else {
 				err = scan_all(ubi, ai, UBI_FM_MAX_START);
 			}
@@ -1535,37 +1655,61 @@ static int self_check_ai(struct ubi_device *ubi, struct ubi_attach_info *ai)
 		vols_found += 1;
 
 		if (ai->is_empty) {
+<<<<<<< HEAD
 			ubi_err(ubi, "bad is_empty flag");
+=======
+			ubi_err(ubi->ubi_num, "bad is_empty flag");
+>>>>>>> p9x
 			goto bad_av;
 		}
 
 		if (av->vol_id < 0 || av->highest_lnum < 0 ||
 		    av->leb_count < 0 || av->vol_type < 0 || av->used_ebs < 0 ||
 		    av->data_pad < 0 || av->last_data_size < 0) {
+<<<<<<< HEAD
 			ubi_err(ubi, "negative values");
+=======
+			ubi_err(ubi->ubi_num, "negative values");
+>>>>>>> p9x
 			goto bad_av;
 		}
 
 		if (av->vol_id >= UBI_MAX_VOLUMES &&
 		    av->vol_id < UBI_INTERNAL_VOL_START) {
+<<<<<<< HEAD
 			ubi_err(ubi, "bad vol_id");
+=======
+			ubi_err(ubi->ubi_num, "bad vol_id");
+>>>>>>> p9x
 			goto bad_av;
 		}
 
 		if (av->vol_id > ai->highest_vol_id) {
+<<<<<<< HEAD
 			ubi_err(ubi, "highest_vol_id is %d, but vol_id %d is there",
+=======
+			ubi_err(ubi->ubi_num, "highest_vol_id is %d, but vol_id %d is there",
+>>>>>>> p9x
 				ai->highest_vol_id, av->vol_id);
 			goto out;
 		}
 
 		if (av->vol_type != UBI_DYNAMIC_VOLUME &&
 		    av->vol_type != UBI_STATIC_VOLUME) {
+<<<<<<< HEAD
 			ubi_err(ubi, "bad vol_type");
+=======
+			ubi_err(ubi->ubi_num, "bad vol_type");
+>>>>>>> p9x
 			goto bad_av;
 		}
 
 		if (av->data_pad > ubi->leb_size / 2) {
+<<<<<<< HEAD
 			ubi_err(ubi, "bad data_pad");
+=======
+			ubi_err(ubi->ubi_num, "bad data_pad");
+>>>>>>> p9x
 			goto bad_av;
 		}
 
@@ -1577,48 +1721,80 @@ static int self_check_ai(struct ubi_device *ubi, struct ubi_attach_info *ai)
 			leb_count += 1;
 
 			if (aeb->pnum < 0 || aeb->ec < 0) {
+<<<<<<< HEAD
 				ubi_err(ubi, "negative values");
+=======
+				ubi_err(ubi->ubi_num, "negative values");
+>>>>>>> p9x
 				goto bad_aeb;
 			}
 
 			if (aeb->ec < ai->min_ec) {
+<<<<<<< HEAD
 				ubi_err(ubi, "bad ai->min_ec (%d), %d found",
+=======
+				ubi_err(ubi->ubi_num, "bad ai->min_ec (%d), %d found",
+>>>>>>> p9x
 					ai->min_ec, aeb->ec);
 				goto bad_aeb;
 			}
 
 			if (aeb->ec > ai->max_ec) {
+<<<<<<< HEAD
 				ubi_err(ubi, "bad ai->max_ec (%d), %d found",
+=======
+				ubi_err(ubi->ubi_num, "bad ai->max_ec (%d), %d found",
+>>>>>>> p9x
 					ai->max_ec, aeb->ec);
 				goto bad_aeb;
 			}
 
 			if (aeb->pnum >= ubi->peb_count) {
+<<<<<<< HEAD
 				ubi_err(ubi, "too high PEB number %d, total PEBs %d",
+=======
+				ubi_err(ubi->ubi_num, "too high PEB number %d, total PEBs %d",
+>>>>>>> p9x
 					aeb->pnum, ubi->peb_count);
 				goto bad_aeb;
 			}
 
 			if (av->vol_type == UBI_STATIC_VOLUME) {
 				if (aeb->lnum >= av->used_ebs) {
+<<<<<<< HEAD
 					ubi_err(ubi, "bad lnum or used_ebs");
+=======
+					ubi_err(ubi->ubi_num, "bad lnum or used_ebs");
+>>>>>>> p9x
 					goto bad_aeb;
 				}
 			} else {
 				if (av->used_ebs != 0) {
+<<<<<<< HEAD
 					ubi_err(ubi, "non-zero used_ebs");
+=======
+					ubi_err(ubi->ubi_num, "non-zero used_ebs");
+>>>>>>> p9x
 					goto bad_aeb;
 				}
 			}
 
 			if (aeb->lnum > av->highest_lnum) {
+<<<<<<< HEAD
 				ubi_err(ubi, "incorrect highest_lnum or lnum");
+=======
+				ubi_err(ubi->ubi_num, "incorrect highest_lnum or lnum");
+>>>>>>> p9x
 				goto bad_aeb;
 			}
 		}
 
 		if (av->leb_count != leb_count) {
+<<<<<<< HEAD
 			ubi_err(ubi, "bad leb_count, %d objects in the tree",
+=======
+			ubi_err(ubi->ubi_num, "bad leb_count, %d objects in the tree",
+>>>>>>> p9x
 				leb_count);
 			goto bad_av;
 		}
@@ -1629,13 +1805,21 @@ static int self_check_ai(struct ubi_device *ubi, struct ubi_attach_info *ai)
 		aeb = last_aeb;
 
 		if (aeb->lnum != av->highest_lnum) {
+<<<<<<< HEAD
 			ubi_err(ubi, "bad highest_lnum");
+=======
+			ubi_err(ubi->ubi_num, "bad highest_lnum");
+>>>>>>> p9x
 			goto bad_aeb;
 		}
 	}
 
 	if (vols_found != ai->vols_found) {
+<<<<<<< HEAD
 		ubi_err(ubi, "bad ai->vols_found %d, should be %d",
+=======
+		ubi_err(ubi->ubi_num, "bad ai->vols_found %d, should be %d",
+>>>>>>> p9x
 			ai->vols_found, vols_found);
 		goto out;
 	}
@@ -1652,8 +1836,13 @@ static int self_check_ai(struct ubi_device *ubi, struct ubi_attach_info *ai)
 
 			err = ubi_io_read_vid_hdr(ubi, aeb->pnum, vidh, 1);
 			if (err && err != UBI_IO_BITFLIPS) {
+<<<<<<< HEAD
 				ubi_err(ubi, "VID header is not OK (%d)",
 					err);
+=======
+				ubi_err(ubi->ubi_num,
+					"VID header is not OK (%d)", err);
+>>>>>>> p9x
 				if (err > 0)
 					err = -EIO;
 				return err;
@@ -1662,37 +1851,70 @@ static int self_check_ai(struct ubi_device *ubi, struct ubi_attach_info *ai)
 			vol_type = vidh->vol_type == UBI_VID_DYNAMIC ?
 				   UBI_DYNAMIC_VOLUME : UBI_STATIC_VOLUME;
 			if (av->vol_type != vol_type) {
+<<<<<<< HEAD
 				ubi_err(ubi, "bad vol_type");
+=======
+				ubi_err(ubi->ubi_num, "bad vol_type");
+>>>>>>> p9x
 				goto bad_vid_hdr;
 			}
 
 			if (aeb->sqnum != be64_to_cpu(vidh->sqnum)) {
+<<<<<<< HEAD
 				ubi_err(ubi, "bad sqnum %llu", aeb->sqnum);
+=======
+				ubi_err(ubi->ubi_num,
+					"bad sqnum %llu", aeb->sqnum);
+>>>>>>> p9x
 				goto bad_vid_hdr;
 			}
 
 			if (av->vol_id != be32_to_cpu(vidh->vol_id)) {
+<<<<<<< HEAD
 				ubi_err(ubi, "bad vol_id %d", av->vol_id);
+=======
+				ubi_err(ubi->ubi_num,
+					"bad vol_id %d", av->vol_id);
+>>>>>>> p9x
 				goto bad_vid_hdr;
 			}
 
 			if (av->compat != vidh->compat) {
+<<<<<<< HEAD
 				ubi_err(ubi, "bad compat %d", vidh->compat);
+=======
+				ubi_err(ubi->ubi_num,
+					"bad compat %d", vidh->compat);
+>>>>>>> p9x
 				goto bad_vid_hdr;
 			}
 
 			if (aeb->lnum != be32_to_cpu(vidh->lnum)) {
+<<<<<<< HEAD
 				ubi_err(ubi, "bad lnum %d", aeb->lnum);
+=======
+				ubi_err(ubi->ubi_num, "bad lnum %d", aeb->lnum);
+>>>>>>> p9x
 				goto bad_vid_hdr;
 			}
 
 			if (av->used_ebs != be32_to_cpu(vidh->used_ebs)) {
+<<<<<<< HEAD
 				ubi_err(ubi, "bad used_ebs %d", av->used_ebs);
+=======
+				ubi_err(ubi->ubi_num,
+					"bad used_ebs %d", av->used_ebs);
+>>>>>>> p9x
 				goto bad_vid_hdr;
 			}
 
 			if (av->data_pad != be32_to_cpu(vidh->data_pad)) {
+<<<<<<< HEAD
 				ubi_err(ubi, "bad data_pad %d", av->data_pad);
+=======
+				ubi_err(ubi->ubi_num,
+					"bad data_pad %d", av->data_pad);
+>>>>>>> p9x
 				goto bad_vid_hdr;
 			}
 		}
@@ -1701,13 +1923,23 @@ static int self_check_ai(struct ubi_device *ubi, struct ubi_attach_info *ai)
 			continue;
 
 		if (av->highest_lnum != be32_to_cpu(vidh->lnum)) {
+<<<<<<< HEAD
 			ubi_err(ubi, "bad highest_lnum %d", av->highest_lnum);
+=======
+			ubi_err(ubi->ubi_num,
+				"bad highest_lnum %d", av->highest_lnum);
+>>>>>>> p9x
 			goto bad_vid_hdr;
 		}
 
 		if (av->last_data_size != be32_to_cpu(vidh->data_size)) {
+<<<<<<< HEAD
 			ubi_err(ubi, "bad last_data_size %d",
 				av->last_data_size);
+=======
+			ubi_err(ubi->ubi_num,
+				"bad last_data_size %d", av->last_data_size);
+>>>>>>> p9x
 			goto bad_vid_hdr;
 		}
 	}
@@ -1748,7 +1980,11 @@ static int self_check_ai(struct ubi_device *ubi, struct ubi_attach_info *ai)
 	err = 0;
 	for (pnum = 0; pnum < ubi->peb_count; pnum++)
 		if (!buf[pnum]) {
+<<<<<<< HEAD
 			ubi_err(ubi, "PEB %d is not referred", pnum);
+=======
+			ubi_err(ubi->ubi_num, "PEB %d is not referred", pnum);
+>>>>>>> p9x
 			err = 1;
 		}
 
@@ -1758,18 +1994,33 @@ static int self_check_ai(struct ubi_device *ubi, struct ubi_attach_info *ai)
 	return 0;
 
 bad_aeb:
+<<<<<<< HEAD
 	ubi_err(ubi, "bad attaching information about LEB %d", aeb->lnum);
+=======
+	ubi_err(ubi->ubi_num, "bad attaching information about LEB %d",
+		aeb->lnum);
+>>>>>>> p9x
 	ubi_dump_aeb(aeb, 0);
 	ubi_dump_av(av);
 	goto out;
 
 bad_av:
+<<<<<<< HEAD
 	ubi_err(ubi, "bad attaching information about volume %d", av->vol_id);
+=======
+	ubi_err(ubi->ubi_num, "bad attaching information about volume %d",
+		av->vol_id);
+>>>>>>> p9x
 	ubi_dump_av(av);
 	goto out;
 
 bad_vid_hdr:
+<<<<<<< HEAD
 	ubi_err(ubi, "bad attaching information about volume %d", av->vol_id);
+=======
+	ubi_err(ubi->ubi_num, "bad attaching information about volume %d",
+		av->vol_id);
+>>>>>>> p9x
 	ubi_dump_av(av);
 	ubi_dump_vid_hdr(vidh);
 

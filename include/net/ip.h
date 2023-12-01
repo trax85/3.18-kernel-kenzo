@@ -151,10 +151,17 @@ static inline struct sk_buff *ip_finish_skb(struct sock *sk, struct flowi4 *fl4)
 	return __ip_make_skb(sk, fl4, &sk->sk_write_queue, &inet_sk(sk)->cork.base);
 }
 
+<<<<<<< HEAD
 static inline __u8 get_rttos(struct ipcm_cookie* ipc, struct inet_sock *inet)
 {
 	return (ipc->tos != -1) ? RT_TOS(ipc->tos) : RT_TOS(inet->tos);
 }
+=======
+/* datagram.c */
+int __ip4_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len);
+extern int		ip4_datagram_connect(struct sock *sk, 
+					     struct sockaddr *uaddr, int addr_len);
+>>>>>>> p9x
 
 static inline __u8 get_rtconn_flags(struct ipcm_cookie* ipc, struct sock* sk)
 {
@@ -185,10 +192,15 @@ static inline __u8 ip_reply_arg_flowi_flags(const struct ip_reply_arg *arg)
 	return (arg->flags & IP_REPLY_ARG_NOSRCCHECK) ? FLOWI_FLAG_ANYSRC : 0;
 }
 
+<<<<<<< HEAD
 void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
 			   const struct ip_options *sopt,
 			   __be32 daddr, __be32 saddr,
 			   const struct ip_reply_arg *arg,
+=======
+void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb, __be32 daddr,
+			   __be32 saddr, const struct ip_reply_arg *arg,
+>>>>>>> p9x
 			   unsigned int len);
 
 #define IP_INC_STATS(net, field)	SNMP_INC_STATS64((net)->mib.ip_statistics, field)
@@ -224,6 +236,7 @@ static inline int inet_is_local_reserved_port(struct net *net, int port)
 	return test_bit(port, net->ipv4.sysctl_local_reserved_ports);
 }
 
+<<<<<<< HEAD
 static inline bool sysctl_dev_name_is_allowed(const char *name)
 {
 	return strcmp(name, "default") != 0  && strcmp(name, "all") != 0;
@@ -238,6 +251,10 @@ static inline int inet_is_local_reserved_port(struct net *net, int port)
 
 extern int sysctl_reserved_port_bind;
 __be32 inet_current_timestamp(void);
+=======
+extern int sysctl_reserved_port_bind;
+extern int sysctl_ip_nonlocal_bind;
+>>>>>>> p9x
 
 /* From inetpeer.c */
 extern int inet_peer_threshold;
@@ -253,6 +270,9 @@ extern int sysctl_ip_dynaddr;
 void ipfrag_init(void);
 
 void ip_static_sysctl_init(void);
+
+#define IP4_REPLY_MARK(net, mark) \
+	((net)->ipv4.sysctl_fwmark_reflect ? (mark) : 0)
 
 #define IP4_REPLY_MARK(net, mark) \
 	((net)->ipv4.sysctl_fwmark_reflect ? (mark) : 0)
@@ -284,6 +304,7 @@ int ip_dont_fragment(struct sock *sk, struct dst_entry *dst)
 		 !(dst_metric_locked(dst, RTAX_MTU)));
 }
 
+<<<<<<< HEAD
 static inline bool ip_sk_accept_pmtu(const struct sock *sk)
 {
 	return inet_sk(sk)->pmtudisc != IP_PMTUDISC_INTERFACE &&
@@ -332,6 +353,16 @@ static inline void ip_select_ident_segs(struct sk_buff *skb, struct sock *sk, in
 	struct iphdr *iph = ip_hdr(skb);
 
 	if ((iph->frag_off & htons(IP_DF)) && !skb->ignore_df) {
+=======
+u32 ip_idents_reserve(u32 hash, int segs);
+void __ip_select_ident(struct iphdr *iph, int segs);
+
+static inline void ip_select_ident_segs(struct sk_buff *skb, struct sock *sk, int segs)
+{
+	struct iphdr *iph = ip_hdr(skb);
+
+	if ((iph->frag_off & htons(IP_DF)) && !skb->local_df) {
+>>>>>>> p9x
 		/* This is only to work around buggy Windows95/2000
 		 * VJ compression implementations.  If the ID field
 		 * does not change, they drop every other packet in
@@ -351,6 +382,7 @@ static inline void ip_select_ident_segs(struct sk_buff *skb, struct sock *sk, in
 static inline void ip_select_ident(struct sk_buff *skb, struct sock *sk)
 {
 	ip_select_ident_segs(skb, sk, 1);
+<<<<<<< HEAD
 }
 
 static inline __wsum inet_compute_pseudo(struct sk_buff *skb, int proto)
@@ -378,6 +410,8 @@ static inline __wsum inet_gro_compute_pseudo(struct sk_buff *skb, int proto)
 
 	return csum_tcpudp_nofold(iph->saddr, iph->daddr,
 				  skb_gro_len(skb), proto, 0);
+=======
+>>>>>>> p9x
 }
 
 /*
@@ -545,6 +579,7 @@ int compat_ip_getsockopt(struct sock *sk, int level, int optname,
 int ip_ra_control(struct sock *sk, unsigned char on,
 		  void (*destructor)(struct sock *));
 
+<<<<<<< HEAD
 int ip_recv_error(struct sock *sk, struct msghdr *msg, int len, int *addr_len);
 void ip_icmp_error(struct sock *sk, struct sk_buff *skb, int err, __be16 port,
 		   u32 info, u8 *payload);
@@ -554,6 +589,13 @@ void ip_local_error(struct sock *sk, int err, __be32 daddr, __be16 dport,
 bool icmp_global_allow(void);
 extern int sysctl_icmp_msgs_per_sec;
 extern int sysctl_icmp_msgs_burst;
+=======
+extern int 	ip_recv_error(struct sock *sk, struct msghdr *msg, int len, int *addr_len);
+extern void	ip_icmp_error(struct sock *sk, struct sk_buff *skb, int err, 
+			      __be16 port, u32 info, u8 *payload);
+extern void	ip_local_error(struct sock *sk, int err, __be32 daddr, __be16 dport,
+			       u32 info);
+>>>>>>> p9x
 
 #ifdef CONFIG_PROC_FS
 int ip_misc_proc_init(void);

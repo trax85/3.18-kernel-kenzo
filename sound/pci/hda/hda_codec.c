@@ -2278,6 +2278,16 @@ int snd_hda_codec_amp_init_stereo(struct hda_codec *codec, hda_nid_t nid,
 }
 EXPORT_SYMBOL_GPL(snd_hda_codec_amp_init_stereo);
 
+/* meta hook to call each driver's vmaster hook */
+static void vmaster_hook(void *private_data, int enabled)
+{
+	struct hda_vmaster_mute_hook *hook = private_data;
+
+	if (hook->mute_mode != HDA_VMUTE_FOLLOW_MASTER)
+		enabled = hook->mute_mode;
+	hook->hook(hook->codec, enabled);
+}
+
 /**
  * snd_hda_codec_resume_amp - Resume all AMP commands from the cache
  * @codec: HD-audio codec
@@ -4152,6 +4162,10 @@ static void hda_call_codec_resume(struct hda_codec *codec)
 	 * in the resume / power-save sequence
 	 */
 	hda_keep_power_on(codec);
+	if (codec->pm_down_notified) {
+		codec->pm_down_notified = 0;
+		hda_call_pm_notify(codec->bus, true);
+	}
 	hda_set_power_state(codec, AC_PWRST_D0);
 	restore_shutup_pins(codec);
 	hda_exec_init_verbs(codec);
@@ -4912,8 +4926,16 @@ static void hda_power_work(struct work_struct *work)
 	spin_unlock(&codec->power_lock);
 
 	state = hda_call_codec_suspend(codec, true);
+<<<<<<< HEAD
 	if (!bus->power_keep_link_on && (state & AC_PWRST_CLK_STOP_OK))
 		hda_call_pm_notify(codec, false);
+=======
+	if (!codec->pm_down_notified &&
+	    !bus->power_keep_link_on && (state & AC_PWRST_CLK_STOP_OK)) {
+		codec->pm_down_notified = 1;
+		hda_call_pm_notify(bus, false);
+	}
+>>>>>>> p9x
 }
 
 static void hda_keep_power_on(struct hda_codec *codec)

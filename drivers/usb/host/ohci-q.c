@@ -41,7 +41,10 @@ finish_urb(struct ohci_hcd *ohci, struct urb *urb, int status)
 __releases(ohci->lock)
 __acquires(ohci->lock)
 {
+<<<<<<< HEAD
 	struct device *dev = ohci_to_hcd(ohci)->self.controller;
+=======
+>>>>>>> p9x
 	struct usb_host_endpoint *ep = urb->ep;
 	struct urb_priv *urb_priv;
 
@@ -1018,6 +1021,14 @@ skip_ed:
 		ed->hwINFO &= ~cpu_to_hc32(ohci, ED_SKIP | ED_DEQUEUE);
 ed_idle:
 
+		/* ED's now officially unlinked, hc doesn't see */
+		if (quirk_zfmicro(ohci) && ed->type == PIPE_INTERRUPT)
+			ohci->eds_scheduled--;
+		ed->hwHeadP &= ~cpu_to_hc32(ohci, ED_H);
+		ed->hwNextED = 0;
+		wmb();
+		ed->hwINFO &= ~cpu_to_hc32(ohci, ED_SKIP | ED_DEQUEUE);
+
 		/* reentrancy:  if we drop the schedule lock, someone might
 		 * have modified this list.  normally it's just prepending
 		 * entries (which we'd ignore), but paranoia won't hurt.
@@ -1087,7 +1098,11 @@ rescan_this:
 		if (list_empty(&ed->td_list)) {
 			*last = ed->ed_next;
 			ed->ed_next = NULL;
+<<<<<<< HEAD
 			list_del(&ed->in_use_list);
+=======
+			ed->state = ED_IDLE;
+>>>>>>> p9x
 		} else if (ohci->rh_state == OHCI_RH_RUNNING) {
 			*last = ed->ed_next;
 			ed->ed_next = NULL;

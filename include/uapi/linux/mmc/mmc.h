@@ -29,10 +29,14 @@
 #define MMC_READ_MULTIPLE_BLOCK  18   /* adtc [31:0] data addr   R1  */
 #define MMC_SEND_TUNING_BLOCK    19   /* adtc                    R1  */
 #define MMC_SEND_TUNING_BLOCK_HS200	21	/* adtc R1  */
+<<<<<<< HEAD
 #define MMC_SEND_TUNING_BLOCK_HS400      MMC_SEND_TUNING_BLOCK_HS200
 
 #define MMC_TUNING_BLK_PATTERN_4BIT_SIZE	 64
 #define MMC_TUNING_BLK_PATTERN_8BIT_SIZE	128
+=======
+#define MMC_SEND_TUNING_BLOCK_HS400	MMC_SEND_TUNING_BLOCK_HS200
+>>>>>>> p9x
 
   /* class 3 */
 #define MMC_WRITE_DAT_UNTIL_STOP 20   /* adtc [31:0] data addr   R1  */
@@ -65,10 +69,13 @@
 #define MMC_APP_CMD              55   /* ac   [31:16] RCA        R1  */
 #define MMC_GEN_CMD              56   /* adtc [0] RD/WR          R1  */
 
+<<<<<<< HEAD
   /* class 11 */
 #define MMC_CMDQ_TASK_PARAM	 44   /* ac			 R1  */
 #define MMC_CMDQ_TASK_ADDR	 45   /* ac   [31:0] blk addr    R1  */
 #define MMC_CMDQ_READ_TASK	 46   /* adtc [20:16] Task ID    R1  */
 #define MMC_CMDQ_WRITE_TASK	 47   /* adtc [20:16] Task ID    R1  */
 
+=======
+>>>>>>> p9x
 #endif /* UAPI_MMC_MMC_H */

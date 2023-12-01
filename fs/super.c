@@ -77,9 +77,14 @@ static unsigned long super_cache_scan(struct shrinker *shrink,
 	if (sb->s_op->nr_cached_objects)
 		fs_objects = sb->s_op->nr_cached_objects(sb, sc->nid);
 
+<<<<<<< HEAD
 	inodes = list_lru_count_node(&sb->s_inode_lru, sc->nid);
 	dentries = list_lru_count_node(&sb->s_dentry_lru, sc->nid);
 	total_objects = dentries + inodes + fs_objects + 1;
+=======
+	total_objects = sb->s_nr_dentry_unused +
+			sb->s_nr_inodes_unused + fs_objects + 1;
+>>>>>>> p9x
 	if (!total_objects)
 		total_objects = 1;
 
@@ -168,10 +173,63 @@ static struct super_block *alloc_super(struct file_system_type *type, int flags)
 	static const struct super_operations default_op;
 	int i;
 
+<<<<<<< HEAD
 	if (!s)
 		return NULL;
 
 	INIT_LIST_HEAD(&s->s_mounts);
+=======
+	if (s) {
+		if (security_sb_alloc(s)) {
+			/*
+			 * We cannot call security_sb_free() without
+			 * security_sb_alloc() succeeding. So bail out manually
+			 */
+			kfree(s);
+			s = NULL;
+			goto out;
+		}
+		if (init_sb_writers(s, type))
+			goto err_out;
+		s->s_flags = flags;
+		s->s_bdi = &default_backing_dev_info;
+		INIT_HLIST_NODE(&s->s_instances);
+		INIT_HLIST_BL_HEAD(&s->s_anon);
+		INIT_LIST_HEAD(&s->s_inodes);
+		INIT_LIST_HEAD(&s->s_dentry_lru);
+		INIT_LIST_HEAD(&s->s_inode_lru);
+		spin_lock_init(&s->s_inode_lru_lock);
+		INIT_LIST_HEAD(&s->s_mounts);
+		init_rwsem(&s->s_umount);
+		lockdep_set_class(&s->s_umount, &type->s_umount_key);
+		/*
+		 * sget() can have s_umount recursion.
+		 *
+		 * When it cannot find a suitable sb, it allocates a new
+		 * one (this one), and tries again to find a suitable old
+		 * one.
+		 *
+		 * In case that succeeds, it will acquire the s_umount
+		 * lock of the old one. Since these are clearly distrinct
+		 * locks, and this object isn't exposed yet, there's no
+		 * risk of deadlocks.
+		 *
+		 * Annotate this by putting this lock in a different
+		 * subclass.
+		 */
+		down_write_nested(&s->s_umount, SINGLE_DEPTH_NESTING);
+		s->s_count = 1;
+		atomic_set(&s->s_active, 1);
+		mutex_init(&s->s_vfs_rename_mutex);
+		lockdep_set_class(&s->s_vfs_rename_mutex, &type->s_vfs_rename_key);
+		mutex_init(&s->s_dquot.dqio_mutex);
+		mutex_init(&s->s_dquot.dqonoff_mutex);
+		init_rwsem(&s->s_dquot.dqptr_sem);
+		s->s_maxbytes = MAX_NON_LFS;
+		s->s_op = &default_op;
+		s->s_time_gran = 1000000000;
+		s->cleancache_poolid = -1;
+>>>>>>> p9x
 
 	if (security_sb_alloc(s))
 		goto fail;
@@ -183,6 +241,7 @@ static struct super_block *alloc_super(struct file_system_type *type, int flags)
 		lockdep_init_map(&s->s_writers.lock_map[i], sb_writers_name[i],
 				 &type->s_writers_key[i], 0);
 	}
+<<<<<<< HEAD
 	init_waitqueue_head(&s->s_writers.wait);
 	init_waitqueue_head(&s->s_writers.wait_unfrozen);
 	s->s_flags = flags;
@@ -235,6 +294,32 @@ static struct super_block *alloc_super(struct file_system_type *type, int flags)
 fail:
 	destroy_super(s);
 	return NULL;
+=======
+out:
+	return s;
+err_out:
+	security_sb_free(s);
+	destroy_sb_writers(s);
+	kfree(s);
+	s = NULL;
+	goto out;
+}
+
+/**
+ *	destroy_super	-	frees a superblock
+ *	@s: superblock to free
+ *
+ *	Frees a superblock.
+ */
+static inline void destroy_super(struct super_block *s)
+{
+	destroy_sb_writers(s);
+	security_sb_free(s);
+	WARN_ON(!list_empty(&s->s_mounts));
+	kfree(s->s_subtype);
+	kfree(s->s_options);
+	kfree(s);
+>>>>>>> p9x
 }
 
 /* Superblock refcounting  */
@@ -708,6 +793,13 @@ int do_remount_sb2(struct vfsmount *mnt, struct super_block *sb, int flags, void
 		return -EACCES;
 #endif
 
+<<<<<<< HEAD
+=======
+	if (flags & MS_RDONLY)
+		acct_auto_close(sb);
+	shrink_dcache_sb(sb);
+
+>>>>>>> p9x
 	remount_ro = (flags & MS_RDONLY) && !(sb->s_flags & MS_RDONLY);
 
 	if (remount_ro) {
@@ -737,6 +829,11 @@ int do_remount_sb2(struct vfsmount *mnt, struct super_block *sb, int flags, void
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	sync_filesystem(sb);
+
+>>>>>>> p9x
 	if (mnt && sb->s_op->remount_fs2) {
 		retval = sb->s_op->remount_fs2(mnt, sb, &flags, data);
 		if (retval) {

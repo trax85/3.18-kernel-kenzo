@@ -9,11 +9,17 @@ Required properties:
     - "qcom,csid-v3.0"
     - "qcom,csid-v3.1"
     - "qcom,csid-v3.2"
+<<<<<<< HEAD
     - "qcom,csid-v3.5"
     - "qcom,csid-v4.0"
     - "qcom,csid-v3.4.2"
     - "qcom,csid-v3.5.1"
     - "qcom,csid-v3.4.3"
+=======
+    - "qcom,csid-v3.4.1"
+    - "qcom,csid-v3.6.0"
+    - "qcom,csid-v4.0"
+>>>>>>> p9x
 - reg : offset and length of the register set for the device
     for the csid operating in compatible mode.
 - reg-names : should specify relevant names to each reg property defined.
@@ -29,9 +35,13 @@ Required properties:
 	- 0 if appropriate clock is required but doesn't have to apply the rate
 
 Optional properties:
+<<<<<<< HEAD
 - qcom,cam-vreg-name : name of the voltage regulators required for the device.
 - gdscr-supply : should contain regulator used for csid clocks.
 - mmagic-supply : should contain mmagic regulator used for mmagic clocks.
+=======
+- qcom,gdscr-vdd-supply : should contain regulator used for csid clocks
+>>>>>>> p9x
 
 Example:
 

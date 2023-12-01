@@ -29,15 +29,19 @@
 #include <linux/idr.h>
 #include <linux/notifier.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
 #include <linux/bitops.h>
 #include <linux/debugfs.h>
 #include <trace/events/iommu.h>
 
 #include "iommu-debug.h"
+=======
+#include <linux/scatterlist.h>
+>>>>>>> p9x
 
 static struct kset *iommu_group_kset;
-static struct ida iommu_group_ida;
+static struct idr iommu_group_idr;
 static struct mutex iommu_group_mutex;
 
 struct iommu_callback_data {
@@ -135,7 +139,7 @@ static void iommu_group_release(struct kobject *kobj)
 		group->iommu_data_release(group->iommu_data);
 
 	mutex_lock(&iommu_group_mutex);
-	ida_remove(&iommu_group_ida, group->id);
+	idr_remove(&iommu_group_idr, group->id);
 	mutex_unlock(&iommu_group_mutex);
 
 	kfree(group->name);
@@ -174,24 +178,20 @@ struct iommu_group *iommu_group_alloc(void)
 	BLOCKING_INIT_NOTIFIER_HEAD(&group->notifier);
 
 	mutex_lock(&iommu_group_mutex);
-
-again:
-	if (unlikely(0 == ida_pre_get(&iommu_group_ida, GFP_KERNEL))) {
-		kfree(group);
-		mutex_unlock(&iommu_group_mutex);
-		return ERR_PTR(-ENOMEM);
-	}
-
-	if (-EAGAIN == ida_get_new(&iommu_group_ida, &group->id))
-		goto again;
-
+	ret = idr_alloc(&iommu_group_idr, group, 1, 0, GFP_KERNEL);
 	mutex_unlock(&iommu_group_mutex);
+
+	if (ret < 0) {
+		kfree(group);
+		return ERR_PTR(ret);
+	}
+	group->id = ret;
 
 	ret = kobject_init_and_add(&group->kobj, &iommu_group_ktype,
 				   NULL, "%d", group->id);
 	if (ret) {
 		mutex_lock(&iommu_group_mutex);
-		ida_remove(&iommu_group_ida, group->id);
+		idr_remove(&iommu_group_idr, group->id);
 		mutex_unlock(&iommu_group_mutex);
 		kfree(group);
 		return ERR_PTR(ret);
@@ -482,7 +482,11 @@ struct iommu_group *iommu_group_find(const char *name)
 	int next = 0;
 
 	mutex_lock(&iommu_group_mutex);
+<<<<<<< HEAD
 	while ((group = idr_get_next(&iommu_group_ida.idr, &next))) {
+=======
+	while ((group = idr_get_next(&iommu_group_idr, &next))) {
+>>>>>>> p9x
 		if (group->name) {
 			if (strcmp(group->name, name) == 0)
 				break;
@@ -1125,6 +1129,7 @@ size_t iommu_pgsize(unsigned long pgsize_bitmap,
 int iommu_map(struct iommu_domain *domain, unsigned long iova,
 	      phys_addr_t paddr, size_t size, int prot)
 {
+<<<<<<< HEAD
 	unsigned long orig_iova = iova, pgsize_bitmap;
 	unsigned int min_pagesz;
 	size_t orig_size = size;
@@ -1135,9 +1140,13 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
 		     (domain->ops->pgsize_bitmap == 0UL &&
 		      !domain->ops->get_pgsize_bitmap))) {
 		trace_map_end(iova, paddr, size);
+=======
+	if (unlikely(domain->ops->map_range == NULL))
+>>>>>>> p9x
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	pgsize_bitmap = iommu_get_pgsize_bitmap(domain);
 	/* find out the minimum page size supported */
 	min_pagesz = 1 << __ffs(pgsize_bitmap);
@@ -1179,6 +1188,11 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
 
 	trace_map_end(iova, paddr, size);
 	return ret;
+=======
+	BUG_ON((iova | paddr | size) & (~PAGE_MASK));
+
+	return domain->ops->map(domain, iova, paddr, size, prot);
+>>>>>>> p9x
 }
 EXPORT_SYMBOL_GPL(iommu_map);
 
@@ -1238,6 +1252,7 @@ EXPORT_SYMBOL_GPL(iommu_unmap);
 size_t default_iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
 			 struct scatterlist *sg, unsigned int nents, int prot)
 {
+<<<<<<< HEAD
 	int ret;
 	size_t mapped = 0;
 	unsigned int i;
@@ -1285,6 +1300,47 @@ int iommu_unmap_range(struct iommu_domain *domain, unsigned long iova,
 	return domain->ops->unmap_range(domain, iova, len);
 }
 EXPORT_SYMBOL_GPL(iommu_unmap_range);
+=======
+	struct scatterlist *s;
+	size_t mapped = 0;
+	unsigned int i, min_pagesz;
+	int ret;
+
+	if (unlikely(domain->ops->pgsize_bitmap == 0UL))
+		return 0;
+
+	min_pagesz = 1 << __ffs(domain->ops->pgsize_bitmap);
+
+	for_each_sg(sg, s, nents, i) {
+		phys_addr_t phys = page_to_phys(sg_page(s)) + s->offset;
+
+		/*
+		 * We are mapping on IOMMU page boundaries, so offset within
+		 * the page must be 0. However, the IOMMU may support pages
+		 * smaller than PAGE_SIZE, so s->offset may still represent
+		 * an offset of that boundary within the CPU page.
+		 */
+		if (!IS_ALIGNED(s->offset, min_pagesz))
+			goto out_err;
+
+		ret = iommu_map(domain, iova + mapped, phys, s->length, prot);
+		if (ret)
+			goto out_err;
+
+		mapped += s->length;
+	}
+
+	return mapped;
+
+out_err:
+	/* undo mappings already done */
+	iommu_unmap(domain, iova, mapped);
+
+	return 0;
+
+}
+EXPORT_SYMBOL_GPL(default_iommu_map_sg);
+>>>>>>> p9x
 
 int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
 			       phys_addr_t paddr, u64 size, int prot)
@@ -1306,13 +1362,48 @@ void iommu_domain_window_disable(struct iommu_domain *domain, u32 wnd_nr)
 }
 EXPORT_SYMBOL_GPL(iommu_domain_window_disable);
 
+<<<<<<< HEAD
 struct dentry *iommu_debugfs_top;
+=======
+int iommu_map_range(struct iommu_domain *domain, unsigned long iova,
+		    struct scatterlist *sg, size_t len, int prot)
+{
+	if (unlikely(domain->ops->map_range == NULL))
+		return -ENODEV;
+
+	BUG_ON(iova & (~PAGE_MASK));
+
+	return domain->ops->map_range(domain, iova, sg, len, prot);
+}
+EXPORT_SYMBOL_GPL(iommu_map_range);
+
+int iommu_unmap_range(struct iommu_domain *domain, unsigned long iova,
+		      size_t len)
+{
+	if (unlikely(domain->ops->unmap_range == NULL))
+		return -ENODEV;
+
+	BUG_ON(iova & (~PAGE_MASK));
+
+	return domain->ops->unmap_range(domain, iova, len);
+}
+EXPORT_SYMBOL_GPL(iommu_unmap_range);
+
+phys_addr_t iommu_get_pt_base_addr(struct iommu_domain *domain)
+{
+	if (unlikely(domain->ops->get_pt_base_addr == NULL))
+		return 0;
+
+	return domain->ops->get_pt_base_addr(domain);
+}
+EXPORT_SYMBOL_GPL(iommu_get_pt_base_addr);
+>>>>>>> p9x
 
 static int __init iommu_init(void)
 {
 	iommu_group_kset = kset_create_and_add("iommu_groups",
 					       NULL, kernel_kobj);
-	ida_init(&iommu_group_ida);
+	idr_init(&iommu_group_idr);
 	mutex_init(&iommu_group_mutex);
 
 	BUG_ON(!iommu_group_kset);

@@ -357,7 +357,11 @@ static void quirk_io(struct pci_dev *dev, int pos, unsigned size,
 	/* Convert from PCI bus to resource space */
 	bus_region.start = region;
 	bus_region.end = region + size - 1;
+<<<<<<< HEAD
 	pcibios_bus_to_resource(dev->bus, res, &bus_region);
+=======
+	pcibios_bus_to_resource(dev, res, &bus_region);
+>>>>>>> p9x
 
 	dev_info(&dev->dev, FW_BUG "%s quirk: reg 0x%x: %pR\n",
 		 name, PCI_BASE_ADDRESS_0 + (pos << 2), res);
@@ -3018,6 +3022,7 @@ static void disable_igfx_irq(struct pci_dev *dev)
 DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL, 0x0102, disable_igfx_irq);
 DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL, 0x010a, disable_igfx_irq);
 DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL, 0x0152, disable_igfx_irq);
+<<<<<<< HEAD
 
 /*
  * PCI devices which are on Intel chips can skip the 10ms delay
@@ -3041,6 +3046,8 @@ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL, 0x8c26, quirk_remove_d3_delay);
 DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL, 0x8c4e, quirk_remove_d3_delay);
 DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL, 0x8c02, quirk_remove_d3_delay);
 DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL, 0x8c22, quirk_remove_d3_delay);
+=======
+>>>>>>> p9x
 
 /*
  * Some devices may pass our check in pci_intx_mask_supported if

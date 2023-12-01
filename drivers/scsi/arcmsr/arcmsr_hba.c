@@ -2306,7 +2306,11 @@ static int arcmsr_iop_message_xfer(struct AdapterControlBlock *acb,
 	case ARCMSR_MESSAGE_WRITE_WQBUFFER: {
 		unsigned char *ver_addr;
 		uint32_t user_len;
+<<<<<<< HEAD
 		int32_t cnt2end;
+=======
+		int32_t my_empty_len, wqbuf_firstindex, wqbuf_lastindex;
+>>>>>>> p9x
 		uint8_t *pQbuffer, *ptmpuserbuffer;
 		ver_addr = kmalloc(ARCMSR_API_DATA_BUFLEN, GFP_ATOMIC);
 		if (!ver_addr) {
@@ -2315,15 +2319,26 @@ static int arcmsr_iop_message_xfer(struct AdapterControlBlock *acb,
 		}
 		ptmpuserbuffer = ver_addr;
 		user_len = pcmdmessagefld->cmdmessage.Length;
+<<<<<<< HEAD
 		if (user_len > ARCMSR_API_DATA_BUFLEN) {
+=======
+		if (user_len > 1032) {
+>>>>>>> p9x
 			retvalue = ARCMSR_MESSAGE_FAIL;
 			kfree(ver_addr);
 			goto message_out;
 		}
+<<<<<<< HEAD
 		memcpy(ptmpuserbuffer,
 			pcmdmessagefld->messagedatabuffer, user_len);
 		spin_lock_irqsave(&acb->wqbuffer_lock, flags);
 		if (acb->wqbuf_putIndex != acb->wqbuf_getIndex) {
+=======
+		memcpy(ptmpuserbuffer, pcmdmessagefld->messagedatabuffer, user_len);
+		wqbuf_lastindex = acb->wqbuf_lastindex;
+		wqbuf_firstindex = acb->wqbuf_firstindex;
+		if (wqbuf_lastindex != wqbuf_firstindex) {
+>>>>>>> p9x
 			struct SENSE_DATA *sensebuffer =
 				(struct SENSE_DATA *)cmd->sense_buffer;
 			arcmsr_write_ioctldata2iop(acb);
@@ -3213,7 +3228,10 @@ static int arcmsr_polling_ccbdone(struct AdapterControlBlock *acb,
 static int arcmsr_iop_confirm(struct AdapterControlBlock *acb)
 {
 	uint32_t cdb_phyaddr, cdb_phyaddr_hi32;
+<<<<<<< HEAD
 	dma_addr_t dma_coherent_handle;
+=======
+>>>>>>> p9x
 
 	/*
 	********************************************************************
@@ -3221,6 +3239,7 @@ static int arcmsr_iop_confirm(struct AdapterControlBlock *acb)
 	** if freeccb.HighPart is not zero
 	********************************************************************
 	*/
+<<<<<<< HEAD
 	switch (acb->adapter_type) {
 	case ACB_ADAPTER_TYPE_B:
 	case ACB_ADAPTER_TYPE_D:
@@ -3232,6 +3251,10 @@ static int arcmsr_iop_confirm(struct AdapterControlBlock *acb)
 	}
 	cdb_phyaddr = lower_32_bits(dma_coherent_handle);
 	cdb_phyaddr_hi32 = upper_32_bits(dma_coherent_handle);
+=======
+	cdb_phyaddr = lower_32_bits(acb->dma_coherent_handle);
+	cdb_phyaddr_hi32 = upper_32_bits(acb->dma_coherent_handle);
+>>>>>>> p9x
 	acb->cdb_phyaddr_hi32 = cdb_phyaddr_hi32;
 	/*
 	***********************************************************************

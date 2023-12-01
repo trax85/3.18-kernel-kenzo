@@ -107,5 +107,9 @@
 };
 
 &wcnss {
+<<<<<<< HEAD
 	qcom,wcnss-vadc = <&pm8909_vadc>;
+=======
+        qcom,wcnss-vadc = <&pm8909_vadc>;
+>>>>>>> p9x
 };

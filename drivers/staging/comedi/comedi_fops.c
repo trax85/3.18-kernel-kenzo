@@ -1511,6 +1511,16 @@ static int do_cmd_ioctl(struct comedi_device *dev,
 		dev_dbg(dev->class_dev, "subdevice busy\n");
 		return -EBUSY;
 	}
+<<<<<<< HEAD
+=======
+
+	/* make sure channel/gain list isn't too long */
+	if (cmd.chanlist_len > s->len_chanlist) {
+		DPRINTK("channel/gain list too long %u > %d\n",
+			cmd.chanlist_len, s->len_chanlist);
+		return -EINVAL;
+	}
+>>>>>>> p9x
 
 	/* make sure channel/gain list isn't too short */
 	if (cmd.chanlist_len < 1) {
@@ -1523,9 +1533,34 @@ static int do_cmd_ioctl(struct comedi_device *dev,
 	async->cmd.data = NULL;
 
 	/* load channel/gain list */
+<<<<<<< HEAD
 	ret = __comedi_get_user_chanlist(dev, s, user_chanlist, &async->cmd);
 	if (ret)
 		goto cleanup;
+=======
+	async->cmd.chanlist =
+	    kmalloc(async->cmd.chanlist_len * sizeof(int), GFP_KERNEL);
+	if (!async->cmd.chanlist) {
+		DPRINTK("allocation failed\n");
+		return -ENOMEM;
+	}
+
+	if (copy_from_user(async->cmd.chanlist, user_chanlist,
+			   async->cmd.chanlist_len * sizeof(int))) {
+		DPRINTK("fault reading chanlist\n");
+		ret = -EFAULT;
+		goto cleanup;
+	}
+
+	/* make sure each element in channel/gain list is valid */
+	ret = comedi_check_chanlist(s,
+				    async->cmd.chanlist_len,
+				    async->cmd.chanlist);
+	if (ret < 0) {
+		DPRINTK("bad chanlist\n");
+		goto cleanup;
+	}
+>>>>>>> p9x
 
 	ret = s->do_cmdtest(dev, s, &async->cmd);
 
@@ -1735,6 +1770,11 @@ static int do_cancel_ioctl(struct comedi_device *dev, unsigned long arg,
 		return -EBUSY;
 
 	ret = do_cancel(dev, s);
+<<<<<<< HEAD
+=======
+	if (comedi_get_subdevice_runflags(s) & SRF_USER)
+		wake_up_interruptible(&s->async->wait_head);
+>>>>>>> p9x
 
 	return ret;
 }
@@ -2073,12 +2113,17 @@ static ssize_t comedi_write(struct file *file, const char __user *buf,
 
 		if (!comedi_is_subdevice_running(s)) {
 			if (count == 0) {
+<<<<<<< HEAD
 				struct comedi_subdevice *new_s;
 
+=======
+				mutex_lock(&dev->mutex);
+>>>>>>> p9x
 				if (comedi_is_subdevice_in_error(s))
 					retval = -EPIPE;
 				else
 					retval = 0;
+<<<<<<< HEAD
 				/*
 				 * To avoid deadlock, cannot acquire dev->mutex
 				 * while dev->attach_lock is held.  Need to
@@ -2104,6 +2149,9 @@ static ssize_t comedi_write(struct file *file, const char __user *buf,
 				    old_detach_count == dev->detach_count &&
 				    s == new_s && new_s->async == async)
 					do_become_nonbusy(dev, s);
+=======
+				do_become_nonbusy(dev, s);
+>>>>>>> p9x
 				mutex_unlock(&dev->mutex);
 			}
 			break;
@@ -2215,11 +2263,20 @@ static ssize_t comedi_read(struct file *file, char __user *buf, size_t nbytes,
 
 		if (n == 0) {
 			if (!comedi_is_subdevice_running(s)) {
+<<<<<<< HEAD
+=======
+				mutex_lock(&dev->mutex);
+				do_become_nonbusy(dev, s);
+>>>>>>> p9x
 				if (comedi_is_subdevice_in_error(s))
 					retval = -EPIPE;
 				else
 					retval = 0;
+<<<<<<< HEAD
 				become_nonbusy = true;
+=======
+				mutex_unlock(&dev->mutex);
+>>>>>>> p9x
 				break;
 			}
 			if (file->f_flags & O_NONBLOCK) {
@@ -2257,6 +2314,16 @@ static ssize_t comedi_read(struct file *file, char __user *buf, size_t nbytes,
 		buf += n;
 		break;		/* makes device work like a pipe */
 	}
+<<<<<<< HEAD
+=======
+	if (comedi_is_subdevice_idle(s)) {
+		mutex_lock(&dev->mutex);
+		if (async->buf_read_count - async->buf_write_count == 0)
+			do_become_nonbusy(dev, s);
+		mutex_unlock(&dev->mutex);
+	}
+	set_current_state(TASK_RUNNING);
+>>>>>>> p9x
 	remove_wait_queue(&async->wait_head, &wait);
 	set_current_state(TASK_RUNNING);
 	if (become_nonbusy || comedi_is_subdevice_idle(s)) {
@@ -2588,7 +2655,11 @@ static int __init comedi_init(void)
 		return PTR_ERR(comedi_class);
 	}
 
+<<<<<<< HEAD
 	comedi_class->dev_groups = comedi_dev_groups;
+=======
+	comedi_class->dev_attrs = comedi_dev_attrs;
+>>>>>>> p9x
 
 	/* create devices files for legacy/manual use */
 	for (i = 0; i < comedi_num_legacy_minors; i++) {

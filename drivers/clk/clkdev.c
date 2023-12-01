@@ -27,6 +27,7 @@ static LIST_HEAD(clocks);
 static DEFINE_MUTEX(clocks_mutex);
 
 #if defined(CONFIG_OF)
+<<<<<<< HEAD
 
 /**
  * of_clk_get_by_clkspec() - Lookup a clock form a clock provider
@@ -53,6 +54,8 @@ struct clk *of_clk_get_by_clkspec(struct of_phandle_args *clkspec)
 	return clk;
 }
 
+=======
+>>>>>>> p9x
 struct clk *of_clk_get(struct device_node *np, int index)
 {
 	struct of_phandle_args clkspec;
@@ -171,7 +174,7 @@ struct clk *clk_get_sys(const char *dev_id, const char *con_id)
 		cl = NULL;
 	mutex_unlock(&clocks_mutex);
 
-	return cl ? cl->clk : ERR_PTR(-ENOENT);
+	return cl ? cl->clk : ERR_PTR(-EPROBE_DEFER);
 }
 EXPORT_SYMBOL(clk_get_sys);
 

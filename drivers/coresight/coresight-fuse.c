@@ -295,10 +295,19 @@ static int fuse_probe(struct platform_device *pdev)
 	struct coresight_desc *desc;
 	const struct of_device_id *match;
 
+<<<<<<< HEAD
 	pdata = of_get_coresight_platform_data(dev, pdev->dev.of_node);
 	if (IS_ERR(pdata))
 		return PTR_ERR(pdata);
 	pdev->dev.platform_data = pdata;
+=======
+	if (pdev->dev.of_node) {
+		pdata = of_get_coresight_platform_data(dev, pdev->dev.of_node);
+		if (IS_ERR(pdata))
+			return PTR_ERR(pdata);
+		pdev->dev.platform_data = pdata;
+	}
+>>>>>>> p9x
 
 	drvdata = devm_kzalloc(dev, sizeof(*drvdata), GFP_KERNEL);
 	if (!drvdata)

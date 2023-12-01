@@ -1017,7 +1017,11 @@ ip_vs_tunnel_xmit(struct sk_buff *skb, struct ip_vs_conn *cp,
 	iph->tos		=	dsfield;
 	iph->daddr		=	cp->daddr.ip;
 	iph->saddr		=	saddr;
+<<<<<<< HEAD
 	iph->ttl		=	ttl;
+=======
+	iph->ttl		=	old_iph->ttl;
+>>>>>>> p9x
 	ip_select_ident(skb, NULL);
 
 	/* Another hack: avoid icmp_send in ip_fragment */
@@ -1103,10 +1107,18 @@ ip_vs_tunnel_xmit_v6(struct sk_buff *skb, struct ip_vs_conn *cp,
 	 */
 	iph			=	ipv6_hdr(skb);
 	iph->version		=	6;
+<<<<<<< HEAD
 	iph->nexthdr		=	next_protocol;
 	iph->payload_len	=	htons(payload_len);
 	memset(&iph->flow_lbl, 0, sizeof(iph->flow_lbl));
 	ipv6_change_dsfield(iph, 0, dsfield);
+=======
+	iph->nexthdr		=	IPPROTO_IPV6;
+	iph->payload_len	=	old_iph->payload_len;
+	be16_add_cpu(&iph->payload_len, sizeof(*old_iph));
+	memset(&iph->flow_lbl, 0, sizeof(iph->flow_lbl));
+	ipv6_change_dsfield(iph, 0, ipv6_get_dsfield(old_iph));
+>>>>>>> p9x
 	iph->daddr = cp->daddr.in6;
 	iph->saddr = saddr;
 	iph->hop_limit		=	ttl;

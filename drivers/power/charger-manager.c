@@ -489,7 +489,11 @@ static void uevent_notify(struct charger_manager *cm, const char *event)
 	strncpy(env_str, event, UEVENT_BUF_SIZE);
 	kobject_uevent(&cm->dev->kobj, KOBJ_CHANGE);
 
+<<<<<<< HEAD
 	dev_info(cm->dev, "%s\n", event);
+=======
+	dev_info(cm->dev, "%s", event);
+>>>>>>> p9x
 }
 
 /**

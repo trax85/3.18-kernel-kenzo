@@ -12,6 +12,7 @@
  */
 
 &soc {
+<<<<<<< HEAD
 	msm_gpio: pinctrl@1000000 {
 		compatible = "qcom,msm8952-pinctrl";
 		reg = <0x1000000 0x300000>;
@@ -46,10 +47,46 @@
 					drive-strength = <2>;
 					bias-pull-down;
 				};
+=======
+	tlmm_pinmux: pinctrl@1000000 {
+		compatible = "qcom,msm-tlmm-8916";
+		reg = <0x1000000 0x300000>;
+		interrupts = <0 208 0>;
+
+		/*General purpose pins*/
+		gp: gp {
+			qcom,num-pins = <134>;
+			#qcom,pin-cells = <1>;
+			msm_gpio: msm_gpio {
+				compatible = "qcom,msm-tlmm-gp";
+				gpio-controller;
+				#gpio-cells = <2>;
+				interrupt-controller;
+				#interrupt-cells = <2>;
+				num_irqs = <134>;
+			};
+		};
+
+		cdc-reset-line {
+			qcom,pins = <&gp 68>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <0>;
+			label = "cdc-reset-line";
+			cdc_reset_line_act: cdc_reset_line_on {
+				drive-strength = <16>;
+				bias-disable;
+				output-high;
+			};
+			cdc_reset_line_sus: cdc_reset_line_off {
+				drive-strength = <16>;
+				bias-disable;
+				output-low;
+>>>>>>> p9x
 			};
 		};
 
 		cdc-pdm-lines {
+<<<<<<< HEAD
 			cdc_pdm_lines_act: pdm_lines_on {
 				mux {
 					pins = "gpio69", "gpio73", "gpio74";
@@ -72,10 +109,23 @@
 					drive-strength = <2>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 69>, <&gp 73>, <&gp 74>;
+			qcom,num-grp-pins = <3>;
+			qcom,pin-func = <1>;
+			label = "cdc-pdm-lines";
+			cdc_pdm_lines_act: pdm_lines_on {
+				drive-strength = <8>;
+			};
+			cdc_pdm_lines_sus: pdm_lines_off {
+				drive-strength = <2>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		cdc-pdm-2-lines {
+<<<<<<< HEAD
 			cdc_pdm_lines_2_act: pdm_lines_2_on {
 				mux {
 					pins = "gpio70", "gpio71", "gpio72";
@@ -99,10 +149,23 @@
 					drive-strength = <2>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 70>, <&gp 71>, <&gp 72>;
+			qcom,num-grp-pins = <3>;
+			qcom,pin-func = <2>;
+			label = "cdc-pdm-2-lines";
+			cdc_pdm_lines_2_act: pdm_lines_2_on {
+				drive-strength = <8>;
+			};
+			cdc_pdm_lines_2_sus: pdm_lines_2_off {
+				drive-strength = <2>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		cross-conn-det {
+<<<<<<< HEAD
 			cross_conn_det_act: lines_on {
 				mux {
 					pins = "gpio63";
@@ -139,11 +202,62 @@
 
 			config {
 				pins = "gpio0", "gpio1", "gpio2", "gpio3";
+=======
+			qcom,pins = <&gp 63>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <0>;
+			label = "cross-conn-det-sw";
+			cross_conn_det_act: lines_on {
+				drive-strength = <8>;
+				output-low;
+				bias-pull-down;
+			};
+			cross_conn_det_sus: lines_off {
+				drive-strength = <2>;
+				bias-pull-down;
+			};
+		};
+
+		ext-spk-pa {
+			qcom,pins = <&gp 2>, <&gp 68>;
+			qcom,num-grp-pins = <2>;
+			qcom,pin-func = <0>;
+			drive-strength = <2>;
+			label = "ext-spk-pa";
+			ext_spk_pa_act: pa_active {
+				output-high;
+				bias-pull-high;
+			};
+			ext_spk_pa_sus: pa_suspend {
+				bias-pull-down;
+				output-low;
+			};
+		};
+
+		pmx-uartconsole {
+			qcom,pins = <&gp 4>, <&gp 5>;
+			qcom,num-grp-pins = <2>;
+			qcom,pin-func = <2>;
+			label = "uart-console";
+			uart_console_sleep: uart-console {
+				drive-strength = <2>;
+				bias-pull-down;
+			};
+		};
+
+		blsp1_uart1_active {
+			qcom,pins = <&gp 0>, <&gp 1>, <&gp 2>, <&gp 3>;
+			qcom,num-grp-pins = <4>;
+			qcom,pin-func = <2>;
+			label = "blsp1_uart1_active";
+			hsuart_active: default {
+>>>>>>> p9x
 				drive-strength = <16>;
 				bias-disable;
 			};
 		};
 
+<<<<<<< HEAD
 		hsuart_sleep: sleep {
 			mux {
 				pins = "gpio0", "gpio1", "gpio2", "gpio3";
@@ -152,12 +266,21 @@
 
 			config {
 				pins = "gpio0", "gpio1", "gpio2", "gpio3";
+=======
+		blsp1_uart1_sleep {
+			qcom,pins = <&gp 0>, <&gp 1>, <&gp 2>, <&gp 3>;
+			qcom,num-grp-pins = <4>;
+			qcom,pin-func = <0>;
+			label = "blsp1_uart1_sleep";
+			hsuart_sleep: sleep {
+>>>>>>> p9x
 				drive-strength = <2>;
 				bias-disable;
 			};
 		};
 
 		sdhc2_cd_pin {
+<<<<<<< HEAD
 			sdc2_cd_on: cd_on {
 				mux {
 					pins = "gpio67";
@@ -193,11 +316,23 @@
 
 			config {
 				pins = "gpio41";
+=======
+			qcom,pins = <&gp 67>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <0>;
+			label = "cd-gpio";
+			sdc2_cd_on: cd_on {
+				drive-strength = <2>;
+				bias-pull-up;
+			};
+			sdc2_cd_off: cd_off {
+>>>>>>> p9x
 				drive-strength = <2>;
 				bias-disable;
 			};
 		};
 
+<<<<<<< HEAD
 		pmx_sdc1_rclk {
 			sdc1_rclk_on: sdc1_rclk_on {
 				config {
@@ -211,10 +346,49 @@
 					pins = "sdc1_rclk";
 					bias-pull-down; /* pull down */
 				};
+=======
+		cti_trigout_a0 {
+			qcom,pins = <&gp 41>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <8>;
+			label = "cti-trigout-a0";
+			trigout_a0: trigout_a0 {
+				drive-strength = <2>;
+				bias-disable;
+			};
+		};
+
+		/* SDC pin type */
+		sdc: sdc {
+			/*
+			 * 0-2 for sdc1
+			 * 4-6 for sdc2
+			 */
+			qcom,num-pins = <7>;
+			/*
+			 * Order of pins:
+			 * SDC1: CLK -> 0, CMD -> 1, DATA -> 2, RCLK -> 3
+			 * SDC2: CLK -> 4, CMD -> 5, DATA -> 6
+			 */
+			#qcom,pin-cells = <1>;
+		};
+
+		pmx_sdc1_rclk {
+			qcom,pins = <&sdc 3>;
+			qcom,num-grp-pins = <1>;
+			label = "sdc1-rclk";
+			sdc1_rclk_on: rclk_on {
+				bias-pull-down; /* pull down */
+			};
+
+			sdc1_rclk_off: rclk_off {
+				bias-pull-down; /* pull down */
+>>>>>>> p9x
 			};
 		};
 
 		pmx_sdc1_clk {
+<<<<<<< HEAD
 			sdc1_clk_on: sdc1_clk_on {
 				config {
 					pins = "sdc1_clk";
@@ -230,10 +404,23 @@
 					bias-disable; /* NO pull */
 					drive-strength = <2>; /* 2 MA */
 				};
+=======
+			qcom,pins = <&sdc 0>;
+			qcom,num-grp-pins = <1>;
+			label = "sdc1-clk";
+			sdc1_clk_on: clk_on {
+				bias-disable; /* NO pull */
+				drive-strength = <16>; /* 16 MA */
+			};
+			sdc1_clk_off: clk_off {
+				bias-disable; /* NO pull */
+				drive-strength = <2>; /* 2 MA */
+>>>>>>> p9x
 			};
 		};
 
 		pmx_sdc1_cmd {
+<<<<<<< HEAD
 			sdc1_cmd_on: sdc1_cmd_on {
 				config {
 					pins = "sdc1_cmd";
@@ -248,10 +435,23 @@
 					bias-pull-up; /* pull up */
 					drive-strength = <2>; /* 2 MA */
 				};
+=======
+			qcom,pins = <&sdc 1>;
+			qcom,num-grp-pins = <1>;
+			label = "sdc1-cmd";
+			sdc1_cmd_on: cmd_on {
+				bias-pull-up; /* pull up */
+				drive-strength = <10>; /* 10 MA */
+			};
+			sdc1_cmd_off: cmd_off {
+				bias-pull-up; /* pull up */
+				drive-strength = <2>; /* 2 MA */
+>>>>>>> p9x
 			};
 		};
 
 		pmx_sdc1_data {
+<<<<<<< HEAD
 			sdc1_data_on: sdc1_data_on {
 				config {
 					pins = "sdc1_data";
@@ -266,10 +466,23 @@
 					bias-pull-up; /* pull up */
 					drive-strength = <2>; /* 2 MA */
 				};
+=======
+			qcom,pins = <&sdc 2>;
+			qcom,num-grp-pins = <1>;
+			label = "sdc1-data";
+			sdc1_data_on: data_on {
+				bias-pull-up; /* pull up */
+				drive-strength = <10>; /* 10 MA */
+			};
+			sdc1_data_off: data_off {
+				bias-pull-up; /* pull up */
+				drive-strength = <2>; /* 2 MA */
+>>>>>>> p9x
 			};
 		};
 
 		pmx_sdc2_clk {
+<<<<<<< HEAD
 			sdc2_clk_on: sdc2_clk_on {
 				config {
 					pins = "sdc2_clk";
@@ -284,10 +497,23 @@
 					bias-disable; /* NO pull */
 					drive-strength = <2>; /* 2 MA */
 				};
+=======
+			qcom,pins = <&sdc 4>;
+			qcom,num-grp-pins = <1>;
+			label = "sdc2-clk";
+			sdc2_clk_on: clk_on {
+				bias-disable; /* NO pull */
+				drive-strength = <16>; /* 16 MA */
+			};
+			sdc2_clk_off: clk_off {
+				bias-disable; /* NO pull */
+				drive-strength = <2>; /* 2 MA */
+>>>>>>> p9x
 			};
 		};
 
 		pmx_sdc2_cmd {
+<<<<<<< HEAD
 			sdc2_cmd_on: sdc2_cmd_on {
 				config {
 					pins = "sdc2_cmd";
@@ -302,10 +528,23 @@
 					bias-pull-up; /* pull up */
 					drive-strength = <2>; /* 2 MA */
 				};
+=======
+			qcom,pins = <&sdc 5>;
+			qcom,num-grp-pins = <1>;
+			label = "sdc2-cmd";
+			sdc2_cmd_on: cmd_on {
+				bias-pull-up; /* pull up */
+				drive-strength = <10>; /* 10 MA */
+			};
+			sdc2_cmd_off: cmd_off {
+				bias-pull-up; /* pull up */
+				drive-strength = <2>; /* 2 MA */
+>>>>>>> p9x
 			};
 		};
 
 		pmx_sdc2_data {
+<<<<<<< HEAD
 			sdc2_data_on: sdc2_data_on {
 				config {
 					pins = "sdc2_data";
@@ -529,10 +768,183 @@
 					bias-pull-down; /* pull down */
 					drive-strength = <0>; /* 0 MA */
 				};
+=======
+			qcom,pins = <&sdc 6>;
+			qcom,num-grp-pins = <1>;
+			label = "sdc2-data";
+			sdc2_data_on: data_on {
+				bias-pull-up; /* pull up */
+				drive-strength = <10>; /* 10 MA */
+			};
+			sdc2_data_off: data_off {
+				bias-pull-up; /* pull up */
+				drive-strength = <2>; /* 2 MA */
+			};
+		};
+
+		spi0_active {
+			/* MOSI, MISO, CLK */
+			qcom,pins = <&gp 0>, <&gp 1>, <&gp 3>;
+			qcom,num-grp-pins = <3>;
+			qcom,pin-func = <1>;
+			label = "spi0-active";
+			/* active state */
+			spi0_default: spi0_default {
+				drive-strength = <12>; /* 12 MA */
+				bias-disable = <0>; /* No PULL */
+			};
+		};
+
+		spi0_suspend {
+			/* MOSI, MISO, CLK */
+			qcom,pins = <&gp 0>, <&gp 1>, <&gp 3>;
+			qcom,num-grp-pins = <3>;
+			qcom,pin-func = <0>;
+			label = "spi0-suspend";
+			/* suspended state */
+			spi0_sleep: spi0_sleep {
+				drive-strength = <2>; /* 2 MA */
+				bias-pull-down; /* PULL Down */
+			};
+		};
+
+		spi0_cs0_active {
+			/* CS */
+			qcom,pins = <&gp 2>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <1>;
+			label = "spi0-cs0-active";
+			spi0_cs0_active: cs0_active {
+				drive-strength = <2>;
+				bias-disable = <0>;
+			};
+		};
+
+		spi0_cs0_suspend {
+			/* CS */
+			qcom,pins = <&gp 2>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <0>;
+			label = "spi0-cs0-suspend";
+			spi0_cs0_sleep: cs0_sleep {
+				drive-strength = <2>;
+				bias-disable = <0>;
+			};
+		};
+		/* cci */
+		cci0_active {
+			/* CLK, DATA */
+			qcom,pins = <&gp 29>, <&gp 30>;
+			qcom,num-grp-pins = <2>;
+			qcom,pin-func = <1>;
+			label = "cci0-active";
+			/* active state */
+			cci0_active: cci0_active {
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+		};
+
+		cci0_suspend {
+			/* CLK, DATA */
+			qcom,pins = <&gp 29>, <&gp 30>;
+			qcom,num-grp-pins = <2>;
+			qcom,pin-func = <0>;
+			label = "cci0-suspend";
+			/*suspended state */
+			cci0_suspend: cci0_suspend {
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+		};
+
+		cci1_active {
+			/* CLK, DATA */
+			qcom,pins = <&gp 31>, <&gp 32>;
+			qcom,num-grp-pins = <2>;
+			qcom,pin-func = <1>;
+			label = "cci1-active";
+			/* active state */
+			cci1_active: cci1_active {
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+		};
+
+		cci1_suspend {
+			/* CLK, DATA */
+			qcom,pins = <&gp 31>, <&gp 32>;
+			qcom,num-grp-pins = <2>;
+			qcom,pin-func = <0>;
+			label = "cci1-suspend";
+			/*suspended state */
+			cci1_suspend: cci1_suspend {
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+		};
+
+		pmx_mdss: pmx_mdss {
+			label = "mdss-pins";
+			qcom,pin-func = <0>;
+			mdss_dsi_active: active {
+				drive-strength = <8>; /* 8 mA */
+				bias-disable = <0>; /* no pull */
+			};
+			mdss_dsi_suspend: suspend {
+				drive-strength = <2>; /* 2 mA */
+				bias-pull-down; /* pull down */
+			};
+		};
+
+		pmx_mdss_te: pmx_mdss_te {
+			label = "mdss-te-pin";
+			qcom,pin-func = <1>;
+			mdss_te_active: active {
+				drive-strength = <2>; /* 2 mA */
+				bias-pull-down; /* pull down */
+				input-debounce = <0>;
+			};
+			mdss_te_suspend: suspend {
+				drive-strength = <2>; /* 2 mA */
+				bias-pull-down; /* pull down */
+				input-debounce = <0>;
+			};
+		};
+
+		/* QDSD pin type */
+		qdsd: qdsd {
+			/* 0-> clk, 1 -> cmd, 2->data0, 3->data1, 4->data2, 5->data3 */
+			qcom,num-pins = <6>;
+
+			#qcom,pin-cells = <1>;
+		};
+
+		pmx_qdsd_clk {
+			qcom,pins = <&qdsd 0>;
+			qcom,num-grp-pins = <1>;
+			label = "qdsd-clk";
+			qdsd_clk_sdcard: clk_sdcard {
+				bias-disable; /* NO pull */
+				drive-strength = <7>; /* 7 MA */
+			};
+			qdsd_clk_trace: clk_trace {
+				bias-pull-down; /* pull down */
+				drive-strength = <0>; /* 0 MA */
+			};
+			qdsd_clk_swdtrc: clk_swdtrc {
+				bias-pull-down; /* pull down */
+				drive-strength = <0>; /* 0 MA */
+			};
+			qdsd_clk_spmi: clk_spmi {
+				bias-pull-down; /* pull down */
+				drive-strength = <0>; /* 0 MA */
+>>>>>>> p9x
 			};
 		};
 
 		pmx_qdsd_cmd {
+<<<<<<< HEAD
 			qdsd_cmd_sdcard: cmd_sdcard {
 				config {
 					pins = "qdsd_cmd";
@@ -574,10 +986,39 @@
 					bias-pull-down; /* pull down */
 					drive-strength = <4>; /* 4 MA */
 				};
+=======
+			qcom,pins = <&qdsd 1>;
+			qcom,num-grp-pins = <1>;
+			label = "qdsd-cmd";
+			qdsd_cmd_sdcard: cmd_sdcard {
+				bias-pull-down; /* pull down */
+				drive-strength = <3>; /* 3 MA */
+			};
+			qdsd_cmd_trace: cmd_trace {
+				bias-pull-down; /* pull down */
+				drive-strength = <0>; /* 0 MA */
+			};
+			qdsd_cmd_swduart: cmd_uart {
+				bias-pull-up; /* pull up */
+				drive-strength = <0>; /* 0 MA */
+			};
+			qdsd_cmd_swdtrc: cmd_swdtrc {
+				bias-pull-up; /* pull up */
+				drive-strength = <0>; /* 0 MA */
+			};
+			qdsd_cmd_jtag: cmd_jtag {
+				bias-disable; /* NO pull */
+				drive-strength = <3>; /* 3 MA */
+			};
+			qdsd_cmd_spmi: cmd_spmi {
+				bias-pull-down; /* pull down */
+				drive-strength = <4>; /* 4 MA */
+>>>>>>> p9x
 			};
 		};
 
 		pmx_qdsd_data0 {
+<<<<<<< HEAD
 			qdsd_data0_sdcard: data0_sdcard {
 				config {
 					pins = "qdsd_data0";
@@ -619,10 +1060,39 @@
 					bias-pull-down; /* pull down */
 					drive-strength = <0>; /* 0 MA */
 				};
+=======
+			qcom,pins = <&qdsd 2>;
+			qcom,num-grp-pins = <1>;
+			label = "qdsd-data0";
+			qdsd_data0_sdcard: data0_sdcard {
+				bias-pull-down; /* pull down */
+				drive-strength = <3>; /* 3 MA */
+			};
+			qdsd_data0_trace: data0_trace {
+				bias-pull-down; /* pull down */
+				drive-strength = <3>; /* 3 MA */
+			};
+			qdsd_data0_swduart: data0_uart {
+				bias-pull-down; /* pull down */
+				drive-strength = <0>; /* 0 MA */
+			};
+			qdsd_data0_swdtrc: data0_swdtrc {
+				bias-pull-down; /* pull down */
+				drive-strength = <0>; /* 0 MA */
+			};
+			qdsd_data0_jtag: data0_jtag {
+				bias-pull-up; /* pull up */
+				drive-strength = <0>; /* 0 MA */
+			};
+			qdsd_data0_spmi: data0_spmi {
+				bias-pull-down; /* pull down */
+				drive-strength = <0>; /* 0 MA */
+>>>>>>> p9x
 			};
 		};
 
 		pmx_qdsd_data1 {
+<<<<<<< HEAD
 			qdsd_data1_sdcard: data1_sdcard {
 				config {
 					pins = "qdsd_data1";
@@ -657,10 +1127,35 @@
 					bias-pull-down; /* pull down */
 					drive-strength = <0>; /* 0 MA */
 				};
+=======
+			qcom,pins = <&qdsd 3>;
+			qcom,num-grp-pins = <1>;
+			label = "qdsd-data1";
+			qdsd_data1_sdcard: data1_sdcard {
+				bias-pull-down; /* pull down */
+				drive-strength = <3>; /* 3 MA */
+			};
+			qdsd_data1_trace: data1_trace {
+				bias-pull-down; /* pull down */
+				drive-strength = <3>; /* 3 MA */
+			};
+			qdsd_data1_swduart: data1_uart {
+				bias-pull-down; /* pull down */
+				drive-strength = <0>; /* 0 MA */
+			};
+			qdsd_data1_swdtrc: data1_swdtrc {
+				bias-pull-down; /* pull down */
+				drive-strength = <0>; /* 0 MA */
+			};
+			qdsd_data1_jtag: data1_jtag {
+				bias-pull-down; /* pull down */
+				drive-strength = <0>; /* 0 MA */
+>>>>>>> p9x
 			};
 		};
 
 		pmx_qdsd_data2 {
+<<<<<<< HEAD
 			qdsd_data2_sdcard: data2_sdcard {
 				config {
 					pins = "qdsd_data2";
@@ -695,10 +1190,35 @@
 					bias-pull-up; /* pull up */
 					drive-strength = <3>; /* 3 MA */
 				};
+=======
+			qcom,pins = <&qdsd 4>;
+			qcom,num-grp-pins = <1>;
+			label = "qdsd-data2";
+			qdsd_data2_sdcard: data2_sdcard {
+				bias-pull-down; /* pull down */
+				drive-strength = <3>; /* 3 MA */
+			};
+			qdsd_data2_trace: data2_trace {
+				bias-pull-down; /* pull down */
+				drive-strength = <3>; /* 3 MA */
+			};
+			qdsd_data2_swduart: data2_uart {
+				bias-pull-down; /* pull down */
+				drive-strength = <0>; /* 0 MA */
+			};
+			qdsd_data2_swdtrc: data2_swdtrc {
+				bias-pull-down; /* pull down */
+				drive-strength = <0>; /* 0 MA */
+			};
+			qdsd_data2_jtag: data2_jtag {
+				bias-pull-up; /* pull up */
+				drive-strength = <3>; /* 3 MA */
+>>>>>>> p9x
 			};
 		};
 
 		pmx_qdsd_data3 {
+<<<<<<< HEAD
 			qdsd_data3_sdcard: data3_sdcard {
 				config {
 					pins = "qdsd_data3";
@@ -740,10 +1260,39 @@
 					bias-pull-down; /* pull down */
 					drive-strength = <3>; /* 3 MA */
 				};
+=======
+			qcom,pins = <&qdsd 5>;
+			qcom,num-grp-pins = <1>;
+			label = "qdsd-data3";
+			qdsd_data3_sdcard: data3_sdcard {
+				bias-pull-down; /* pull down */
+				drive-strength = <3>; /* 3 MA */
+			};
+			qdsd_data3_trace: data3_trace {
+				bias-pull-down; /* pull down */
+				drive-strength = <3>; /* 3 MA */
+			};
+			qdsd_data3_swduart: data3_uart {
+				bias-pull-up; /* pull up */
+				drive-strength = <0>; /* 0 MA */
+			};
+			qdsd_data3_swdtrc: data3_swdtrc {
+				bias-pull-up; /* pull up */
+				drive-strength = <0>; /* 0 MA */
+			};
+			qdsd_data3_jtag: data3_jtag {
+				bias-pull-up; /* pull up */
+				drive-strength = <0>; /* 0 MA */
+			};
+			qdsd_data3_spmi: data3_spmi {
+				bias-pull-down; /* pull down */
+				drive-strength = <3>; /* 3 MA */
+>>>>>>> p9x
 			};
 		};
 
 		pmx_i2c_2 {
+<<<<<<< HEAD
 			/* active state */
 			i2c_2_active: i2c_2_active{
 				mux {
@@ -772,10 +1321,27 @@
 					drive-strength = <2>; /* 2 MA */
 					bias-disable; /* No PULL */
 				};
+=======
+			/* CLK, DATA */
+			qcom,pins = <&gp 6>, <&gp 7>;
+			qcom,num-grp-pins = <2>;
+			qcom,pin-func = <3>;
+			label = "pmx_i2c_2";
+			/* active state */
+			i2c_2_active: i2c_2_active{
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+			/* suspended state */
+			i2c_2_sleep: i2c_2_sleep {
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+>>>>>>> p9x
 			};
 		};
 
 		pmx_i2c_5 {
+<<<<<<< HEAD
 			/* active state */
 			i2c_5_active: i2c_5_active{
 				mux {
@@ -804,11 +1370,62 @@
 					drive-strength = <2>; /* 2 MA */
 					bias-disable; /* No PULL */
 				};
+=======
+			/* CLK, DATA */
+			qcom,pins = <&gp 18>, <&gp 19>;
+			qcom,num-grp-pins = <2>;
+			qcom,pin-func = <3>;
+			label = "pmx_i2c_5";
+			/* active state */
+			i2c_5_active: i2c_5_active{
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+			/* suspended state */
+			i2c_5_sleep: i2c_5_sleep {
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+		};
+
+		pmx_rd_nfc_int {
+			qcom,pins = <&gp 17>;
+			qcom,pin-func = <0>;
+			qcom,num-grp-pins = <1>;
+			label = "pmx_nfc_int";
+
+			nfc_int_active: active {
+				drive-strength = <6>;
+				bias-pull-up;
+			};
+
+			nfc_int_suspend: suspend {
+				drive-strength = <6>;
+				bias-pull-up;
+			};
+		};
+
+		pmx_nfc_reset {
+			qcom,pins = <&gp 16>;
+			qcom,pin-func = <0>;
+			qcom,num-grp-pins = <1>;
+			label = "pmx_nfc_disable";
+
+			nfc_disable_active: active {
+				drive-strength = <6>;
+				bias-pull-up;
+			};
+
+			nfc_disable_suspend: suspend {
+				drive-strength = <6>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		/* WSA Reset */
 		wsa_reset {
+<<<<<<< HEAD
 			wsa_reset_on: wsa_reset_on {
 				mux {
 					pins = "gpio68";
@@ -833,11 +1450,25 @@
 					drive-strength = <2>; /* 2 MA */
 					output-low;
 				};
+=======
+			qcom,pins = <&gp 68>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <0>;
+			label = "wsa_reset";
+			wsa_active: wsa_on {
+				drive-strength = <2>; /* 2 MA */
+				output-high;
+			};
+			wsa_suspend: wsa_off {
+				drive-strength = <2>; /* 2 MA */
+				output-low;
+>>>>>>> p9x
 			};
 		};
 
 		/* WSA CLK */
 		wsa_clk {
+<<<<<<< HEAD
 			wsa_clk_on: wsa_clk_on {
 				mux {
 					pins = "gpio25";
@@ -863,10 +1494,25 @@
 					output-low;
 					bias-pull-down;
 				};
+=======
+			qcom,pins = <&gp 25>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <2>;
+			label = "wsa_clk";
+			wsa_clk_on: wsa_on {
+				drive-strength = <8>; /* 8 MA */
+				output-high;
+			};
+			wsa_clk_off: wsa_off {
+				drive-strength = <2>; /* 2 MA */
+				output-low;
+				bias-pull-down;
+>>>>>>> p9x
 			};
 		};
 
 		/* WSA VI sense */
+<<<<<<< HEAD
 		wsa-vi {
 			wsa_vi_on: wsa_vi_on {
 				mux {
@@ -1073,16 +1719,224 @@
 				/* RESET, STANDBY active state */
 				pins = "gpio130", "gpio131";
 				function = "gpio";
+=======
+		wsa-vi-sense {
+			qcom,pins = <&gp 94>, <&gp 95>;
+			qcom,num-grp-pins = <2>;
+			qcom,pin-func = <1>;
+			label = "wsa_vi";
+			wsa_vi_act: vi_sense_on {
+				drive-strength = <8>;
+				bias-disable; /* NO pull */
+			};
+			wsa_vi_sus: vi_sense_off {
+				drive-strength = <2>;
+				bias-pull-down;
+			};
+		};
+
+		/*sensors */
+		cam_sensor_mclk0_default {
+			/* MCLK0 */
+			qcom,pins = <&gp 26>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <1>;
+			label = "cam_sensor_mclk0_default";
+			/* active state */
+			cam_sensor_mclk0_default: cam_sensor_mclk0_default {
 				drive-strength = <2>; /* 2 MA */
 				bias-disable; /* No PULL */
 			};
 		};
 
+		cam_sensor_mclk0_sleep {
+			/* MCLK0 */
+			qcom,pins = <&gp 26>;
+			qcom,num-grp-pins = <1>;
+			label = "cam_sensor_mclk0_sleep";
+			/*suspended state */
+			cam_sensor_mclk0_sleep: cam_sensor_mclk0_sleep {
+				drive-strength = <2>; /* 2 MA */
+				bias-pull-down; /* PULL DOWN */
+			};
+		};
+
+		cam_sensor_rear_default {
+			/* RESET, STANDBY */
+			qcom,pins = <&gp 36>, <&gp 35>;
+			qcom,num-grp-pins = <2>;
+			label = "cam_sensor_rear_default";
+			/* active state */
+			cam_sensor_rear_default: cam_sensor_rear_default {
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+		};
+
+		cam_sensor_rear_sleep {
+			/* RESET, STANDBY */
+			qcom,pins = <&gp 36>, <&gp 35>;
+			qcom,num-grp-pins = <2>;
+			label = "cam_sensor_rear_sleep";
+			/*suspended state */
+			cam_sensor_rear_sleep: cam_sensor_rear_sleep {
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+		};
+
+		cam_sensor_rear_vaf_default {
+			/* VAF_PWDN */
+			qcom,pins = <&gp 6>;
+			qcom,num-grp-pins = <1>;
+			label = "cam_sensor_rear_vaf_default";
+			/* active state */
+			cam_sensor_rear_vaf_default:
+			cam_sensor_rear_vaf_default {
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+		};
+
+		cam_sensor_rear_vaf_sleep {
+			/* VAF_PWDN */
+			qcom,pins = <&gp 6>;
+			qcom,num-grp-pins = <1>;
+			label = "cam_sensor_rear_vaf_sleep";
+			/*suspended state */
+			cam_sensor_rear_vaf_sleep:
+			cam_sensor_rear_vaf_sleep {
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+		};
+
+		cam_sensor_mclk1_default {
+			/* MCLK1 */
+			qcom,pins = <&gp 27>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <1>;
+			label = "cam_sensor_mclk1_default";
+			/* active state */
+			cam_sensor_mclk1_default: cam_sensor_mclk1_default {
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+		};
+
+		cam_sensor_mclk1_sleep {
+			/* MCLK1 */
+			qcom,pins = <&gp 27>;
+			qcom,num-grp-pins = <1>;
+			label = "cam_sensor_mclk1_sleep";
+			/*suspended state */
+			cam_sensor_mclk1_sleep: cam_sensor_mclk1_sleep {
+				drive-strength = <2>; /* 2 MA */
+				bias-pull-down; /* PULL DOWN */
+			};
+		};
+
+		cam_sensor_front_default {
+			/* RESET, STANDBY */
+			qcom,pins = <&gp 38>, <&gp 37>;
+			qcom,num-grp-pins = <2>;
+			label = "cam_sensor_front_default";
+			/* active state */
+			cam_sensor_front_default: cam_sensor_front_default {
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+		};
+
+		cam_sensor_front_sleep {
+			/* RESET, STANDBY */
+			qcom,pins = <&gp 38>, <&gp 37>;
+			qcom,num-grp-pins = <2>;
+			label = "cam_sensor_front_sleep";
+			/*suspended state */
+			cam_sensor_front_sleep: cam_sensor_front_sleep {
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+		};
+
+		cam_sensor_mclk2_default {
+			/* MCLK2 */
+			qcom,pins = <&gp 28>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <1>;
+			label = "cam_sensor_mclk2_default";
+			/* active state */
+			cam_sensor_mclk2_default: cam_sensor_mclk2_default {
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+		};
+
+		cam_sensor_mclk2_sleep {
+			/* MCLK2 */
+			qcom,pins = <&gp 28>;
+			qcom,num-grp-pins = <1>;
+			label = "cam_sensor_mclk2_sleep";
+			/*suspended state */
+			cam_sensor_mclk2_sleep: cam_sensor_mclk2_sleep {
+				drive-strength = <2>; /* 2 MA */
+				bias-pull-down; /* PULL DOWN */
+			};
+		};
+
+		cam_sensor_front1_default {
+			/* RESET, STANDBY */
+			qcom,pins = <&gp 40>, <&gp 39>;
+			qcom,num-grp-pins = <2>;
+			label = "cam_sensor_front1_default";
+			/* active state */
+			cam_sensor_front1_default: cam_sensor_front1_default {
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+		};
+
+		cam_sensor_front1_sleep {
+			/* RESET, STANDBY */
+			qcom,pins = <&gp 40>, <&gp 39>;
+			qcom,num-grp-pins = <2>;
+			label = "cam_sensor_front1_sleep";
+			/*suspended state */
+			cam_sensor_front1_sleep: cam_sensor_front1_sleep {
+>>>>>>> p9x
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+		};
+
+<<<<<<< HEAD
 		cam_sensor_ext_gpio_sleep: cam_sensor_ext_gpio_sleep {
 			cam_sensor_ext_gpio_sleep {
 				/* RESET, STANDBY susppend state */
 				pins = "gpio130", "gpio131";
 				function = "gpio";
+=======
+		cam_sensor_ext_gpio_default {
+			/* RESET, STANDBY */
+			qcom,pins = <&gp 130>, <&gp 131>;
+			qcom,num-grp-pins = <2>;
+			label = "cam_sensor_ext_gpio_default";
+			/* active state */
+			cam_sensor_ext_gpio_default: cam_sensor_ext_gpio_default {
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+		};
+
+		cam_sensor_ext_gpio_sleep {
+			/* RESET, STANDBY */
+			qcom,pins = <&gp 130>, <&gp 131>;
+			qcom,num-grp-pins = <2>;
+			label = "cam_sensor_ext_gpio_sleep";
+			/* active state */
+			cam_sensor_ext_gpio_sleep: cam_sensor_ext_gpio_sleep {
+>>>>>>> p9x
 				drive-strength = <2>; /* 2 MA */
 				bias-disable; /* No PULL */
 			};
@@ -1090,6 +1944,7 @@
 
 		/* CoreSight */
 		tpiu_seta_1 {
+<<<<<<< HEAD
 			seta_1: seta {
 				mux {
 					pins = "gpio16";
@@ -1101,10 +1956,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 16>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <7>;
+			label = "tpiu-seta-1";
+			seta_1: seta {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_seta_2 {
+<<<<<<< HEAD
 			seta_2: seta {
 				mux {
 					pins = "gpio18";
@@ -1116,10 +1981,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 18>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <4>;
+			label = "tpiu-seta-2";
+			seta_2: seta {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_seta_3 {
+<<<<<<< HEAD
 			seta_3: seta {
 				mux {
 					pins = "gpio19";
@@ -1131,10 +2006,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 19>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <4>;
+			label = "tpiu-seta-3";
+			seta_3: seta {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_seta_4 {
+<<<<<<< HEAD
 			seta_4: seta {
 				mux {
 					pins = "gpio26";
@@ -1146,10 +2031,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 26>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <7>;
+			label = "tpiu-seta-4";
+			seta_4: seta {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_seta_5 {
+<<<<<<< HEAD
 			seta_5: seta {
 				mux {
 					pins = "gpio27";
@@ -1161,10 +2056,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 27>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <9>;
+			label = "tpiu-seta-5";
+			seta_5: seta {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_seta_6 {
+<<<<<<< HEAD
 			seta_6: seta {
 				mux {
 					pins = "gpio28";
@@ -1176,10 +2081,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 28>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <7>;
+			label = "tpiu-seta-6";
+			seta_6: seta {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_seta_7 {
+<<<<<<< HEAD
 			seta_7: seta {
 				mux {
 					pins = "gpio29";
@@ -1191,10 +2106,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 29>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <8>;
+			label = "tpiu-seta-7";
+			seta_7: seta {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_seta_8 {
+<<<<<<< HEAD
 			seta_8: seta {
 				mux {
 					pins = "gpio30";
@@ -1206,10 +2131,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 30>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <9>;
+			label = "tpiu-seta-8";
+			seta_8: seta {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_seta_9 {
+<<<<<<< HEAD
 			seta_9: seta {
 				mux {
 					pins = "gpio31";
@@ -1221,10 +2156,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 31>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <9>;
+			label = "tpiu-seta-9";
+			seta_9: seta {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_seta_10 {
+<<<<<<< HEAD
 			seta_10: seta {
 				mux {
 					pins = "gpio32";
@@ -1236,10 +2181,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 32>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <9>;
+			label = "tpiu-seta-10";
+			seta_10: seta {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_seta_11 {
+<<<<<<< HEAD
 			seta_11: seta {
 				mux {
 					pins = "gpio33";
@@ -1251,10 +2206,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 33>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <9>;
+			label = "tpiu-seta-11";
+			seta_11: seta {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_seta_12 {
+<<<<<<< HEAD
 			seta_12: seta {
 				mux {
 					pins = "gpio34";
@@ -1266,10 +2231,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 34>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <9>;
+			label = "tpiu-seta-12";
+			seta_12: seta {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_seta_13 {
+<<<<<<< HEAD
 			seta_13: seta {
 				mux {
 					pins = "gpio35";
@@ -1281,10 +2256,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 35>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <9>;
+			label = "tpiu-seta-13";
+			seta_13: seta {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_seta_14 {
+<<<<<<< HEAD
 			seta_14: seta {
 				mux {
 					pins = "gpio36";
@@ -1296,10 +2281,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 36>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <9>;
+			label = "tpiu-seta-14";
+			seta_14: seta {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_seta_15 {
+<<<<<<< HEAD
 			seta_15: seta {
 				mux {
 					pins = "gpio37";
@@ -1312,10 +2307,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 37>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <6>;
+			label = "tpiu-seta-15";
+			seta_15: seta {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_seta_16 {
+<<<<<<< HEAD
 			seta_16: seta {
 				mux {
 					pins = "gpio38";
@@ -1327,10 +2332,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 38>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <2>;
+			label = "tpiu-seta-16";
+			seta_16: seta {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_seta_17 {
+<<<<<<< HEAD
 			seta_17: seta {
 				mux {
 					pins = "gpio39";
@@ -1342,10 +2357,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 39>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <7>;
+			label = "tpiu-seta-17";
+			seta_17: seta {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_seta_18 {
+<<<<<<< HEAD
 			seta_18: seta {
 				mux {
 					pins = "gpio40";
@@ -1357,10 +2382,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 40>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <5>;
+			label = "tpiu-seta-18";
+			seta_18: seta {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_setb_1 {
+<<<<<<< HEAD
 			setb_1: setb {
 				mux {
 					pins = "gpio8";
@@ -1372,10 +2407,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 8>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <11>;
+			label = "tpiu-setb-1";
+			setb_1: setb {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_setb_2 {
+<<<<<<< HEAD
 			setb_2: setb {
 				mux {
 					pins = "gpio9";
@@ -1387,10 +2432,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 9>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <12>;
+			label = "tpiu-setb-2";
+			setb_2: setb {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_setb_3 {
+<<<<<<< HEAD
 			setb_3: setb {
 				mux {
 					pins = "gpio12";
@@ -1402,10 +2457,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 12>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <12>;
+			label = "tpiu-setb-3";
+			setb_3: setb {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_setb_4 {
+<<<<<<< HEAD
 			setb_4: setb {
 				mux {
 					pins = "gpio13";
@@ -1417,10 +2482,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 13>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <12>;
+			label = "tpiu-setb-4";
+			setb_4: setb {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_setb_5 {
+<<<<<<< HEAD
 			setb_5: setb {
 				mux {
 					pins = "gpio20";
@@ -1432,10 +2507,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 20>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <9>;
+			label = "tpiu-setb-5";
+			setb_5: setb {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_setb_6 {
+<<<<<<< HEAD
 			setb_6: setb {
 				mux {
 					pins = "gpio22";
@@ -1447,10 +2532,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 22>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <4>;
+			label = "tpiu-setb-6";
+			setb_6: setb {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_setb_7 {
+<<<<<<< HEAD
 			setb_7: setb {
 				mux {
 					pins = "gpio23";
@@ -1462,10 +2557,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 23>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <4>;
+			label = "tpiu-setb-7";
+			setb_7: setb {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_setb_8 {
+<<<<<<< HEAD
 			setb_8: setb {
 				mux {
 					pins = "gpio42";
@@ -1477,10 +2582,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 42>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <2>;
+			label = "tpiu-setb-8";
+			setb_8: setb {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_setb_9 {
+<<<<<<< HEAD
 			setb_9: setb {
 				mux {
 					pins = "gpio43";
@@ -1492,10 +2607,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 43>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <2>;
+			label = "tpiu-setb-9";
+			setb_9: setb {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_setb_10 {
+<<<<<<< HEAD
 			setb_10: setb {
 				mux {
 					pins = "gpio44";
@@ -1506,12 +2631,28 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 44>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <2>;
+			label = "tpiu-setb-10";
+			setb_10: setb {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_setb_11 {
+<<<<<<< HEAD
 			pins = "gpio45";
 			function = "qdss_tracedata_b";
+=======
+			qcom,pins = <&gp 45>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <2>;
+			label = "tpiu-setb-11";
+>>>>>>> p9x
 			setb_11: setb {
 				drive-strength = <16>;
 				bias-disable;
@@ -1519,6 +2660,7 @@
 		};
 
 		tpiu_setb_12 {
+<<<<<<< HEAD
 			setb_12: setb {
 				mux {
 					pins = "gpio46";
@@ -1530,10 +2672,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 46>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <2>;
+			label = "tpiu-setb-12";
+			setb_12: setb {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_setb_13 {
+<<<<<<< HEAD
 			setb_13: setb {
 				mux {
 					pins = "gpio47";
@@ -1545,10 +2697,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 47>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <3>;
+			label = "tpiu-setb-13";
+			setb_13: setb {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_setb_14 {
+<<<<<<< HEAD
 			setb_14: setb {
 				mux {
 					pins = "gpio66";
@@ -1560,10 +2722,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 66>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <4>;
+			label = "tpiu-setb-14";
+			setb_14: setb {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_setb_15 {
+<<<<<<< HEAD
 			setb_15: setb {
 				mux {
 					pins = "gpio86";
@@ -1575,10 +2747,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 86>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <1>;
+			label = "tpiu-setb-15";
+			setb_15: setb {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_setb_16 {
+<<<<<<< HEAD
 			setb_16: setb {
 				mux {
 					pins = "gpio87";
@@ -1590,10 +2772,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 87>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <1>;
+			label = "tpiu-setb-16";
+			setb_16: setb {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_setb_17 {
+<<<<<<< HEAD
 			setb_17: setb {
 				mux {
 					pins = "gpio88";
@@ -1605,10 +2797,20 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 88>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <9>;
+			label = "tpiu-setb-17";
+			setb_17: setb {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		tpiu_setb_18 {
+<<<<<<< HEAD
 			setb_18: setb {
 				mux {
 					pins = "gpio92";
@@ -1620,11 +2822,21 @@
 					drive-strength = <16>;
 					bias-disable;
 				};
+=======
+			qcom,pins = <&gp 92>;
+			qcom,num-grp-pins = <1>;
+			qcom,pin-func = <9>;
+			label = "tpiu-setb-18";
+			setb_18: setb {
+				drive-strength = <16>;
+				bias-disable;
+>>>>>>> p9x
 			};
 		};
 
 		/* add pingrp for touchscreen */
 		pmx_ts_int_active {
+<<<<<<< HEAD
 			ts_int_active: ts_int_active {
 				mux {
 					pins = "gpio65";
@@ -1636,10 +2848,21 @@
 					drive-strength = <8>;
 					bias-pull-up;
 				};
+=======
+			qcom,pins = <&gp 65>;
+			qcom,pin-func = <0>;
+			qcom,num-grp-pins = <1>;
+			label = "pmx_ts_int_active";
+
+			ts_int_active: ts_int_active {
+				drive-strength = <8>;
+				bias-pull-up;
+>>>>>>> p9x
 			};
 		};
 
 		pmx_ts_int_suspend {
+<<<<<<< HEAD
 			ts_int_suspend: ts_int_suspend {
 				mux {
 					pins = "gpio65";
@@ -1651,10 +2874,21 @@
 					drive-strength = <2>;
 					bias-pull-down;
 				};
+=======
+			qcom,pins = <&gp 65>;
+			qcom,pin-func = <0>;
+			qcom,num-grp-pins = <1>;
+			label = "pmx_ts_int_suspend";
+
+			ts_int_suspend: ts_int_suspend {
+				drive-strength = <2>;
+				bias-pull-down;
+>>>>>>> p9x
 			};
 		};
 
 		pmx_ts_reset_active {
+<<<<<<< HEAD
 			ts_reset_active: ts_reset_active {
 				mux {
 					pins = "gpio64";
@@ -1666,10 +2900,21 @@
 					drive-strength = <8>;
 					bias-pull-up;
 				};
+=======
+			qcom,pins = <&gp 64>;
+			qcom,pin-func = <0>;
+			qcom,num-grp-pins = <1>;
+			label = "pmx_ts_reset_active";
+
+			ts_reset_active: ts_reset_active {
+				drive-strength = <8>;
+				bias-pull-up;
+>>>>>>> p9x
 			};
 		};
 
 		pmx_ts_reset_suspend {
+<<<<<<< HEAD
 			ts_reset_suspend: ts_reset_suspend {
 				mux {
 					pins = "gpio64";
@@ -1681,10 +2926,21 @@
 					drive-strength = <2>;
 					bias-pull-down;
 				};
+=======
+			qcom,pins = <&gp 64>;
+			qcom,pin-func = <0>;
+			qcom,num-grp-pins = <1>;
+			label = "pmx_ts_reset_suspend";
+
+			ts_reset_suspend: ts_reset_suspend {
+				drive-strength = <2>;
+				bias-pull-down;
+>>>>>>> p9x
 			};
 		};
 
 		pmx_ts_release {
+<<<<<<< HEAD
 			ts_release: ts_release {
 				mux {
 					pins = "gpio65", "gpio64";
@@ -1696,10 +2952,20 @@
 					drive-strength = <2>;
 					bias-pull-down;
 				};
+=======
+			qcom,pins = <&gp 65>, <&gp 64>;
+			qcom,num-grp-pins = <2>;
+			label = "pmx_ts_release";
+
+			ts_release: ts_release {
+				drive-strength = <2>;
+				bias-pull-down;
+>>>>>>> p9x
 			};
 		};
 
 		flash_led_enable {
+<<<<<<< HEAD
 			flash_led_enable: flash_led_enable {
 				mux {
 					pins = "gpio128";
@@ -1711,10 +2977,21 @@
 					drive-strength = <16>;
 					output-high;
 				};
+=======
+			qcom,pins = <&gp 128>;
+			qcom,pin-func = <0>;
+			qcom,num-grp-pins = <1>;
+			label = "flash_led_enable";
+
+			flash_led_enable: flash_led_enable {
+				drive-strength = <16>;
+				output-high;
+>>>>>>> p9x
 			};
 		};
 
 		flash_led_disable {
+<<<<<<< HEAD
 			flash_led_disable: flash_led_disable {
 				mux {
 					pins = "gpio128";
@@ -1726,10 +3003,21 @@
 					drive-strength = <2>;
 					output-low;
 				};
+=======
+			qcom,pins = <&gp 128>;
+			qcom,pin-func = <0>;
+			qcom,num-grp-pins = <1>;
+			label = "flash_led_disable";
+
+			flash_led_disable: flash_led_disable {
+				drive-strength = <2>;
+				output-low;
+>>>>>>> p9x
 			};
 		};
 
 		pmx_i2c_8 {
+<<<<<<< HEAD
 			/* active state */
 			i2c_8_active: i2c_8_active{
 				mux {
@@ -1758,10 +3046,27 @@
 					drive-strength = <2>; /* 2 MA */
 					bias-disable; /* No PULL */
 				};
+=======
+			/* CLK, DATA */
+			qcom,pins = <&gp 98>, <&gp 99>;
+			qcom,num-grp-pins = <2>;
+			qcom,pin-func = <1>;
+			label = "pmx_i2c_8";
+			/* active state */
+			i2c_8_active: i2c_8_active{
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+			/* suspended state */
+			i2c_8_sleep: i2c_8_sleep {
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+>>>>>>> p9x
 			};
 		};
 
 		pmx_i2c_3 {
+<<<<<<< HEAD
 			i2c_3_active: i2c_3_active {
 				mux {
 					/* CLK, DATA */
@@ -1845,10 +3150,46 @@
 					drive-strength = <2>; /* 2 MA */
 					bias-pull-down; /* PULL Down */
 				};
+=======
+                        /* CLK, DATA */
+			qcom,pins = <&gp 10>, <&gp 11>;
+			qcom,num-grp-pins = <2>;
+			qcom,pin-func = <3>;
+			label = "pmx_i2c_3";
+
+			i2c_3_active: i2c_3_active {
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+
+			i2c_3_sleep: i2c_3_sleep {
+				drive-strength = <2>; /* 2 MA */
+				bias-disable; /* No PULL */
+			};
+		};
+
+		wcnss_pmux_5wire: wcnss_pmux_5wire {
+			/* Uses general purpose pins */
+			qcom,pins = <&gp 76>, <&gp 77>,
+				    <&gp 78>, <&gp 79>,
+				    <&gp 80>;
+			qcom,num-grp-pins = <5>;
+			qcom,pin-func = <1>;
+			label = "wcnss_5wire_pins";
+			/* Active configuration of bus pins */
+			wcnss_default: wcnss_default {
+				drive-strength = <6>; /* 6 MA */
+				bias-pull-up; /* PULL UP */
+			};
+			wcnss_sleep: wcnss_sleep {
+				drive-strength = <2>; /* 2 MA */
+				bias-pull-down; /* PULL Down */
+>>>>>>> p9x
 			};
 		};
 
 		wcnss_pmux_gpio: wcnss_pmux_gpio {
+<<<<<<< HEAD
 			wcnss_gpio_default: wcnss_gpio_default {
 				/* Active configuration of bus pins */
 				mux {
@@ -1867,10 +3208,24 @@
 					drive-strength = <6>; /* 6 MA */
 					bias-pull-up; /* PULL UP */
 				};
+=======
+			/* Uses general purpose pins */
+			qcom,pins = <&gp 76>, <&gp 77>,
+				    <&gp 78>, <&gp 79>,
+				    <&gp 80>;
+			qcom,num-grp-pins = <5>;
+			qcom,pin-func = <0>;
+			label = "wcnss_5gpio_pins";
+			/* Active configuration of bus pins */
+			wcnss_gpio_default: wcnss_gpio_default {
+				drive-strength = <6>; /* 6 MA */
+				bias-pull-up; /* PULL UP */
+>>>>>>> p9x
 			};
 		};
 
 		tlmm_gpio_key {
+<<<<<<< HEAD
 			gpio_key_active: gpio_key_active {
 				mux {
 					pins = "gpio85", "gpio86", "gpio87";
@@ -1895,6 +3250,30 @@
 					drive-strength = <2>;
 					bias-pull-up;
 				};
+=======
+			qcom,pins = <&gp 85>, <&gp 86>, <&gp 87>;
+			qcom,pin-func = <0>;
+			qcom,num-grp-pins = <3>;
+			label = "tlmm_gpio_key";
+			gpio_key_active: gpio_key_active {
+				drive-strength = <2>;
+				bias-pull-up;
+			};
+			gpio_key_suspend: gpio_key_suspend {
+				drive-strength = <2>;
+				bias-pull-up;
+			};
+		};
+
+		usb_c_intn_pin {
+			qcom,pins = <&gp 93>, <&gp 133>;
+			qcom,num-grp-pins = <2>;
+			qcom,pin-func = <0>;
+			label = "usb_typec-gpio";
+			usbc_int_default: usbc_int_default {
+				drive-strength = <2>;	/* 2 MA */
+				bias-pull-up;		/* PULL UP*/
+>>>>>>> p9x
 			};
 		};
 	};

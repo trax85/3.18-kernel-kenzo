@@ -36,10 +36,14 @@
 #include <linux/eventfd.h>
 #include <linux/blkdev.h>
 #include <linux/compat.h>
+<<<<<<< HEAD
 #include <linux/migrate.h>
 #include <linux/ramfs.h>
 #include <linux/percpu-refcount.h>
 #include <linux/mount.h>
+=======
+#include <linux/personality.h>
+>>>>>>> p9x
 
 #include <asm/kmap_types.h>
 #include <asm/uaccess.h>
@@ -383,6 +387,9 @@ static int aio_setup_ring(struct kioctx *ctx)
 	int i;
 	struct file *file;
 
+	if (current->personality & READ_IMPLIES_EXEC)
+		return -EPERM;
+
 	/* Compensate for the ring buffer's head/tail overlap entry */
 	nr_events += 2;	/* 1 is required, 2 for good luck */
 
@@ -567,8 +574,40 @@ static void free_ioctx_users(struct percpu_ref *ref)
 
 	spin_unlock_irq(&ctx->ctx_lock);
 
+<<<<<<< HEAD
 	percpu_ref_kill(&ctx->reqs);
 	percpu_ref_put(&ctx->reqs);
+=======
+	ring = kmap_atomic(ctx->ring_pages[0]);
+	head = ring->head;
+	kunmap_atomic(ring);
+
+	while (atomic_read(&ctx->reqs_active) > 0) {
+		wait_event(ctx->wait,
+				head != ctx->tail ||
+				atomic_read(&ctx->reqs_active) <= 0);
+
+		avail = (head <= ctx->tail ? ctx->tail : ctx->nr_events) - head;
+
+		head += avail;
+		head %= ctx->nr_events;
+	}
+
+	WARN_ON(atomic_read(&ctx->reqs_active) < 0);
+
+	aio_free_ring(ctx);
+
+	pr_debug("freeing %p\n", ctx);
+
+	/*
+	 * Here the call_rcu() is between the wait_event() for reqs_active to
+	 * hit 0, and freeing the ioctx.
+	 *
+	 * aio_complete() decrements reqs_active, but it has to touch the ioctx
+	 * after to issue a wakeup so we use rcu.
+	 */
+	call_rcu(&ctx->rcu_head, free_ioctx_rcu);
+>>>>>>> p9x
 }
 
 static int ioctx_add_table(struct kioctx *ctx, struct mm_struct *mm)
@@ -749,10 +788,19 @@ err:
  *	when the processes owning a context have all exited to encourage
  *	the rapid destruction of the kioctx.
  */
+<<<<<<< HEAD
 static int kill_ioctx(struct mm_struct *mm, struct kioctx *ctx,
 		struct completion *requests_done)
 {
 	struct kioctx_table *table;
+=======
+static void kill_ioctx(struct mm_struct *mm, struct kioctx *ctx)
+{
+	if (!atomic_xchg(&ctx->dead, 1)) {
+		spin_lock(&mm->ioctx_lock);
+		hlist_del_rcu(&ctx->list);
+		spin_unlock(&mm->ioctx_lock);
+>>>>>>> p9x
 
 	if (atomic_xchg(&ctx->dead, 1))
 		return -EINVAL;
@@ -834,8 +882,12 @@ void exit_aio(struct mm_struct *mm)
 		ctx->mmap_size = 0;
 		kill_ioctx(mm, ctx, &requests_done);
 
+<<<<<<< HEAD
 		/* Wait until all IO for the context are done. */
 		wait_for_completion(&requests_done);
+=======
+		kill_ioctx(mm, ctx);
+>>>>>>> p9x
 	}
 
 	RCU_INIT_POINTER(mm->ioctx_table, NULL);
@@ -1105,7 +1157,12 @@ void aio_complete(struct kiocb *iocb, long res, long res2)
 		eventfd_signal(iocb->ki_eventfd, 1);
 
 	/* everything turned out well, dispose of the aiocb. */
+<<<<<<< HEAD
 	kiocb_free(iocb);
+=======
+	aio_put_req(iocb);
+	atomic_dec(&ctx->reqs_active);
+>>>>>>> p9x
 
 	/*
 	 * We have to order our ring_info tail store above and test
@@ -1154,7 +1211,10 @@ static long aio_read_events_ring(struct kioctx *ctx,
 		goto out;
 
 	head %= ctx->nr_events;
+<<<<<<< HEAD
 	tail %= ctx->nr_events;
+=======
+>>>>>>> p9x
 
 	while (ret < nr) {
 		long avail;
@@ -1193,7 +1253,11 @@ static long aio_read_events_ring(struct kioctx *ctx,
 	kunmap_atomic(ring);
 	flush_dcache_page(ctx->ring_pages[0]);
 
+<<<<<<< HEAD
 	pr_debug("%li  h%u t%u\n", ret, head, tail);
+=======
+	pr_debug("%li  h%u t%u\n", ret, head, ctx->tail);
+>>>>>>> p9x
 out:
 	mutex_unlock(&ctx->ring_lock);
 
@@ -1291,8 +1355,13 @@ SYSCALL_DEFINE2(io_setup, unsigned, nr_events, aio_context_t __user *, ctxp)
 	if (!IS_ERR(ioctx)) {
 		ret = put_user(ioctx->user_id, ctxp);
 		if (ret)
+<<<<<<< HEAD
 			kill_ioctx(current->mm, ioctx, NULL);
 		percpu_ref_put(&ioctx->users);
+=======
+			kill_ioctx(current->mm, ioctx);
+		put_ioctx(ioctx);
+>>>>>>> p9x
 	}
 
 out:
@@ -1309,6 +1378,7 @@ SYSCALL_DEFINE1(io_destroy, aio_context_t, ctx)
 {
 	struct kioctx *ioctx = lookup_ioctx(ctx);
 	if (likely(NULL != ioctx)) {
+<<<<<<< HEAD
 		struct completion requests_done =
 			COMPLETION_INITIALIZER_ONSTACK(requests_done);
 		int ret;
@@ -1328,6 +1398,11 @@ SYSCALL_DEFINE1(io_destroy, aio_context_t, ctx)
 			wait_for_completion(&requests_done);
 
 		return ret;
+=======
+		kill_ioctx(current->mm, ioctx);
+		put_ioctx(ioctx);
+		return 0;
+>>>>>>> p9x
 	}
 	pr_debug("EINVAL: io_destroy: invalid context id\n");
 	return -EINVAL;
@@ -1375,12 +1450,22 @@ static ssize_t aio_setup_single_vector(struct kiocb *kiocb,
 	if (len > MAX_RW_COUNT)
 		len = MAX_RW_COUNT;
 
+<<<<<<< HEAD
 	if (unlikely(!access_ok(!rw, buf, len)))
 		return -EFAULT;
 
 	iovec->iov_base = buf;
 	iovec->iov_len = len;
 	*nr_segs = 1;
+=======
+	if (unlikely(!access_ok(!rw, kiocb->ki_buf, len)))
+                return -EFAULT;
+
+	kiocb->ki_iovec = &kiocb->ki_inline_vec;
+	kiocb->ki_iovec->iov_base = kiocb->ki_buf;
+	kiocb->ki_iovec->iov_len = len;
+	kiocb->ki_nr_segs = 1;
+>>>>>>> p9x
 	return 0;
 }
 
@@ -1578,7 +1663,6 @@ long do_io_submit(aio_context_t ctx_id, long nr,
 	struct kioctx *ctx;
 	long ret = 0;
 	int i = 0;
-	struct blk_plug plug;
 
 	if (unlikely(nr < 0))
 		return -EINVAL;
@@ -1594,8 +1678,6 @@ long do_io_submit(aio_context_t ctx_id, long nr,
 		pr_debug("EINVAL: invalid context id\n");
 		return -EINVAL;
 	}
-
-	blk_start_plug(&plug);
 
 	/*
 	 * AKPM: should this return a partial result if some of the IOs were
@@ -1619,7 +1701,6 @@ long do_io_submit(aio_context_t ctx_id, long nr,
 		if (ret)
 			break;
 	}
-	blk_finish_plug(&plug);
 
 	percpu_ref_put(&ctx->users);
 	return i ? i : ret;

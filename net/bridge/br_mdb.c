@@ -416,6 +416,12 @@ static int __br_mdb_del(struct net_bridge *br, struct br_mdb_entry *entry)
 	if (!netif_running(br->dev) || br->multicast_disabled)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	if (timer_pending(&br->multicast_querier_timer))
+		return -EBUSY;
+
+>>>>>>> p9x
 	memset(&ip, 0, sizeof(ip));
 	ip.proto = entry->addr.proto;
 	if (ip.proto == htons(ETH_P_IP)) {

@@ -1,7 +1,10 @@
 # UAPI Header export list
 include include/uapi/asm-generic/Kbuild.asm
 
+<<<<<<< HEAD
 header-y += auxvec.h
+=======
+>>>>>>> p9x
 header-y += byteorder.h
 header-y += fcntl.h
 header-y += hwcap.h

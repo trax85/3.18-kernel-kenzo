@@ -1070,9 +1070,12 @@ static u8 smp_cmd_pairing_confirm(struct l2cap_conn *conn, struct sk_buff *skb)
 	struct smp_chan *smp = chan->data;
 
 	BT_DBG("conn %pK %s", conn, conn->hcon->out ? "master" : "slave");
+<<<<<<< HEAD
 
 	if (skb->len < sizeof(smp->pcnf))
 		return SMP_INVALID_PARAMS;
+=======
+>>>>>>> p9x
 
 	memcpy(smp->pcnf, skb->data, sizeof(smp->pcnf));
 	skb_pull(skb, sizeof(smp->pcnf));
@@ -1132,6 +1135,7 @@ static bool smp_ltk_encrypt(struct l2cap_conn *conn, u8 sec_level)
 
 	return true;
 }
+<<<<<<< HEAD
 
 bool smp_sufficient_security(struct hci_conn *hcon, u8 sec_level)
 {
@@ -1152,6 +1156,19 @@ bool smp_sufficient_security(struct hci_conn *hcon, u8 sec_level)
 	if (hcon->sec_level >= sec_level)
 		return true;
 
+=======
+bool smp_sufficient_security(struct hci_conn *hcon, u8 sec_level)
+{
+	if (sec_level == BT_SECURITY_LOW) {
+		BT_INFO("TRUE:(sec_level == BT_SECURITY_LOW)");
+		return true;
+	}
+	if (hcon->sec_level >= sec_level) {
+		BT_INFO("TRUE:(hcon->sec_level >= sec_level)");
+		return true;
+	}
+	BT_INFO("return false");
+>>>>>>> p9x
 	return false;
 }
 
@@ -1161,6 +1178,7 @@ static u8 smp_cmd_security_req(struct l2cap_conn *conn, struct sk_buff *skb)
 	struct smp_cmd_pairing cp;
 	struct hci_conn *hcon = conn->hcon;
 	struct smp_chan *smp;
+<<<<<<< HEAD
 	u8 sec_level, auth;
 
 	BT_DBG("conn %pK", conn);
@@ -1186,6 +1204,15 @@ static u8 smp_cmd_security_req(struct l2cap_conn *conn, struct sk_buff *skb)
 		smp_ltk_encrypt(conn, hcon->sec_level);
 		return 0;
 	}
+=======
+	u8 sec_level;
+
+	BT_DBG("conn %pK", conn);
+
+	sec_level = authreq_to_seclevel(rp->auth_req);
+	if (smp_sufficient_security(hcon, sec_level))
+		return 0;
+>>>>>>> p9x
 
 	if (sec_level > hcon->pending_sec_level)
 		hcon->pending_sec_level = sec_level;
@@ -1196,10 +1223,13 @@ static u8 smp_cmd_security_req(struct l2cap_conn *conn, struct sk_buff *skb)
 	smp = smp_chan_create(conn);
 	if (!smp)
 		return SMP_UNSPECIFIED;
+<<<<<<< HEAD
 
 	if (!test_bit(HCI_BONDABLE, &hcon->hdev->dev_flags) &&
 	    (auth & SMP_AUTH_BONDING))
 		return SMP_PAIRING_NOTSUPP;
+=======
+>>>>>>> p9x
 
 	skb_pull(skb, sizeof(*rp));
 
@@ -1224,12 +1254,15 @@ int smp_conn_security(struct hci_conn *hcon, __u8 sec_level)
 	int ret;
 
 	BT_DBG("conn %pK hcon %pK level 0x%2.2x", conn, hcon, sec_level);
+<<<<<<< HEAD
 
 	/* This may be NULL if there's an unexpected disconnection */
 	if (!conn)
 		return 1;
 
 	chan = conn->smp;
+=======
+>>>>>>> p9x
 
 	if (!test_bit(HCI_LE_ENABLED, &hcon->hdev->dev_flags))
 		return 1;
@@ -1633,9 +1666,13 @@ static struct sk_buff *smp_alloc_skb_cb(struct l2cap_chan *chan,
 {
 	struct sk_buff *skb;
 
+<<<<<<< HEAD
 	skb = bt_skb_alloc(hdr_len + len, GFP_KERNEL);
 	if (!skb)
 		return ERR_PTR(-ENOMEM);
+=======
+	BT_DBG("conn %pK force %d", conn, force);
+>>>>>>> p9x
 
 	skb->priority = HCI_PRIO_MAX;
 	bt_cb(skb)->chan = chan;

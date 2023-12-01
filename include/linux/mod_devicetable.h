@@ -398,6 +398,7 @@ struct virtio_device_id {
 /*
  * For Hyper-V devices we use the device guid as the id.
  */
+#define vmbus_device_id hv_vmbus_device_id
 struct hv_vmbus_device_id {
 	__u8 guid[16];
 	kernel_ulong_t driver_data;	/* Data private to the driver */
@@ -432,12 +433,29 @@ struct spi_device_id {
 	kernel_ulong_t driver_data;	/* Data private to the driver */
 };
 
+<<<<<<< HEAD
+=======
+#define SLIMBUS_NAME_SIZE	32
+#define SLIMBUS_MODULE_PREFIX "slim:"
+
+struct slim_device_id {
+	char name[SLIMBUS_NAME_SIZE];
+	kernel_ulong_t driver_data	/* Data private to the driver */
+			__attribute__((aligned(sizeof(kernel_ulong_t))));
+};
+
+>>>>>>> p9x
 #define SPMI_NAME_SIZE	32
 #define SPMI_MODULE_PREFIX "spmi:"
 
 struct spmi_device_id {
 	char name[SPMI_NAME_SIZE];
+<<<<<<< HEAD
 	kernel_ulong_t driver_data;	/* Data private to the driver */
+=======
+	kernel_ulong_t driver_data	/* Data private to the driver */
+			__attribute__((aligned(sizeof(kernel_ulong_t))));
+>>>>>>> p9x
 };
 
 /* soundwire */
@@ -617,6 +635,7 @@ struct ipack_device_id {
 #define MEI_CL_MODULE_PREFIX "mei:"
 #define MEI_CL_NAME_SIZE 32
 
+#define mei_device_id mei_cl_device_id
 struct mei_cl_device_id {
 	char name[MEI_CL_NAME_SIZE];
 	kernel_ulong_t driver_info;

@@ -23,6 +23,14 @@ obj-$(CONFIG_VT6655)		+= vt6655/
 obj-$(CONFIG_VT6656)		+= vt6656/
 obj-$(CONFIG_VME_BUS)		+= vme/
 obj-$(CONFIG_IIO)		+= iio/
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_WLAGS49_H2)	+= wlags49_h2/
+obj-$(CONFIG_WLAGS49_H25)	+= wlags49_h25/
+obj-$(CONFIG_FB_SM7XX)		+= sm7xxfb/
+obj-$(CONFIG_CRYSTALHD)		+= crystalhd/
+obj-$(CONFIG_CXT1E1)		+= cxt1e1/
+>>>>>>> p9x
 obj-$(CONFIG_FB_XGI)		+= xgifb/
 obj-$(CONFIG_USB_EMXX)		+= emxx_udc/
 obj-$(CONFIG_BCM_WIMAX)		+= bcm/
@@ -38,6 +46,7 @@ obj-$(CONFIG_LTE_GDM724X)	+= gdm724x/
 obj-$(CONFIG_DRM_IMX)		+= imx-drm/
 obj-$(CONFIG_FIREWIRE_SERIAL)	+= fwserial/
 obj-$(CONFIG_GOLDFISH)		+= goldfish/
+<<<<<<< HEAD
 obj-$(CONFIG_LUSTRE_FS)		+= lustre/
 obj-$(CONFIG_DGNC)			+= dgnc/
 obj-$(CONFIG_DGAP)			+= dgap/
@@ -45,3 +54,8 @@ obj-$(CONFIG_MTD_SPINAND_MT29F)	+= mt29f_spinand/
 obj-$(CONFIG_GS_FPGABOOT)	+= gs_fpgaboot/
 obj-$(CONFIG_CRYPTO_SKEIN)	+= skein/
 obj-$(CONFIG_UNISYSSPAR)	+= unisys/
+=======
+obj-$(CONFIG_USB_DWC2)		+= dwc2/
+obj-$(CONFIG_PRIMA_WLAN)	+= prima/
+obj-$(CONFIG_PRONTO_WLAN)	+= prima/
+>>>>>>> p9x

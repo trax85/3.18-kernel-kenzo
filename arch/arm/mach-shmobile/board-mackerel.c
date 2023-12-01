@@ -412,6 +412,7 @@ static struct platform_device lcdc_device = {
 	.dev	= {
 		.platform_data	= &lcdc_info,
 		.coherent_dma_mask = DMA_BIT_MASK(32),
+<<<<<<< HEAD
 	},
 };
 
@@ -426,6 +427,8 @@ static struct platform_device gpio_backlight_device = {
 	.name = "gpio-backlight",
 	.dev = {
 		.platform_data = &gpio_backlight_data,
+=======
+>>>>>>> p9x
 	},
 };
 

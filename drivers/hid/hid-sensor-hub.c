@@ -238,7 +238,11 @@ int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
 
 	mutex_lock(&data->mutex);
 	report = sensor_hub_report(report_id, hsdev->hdev, HID_FEATURE_REPORT);
+<<<<<<< HEAD
 	if (!report || (field_index >= report->maxfield) ||
+=======
+	if (!report || (field_index >=  report->maxfield) ||
+>>>>>>> p9x
 	    report->field[field_index]->report_count < 1) {
 		ret = -EINVAL;
 		goto done_proc;
@@ -350,6 +354,7 @@ int sensor_hub_input_get_attribute_info(struct hid_sensor_hub_device *hsdev,
 	list_for_each_entry(report, &report_enum->report_list, list) {
 		for (i = 0; i < report->maxfield; ++i) {
 			field = report->field[i];
+<<<<<<< HEAD
 			if (field->maxusage) {
 				if (field->physical == usage_id &&
 					(field->logical == attr_usage_id ||
@@ -365,6 +370,30 @@ int sensor_hub_input_get_attribute_info(struct hid_sensor_hub_device *hsdev,
 								field);
 					ret = 0;
 					break;
+=======
+			if (field->physical == usage_id &&
+				field->logical == attr_usage_id) {
+				sensor_hub_fill_attr_info(info, i, report->id,
+					field->unit, field->unit_exponent,
+					field->report_size *
+							field->report_count);
+				ret = 0;
+			} else {
+				for (j = 0; j < field->maxusage; ++j) {
+					if (field->usage[j].hid ==
+					attr_usage_id &&
+					field->usage[j].collection_index ==
+					collection_index)  {
+						sensor_hub_fill_attr_info(info,
+							i, report->id,
+							field->unit,
+							field->unit_exponent,
+							field->report_size *
+							field->report_count);
+						ret = 0;
+						break;
+					}
+>>>>>>> p9x
 				}
 			}
 		}

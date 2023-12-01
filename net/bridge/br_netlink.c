@@ -459,6 +459,7 @@ static int br_dev_newlink(struct net *src_net, struct net_device *dev,
 	return register_netdevice(dev);
 }
 
+<<<<<<< HEAD
 static int br_port_slave_changelink(struct net_device *brdev,
 				    struct net_device *dev,
 				    struct nlattr *tb[],
@@ -541,6 +542,8 @@ static int br_fill_info(struct sk_buff *skb, const struct net_device *brdev)
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 static size_t br_get_link_af_size(const struct net_device *dev)
 {
 	struct net_port_vlans *pv;
@@ -565,6 +568,7 @@ static struct rtnl_af_ops br_af_ops = {
 };
 
 struct rtnl_link_ops br_link_ops __read_mostly = {
+<<<<<<< HEAD
 	.kind			= "bridge",
 	.priv_size		= sizeof(struct net_bridge),
 	.setup			= br_dev_setup,
@@ -582,6 +586,14 @@ struct rtnl_link_ops br_link_ops __read_mostly = {
 	.slave_changelink	= br_port_slave_changelink,
 	.get_slave_size		= br_port_get_slave_size,
 	.fill_slave_info	= br_port_fill_slave_info,
+=======
+	.kind		= "bridge",
+	.priv_size	= sizeof(struct net_bridge),
+	.setup		= br_dev_setup,
+	.validate	= br_validate,
+	.newlink	= br_dev_newlink,
+	.dellink	= br_dev_delete,
+>>>>>>> p9x
 };
 
 int __init br_netlink_init(void)

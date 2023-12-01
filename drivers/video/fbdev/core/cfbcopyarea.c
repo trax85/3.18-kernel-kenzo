@@ -55,8 +55,13 @@ bitcpy(struct fb_info *p, unsigned long __iomem *dst, unsigned dst_idx,
 	 * If you suspect bug in this function, compare it with this simple
 	 * memmove implementation.
 	 */
+<<<<<<< HEAD:drivers/video/fbdev/core/cfbcopyarea.c
 	memmove((char *)dst + ((dst_idx & (bits - 1))) / 8,
 		(char *)src + ((src_idx & (bits - 1))) / 8, n / 8);
+=======
+	fb_memmove((char *)dst + ((dst_idx & (bits - 1))) / 8,
+		   (char *)src + ((src_idx & (bits - 1))) / 8, n / 8);
+>>>>>>> p9x:drivers/video/cfbcopyarea.c
 	return;
 #endif
 
@@ -221,8 +226,13 @@ bitcpy_rev(struct fb_info *p, unsigned long __iomem *dst, unsigned dst_idx,
 	 * If you suspect bug in this function, compare it with this simple
 	 * memmove implementation.
 	 */
+<<<<<<< HEAD:drivers/video/fbdev/core/cfbcopyarea.c
 	memmove((char *)dst + ((dst_idx & (bits - 1))) / 8,
 		(char *)src + ((src_idx & (bits - 1))) / 8, n / 8);
+=======
+	fb_memmove((char *)dst + ((dst_idx & (bits - 1))) / 8,
+		   (char *)src + ((src_idx & (bits - 1))) / 8, n / 8);
+>>>>>>> p9x:drivers/video/cfbcopyarea.c
 	return;
 #endif
 

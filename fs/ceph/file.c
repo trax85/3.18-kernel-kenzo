@@ -784,7 +784,18 @@ out:
 
 	if (ret != -EOLDSNAPC && written > 0) {
 		ret = written;
+<<<<<<< HEAD
 		iocb->ki_pos = pos;
+=======
+		*ppos = pos;
+		if (pos > i_size_read(inode))
+			check_caps = ceph_inode_set_size(inode, pos);
+		if (check_caps)
+			ceph_check_caps(ceph_inode(inode), CHECK_CAPS_AUTHONLY,
+					NULL);
+	} else if (ret != -EOLDSNAPC && written > 0) {
+		ret = written;
+>>>>>>> p9x
 	}
 	return ret;
 }

@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2016 Qualcomm Atheros, Inc.
+=======
+ * Copyright (c) 2012-2014 Qualcomm Atheros, Inc.
+>>>>>>> p9x
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -160,7 +164,10 @@ static void wil_vring_free(struct wil6210_priv *wil, struct vring *vring,
 	struct device *dev = wil_to_dev(wil);
 	size_t sz = vring->size * sizeof(vring->va[0]);
 
+<<<<<<< HEAD
 	lockdep_assert_held(&wil->mutex);
+=======
+>>>>>>> p9x
 	if (tx) {
 		int vring_index = vring - wil->vring_tx;
 
@@ -184,6 +191,7 @@ static void wil_vring_free(struct wil6210_priv *wil, struct vring *vring,
 					&vring->va[vring->swtail].tx;
 
 			ctx = &vring->ctx[vring->swtail];
+<<<<<<< HEAD
 			if (!ctx) {
 				wil_dbg_txrx(wil,
 					     "ctx(%d) was already completed\n",
@@ -191,6 +199,8 @@ static void wil_vring_free(struct wil6210_priv *wil, struct vring *vring,
 				vring->swtail = wil_vring_next_tail(vring);
 				continue;
 			}
+=======
+>>>>>>> p9x
 			*d = *_d;
 			wil_txdesc_unmap(dev, d, ctx);
 			if (ctx->skb)
@@ -226,7 +236,11 @@ static int wil_vring_alloc_skb(struct wil6210_priv *wil, struct vring *vring,
 			       u32 i, int headroom)
 {
 	struct device *dev = wil_to_dev(wil);
+<<<<<<< HEAD
 	unsigned int sz = mtu_max + ETH_HLEN + wil_rx_snaplen();
+=======
+	unsigned int sz = mtu_max + ETH_HLEN;
+>>>>>>> p9x
 	struct vring_rx_desc dd, *d = &dd;
 	volatile struct vring_rx_desc *_d = &vring->va[i].rx;
 	dma_addr_t pa;
@@ -244,7 +258,11 @@ static int wil_vring_alloc_skb(struct wil6210_priv *wil, struct vring *vring,
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	d->dma.d0 = RX_DMA_D0_CMD_DMA_RT | RX_DMA_D0_CMD_DMA_IT;
+=======
+	d->dma.d0 = BIT(9) | RX_DMA_D0_CMD_DMA_IT;
+>>>>>>> p9x
 	wil_desc_addr_set(&d->dma.addr, pa);
 	/* ip_length don't care */
 	/* b11 don't care */
@@ -366,6 +384,7 @@ static void wil_rx_add_radiotap_header(struct wil6210_priv *wil,
 	}
 }
 
+<<<<<<< HEAD
 /* similar to ieee80211_ version, but FC contain only 1-st byte */
 static inline int wil_is_back_req(u8 fc)
 {
@@ -373,6 +392,8 @@ static inline int wil_is_back_req(u8 fc)
 	       (IEEE80211_FTYPE_CTL | IEEE80211_STYPE_BACK_REQ);
 }
 
+=======
+>>>>>>> p9x
 /**
  * reap 1 frame from @swhead
  *
@@ -389,27 +410,42 @@ static struct sk_buff *wil_vring_reap_rx(struct wil6210_priv *wil,
 	struct vring_rx_desc *d;
 	struct sk_buff *skb;
 	dma_addr_t pa;
+<<<<<<< HEAD
 	unsigned int snaplen = wil_rx_snaplen();
 	unsigned int sz = mtu_max + ETH_HLEN + snaplen;
 	u16 dmalen;
 	u8 ftype;
 	int cid;
 	int i;
+=======
+	unsigned int sz = mtu_max + ETH_HLEN;
+	u16 dmalen;
+	u8 ftype;
+	int cid;
+>>>>>>> p9x
 	struct wil_net_stats *stats;
 
 	BUILD_BUG_ON(sizeof(struct vring_rx_desc) > sizeof(skb->cb));
 
+<<<<<<< HEAD
 again:
 	if (unlikely(wil_vring_is_empty(vring)))
 		return NULL;
 
 	i = (int)vring->swhead;
 	_d = &vring->va[i].rx;
+=======
+	if (unlikely(wil_vring_is_empty(vring)))
+		return NULL;
+
+	_d = &vring->va[vring->swhead].rx;
+>>>>>>> p9x
 	if (unlikely(!(_d->dma.status & RX_DMA_STATUS_DU))) {
 		/* it is not error, we just reached end of Rx done area */
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	skb = vring->ctx[i].skb;
 	vring->ctx[i].skb = NULL;
 	wil_vring_advance_head(vring, 1);
@@ -420,10 +456,19 @@ again:
 	d = wil_skb_rxdesc(skb);
 	*d = *_d;
 	pa = wil_desc_addr(&d->dma.addr);
+=======
+	skb = vring->ctx[vring->swhead].skb;
+	d = wil_skb_rxdesc(skb);
+	*d = *_d;
+	pa = wil_desc_addr(&d->dma.addr);
+	vring->ctx[vring->swhead].skb = NULL;
+	wil_vring_advance_head(vring, 1);
+>>>>>>> p9x
 
 	dma_unmap_single(dev, pa, sz, DMA_FROM_DEVICE);
 	dmalen = le16_to_cpu(d->dma.length);
 
+<<<<<<< HEAD
 	trace_wil6210_rx(i, d);
 	wil_dbg_txrx(wil, "Rx[%3d] : %d bytes\n", i, dmalen);
 	wil_hex_dump_txrx("RxD ", DUMP_PREFIX_NONE, 32, 4,
@@ -437,6 +482,17 @@ again:
 		stats->rx_large_frame++;
 		kfree_skb(skb);
 		goto again;
+=======
+	trace_wil6210_rx(vring->swhead, d);
+	wil_dbg_txrx(wil, "Rx[%3d] : %d bytes\n", vring->swhead, dmalen);
+	wil_hex_dump_txrx("Rx ", DUMP_PREFIX_NONE, 32, 4,
+			  (const void *)d, sizeof(*d), false);
+
+	if (unlikely(dmalen > sz)) {
+		wil_err(wil, "Rx size too large: %d bytes!\n", dmalen);
+		kfree_skb(skb);
+		return NULL;
+>>>>>>> p9x
 	}
 	skb_trim(skb, dmalen);
 
@@ -445,9 +501,15 @@ again:
 	wil_hex_dump_txrx("Rx ", DUMP_PREFIX_OFFSET, 16, 1,
 			  skb->data, skb_headlen(skb), false);
 
+<<<<<<< HEAD
 	stats->last_mcs_rx = wil_rxdesc_mcs(d);
 	if (stats->last_mcs_rx < ARRAY_SIZE(stats->rx_per_mcs))
 		stats->rx_per_mcs[stats->last_mcs_rx]++;
+=======
+	cid = wil_rxdesc_cid(d);
+	stats = &wil->sta[cid].stats;
+	stats->last_mcs_rx = wil_rxdesc_mcs(d);
+>>>>>>> p9x
 
 	/* use radiotap header only if required */
 	if (ndev->type == ARPHRD_IEEE80211_RADIOTAP)
@@ -462,6 +524,7 @@ again:
 	 */
 	ftype = wil_rxdesc_ftype(d) << 2;
 	if (unlikely(ftype != IEEE80211_FTYPE_DATA)) {
+<<<<<<< HEAD
 		u8 fc1 = wil_rxdesc_fc1(d);
 		int mid = wil_rxdesc_mid(d);
 		int tid = wil_rxdesc_tid(d);
@@ -488,11 +551,19 @@ again:
 			wil_hex_dump_txrx("Rx ", DUMP_PREFIX_OFFSET, 16, 1,
 					  skb->data, skb_headlen(skb), false);
 		}
+=======
+		wil_dbg_txrx(wil, "Non-data frame ftype 0x%08x\n", ftype);
+		/* TODO: process it */
+>>>>>>> p9x
 		kfree_skb(skb);
 		goto again;
 	}
 
+<<<<<<< HEAD
 	if (unlikely(skb->len < ETH_HLEN + snaplen)) {
+=======
+	if (unlikely(skb->len < ETH_HLEN)) {
+>>>>>>> p9x
 		wil_err(wil, "Short frame, len = %d\n", skb->len);
 		stats->rx_short_frame++;
 		kfree_skb(skb);
@@ -512,6 +583,7 @@ again:
 		 * mis-calculates TCP checksum - if it should be 0x0,
 		 * it writes 0xffff in violation of RFC 1624
 		 */
+<<<<<<< HEAD
 	}
 
 	if (snaplen) {
@@ -523,6 +595,8 @@ again:
 		 */
 		memmove(skb->data + snaplen, skb->data, 2 * ETH_ALEN);
 		skb_pull(skb, snaplen);
+=======
+>>>>>>> p9x
 	}
 
 	return skb;
@@ -622,6 +696,7 @@ static int wil_rx_crypto_check(struct wil6210_priv *wil, struct sk_buff *skb)
  */
 void wil_netif_rx_any(struct sk_buff *skb, struct net_device *ndev)
 {
+<<<<<<< HEAD
 	gro_result_t rc = GRO_NORMAL;
 	struct wil6210_priv *wil = ndev_to_wil(ndev);
 	struct wireless_dev *wdev = wil_to_wdev(wil);
@@ -704,6 +779,19 @@ void wil_netif_rx_any(struct sk_buff *skb, struct net_device *ndev)
 	}
 stats:
 	/* statistics. rc set to GRO_NORMAL for AP bridging */
+=======
+	gro_result_t rc;
+	struct wil6210_priv *wil = ndev_to_wil(ndev);
+	unsigned int len = skb->len;
+	struct vring_rx_desc *d = wil_skb_rxdesc(skb);
+	int cid = wil_rxdesc_cid(d);
+	struct wil_net_stats *stats = &wil->sta[cid].stats;
+
+	skb_orphan(skb);
+
+	rc = napi_gro_receive(&wil->napi_rx, skb);
+
+>>>>>>> p9x
 	if (unlikely(rc == GRO_DROP)) {
 		ndev->stats.rx_dropped++;
 		stats->rx_dropped++;
@@ -713,8 +801,22 @@ stats:
 		stats->rx_packets++;
 		ndev->stats.rx_bytes += len;
 		stats->rx_bytes += len;
+<<<<<<< HEAD
 		if (mcast)
 			ndev->stats.multicast++;
+=======
+	}
+	{
+		static const char * const gro_res_str[] = {
+			[GRO_MERGED]		= "GRO_MERGED",
+			[GRO_MERGED_FREE]	= "GRO_MERGED_FREE",
+			[GRO_HELD]		= "GRO_HELD",
+			[GRO_NORMAL]		= "GRO_NORMAL",
+			[GRO_DROP]		= "GRO_DROP",
+		};
+		wil_dbg_txrx(wil, "Rx complete %d bytes => %s\n",
+			     len, gro_res_str[rc]);
+>>>>>>> p9x
 	}
 }
 
@@ -745,6 +847,10 @@ void wil_rx_handle(struct wil6210_priv *wil, int *quota)
 			skb->protocol = htons(ETH_P_802_2);
 			wil_netif_rx_any(skb, ndev);
 		} else {
+<<<<<<< HEAD
+=======
+			skb->protocol = eth_type_trans(skb, ndev);
+>>>>>>> p9x
 			wil_rx_reorder(wil, skb);
 		}
 	}
@@ -841,7 +947,10 @@ int wil_vring_init_tx(struct wil6210_priv *wil, int id, int size,
 
 	wil_dbg_misc(wil, "%s() max_mpdu_size %d\n", __func__,
 		     cmd.vring_cfg.tx_sw_ring.max_mpdu_size);
+<<<<<<< HEAD
 	lockdep_assert_held(&wil->mutex);
+=======
+>>>>>>> p9x
 
 	if (vring->va) {
 		wil_err(wil, "Tx ring [%d] already allocated\n", id);
@@ -849,7 +958,12 @@ int wil_vring_init_tx(struct wil6210_priv *wil, int id, int size,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	wil_tx_data_init(txdata);
+=======
+	memset(txdata, 0, sizeof(*txdata));
+	spin_lock_init(&txdata->lock);
+>>>>>>> p9x
 	vring->size = size;
 	rc = wil_vring_alloc(wil, vring);
 	if (rc)
@@ -880,6 +994,10 @@ int wil_vring_init_tx(struct wil6210_priv *wil, int id, int size,
 	spin_unlock_bh(&txdata->lock);
 
 	if (txdata->dot1x_open && (agg_wsize >= 0))
+		wil_addba_tx_request(wil, id, agg_wsize);
+
+	txdata->enabled = 1;
+	if (wil->sta[cid].data_port_open && (agg_wsize >= 0))
 		wil_addba_tx_request(wil, id, agg_wsize);
 
 	return 0;
@@ -976,7 +1094,11 @@ void wil_vring_fini_tx(struct wil6210_priv *wil, int id)
 	struct vring *vring = &wil->vring_tx[id];
 	struct vring_tx_data *txdata = &wil->vring_tx_data[id];
 
+<<<<<<< HEAD
 	lockdep_assert_held(&wil->mutex);
+=======
+	WARN_ON(!mutex_is_locked(&wil->mutex));
+>>>>>>> p9x
 
 	if (!vring->va)
 		return;
@@ -984,6 +1106,7 @@ void wil_vring_fini_tx(struct wil6210_priv *wil, int id)
 	wil_dbg_misc(wil, "%s() id=%d\n", __func__, id);
 
 	spin_lock_bh(&txdata->lock);
+<<<<<<< HEAD
 	txdata->dot1x_open = false;
 	txdata->enabled = 0; /* no Tx can be in progress or start anew */
 	spin_unlock_bh(&txdata->lock);
@@ -994,11 +1117,16 @@ void wil_vring_fini_tx(struct wil6210_priv *wil, int id)
 	 * handle this vring
 	 */
 	wmb();
+=======
+	txdata->enabled = 0; /* no Tx can be in progress or start anew */
+	spin_unlock_bh(&txdata->lock);
+>>>>>>> p9x
 	/* make sure NAPI won't touch this vring */
 	if (test_bit(wil_status_napi_en, wil->status))
 		napi_synchronize(&wil->napi_tx);
 
 	wil_vring_free(wil, vring, 1);
+	memset(txdata, 0, sizeof(*txdata));
 }
 
 static struct vring *wil_find_tx_ucast(struct wil6210_priv *wil,
@@ -1011,6 +1139,7 @@ static struct vring *wil_find_tx_ucast(struct wil6210_priv *wil,
 	if (cid < 0)
 		return NULL;
 
+<<<<<<< HEAD
 	/* TODO: fix for multiple TID */
 	for (i = 0; i < ARRAY_SIZE(wil->vring2cid_tid); i++) {
 		if (!wil->vring_tx_data[i].dot1x_open &&
@@ -1023,6 +1152,20 @@ static struct vring *wil_find_tx_ucast(struct wil6210_priv *wil,
 			wil_dbg_txrx(wil, "%s(%pM) -> [%d]\n",
 				     __func__, eth->h_dest, i);
 			if (v->va && txdata->enabled) {
+=======
+	if (!wil->sta[cid].data_port_open &&
+	    (skb->protocol != cpu_to_be16(ETH_P_PAE)))
+		return NULL;
+
+	/* TODO: fix for multiple TID */
+	for (i = 0; i < ARRAY_SIZE(wil->vring2cid_tid); i++) {
+		if (wil->vring2cid_tid[i][0] == cid) {
+			struct vring *v = &wil->vring_tx[i];
+
+			wil_dbg_txrx(wil, "%s(%pM) -> [%d]\n",
+				     __func__, eth->h_dest, i);
+			if (v->va) {
+>>>>>>> p9x
 				return v;
 			} else {
 				wil_dbg_txrx(wil, "vring[%d] not valid\n", i);
@@ -1034,6 +1177,7 @@ static struct vring *wil_find_tx_ucast(struct wil6210_priv *wil,
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int wil_tx_vring(struct wil6210_priv *wil, struct vring *vring,
 			struct sk_buff *skb);
 
@@ -1062,6 +1206,40 @@ static struct vring *wil_find_tx_vring_sta(struct wil6210_priv *wil,
 		if (!wil->vring_tx_data[i].dot1x_open &&
 		    (skb->protocol != cpu_to_be16(ETH_P_PAE)))
 			continue;
+=======
+static void wil_set_da_for_vring(struct wil6210_priv *wil,
+				 struct sk_buff *skb, int vring_index)
+{
+	struct ethhdr *eth = (void *)skb->data;
+	int cid = wil->vring2cid_tid[vring_index][0];
+
+	memcpy(eth->h_dest, wil->sta[cid].addr, ETH_ALEN);
+}
+
+static int wil_tx_vring(struct wil6210_priv *wil, struct vring *vring,
+			struct sk_buff *skb);
+
+static struct vring *wil_find_tx_vring_sta(struct wil6210_priv *wil,
+					   struct sk_buff *skb)
+{
+	struct vring *v;
+	int i;
+	u8 cid;
+
+	/* In the STA mode, it is expected to have only 1 VRING
+	 * for the AP we connected to.
+	 * find 1-st vring and see whether it is eligible for data
+	 */
+	for (i = 0; i < WIL6210_MAX_TX_RINGS; i++) {
+		v = &wil->vring_tx[i];
+		if (!v->va)
+			continue;
+
+		cid = wil->vring2cid_tid[i][0];
+		if (!wil->sta[cid].data_port_open &&
+		    (skb->protocol != cpu_to_be16(ETH_P_PAE)))
+			break;
+>>>>>>> p9x
 
 		wil_dbg_txrx(wil, "Tx -> ring %d\n", i);
 
@@ -1073,6 +1251,7 @@ static struct vring *wil_find_tx_vring_sta(struct wil6210_priv *wil,
 	return NULL;
 }
 
+<<<<<<< HEAD
 /* Use one of 2 strategies:
  *
  * 1. New (real broadcast):
@@ -1115,18 +1294,30 @@ static void wil_set_da_for_vring(struct wil6210_priv *wil,
 
 static struct vring *wil_find_tx_bcast_2(struct wil6210_priv *wil,
 					 struct sk_buff *skb)
+=======
+/*
+ * Find 1-st vring and return it; set dest address for this vring in skb
+ * duplicate skb and send it to other active vrings
+ */
+static struct vring *wil_tx_bcast(struct wil6210_priv *wil,
+				  struct sk_buff *skb)
+>>>>>>> p9x
 {
 	struct vring *v, *v2;
 	struct sk_buff *skb2;
 	int i;
 	u8 cid;
+<<<<<<< HEAD
 	struct ethhdr *eth = (void *)skb->data;
 	char *src = eth->h_source;
 	struct vring_tx_data *txdata;
+=======
+>>>>>>> p9x
 
 	/* find 1-st vring eligible for data */
 	for (i = 0; i < WIL6210_MAX_TX_RINGS; i++) {
 		v = &wil->vring_tx[i];
+<<<<<<< HEAD
 		txdata = &wil->vring_tx_data[i];
 		if (!v->va || !txdata->enabled)
 			continue;
@@ -1140,6 +1331,13 @@ static struct vring *wil_find_tx_bcast_2(struct wil6210_priv *wil,
 
 		/* don't Tx back to source when re-routing Rx->Tx at the AP */
 		if (0 == memcmp(wil->sta[cid].addr, src, ETH_ALEN))
+=======
+		if (!v->va)
+			continue;
+
+		cid = wil->vring2cid_tid[i][0];
+		if (!wil->sta[cid].data_port_open)
+>>>>>>> p9x
 			continue;
 
 		goto found;
@@ -1159,6 +1357,7 @@ found:
 		if (!v2->va)
 			continue;
 		cid = wil->vring2cid_tid[i][0];
+<<<<<<< HEAD
 		if (cid >= WIL6210_MAX_CID) /* skip BCAST */
 			continue;
 		if (!wil->vring_tx_data[i].dot1x_open &&
@@ -1166,6 +1365,9 @@ found:
 			continue;
 
 		if (0 == memcmp(wil->sta[cid].addr, src, ETH_ALEN))
+=======
+		if (!wil->sta[cid].data_port_open)
+>>>>>>> p9x
 			continue;
 
 		skb2 = skb_copy(skb, GFP_ATOMIC);
@@ -1181,6 +1383,7 @@ found:
 	return v;
 }
 
+<<<<<<< HEAD
 static struct vring *wil_find_tx_bcast(struct wil6210_priv *wil,
 				       struct sk_buff *skb)
 {
@@ -1192,6 +1395,8 @@ static struct vring *wil_find_tx_bcast(struct wil6210_priv *wil,
 	return wil_find_tx_bcast_1(wil, skb);
 }
 
+=======
+>>>>>>> p9x
 static int wil_tx_desc_map(struct vring_tx_desc *d, dma_addr_t pa, u32 len,
 			   int vring_index)
 {
@@ -1217,6 +1422,7 @@ static int wil_tx_desc_map(struct vring_tx_desc *d, dma_addr_t pa, u32 len,
 static inline
 void wil_tx_desc_set_nr_frags(struct vring_tx_desc *d, int nr_frags)
 {
+<<<<<<< HEAD
 	d->mac.d[2] |= (nr_frags << MAC_CFG_DESC_TX_2_NUM_OF_DESCRIPTORS_POS);
 }
 
@@ -1263,6 +1469,16 @@ static void wil_tx_desc_offload_setup_tso(struct vring_tx_desc *d,
 
 static int wil_tx_desc_offload_setup(struct vring_tx_desc *d,
 				     struct sk_buff *skb){
+=======
+	d->mac.d[2] |= ((nr_frags + 1) <<
+		       MAC_CFG_DESC_TX_2_NUM_OF_DESCRIPTORS_POS);
+}
+
+static int wil_tx_desc_offload_cksum_set(struct wil6210_priv *wil,
+					 struct vring_tx_desc *d,
+					 struct sk_buff *skb)
+{
+>>>>>>> p9x
 	int protocol;
 
 	if (skb->ip_summed != CHECKSUM_PARTIAL)
@@ -1307,6 +1523,7 @@ static int wil_tx_desc_offload_setup(struct vring_tx_desc *d,
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void wil_tx_last_desc(struct vring_tx_desc *d)
 {
 	d->dma.d0 |= BIT(DMA_CFG_DESC_TX_0_CMD_EOP_POS) |
@@ -1617,6 +1834,12 @@ static int __wil_tx_vring(struct wil6210_priv *wil, struct vring *vring,
 			  struct sk_buff *skb)
 {
 	struct device *dev = wil_to_dev(wil);
+=======
+static int __wil_tx_vring(struct wil6210_priv *wil, struct vring *vring,
+			  struct sk_buff *skb)
+{
+	struct device *dev = wil_to_dev(wil);
+>>>>>>> p9x
 	struct vring_tx_desc dd, *d = &dd;
 	volatile struct vring_tx_desc *_d;
 	u32 swhead = vring->swhead;
@@ -1628,8 +1851,11 @@ static int __wil_tx_vring(struct wil6210_priv *wil, struct vring *vring,
 	uint i = swhead;
 	dma_addr_t pa;
 	int used;
+<<<<<<< HEAD
 	bool mcast = (vring_index == wil->bcast_vring);
 	uint len = skb_headlen(skb);
+=======
+>>>>>>> p9x
 
 	wil_dbg_txrx(wil, "%s() %d bytes to vring %d\n",
 		     __func__, skb->len, vring_index);
@@ -1656,6 +1882,7 @@ static int __wil_tx_vring(struct wil6210_priv *wil, struct vring *vring,
 		return -EINVAL;
 	vring->ctx[i].mapped_as = wil_mapped_as_single;
 	/* 1-st segment */
+<<<<<<< HEAD
 	wil_tx_desc_map(d, pa, len, vring_index);
 	if (unlikely(mcast)) {
 		d->mac.d[0] |= BIT(MAC_CFG_DESC_TX_0_MCS_EN_POS); /* MCS 0 */
@@ -1664,13 +1891,22 @@ static int __wil_tx_vring(struct wil6210_priv *wil, struct vring *vring,
 	}
 	/* Process TCP/UDP checksum offloading */
 	if (unlikely(wil_tx_desc_offload_setup(d, skb))) {
+=======
+	wil_tx_desc_map(d, pa, skb_headlen(skb), vring_index);
+	/* Process TCP/UDP checksum offloading */
+	if (unlikely(wil_tx_desc_offload_cksum_set(wil, d, skb))) {
+>>>>>>> p9x
 		wil_err(wil, "Tx[%2d] Failed to set cksum, drop packet\n",
 			vring_index);
 		goto dma_error;
 	}
 
 	vring->ctx[i].nr_frags = nr_frags;
+<<<<<<< HEAD
 	wil_tx_desc_set_nr_frags(d, nr_frags + 1);
+=======
+	wil_tx_desc_set_nr_frags(d, nr_frags);
+>>>>>>> p9x
 
 	/* middle segments */
 	for (; f < nr_frags; f++) {
@@ -1686,18 +1922,27 @@ static int __wil_tx_vring(struct wil6210_priv *wil, struct vring *vring,
 		_d = &vring->va[i].tx;
 		pa = skb_frag_dma_map(dev, frag, 0, skb_frag_size(frag),
 				      DMA_TO_DEVICE);
+<<<<<<< HEAD
 		if (unlikely(dma_mapping_error(dev, pa))) {
 			wil_err(wil, "Tx[%2d] failed to map fragment\n",
 				vring_index);
 			goto dma_error;
 		}
+=======
+		if (unlikely(dma_mapping_error(dev, pa)))
+			goto dma_error;
+>>>>>>> p9x
 		vring->ctx[i].mapped_as = wil_mapped_as_page;
 		wil_tx_desc_map(d, pa, len, vring_index);
 		/* no need to check return code -
 		 * if it succeeded for 1-st descriptor,
 		 * it will succeed here too
 		 */
+<<<<<<< HEAD
 		wil_tx_desc_offload_setup(d, skb);
+=======
+		wil_tx_desc_offload_cksum_set(wil, d, skb);
+>>>>>>> p9x
 	}
 	/* for the last seg only */
 	d->dma.d0 |= BIT(DMA_CFG_DESC_TX_0_CMD_EOP_POS);
@@ -1723,6 +1968,7 @@ static int __wil_tx_vring(struct wil6210_priv *wil, struct vring *vring,
 			     vring_index, used, used + nr_frags + 1);
 	}
 
+<<<<<<< HEAD
 	/* Make sure to advance the head only after descriptor update is done.
 	 * This will prevent a race condition where the completion thread
 	 * will see the DU bit set from previous run and will handle the
@@ -1730,11 +1976,14 @@ static int __wil_tx_vring(struct wil6210_priv *wil, struct vring *vring,
 	 */
 	wmb();
 
+=======
+>>>>>>> p9x
 	/* advance swhead */
 	wil_vring_advance_head(vring, nr_frags + 1);
 	wil_dbg_txrx(wil, "Tx[%2d] swhead %d -> %d\n", vring_index, swhead,
 		     vring->swhead);
 	trace_wil6210_tx(vring_index, swhead, skb->len, nr_frags);
+<<<<<<< HEAD
 
 	/* make sure all writes to descriptors (shared memory) are done before
 	 * committing them to HW
@@ -1742,6 +1991,9 @@ static int __wil_tx_vring(struct wil6210_priv *wil, struct vring *vring,
 	wmb();
 
 	wil_w(wil, vring->hwtail, vring->swhead);
+=======
+	iowrite32(vring->swhead, wil->csr + HOSTADDR(vring->hwtail));
+>>>>>>> p9x
 
 	return 0;
  dma_error:
@@ -1757,6 +2009,12 @@ static int __wil_tx_vring(struct wil6210_priv *wil, struct vring *vring,
 		_d->dma.status = TX_DMA_STATUS_DU;
 		wil_txdesc_unmap(dev, d, ctx);
 
+<<<<<<< HEAD
+=======
+		if (ctx->skb)
+			dev_kfree_skb_any(ctx->skb);
+
+>>>>>>> p9x
 		memset(ctx, 0, sizeof(*ctx));
 	}
 
@@ -1771,12 +2029,17 @@ static int wil_tx_vring(struct wil6210_priv *wil, struct vring *vring,
 	int rc;
 
 	spin_lock(&txdata->lock);
+<<<<<<< HEAD
 
 	rc = (skb_is_gso(skb) ? __wil_tx_vring_tso : __wil_tx_vring)
 	     (wil, vring, skb);
 
 	spin_unlock(&txdata->lock);
 
+=======
+	rc = __wil_tx_vring(wil, vring, skb);
+	spin_unlock(&txdata->lock);
+>>>>>>> p9x
 	return rc;
 }
 
@@ -1784,7 +2047,10 @@ netdev_tx_t wil_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 {
 	struct wil6210_priv *wil = ndev_to_wil(ndev);
 	struct ethhdr *eth = (void *)skb->data;
+<<<<<<< HEAD
 	bool bcast = is_multicast_ether_addr(eth->h_dest);
+=======
+>>>>>>> p9x
 	struct vring *vring;
 	static bool pr_once_fw;
 	int rc;
@@ -1798,7 +2064,11 @@ netdev_tx_t wil_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 		goto drop;
 	}
 	if (unlikely(!test_bit(wil_status_fwconnected, wil->status))) {
+<<<<<<< HEAD
 		wil_dbg_ratelimited(wil, "FW not connected, packet dropped\n");
+=======
+		wil_err(wil, "FW not connected\n");
+>>>>>>> p9x
 		goto drop;
 	}
 	if (unlikely(wil->wdev->iftype == NL80211_IFTYPE_MONITOR)) {
@@ -1812,8 +2082,15 @@ netdev_tx_t wil_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 		/* in STA mode (ESS), all to same VRING */
 		vring = wil_find_tx_vring_sta(wil, skb);
 	} else { /* direct communication, find matching VRING */
+<<<<<<< HEAD
 		vring = bcast ? wil_find_tx_bcast(wil, skb) :
 				wil_find_tx_ucast(wil, skb);
+=======
+		if (is_unicast_ether_addr(eth->h_dest))
+			vring = wil_find_tx_vring(wil, skb);
+		else
+			vring = wil_tx_bcast(wil, skb);
+>>>>>>> p9x
 	}
 	if (unlikely(!vring)) {
 		wil_dbg_txrx(wil, "No Tx VRING found for %pM\n", eth->h_dest);
@@ -1858,7 +2135,11 @@ static inline void wil_consume_skb(struct sk_buff *skb, bool acked)
 	if (unlikely(wil_need_txstat(skb)))
 		skb_complete_wifi_ack(skb, acked);
 	else
+<<<<<<< HEAD
 		acked ? dev_consume_skb_any(skb) : dev_kfree_skb_any(skb);
+=======
+		dev_kfree_skb_any(skb);
+>>>>>>> p9x
 }
 
 /**
@@ -1876,7 +2157,11 @@ int wil_tx_complete(struct wil6210_priv *wil, int ringid)
 	struct vring_tx_data *txdata = &wil->vring_tx_data[ringid];
 	int done = 0;
 	int cid = wil->vring2cid_tid[ringid][0];
+<<<<<<< HEAD
 	struct wil_net_stats *stats = NULL;
+=======
+	struct wil_net_stats *stats = &wil->sta[cid].stats;
+>>>>>>> p9x
 	volatile struct vring_tx_desc *_d;
 	int used_before_complete;
 	int used_new;
@@ -1895,16 +2180,23 @@ int wil_tx_complete(struct wil6210_priv *wil, int ringid)
 
 	used_before_complete = wil_vring_used_tx(vring);
 
+<<<<<<< HEAD
 	if (cid < WIL6210_MAX_CID)
 		stats = &wil->sta[cid].stats;
 
+=======
+>>>>>>> p9x
 	while (!wil_vring_is_empty(vring)) {
 		int new_swtail;
 		struct wil_ctx *ctx = &vring->ctx[vring->swtail];
 		/**
 		 * For the fragmented skb, HW will set DU bit only for the
+<<<<<<< HEAD
 		 * last fragment. look for it.
 		 * In TSO the first DU will include hdr desc
+=======
+		 * last fragment. look for it
+>>>>>>> p9x
 		 */
 		int lf = (vring->swtail + ctx->nr_frags) % vring->size;
 		/* TODO: check we are not past head */
@@ -1940,6 +2232,7 @@ int wil_tx_complete(struct wil6210_priv *wil, int ringid)
 			if (skb) {
 				if (likely(d->dma.error == 0)) {
 					ndev->stats.tx_packets++;
+<<<<<<< HEAD
 					ndev->stats.tx_bytes += skb->len;
 					if (stats) {
 						stats->tx_packets++;
@@ -1949,16 +2242,27 @@ int wil_tx_complete(struct wil6210_priv *wil, int ringid)
 					ndev->stats.tx_errors++;
 					if (stats)
 						stats->tx_errors++;
+=======
+					stats->tx_packets++;
+					ndev->stats.tx_bytes += skb->len;
+					stats->tx_bytes += skb->len;
+				} else {
+					ndev->stats.tx_errors++;
+					stats->tx_errors++;
+>>>>>>> p9x
 				}
 				wil_consume_skb(skb, d->dma.error == 0);
 			}
 			memset(ctx, 0, sizeof(*ctx));
+<<<<<<< HEAD
 			/* Make sure the ctx is zeroed before updating the tail
 			 * to prevent a case where wil_tx_vring will see
 			 * this descriptor as used and handle it before ctx zero
 			 * is completed.
 			 */
 			wmb();
+=======
+>>>>>>> p9x
 			/* There is no need to touch HW descriptor:
 			 * - ststus bit TX_DMA_STATUS_DU is set by design,
 			 *   so hardware will not try to process this desc.,

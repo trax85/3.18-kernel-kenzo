@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -260,6 +264,7 @@ out:
  * msm_fd_stop_streaming - vb2_ops stop_streaming callback.
  * @q: Pointer to vb2 queue struct.
  */
+<<<<<<< HEAD
 static void msm_fd_stop_streaming(struct vb2_queue *q)
 {
 	struct fd_ctx *ctx = vb2_get_drv_priv(q);
@@ -268,6 +273,16 @@ static void msm_fd_stop_streaming(struct vb2_queue *q)
 	msm_fd_hw_remove_buffers_from_queue(ctx->fd_device, q);
 	msm_fd_hw_put(ctx->fd_device);
 	mutex_unlock(&ctx->fd_device->recovery_lock);
+=======
+static int msm_fd_stop_streaming(struct vb2_queue *q)
+{
+	struct fd_ctx *ctx = vb2_get_drv_priv(q);
+
+	msm_fd_hw_remove_buffers_from_queue(ctx->fd_device, q);
+	msm_fd_hw_put(ctx->fd_device);
+
+	return 0;
+>>>>>>> p9x
 }
 
 /* Videobuf2 queue callbacks. */
@@ -328,6 +343,7 @@ static struct vb2_mem_ops msm_fd_vb2_mem_ops = {
 };
 
 /*
+<<<<<<< HEAD
  * msm_fd_vbif_error_handler - FD VBIF Error handler
  * @handle: FD Device handle
  * @error: CPP-VBIF Error code
@@ -391,6 +407,8 @@ static int msm_fd_vbif_error_handler(void *handle, uint32_t error)
 }
 
 /*
+=======
+>>>>>>> p9x
  * msm_fd_open - Fd device open method.
  * @file: Pointer to file struct.
  */
@@ -431,7 +449,11 @@ static int msm_fd_open(struct file *file)
 	ctx->vb2_q.buf_struct_size = sizeof(struct msm_fd_buffer);
 	ctx->vb2_q.type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
 	ctx->vb2_q.io_modes = VB2_USERPTR;
+<<<<<<< HEAD
 	ctx->vb2_q.timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_COPY;
+=======
+	ctx->vb2_q.timestamp_type = V4L2_BUF_FLAG_TIMESTAMP_COPY;
+>>>>>>> p9x
 	mutex_init(&ctx->lock);
 	ret = vb2_queue_init(&ctx->vb2_q);
 	if (ret < 0) {
@@ -447,6 +469,7 @@ static int msm_fd_open(struct file *file)
 		goto error_stats_vmalloc;
 	}
 
+<<<<<<< HEAD
 	ret = cam_config_ahb_clk(NULL, 0, CAM_AHB_CLIENT_FD,
 			CAM_AHB_SVS_VOTE);
 	if (ret < 0) {
@@ -462,6 +485,10 @@ static int msm_fd_open(struct file *file)
 
 error_ahb_config:
 	vfree(ctx->stats);
+=======
+	return 0;
+
+>>>>>>> p9x
 error_stats_vmalloc:
 	vb2_queue_release(&ctx->vb2_q);
 error_vb2_queue_init:
@@ -479,10 +506,13 @@ static int msm_fd_release(struct file *file)
 {
 	struct fd_ctx *ctx = msm_fd_ctx_from_fh(file->private_data);
 
+<<<<<<< HEAD
 	/* Un-register with CPP VBIF error handler */
 	msm_cpp_vbif_register_error_handler((void *)ctx,
 		VBIF_CLIENT_FD, NULL);
 
+=======
+>>>>>>> p9x
 	mutex_lock(&ctx->lock);
 	vb2_queue_release(&ctx->vb2_q);
 	mutex_unlock(&ctx->lock);
@@ -497,10 +527,13 @@ static int msm_fd_release(struct file *file)
 
 	kfree(ctx);
 
+<<<<<<< HEAD
 	if (cam_config_ahb_clk(NULL, 0, CAM_AHB_CLIENT_FD,
 		CAM_AHB_SUSPEND_VOTE) < 0)
 		pr_err("%s: failed to remove vote for AHB\n", __func__);
 
+=======
+>>>>>>> p9x
 	return 0;
 }
 
@@ -543,7 +576,11 @@ static long msm_fd_private_ioctl(struct file *file, void *fh,
 	struct fd_ctx *ctx = msm_fd_ctx_from_fh(fh);
 	struct msm_fd_stats *stats;
 	int stats_idx;
+<<<<<<< HEAD
 	int ret = 0;
+=======
+	int ret;
+>>>>>>> p9x
 	int i;
 
 	switch (cmd) {
@@ -1064,8 +1101,14 @@ static int msm_fd_s_ctrl(struct file *file, void *fh, struct v4l2_control *a)
 			a->value = ctx->format.size->work_size;
 		break;
 	case V4L2_CID_FD_WORK_MEMORY_FD:
+<<<<<<< HEAD
 		mutex_lock(&ctx->fd_device->recovery_lock);
 		if (ctx->work_buf.fd != -1)
+=======
+		if (ctx->work_buf.fd != -1)
+                mutex_lock(&ctx->fd_device->recovery_lock);
+		if (ctx->work_buf.handle)
+>>>>>>> p9x
 			msm_fd_hw_unmap_buffer(&ctx->work_buf);
 		if (a->value >= 0) {
 			ret = msm_fd_hw_map_buffer(&ctx->mem_pool,
@@ -1272,12 +1315,15 @@ static void msm_fd_wq_handler(struct work_struct *work)
 	/* Stats are ready, set correct frame id */
 	atomic_set(&stats->frame_id, ctx->sequence);
 
+<<<<<<< HEAD
 	/* If Recovery mode is on, we got IRQ after recovery, reset it */
 	if (fd->recovery_mode) {
 		fd->recovery_mode = 0;
 		dev_dbg(fd->dev, "Got IRQ after Recovery\n");
 	}
 
+=======
+>>>>>>> p9x
 	/* We have the data from fd hw, we can start next processing */
 	msm_fd_hw_schedule_next_buffer(fd);
 
@@ -1317,7 +1363,10 @@ static int fd_probe(struct platform_device *pdev)
 	mutex_init(&fd->recovery_lock);
 	init_completion(&fd->hw_halt_completion);
 	INIT_LIST_HEAD(&fd->buf_queue);
+<<<<<<< HEAD
 	fd->pdev = pdev;
+=======
+>>>>>>> p9x
 	fd->dev = &pdev->dev;
 
 	/* Get resources */
@@ -1328,6 +1377,7 @@ static int fd_probe(struct platform_device *pdev)
 		goto error_mem_resources;
 	}
 
+<<<<<<< HEAD
 	ret = msm_camera_get_regulator_info(pdev, &fd->vdd_info,
 		&fd->num_reg);
 	if (ret < 0) {
@@ -1336,12 +1386,26 @@ static int fd_probe(struct platform_device *pdev)
 	}
 	ret = msm_camera_get_clk_info_and_rates(pdev, &fd->clk_info,
 		&fd->clk, &fd->clk_rates, &fd->clk_rates_num, &fd->clk_num);
+=======
+	fd->vdd = regulator_get(&pdev->dev, "vdd");
+	if (IS_ERR(fd->vdd)) {
+		dev_err(&pdev->dev, "Fail to get vdd regulator\n");
+		ret = -ENODEV;
+		goto error_get_regulator;
+	}
+
+	ret = msm_fd_hw_get_clocks(fd);
+>>>>>>> p9x
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Fail to get clocks\n");
 		goto error_get_clocks;
 	}
 
+<<<<<<< HEAD
 	ret = msm_camera_register_bus_client(pdev, CAM_BUS_CLIENT_FD);
+=======
+	ret = msm_fd_hw_get_bus(fd);
+>>>>>>> p9x
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Fail to get bus\n");
 		goto error_get_bus;
@@ -1351,7 +1415,11 @@ static int fd_probe(struct platform_device *pdev)
 	ret = msm_fd_hw_get(fd, 0);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Fail to get hw\n");
+<<<<<<< HEAD
 		goto error_hw_get_request_irq;
+=======
+		goto error_get_clocks;
+>>>>>>> p9x
 	}
 	fd->hw_revision = msm_fd_hw_get_revision(fd);
 
@@ -1397,12 +1465,20 @@ error_video_register:
 error_v4l2_register:
 	msm_fd_hw_release_irq(fd);
 error_hw_get_request_irq:
+<<<<<<< HEAD
 	msm_camera_unregister_bus_client(CAM_BUS_CLIENT_FD);
 error_get_bus:
 	msm_camera_put_clk_info_and_rates(pdev, &fd->clk_info,
 		&fd->clk, &fd->clk_rates, fd->clk_rates_num, fd->clk_num);
 error_get_clocks:
 	msm_camera_put_regulators(pdev, &fd->vdd_info, fd->num_reg);
+=======
+	msm_fd_hw_put_bus(fd);
+error_get_bus:
+	msm_fd_hw_put_clocks(fd);
+error_get_clocks:
+	regulator_put(fd->vdd);
+>>>>>>> p9x
 error_get_regulator:
 	msm_fd_hw_release_mem_resources(fd);
 error_mem_resources:
@@ -1426,10 +1502,16 @@ static int fd_device_remove(struct platform_device *pdev)
 	video_unregister_device(&fd->video);
 	v4l2_device_unregister(&fd->v4l2_dev);
 	msm_fd_hw_release_irq(fd);
+<<<<<<< HEAD
 	msm_camera_unregister_bus_client(CAM_BUS_CLIENT_FD);
 	msm_camera_put_clk_info_and_rates(pdev, &fd->clk_info,
 		&fd->clk, &fd->clk_rates, fd->clk_rates_num, fd->clk_num);
 	msm_camera_put_regulators(pdev, &fd->vdd_info, fd->num_reg);
+=======
+	msm_fd_hw_put_bus(fd);
+	msm_fd_hw_put_clocks(fd);
+	regulator_put(fd->vdd);
+>>>>>>> p9x
 	msm_fd_hw_release_mem_resources(fd);
 	kfree(fd);
 

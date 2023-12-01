@@ -25,8 +25,20 @@
 #include <linux/namei.h>
 #include "fscrypt_private.h"
 
+<<<<<<< HEAD
 static void __fscrypt_decrypt_bio(struct bio *bio, bool done)
 {
+=======
+/*
+ * Call fscrypt_decrypt_page on every single page, reusing the encryption
+ * context.
+ */
+static void completion_pages(struct work_struct *work)
+{
+	struct fscrypt_ctx *ctx =
+		container_of(work, struct fscrypt_ctx, r.work);
+	struct bio *bio = ctx->r.bio;
+>>>>>>> p9x
 	struct bio_vec *bv;
 	int i;
 
@@ -38,6 +50,7 @@ static void __fscrypt_decrypt_bio(struct bio *bio, bool done)
 		if (ret) {
 			WARN_ON_ONCE(1);
 			SetPageError(page);
+<<<<<<< HEAD
 		} else if (done) {
 			SetPageUptodate(page);
 		}
@@ -59,10 +72,18 @@ static void completion_pages(struct work_struct *work)
 	struct bio *bio = ctx->r.bio;
 
 	__fscrypt_decrypt_bio(bio, true);
+=======
+		} else {
+			SetPageUptodate(page);
+		}
+		unlock_page(page);
+	}
+>>>>>>> p9x
 	fscrypt_release_ctx(ctx);
 	bio_put(bio);
 }
 
+<<<<<<< HEAD
 void fscrypt_enqueue_decrypt_bio(struct fscrypt_ctx *ctx, struct bio *bio)
 {
 	INIT_WORK(&ctx->r.work, completion_pages);
@@ -70,6 +91,15 @@ void fscrypt_enqueue_decrypt_bio(struct fscrypt_ctx *ctx, struct bio *bio)
 	fscrypt_enqueue_decrypt_work(&ctx->r.work);
 }
 EXPORT_SYMBOL(fscrypt_enqueue_decrypt_bio);
+=======
+void fscrypt_decrypt_bio_pages(struct fscrypt_ctx *ctx, struct bio *bio)
+{
+	INIT_WORK(&ctx->r.work, completion_pages);
+	ctx->r.bio = bio;
+	queue_work(fscrypt_read_workqueue, &ctx->r.work);
+}
+EXPORT_SYMBOL(fscrypt_decrypt_bio_pages);
+>>>>>>> p9x
 
 void fscrypt_pullback_bio_page(struct page **page, bool restore)
 {
@@ -125,7 +155,11 @@ int fscrypt_zeroout_range(const struct inode *inode, pgoff_t lblk,
 			goto errout;
 		}
 		bio->bi_bdev = inode->i_sb->s_bdev;
+<<<<<<< HEAD
 		bio->bi_iter.bi_sector =
+=======
+		bio->bi_sector =
+>>>>>>> p9x
 			pblk << (inode->i_sb->s_blocksize_bits - 9);
 		bio_set_op_attrs(bio, REQ_OP_WRITE, 0);
 		ret = bio_add_page(bio, ciphertext_page,

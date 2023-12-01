@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2013-2017, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -20,8 +24,11 @@
 #include <linux/rmnet_data.h>
 #include <linux/net_map.h>
 #include <linux/netdev_features.h>
+<<<<<<< HEAD
 #include <linux/ip.h>
 #include <linux/ipv6.h>
+=======
+>>>>>>> p9x
 #include "rmnet_data_private.h"
 #include "rmnet_data_config.h"
 #include "rmnet_data_vnd.h"
@@ -45,6 +52,7 @@ module_param(dump_pkt_tx, uint, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(dump_pkt_tx, "Dump packets exiting egress handler");
 #endif /* CONFIG_RMNET_DATA_DEBUG_PKT */
 
+<<<<<<< HEAD
 /* Time in nano seconds. This number must be less that a second. */
 long gro_flush_time __read_mostly = 10000L;
 module_param(gro_flush_time, long, S_IRUGO | S_IWUSR);
@@ -56,6 +64,8 @@ MODULE_PARM_DESC(gro_flush_time, "Flush GRO when spaced more than this");
 #define RMNET_DATA_GRO_RCV_FAIL 0
 #define RMNET_DATA_GRO_RCV_PASS 1
 
+=======
+>>>>>>> p9x
 /* ***************** Helper Functions *************************************** */
 
 /**
@@ -70,10 +80,17 @@ MODULE_PARM_DESC(gro_flush_time, "Flush GRO when spaced more than this");
 static inline void __rmnet_data_set_skb_proto(struct sk_buff *skb)
 {
 	switch (skb->data[0] & 0xF0) {
+<<<<<<< HEAD
 	case RMNET_DATA_IP_VERSION_4:
 		skb->protocol = htons(ETH_P_IP);
 		break;
 	case RMNET_DATA_IP_VERSION_6:
+=======
+	case 0x40: /* IPv4 */
+		skb->protocol = htons(ETH_P_IP);
+		break;
+	case 0x60: /* IPv6 */
+>>>>>>> p9x
 		skb->protocol = htons(ETH_P_IPV6);
 		break;
 	default:
@@ -186,12 +203,17 @@ static void rmnet_reset_mac_header(struct sk_buff *skb)
 #else
 static void rmnet_reset_mac_header(struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	skb->mac_header = skb->network_header;
+=======
+	skb->mac_header = skb->data;
+>>>>>>> p9x
 	skb->mac_len = 0;
 }
 #endif /*NET_SKBUFF_DATA_USES_OFFSET*/
 
 /**
+<<<<<<< HEAD
  * rmnet_check_skb_can_gro() - Check is skb can be passed through GRO handler
  *
  * Determines whether to pass the skb to the GRO handler napi_gro_receive() or
@@ -252,6 +274,8 @@ static void rmnet_optional_gro_flush(struct napi_struct *napi,
 }
 
 /**
+=======
+>>>>>>> p9x
  * __rmnet_deliver_skb() - Deliver skb
  *
  * Determines where to deliver skb. Options are: consume by network stack,
@@ -285,13 +309,20 @@ static rx_handler_result_t __rmnet_deliver_skb(struct sk_buff *skb,
 		case RX_HANDLER_PASS:
 			skb->pkt_type = PACKET_HOST;
 			rmnet_reset_mac_header(skb);
+<<<<<<< HEAD
 			if (rmnet_check_skb_can_gro(skb) &&
 			    (skb->dev->features & NETIF_F_GRO)) {
+=======
+			if (skb->dev->features & NETIF_F_GRO) {
+>>>>>>> p9x
 				napi = get_current_napi_context();
 				if (napi != NULL) {
 					gro_res = napi_gro_receive(napi, skb);
 					trace_rmnet_gro_downlink(gro_res);
+<<<<<<< HEAD
 					rmnet_optional_gro_flush(napi, ep);
+=======
+>>>>>>> p9x
 				} else {
 					WARN_ONCE(1, "current napi is NULL\n");
 					netif_receive_skb(skb);
@@ -411,6 +442,10 @@ static rx_handler_result_t _rmnet_map_ingress_handler(struct sk_buff *skb,
 		else if (ckresult != RMNET_MAP_CHECKSUM_ERR_UNKNOWN_IP_VERSION
 			&& ckresult != RMNET_MAP_CHECKSUM_ERR_UNKNOWN_TRANSPORT
 			&& ckresult != RMNET_MAP_CHECKSUM_VALID_FLAG_NOT_SET
+<<<<<<< HEAD
+=======
+			&& ckresult != RMNET_MAP_CHECKSUM_VALIDATION_FAILED
+>>>>>>> p9x
 			&& ckresult != RMNET_MAP_CHECKSUM_FRAGMENTED_PACKET) {
 			rmnet_kfree_skb(skb,
 				RMNET_STATS_SKBFREE_INGRESS_BAD_MAP_CKSUM);
@@ -501,9 +536,17 @@ static int rmnet_map_egress_handler(struct sk_buff *skb,
 	LOGD("headroom of %d bytes", required_headroom);
 
 	if (skb_headroom(skb) < required_headroom) {
+<<<<<<< HEAD
 		LOGE("Not enough headroom for %d bytes", required_headroom);
 		kfree_skb(skb);
 		return 1;
+=======
+		if (pskb_expand_head(skb, required_headroom, 0, GFP_KERNEL)) {
+			LOGD("Failed to add headroom of %d bytes",
+			     required_headroom);
+			return 1;
+		}
+>>>>>>> p9x
 	}
 
 	if ((config->egress_data_format & RMNET_EGRESS_FORMAT_MAP_CKSUMV3) ||
@@ -514,9 +557,13 @@ static int rmnet_map_egress_handler(struct sk_buff *skb,
 		rmnet_stats_ul_checksum(ckresult);
 	}
 
+<<<<<<< HEAD
 	if ((!(config->egress_data_format &
 	    RMNET_EGRESS_FORMAT_AGGREGATION)) ||
 	    ((orig_dev->features & NETIF_F_GSO) && skb_is_nonlinear(skb)))
+=======
+	if (!(config->egress_data_format & RMNET_EGRESS_FORMAT_AGGREGATION))
+>>>>>>> p9x
 		map_header = rmnet_map_add_map_header
 		(skb, additional_header_length, RMNET_MAP_NO_PAD_BYTES);
 	else
@@ -525,7 +572,10 @@ static int rmnet_map_egress_handler(struct sk_buff *skb,
 
 	if (!map_header) {
 		LOGD("%s", "Failed to add MAP header to egress packet");
+<<<<<<< HEAD
 		kfree_skb(skb);
+=======
+>>>>>>> p9x
 		return 1;
 	}
 

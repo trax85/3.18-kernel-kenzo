@@ -432,6 +432,10 @@ static unsigned int pch_uart_get_uartclk(void)
 	if (d)
 		return (unsigned long)d->driver_data;
 
+	cmp = dmi_get_system_info(DMI_BOARD_NAME);
+	if (cmp && strstr(cmp, "MinnowBoard"))
+		return MINNOW_UARTCLK;
+
 	return DEFAULT_UARTCLK;
 }
 
@@ -679,11 +683,20 @@ static int dma_push_rx(struct eg20t_port *priv, int size)
 		dev_warn(port->dev, "Rx overrun: dropping %u bytes\n",
 			 size - room);
 	if (!room)
+<<<<<<< HEAD
 		return 0;
+=======
+		goto out;
+>>>>>>> p9x
 
 	tty_insert_flip_string(tport, sg_virt(&priv->sg_rx), size);
 
 	port->icount.rx += room;
+<<<<<<< HEAD
+=======
+out:
+	tty_kref_put(tty);
+>>>>>>> p9x
 
 	return room;
 }

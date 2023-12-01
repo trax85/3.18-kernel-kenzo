@@ -7,6 +7,16 @@
 #include <linux/mmc/host.h>
 #include <linux/mmc/card.h>
 #include <linux/mmc/sdio_func.h>
+<<<<<<< HEAD
+=======
+
+struct embedded_sdio_data {
+        struct sdio_cis cis;
+        struct sdio_cccr cccr;
+        struct sdio_embedded_func *funcs;
+        int num_funcs;
+};
+>>>>>>> p9x
 
 struct embedded_sdio_data {
         struct sdio_cis cis;
@@ -40,10 +50,22 @@ struct mmci_platform_data {
 	int	gpio_wp;
 	int	gpio_cd;
 	bool	cd_invert;
+<<<<<<< HEAD
 	unsigned int status_irq;
 	struct embedded_sdio_data *embedded_sdio;
 	int (*register_status_notify)(void (*callback)(int card_present, void *dev_id), void *dev_id);
 
+=======
+	unsigned long capabilities;
+	unsigned long capabilities2;
+	u32 sigdir;
+	bool (*dma_filter)(struct dma_chan *chan, void *filter_param);
+	void *dma_rx_param;
+	void *dma_tx_param;
+	unsigned int status_irq;
+	struct embedded_sdio_data *embedded_sdio;
+	int (*register_status_notify)(void (*callback)(int card_present, void *dev_id), void *dev_id);
+>>>>>>> p9x
 };
 
 #endif

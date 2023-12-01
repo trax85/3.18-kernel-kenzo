@@ -17,10 +17,15 @@
 #include <linux/delay.h>
 #include <linux/workqueue.h>
 #include <linux/kmod.h>
+<<<<<<< HEAD
 #include <trace/events/power.h>
 #include <linux/wakeup_reason.h>
+=======
+#include <linux/wakeup_reason.h>
+#include <linux/cpuset.h>
+>>>>>>> p9x
 
-/* 
+/*
  * Timeout for stopping processes
  */
 unsigned int __read_mostly freeze_timeout_msecs = 20 * MSEC_PER_SEC;
@@ -103,6 +108,7 @@ static int try_to_freeze_tasks(bool user_only)
 		       elapsed_msecs / 1000, elapsed_msecs % 1000,
 		       todo - wq_busy, wq_busy);
 
+<<<<<<< HEAD
 			read_lock(&tasklist_lock);
 			for_each_process_thread(g, p) {
 				if (p != current && !freezer_should_skip(p)
@@ -110,6 +116,15 @@ static int try_to_freeze_tasks(bool user_only)
 					sched_show_task(p);
 			}
 			read_unlock(&tasklist_lock);
+=======
+		read_lock(&tasklist_lock);
+		do_each_thread(g, p) {
+			if (p != current && !freezer_should_skip(p)
+			    && freezing(p) && !frozen(p))
+				sched_show_task(p);
+		} while_each_thread(g, p);
+		read_unlock(&tasklist_lock);
+>>>>>>> p9x
 	} else {
 		printk("(elapsed %d.%03d seconds) ", elapsed_msecs / 1000,
 			elapsed_msecs % 1000);
@@ -118,6 +133,7 @@ static int try_to_freeze_tasks(bool user_only)
 	return todo ? -EBUSY : 0;
 }
 
+<<<<<<< HEAD
 static bool __check_frozen_processes(void)
 {
 	struct task_struct *g, *p;
@@ -129,16 +145,35 @@ static bool __check_frozen_processes(void)
 	return true;
 }
 
+=======
+>>>>>>> p9x
 /*
  * Returns true if all freezable tasks (except for current) are frozen already
  */
 static bool check_frozen_processes(void)
 {
+<<<<<<< HEAD
 	bool ret;
 
 	read_lock(&tasklist_lock);
 	ret = __check_frozen_processes();
 	read_unlock(&tasklist_lock);
+=======
+	struct task_struct *g, *p;
+	bool ret = true;
+
+	read_lock(&tasklist_lock);
+	for_each_process_thread(g, p) {
+		if (p != current && !freezer_should_skip(p) &&
+		    !frozen(p)) {
+			ret = false;
+			goto done;
+		}
+	}
+done:
+	read_unlock(&tasklist_lock);
+
+>>>>>>> p9x
 	return ret;
 }
 
@@ -179,6 +214,7 @@ int freeze_processes(void)
 		 * on the way out so we have to double check for race.
 		 */
 		if (oom_kills_count() != oom_kills_saved &&
+<<<<<<< HEAD
 		    !check_frozen_processes()) {
 			__usermodehelper_set_disable_depth(UMH_ENABLED);
 			printk("OOM in progress.");
@@ -186,7 +222,17 @@ int freeze_processes(void)
 		} else {
 			printk("done.");
 		}
+=======
+				!check_frozen_processes()) {
+			__usermodehelper_set_disable_depth(UMH_ENABLED);
+			printk("OOM in progress.");
+			error = -EBUSY;
+			goto done;
+		}
+		printk("done.");
+>>>>>>> p9x
 	}
+done:
 	printk("\n");
 	BUG_ON(in_atomic());
 
@@ -238,6 +284,8 @@ void thaw_processes(void)
 
 	__usermodehelper_set_disable_depth(UMH_FREEZING);
 	thaw_workqueues();
+
+	cpuset_wait_for_hotplug();
 
 	read_lock(&tasklist_lock);
 	for_each_process_thread(g, p) {

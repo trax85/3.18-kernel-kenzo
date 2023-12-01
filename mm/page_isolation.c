@@ -62,8 +62,12 @@ out:
 
 		set_pageblock_migratetype(page, MIGRATE_ISOLATE);
 		zone->nr_isolate_pageblock++;
+<<<<<<< HEAD
 		nr_pages = move_freepages_block(zone, page,
 				MIGRATE_ISOLATE, migratetype);
+=======
+		nr_pages = move_freepages_block(zone, page, MIGRATE_ISOLATE);
+>>>>>>> p9x
 
 		__mod_zone_freepage_state(zone, -nr_pages, migratetype);
 	}
@@ -105,8 +109,11 @@ void unset_migratetype_isolate(struct page *page, unsigned migratetype)
 
 			if (!is_migrate_isolate_page(buddy)) {
 				__isolate_free_page(page, order);
+<<<<<<< HEAD
 				kasan_alloc_pages(page, order);
 				arch_alloc_page(page, order);
+=======
+>>>>>>> p9x
 				kernel_map_pages(page, (1 << order), 1);
 				set_page_refcounted(page);
 				isolated_page = page;
@@ -120,8 +127,12 @@ void unset_migratetype_isolate(struct page *page, unsigned migratetype)
 	 * pageblock scanning for freepage moving.
 	 */
 	if (!isolated_page) {
+<<<<<<< HEAD
 		nr_pages = move_freepages_block(zone, page,
 				migratetype, 0);
+=======
+		nr_pages = move_freepages_block(zone, page, migratetype);
+>>>>>>> p9x
 		__mod_zone_freepage_state(zone, nr_pages, migratetype);
 	}
 	set_pageblock_migratetype(page, migratetype);

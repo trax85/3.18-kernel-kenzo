@@ -53,7 +53,11 @@
 #include <linux/oom.h>
 #include <linux/writeback.h>
 #include <linux/shm.h>
+<<<<<<< HEAD
 #include <linux/kcov.h>
+=======
+#include <linux/cpufreq.h>
+>>>>>>> p9x
 
 #include <asm/uaccess.h>
 #include <asm/unistd.h>
@@ -174,6 +178,9 @@ void release_task(struct task_struct *p)
 {
 	struct task_struct *leader;
 	int zap_leader;
+#ifdef CONFIG_CPU_FREQ_STAT
+	cpufreq_task_stats_exit(p);
+#endif
 repeat:
 	/* don't need to get the RCU readlock here - the process is dead and
 	 * can't be modifying its own credentials. But shut RCU-lockdep up */
@@ -462,7 +469,10 @@ static void exit_mm(struct task_struct *tsk)
 	mm_update_next_owner(mm);
 
 	mm_released = mmput(mm);
+<<<<<<< HEAD
 	clear_thread_flag(TIF_MEMDIE);
+=======
+>>>>>>> p9x
 	if (mm_released)
 		set_tsk_thread_flag(tsk, TIF_MM_RELEASED);
 }
@@ -535,9 +545,6 @@ static void reparent_leader(struct task_struct *father, struct task_struct *p,
 				struct list_head *dead)
 {
 	list_move_tail(&p->sibling, &p->real_parent->children);
-
-	if (p->exit_state == EXIT_DEAD)
-		return;
 	/*
 	 * If this is a threaded reparent there is no need to
 	 * notify anyone anything has happened.
@@ -545,8 +552,22 @@ static void reparent_leader(struct task_struct *father, struct task_struct *p,
 	if (same_thread_group(p->real_parent, father))
 		return;
 
+<<<<<<< HEAD
 	/* We don't want people slaying init. */
+=======
+	/*
+	 * We don't want people slaying init.
+	 *
+	 * Note: we do this even if it is EXIT_DEAD, wait_task_zombie()
+	 * can change ->exit_state to EXIT_ZOMBIE. If this is the final
+	 * state, do_notify_parent() was already called and ->exit_signal
+	 * doesn't matter.
+	 */
+>>>>>>> p9x
 	p->exit_signal = SIGCHLD;
+
+	if (p->exit_state == EXIT_DEAD)
+		return;
 
 	/* If it has exited notify the new parent about this child's death. */
 	if (!p->ptrace &&
@@ -712,7 +733,12 @@ void do_exit(long code)
 #ifdef CONFIG_PANIC_ON_RECURSIVE_FAULT
 		panic("Recursive fault!\n");
 #else
+<<<<<<< HEAD
 		pr_alert("Fixing recursive fault but reboot is needed!\n");
+=======
+		printk(KERN_ALERT
+			"Fixing recursive fault but reboot is needed!\n");
+>>>>>>> p9x
 #endif
 		/*
 		 * We can do this unlocked here. The futex code uses
@@ -732,6 +758,13 @@ void do_exit(long code)
 
 	sched_exit(tsk);
 
+<<<<<<< HEAD
+=======
+	if (tsk->flags & PF_SU) {
+		su_exit();
+	}
+
+>>>>>>> p9x
 	/*
 	 * tsk->flags are checked in the futex code to protect against
 	 * an exiting task cleaning up the robust pi futexes.
@@ -787,10 +820,18 @@ void do_exit(long code)
 	 */
 	perf_event_exit_task(tsk);
 
+<<<<<<< HEAD
 	cgroup_exit(tsk);
 
 	module_put(task_thread_info(tsk)->exec_domain->module);
 
+=======
+	cgroup_exit(tsk, 1);
+
+	module_put(task_thread_info(tsk)->exec_domain->module);
+
+	proc_exit_connector(tsk);
+>>>>>>> p9x
 	/*
 	 * FIXME: do that only when needed, using sched_exit tracepoint
 	 */

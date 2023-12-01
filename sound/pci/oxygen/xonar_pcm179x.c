@@ -1269,6 +1269,7 @@ int get_xonar_pcm179x_model(struct oxygen *chip,
 		break;
 	case 0x85f4:
 		chip->model = model_xonar_st;
+<<<<<<< HEAD
 		oxygen_clear_bits16(chip, OXYGEN_GPIO_CONTROL, GPIO_DB_MASK);
 		switch (oxygen_read16(chip, OXYGEN_GPIO_DATA) & GPIO_DB_MASK) {
 		default:
@@ -1281,10 +1282,15 @@ int get_xonar_pcm179x_model(struct oxygen *chip,
 			chip->model.dac_mclks = OXYGEN_MCLKS(256, 128, 128);
 			break;
 		}
+=======
+		/* TODO: daughterboard support */
+		chip->model.shortname = "Xonar STX II";
+>>>>>>> p9x
 		chip->model.init = xonar_stx_init;
 		chip->model.resume = xonar_stx_resume;
 		chip->model.set_dac_params = set_pcm1796_params;
 		break;
+<<<<<<< HEAD
 	case 0x8428:
 		chip->model = model_xonar_st;
 		chip->model.shortname = "Xonar Xense";
@@ -1292,6 +1298,8 @@ int get_xonar_pcm179x_model(struct oxygen *chip,
 		chip->model.init = xonar_xense_init;
 		chip->model.mixer_init = xonar_xense_mixer_init;
 		break;
+=======
+>>>>>>> p9x
 	default:
 		return -EINVAL;
 	}

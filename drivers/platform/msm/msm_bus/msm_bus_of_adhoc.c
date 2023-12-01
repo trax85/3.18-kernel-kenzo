@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -227,7 +231,11 @@ static int msm_bus_of_parse_clk_array(struct device_node *dev_node,
 
 	clks = of_property_count_strings(dev_node, "clock-names");
 	if (clks < 0) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "No qos clks node %d\n", id);
+=======
+		pr_info("%s: No qos clks node %d\n", __func__, id);
+>>>>>>> p9x
 		ret = clks;
 		goto exit_of_parse_clk_array;
 	}
@@ -237,7 +245,11 @@ static int msm_bus_of_parse_clk_array(struct device_node *dev_node,
 			(clks * sizeof(struct nodeclk)), GFP_KERNEL);
 
 	if (!(*clk_arr)) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "Error allocating clk nodes for %d\n", id);
+=======
+		pr_err("%s: Error allocating clk nodes for %d\n", __func__, id);
+>>>>>>> p9x
 		ret = -ENOMEM;
 		*num_clks = 0;
 		goto exit_of_parse_clk_array;
@@ -506,7 +518,11 @@ static int get_bus_node_device_data(
 
 	if (node_device->node_info->is_fab_dev) {
 		struct device_node *qos_clk_node;
+<<<<<<< HEAD
 		dev_dbg(&pdev->dev, "Dev %d\n", node_device->node_info->id);
+=======
+		dev_err(&pdev->dev, "Dev %d\n", node_device->node_info->id);
+>>>>>>> p9x
 
 		if (!node_device->node_info->virt_dev) {
 			node_device->fabdev =
@@ -596,6 +612,7 @@ static int get_bus_node_device_data(
 					MAX_REG_NAME, "%c", '\0');
 		}
 
+<<<<<<< HEAD
 		qos_clk_node = of_get_child_by_name(dev_node,
 						"qcom,node-qos-clks");
 
@@ -610,6 +627,16 @@ static int get_bus_node_device_data(
 			}
 			of_node_put(qos_clk_node);
 		}
+=======
+		qos_clk_node = of_find_node_by_name(dev_node,
+						"qcom,node-qos-clks");
+
+		if (qos_clk_node)
+			msm_bus_of_parse_clk_array(qos_clk_node, dev_node, pdev,
+			&node_device->node_qos_clks,
+			&node_device->num_node_qos_clks,
+			node_device->node_info->id);
+>>>>>>> p9x
 
 		if (msmbus_coresight_init_adhoc(pdev, dev_node))
 			dev_warn(&pdev->dev,
@@ -808,9 +835,12 @@ int msm_bus_of_get_static_rules(struct platform_device *pdev,
 	int bw_fld = 0;
 	int i;
 	struct bus_rule_type *local_rule = NULL;
+<<<<<<< HEAD
 	int *thresh_arr = NULL;
 	int num_op = 0;
 	int num_fld = 0;
+=======
+>>>>>>> p9x
 
 	of_node = pdev->dev.of_node;
 	num_rules = of_get_child_count(of_node);
@@ -835,6 +865,7 @@ int msm_bus_of_get_static_rules(struct platform_device *pdev,
 			&local_rule[rule_idx].num_dst,
 			"qcom,dest-node");
 
+<<<<<<< HEAD
 		if (local_rule[rule_idx].num_dst > 1) {
 			dev_err(&pdev->dev, "Only 1 dest node supported\n");
 			ret = -ENXIO;
@@ -870,14 +901,25 @@ int msm_bus_of_get_static_rules(struct platform_device *pdev,
 		local_rule[rule_idx].src_field = get_arr(pdev, child_node,
 				"qcom,src-field", &num_fld);
 		if (!num_fld || (num_fld != local_rule[rule_idx].num_thresh)) {
+=======
+		ret = of_property_read_u32(child_node, "qcom,src-field",
+				&local_rule[rule_idx].src_field);
+		if (ret) {
+>>>>>>> p9x
 			dev_err(&pdev->dev, "src-field missing");
 			ret = -ENXIO;
 			goto err_static_rules;
 		}
 
+<<<<<<< HEAD
 		local_rule[rule_idx].op = get_arr(pdev, child_node,
 				"qcom,src-op", &num_op);
 		if (!num_op || (num_op != local_rule[rule_idx].num_thresh)) {
+=======
+		ret = of_property_read_u32(child_node, "qcom,src-op",
+				&local_rule[rule_idx].op);
+		if (ret) {
+>>>>>>> p9x
 			dev_err(&pdev->dev, "src-op missing");
 			ret = -ENXIO;
 			goto err_static_rules;
@@ -885,8 +927,24 @@ int msm_bus_of_get_static_rules(struct platform_device *pdev,
 
 		ret = of_property_read_u32(child_node, "qcom,mode",
 				&local_rule[rule_idx].mode);
+<<<<<<< HEAD
 		if (ret)
 			local_rule[rule_idx].mode = THROTTLE_OFF;
+=======
+		if (ret) {
+			dev_err(&pdev->dev, "mode missing");
+			ret = -ENXIO;
+			goto err_static_rules;
+		}
+
+		ret = of_property_read_u32(child_node, "qcom,thresh", &bw_fld);
+		if (ret) {
+			dev_err(&pdev->dev, "thresh missing");
+			ret = -ENXIO;
+			goto err_static_rules;
+		} else
+			local_rule[rule_idx].thresh = KBTOB(bw_fld);
+>>>>>>> p9x
 
 		ret = of_property_read_u32(child_node, "qcom,dest-bw",
 								&bw_fld);
@@ -895,6 +953,7 @@ int msm_bus_of_get_static_rules(struct platform_device *pdev,
 		else
 			local_rule[rule_idx].dst_bw = KBTOB(bw_fld);
 
+<<<<<<< HEAD
 		ret = of_property_read_u32(child_node, "qcom,combo-op",
 				&local_rule[rule_idx].combo_op);
 		if (ret) {
@@ -910,6 +969,11 @@ int msm_bus_of_get_static_rules(struct platform_device *pdev,
 	}
 	ret = rule_idx;
 
+=======
+		rule_idx++;
+	}
+	ret = rule_idx;
+>>>>>>> p9x
 exit_static_rules:
 	return ret;
 err_static_rules:
@@ -921,6 +985,7 @@ err_static_rules:
 			if (!IS_ERR_OR_NULL(local_rule[i].dst_node))
 				devm_kfree(&pdev->dev,
 						local_rule[i].dst_node);
+<<<<<<< HEAD
 			if (!IS_ERR_OR_NULL(thresh_arr))
 				devm_kfree(&pdev->dev, thresh_arr);
 			if (!IS_ERR_OR_NULL(local_rule[i].thresh))
@@ -937,6 +1002,11 @@ err_static_rules:
 		}
 	}
 	devm_kfree(&pdev->dev, local_rule);
+=======
+			devm_kfree(&pdev->dev, local_rule);
+		}
+	}
+>>>>>>> p9x
 	*static_rules = NULL;
 	return ret;
 }

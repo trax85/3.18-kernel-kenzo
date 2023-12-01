@@ -459,11 +459,14 @@ struct scsi_host_template {
 	/* True if the controller does not support WRITE SAME */
 	unsigned no_write_same:1;
 
+<<<<<<< HEAD
 	/*
 	 * True if asynchronous aborts are not supported
 	 */
 	unsigned no_async_abort:1;
 
+=======
+>>>>>>> p9x
 	/*
 	 * Countdown for host blocking with no commands outstanding.
 	 */
@@ -679,8 +682,16 @@ struct Scsi_Host {
 	/* The controller does not support WRITE SAME */
 	unsigned no_write_same:1;
 
+<<<<<<< HEAD
 	unsigned use_blk_mq:1;
 	unsigned use_cmd_list:1;
+=======
+	/*
+	 * Set "SELECT REPORT" field to allow detection of well known logical
+	 * units along with standard LUs.
+	 */
+	unsigned report_wlus:1;
+>>>>>>> p9x
 
 	/*
 	 * Set "DBD" field in mode_sense caching mode page in case it is

@@ -3,7 +3,10 @@
  *
  * Author: Nicolas Pitre
  */
+<<<<<<< HEAD
 #include <linux/cpufreq.h>
+=======
+>>>>>>> p9x
 #include <linux/reboot.h>
 
 extern void sa1100_timer_init(void);

@@ -114,6 +114,20 @@ int pud_huge(pud_t pud)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+int pmd_huge_support(void)
+{
+	return 0;
+}
+
+struct page *
+follow_huge_pmd(struct mm_struct *mm, unsigned long address, pmd_t *pmd, int write)
+{
+	return NULL;
+}
+
+>>>>>>> p9x
 void hugetlb_free_pgd_range(struct mmu_gather *tlb,
 			unsigned long addr, unsigned long end,
 			unsigned long floor, unsigned long ceiling)

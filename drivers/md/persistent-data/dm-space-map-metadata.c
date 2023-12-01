@@ -464,13 +464,21 @@ static int sm_metadata_new_block(struct dm_space_map *sm, dm_block_t *b)
 
 	int r = sm_metadata_new_block_(sm, b);
 	if (r) {
+<<<<<<< HEAD
 		DMERR_LIMIT("unable to allocate new metadata block");
+=======
+		DMERR("unable to allocate new metadata block");
+>>>>>>> p9x
 		return r;
 	}
 
 	r = sm_metadata_get_nr_free(sm, &count);
 	if (r) {
+<<<<<<< HEAD
 		DMERR_LIMIT("couldn't get free block count");
+=======
+		DMERR("couldn't get free block count");
+>>>>>>> p9x
 		return r;
 	}
 
@@ -710,12 +718,15 @@ static int sm_metadata_extend(struct dm_space_map *sm, dm_block_t extra_blocks)
 		}
 		old_len = smm->begin;
 
+<<<<<<< HEAD
 		r = apply_bops(smm);
 		if (r) {
 			DMERR("%s: apply_bops failed", __func__);
 			goto out;
 		}
 
+=======
+>>>>>>> p9x
 		r = sm_ll_commit(&smm->ll);
 		if (r)
 			goto out;
@@ -765,8 +776,11 @@ int dm_sm_metadata_create(struct dm_space_map *sm,
 
 	r = sm_ll_new_metadata(&smm->ll, tm);
 	if (!r) {
+<<<<<<< HEAD
 		if (nr_blocks > DM_SM_METADATA_MAX_BLOCKS)
 			nr_blocks = DM_SM_METADATA_MAX_BLOCKS;
+=======
+>>>>>>> p9x
 		r = sm_ll_extend(&smm->ll, nr_blocks);
 	}
 	memcpy(&smm->sm, &ops, sizeof(smm->sm));

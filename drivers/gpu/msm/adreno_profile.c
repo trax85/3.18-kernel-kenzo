@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -364,6 +368,10 @@ static bool _add_to_assignments_list(struct adreno_profile *profile,
 static bool results_available(struct adreno_device *adreno_dev,
 		struct adreno_profile *profile, unsigned int *shared_buf_tail)
 {
+<<<<<<< HEAD
+=======
+	struct kgsl_device *device = &adreno_dev->dev;
+>>>>>>> p9x
 	unsigned int global_eop;
 	unsigned int off = profile->shared_tail;
 	unsigned int *shared_ptr = (unsigned int *)
@@ -378,7 +386,11 @@ static bool results_available(struct adreno_device *adreno_dev,
 	if (shared_buf_empty(profile))
 		return false;
 
+<<<<<<< HEAD
 	if (adreno_rb_readtimestamp(adreno_dev,
+=======
+	if (adreno_rb_readtimestamp(device,
+>>>>>>> p9x
 			adreno_dev->cur_rb,
 			KGSL_TIMESTAMP_RETIRED, &global_eop))
 		return false;
@@ -1061,7 +1073,11 @@ DEFINE_SIMPLE_ATTRIBUTE(profile_enable_fops,
 
 void adreno_profile_init(struct adreno_device *adreno_dev)
 {
+<<<<<<< HEAD
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
+=======
+	struct kgsl_device *device = &adreno_dev->dev;
+>>>>>>> p9x
 	struct adreno_profile *profile = &adreno_dev->profile;
 	struct dentry *profile_dir;
 	int ret;
@@ -1071,8 +1087,12 @@ void adreno_profile_init(struct adreno_device *adreno_dev)
 	/* allocate shared_buffer, which includes pre_ib and post_ib */
 	profile->shared_size = ADRENO_PROFILE_SHARED_BUF_SIZE_DWORDS;
 	ret = kgsl_allocate_global(device, &profile->shared_buffer,
+<<<<<<< HEAD
 			profile->shared_size * sizeof(unsigned int),
 			0, 0, "profile");
+=======
+			profile->shared_size * sizeof(unsigned int), 0, 0);
+>>>>>>> p9x
 
 	if (ret) {
 		profile->shared_size = 0;
@@ -1108,7 +1128,11 @@ void adreno_profile_close(struct adreno_device *adreno_dev)
 	profile->log_tail = NULL;
 	profile->shared_head = 0;
 	profile->shared_tail = 0;
+<<<<<<< HEAD
 	kgsl_free_global(KGSL_DEVICE(adreno_dev), &profile->shared_buffer);
+=======
+	kgsl_free_global(&profile->shared_buffer);
+>>>>>>> p9x
 	profile->shared_size = 0;
 
 	profile->assignment_count = 0;

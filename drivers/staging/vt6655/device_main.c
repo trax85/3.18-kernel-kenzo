@@ -2220,6 +2220,10 @@ static  irqreturn_t  device_intr(int irq,  void *dev_instance)
 	unsigned char byData = 0;
 	int             ii = 0;
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+//    unsigned char byRSSI;
+>>>>>>> p9x
 
 	MACvReadISR(pDevice->PortOffset, &pDevice->dwIsr);
 

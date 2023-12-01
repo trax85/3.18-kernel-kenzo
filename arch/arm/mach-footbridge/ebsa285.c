@@ -42,7 +42,10 @@ static const struct {
 };
 
 static unsigned char hw_led_state;
+<<<<<<< HEAD
 static void __iomem *xbus;
+=======
+>>>>>>> p9x
 
 static void ebsa285_led_set(struct led_classdev *cdev,
 		enum led_brightness b)
@@ -54,7 +57,11 @@ static void ebsa285_led_set(struct led_classdev *cdev,
 		hw_led_state |= led->mask;
 	else
 		hw_led_state &= ~led->mask;
+<<<<<<< HEAD
 	writeb(hw_led_state, xbus);
+=======
+	*XBUS_LEDS = hw_led_state;
+>>>>>>> p9x
 }
 
 static enum led_brightness ebsa285_led_get(struct led_classdev *cdev)
@@ -72,6 +79,7 @@ static int __init ebsa285_leds_init(void)
 	if (!machine_is_ebsa285())
 		return -ENODEV;
 
+<<<<<<< HEAD
 	xbus = ioremap(XBUS_CS2, SZ_4K);
 	if (!xbus)
 		return -ENOMEM;
@@ -79,6 +87,11 @@ static int __init ebsa285_leds_init(void)
 	/* 3 LEDS all off */
 	hw_led_state = XBUS_AMBER_L | XBUS_GREEN_L | XBUS_RED_L;
 	writeb(hw_led_state, xbus);
+=======
+	/* 3 LEDS all off */
+	hw_led_state = XBUS_LED_AMBER | XBUS_LED_GREEN | XBUS_LED_RED;
+	*XBUS_LEDS = hw_led_state;
+>>>>>>> p9x
 
 	for (i = 0; i < ARRAY_SIZE(ebsa285_leds); i++) {
 		struct ebsa285_led *led;

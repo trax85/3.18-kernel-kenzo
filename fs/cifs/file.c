@@ -583,7 +583,11 @@ cifs_relock_file(struct cifsFileInfo *cfile)
 	struct cifs_tcon *tcon = tlink_tcon(cfile->tlink);
 	int rc = 0;
 
+<<<<<<< HEAD
 	down_read_nested(&cinode->lock_sem, SINGLE_DEPTH_NESTING);
+=======
+	down_read(&cinode->lock_sem);
+>>>>>>> p9x
 	if (cinode->can_cache_brlcks) {
 		/* can cache locks - no need to relock */
 		up_read(&cinode->lock_sem);
@@ -2488,12 +2492,26 @@ cifs_write_from_iter(loff_t offset, size_t len, struct iov_iter *from,
 		     struct cifsFileInfo *open_file,
 		     struct cifs_sb_info *cifs_sb, struct list_head *wdata_list)
 {
+<<<<<<< HEAD
 	int rc = 0;
 	size_t cur_len;
 	unsigned long nr_pages, num_pages, i;
 	struct cifs_writedata *wdata;
 	struct iov_iter saved_from;
 	loff_t saved_offset = offset;
+=======
+	unsigned long nr_pages, i;
+	size_t bytes, copied, len, cur_len;
+	ssize_t total_written = 0;
+	loff_t offset;
+	struct iov_iter it;
+	struct cifsFileInfo *open_file;
+	struct cifs_tcon *tcon;
+	struct cifs_sb_info *cifs_sb;
+	struct cifs_writedata *wdata, *tmp;
+	struct list_head wdata_list;
+	int rc;
+>>>>>>> p9x
 	pid_t pid;
 	struct TCP_Server_Info *server;
 
@@ -2529,6 +2547,7 @@ cifs_write_from_iter(loff_t offset, size_t len, struct iov_iter *from,
 			break;
 		}
 
+<<<<<<< HEAD
 		num_pages = nr_pages;
 		rc = wdata_fill_from_iovec(wdata, from, &cur_len, &num_pages);
 		if (rc) {
@@ -2537,6 +2556,24 @@ cifs_write_from_iter(loff_t offset, size_t len, struct iov_iter *from,
 			kfree(wdata);
 			add_credits_and_wake_if(server, credits, 0);
 			break;
+=======
+		save_len = cur_len;
+		for (i = 0; i < nr_pages; i++) {
+			bytes = min_t(const size_t, cur_len, PAGE_SIZE);
+			copied = iov_iter_copy_from_user(wdata->pages[i], &it,
+							 0, bytes);
+			cur_len -= copied;
+			iov_iter_advance(&it, copied);
+			/*
+			 * If we didn't copy as much as we expected, then that
+			 * may mean we trod into an unmapped area. Stop copying
+			 * at that point. On the next pass through the big
+			 * loop, we'll likely end up getting a zero-length
+			 * write and bailing out of it.
+			 */
+			if (copied < bytes)
+				break;
+>>>>>>> p9x
 		}
 
 		/*
@@ -2544,6 +2581,28 @@ cifs_write_from_iter(loff_t offset, size_t len, struct iov_iter *from,
 		 * and free any pages that we didn't use.
 		 */
 		for ( ; nr_pages > num_pages; nr_pages--)
+			put_page(wdata->pages[nr_pages - 1]);
+
+		/*
+		 * If we have no data to send, then that probably means that
+		 * the copy above failed altogether. That's most likely because
+		 * the address in the iovec was bogus. Set the rc to -EFAULT,
+		 * free anything we allocated and bail out.
+		 */
+		if (!cur_len) {
+			for (i = 0; i < nr_pages; i++)
+				put_page(wdata->pages[i]);
+			kfree(wdata);
+			rc = -EFAULT;
+			break;
+		}
+
+		/*
+		 * i + 1 now represents the number of pages we actually used in
+		 * the copy phase above. Bring nr_pages down to that, and free
+		 * any pages that we didn't use.
+		 */
+		for ( ; nr_pages > i + 1; nr_pages--)
 			put_page(wdata->pages[nr_pages - 1]);
 
 		wdata->sync_mode = WB_SYNC_ALL;
@@ -2940,8 +2999,12 @@ cifs_uncached_read_into_pages(struct TCP_Server_Info *server,
 		rdata->got_bytes += result;
 	}
 
+<<<<<<< HEAD
 	return rdata->got_bytes > 0 && result != -ECONNABORTED ?
 						rdata->got_bytes : result;
+=======
+	return total_read > 0 && result != -EAGAIN ? total_read : result;
+>>>>>>> p9x
 }
 
 static int
@@ -3413,6 +3476,7 @@ cifs_readpages_read_into_pages(struct TCP_Server_Info *server,
 		rdata->got_bytes += result;
 	}
 
+<<<<<<< HEAD
 	return rdata->got_bytes > 0 && result != -ECONNABORTED ?
 						rdata->got_bytes : result;
 }
@@ -3474,6 +3538,9 @@ readpages_get_pages(struct address_space *mapping, struct list_head *page_list,
 		(*nr_pages)++;
 	}
 	return rc;
+=======
+	return total_read > 0 && result != -EAGAIN ? total_read : result;
+>>>>>>> p9x
 }
 
 static int cifs_readpages(struct file *file, struct address_space *mapping,

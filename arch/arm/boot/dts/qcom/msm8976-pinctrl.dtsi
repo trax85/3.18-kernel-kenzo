@@ -16,11 +16,14 @@
 		compatible = "qcom,msm-tlmm-8916";
 		reg = <0x1000000 0x300000>;
 		interrupts = <0 208 0>;
+<<<<<<< HEAD
 		status = "ok";
 		gpio-controller;
 		#gpio-cells = <2>;
 		interrupt-controller;
 		#interrupt-cells = <2>;
+=======
+>>>>>>> p9x
 
 		/*General purpose pins*/
 		gp: gp {

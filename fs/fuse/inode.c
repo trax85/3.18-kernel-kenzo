@@ -175,9 +175,15 @@ void fuse_change_attributes_common(struct inode *inode, struct fuse_attr *attr,
 	if (!fc->writeback_cache || !S_ISREG(inode->i_mode)) {
 		inode->i_mtime.tv_sec   = attr->mtime;
 		inode->i_mtime.tv_nsec  = attr->mtimensec;
+<<<<<<< HEAD
 		inode->i_ctime.tv_sec   = attr->ctime;
 		inode->i_ctime.tv_nsec  = attr->ctimensec;
 	}
+=======
+	}
+	inode->i_ctime.tv_sec   = attr->ctime;
+	inode->i_ctime.tv_nsec  = attr->ctimensec;
+>>>>>>> p9x
 
 	if (attr->blksize != 0)
 		inode->i_blkbits = ilog2(attr->blksize);
@@ -256,8 +262,11 @@ static void fuse_init_inode(struct inode *inode, struct fuse_attr *attr)
 	inode->i_size = attr->size;
 	inode->i_mtime.tv_sec  = attr->mtime;
 	inode->i_mtime.tv_nsec = attr->mtimensec;
+<<<<<<< HEAD
 	inode->i_ctime.tv_sec  = attr->ctime;
 	inode->i_ctime.tv_nsec = attr->ctimensec;
+=======
+>>>>>>> p9x
 	if (S_ISREG(inode->i_mode)) {
 		fuse_init_common(inode);
 		fuse_init_file_inode(inode);
@@ -305,7 +314,11 @@ struct inode *fuse_iget(struct super_block *sb, u64 nodeid,
 
 	if ((inode->i_state & I_NEW)) {
 		inode->i_flags |= S_NOATIME;
+<<<<<<< HEAD
 		if (!fc->writeback_cache || !S_ISREG(attr->mode))
+=======
+		if (!fc->writeback_cache || !S_ISREG(inode->i_mode))
+>>>>>>> p9x
 			inode->i_flags |= S_NOCMTIME;
 		inode->i_generation = generation;
 		inode->i_data.backing_dev_info = &fc->bdi;
@@ -913,6 +926,12 @@ static void process_init_reply(struct fuse_conn *fc, struct fuse_req *req)
 			}
 			if (arg->time_gran && arg->time_gran <= 1000000000)
 				fc->sb->s_time_gran = arg->time_gran;
+<<<<<<< HEAD
+=======
+			else
+				fc->sb->s_time_gran = 1000000000;
+
+>>>>>>> p9x
 		} else {
 			ra_pages = fc->max_read / PAGE_CACHE_SIZE;
 			fc->no_lock = 1;
@@ -939,9 +958,15 @@ static void fuse_send_init(struct fuse_conn *fc, struct fuse_req *req)
 	arg->flags |= FUSE_ASYNC_READ | FUSE_POSIX_LOCKS | FUSE_ATOMIC_O_TRUNC |
 		FUSE_EXPORT_SUPPORT | FUSE_BIG_WRITES | FUSE_DONT_MASK |
 		FUSE_SPLICE_WRITE | FUSE_SPLICE_MOVE | FUSE_SPLICE_READ |
+<<<<<<< HEAD
 		FUSE_FLOCK_LOCKS | FUSE_HAS_IOCTL_DIR | FUSE_AUTO_INVAL_DATA |
 		FUSE_DO_READDIRPLUS | FUSE_READDIRPLUS_AUTO | FUSE_ASYNC_DIO |
 		FUSE_WRITEBACK_CACHE | FUSE_NO_OPEN_SUPPORT;
+=======
+		FUSE_FLOCK_LOCKS | FUSE_IOCTL_DIR | FUSE_AUTO_INVAL_DATA |
+		FUSE_DO_READDIRPLUS | FUSE_READDIRPLUS_AUTO | FUSE_ASYNC_DIO |
+		FUSE_WRITEBACK_CACHE;
+>>>>>>> p9x
 	req->in.h.opcode = FUSE_INIT;
 	req->in.numargs = 1;
 	req->in.args[0].size = sizeof(*arg);

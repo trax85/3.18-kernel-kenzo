@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -56,6 +60,7 @@ static void _kgsl_event_worker(struct kthread_work *work)
 	kmem_cache_free(events_cache, event);
 }
 
+<<<<<<< HEAD
 /* return true if the group needs to be processed */
 static bool _do_process_group(unsigned int processed, unsigned int cur)
 {
@@ -73,6 +78,8 @@ static bool _do_process_group(unsigned int processed, unsigned int cur)
 	return true;
 }
 
+=======
+>>>>>>> p9x
 static void _process_event_group(struct kgsl_device *device,
 		struct kgsl_event_group *group, bool flush)
 {
@@ -97,7 +104,15 @@ static void _process_event_group(struct kgsl_device *device,
 	group->readtimestamp(device, group->priv, KGSL_TIMESTAMP_RETIRED,
 		&timestamp);
 
+<<<<<<< HEAD
 	if (!flush && _do_process_group(group->processed, timestamp) == false)
+=======
+	/*
+	 * If no timestamps have been retired since the last time we were here
+	 * then we can avoid going through this loop
+	 */
+	if (!flush && timestamp_cmp(timestamp, group->processed) <= 0)
+>>>>>>> p9x
 		goto out;
 
 	list_for_each_entry_safe(event, tmp, &group->events, node) {
@@ -314,16 +329,32 @@ EXPORT_SYMBOL(kgsl_add_event);
 static DEFINE_RWLOCK(group_lock);
 static LIST_HEAD(group_list);
 
+<<<<<<< HEAD
 void kgsl_process_event_groups(struct kgsl_device *device)
 {
 	struct kgsl_event_group *group;
+=======
+/**
+ * kgsl_process_events() - Work queue for processing new timestamp events
+ * @work: Pointer to a work_struct
+ */
+void kgsl_process_events(struct work_struct *work)
+{
+	struct kgsl_event_group *group;
+	struct kgsl_device *device = container_of(work, struct kgsl_device,
+		event_work);
+>>>>>>> p9x
 
 	read_lock(&group_lock);
 	list_for_each_entry(group, &group_list, group)
 		_process_event_group(device, group, false);
 	read_unlock(&group_lock);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(kgsl_process_event_groups);
+=======
+EXPORT_SYMBOL(kgsl_process_events);
+>>>>>>> p9x
 
 /**
  * kgsl_del_event_group() - Remove a GPU event group

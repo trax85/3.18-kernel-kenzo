@@ -10,7 +10,11 @@ Required properties:
 - compatible : name of the component used for driver matching, should be
 	       "qcom,dcc"
 
+<<<<<<< HEAD
 - reg : physical base address and length of the register set(s), SRAM and XPU
+=======
+- reg : physical base address and length of the register set(s) and SRAM
+>>>>>>> p9x
 	of the component.
 
 - reg-names : names corresponding to each reg property value.
@@ -30,9 +34,14 @@ Example:
 	dcc: dcc@4b3000 {
 		compatible = "qcom,dcc";
 		reg = <0x4b3000 0x1000>,
+<<<<<<< HEAD
 		      <0x4b4000 0x2000>,
 		      <0x4b0000 0x1>;
 		reg-names = "dcc-base", "dcc-ram-base", "dcc-xpu-base";
+=======
+		      <0x4b4000 0x2000>;
+		reg-names = "dcc-base", "dcc-ram-base";
+>>>>>>> p9x
 
 		clocks = <&clock_gcc clk_gcc_dcc_ahb_clk>;
 		clock-names = "dcc_clk";

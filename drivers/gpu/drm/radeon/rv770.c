@@ -1689,13 +1689,29 @@ static int rv770_startup(struct radeon_device *rdev)
 	/* enable pcie gen2 link */
 	rv770_pcie_gen2_enable(rdev);
 
+<<<<<<< HEAD
 	/* scratch needs to be initialized before MC */
+=======
+	rv770_mc_program(rdev);
+
+	if (!rdev->me_fw || !rdev->pfp_fw || !rdev->rlc_fw) {
+		r = r600_init_microcode(rdev);
+		if (r) {
+			DRM_ERROR("Failed to load firmware!\n");
+			return r;
+		}
+	}
+
+>>>>>>> p9x
 	r = r600_vram_scratch_init(rdev);
 	if (r)
 		return r;
 
+<<<<<<< HEAD
 	rv770_mc_program(rdev);
 
+=======
+>>>>>>> p9x
 	if (rdev->flags & RADEON_IS_AGP) {
 		rv770_agp_enable(rdev);
 	} else {
@@ -1829,9 +1845,14 @@ int rv770_resume(struct radeon_device *rdev)
 
 int rv770_suspend(struct radeon_device *rdev)
 {
+<<<<<<< HEAD
 	radeon_pm_suspend(rdev);
 	radeon_audio_fini(rdev);
 	uvd_v1_0_fini(rdev);
+=======
+	r600_audio_fini(rdev);
+	r600_uvd_stop(rdev);
+>>>>>>> p9x
 	radeon_uvd_suspend(rdev);
 	r700_cp_stop(rdev);
 	r600_dma_stop(rdev);
@@ -1957,7 +1978,12 @@ void rv770_fini(struct radeon_device *rdev)
 	radeon_wb_fini(rdev);
 	radeon_ib_pool_fini(rdev);
 	radeon_irq_kms_fini(rdev);
+<<<<<<< HEAD
 	uvd_v1_0_fini(rdev);
+=======
+	rv770_pcie_gart_fini(rdev);
+	r600_uvd_stop(rdev);
+>>>>>>> p9x
 	radeon_uvd_fini(rdev);
 	rv770_pcie_gart_fini(rdev);
 	r600_vram_scratch_fini(rdev);

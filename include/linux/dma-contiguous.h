@@ -67,6 +67,7 @@ struct device;
  */
 #define MAX_CMA_AREAS	(1 + CONFIG_CMA_AREAS)
 
+<<<<<<< HEAD
 extern struct cma *dma_contiguous_def_area;
 
 static inline struct cma *dev_get_cma_area(struct device *dev)
@@ -86,6 +87,13 @@ static inline void dma_contiguous_set_default(struct cma *cma)
 {
 	dma_contiguous_def_area = cma;
 }
+=======
+
+phys_addr_t cma_get_base(struct device *dev);
+unsigned long cma_get_size(struct device *dev);
+
+extern struct cma *dma_contiguous_def_area;
+>>>>>>> p9x
 
 void dma_contiguous_reserve(phys_addr_t addr_limit);
 
@@ -93,8 +101,13 @@ int dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t *res_base,
 				  phys_addr_t limit, const char *name,
 				  bool in_system,
 				  bool remove, bool fixup);
+<<<<<<< HEAD
 int dma_contiguous_add_device(struct device *dev, phys_addr_t base);
 
+=======
+
+int dma_contiguous_add_device(struct device *dev, phys_addr_t base);
+>>>>>>> p9x
 
 /**
  * dma_declare_contiguous() - reserve area for contiguous memory handling
@@ -117,9 +130,15 @@ static inline int dma_declare_contiguous(struct device *dev, phys_addr_t size,
 						false, false);
 	if (ret == 0)
 		ret = dma_contiguous_add_device(dev, base);
+<<<<<<< HEAD
 
 	return ret;
 }
+=======
+	return ret;
+}
+
+>>>>>>> p9x
 static inline int dma_declare_contiguous_reserved(struct device *dev,
 					 phys_addr_t size,
 					 phys_addr_t base,
@@ -133,9 +152,13 @@ static inline int dma_declare_contiguous_reserved(struct device *dev,
 	return ret;
 }
 
+<<<<<<< HEAD
 struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
+=======
+unsigned long dma_alloc_from_contiguous(struct device *dev, size_t count,
+>>>>>>> p9x
 				       unsigned int order);
-bool dma_release_from_contiguous(struct device *dev, struct page *pages,
+bool dma_release_from_contiguous(struct device *dev, unsigned long pfn,
 				 int count);
 
 #else
@@ -162,17 +185,32 @@ int dma_declare_contiguous(struct device *dev, phys_addr_t size,
 }
 
 static inline
+<<<<<<< HEAD
 struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
+=======
+unsigned long dma_alloc_from_contiguous(struct device *dev, size_t count,
+>>>>>>> p9x
 				       unsigned int order)
 {
-	return NULL;
+	return 0;
 }
 
 static inline
-bool dma_release_from_contiguous(struct device *dev, struct page *pages,
+bool dma_release_from_contiguous(struct device *dev, unsigned long pfn,
 				 int count)
 {
 	return false;
+}
+
+
+static inline phys_addr_t cma_get_base(struct device *dev)
+{
+	return 0;
+}
+
+static inline unsigned long cma_get_size(struct device *dev)
+{
+	return 0;
 }
 
 #endif

@@ -109,6 +109,11 @@ struct rcu_dynticks {
 				    /* # times non-lazy CBs posted to CPU. */
 	unsigned long nonlazy_posted_snap;
 				    /* idle-period nonlazy_posted snapshot. */
+<<<<<<< HEAD
+=======
+	unsigned long last_accelerate;
+				    /* Last jiffy CBs were accelerated. */
+>>>>>>> p9x
 	unsigned long last_advance_all;
 				    /* Last jiffy CBs were all advanced. */
 	int tick_nohz_enabled_snap; /* Previously seen value from sysfs. */
@@ -493,10 +498,17 @@ struct rcu_state {
 						/*  due to no GP active. */
 	unsigned long gp_start;			/* Time at which GP started, */
 						/*  but in jiffies. */
+	unsigned long gp_activity;		/* Time of last GP kthread */
+						/*  activity in jiffies. */
 	unsigned long jiffies_stall;		/* Time at which to check */
 						/*  for CPU stalls. */
+<<<<<<< HEAD
 	unsigned long jiffies_resched;		/* Time at which to resched */
 						/*  a reluctant CPU. */
+=======
+	unsigned long n_force_qs_gpstart;	/* Snapshot of n_force_qs at */
+						/*  GP start. */
+>>>>>>> p9x
 	unsigned long gp_max;			/* Maximum GP duration in */
 						/*  jiffies. */
 	const char *name;			/* Name of structure. */
@@ -593,7 +605,10 @@ static void print_cpu_stall_info(struct rcu_state *rsp, int cpu);
 static void print_cpu_stall_info_end(void);
 static void zero_cpu_stall_ticks(struct rcu_data *rdp);
 static void increment_cpu_stall_ticks(void);
+<<<<<<< HEAD
 static bool rcu_nocb_cpu_needs_barrier(struct rcu_state *rsp, int cpu);
+=======
+>>>>>>> p9x
 static void rcu_nocb_gp_set(struct rcu_node *rnp, int nrq);
 static void rcu_nocb_gp_cleanup(struct rcu_state *rsp, struct rcu_node *rnp);
 static void rcu_init_one_nocb(struct rcu_node *rnp);
@@ -612,6 +627,7 @@ static void __init rcu_organize_nocb_kthreads(struct rcu_state *rsp);
 #endif /* #ifdef CONFIG_RCU_NOCB_CPU */
 static void __maybe_unused rcu_kick_nohz_cpu(int cpu);
 static bool init_nocb_callback_list(struct rcu_data *rdp);
+<<<<<<< HEAD
 static void rcu_sysidle_enter(struct rcu_dynticks *rdtp, int irq);
 static void rcu_sysidle_exit(struct rcu_dynticks *rdtp, int irq);
 static void rcu_sysidle_check_cpu(struct rcu_data *rdp, bool *isidle,
@@ -625,6 +641,9 @@ static bool rcu_nohz_full_cpu(struct rcu_state *rsp);
 static void rcu_dynticks_task_enter(void);
 static void rcu_dynticks_task_exit(void);
 
+=======
+static void rcu_bind_gp_kthread(void);
+>>>>>>> p9x
 #endif /* #ifndef RCU_TREE_NONCORE */
 
 #ifdef CONFIG_RCU_TRACE

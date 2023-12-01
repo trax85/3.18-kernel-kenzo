@@ -192,7 +192,10 @@ struct pmu {
 	int * __percpu			pmu_disable_count;
 	struct perf_cpu_context * __percpu pmu_cpu_context;
 	int				task_ctx_nr;
+<<<<<<< HEAD
 	int				hrtimer_interval_ms;
+=======
+>>>>>>> p9x
 	u32                             events_across_hotplug:1,
 					reserved:31;
 
@@ -348,7 +351,11 @@ struct perf_event {
 	struct pmu			*pmu;
 
 	enum perf_event_active_state	state;
+<<<<<<< HEAD
 	enum perf_event_active_state hotplug_save_state;
+=======
+	enum perf_event_active_state	hotplug_save_state;
+>>>>>>> p9x
 	unsigned int			attach_state;
 	local64_t			count;
 	atomic64_t			child_count;

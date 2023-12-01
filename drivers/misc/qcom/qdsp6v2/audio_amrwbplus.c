@@ -104,10 +104,16 @@ static long audio_ioctl_shared(struct file *file, unsigned int cmd,
 		pr_debug("%s:AUDIO_START sessionid[%d]enable[%d]\n", __func__,
 			audio->ac->session,
 			audio->enabled);
+<<<<<<< HEAD
 		if (audio->stopped == 1){
 			audio->stopped = 0;
 			break;
                  }
+=======
+		if (audio->stopped == 1)
+			audio->stopped = 0;
+			break;
+>>>>>>> p9x
 		}
 	default:
 		pr_err("%s: Unknown ioctl cmd = %d", __func__, cmd);
@@ -314,8 +320,11 @@ static int audio_open(struct inode *inode, struct file *file)
 	audio->wakelock_voted = false;
 	audio->audio_ws_mgr = &audio_amrwbplus_ws_mgr;
 
+<<<<<<< HEAD
 	init_waitqueue_head(&audio->event_wait);
 
+=======
+>>>>>>> p9x
 	audio->ac =
 	q6asm_audio_client_alloc((app_cb) q6_audio_cb, (void *)audio);
 

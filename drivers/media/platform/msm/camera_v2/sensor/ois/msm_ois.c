@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, 2017 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -13,7 +17,10 @@
 #define pr_fmt(fmt) "%s:%d " fmt, __func__, __LINE__
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/firmware.h>
+=======
+>>>>>>> p9x
 #include "msm_sd.h"
 #include "msm_ois.h"
 #include "msm_cci.h"
@@ -27,12 +34,18 @@ DEFINE_MSM_MUTEX(msm_ois_mutex);
 #define CDBG(fmt, args...) pr_debug(fmt, ##args)
 #endif
 
+<<<<<<< HEAD
+=======
+#define MAX_POLL_COUNT 100
+
+>>>>>>> p9x
 static struct v4l2_file_operations msm_ois_v4l2_subdev_fops;
 static int32_t msm_ois_power_up(struct msm_ois_ctrl_t *o_ctrl);
 static int32_t msm_ois_power_down(struct msm_ois_ctrl_t *o_ctrl);
 
 static struct i2c_driver msm_ois_i2c_driver;
 
+<<<<<<< HEAD
 static int32_t msm_ois_download(struct msm_ois_ctrl_t *o_ctrl)
 {
 	uint16_t bytes_in_tx = 0;
@@ -151,12 +164,18 @@ static int32_t msm_ois_data_config(struct msm_ois_ctrl_t *o_ctrl,
 	return rc;
 }
 
+=======
+>>>>>>> p9x
 static int32_t msm_ois_write_settings(struct msm_ois_ctrl_t *o_ctrl,
 	uint16_t size, struct reg_settings_ois_t *settings)
 {
 	int32_t rc = -EFAULT;
 	int32_t i = 0;
+<<<<<<< HEAD
 	struct msm_camera_i2c_seq_reg_array *reg_setting;
+=======
+	struct msm_camera_i2c_seq_reg_array reg_setting;
+>>>>>>> p9x
 	CDBG("Enter\n");
 
 	for (i = 0; i < size; i++) {
@@ -172,6 +191,7 @@ static int32_t msm_ois_write_settings(struct msm_ois_ctrl_t *o_ctrl,
 					settings[i].data_type);
 				break;
 			case MSM_CAMERA_I2C_DWORD_DATA:
+<<<<<<< HEAD
 			reg_setting =
 			kzalloc(sizeof(struct msm_camera_i2c_seq_reg_array),
 				GFP_KERNEL);
@@ -198,6 +218,26 @@ static int32_t msm_ois_write_settings(struct msm_ois_ctrl_t *o_ctrl,
 					reg_setting->reg_data_size);
 				kfree(reg_setting);
 				reg_setting = NULL;
+=======
+				reg_setting.reg_addr = settings[i].reg_addr;
+				reg_setting.reg_data[0] = (uint8_t)
+					((settings[i].reg_data &
+					0xFF000000) >> 24);
+				reg_setting.reg_data[1] = (uint8_t)
+					((settings[i].reg_data &
+					0x00FF0000) >> 16);
+				reg_setting.reg_data[2] = (uint8_t)
+					((settings[i].reg_data &
+					0x0000FF00) >> 8);
+				reg_setting.reg_data[3] = (uint8_t)
+					(settings[i].reg_data & 0x000000FF);
+				reg_setting.reg_data_size = 4;
+				rc = o_ctrl->i2c_client.i2c_func_tbl->
+					i2c_write_seq(&o_ctrl->i2c_client,
+					reg_setting.reg_addr,
+					reg_setting.reg_data,
+					reg_setting.reg_data_size);
+>>>>>>> p9x
 				if (rc < 0)
 					return rc;
 				break;
@@ -207,15 +247,19 @@ static int32_t msm_ois_write_settings(struct msm_ois_ctrl_t *o_ctrl,
 					settings[i].data_type);
 				break;
 			}
+<<<<<<< HEAD
 			if (settings[i].delay > 20)
 				msleep(settings[i].delay);
 			else if (0 != settings[i].delay)
 				usleep_range(settings[i].delay * 1000,
 					(settings[i].delay * 1000) + 1000);
+=======
+>>>>>>> p9x
 		}
 			break;
 
 		case MSM_OIS_POLL: {
+<<<<<<< HEAD
 			switch (settings[i].data_type) {
 			case MSM_CAMERA_I2C_BYTE_DATA:
 			case MSM_CAMERA_I2C_WORD_DATA:
@@ -226,6 +270,24 @@ static int32_t msm_ois_write_settings(struct msm_ois_ctrl_t *o_ctrl,
 					settings[i].reg_data,
 					settings[i].data_type,
 					settings[i].delay);
+=======
+			int32_t poll_count = 0;
+			switch (settings[i].data_type) {
+			case MSM_CAMERA_I2C_BYTE_DATA:
+			case MSM_CAMERA_I2C_WORD_DATA:
+				do {
+					rc = o_ctrl->i2c_client.i2c_func_tbl
+						->i2c_poll(&o_ctrl->i2c_client,
+						settings[i].reg_addr,
+						settings[i].reg_data,
+						settings[i].data_type);
+
+					if (poll_count++ > MAX_POLL_COUNT) {
+						pr_err("MSM_OIS_POLL failed");
+						break;
+					}
+				} while (rc != 0);
+>>>>>>> p9x
 				break;
 
 			default:
@@ -236,6 +298,15 @@ static int32_t msm_ois_write_settings(struct msm_ois_ctrl_t *o_ctrl,
 		}
 		}
 
+<<<<<<< HEAD
+=======
+		if (settings[i].delay > 20)
+			msleep(settings[i].delay);
+		else if (0 != settings[i].delay)
+			usleep_range(settings[i].delay * 1000,
+				(settings[i].delay * 1000) + 1000);
+
+>>>>>>> p9x
 		if (rc < 0)
 			break;
 	}
@@ -272,8 +343,11 @@ static int32_t msm_ois_vreg_control(struct msm_ois_ctrl_t *o_ctrl,
 static int32_t msm_ois_power_down(struct msm_ois_ctrl_t *o_ctrl)
 {
 	int32_t rc = 0;
+<<<<<<< HEAD
 	enum msm_sensor_power_seq_gpio_t gpio;
 
+=======
+>>>>>>> p9x
 	CDBG("Enter\n");
 	if (o_ctrl->ois_state != OIS_DISABLE_STATE) {
 
@@ -283,6 +357,7 @@ static int32_t msm_ois_power_down(struct msm_ois_ctrl_t *o_ctrl)
 			return rc;
 		}
 
+<<<<<<< HEAD
 		for (gpio = SENSOR_GPIO_AF_PWDM; gpio < SENSOR_GPIO_MAX;
 			gpio++) {
 			if (o_ctrl->gconf &&
@@ -316,6 +391,8 @@ static int32_t msm_ois_power_down(struct msm_ois_ctrl_t *o_ctrl)
 			}
 		}
 
+=======
+>>>>>>> p9x
 		o_ctrl->i2c_tbl_index = 0;
 		o_ctrl->ois_state = OIS_OPS_INACTIVE;
 	}
@@ -490,6 +567,7 @@ static int32_t msm_ois_config(struct msm_ois_ctrl_t *o_ctrl,
 	return rc;
 }
 
+<<<<<<< HEAD
 static int32_t msm_ois_config_download(struct msm_ois_ctrl_t *o_ctrl,
 	void __user *argp)
 {
@@ -524,6 +602,8 @@ static int32_t msm_ois_config_download(struct msm_ois_ctrl_t *o_ctrl,
 }
 
 
+=======
+>>>>>>> p9x
 static int32_t msm_ois_get_subdev_id(struct msm_ois_ctrl_t *o_ctrl,
 	void *arg)
 {
@@ -573,7 +653,12 @@ static int msm_ois_close(struct v4l2_subdev *sd,
 	int rc = 0;
 	struct msm_ois_ctrl_t *o_ctrl =  v4l2_get_subdevdata(sd);
 	CDBG("Enter\n");
+<<<<<<< HEAD
 	if (!o_ctrl) {
+=======
+	if (!o_ctrl || !o_ctrl->i2c_client.i2c_func_tbl) {
+		/* check to make sure that init happens before release */
+>>>>>>> p9x
 		pr_err("failed\n");
 		return -EINVAL;
 	}
@@ -608,12 +693,16 @@ static long msm_ois_subdev_ioctl(struct v4l2_subdev *sd,
 		return msm_ois_get_subdev_id(o_ctrl, argp);
 	case VIDIOC_MSM_OIS_CFG:
 		return msm_ois_config(o_ctrl, argp);
+<<<<<<< HEAD
 	case VIDIOC_MSM_OIS_CFG_DOWNLOAD:
 		return msm_ois_config_download(o_ctrl, argp);
+=======
+>>>>>>> p9x
 	case MSM_SD_SHUTDOWN:
 		if (!o_ctrl->i2c_client.i2c_func_tbl) {
 			pr_err("o_ctrl->i2c_client.i2c_func_tbl NULL\n");
 			return -EINVAL;
+<<<<<<< HEAD
 		}
 		mutex_lock(o_ctrl->ois_mutex);
 		rc = msm_ois_power_down(o_ctrl);
@@ -623,6 +712,18 @@ static long msm_ois_subdev_ioctl(struct v4l2_subdev *sd,
 		}
 		mutex_unlock(o_ctrl->ois_mutex);
 		return msm_ois_close(sd, NULL);
+=======
+		} else {
+			mutex_lock(o_ctrl->ois_mutex);
+			rc = msm_ois_power_down(o_ctrl);
+			if (rc < 0) {
+				pr_err("%s:%d OIS Power down failed\n",
+					__func__, __LINE__);
+			}
+			mutex_unlock(o_ctrl->ois_mutex);
+			return msm_ois_close(sd, NULL);
+		}
+>>>>>>> p9x
 	default:
 		return -ENOIOCTLCMD;
 	}
@@ -631,8 +732,11 @@ static long msm_ois_subdev_ioctl(struct v4l2_subdev *sd,
 static int32_t msm_ois_power_up(struct msm_ois_ctrl_t *o_ctrl)
 {
 	int rc = 0;
+<<<<<<< HEAD
 	enum msm_sensor_power_seq_gpio_t gpio;
 
+=======
+>>>>>>> p9x
 	CDBG("%s called\n", __func__);
 
 	rc = msm_ois_vreg_control(o_ctrl, 1);
@@ -641,6 +745,7 @@ static int32_t msm_ois_power_up(struct msm_ois_ctrl_t *o_ctrl)
 		return rc;
 	}
 
+<<<<<<< HEAD
 	for (gpio = SENSOR_GPIO_AF_PWDM;
 		gpio < SENSOR_GPIO_MAX; gpio++) {
 		if (o_ctrl->gconf && o_ctrl->gconf->gpio_num_info &&
@@ -668,6 +773,8 @@ static int32_t msm_ois_power_up(struct msm_ois_ctrl_t *o_ctrl)
 		}
 	}
 
+=======
+>>>>>>> p9x
 	o_ctrl->ois_state = OIS_ENABLE_STATE;
 	CDBG("Exit\n");
 	return rc;
@@ -759,6 +866,7 @@ static long msm_ois_subdev_do_ioctl(
 	struct file *file, unsigned int cmd, void *arg)
 {
 	long rc = 0;
+<<<<<<< HEAD
 	struct video_device *vdev;
 	struct v4l2_subdev *sd;
 	struct msm_ois_cfg_data32 *u32;
@@ -775,11 +883,26 @@ static long msm_ois_subdev_do_ioctl(
 	sd = vdev_to_v4l2_subdev(vdev);
 	u32 = (struct msm_ois_cfg_data32 *)arg;
 	parg = arg;
+=======
+	struct video_device *vdev = video_devdata(file);
+	struct v4l2_subdev *sd = vdev_to_v4l2_subdev(vdev);
+	struct msm_ois_cfg_data32 *u32 =
+		(struct msm_ois_cfg_data32 *)arg;
+	struct msm_ois_cfg_data ois_data;
+	void *parg = arg;
+	struct msm_camera_i2c_seq_reg_setting settings;
+	struct msm_camera_i2c_seq_reg_setting32 settings32;
+
+	ois_data.cfgtype = u32->cfgtype;
+>>>>>>> p9x
 
 	switch (cmd) {
 	case VIDIOC_MSM_OIS_CFG32:
 		cmd = VIDIOC_MSM_OIS_CFG;
+<<<<<<< HEAD
 		ois_data.cfgtype = u32->cfgtype;
+=======
+>>>>>>> p9x
 
 		switch (u32->cfgtype) {
 		case CFG_OIS_CONTROL:
@@ -813,6 +936,10 @@ static long msm_ois_subdev_do_ioctl(
 			settings.reg_setting =
 				compat_ptr(settings32.reg_setting);
 
+<<<<<<< HEAD
+=======
+			ois_data.cfgtype = u32->cfgtype;
+>>>>>>> p9x
 			ois_data.cfg.settings = &settings;
 			parg = &ois_data;
 			break;
@@ -856,6 +983,7 @@ static int32_t msm_ois_platform_probe(struct platform_device *pdev)
 		pr_err("%s:%d failed no memory\n", __func__, __LINE__);
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 
 	msm_ois_t->oboard_info = kzalloc(sizeof(
 		struct msm_ois_board_info), GFP_KERNEL);
@@ -864,20 +992,34 @@ static int32_t msm_ois_platform_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
+=======
+>>>>>>> p9x
 	rc = of_property_read_u32((&pdev->dev)->of_node, "cell-index",
 		&pdev->id);
 	CDBG("cell-index %d, rc %d\n", pdev->id, rc);
 	if (rc < 0) {
+<<<<<<< HEAD
 		pr_err("failed rc %d\n", rc);
 		goto release_memory;
+=======
+		kfree(msm_ois_t);
+		pr_err("failed rc %d\n", rc);
+		return rc;
+>>>>>>> p9x
 	}
 
 	rc = of_property_read_u32((&pdev->dev)->of_node, "qcom,cci-master",
 		&msm_ois_t->cci_master);
 	CDBG("qcom,cci-master %d, rc %d\n", msm_ois_t->cci_master, rc);
 	if (rc < 0 || msm_ois_t->cci_master >= MASTER_MAX) {
+<<<<<<< HEAD
 		pr_err("failed rc %d\n", rc);
 		goto release_memory;
+=======
+		kfree(msm_ois_t);
+		pr_err("failed rc %d\n", rc);
+		return rc;
+>>>>>>> p9x
 	}
 
 	if (of_find_property((&pdev->dev)->of_node,
@@ -886,6 +1028,7 @@ static int32_t msm_ois_platform_probe(struct platform_device *pdev)
 		rc = msm_camera_get_dt_vreg_data((&pdev->dev)->of_node,
 			&vreg_cfg->cam_vreg, &vreg_cfg->num_vreg);
 		if (rc < 0) {
+<<<<<<< HEAD
 			pr_err("failed rc %d\n", rc);
 			goto release_memory;
 		}
@@ -904,6 +1047,11 @@ static int32_t msm_ois_platform_probe(struct platform_device *pdev)
 		if (rc < 0) {
 			pr_err("ERR: Error in reading OIS pinctrl\n");
 			msm_ois_t->cam_pinctrl_status = 0;
+=======
+			kfree(msm_ois_t);
+			pr_err("failed rc %d\n", rc);
+			return rc;
+>>>>>>> p9x
 		}
 	}
 
@@ -919,8 +1067,14 @@ static int32_t msm_ois_platform_probe(struct platform_device *pdev)
 		struct msm_camera_cci_client), GFP_KERNEL);
 	if (!msm_ois_t->i2c_client.cci_client) {
 		kfree(msm_ois_t->vreg_cfg.cam_vreg);
+<<<<<<< HEAD
 		rc = -ENOMEM;
 		goto release_memory;
+=======
+		kfree(msm_ois_t);
+		pr_err("failed no memory\n");
+		return -ENOMEM;
+>>>>>>> p9x
 	}
 
 	cci_client = msm_ois_t->i2c_client.cci_client;
@@ -939,7 +1093,11 @@ static int32_t msm_ois_platform_probe(struct platform_device *pdev)
 	msm_ois_t->msm_sd.close_seq = MSM_SD_CLOSE_2ND_CATEGORY | 0x2;
 	msm_sd_register(&msm_ois_t->msm_sd);
 	msm_ois_t->ois_state = OIS_DISABLE_STATE;
+<<<<<<< HEAD
 	msm_cam_copy_v4l2_subdev_fops(&msm_ois_v4l2_subdev_fops);
+=======
+	msm_ois_v4l2_subdev_fops = v4l2_subdev_fops;
+>>>>>>> p9x
 #ifdef CONFIG_COMPAT
 	msm_ois_v4l2_subdev_fops.compat_ioctl32 =
 		msm_ois_subdev_fops_ioctl;
@@ -949,10 +1107,13 @@ static int32_t msm_ois_platform_probe(struct platform_device *pdev)
 
 	CDBG("Exit\n");
 	return rc;
+<<<<<<< HEAD
 release_memory:
 	kfree(msm_ois_t->oboard_info);
 	kfree(msm_ois_t);
 	return rc;
+=======
+>>>>>>> p9x
 }
 
 static const struct of_device_id msm_ois_i2c_dt_match[] = {

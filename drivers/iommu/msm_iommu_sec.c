@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -28,10 +32,16 @@
 #include <linux/kmemleak.h>
 #include <linux/dma-mapping.h>
 #include <soc/qcom/scm.h>
+<<<<<<< HEAD
 #include <soc/qcom/secure_buffer.h>
 
 #include <asm/cacheflush.h>
 #include <linux/sizes.h>
+=======
+
+#include <asm/cacheflush.h>
+#include <asm/sizes.h>
+>>>>>>> p9x
 
 #include "msm_iommu_pagetable.h"
 #include "msm_iommu_perfmon.h"
@@ -75,7 +85,11 @@ static const struct of_device_id msm_smmu_list[] = {
 };
 
 struct msm_scm_paddr_list {
+<<<<<<< HEAD
 	phys_addr_t list;
+=======
+	unsigned int list;
+>>>>>>> p9x
 	unsigned int list_size;
 	unsigned int size;
 };
@@ -176,7 +190,10 @@ static int msm_iommu_reg_dump_to_regs(
 		uint32_t addr	= *it;
 		uint32_t val	= *(it + 1);
 		struct msm_iommu_context_reg *reg = NULL;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 		if (addr < phys_base) {
 			pr_err("Bogus-looking register (0x%x) for Iommu with base at %pa. Skipping.\n",
 				addr, &phys_base);
@@ -188,7 +205,10 @@ static int msm_iommu_reg_dump_to_regs(
 			struct dump_regs_tbl_entry dump_reg = dump_regs_tbl[j];
 			void *test_reg;
 			unsigned int test_offset;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 			switch (dump_reg.dump_reg_type) {
 			case DRT_CTX_REG:
 				test_reg = CTX_REG(dump_reg.reg_offset,
@@ -267,8 +287,13 @@ static void print_iova_to_phys(struct msm_iommu_ctx_drvdata *ctx_drvdata,
 		pagetable_phys = msm_iommu_iova_to_phys_soft(
 					ctx_drvdata->attached_domain,
 					faulty_iova);
+<<<<<<< HEAD
 		pr_err("Page table in DDR shows PA = %pa\n",
 					&pagetable_phys);
+=======
+		pr_err("Page table in DDR shows PA = %lx\n",
+					(unsigned long) pagetable_phys);
+>>>>>>> p9x
 	}
 }
 
@@ -291,8 +316,15 @@ irqreturn_t msm_iommu_secure_fault_handler_v2(int irq, void *dev_id)
 	BUG_ON(!ctx_drvdata);
 
 	regs = kzalloc(sizeof(*regs), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!regs)
 		goto lock_release;
+=======
+	if (!regs) {
+		pr_err("%s: Couldn't allocate memory\n", __func__);
+		goto lock_release;
+	}
+>>>>>>> p9x
 
 	if (!drvdata->ctx_attach_count) {
 		pr_err("Unexpected IOMMU page fault from secure context bank!\n");
@@ -316,7 +348,10 @@ irqreturn_t msm_iommu_secure_fault_handler_v2(int irq, void *dev_id)
 		goto clock_off;
 	} else {
 		struct msm_iommu_context_reg ctx_regs[MAX_DUMP_REGS];
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 		memset(ctx_regs, 0, sizeof(ctx_regs));
 		tmp = msm_iommu_reg_dump_to_regs(
 			ctx_regs, regs, drvdata, ctx_drvdata);
@@ -374,7 +409,11 @@ static int msm_iommu_sec_ptbl_init(void)
 		unsigned int spare;
 	} pinit = {0};
 	int psize[2] = {0, 0};
+<<<<<<< HEAD
 	unsigned int spare = 0;
+=======
+	unsigned int spare;
+>>>>>>> p9x
 	int ret, ptbl_ret = 0;
 	int version;
 	/* Use a dummy device for dma_alloc_attrs allocation */
@@ -493,7 +532,10 @@ int msm_iommu_sec_program_iommu(struct msm_iommu_drvdata *drvdata,
 	if (drvdata->smmu_local_base) {
 		writel_relaxed(0xFFFFFFFF, drvdata->smmu_local_base +
 						SMMU_INTR_SEL_NS);
+<<<<<<< HEAD
 		/* make sure SMMU_INTR_SEL_NS is seen */
+=======
+>>>>>>> p9x
 		mb();
 	}
 
@@ -571,15 +613,23 @@ static int msm_iommu_sec_ptbl_map(struct msm_iommu_drvdata *iommu_drvdata,
 	return 0;
 }
 
+<<<<<<< HEAD
 static phys_addr_t get_phys_addr(struct scatterlist *sg)
+=======
+static unsigned int get_phys_addr(struct scatterlist *sg)
+>>>>>>> p9x
 {
 	/*
 	 * Try sg_dma_address first so that we can
 	 * map carveout regions that do not have a
 	 * struct page associated with them.
 	 */
+<<<<<<< HEAD
 	phys_addr_t pa = sg_dma_address(sg);
 
+=======
+	unsigned int pa = sg_dma_address(sg);
+>>>>>>> p9x
 	if (pa == 0)
 		pa = sg_phys(sg);
 	return pa;
@@ -591,9 +641,14 @@ static int msm_iommu_sec_ptbl_map_range(struct msm_iommu_drvdata *iommu_drvdata,
 {
 	struct scatterlist *sgiter;
 	struct msm_scm_map2_req map;
+<<<<<<< HEAD
 	phys_addr_t *pa_list = 0;
 	unsigned int cnt;
 	phys_addr_t pa;
+=======
+	unsigned int *pa_list = 0;
+	unsigned int pa, cnt;
+>>>>>>> p9x
 	void *flush_va, *flush_va_end;
 	unsigned int offset = 0, chunk_offset = 0;
 	int ret;
@@ -629,7 +684,11 @@ static int msm_iommu_sec_ptbl_map_range(struct msm_iommu_drvdata *iommu_drvdata,
 			cnt += sgiter->length / SZ_1M;
 		}
 
+<<<<<<< HEAD
 		pa_list = kmalloc_array(cnt, sizeof(*pa_list), GFP_KERNEL);
+=======
+		pa_list = kmalloc(cnt * sizeof(*pa_list), GFP_KERNEL);
+>>>>>>> p9x
 		if (!pa_list)
 			return -ENOMEM;
 
@@ -746,9 +805,12 @@ static int msm_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	if (!(priv->client_name))
 		priv->client_name = dev_name(dev);
 
+=======
+>>>>>>> p9x
 	iommu_drvdata = dev_get_drvdata(dev->parent);
 	ctx_drvdata = dev_get_drvdata(dev);
 	if (!iommu_drvdata || !ctx_drvdata) {
@@ -976,9 +1038,21 @@ static phys_addr_t msm_iommu_iova_to_phys(struct iommu_domain *domain,
 	return 0;
 }
 
+<<<<<<< HEAD
 static bool msm_iommu_capable(enum iommu_cap cap)
 {
 	return false;
+=======
+static int msm_iommu_domain_has_cap(struct iommu_domain *domain,
+				    unsigned long cap)
+{
+	return 0;
+}
+
+static phys_addr_t msm_iommu_get_pt_base_addr(struct iommu_domain *domain)
+{
+	return 0;
+>>>>>>> p9x
 }
 
 void msm_iommu_check_scm_call_avail(void)
@@ -1001,12 +1075,16 @@ int is_vfe_secure(void)
 {
 	if (secure_camera_enabled == -1) {
 		u32 ver = scm_get_feat_version(SCM_SVC_SEC_CAMERA);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 		secure_camera_enabled = ver >= MAKE_VERSION(1, 0, 0);
 	}
 	return secure_camera_enabled;
 }
 
+<<<<<<< HEAD
 static int msm_iommu_dma_supported(struct iommu_domain *domain,
 				  struct device *dev, u64 mask)
 {
@@ -1071,6 +1149,8 @@ static int msm_iommu_domain_get_attr(struct iommu_domain *domain,
 	}
 	return 0;
 }
+=======
+>>>>>>> p9x
 
 static struct iommu_ops msm_iommu_ops = {
 	.domain_init = msm_iommu_domain_init,
@@ -1083,11 +1163,17 @@ static struct iommu_ops msm_iommu_ops = {
 	.map_sg = msm_iommu_map_sg,
 	.unmap_range = msm_iommu_unmap_range,
 	.iova_to_phys = msm_iommu_iova_to_phys,
+<<<<<<< HEAD
 	.capable = msm_iommu_capable,
 	.pgsize_bitmap = MSM_IOMMU_PGSIZES,
 	.domain_set_attr = msm_iommu_domain_set_attr,
 	.domain_get_attr = msm_iommu_domain_get_attr,
 	.dma_supported = msm_iommu_dma_supported,
+=======
+	.domain_has_cap = msm_iommu_domain_has_cap,
+	.get_pt_base_addr = msm_iommu_get_pt_base_addr,
+	.pgsize_bitmap = MSM_IOMMU_PGSIZES,
+>>>>>>> p9x
 };
 
 static int __init msm_iommu_sec_init(void)

@@ -51,6 +51,7 @@ Description:
 		 Controls the dirty page count condition for the in-place-update
 		 policies.
 
+<<<<<<< HEAD
 What:		/sys/fs/f2fs/<disk>/min_hot_blocks
 Date:		March 2017
 Contact:	"Jaegeuk Kim" <jaegeuk@kernel.org>
@@ -63,12 +64,15 @@ Contact:	"Chao Yu" <yuchao0@huawei.com>
 Description:
 		 Controls the fee section threshold to trigger SSR allocation.
 
+=======
+>>>>>>> p9x
 What:		/sys/fs/f2fs/<disk>/max_small_discards
 Date:		November 2013
 Contact:	"Jaegeuk Kim" <jaegeuk.kim@samsung.com>
 Description:
 		 Controls the issue rate of small discard commands.
 
+<<<<<<< HEAD
 What:          /sys/fs/f2fs/<disk>/discard_granularity
 Date:          July 2017
 Contact:       "Chao Yu" <yuchao0@huawei.com>
@@ -78,6 +82,8 @@ Description:
 		The unit size is one block, now only support configuring in range
 		of [1, 512].
 
+=======
+>>>>>>> p9x
 What:		/sys/fs/f2fs/<disk>/max_victim_search
 Date:		January 2014
 Contact:	"Jaegeuk Kim" <jaegeuk.kim@samsung.com>
@@ -101,7 +107,10 @@ Date:		February 2015
 Contact:	"Jaegeuk Kim" <jaegeuk@kernel.org>
 Description:
 		 Controls the trimming rate in batch mode.
+<<<<<<< HEAD
 		 <deprecated>
+=======
+>>>>>>> p9x
 
 What:		/sys/fs/f2fs/<disk>/cp_interval
 Date:		October 2015
@@ -115,12 +124,15 @@ Contact:	"Jaegeuk Kim" <jaegeuk@kernel.org>
 Description:
 		 Controls the idle timing.
 
+<<<<<<< HEAD
 What:		/sys/fs/f2fs/<disk>/iostat_enable
 Date:		August 2017
 Contact:	"Chao Yu" <yuchao0@huawei.com>
 Description:
 		 Controls to enable/disable IO stat.
 
+=======
+>>>>>>> p9x
 What:		/sys/fs/f2fs/<disk>/ra_nid_pages
 Date:		October 2015
 Contact:	"Chao Yu" <chao2.yu@samsung.com>
@@ -140,6 +152,7 @@ Date:		January 2016
 Contact:	"Shuoran Liu" <liushuoran@huawei.com>
 Description:
 		 Shows total written kbytes issued to disk.
+<<<<<<< HEAD
 
 What:		/sys/fs/f2fs/<disk>/feature
 Date:		July 2017
@@ -204,3 +217,5 @@ Description:
 		 - Del: echo '[h/c]!extension' > /sys/fs/f2fs/<disk>/extension_list
 		 - [h] means add/del hot file extension
 		 - [c] means add/del cold file extension
+=======
+>>>>>>> p9x

@@ -176,6 +176,7 @@ lr	.req	x30		// link register
 #endif
 	orr	\rd, \lbits, \hbits, lsl #32
 	.endm
+<<<<<<< HEAD
 
 /*
  * Pseudo-ops for PC-relative adr/ldr/str <reg>, <symbol> where
@@ -342,3 +343,5 @@ lr	.req	x30		// link register
 	.endm
 
 #endif	/* __ASM_ASSEMBLER_H */
+=======
+>>>>>>> p9x

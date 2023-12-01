@@ -1286,7 +1286,11 @@ source "drivers/scsi/qla4xxx/Kconfig"
 config SCSI_LPFC
 	tristate "Emulex LightPulse Fibre Channel Support"
 	depends on PCI && SCSI
+<<<<<<< HEAD
 	depends on SCSI_FC_ATTRS
+=======
+	select SCSI_FC_ATTRS
+>>>>>>> p9x
 	select CRC_T10DIF
 	help
           This lpfc driver supports the Emulex LightPulse

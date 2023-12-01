@@ -431,8 +431,13 @@ int iwl_mvm_mac_ctxt_init(struct iwl_mvm *mvm, struct ieee80211_vif *vif)
 				      IWL_MVM_TX_FIFO_VO);
 		break;
 	case NL80211_IFTYPE_AP:
+<<<<<<< HEAD
 		iwl_mvm_enable_ac_txq(mvm, vif->cab_queue,
 				      IWL_MVM_TX_FIFO_MCAST);
+=======
+		iwl_trans_ac_txq_enable(mvm->trans, vif->cab_queue,
+					IWL_MVM_TX_FIFO_MCAST);
+>>>>>>> p9x
 		/* fall through */
 	default:
 		for (ac = 0; ac < IEEE80211_NUM_ACS; ac++)
@@ -665,8 +670,12 @@ static void iwl_mvm_mac_ctxt_cmd_common(struct iwl_mvm *mvm,
 
 	/* in AP mode, the MCAST FIFO takes the EDCA params from VO */
 	if (vif->type == NL80211_IFTYPE_AP)
+<<<<<<< HEAD
 		cmd->ac[IWL_MVM_TX_FIFO_VO].fifos_mask |=
 			BIT(IWL_MVM_TX_FIFO_MCAST);
+=======
+		cmd->ac[AC_VO].fifos_mask |= BIT(IWL_MVM_TX_FIFO_MCAST);
+>>>>>>> p9x
 
 	if (vif->bss_conf.qos)
 		cmd->qos_flags |= cpu_to_le32(MAC_QOS_FLG_UPDATE_EDCA);

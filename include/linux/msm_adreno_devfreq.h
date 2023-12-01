@@ -28,8 +28,11 @@ struct devfreq_msm_adreno_tz_data {
 	struct {
 		s64 total_time;
 		s64 busy_time;
+<<<<<<< HEAD
 		u32 ctxt_aware_target_pwrlevel;
 		u32 ctxt_aware_busy_penalty;
+=======
+>>>>>>> p9x
 	} bin;
 	struct {
 		u64 total_time;
@@ -39,17 +42,27 @@ struct devfreq_msm_adreno_tz_data {
 		u32 num;
 		u32 max;
 		u32 width;
+<<<<<<< HEAD
 		u32 *up;
 		u32 *down;
 		u32 *p_up;
 		u32 *p_down;
+=======
+		u32 up[MSM_ADRENO_MAX_PWRLEVELS];
+		u32 down[MSM_ADRENO_MAX_PWRLEVELS];
+		u32 p_up[MSM_ADRENO_MAX_PWRLEVELS];
+		u32 p_down[MSM_ADRENO_MAX_PWRLEVELS];
+>>>>>>> p9x
 		unsigned int *index;
 		uint64_t *ib;
 	} bus;
 	unsigned int device_id;
 	bool is_64;
+<<<<<<< HEAD
 	bool disable_busy_time_burst;
 	bool ctxt_aware_enable;
+=======
+>>>>>>> p9x
 };
 
 struct msm_adreno_extended_profile {

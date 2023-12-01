@@ -81,8 +81,11 @@ void irqtime_account_irq(struct task_struct *curr)
 
 	if (account)
 		sched_account_irqtime(cpu, curr, delta, wallclock);
+<<<<<<< HEAD
 	else if (curr != this_cpu_ksoftirqd())
 		sched_account_irqstart(cpu, curr, wallclock);
+=======
+>>>>>>> p9x
 
 	local_irq_restore(flags);
 }
@@ -162,10 +165,15 @@ void account_user_time(struct task_struct *p, cputime_t cputime,
 	/* Account for user time used */
 	acct_account_cputime(p);
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_FREQ_STAT
 	/* Account power usage for user time */
 	acct_update_power(p, cputime);
 #endif
+=======
+	/* Account power usage for user time */
+	acct_update_power(p, cputime);
+>>>>>>> p9x
 }
 
 /*
@@ -217,10 +225,15 @@ void __account_system_time(struct task_struct *p, cputime_t cputime,
 	/* Account for system time used */
 	acct_account_cputime(p);
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_FREQ_STAT
 	/* Account power usage for system time */
 	acct_update_power(p, cputime);
 #endif
+=======
+	/* Account power usage for system time */
+	acct_update_power(p, cputime);
+>>>>>>> p9x
 }
 
 /*
@@ -603,6 +616,15 @@ static void cputime_adjust(struct task_cputime *curr,
 {
 	cputime_t rtime, stime, utime;
 
+<<<<<<< HEAD
+=======
+	if (vtime_accounting_enabled()) {
+		*ut = curr->utime;
+		*st = curr->stime;
+		return;
+	}
+
+>>>>>>> p9x
 	/*
 	 * Tick based cputime accounting depend on random scheduling
 	 * timeslices of a task to be interrupted or not by the timer.

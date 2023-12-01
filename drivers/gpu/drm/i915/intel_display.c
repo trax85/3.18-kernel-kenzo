@@ -6447,11 +6447,17 @@ static void intel_connector_check_state(struct intel_connector *connector)
 
 int intel_connector_init(struct intel_connector *connector)
 {
+<<<<<<< HEAD
 	struct drm_connector_state *connector_state;
 
 	connector_state = kzalloc(sizeof *connector_state, GFP_KERNEL);
 	if (!connector_state)
 		return -ENOMEM;
+=======
+	/* All the simple cases only support two dpms states. */
+	if (mode != DRM_MODE_DPMS_ON)
+		mode = DRM_MODE_DPMS_OFF;
+>>>>>>> p9x
 
 	connector->base.state = connector_state;
 	return 0;
@@ -6461,9 +6467,15 @@ struct intel_connector *intel_connector_alloc(void)
 {
 	struct intel_connector *connector;
 
+<<<<<<< HEAD
 	connector = kzalloc(sizeof *connector, GFP_KERNEL);
 	if (!connector)
 		return NULL;
+=======
+	/* Only need to change hw state when actually enabled */
+	if (connector->encoder)
+		intel_encoder_dpms(to_intel_encoder(connector->encoder), mode);
+>>>>>>> p9x
 
 	if (intel_connector_init(connector) < 0) {
 		kfree(connector);
@@ -7413,6 +7425,7 @@ static void vlv_prepare_pll(struct intel_crtc *crtc,
 	mutex_unlock(&dev_priv->sb_lock);
 }
 
+<<<<<<< HEAD
 static void chv_compute_dpll(struct intel_crtc *crtc,
 			     struct intel_crtc_state *pipe_config)
 {
@@ -7428,6 +7441,12 @@ static void chv_compute_dpll(struct intel_crtc *crtc,
 
 static void chv_prepare_pll(struct intel_crtc *crtc,
 			    const struct intel_crtc_state *pipe_config)
+=======
+static void i9xx_update_pll(struct intel_crtc *crtc,
+			    intel_clock_t *reduced_clock,
+			    int num_connectors,
+			    bool needs_tv_clock)
+>>>>>>> p9x
 {
 	struct drm_device *dev = crtc->base.dev;
 	struct drm_i915_private *dev_priv = dev->dev_private;
@@ -7637,7 +7656,11 @@ static void i9xx_compute_dpll(struct intel_crtc *crtc,
 	if (INTEL_INFO(dev)->gen >= 4)
 		dpll |= (6 << PLL_LOAD_PULSE_PHASE_SHIFT);
 
+<<<<<<< HEAD
 	if (crtc_state->sdvo_tv_clock)
+=======
+	if (is_sdvo && needs_tv_clock)
+>>>>>>> p9x
 		dpll |= PLL_REF_INPUT_TVCLKINBC;
 	else if (intel_pipe_will_have_type(crtc_state, INTEL_OUTPUT_LVDS) &&
 		 intel_panel_use_ssc(dev_priv) && num_connectors < 2)
@@ -7835,9 +7858,29 @@ static void i9xx_set_pipeconf(struct intel_crtc *intel_crtc)
 
 	pipeconf = 0;
 
+<<<<<<< HEAD
 	if ((intel_crtc->pipe == PIPE_A && dev_priv->quirks & QUIRK_PIPEA_FORCE) ||
 	    (intel_crtc->pipe == PIPE_B && dev_priv->quirks & QUIRK_PIPEB_FORCE))
 		pipeconf |= I915_READ(PIPECONF(intel_crtc->pipe)) & PIPECONF_ENABLE;
+=======
+	if (dev_priv->quirks & QUIRK_PIPEA_FORCE &&
+	    I915_READ(PIPECONF(intel_crtc->pipe)) & PIPECONF_ENABLE)
+		pipeconf |= PIPECONF_ENABLE;
+
+	if (intel_crtc->pipe == 0 && INTEL_INFO(dev)->gen < 4) {
+		/* Enable pixel doubling when the dot clock is > 90% of the (display)
+		 * core speed.
+		 *
+		 * XXX: No double-wide on 915GM pipe B. Is that the only reason for the
+		 * pipe == 0 check?
+		 */
+		if (intel_crtc->config.requested_mode.clock >
+		    dev_priv->display.get_display_clock_speed(dev) * 9 / 10)
+			pipeconf |= PIPECONF_DOUBLE_WIDE;
+		else
+			pipeconf &= ~PIPECONF_DOUBLE_WIDE;
+	}
+>>>>>>> p9x
 
 	if (intel_crtc->config->double_wide)
 		pipeconf |= PIPECONF_DOUBLE_WIDE;
@@ -7955,6 +7998,7 @@ static int i9xx_crtc_compute_clock(struct intel_crtc *crtc,
 		crtc_state->dpll.p2 = clock.p2;
 	}
 
+<<<<<<< HEAD
 	if (IS_GEN2(dev)) {
 		i8xx_compute_dpll(crtc, crtc_state, NULL,
 				  num_connectors);
@@ -7965,6 +8009,31 @@ static int i9xx_crtc_compute_clock(struct intel_crtc *crtc,
 	} else {
 		i9xx_compute_dpll(crtc, crtc_state, NULL,
 				  num_connectors);
+=======
+	if (is_sdvo && is_tv)
+		i9xx_adjust_sdvo_tv_clock(intel_crtc);
+
+	if (IS_GEN2(dev))
+		i8xx_update_pll(intel_crtc, adjusted_mode,
+				has_reduced_clock ? &reduced_clock : NULL,
+				num_connectors);
+	else if (IS_VALLEYVIEW(dev))
+		vlv_update_pll(intel_crtc);
+	else
+		i9xx_update_pll(intel_crtc,
+				has_reduced_clock ? &reduced_clock : NULL,
+				num_connectors,
+				is_sdvo && is_tv);
+
+	/* Set up the display plane register */
+	dspcntr = DISPPLANE_GAMMA_ENABLE;
+
+	if (!IS_VALLEYVIEW(dev)) {
+		if (pipe == 0)
+			dspcntr &= ~DISPPLANE_SEL_PIPE_MASK;
+		else
+			dspcntr |= DISPPLANE_SEL_PIPE_B;
+>>>>>>> p9x
 	}
 
 	return 0;
@@ -8716,7 +8785,11 @@ static void intel_set_pipe_csc(struct drm_crtc *crtc)
 	if (INTEL_INFO(dev)->gen > 6) {
 		uint16_t postoff = 0;
 
+<<<<<<< HEAD
 		if (intel_crtc->config->limited_color_range)
+=======
+		if (intel_crtc->config.limited_color_range)
+>>>>>>> p9x
 			postoff = (16 * (1 << 12) / 255) & 0x1fff;
 
 		I915_WRITE(PIPE_CSC_POSTOFF_HI(pipe), postoff);
@@ -10049,10 +10122,43 @@ static void i9xx_update_cursor(struct drm_crtc *crtc, u32 base, bool on)
 	}
 
 	/* and commit changes on next vblank */
+	POSTING_READ(CURCNTR(pipe));
 	I915_WRITE(CURBASE(pipe), base);
 	POSTING_READ(CURBASE(pipe));
+<<<<<<< HEAD
 
 	intel_crtc->cursor_base = base;
+=======
+}
+
+static void ivb_update_cursor(struct drm_crtc *crtc, u32 base)
+{
+	struct drm_device *dev = crtc->dev;
+	struct drm_i915_private *dev_priv = dev->dev_private;
+	struct intel_crtc *intel_crtc = to_intel_crtc(crtc);
+	int pipe = intel_crtc->pipe;
+	bool visible = base != 0;
+
+	if (intel_crtc->cursor_visible != visible) {
+		uint32_t cntl = I915_READ(CURCNTR_IVB(pipe));
+		if (base) {
+			cntl &= ~CURSOR_MODE;
+			cntl |= CURSOR_MODE_64_ARGB_AX | MCURSOR_GAMMA_ENABLE;
+		} else {
+			cntl &= ~(CURSOR_MODE | MCURSOR_GAMMA_ENABLE);
+			cntl |= CURSOR_MODE_DISABLE;
+		}
+		if (IS_HASWELL(dev))
+			cntl |= CURSOR_PIPE_CSC_ENABLE;
+		I915_WRITE(CURCNTR_IVB(pipe), cntl);
+
+		intel_crtc->cursor_visible = visible;
+	}
+	/* and commit changes on next vblank */
+	POSTING_READ(CURCNTR_IVB(pipe));
+	I915_WRITE(CURBASE_IVB(pipe), base);
+	POSTING_READ(CURBASE_IVB(pipe));
+>>>>>>> p9x
 }
 
 /* If no-part of the cursor is visible on the framebuffer, then the GPU may hang... */
@@ -10841,6 +10947,15 @@ static void do_intel_finish_page_flip(struct drm_device *dev,
 	page_flip_completed(intel_crtc);
 
 	spin_unlock_irqrestore(&dev->event_lock, flags);
+<<<<<<< HEAD
+=======
+
+	wake_up_all(&dev_priv->pending_flip_queue);
+
+	trace_i915_flip_complete(intel_crtc->plane, work->pending_flip_obj);
+
+	queue_work(dev_priv->wq, &work->work);
+>>>>>>> p9x
 }
 
 void intel_finish_page_flip(struct drm_device *dev, int pipe)
@@ -12410,9 +12525,13 @@ intel_compare_m_n(unsigned int m, unsigned int n,
 }
 
 static bool
+<<<<<<< HEAD
 intel_compare_link_m_n(const struct intel_link_m_n *m_n,
 		       struct intel_link_m_n *m2_n2,
 		       bool adjust)
+=======
+is_crtc_connector_off(struct drm_mode_set *set)
+>>>>>>> p9x
 {
 	if (m_n->tu == m2_n2->tu &&
 	    intel_compare_m_n(m_n->gmch_m, m_n->gmch_n,
@@ -12422,8 +12541,22 @@ intel_compare_link_m_n(const struct intel_link_m_n *m_n,
 		if (adjust)
 			*m2_n2 = *m_n;
 
+<<<<<<< HEAD
 		return true;
 	}
+=======
+	if (set->num_connectors == 0)
+		return false;
+
+	if (WARN_ON(set->connectors == NULL))
+		return false;
+
+	for (i = 0; i < set->num_connectors; i++)
+		if (set->connectors[i]->encoder &&
+		    set->connectors[i]->encoder->crtc == set->crtc &&
+		    set->connectors[i]->dpms != DRM_MODE_DPMS_ON)
+			return true;
+>>>>>>> p9x
 
 	return false;
 }
@@ -12436,6 +12569,7 @@ intel_pipe_config_compare(struct drm_device *dev,
 {
 	bool ret = true;
 
+<<<<<<< HEAD
 #define INTEL_ERR_OR_DBG_KMS(fmt, ...) \
 	do { \
 		if (!adjust) \
@@ -12451,6 +12585,25 @@ intel_pipe_config_compare(struct drm_device *dev,
 			  current_config->name, \
 			  pipe_config->name); \
 		ret = false; \
+=======
+	/* We should be able to check here if the fb has the same properties
+	 * and then just flip_or_move it */
+	if (is_crtc_connector_off(set)) {
+		config->mode_changed = true;
+	} else if (set->crtc->fb != set->fb) {
+		/* If we have no fb then treat it as a full mode set */
+		if (set->crtc->fb == NULL) {
+			DRM_DEBUG_KMS("crtc has no fb, full mode set\n");
+			config->mode_changed = true;
+		} else if (set->fb == NULL) {
+			config->mode_changed = true;
+		} else if (set->fb->pixel_format !=
+			   set->crtc->fb->pixel_format) {
+			config->mode_changed = true;
+		} else {
+			config->fb_changed = true;
+		}
+>>>>>>> p9x
 	}
 
 #define PIPE_CONF_CHECK_I(name)	\
@@ -14740,12 +14893,24 @@ static void quirk_invert_brightness(struct drm_device *dev)
 	DRM_INFO("applying inverted panel brightness quirk\n");
 }
 
+<<<<<<< HEAD
 /* Some VBT's incorrectly indicate no backlight is present */
 static void quirk_backlight_present(struct drm_device *dev)
 {
 	struct drm_i915_private *dev_priv = dev->dev_private;
 	dev_priv->quirks |= QUIRK_BACKLIGHT_PRESENT;
 	DRM_INFO("applying backlight present quirk\n");
+=======
+/*
+ * Some machines (Dell XPS13) suffer broken backlight controls if
+ * BLM_PCH_PWM_ENABLE is set.
+ */
+static void quirk_no_pcm_pwm_enable(struct drm_device *dev)
+{
+	struct drm_i915_private *dev_priv = dev->dev_private;
+	dev_priv->quirks |= QUIRK_NO_PCH_PWM_ENABLE;
+	DRM_INFO("applying no-PCH_PWM_ENABLE quirk\n");
+>>>>>>> p9x
 }
 
 struct intel_quirk {
@@ -14817,6 +14982,7 @@ static struct intel_quirk intel_quirks[] = {
 	/* Acer Aspire 4736Z */
 	{ 0x2a42, 0x1025, 0x0260, quirk_invert_brightness },
 
+<<<<<<< HEAD
 	/* Acer Aspire 5336 */
 	{ 0x2a42, 0x1025, 0x048a, quirk_invert_brightness },
 
@@ -14843,6 +15009,12 @@ static struct intel_quirk intel_quirks[] = {
 
 	/* Dell Chromebook 11 (2015 version) */
 	{ 0x0a16, 0x1028, 0x0a35, quirk_backlight_present },
+=======
+	/* Dell XPS13 HD Sandy Bridge */
+	{ 0x0116, 0x1028, 0x052e, quirk_no_pcm_pwm_enable },
+	/* Dell XPS13 HD and XPS13 FHD Ivy Bridge */
+	{ 0x0166, 0x1028, 0x058b, quirk_no_pcm_pwm_enable },
+>>>>>>> p9x
 };
 
 static void intel_init_quirks(struct drm_device *dev)
@@ -14990,6 +15162,7 @@ void intel_modeset_init(struct drm_device *dev)
 	/* Just in case the BIOS is doing something questionable. */
 	intel_fbc_disable(dev_priv);
 
+<<<<<<< HEAD
 	drm_modeset_lock_all(dev);
 	intel_modeset_setup_hw_state(dev);
 	drm_modeset_unlock_all(dev);
@@ -15018,6 +15191,8 @@ void intel_modeset_init(struct drm_device *dev)
 	}
 }
 
+=======
+>>>>>>> p9x
 static void intel_enable_pipe_a(struct drm_device *dev)
 {
 	struct intel_connector *connector;
@@ -15115,6 +15290,30 @@ static void intel_sanitize_crtc(struct intel_crtc *crtc)
 		crtc->plane = !plane;
 		intel_crtc_disable_noatomic(&crtc->base);
 		crtc->plane = plane;
+<<<<<<< HEAD
+=======
+
+		/* ... and break all links. */
+		list_for_each_entry(connector, &dev->mode_config.connector_list,
+				    base.head) {
+			if (connector->encoder->base.crtc != &crtc->base)
+				continue;
+
+			connector->base.dpms = DRM_MODE_DPMS_OFF;
+			connector->base.encoder = NULL;
+		}
+		/* multiple connectors may have the same encoder:
+		 *  handle them and break crtc link separately */
+		list_for_each_entry(connector, &dev->mode_config.connector_list,
+				    base.head)
+			if (connector->encoder->base.crtc == &crtc->base) {
+				connector->encoder->base.crtc = NULL;
+				connector->encoder->connectors_active = false;
+			}
+
+		WARN_ON(crtc->active);
+		crtc->base.enabled = false;
+>>>>>>> p9x
 	}
 
 	if (dev_priv->quirks & QUIRK_PIPEA_FORCE &&
@@ -15214,6 +15413,10 @@ static void intel_sanitize_encoder(struct intel_encoder *encoder)
 				encoder->post_disable(encoder);
 		}
 		encoder->base.crtc = NULL;
+<<<<<<< HEAD
+=======
+		encoder->connectors_active = false;
+>>>>>>> p9x
 
 		/* Inconsistent output/port/pipe state happens presumably due to
 		 * a bug in one of the get_hw_state functions. Or someplace else
@@ -15516,6 +15719,7 @@ void intel_modeset_gem_init(struct drm_device *dev)
 
 	intel_setup_overlay(dev);
 
+<<<<<<< HEAD
 	/*
 	 * Make sure any fbs we allocated at startup are properly
 	 * pinned & fenced.  When we do the allocation it's too early
@@ -15552,6 +15756,11 @@ void intel_connector_unregister(struct intel_connector *intel_connector)
 
 	intel_panel_destroy_backlight(connector);
 	drm_connector_unregister(connector);
+=======
+	mutex_lock(&dev->mode_config.mutex);
+	intel_modeset_setup_hw_state(dev, false);
+	mutex_unlock(&dev->mode_config.mutex);
+>>>>>>> p9x
 }
 
 void intel_modeset_cleanup(struct drm_device *dev)
@@ -15627,6 +15836,7 @@ int intel_modeset_vga_set_state(struct drm_device *dev, bool state)
 	unsigned reg = INTEL_INFO(dev)->gen >= 6 ? SNB_GMCH_CTRL : INTEL_GMCH_CTRL;
 	u16 gmch_ctrl;
 
+<<<<<<< HEAD
 	if (pci_read_config_word(dev_priv->bridge_dev, reg, &gmch_ctrl)) {
 		DRM_ERROR("failed to read control word\n");
 		return -EIO;
@@ -15635,16 +15845,23 @@ int intel_modeset_vga_set_state(struct drm_device *dev, bool state)
 	if (!!(gmch_ctrl & INTEL_GMCH_VGA_DISABLE) == !state)
 		return 0;
 
+=======
+	pci_read_config_word(dev_priv->bridge_dev, reg, &gmch_ctrl);
+>>>>>>> p9x
 	if (state)
 		gmch_ctrl &= ~INTEL_GMCH_VGA_DISABLE;
 	else
 		gmch_ctrl |= INTEL_GMCH_VGA_DISABLE;
+<<<<<<< HEAD
 
 	if (pci_write_config_word(dev_priv->bridge_dev, reg, gmch_ctrl)) {
 		DRM_ERROR("failed to write control word\n");
 		return -EIO;
 	}
 
+=======
+	pci_write_config_word(dev_priv->bridge_dev, reg, gmch_ctrl);
+>>>>>>> p9x
 	return 0;
 }
 

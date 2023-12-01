@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -21,9 +25,16 @@
 #include <linux/iopoll.h>
 #include <linux/kthread.h>
 
+<<<<<<< HEAD
 #include "mdss_dsi_cmd.h"
 #include "mdss_dsi.h"
 #include "mdss_smmu.h"
+=======
+#include <linux/msm_iommu_domains.h>
+
+#include "mdss_dsi_cmd.h"
+#include "mdss_dsi.h"
+>>>>>>> p9x
 
 /*
  * mipi dsi buf mechanism
@@ -71,8 +82,13 @@ char *mdss_dsi_buf_init(struct dsi_buf *dp)
 
 int mdss_dsi_buf_alloc(struct device *ctrl_dev, struct dsi_buf *dp, int size)
 {
+<<<<<<< HEAD
 	dp->start = mdss_smmu_dsi_alloc_buf(ctrl_dev, size, &dp->dmap,
 			GFP_KERNEL);
+=======
+	dp->start = dma_alloc_writecombine(ctrl_dev, size, &dp->dmap,
+					   GFP_KERNEL);
+>>>>>>> p9x
 	if (dp->start == NULL) {
 		pr_err("%s:%u\n", __func__, __LINE__);
 		return -ENOMEM;
@@ -724,8 +740,12 @@ void mdss_dsi_set_tear_off(struct mdss_dsi_ctrl_pdata *ctrl)
 /*
  * mdss_dsi_cmd_get: ctrl->cmd_mutex acquired by caller
  */
+<<<<<<< HEAD
 struct dcs_cmd_req *mdss_dsi_cmdlist_get(struct mdss_dsi_ctrl_pdata *ctrl,
 				int from_mdp)
+=======
+struct dcs_cmd_req *mdss_dsi_cmdlist_get(struct mdss_dsi_ctrl_pdata *ctrl)
+>>>>>>> p9x
 {
 	struct dcs_cmd_list *clist;
 	struct dcs_cmd_req *req = NULL;
@@ -734,12 +754,15 @@ struct dcs_cmd_req *mdss_dsi_cmdlist_get(struct mdss_dsi_ctrl_pdata *ctrl,
 	clist = &ctrl->cmdlist;
 	if (clist->get != clist->put) {
 		req = &clist->list[clist->get];
+<<<<<<< HEAD
 		/*dont let commit thread steal ESD thread's
 		command*/
 		if (from_mdp && (req->flags & CMD_REQ_COMMIT)) {
 			mutex_unlock(&ctrl->cmdlist_mutex);
 			return NULL;
 		}
+=======
+>>>>>>> p9x
 		clist->get++;
 		clist->get %= CMD_REQ_MAX;
 		clist->tot--;

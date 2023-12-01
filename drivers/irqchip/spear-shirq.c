@@ -161,11 +161,35 @@ static struct spear_shirq spear320_shirq_ras1 = {
 };
 
 static struct spear_shirq spear320_shirq_ras2 = {
+<<<<<<< HEAD
 	.offset		= 10,
 	.nr_irqs	= 1,
 	.mask		= ((0x1 << 1) - 1) << 10,
 	.irq_chip	= &dummy_irq_chip,
 	.status_reg	= SPEAR320_INT_STS_MASK_REG,
+=======
+	.irq_nr = 1,
+	.irq_bit_off = 10,
+	.regs = {
+		.enb_reg = -1,
+		.status_reg = SPEAR320_INT_STS_MASK_REG,
+		.clear_reg = SPEAR320_INT_CLR_MASK_REG,
+		.reset_to_clear = 1,
+	},
+};
+
+static struct spear_shirq spear320_shirq_ras3 = {
+	.irq_nr = 7,
+	.irq_bit_off = 0,
+	.invalid_irq = 1,
+	.regs = {
+		.enb_reg = SPEAR320_INT_ENB_MASK_REG,
+		.reset_to_enb = 1,
+		.status_reg = SPEAR320_INT_STS_MASK_REG,
+		.clear_reg = SPEAR320_INT_CLR_MASK_REG,
+		.reset_to_clear = 1,
+	},
+>>>>>>> p9x
 };
 
 static struct spear_shirq spear320_shirq_intrcomm_ras = {

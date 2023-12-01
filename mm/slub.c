@@ -1010,6 +1010,54 @@ static void trace(struct kmem_cache *s, struct page *page, void *object,
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * Hooks for other subsystems that check memory allocations. In a typical
+ * production configuration these hooks all should produce no code at all.
+ */
+static inline int slab_pre_alloc_hook(struct kmem_cache *s, gfp_t flags)
+{
+	flags &= gfp_allowed_mask;
+	lockdep_trace_alloc(flags);
+	might_sleep_if(flags & __GFP_WAIT);
+
+	return should_failslab(s->object_size, flags, s->flags);
+}
+
+static inline void slab_post_alloc_hook(struct kmem_cache *s, gfp_t flags, void *object)
+{
+	flags &= gfp_allowed_mask;
+	kmemcheck_slab_alloc(s, flags, object, slab_ksize(s));
+	kmemleak_alloc_recursive(object, s->object_size, 1, s->flags, flags);
+	kasan_slab_alloc(s, object);
+}
+
+static inline void slab_free_hook(struct kmem_cache *s, void *x)
+{
+	kmemleak_free_recursive(x, s->flags);
+
+	/*
+	 * Trouble is that we may no longer disable interupts in the fast path
+	 * So in order to make the debug calls that expect irqs to be
+	 * disabled we need to disable interrupts temporarily.
+	 */
+#if defined(CONFIG_KMEMCHECK) || defined(CONFIG_LOCKDEP)
+	{
+		unsigned long flags;
+
+		local_irq_save(flags);
+		kmemcheck_slab_free(s, x, s->object_size);
+		debug_check_no_locks_freed(x, s->object_size);
+		local_irq_restore(flags);
+	}
+#endif
+	if (!(s->flags & SLAB_DEBUG_OBJECTS))
+		debug_check_no_obj_freed(x, s->object_size);
+	kasan_slab_free(s, x);
+}
+
+/*
+>>>>>>> p9x
  * Tracking of fully allocated slabs for debugging purposes.
  */
 static void add_full(struct kmem_cache *s,
@@ -1482,7 +1530,19 @@ static struct page *new_slab(struct kmem_cache *s, gfp_t flags, int node)
 	if (unlikely(s->flags & SLAB_POISON))
 		memset(start, POISON_INUSE, PAGE_SIZE << order);
 
+<<<<<<< HEAD
 	kasan_poison_slab(page);
+=======
+	last = start;
+	kasan_poison_slab(page);
+	for_each_object(p, s, start, page->objects) {
+		setup_object(s, page, last);
+		set_freepointer(s, last, p);
+		last = p;
+	}
+	setup_object(s, page, last);
+	set_freepointer(s, last, NULL);
+>>>>>>> p9x
 
 	for_each_object_idx(p, idx, s, start, page->objects) {
 		setup_object(s, page, p);
@@ -4521,7 +4581,11 @@ static ssize_t cpu_partial_store(struct kmem_cache *s, const char *buf,
 	unsigned int objects;
 	int err;
 
+<<<<<<< HEAD
 	err = kstrtouint(buf, 10, &objects);
+=======
+	err = kstrtoul(buf, 10, &objects);
+>>>>>>> p9x
 	if (err)
 		return err;
 	if (objects && !kmem_cache_has_cpu_partial(s))
@@ -5136,7 +5200,11 @@ static void memcg_propagate_slab_attrs(struct kmem_cache *s)
 			buf = buffer;
 		}
 
+<<<<<<< HEAD
 		len = attr->show(root_cache, buf);
+=======
+		len = attr->show(s->memcg_params->root_cache, buf);
+>>>>>>> p9x
 		if (len > 0)
 			attr->store(s, buf, len);
 	}

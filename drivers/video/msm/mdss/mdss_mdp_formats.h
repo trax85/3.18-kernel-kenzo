@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -31,6 +35,7 @@ enum {
 	COLOR_ALPHA_4BIT = 1,
 };
 
+<<<<<<< HEAD
 #define UBWC_META_MACRO_W_H 16
 #define UBWC_META_BLOCK_SIZE 256
 
@@ -38,13 +43,21 @@ enum {
 	{							\
 		.format = (fmt),				\
 		.flag = flag_arg,					\
+=======
+#define FMT_RGB_565(fmt, e0, e1, e2)				\
+	{							\
+		.format = (fmt),				\
+>>>>>>> p9x
 		.fetch_planes = MDSS_MDP_PLANE_INTERLEAVED,	\
 		.unpack_tight = 1,				\
 		.unpack_align_msb = 0,				\
 		.alpha_enable = 0,				\
 		.unpack_count = 3,				\
 		.bpp = 2,					\
+<<<<<<< HEAD
 		.fetch_mode = (fetch_type),			\
+=======
+>>>>>>> p9x
 		.element = { (e0), (e1), (e2) },		\
 		.bits = {					\
 			[C2_R_Cr] = COLOR_5BIT,			\
@@ -53,17 +66,45 @@ enum {
 		},						\
 	}
 
+<<<<<<< HEAD
 #define FMT_RGB_888(fmt, fetch_type, flag_arg, e0, e1, e2)		\
 	{							\
 		.format = (fmt),				\
 		.flag = flag_arg,					\
+=======
+#define FMT_RGB_565_TILE(fmt, e0, e1, e2)				\
+	{							\
+		.format = (fmt),				\
+		.fetch_planes = MDSS_MDP_PLANE_INTERLEAVED,	\
+		.unpack_tight = 1,				\
+		.unpack_align_msb = 0,				\
+		.alpha_enable = 0,				\
+		.unpack_count = 3,				\
+		.bpp = 2,					\
+		.tile = 1,					\
+		.element = { (e0), (e1), (e2) },		\
+		.bits = {					\
+			[C2_R_Cr] = COLOR_5BIT,			\
+			[C0_G_Y] = COLOR_6BIT,			\
+			[C1_B_Cb] = COLOR_5BIT,			\
+		},						\
+	}
+
+
+#define FMT_RGB_888(fmt, e0, e1, e2)				\
+	{							\
+		.format = (fmt),				\
+>>>>>>> p9x
 		.fetch_planes = MDSS_MDP_PLANE_INTERLEAVED,	\
 		.unpack_tight = 1,				\
 		.unpack_align_msb = 0,				\
 		.alpha_enable = 0,				\
 		.unpack_count = 3,				\
 		.bpp = 3,					\
+<<<<<<< HEAD
 		.fetch_mode = (fetch_type),			\
+=======
+>>>>>>> p9x
 		.element = { (e0), (e1), (e2) },		\
 		.bits = {					\
 			[C2_R_Cr] = COLOR_8BIT,			\
@@ -72,18 +113,46 @@ enum {
 		},						\
 	}
 
+<<<<<<< HEAD
 #define FMT_RGB_8888(fmt, fetch_type, flag_arg,	\
 		alpha_en, e0, e1, e2, e3)	\
 	{							\
 		.format = (fmt),				\
 		.flag = flag_arg,					\
+=======
+#define FMT_RGB_8888(fmt, alpha_en, e0, e1, e2, e3)		\
+	{							\
+		.format = (fmt),				\
+>>>>>>> p9x
 		.fetch_planes = MDSS_MDP_PLANE_INTERLEAVED,	\
 		.unpack_tight = 1,				\
 		.unpack_align_msb = 0,				\
 		.alpha_enable = (alpha_en),			\
 		.unpack_count = 4,				\
 		.bpp = 4,					\
+<<<<<<< HEAD
 		.fetch_mode = (fetch_type),			\
+=======
+		.element = { (e0), (e1), (e2), (e3) },		\
+		.bits = {					\
+			[C3_ALPHA] = COLOR_8BIT,		\
+			[C2_R_Cr] = COLOR_8BIT,			\
+			[C0_G_Y] = COLOR_8BIT,			\
+			[C1_B_Cb] = COLOR_8BIT,			\
+		},						\
+	}
+
+#define FMT_RGB_8888_TILE(fmt, alpha_en, e0, e1, e2, e3)	\
+	{							\
+		.format = (fmt),				\
+		.fetch_planes = MDSS_MDP_PLANE_INTERLEAVED,	\
+		.unpack_tight = 1,				\
+		.unpack_align_msb = 0,				\
+		.alpha_enable = (alpha_en),			\
+		.unpack_count = 4,				\
+		.bpp = 4,					\
+		.tile = 1,					\
+>>>>>>> p9x
 		.element = { (e0), (e1), (e2), (e3) },		\
 		.bits = {					\
 			[C3_ALPHA] = COLOR_8BIT,		\
@@ -105,15 +174,22 @@ enum {
 		.unpack_tight = 1,				\
 		.unpack_align_msb = 0
 
+<<<<<<< HEAD
 #define FMT_YUV_PSEUDO(fmt, fetch_type, samp, \
 		flag_arg, e0, e1)		\
 	{							\
 		FMT_YUV_COMMON(fmt),				\
 		.flag = flag_arg,					\
+=======
+#define FMT_YUV_PSEUDO(fmt, samp, e0, e1)			\
+	{							\
+		FMT_YUV_COMMON(fmt),				\
+>>>>>>> p9x
 		.fetch_planes = MDSS_MDP_PLANE_PSEUDO_PLANAR,	\
 		.chroma_sample = samp,				\
 		.unpack_count = 2,				\
 		.bpp = 2,					\
+<<<<<<< HEAD
 		.fetch_mode = (fetch_type),			\
 		.element = { (e0), (e1) },			\
 	}
@@ -123,10 +199,19 @@ enum {
 	{							\
 		FMT_YUV_COMMON(fmt),				\
 		.flag = flag_arg,					\
+=======
+		.element = { (e0), (e1) },			\
+	}
+
+#define FMT_YUV_PLANR(fmt, samp, e0, e1)			\
+	{							\
+		FMT_YUV_COMMON(fmt),				\
+>>>>>>> p9x
 		.fetch_planes = MDSS_MDP_PLANE_PLANAR,		\
 		.chroma_sample = samp,				\
 		.bpp = 1,					\
 		.unpack_count = 1,				\
+<<<<<<< HEAD
 		.fetch_mode = (fetch_type),			\
 		.element = { (e0), (e1) }			\
 	}
@@ -135,6 +220,14 @@ enum {
 	{							\
 		.format = (fmt),				\
 		.flag = flag_arg,					\
+=======
+		.element = { (e0), (e1) }			\
+	}
+
+#define FMT_RGB_1555(fmt, alpha_en, e0, e1, e2, e3)		\
+	{							\
+		.format = (fmt),				\
+>>>>>>> p9x
 		.fetch_planes = MDSS_MDP_PLANE_INTERLEAVED,	\
 		.unpack_tight = 1,				\
 		.unpack_align_msb = 0,				\
@@ -142,7 +235,10 @@ enum {
 		.unpack_count = 4,				\
 		.bpp = 2,					\
 		.element = { (e0), (e1), (e2), (e3) },		\
+<<<<<<< HEAD
 		.fetch_mode = MDSS_MDP_FETCH_LINEAR,		\
+=======
+>>>>>>> p9x
 		.bits = {					\
 			[C3_ALPHA] = COLOR_ALPHA_1BIT,		\
 			[C2_R_Cr] = COLOR_5BIT,			\
@@ -151,17 +247,26 @@ enum {
 		},						\
 	}
 
+<<<<<<< HEAD
 #define FMT_RGB_4444(fmt, alpha_en, flag_arg, e0, e1, e2, e3)		\
 	{							\
 		.format = (fmt),				\
 		.flag = flag_arg,					\
+=======
+#define FMT_RGB_4444(fmt, alpha_en, e0, e1, e2, e3)		\
+	{							\
+		.format = (fmt),				\
+>>>>>>> p9x
 		.fetch_planes = MDSS_MDP_PLANE_INTERLEAVED,	\
 		.unpack_tight = 1,				\
 		.unpack_align_msb = 0,				\
 		.alpha_enable = (alpha_en),			\
 		.unpack_count = 4,				\
 		.bpp = 2,					\
+<<<<<<< HEAD
 		.fetch_mode = MDSS_MDP_FETCH_LINEAR,		\
+=======
+>>>>>>> p9x
 		.element = { (e0), (e1), (e2), (e3) },		\
 		.bits = {					\
 			[C3_ALPHA] = COLOR_ALPHA_4BIT,		\
@@ -171,6 +276,7 @@ enum {
 		},						\
 	}
 
+<<<<<<< HEAD
 #define FMT_RGB_2101010(fmt, fetch_type, flag_arg,	\
 		alpha_en, e0, e1, e2, e3)	\
 	{							\
@@ -380,6 +486,55 @@ static struct mdss_mdp_format_params mdss_mdp_format_map[] = {
 	FMT_YUV_PLANR(MDP_Y_CR_CB_GH2V2, MDSS_MDP_FETCH_LINEAR,
 		MDSS_MDP_CHROMA_420, VALID_ROT_WB_FORMAT |
 		VALID_MDP_WB_INTF_FORMAT, C1_B_Cb, C2_R_Cr),
+=======
+static struct mdss_mdp_format_params mdss_mdp_format_map[] = {
+	FMT_RGB_565(MDP_RGB_565, C1_B_Cb, C0_G_Y, C2_R_Cr),
+	FMT_RGB_565(MDP_BGR_565, C2_R_Cr, C0_G_Y, C1_B_Cb),
+	FMT_RGB_565_TILE(MDP_RGB_565_TILE, C1_B_Cb, C0_G_Y, C2_R_Cr),
+	FMT_RGB_565_TILE(MDP_BGR_565_TILE, C2_R_Cr, C0_G_Y, C1_B_Cb),
+	FMT_RGB_888(MDP_RGB_888, C2_R_Cr, C0_G_Y, C1_B_Cb),
+	FMT_RGB_888(MDP_BGR_888, C1_B_Cb, C0_G_Y, C2_R_Cr),
+
+	FMT_RGB_8888(MDP_XRGB_8888, 0, C3_ALPHA, C2_R_Cr, C0_G_Y, C1_B_Cb),
+	FMT_RGB_8888(MDP_ARGB_8888, 1, C3_ALPHA, C2_R_Cr, C0_G_Y, C1_B_Cb),
+	FMT_RGB_8888(MDP_RGBA_8888, 1, C2_R_Cr, C0_G_Y, C1_B_Cb, C3_ALPHA),
+	FMT_RGB_8888(MDP_RGBX_8888, 0, C2_R_Cr, C0_G_Y, C1_B_Cb, C3_ALPHA),
+	FMT_RGB_8888(MDP_BGRA_8888, 1, C1_B_Cb, C0_G_Y, C2_R_Cr, C3_ALPHA),
+	FMT_RGB_8888(MDP_BGRX_8888, 0, C1_B_Cb, C0_G_Y, C2_R_Cr, C3_ALPHA),
+	FMT_RGB_8888_TILE(MDP_RGBA_8888_TILE, 1, C2_R_Cr, C0_G_Y, C1_B_Cb,
+			C3_ALPHA),
+	FMT_RGB_8888_TILE(MDP_ARGB_8888_TILE, 1, C3_ALPHA, C2_R_Cr, C0_G_Y,
+			C1_B_Cb),
+	FMT_RGB_8888_TILE(MDP_ABGR_8888_TILE, 1, C3_ALPHA, C1_B_Cb, C0_G_Y,
+			C2_R_Cr),
+	FMT_RGB_8888_TILE(MDP_BGRA_8888_TILE, 1, C1_B_Cb, C0_G_Y, C2_R_Cr,
+			C3_ALPHA),
+	FMT_RGB_8888_TILE(MDP_RGBX_8888_TILE, 0, C2_R_Cr, C0_G_Y, C1_B_Cb,
+			C3_ALPHA),
+	FMT_RGB_8888_TILE(MDP_XRGB_8888_TILE, 0, C3_ALPHA, C2_R_Cr, C0_G_Y,
+			C1_B_Cb),
+	FMT_RGB_8888_TILE(MDP_XBGR_8888_TILE, 0, C3_ALPHA, C1_B_Cb, C0_G_Y,
+			C2_R_Cr),
+	FMT_RGB_8888_TILE(MDP_BGRX_8888_TILE, 0, C1_B_Cb, C0_G_Y, C2_R_Cr,
+			C3_ALPHA),
+
+	FMT_YUV_PSEUDO(MDP_Y_CRCB_H1V1, MDSS_MDP_CHROMA_RGB, C2_R_Cr, C1_B_Cb),
+	FMT_YUV_PSEUDO(MDP_Y_CBCR_H1V1, MDSS_MDP_CHROMA_RGB, C1_B_Cb, C2_R_Cr),
+	FMT_YUV_PSEUDO(MDP_Y_CRCB_H2V1, MDSS_MDP_CHROMA_H2V1, C2_R_Cr, C1_B_Cb),
+	FMT_YUV_PSEUDO(MDP_Y_CBCR_H2V1, MDSS_MDP_CHROMA_H2V1, C1_B_Cb, C2_R_Cr),
+	FMT_YUV_PSEUDO(MDP_Y_CRCB_H1V2, MDSS_MDP_CHROMA_H1V2, C2_R_Cr, C1_B_Cb),
+	FMT_YUV_PSEUDO(MDP_Y_CBCR_H1V2, MDSS_MDP_CHROMA_H1V2, C1_B_Cb, C2_R_Cr),
+	FMT_YUV_PSEUDO(MDP_Y_CRCB_H2V2, MDSS_MDP_CHROMA_420, C2_R_Cr, C1_B_Cb),
+	FMT_YUV_PSEUDO(MDP_Y_CBCR_H2V2, MDSS_MDP_CHROMA_420, C1_B_Cb, C2_R_Cr),
+	FMT_YUV_PSEUDO(MDP_Y_CBCR_H2V2_VENUS, MDSS_MDP_CHROMA_420,
+		       C1_B_Cb, C2_R_Cr),
+	FMT_YUV_PSEUDO(MDP_Y_CRCB_H2V2_VENUS, MDSS_MDP_CHROMA_420,
+			C2_R_Cr, C1_B_Cb),
+
+	FMT_YUV_PLANR(MDP_Y_CB_CR_H2V2, MDSS_MDP_CHROMA_420, C2_R_Cr, C1_B_Cb),
+	FMT_YUV_PLANR(MDP_Y_CR_CB_H2V2, MDSS_MDP_CHROMA_420, C1_B_Cb, C2_R_Cr),
+	FMT_YUV_PLANR(MDP_Y_CR_CB_GH2V2, MDSS_MDP_CHROMA_420, C1_B_Cb, C2_R_Cr),
+>>>>>>> p9x
 
 	{
 		FMT_YUV_COMMON(MDP_YCBCR_H1V1),
@@ -387,7 +542,10 @@ static struct mdss_mdp_format_params mdss_mdp_format_map[] = {
 		.chroma_sample = MDSS_MDP_CHROMA_RGB,
 		.unpack_count = 3,
 		.bpp = 3,
+<<<<<<< HEAD
 		.fetch_mode = MDSS_MDP_FETCH_LINEAR,
+=======
+>>>>>>> p9x
 		.element = { C2_R_Cr, C1_B_Cb, C0_G_Y },
 	},
 	{
@@ -396,7 +554,10 @@ static struct mdss_mdp_format_params mdss_mdp_format_map[] = {
 		.chroma_sample = MDSS_MDP_CHROMA_RGB,
 		.unpack_count = 3,
 		.bpp = 3,
+<<<<<<< HEAD
 		.fetch_mode = MDSS_MDP_FETCH_LINEAR,
+=======
+>>>>>>> p9x
 		.element = { C1_B_Cb, C2_R_Cr, C0_G_Y },
 	},
 	{
@@ -405,16 +566,23 @@ static struct mdss_mdp_format_params mdss_mdp_format_map[] = {
 		.chroma_sample = MDSS_MDP_CHROMA_H2V1,
 		.unpack_count = 4,
 		.bpp = 2,
+<<<<<<< HEAD
 		.fetch_mode = MDSS_MDP_FETCH_LINEAR,
+=======
+>>>>>>> p9x
 		.element = { C1_B_Cb, C0_G_Y, C2_R_Cr, C0_G_Y },
 	},
 	{
 		FMT_YUV_COMMON(MDP_YCBYCR_H2V1),
+<<<<<<< HEAD
 		.flag = VALID_MDP_WB_INTF_FORMAT,
+=======
+>>>>>>> p9x
 		.fetch_planes = MDSS_MDP_PLANE_INTERLEAVED,
 		.chroma_sample = MDSS_MDP_CHROMA_H2V1,
 		.unpack_count = 4,
 		.bpp = 2,
+<<<<<<< HEAD
 		.fetch_mode = MDSS_MDP_FETCH_LINEAR,
 		.element = { C2_R_Cr, C0_G_Y, C1_B_Cb, C0_G_Y },
 	},
@@ -499,6 +667,14 @@ static struct mdss_mdp_format_params mdss_mdp_format_map[] = {
 	FMT_YUV_PSEUDO_10(MDP_Y_CBCR_H2V2_P010, MDSS_MDP_FETCH_LINEAR,
 		MDSS_MDP_CHROMA_420, VALID_ROT_WB_FORMAT,
 		C1_B_Cb, C2_R_Cr, 0, 1),
+=======
+		.element = { C2_R_Cr, C0_G_Y, C1_B_Cb, C0_G_Y },
+	},
+	FMT_RGB_1555(MDP_RGBA_5551, 1, C3_ALPHA, C1_B_Cb, C0_G_Y, C2_R_Cr),
+	FMT_RGB_1555(MDP_ARGB_1555, 1, C1_B_Cb, C0_G_Y, C2_R_Cr, C3_ALPHA),
+	FMT_RGB_4444(MDP_RGBA_4444, 1, C3_ALPHA, C1_B_Cb, C0_G_Y, C2_R_Cr),
+	FMT_RGB_4444(MDP_ARGB_4444, 1, C1_B_Cb, C0_G_Y, C2_R_Cr, C3_ALPHA),
+>>>>>>> p9x
 
 };
 #endif

@@ -25,17 +25,25 @@
 #include <linux/debugfs.h>
 #include <linux/spmi.h>
 #include <linux/of_irq.h>
+<<<<<<< HEAD
 #ifdef CONFIG_WAKELOCK
 #include <linux/wakelock.h>
 #endif
+=======
+#include <linux/wakelock.h>
+>>>>>>> p9x
 #include <linux/interrupt.h>
 #include <linux/completion.h>
 #include <linux/hwmon-sysfs.h>
 #include <linux/qpnp/qpnp-adc.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #ifdef CONFIG_WAKELOCK
 #include <linux/wakelock.h>
 #endif
+=======
+#include <linux/wakelock.h>
+>>>>>>> p9x
 
 /* QPNP IADC register definition */
 #define QPNP_IADC_REVISION1				0x0
@@ -814,7 +822,11 @@ static int32_t qpnp_iadc_configure(struct qpnp_iadc_chip *iadc,
 	}
 
 	if (!iadc->iadc_poll_eoc)
+<<<<<<< HEAD
 		reinit_completion(&iadc->adc->adc_rslt_completion);
+=======
+		INIT_COMPLETION(iadc->adc->adc_rslt_completion);
+>>>>>>> p9x
 
 	rc = qpnp_iadc_enable(iadc, true);
 	if (rc)

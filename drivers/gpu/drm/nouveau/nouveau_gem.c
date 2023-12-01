@@ -340,7 +340,11 @@ validate_fini_no_ticket(struct validate_op *op, struct nouveau_fence *fence,
 		b = &pbbo[nvbo->pbbo_index];
 
 		if (likely(fence))
+<<<<<<< HEAD
 			nouveau_bo_fence(nvbo, fence, !!b->write_domains);
+=======
+			nouveau_bo_fence(nvbo, fence);
+>>>>>>> p9x
 
 		if (unlikely(nvbo->validate_mapped)) {
 			ttm_bo_kunmap(&nvbo->kmap);

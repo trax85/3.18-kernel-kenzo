@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -14,6 +18,10 @@
 #define _MSM_ISP_BUF_H_
 
 #include <media/msmb_isp.h>
+<<<<<<< HEAD
+=======
+#include <linux/msm_iommu_domains.h>
+>>>>>>> p9x
 #include "msm_sd.h"
 
 /* Buffer type could be userspace / HAL.
@@ -23,6 +31,7 @@
 		(id & ISP_NATIVE_BUF_BIT) ? MSM_ISP_BUFFER_SRC_NATIVE : \
 				MSM_ISP_BUFFER_SRC_HAL)
 
+<<<<<<< HEAD
 /*
  * This mask can be set dynamically if there are more than 2 VFE
  *.and 2 of those are used
@@ -34,6 +43,12 @@
 
 #define MSM_ISP_INVALID_BUF_INDEX 0xFFFFFFFF
 
+=======
+#define ISP_SHARE_BUF_CLIENT 2
+#define BUF_MGR_NUM_BUF_Q 28
+#define MAX_IOMMU_CTX 2
+
+>>>>>>> p9x
 struct msm_isp_buf_mgr;
 
 enum msm_isp_buffer_src_t {
@@ -53,6 +68,7 @@ enum msm_isp_buffer_state {
 	MSM_ISP_BUFFER_STATE_DISPATCHED,     /* Sent to HAL*/
 };
 
+<<<<<<< HEAD
 enum msm_isp_buffer_put_state {
 	MSM_ISP_BUFFER_STATE_PUT_PREPARED,  /* on init */
 	MSM_ISP_BUFFER_STATE_PUT_BUF,       /* on rotation */
@@ -62,6 +78,8 @@ enum msm_isp_buffer_put_state {
 	MSM_ISP_BUFFER_STATE_RETURN_EMPTY,  /* for return empty */
 };
 
+=======
+>>>>>>> p9x
 enum msm_isp_buffer_flush_t {
 	MSM_ISP_BUFFER_FLUSH_DIVERTED,
 	MSM_ISP_BUFFER_FLUSH_ALL,
@@ -73,11 +91,16 @@ enum msm_isp_buf_mgr_state {
 };
 
 struct msm_isp_buffer_mapped_info {
+<<<<<<< HEAD
 	size_t len;
+=======
+	unsigned long len;
+>>>>>>> p9x
 	dma_addr_t paddr;
 	int buf_fd;
 };
 
+<<<<<<< HEAD
 struct buffer_cmd {
 	struct list_head list;
 	struct msm_isp_buffer_mapped_info *mapped_info;
@@ -88,6 +111,8 @@ struct msm_isp_buffer_debug_t {
 	uint8_t put_state_last;
 };
 
+=======
+>>>>>>> p9x
 struct msm_isp_buffer {
 	/*Common Data structure*/
 	int num_planes;
@@ -96,17 +121,33 @@ struct msm_isp_buffer {
 	uint32_t bufq_handle;
 	uint32_t frame_id;
 	struct timeval *tv;
+<<<<<<< HEAD
 	/* Indicates whether buffer is used as ping ot pong buffer */
 	uint32_t pingpong_bit;
+=======
+>>>>>>> p9x
 
 	/*Native buffer*/
 	struct list_head list;
 	enum msm_isp_buffer_state state;
 
+<<<<<<< HEAD
 	struct msm_isp_buffer_debug_t buf_debug;
 
 	/*Vb2 buffer data*/
 	struct vb2_buffer *vb2_buf;
+=======
+	/*Vb2 buffer data*/
+	struct vb2_buffer *vb2_buf;
+
+	/*Share buffer cache state*/
+	struct list_head share_list;
+	uint8_t buf_used[ISP_SHARE_BUF_CLIENT];
+	uint8_t buf_get_count;
+	uint8_t buf_put_count;
+	uint8_t buf_reuse_flag;
+	uint8_t ping_pong_bit;
+>>>>>>> p9x
 };
 
 struct msm_isp_bufq {
@@ -117,6 +158,7 @@ struct msm_isp_bufq {
 	enum msm_isp_buf_type buf_type;
 	struct msm_isp_buffer *bufs;
 	spinlock_t bufq_lock;
+<<<<<<< HEAD
 	uint8_t put_buf_mask[ISP_NUM_BUF_MASK];
 	/*Native buffer queue*/
 	struct list_head head;
@@ -127,11 +169,27 @@ struct msm_isp_buf_ops {
 		struct msm_isp_buf_request *buf_request);
 
 	int (*enqueue_buf)(struct msm_isp_buf_mgr *buf_mgr,
+=======
+
+	/*Native buffer queue*/
+	struct list_head head;
+	/*Share buffer cache queue*/
+	struct list_head share_head;
+	uint8_t buf_client_count;
+};
+
+struct msm_isp_buf_ops {
+	int (*request_buf) (struct msm_isp_buf_mgr *buf_mgr,
+		struct msm_isp_buf_request *buf_request);
+
+	int (*enqueue_buf) (struct msm_isp_buf_mgr *buf_mgr,
+>>>>>>> p9x
 		struct msm_isp_qbuf_info *info);
 
 	int (*dequeue_buf)(struct msm_isp_buf_mgr *buf_mgr,
 		struct msm_isp_qbuf_info *info);
 
+<<<<<<< HEAD
 	int (*release_buf)(struct msm_isp_buf_mgr *buf_mgr,
 		uint32_t bufq_handle);
 
@@ -146,6 +204,22 @@ struct msm_isp_buf_ops {
 		struct msm_isp_buffer **buf_info);
 
 	int (*get_buf_by_index)(struct msm_isp_buf_mgr *buf_mgr,
+=======
+	int (*release_buf) (struct msm_isp_buf_mgr *buf_mgr,
+		uint32_t bufq_handle);
+
+	int (*get_bufq_handle) (struct msm_isp_buf_mgr *buf_mgr,
+		uint32_t session_id, uint32_t stream_id);
+
+	int (*get_buf_src) (struct msm_isp_buf_mgr *buf_mgr,
+		uint32_t bufq_handle, uint32_t *buf_src);
+
+	int (*get_buf)(struct msm_isp_buf_mgr *buf_mgr, uint32_t id,
+		uint32_t bufq_handle, struct msm_isp_buffer **buf_info,
+		uint32_t *buf_cnt, uint8_t ping_pong_bit);
+
+	int (*get_buf_by_index) (struct msm_isp_buf_mgr *buf_mgr,
+>>>>>>> p9x
 		uint32_t bufq_handle, uint32_t buf_index,
 		struct msm_isp_buffer **buf_info);
 
@@ -157,6 +231,7 @@ struct msm_isp_buf_ops {
 	int (*put_buf)(struct msm_isp_buf_mgr *buf_mgr,
 		uint32_t bufq_handle, uint32_t buf_index);
 
+<<<<<<< HEAD
 	int (*flush_buf)(struct msm_isp_buf_mgr *buf_mgr, uint32_t id,
 	uint32_t bufq_handle, enum msm_isp_buffer_flush_t flush_type,
 	struct timeval *tv, uint32_t frame_id);
@@ -177,11 +252,37 @@ struct msm_isp_buf_ops {
 	int (*update_put_buf_cnt)(struct msm_isp_buf_mgr *buf_mgr,
 	uint32_t id, uint32_t bufq_handle, int32_t buf_index,
 	struct timeval *tv, uint32_t frame_id, uint32_t pingpong_bit);
+=======
+	int (*flush_buf) (struct msm_isp_buf_mgr *buf_mgr,
+		uint32_t bufq_handle, enum msm_isp_buffer_flush_t flush_type);
+
+	int (*buf_done) (struct msm_isp_buf_mgr *buf_mgr,
+		uint32_t bufq_handle, uint32_t buf_index,
+		struct timeval *tv, uint32_t frame_id, uint32_t output_format);
+	int (*buf_divert) (struct msm_isp_buf_mgr *buf_mgr,
+		uint32_t bufq_handle, uint32_t buf_index,
+		struct timeval *tv, uint32_t frame_id);
+	void (*register_ctx) (struct msm_isp_buf_mgr *buf_mgr,
+		struct device **iommu_ctx1, struct device **iommu_ctx2,
+		int num_iommu_ctx1, int num_iommu_ctx2);
+	int (*buf_mgr_init) (struct msm_isp_buf_mgr *buf_mgr,
+		const char *ctx_name, uint16_t num_buf_q);
+	int (*buf_mgr_deinit) (struct msm_isp_buf_mgr *buf_mgr);
+	int (*buf_mgr_debug) (struct msm_isp_buf_mgr *buf_mgr);
+	struct msm_isp_bufq * (*get_bufq)(struct msm_isp_buf_mgr *buf_mgr,
+		uint32_t bufq_handle);
+	int (*update_put_buf_cnt)(struct msm_isp_buf_mgr *buf_mgr,
+		uint32_t bufq_handle, uint32_t buf_index,
+		uint32_t frame_id);
+	int (*reset_put_buf_cnt)(struct msm_isp_buf_mgr *buf_mgr,
+		uint32_t bufq_handle, uint32_t buf_index);
+>>>>>>> p9x
 };
 
 struct msm_isp_buf_mgr {
 	int init_done;
 	uint32_t open_count;
+<<<<<<< HEAD
 	uint32_t pagefault_debug_disable;
 	uint32_t frameId_mismatch_recovery;
 	uint16_t num_buf_q;
@@ -189,16 +290,32 @@ struct msm_isp_buf_mgr {
 
 	struct ion_client *client;
 	struct msm_isp_buf_ops *ops;
+=======
+	uint32_t pagefault_debug;
+	uint32_t frameId_mismatch_recovery;
+	uint16_t num_buf_q;
+	struct msm_isp_bufq *bufq;
+
+	struct ion_client *client;
+	struct msm_isp_buf_ops *ops;
+	uint32_t buf_handle_cnt;
+>>>>>>> p9x
 
 	struct msm_sd_req_vb2_q *vb2_ops;
 
 	/*IOMMU driver*/
+<<<<<<< HEAD
 	int iommu_hdl;
+=======
+	int ns_iommu_hdl;
+	int sec_iommu_hdl;
+>>>>>>> p9x
 
 	/*Add secure mode*/
 	int secure_enable;
 
 	int num_iommu_ctx;
+<<<<<<< HEAD
 	int num_iommu_secure_ctx;
 	int attach_ref_cnt;
 	enum msm_isp_buf_mgr_state attach_state;
@@ -212,10 +329,27 @@ struct msm_isp_buf_mgr {
 int msm_isp_create_isp_buf_mgr(struct msm_isp_buf_mgr *buf_mgr,
 	struct msm_sd_req_vb2_q *vb2_ops, struct device *dev,
 	uint32_t scratch_addr_range);
+=======
+	spinlock_t bufq_list_lock;
+	int num_iommu_secure_ctx;
+	int attach_ref_cnt;
+	enum msm_isp_buf_mgr_state attach_state;
+	struct mutex lock;
+};
+
+int msm_isp_create_isp_buf_mgr(struct msm_isp_buf_mgr *buf_mgr,
+	struct msm_sd_req_vb2_q *vb2_ops, struct device *dev);
+>>>>>>> p9x
 
 int msm_isp_proc_buf_cmd(struct msm_isp_buf_mgr *buf_mgr,
 	unsigned int cmd, void *arg);
 
+<<<<<<< HEAD
+=======
+int msm_isp_create_secure_domain(struct msm_isp_buf_mgr *buf_mgr,
+	struct msm_iova_layout *iova_layout);
+
+>>>>>>> p9x
 int msm_isp_smmu_attach(struct msm_isp_buf_mgr *buf_mgr,
 	void *arg);
 

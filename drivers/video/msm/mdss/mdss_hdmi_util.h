@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2010-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2010-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -214,6 +218,7 @@
 #define HDMI_CLK_CTRL                    (0x00000384)
 #define HDMI_CLK_ACTIVE                  (0x00000388)
 #define HDMI_VBI_CFG                     (0x0000038C)
+<<<<<<< HEAD
 #define HDMI_DDC_INT_CTRL0               (0x00000430)
 #define HDMI_DDC_INT_CTRL1               (0x00000434)
 #define HDMI_DDC_INT_CTRL2               (0x00000438)
@@ -234,6 +239,8 @@
 #define HDMI_HDCP2P2_DDC_SW_TRIGGER      (0x000004D0)
 #define HDMI_HDCP_STATUS                 (0x00000500)
 #define HDMI_HDCP_INT_CTRL2              (0x00000504)
+=======
+>>>>>>> p9x
 
 /* HDMI PHY Registers */
 #define HDMI_PHY_ANA_CFG0                (0x00000000)
@@ -249,6 +256,7 @@
 /* QFPROM Registers for HDMI/HDCP */
 #define QFPROM_RAW_FEAT_CONFIG_ROW0_LSB  (0x000000F8)
 #define QFPROM_RAW_FEAT_CONFIG_ROW0_MSB  (0x000000FC)
+<<<<<<< HEAD
 #define QFPROM_RAW_VERSION_4             (0x000000A8)
 #define SEC_CTRL_HW_VERSION              (0x00006000)
 #define HDCP_KSV_LSB                     (0x000060D8)
@@ -257,6 +265,10 @@
 
 /* SEC_CTRL version that supports HDCP SEL */
 #define HDCP_SEL_MIN_SEC_VERSION         (0x50010000)
+=======
+#define HDCP_KSV_LSB                     (0x000060D8)
+#define HDCP_KSV_MSB                     (0x000060DC)
+>>>>>>> p9x
 
 #define TOP_AND_BOTTOM		(1 << HDMI_S3D_TOP_AND_BOTTOM)
 #define FRAME_PACKING		(1 << HDMI_S3D_FRAME_PACKING)
@@ -265,6 +277,7 @@
 #define LPASS_LPAIF_RDDMA_CTL0           (0xFE152000)
 #define LPASS_LPAIF_RDDMA_PER_CNT0       (0x00000014)
 
+<<<<<<< HEAD
 /* TX major version that supports scrambling */
 #define HDMI_TX_SCRAMBLER_MIN_TX_VERSION 0x04
 
@@ -401,6 +414,19 @@ enum hdmi_tx_ddc_timer_type {
 	HDMI_TX_DDC_TIMER_STATUS_FLAGS,
 	HDMI_TX_DDC_TIMER_CED,
 	HDMI_TX_DDC_TIMER_MAX,
+=======
+enum hdmi_tx_feature_type {
+	HDMI_TX_FEAT_EDID,
+	HDMI_TX_FEAT_HDCP,
+	HDMI_TX_FEAT_CEC_HW,
+	HDMI_TX_FEAT_CEC_ABST,
+	HDMI_TX_FEAT_MAX,
+};
+
+struct hdmi_tx_ddc_ctrl {
+	struct dss_io_data *io;
+	struct completion ddc_sw_done;
+>>>>>>> p9x
 };
 
 struct hdmi_tx_ddc_data {
@@ -410,6 +436,7 @@ struct hdmi_tx_ddc_data {
 	u32 dev_addr;
 	u32 offset;
 	u32 request_len;
+<<<<<<< HEAD
 	u32 retry_align;
 	u32 hard_timeout;
 	u32 timeout_left;
@@ -454,11 +481,18 @@ struct hdmi_tx_ddc_ctrl {
 };
 
 
+=======
+	u32 no_align;
+	int retry;
+};
+
+>>>>>>> p9x
 struct hdmi_util_ds_data {
 	bool ds_registered;
 	u32 ds_max_clk;
 };
 
+<<<<<<< HEAD
 static inline int hdmi_tx_get_v_total(const struct msm_hdmi_mode_timing_info *t)
 {
 	if (t) {
@@ -479,6 +513,8 @@ static inline int hdmi_tx_get_h_total(const struct msm_hdmi_mode_timing_info *t)
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 /* video timing related utility routines */
 int hdmi_get_video_id_code(struct msm_hdmi_mode_timing_info *timing_in,
 	struct hdmi_util_ds_data *ds_data);
@@ -487,7 +523,10 @@ int hdmi_get_supported_mode(struct msm_hdmi_mode_timing_info *info,
 ssize_t hdmi_get_video_3d_fmt_2string(u32 format, char *buf, u32 size);
 const char *msm_hdmi_mode_2string(u32 mode);
 int hdmi_set_resv_timing_info(struct msm_hdmi_mode_timing_info *mode);
+<<<<<<< HEAD
 bool hdmi_is_valid_resv_timing(int mode);
+=======
+>>>>>>> p9x
 void hdmi_reset_resv_timing_info(void);
 
 /* todo: Fix this. Right now this is defined in mdss_hdmi_tx.c */
@@ -495,6 +534,7 @@ void *hdmi_get_featuredata_from_sysfs_dev(struct device *device, u32 type);
 
 /* DDC */
 void hdmi_ddc_config(struct hdmi_tx_ddc_ctrl *);
+<<<<<<< HEAD
 int hdmi_ddc_isr(struct hdmi_tx_ddc_ctrl *, u32 version);
 int hdmi_ddc_write(struct hdmi_tx_ddc_ctrl *);
 int hdmi_ddc_read_seg(struct hdmi_tx_ddc_ctrl *);
@@ -510,5 +550,11 @@ void hdmi_hdcp2p2_ddc_disable(struct hdmi_tx_ddc_ctrl *ctrl);
 int hdmi_hdcp2p2_ddc_read_rxstatus(struct hdmi_tx_ddc_ctrl *ctrl);
 int hdmi_utils_get_timeout_in_hysnc(struct msm_hdmi_mode_timing_info *timing,
 	u32 timeout_ms);
+=======
+int hdmi_ddc_isr(struct hdmi_tx_ddc_ctrl *);
+int hdmi_ddc_write(struct hdmi_tx_ddc_ctrl *, struct hdmi_tx_ddc_data *);
+int hdmi_ddc_read_seg(struct hdmi_tx_ddc_ctrl *, struct hdmi_tx_ddc_data *);
+int hdmi_ddc_read(struct hdmi_tx_ddc_ctrl *, struct hdmi_tx_ddc_data *);
+>>>>>>> p9x
 
 #endif /* __HDMI_UTIL_H__ */

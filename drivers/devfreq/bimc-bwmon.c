@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014-2015, 2018 The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -40,10 +44,23 @@
 #define MON_MASK(m)		((m)->base + 0x298)
 #define MON_MATCH(m)		((m)->base + 0x29C)
 
+<<<<<<< HEAD
 struct bwmon_spec {
 	bool wrap_on_thres;
 	bool overflow;
 	bool throt_adj;
+=======
+/*
+ * Don't set the threshold lower than this value. This helps avoid
+ * threshold IRQs when the traffic is close to zero and even small
+ * changes can exceed the threshold percentage.
+ */
+#define FLOOR_MBPS	100UL
+
+struct bwmon_spec {
+	bool wrap_on_thres;
+	bool overflow;
+>>>>>>> p9x
 };
 
 struct bwmon {
@@ -54,11 +71,15 @@ struct bwmon {
 	const struct bwmon_spec *spec;
 	struct device *dev;
 	struct bw_hwmon hw;
+<<<<<<< HEAD
 	u32 throttle_adj;
+=======
+>>>>>>> p9x
 };
 
 #define to_bwmon(ptr)		container_of(ptr, struct bwmon, hw)
 
+<<<<<<< HEAD
 #define ENABLE_MASK BIT(0)
 #define THROTTLE_MASK 0x1F
 #define THROTTLE_SHIFT 16
@@ -67,16 +88,26 @@ static DEFINE_SPINLOCK(glb_lock);
 static void mon_enable(struct bwmon *m)
 {
 	writel_relaxed((ENABLE_MASK | m->throttle_adj), MON_EN(m));
+=======
+static DEFINE_SPINLOCK(glb_lock);
+static void mon_enable(struct bwmon *m)
+{
+	writel_relaxed(0x1, MON_EN(m));
+>>>>>>> p9x
 }
 
 static void mon_disable(struct bwmon *m)
 {
+<<<<<<< HEAD
 	writel_relaxed(m->throttle_adj, MON_EN(m));
 	/*
 	 * mon_disable() and mon_irq_clear(),
 	 * If latter goes first and count happen to trigger irq, we would
 	 * have the irq line high but no one handling it.
 	 */
+=======
+	writel_relaxed(0x0, MON_EN(m));
+>>>>>>> p9x
 	mb();
 }
 
@@ -104,10 +135,13 @@ static void mon_irq_enable(struct bwmon *m)
 	val = readl_relaxed(MON_INT_EN(m));
 	val |= 0x1;
 	writel_relaxed(val, MON_INT_EN(m));
+<<<<<<< HEAD
 	/*
 	 * make Sure irq enable complete for local and global
 	 * to avoid race with other monitor calls
 	 */
+=======
+>>>>>>> p9x
 	mb();
 }
 
@@ -124,21 +158,33 @@ static void mon_irq_disable(struct bwmon *m)
 	val = readl_relaxed(MON_INT_EN(m));
 	val &= ~0x1;
 	writel_relaxed(val, MON_INT_EN(m));
+<<<<<<< HEAD
 	/*
 	 * make Sure irq disable complete for local and global
 	 * to avoid race with other monitor calls
 	 */
+=======
+>>>>>>> p9x
 	mb();
 }
 
 static unsigned int mon_irq_status(struct bwmon *m)
 {
+<<<<<<< HEAD
 	u32 mval;
 
 	mval = readl_relaxed(MON_INT_STATUS(m));
 
 	dev_dbg(m->dev, "IRQ status p:%x, g:%x\n", mval,
 			readl_relaxed(GLB_INT_STATUS(m)));
+=======
+	u32 mval, gval;
+
+	mval = readl_relaxed(MON_INT_STATUS(m)),
+	gval = readl_relaxed(GLB_INT_STATUS(m));
+
+	dev_dbg(m->dev, "IRQ status p:%x, g:%x\n", mval, gval);
+>>>>>>> p9x
 
 	return mval;
 }
@@ -151,6 +197,7 @@ static void mon_irq_clear(struct bwmon *m)
 	mb();
 }
 
+<<<<<<< HEAD
 static int mon_set_throttle_adj(struct bw_hwmon *hw, uint adj)
 {
 	struct bwmon *m = to_bwmon(hw);
@@ -171,6 +218,8 @@ static u32 mon_get_throttle_adj(struct bw_hwmon *hw)
 	return m->throttle_adj >> THROTTLE_SHIFT;
 }
 
+=======
+>>>>>>> p9x
 static void mon_set_limit(struct bwmon *m, u32 count)
 {
 	writel_relaxed(count, MON_THRES(m));
@@ -206,6 +255,17 @@ static unsigned long mon_get_count(struct bwmon *m)
 /* ********** CPUBW specific code  ********** */
 
 /* Returns MBps of read/writes for the sampling window. */
+<<<<<<< HEAD
+=======
+static unsigned int bytes_to_mbps(long long bytes, unsigned int us)
+{
+	bytes *= USEC_PER_SEC;
+	do_div(bytes, us);
+	bytes = DIV_ROUND_UP_ULL(bytes, SZ_1M);
+	return bytes;
+}
+
+>>>>>>> p9x
 static unsigned int mbps_to_bytes(unsigned long mbps, unsigned int ms,
 				  unsigned int tolerance_percent)
 {
@@ -216,6 +276,7 @@ static unsigned int mbps_to_bytes(unsigned long mbps, unsigned int ms,
 	return mbps;
 }
 
+<<<<<<< HEAD
 static unsigned long get_bytes_and_clear(struct bw_hwmon *hw)
 {
 	struct bwmon *m = to_bwmon(hw);
@@ -250,11 +311,45 @@ static unsigned long set_thres(struct bw_hwmon *hw, unsigned long bytes)
 	mon_enable(m);
 
 	return count;
+=======
+static unsigned long meas_bw_and_set_irq(struct bw_hwmon *hw,
+					 unsigned int tol, unsigned int us)
+{
+	unsigned long mbps;
+	u32 limit;
+	unsigned int sample_ms = hw->df->profile->polling_ms;
+	struct bwmon *m = to_bwmon(hw);
+
+	mon_disable(m);
+
+	mbps = mon_get_count(m);
+	mbps = bytes_to_mbps(mbps, us);
+
+	/*
+	 * If the counter wraps on thres, don't set the thres too low.
+	 * Setting it too low runs the risk of the counter wrapping around
+	 * multiple times before the IRQ is processed.
+	 */
+	if (likely(!m->spec->wrap_on_thres))
+		limit = mbps_to_bytes(max(mbps, FLOOR_MBPS), sample_ms, tol);
+	else
+		limit = mbps_to_bytes(max(mbps, 400UL), sample_ms, tol);
+
+	mon_set_limit(m, limit);
+
+	mon_clear(m);
+	mon_irq_clear(m);
+	mon_enable(m);
+
+	dev_dbg(m->dev, "MBps = %lu\n", mbps);
+	return mbps;
+>>>>>>> p9x
 }
 
 static irqreturn_t bwmon_intr_handler(int irq, void *dev)
 {
 	struct bwmon *m = dev;
+<<<<<<< HEAD
 
 	if (!mon_irq_status(m))
 		return IRQ_NONE;
@@ -271,6 +366,14 @@ static irqreturn_t bwmon_intr_thread(int irq, void *dev)
 
 	update_bw_hwmon(&m->hw);
 	return IRQ_HANDLED;
+=======
+	if (mon_irq_status(m)) {
+		update_bw_hwmon(&m->hw);
+		return IRQ_HANDLED;
+	}
+
+	return IRQ_NONE;
+>>>>>>> p9x
 }
 
 static int start_bw_hwmon(struct bw_hwmon *hw, unsigned long mbps)
@@ -279,8 +382,12 @@ static int start_bw_hwmon(struct bw_hwmon *hw, unsigned long mbps)
 	u32 limit;
 	int ret;
 
+<<<<<<< HEAD
 	ret = request_threaded_irq(m->irq, bwmon_intr_handler,
 				  bwmon_intr_thread,
+=======
+	ret = request_threaded_irq(m->irq, NULL, bwmon_intr_handler,
+>>>>>>> p9x
 				  IRQF_ONESHOT | IRQF_SHARED,
 				  dev_name(m->dev), m);
 	if (ret) {
@@ -331,8 +438,12 @@ static int resume_bw_hwmon(struct bw_hwmon *hw)
 	int ret;
 
 	mon_clear(m);
+<<<<<<< HEAD
 	ret = request_threaded_irq(m->irq, bwmon_intr_handler,
 				  bwmon_intr_thread,
+=======
+	ret = request_threaded_irq(m->irq, NULL, bwmon_intr_handler,
+>>>>>>> p9x
 				  IRQF_ONESHOT | IRQF_SHARED,
 				  dev_name(m->dev), m);
 	if (ret) {
@@ -350,15 +461,23 @@ static int resume_bw_hwmon(struct bw_hwmon *hw)
 /*************************************************************************/
 
 static const struct bwmon_spec spec[] = {
+<<<<<<< HEAD
 	{ .wrap_on_thres = true, .overflow = false, .throt_adj = false},
 	{ .wrap_on_thres = false, .overflow = true, .throt_adj = false},
 	{ .wrap_on_thres = false, .overflow = true, .throt_adj = true},
+=======
+	{ .wrap_on_thres = true, .overflow = false },
+	{ .wrap_on_thres = false, .overflow = true },
+>>>>>>> p9x
 };
 
 static struct of_device_id match_table[] = {
 	{ .compatible = "qcom,bimc-bwmon", .data = &spec[0] },
 	{ .compatible = "qcom,bimc-bwmon2", .data = &spec[1] },
+<<<<<<< HEAD
 	{ .compatible = "qcom,bimc-bwmon3", .data = &spec[2] },
+=======
+>>>>>>> p9x
 	{}
 };
 
@@ -421,6 +540,7 @@ static int bimc_bwmon_driver_probe(struct platform_device *pdev)
 	m->hw.of_node = of_parse_phandle(dev->of_node, "qcom,target-dev", 0);
 	if (!m->hw.of_node)
 		return -EINVAL;
+<<<<<<< HEAD
 	m->hw.start_hwmon = &start_bw_hwmon;
 	m->hw.stop_hwmon = &stop_bw_hwmon;
 	m->hw.suspend_hwmon = &suspend_bw_hwmon;
@@ -431,6 +551,13 @@ static int bimc_bwmon_driver_probe(struct platform_device *pdev)
 		m->hw.set_throttle_adj = &mon_set_throttle_adj;
 		m->hw.get_throttle_adj = &mon_get_throttle_adj;
 	}
+=======
+	m->hw.start_hwmon = &start_bw_hwmon,
+	m->hw.stop_hwmon = &stop_bw_hwmon,
+	m->hw.suspend_hwmon = &suspend_bw_hwmon,
+	m->hw.resume_hwmon = &resume_bw_hwmon,
+	m->hw.meas_bw_and_set_irq = &meas_bw_and_set_irq,
+>>>>>>> p9x
 
 	ret = register_bw_hwmon(dev, &m->hw);
 	if (ret) {
@@ -447,7 +574,10 @@ static struct platform_driver bimc_bwmon_driver = {
 		.name = "bimc-bwmon",
 		.of_match_table = match_table,
 		.owner = THIS_MODULE,
+<<<<<<< HEAD
 		.suppress_bind_attrs = true,
+=======
+>>>>>>> p9x
 	},
 };
 

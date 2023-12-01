@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014-2016, Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014-2015, Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -17,7 +21,10 @@
 #include <linux/types.h>
 
 #define CPE_AFE_PORT_1_TX 1
+<<<<<<< HEAD
 #define CPE_AFE_PORT_3_TX 3
+=======
+>>>>>>> p9x
 #define CPE_AFE_PORT_ID_2_OUT 0x02
 #define CMI_INBAND_MESSAGE_SIZE 127
 
@@ -81,7 +88,10 @@
 #define CPE_LSM_PARAM_ID_LAB_CONFIG	0x00012C0A
 #define CPE_LSM_PARAM_ID_REGISTER_SOUND_MODEL	(0x00012C14)
 #define CPE_LSM_PARAM_ID_DEREGISTER_SOUND_MODEL	(0x00012C15)
+<<<<<<< HEAD
 #define CPE_LSM_PARAM_ID_MEDIA_FMT		(0x00012C1E)
+=======
+>>>>>>> p9x
 
 /* AFE Service command opcodes */
 #define CPE_AFE_PORT_CMD_START			(0x1001)
@@ -127,7 +137,11 @@ enum {
 	CMI_CPE_SERVICE_ID_MAX,
 };
 
+<<<<<<< HEAD
 #define CPE_LSM_SESSION_ID_MAX 2
+=======
+#define CPE_LSM_SESSION_ID_MAX 1
+>>>>>>> p9x
 
 #define IS_VALID_SESSION_ID(s_id) \
 	(s_id <= CPE_LSM_SESSION_ID_MAX)
@@ -420,6 +434,7 @@ struct cpe_lsm_lab_latency_config {
 	struct cpe_lsm_lab_config latency_cfg;
 } __packed;
 
+<<<<<<< HEAD
 struct cpe_lsm_media_fmt_param {
 	struct cmi_hdr hdr;
 	struct cpe_param_data param;
@@ -429,6 +444,8 @@ struct cpe_lsm_media_fmt_param {
 	u16 bit_width;
 } __packed;
 
+=======
+>>>>>>> p9x
 
 #define CPE_PARAM_LSM_LAB_LATENCY_SIZE (\
 				sizeof(struct cpe_lsm_lab_latency_config) - \
@@ -485,8 +502,11 @@ struct cpe_lsm_media_fmt_param {
 			       sizeof(struct cmi_hdr))
 #define CPE_GAIN_PARAM_SIZE ((CPE_CMD_GAIN_PLD_SIZE) - \
 			     sizeof(struct cpe_param_data))
+<<<<<<< HEAD
 #define CPE_MEDIA_FMT_PLD_SIZE (sizeof(struct cpe_lsm_media_fmt_param) - \
 				sizeof(struct cmi_hdr))
 #define CPE_MEDIA_FMT_PARAM_SIZE ((CPE_MEDIA_FMT_PLD_SIZE) - \
 				  sizeof(struct cpe_param_data))
+=======
+>>>>>>> p9x
 #endif /* __CPE_CMI_H__ */

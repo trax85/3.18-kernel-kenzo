@@ -27,9 +27,12 @@ extern void tick_handover_do_timer(int *cpup);
 extern void tick_shutdown(unsigned int *cpup);
 extern void tick_suspend(void);
 extern void tick_resume(void);
+<<<<<<< HEAD
 extern bool tick_check_replacement(struct clock_event_device *curdev,
 				   struct clock_event_device *newdev);
 extern void tick_install_replacement(struct clock_event_device *dev);
+=======
+>>>>>>> p9x
 
 extern void clockevents_shutdown(struct clock_event_device *dev);
 
@@ -168,5 +171,6 @@ int __clockevents_update_freq(struct clock_event_device *dev, u32 freq);
 
 #endif
 
+int __clockevents_update_freq(struct clock_event_device *dev, u32 freq);
 extern void do_timer(unsigned long ticks);
 extern void update_wall_time(void);

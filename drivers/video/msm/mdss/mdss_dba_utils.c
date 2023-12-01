@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -18,7 +22,11 @@
 
 #include "mdss_dba_utils.h"
 #include "mdss_hdmi_edid.h"
+<<<<<<< HEAD
 #include "mdss_cec_core.h"
+=======
+#include "mdss_cec_abstract.h"
+>>>>>>> p9x
 #include "mdss_fb.h"
 
 /* standard cec buf size + 1 byte specific to driver */
@@ -38,7 +46,10 @@ struct mdss_dba_utils_data {
 	struct mdss_panel_info *pinfo;
 	void *dba_data;
 	void *edid_data;
+<<<<<<< HEAD
 	void *timing_data;
+=======
+>>>>>>> p9x
 	void *cec_abst_data;
 	u8 *edid_buf;
 	u32 edid_buf_size;
@@ -47,7 +58,10 @@ struct mdss_dba_utils_data {
 	struct cec_cbs ccbs;
 	char disp_switch_name[MAX_SWITCH_NAME_SIZE];
 	u32 current_vic;
+<<<<<<< HEAD
 	bool support_audio;
+=======
+>>>>>>> p9x
 };
 
 static struct mdss_dba_utils_data *mdss_dba_utils_get_data(
@@ -86,7 +100,11 @@ end:
 	return udata;
 }
 
+<<<<<<< HEAD
 static void mdss_dba_utils_notify_display(
+=======
+static void mdss_dba_utils_send_display_notification(
+>>>>>>> p9x
 	struct mdss_dba_utils_data *udata, int val)
 {
 	int state = 0;
@@ -111,7 +129,11 @@ static void mdss_dba_utils_notify_display(
 		udata->sdev_display.state);
 }
 
+<<<<<<< HEAD
 static void mdss_dba_utils_notify_audio(
+=======
+static void mdss_dba_utils_send_audio_notification(
+>>>>>>> p9x
 	struct mdss_dba_utils_data *udata, int val)
 {
 	int state = 0;
@@ -221,6 +243,7 @@ static ssize_t mdss_dba_utils_sysfs_wta_hpd(struct device *dev,
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t mdss_dba_utils_sysfs_rda_hpd(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
@@ -245,13 +268,19 @@ static ssize_t mdss_dba_utils_sysfs_rda_hpd(struct device *dev,
 	return ret;
 }
 
+=======
+>>>>>>> p9x
 static DEVICE_ATTR(connected, S_IRUGO,
 		mdss_dba_utils_sysfs_rda_connected, NULL);
 
 static DEVICE_ATTR(video_mode, S_IRUGO,
 		mdss_dba_utils_sysfs_rda_video_mode, NULL);
 
+<<<<<<< HEAD
 static DEVICE_ATTR(hpd, S_IRUGO | S_IWUSR, mdss_dba_utils_sysfs_rda_hpd,
+=======
+static DEVICE_ATTR(hpd, S_IRUGO | S_IWUSR, NULL,
+>>>>>>> p9x
 		mdss_dba_utils_sysfs_wta_hpd);
 
 static struct attribute *mdss_dba_utils_fs_attrs[] = {
@@ -293,6 +322,7 @@ static void mdss_dba_utils_sysfs_remove(struct kobject *kobj)
 	sysfs_remove_group(kobj, &mdss_dba_utils_fs_attrs_group);
 }
 
+<<<<<<< HEAD
 static bool mdss_dba_check_audio_support(struct mdss_dba_utils_data *udata)
 {
 	bool dvi_mode = false;
@@ -318,6 +348,8 @@ static bool mdss_dba_check_audio_support(struct mdss_dba_utils_data *udata)
 		return true;
 }
 
+=======
+>>>>>>> p9x
 static void mdss_dba_utils_dba_cb(void *data, enum msm_dba_callback_event event)
 {
 	int ret = -EINVAL;
@@ -327,7 +359,10 @@ static void mdss_dba_utils_dba_cb(void *data, enum msm_dba_callback_event event)
 	bool operands_present = false;
 	u32 no_of_operands, size, i;
 	u32 operands_offset = MAX_CEC_FRAME_SIZE - MAX_OPERAND_SIZE;
+<<<<<<< HEAD
 	struct msm_hdmi_audio_edid_blk blk;
+=======
+>>>>>>> p9x
 
 	if (!udata) {
 		pr_err("Invalid data\n");
@@ -347,6 +382,7 @@ static void mdss_dba_utils_dba_cb(void *data, enum msm_dba_callback_event event)
 			ret = udata->ops.get_raw_edid(udata->dba_data,
 				udata->edid_buf_size, udata->edid_buf, 0);
 
+<<<<<<< HEAD
 			if (!ret) {
 				hdmi_edid_parser(udata->edid_data);
 				/* check whether audio is supported or not */
@@ -369,6 +405,17 @@ static void mdss_dba_utils_dba_cb(void *data, enum msm_dba_callback_event event)
 			mdss_dba_utils_notify_display(udata, 1);
 			if (udata->support_audio)
 				mdss_dba_utils_notify_audio(udata, 1);
+=======
+			if (!ret)
+				hdmi_edid_parser(udata->edid_data);
+			else
+				pr_err("failed to get edid%d\n", ret);
+		}
+
+		if (pluggable) {
+			mdss_dba_utils_send_display_notification(udata, 1);
+			mdss_dba_utils_send_audio_notification(udata, 1);
+>>>>>>> p9x
 		} else {
 			mdss_dba_utils_video_on(udata, udata->pinfo);
 		}
@@ -380,9 +427,14 @@ static void mdss_dba_utils_dba_cb(void *data, enum msm_dba_callback_event event)
 		if (!udata->hpd_state)
 			break;
 		if (pluggable) {
+<<<<<<< HEAD
 			if (udata->support_audio)
 				mdss_dba_utils_notify_audio(udata, 0);
 			mdss_dba_utils_notify_display(udata, 0);
+=======
+			mdss_dba_utils_send_audio_notification(udata, 0);
+			mdss_dba_utils_send_display_notification(udata, 0);
+>>>>>>> p9x
 		} else {
 			mdss_dba_utils_video_off(udata);
 		}
@@ -576,7 +628,11 @@ int mdss_dba_utils_video_on(void *data, struct mdss_panel_info *pinfo)
 	video_cfg.v_back_porch = pinfo->lcdc.v_back_porch;
 	video_cfg.h_pulse_width = pinfo->lcdc.h_pulse_width;
 	video_cfg.v_pulse_width = pinfo->lcdc.v_pulse_width;
+<<<<<<< HEAD
 	video_cfg.pclk_khz = (unsigned long)pinfo->clk_rate / 1000;
+=======
+	video_cfg.pclk_khz = pinfo->clk_rate / 1000;
+>>>>>>> p9x
 	video_cfg.hdmi_mode = hdmi_edid_get_sink_mode(ud->edid_data);
 
 	/* Calculate number of DSI lanes configured */
@@ -649,6 +705,7 @@ void mdss_dba_utils_hdcp_enable(void *data, bool enable)
 		ud->ops.hdcp_enable(ud->dba_data, enable, enable, 0);
 }
 
+<<<<<<< HEAD
 void mdss_dba_update_lane_cfg(struct mdss_panel_info *pinfo)
 {
 	struct mdss_dba_utils_data *dba_data;
@@ -715,6 +772,8 @@ lane_cfg:
 	}
 }
 
+=======
+>>>>>>> p9x
 /**
  * mdss_dba_utils_init() - Allow clients to register with DBA utils
  * @uid: Initialization data for registration.
@@ -734,6 +793,10 @@ void *mdss_dba_utils_init(struct mdss_dba_utils_init_data *uid)
 	struct mdss_dba_utils_data *udata = NULL;
 	struct msm_dba_reg_info info;
 	struct cec_abstract_init_data cec_abst_init_data;
+<<<<<<< HEAD
+=======
+	void *cec_abst_data;
+>>>>>>> p9x
 	int ret = 0;
 
 	if (!uid) {
@@ -744,6 +807,10 @@ void *mdss_dba_utils_init(struct mdss_dba_utils_init_data *uid)
 
 	udata = kzalloc(sizeof(*udata), GFP_KERNEL);
 	if (!udata) {
+<<<<<<< HEAD
+=======
+		pr_err("Not enough Memory\n");
+>>>>>>> p9x
 		ret = -ENOMEM;
 		goto error;
 	}
@@ -783,11 +850,24 @@ void *mdss_dba_utils_init(struct mdss_dba_utils_init_data *uid)
 	udata->kobj = uid->kobj;
 	udata->pinfo = uid->pinfo;
 
+<<<<<<< HEAD
+=======
+	/* register display and audio switch devices */
+	ret = mdss_dba_utils_init_switch_dev(udata, uid->fb_node);
+	if (ret) {
+		pr_err("switch dev registration failed\n");
+		goto error;
+	}
+
+>>>>>>> p9x
 	/* Initialize EDID feature */
 	edid_init_data.kobj = uid->kobj;
 	edid_init_data.ds_data.ds_registered = true;
 	edid_init_data.ds_data.ds_max_clk = MSM_DBA_MAX_PCLK;
+<<<<<<< HEAD
 	edid_init_data.max_pclk_khz = MSM_DBA_MAX_PCLK;
+=======
+>>>>>>> p9x
 
 	/* register with edid module for parsing edid buffer */
 	udata->edid_data = hdmi_edid_init(&edid_init_data);
@@ -802,7 +882,11 @@ void *mdss_dba_utils_init(struct mdss_dba_utils_init_data *uid)
 		uid->pinfo->edid_data = udata->edid_data;
 		/* Initialize to default resolution */
 		hdmi_edid_set_video_resolution(uid->pinfo->edid_data,
+<<<<<<< HEAD
 					DEFAULT_VIDEO_RESOLUTION, true);
+=======
+					DEFAULT_VIDEO_RESOLUTION);
+>>>>>>> p9x
 	}
 
 	/* get edid buffer from edid parser */
@@ -822,6 +906,7 @@ void *mdss_dba_utils_init(struct mdss_dba_utils_init_data *uid)
 	udata->cec_abst_data = cec_abstract_init(&cec_abst_init_data);
 	if (IS_ERR_OR_NULL(udata->cec_abst_data)) {
 		pr_err("error initializing cec abstract module\n");
+<<<<<<< HEAD
 		ret = PTR_ERR(udata->cec_abst_data);
 		goto error;
 	}
@@ -832,10 +917,17 @@ void *mdss_dba_utils_init(struct mdss_dba_utils_init_data *uid)
 	else
 		udata->timing_data = NULL;
 
+=======
+		ret = PTR_ERR(cec_abst_data);
+		goto error;
+	}
+
+>>>>>>> p9x
 	/* update cec data to retrieve it back in cec abstract module */
 	if (uid->pinfo) {
 		uid->pinfo->is_cec_supported = true;
 		uid->pinfo->cec_data = udata->cec_abst_data;
+<<<<<<< HEAD
 
 		/*
 		 * TODO: Currently there is no support from HAL to send
@@ -857,6 +949,10 @@ void *mdss_dba_utils_init(struct mdss_dba_utils_init_data *uid)
 				goto error;
 			}
 		}
+=======
+		if (!uid->pinfo->is_prim_panel)
+			uid->pinfo->is_pluggable = true;
+>>>>>>> p9x
 	}
 
 	return udata;

@@ -537,10 +537,13 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 			Format: <io>,<irq>,<mode>
 			See header of drivers/net/hamradio/baycom_ser_hdx.c.
 
+<<<<<<< HEAD
 	blkdevparts=	Manual partition parsing of block device(s) for
 			embedded devices based on command line input.
 			See Documentation/block/cmdline-partition.txt
 
+=======
+>>>>>>> p9x
 	boot_cpus=	[SMP]
 			Rather than attempting to online all possible CPUs at
 			boot time, only online the specified set of CPUs.
@@ -1177,6 +1180,10 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 			debugfs, even when the module is unloaded/reloaded.
 			When zero, profiling data is discarded and associated
 			debugfs files are removed at module unload time.
+
+	goldfish	[X86] Enable the goldfish android emulator platform.
+			Don't use this when you are not running on the
+			android emulator
 
 	gpt		[EFI] Forces disk with valid GPT signature but
 			invalid Protective MBR to be treated as GPT. If the
@@ -2935,20 +2942,28 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 			periodically wake up to do the polling.
 
 	rcutree.blimit=	[KNL]
+<<<<<<< HEAD
 			Set maximum number of finished RCU callbacks to
 			process in one batch.
+=======
+			Set maximum number of finished RCU callbacks to process
+			in one batch.
+>>>>>>> p9x
 
 	rcutree.rcu_fanout_leaf= [KNL]
 			Increase the number of CPUs assigned to each
 			leaf rcu_node structure.  Useful for very large
 			systems.
 
+<<<<<<< HEAD
 	rcutree.jiffies_till_sched_qs= [KNL]
 			Set required age in jiffies for a
 			given grace period before RCU starts
 			soliciting quiescent-state help from
 			rcu_note_context_switch().
 
+=======
+>>>>>>> p9x
 	rcutree.jiffies_till_first_fqs= [KNL]
 			Set delay from grace-period initialization to
 			first attempt to force quiescent states.
@@ -2960,6 +2975,7 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 			quiescent states.  Units are jiffies, minimum
 			value is one, and maximum value is HZ.
 
+<<<<<<< HEAD
 	rcutree.rcu_nocb_leader_stride= [KNL]
 			Set the number of NOCB kthread groups, which
 			defaults to the square root of the number of
@@ -2971,6 +2987,12 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 			Set threshold of queued RCU callbacks beyond which
 			batch limiting is disabled.
 
+=======
+	rcutree.qhimark= [KNL]
+			Set threshold of queued
+			RCU callbacks over which batch limiting is disabled.
+
+>>>>>>> p9x
 	rcutree.qlowmark= [KNL]
 			Set threshold of queued RCU callbacks below which
 			batch limiting is re-enabled.
@@ -2985,6 +3007,7 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 			Lazy RCU callbacks are those which RCU can
 			prove do nothing more than free memory.
 
+<<<<<<< HEAD
 	rcutorture.cbflood_inter_holdoff= [KNL]
 			Set holdoff time (jiffies) between successive
 			callback-flood tests.
@@ -3003,6 +3026,8 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 			Set the number of callbacks to be registered
 			in a given burst of a callback-flood test.
 
+=======
+>>>>>>> p9x
 	rcutorture.fqs_duration= [KNL]
 			Set duration of force_quiescent_state bursts.
 
@@ -3042,7 +3067,11 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 			Set time (s) between CPU-hotplug operations, or
 			zero to disable CPU-hotplug testing.
 
+<<<<<<< HEAD
 	rcutorture.torture_runnable= [BOOT]
+=======
+	rcutorture.rcutorture_runnable= [BOOT]
+>>>>>>> p9x
 			Start rcutorture running at boot time.
 
 	rcutorture.shuffle_interval= [KNL]
@@ -3104,11 +3133,14 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 	rcupdate.rcu_cpu_stall_timeout= [KNL]
 			Set timeout for RCU CPU stall warning messages.
 
+<<<<<<< HEAD
 	rcupdate.rcu_task_stall_timeout= [KNL]
 			Set timeout in jiffies for RCU task stall warning
 			messages.  Disable with a value less than or equal
 			to zero.
 
+=======
+>>>>>>> p9x
 	rdinit=		[KNL]
 			Format: <full_path>
 			Run specified binary instead of /init from the ramdisk,
@@ -3329,6 +3361,10 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 				0: Toshiba Satellite 1800 (GP data pin select)
 				1: Fast pin select (default)
 				2: ATC IRMode
+
+	snddev_icodec.msm_codec_i2s_slave_mode= [ARM-MSM]
+			1, codec is I2S master
+			0, MSM is I2S master (default)
 
 	softlockup_panic=
 			[KNL] Should the soft-lockup detector generate panics.

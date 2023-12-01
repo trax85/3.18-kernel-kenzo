@@ -140,6 +140,37 @@ void __iomem *devm_ioremap_resource(struct device *dev, struct resource *res)
 }
 EXPORT_SYMBOL(devm_ioremap_resource);
 
+<<<<<<< HEAD
+=======
+/**
+ * devm_request_and_ioremap() - Check, request region, and ioremap resource
+ * @dev: Generic device to handle the resource for
+ * @res: resource to be handled
+ *
+ * Takes all necessary steps to ioremap a mem resource. Uses managed device, so
+ * everything is undone on driver detach. Checks arguments, so you can feed
+ * it the result from e.g. platform_get_resource() directly. Returns the
+ * remapped pointer or NULL on error. Usage example:
+ *
+ *	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ *	base = devm_request_and_ioremap(&pdev->dev, res);
+ *	if (!base)
+ *		return -EADDRNOTAVAIL;
+ */
+void __iomem *devm_request_and_ioremap(struct device *device,
+				       struct resource *res)
+{
+	void __iomem *dest_ptr;
+
+	dest_ptr = devm_ioremap_resource(device, res);
+	if (IS_ERR(dest_ptr))
+		return NULL;
+
+	return dest_ptr;
+}
+EXPORT_SYMBOL(devm_request_and_ioremap);
+
+>>>>>>> p9x
 #ifdef CONFIG_HAS_IOPORT_MAP
 /*
  * Generic iomap devres
@@ -395,7 +426,7 @@ void pcim_iounmap_regions(struct pci_dev *pdev, int mask)
 	if (!iomap)
 		return;
 
-	for (i = 0; i < DEVICE_COUNT_RESOURCE; i++) {
+	for (i = 0; i < PCIM_IOMAP_MAX; i++) {
 		if (!(mask & (1 << i)))
 			continue;
 

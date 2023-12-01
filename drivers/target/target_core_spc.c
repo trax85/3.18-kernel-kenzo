@@ -112,6 +112,7 @@ spc_emulate_inquiry_std(struct se_cmd *cmd, unsigned char *buf)
 
 	buf[7] = 0x2; /* CmdQue=1 */
 
+<<<<<<< HEAD
 	/*
 	 * ASCII data fields described as being left-aligned shall have any
 	 * unused bytes at the end of the field (i.e., highest offset) and the
@@ -123,6 +124,14 @@ spc_emulate_inquiry_std(struct se_cmd *cmd, unsigned char *buf)
 	       strnlen(dev->t10_wwn.model, 16));
 	memcpy(&buf[32], dev->t10_wwn.revision,
 	       strnlen(dev->t10_wwn.revision, 4));
+=======
+	memcpy(&buf[8], "LIO-ORG ", 8);
+	memset(&buf[16], 0x20, 16);
+	memcpy(&buf[16], dev->t10_wwn.model,
+	       min_t(size_t, strlen(dev->t10_wwn.model), 16));
+	memcpy(&buf[32], dev->t10_wwn.revision,
+	       min_t(size_t, strlen(dev->t10_wwn.revision), 4));
+>>>>>>> p9x
 	buf[4] = 31; /* Set additional length to 31 */
 
 	return 0;

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -43,12 +47,19 @@ struct esoc_desc *devm_register_esoc_client(struct device *dev,
 	struct device_node *np = dev->of_node;
 	struct esoc_clink *esoc_clink;
 	struct esoc_desc *desc;
+<<<<<<< HEAD
 	char *esoc_name, *esoc_link, *esoc_link_info;
 
 	for (index = 0;; index++) {
 		esoc_prop = kasprintf(GFP_KERNEL, "esoc-%d", index);
 		if (IS_ERR_OR_NULL(esoc_prop))
 			return ERR_PTR(-ENOMEM);
+=======
+	char *esoc_name, *esoc_link;
+
+	for (index = 0;; index++) {
+		esoc_prop = kasprintf(GFP_KERNEL, "esoc-%d", index);
+>>>>>>> p9x
 		parp = of_get_property(np, esoc_prop, NULL);
 		if (parp == NULL) {
 			dev_err(dev, "esoc device not present\n");
@@ -85,6 +96,7 @@ struct esoc_desc *devm_register_esoc_client(struct device *dev,
 			kfree(esoc_name);
 			return ERR_PTR(-ENOMEM);
 		}
+<<<<<<< HEAD
 		esoc_link_info = kasprintf(GFP_KERNEL, "%s",
 					esoc_clink->link_info);
 		if (IS_ERR_OR_NULL(esoc_link_info)) {
@@ -93,18 +105,26 @@ struct esoc_desc *devm_register_esoc_client(struct device *dev,
 			kfree(esoc_link);
 			return ERR_PTR(-ENOMEM);
 		}
+=======
+>>>>>>> p9x
 		desc = devres_alloc(devm_esoc_desc_release,
 						sizeof(*desc), GFP_KERNEL);
 		if (IS_ERR_OR_NULL(desc)) {
 			kfree(esoc_name);
 			kfree(esoc_link);
+<<<<<<< HEAD
 			kfree(esoc_link_info);
+=======
+>>>>>>> p9x
 			dev_err(dev, "unable to allocate esoc descriptor\n");
 			return ERR_PTR(-ENOMEM);
 		}
 		desc->name = esoc_name;
 		desc->link = esoc_link;
+<<<<<<< HEAD
 		desc->link_info = esoc_link_info;
+=======
+>>>>>>> p9x
 		desc->priv = esoc_clink;
 		devres_add(dev, desc);
 		return desc;

@@ -486,9 +486,15 @@ static void sync_cmos_clock(struct work_struct *work)
 		return;
 	}
 
+<<<<<<< HEAD
 	getnstimeofday64(&now);
 	if (abs(now.tv_nsec - (NSEC_PER_SEC / 2)) <= tick_nsec * 5) {
 		struct timespec adjust = timespec64_to_timespec(now);
+=======
+	getnstimeofday(&now);
+	if (abs(now.tv_nsec - (NSEC_PER_SEC / 2)) <= tick_nsec * 5) {
+		struct timespec adjust = now;
+>>>>>>> p9x
 
 		fail = -ENODEV;
 		if (persistent_clock_is_local)

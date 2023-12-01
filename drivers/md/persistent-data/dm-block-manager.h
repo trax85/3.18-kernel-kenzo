@@ -106,11 +106,14 @@ int dm_bm_unlock(struct dm_block *b);
  * This method always blocks.
  */
 int dm_bm_flush(struct dm_block_manager *bm);
+<<<<<<< HEAD
 
 /*
  * Request data is prefetched into the cache.
  */
 void dm_bm_prefetch(struct dm_block_manager *bm, dm_block_t b);
+=======
+>>>>>>> p9x
 
 /*
  * Switches the bm to a read only mode.  Once read-only mode

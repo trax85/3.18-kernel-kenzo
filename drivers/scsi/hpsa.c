@@ -1725,6 +1725,7 @@ static void complete_scsi_command(struct CommandList *cp)
 
 	memcpy(cmd->sense_buffer, ei->SenseInfo, sense_data_size);
 
+<<<<<<< HEAD
 	/* For I/O accelerator commands, copy over some fields to the normal
 	 * CISS header used below for error handling.
 	 */
@@ -1749,6 +1750,12 @@ static void complete_scsi_command(struct CommandList *cp)
 			cmd->scsi_done(cmd);
 			return;
 		}
+=======
+	if (ei->CommandStatus == 0) {
+		cmd_free(h, cp);
+		cmd->scsi_done(cmd);
+		return;
+>>>>>>> p9x
 	}
 
 	/* an error has occurred */
@@ -7123,12 +7130,16 @@ reinit_after_soft_reset:
 
 	hpsa_hba_inquiry(h);
 	hpsa_register_scsi(h);	/* hook ourselves into SCSI subsystem */
+<<<<<<< HEAD
 
 	/* Monitor the controller for firmware lockups */
 	h->heartbeat_sample_interval = HEARTBEAT_SAMPLE_INTERVAL;
 	INIT_DELAYED_WORK(&h->monitor_ctlr_work, hpsa_monitor_ctlr_worker);
 	schedule_delayed_work(&h->monitor_ctlr_work,
 				h->heartbeat_sample_interval);
+=======
+	start_controller_lockup_detector(h);
+>>>>>>> p9x
 	return 0;
 
 clean4:

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2010-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2010-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -154,7 +158,10 @@ static void ci13xxx_msm_reset(void)
 	/* workaround for rx buffer collision issue */
 	temp = readl_relaxed(USB_GENCONFIG);
 	temp &= ~GENCONFIG_TXFIFO_IDLE_FORCE_DISABLE;
+<<<<<<< HEAD
 	temp &= ~GENCONFIG_ULPI_SERIAL_EN;
+=======
+>>>>>>> p9x
 	writel_relaxed(temp, USB_GENCONFIG);
 
 	if (udc->gadget.l1_supported)
@@ -235,6 +242,24 @@ static void ci13xxx_msm_notify_event(struct ci13xxx *udc, unsigned event)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static bool ci13xxx_cancel_pending_suspend(struct ci13xxx *udc)
+{
+	struct msm_otg *otg;
+
+	if (udc == NULL)
+		return false;
+
+	if (udc->transceiver == NULL)
+		return false;
+
+	otg = container_of(udc->transceiver, struct msm_otg, phy);
+
+	return cancel_delayed_work_sync(&otg->suspend_work);
+}
+
+>>>>>>> p9x
 static bool ci13xxx_msm_in_lpm(struct ci13xxx *udc)
 {
 	struct msm_otg *otg;
@@ -250,6 +275,23 @@ static bool ci13xxx_msm_in_lpm(struct ci13xxx *udc)
 	return (atomic_read(&otg->in_lpm) != 0);
 }
 
+<<<<<<< HEAD
+=======
+static void ci13xxx_msm_set_fpr_flag(struct ci13xxx *udc)
+{
+	struct msm_otg *otg;
+
+	if (udc == NULL)
+		return;
+
+	if (udc->transceiver == NULL)
+		return;
+
+	otg = container_of(udc->transceiver, struct msm_otg, phy);
+
+	atomic_set(&otg->set_fpr_with_lpm_exit, 1);
+}
+>>>>>>> p9x
 
 static irqreturn_t ci13xxx_msm_resume_irq(int irq, void *data)
 {
@@ -269,10 +311,20 @@ static struct ci13xxx_udc_driver ci13xxx_msm_udc_driver = {
 				  CI13XXX_REQUIRE_TRANSCEIVER |
 				  CI13XXX_PULLUP_ON_VBUS |
 				  CI13XXX_ZERO_ITC |
+<<<<<<< HEAD
 				  CI13XXX_DISABLE_STREAMING,
 	.nz_itc			= 0,
 	.notify_event		= ci13xxx_msm_notify_event,
 	.in_lpm                 = ci13xxx_msm_in_lpm,
+=======
+				  CI13XXX_DISABLE_STREAMING |
+				  CI13XXX_IS_OTG,
+	.nz_itc			= 0,
+	.notify_event		= ci13xxx_msm_notify_event,
+	.cancel_pending_suspend = ci13xxx_cancel_pending_suspend,
+	.in_lpm                 = ci13xxx_msm_in_lpm,
+	.set_fpr_flag           = ci13xxx_msm_set_fpr_flag,
+>>>>>>> p9x
 };
 
 static int ci13xxx_msm_install_wake_gpio(struct platform_device *pdev,
@@ -440,7 +492,10 @@ static int ci13xxx_msm_probe(struct platform_device *pdev)
 							(unsigned long)NULL);
 
 	pm_runtime_no_callbacks(&pdev->dev);
+<<<<<<< HEAD
 	pm_runtime_set_active(&pdev->dev);
+=======
+>>>>>>> p9x
 	pm_runtime_enable(&pdev->dev);
 
 	return 0;
@@ -470,6 +525,7 @@ void ci13xxx_msm_shutdown(struct platform_device *pdev)
 	ci13xxx_pullup(&_udc->gadget, 0);
 }
 
+<<<<<<< HEAD
 void msm_hw_soft_reset(void)
 {
 	struct ci13xxx *udc = _udc;
@@ -477,6 +533,8 @@ void msm_hw_soft_reset(void)
 	hw_device_reset(udc);
 }
 
+=======
+>>>>>>> p9x
 void msm_hw_bam_disable(bool bam_disable)
 {
 	u32 val;

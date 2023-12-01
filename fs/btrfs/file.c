@@ -1898,6 +1898,7 @@ int btrfs_sync_file(struct file *file, loff_t start, loff_t end, int datasync)
 	full_sync = test_bit(BTRFS_INODE_NEEDS_FULL_SYNC,
 			     &BTRFS_I(inode)->runtime_flags);
 	/*
+<<<<<<< HEAD
 	 * We might have have had more pages made dirty after calling
 	 * start_ordered_ops and before acquiring the inode's i_mutex.
 	 */
@@ -1951,6 +1952,8 @@ int btrfs_sync_file(struct file *file, loff_t start, loff_t end, int datasync)
 	atomic_inc(&root->log_batch);
 
 	/*
+=======
+>>>>>>> p9x
 	 * If the last transaction that changed this file was before the current
 	 * transaction and we have the full sync flag set in our inode, we can
 	 * bail out now without any syncing.
@@ -1980,10 +1983,15 @@ int btrfs_sync_file(struct file *file, loff_t start, loff_t end, int datasync)
 	 */
 	smp_mb();
 	if (btrfs_inode_in_log(inode, root->fs_info->generation) ||
+<<<<<<< HEAD
 	    (BTRFS_I(inode)->last_trans <=
 	     root->fs_info->last_trans_committed &&
 	     (full_sync ||
 	      !btrfs_have_ordered_extents_in_range(inode, start, len)))) {
+=======
+	    (full_sync && BTRFS_I(inode)->last_trans <=
+	     root->fs_info->last_trans_committed)) {
+>>>>>>> p9x
 		/*
 		 * We'v had everything committed since the last time we were
 		 * modified so clear this flag in case it was set for whatever

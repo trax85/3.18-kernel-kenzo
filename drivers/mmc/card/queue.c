@@ -15,9 +15,13 @@
 #include <linux/freezer.h>
 #include <linux/kthread.h>
 #include <linux/scatterlist.h>
+<<<<<<< HEAD
 #include <linux/dma-mapping.h>
 #include <linux/bitops.h>
 #include <linux/delay.h>
+=======
+#include <linux/bitops.h>
+>>>>>>> p9x
 
 #include <linux/mmc/card.h>
 #include <linux/mmc/host.h>
@@ -55,6 +59,7 @@ static int mmc_prep_request(struct request_queue *q, struct request *req)
 	return BLKPREP_OK;
 }
 
+<<<<<<< HEAD
 static struct request *mmc_peek_request(struct mmc_queue *mq)
 {
 	struct request_queue *q = mq->queue;
@@ -106,18 +111,55 @@ static inline void mmc_cmdq_ready_wait(struct mmc_host *host,
 			!mmc_card_suspended(host->card))
 		&& !test_bit(CMDQ_STATE_ERR, &ctx->curr_state)
 		&& !mmc_check_blk_queue_start_tag(q, mq->cmdq_req_peeked)));
+=======
+static inline bool mmc_cmdq_should_pull_reqs(struct mmc_host *host,
+					struct mmc_cmdq_context_info *ctx,
+					struct request *req)
+
+{
+	bool ret = true;
+
+	if ((req->cmd_flags & (REQ_FLUSH | REQ_DISCARD)) &&
+			test_bit(CMDQ_STATE_DCMD_ACTIVE, &ctx->curr_state))
+		ret = false;
+	else if (!host->card->part_curr &&
+			mmc_host_halt(host) && !mmc_card_suspended(host->card))
+		ret = false;
+	else if (test_bit(CMDQ_STATE_ERR, &ctx->curr_state))
+		ret = false;
+	else if (!host->card->part_curr && mmc_host_cq_disable(host) &&
+			!mmc_card_suspended(host->card))
+		return false;
+
+	if (!ret)
+		pr_debug("%s: %s: skip pulling reqs: state: %lu, cmd_flags: 0x%x\n",
+			 mmc_hostname(host), __func__,
+			 ctx->curr_state, req->cmd_flags);
+	return ret;
+>>>>>>> p9x
 }
 
 static int mmc_cmdq_thread(void *d)
 {
 	struct mmc_queue *mq = d;
+<<<<<<< HEAD
 	struct mmc_card *card = mq->card;
 	struct mmc_host *host = card->host;
+=======
+	struct request_queue *q = mq->queue;
+	struct mmc_card *card = mq->card;
+
+	struct request *req;
+	struct mmc_host *host = card->host;
+	struct mmc_cmdq_context_info *ctx = &host->cmdq_ctx;
+	unsigned long flags;
+>>>>>>> p9x
 
 	current->flags |= PF_MEMALLOC;
 	if (card->host->wakeup_on_idle)
 		set_wake_up_idle(true);
 
+<<<<<<< HEAD
 	while (1) {
 		int ret = 0;
 
@@ -134,6 +176,54 @@ static int mmc_cmdq_thread(void *d)
 		 */
 	} /* loop */
 
+=======
+	down(&mq->thread_sem);
+	while (1) {
+		int ret = 0;
+
+		spin_lock_irqsave(q->queue_lock, flags);
+		set_current_state(TASK_INTERRUPTIBLE);
+		req = blk_peek_request(q);
+		if (req) {
+			ret = blk_queue_start_tag(q, req);
+			spin_unlock_irqrestore(q->queue_lock, flags);
+			if (ret) {
+				test_and_set_bit(0, &ctx->req_starved);
+				up(&mq->thread_sem);
+				schedule_timeout(HZ / 100);
+				down(&mq->thread_sem);
+			} else {
+				if (!mmc_cmdq_should_pull_reqs(host, ctx,
+							       req)) {
+					spin_lock_irqsave(q->queue_lock, flags);
+					blk_requeue_request(q, req);
+					spin_unlock_irqrestore(q->queue_lock,
+							       flags);
+					test_and_set_bit(0, &ctx->req_starved);
+					up(&mq->thread_sem);
+					schedule_timeout(HZ / 100);
+					down(&mq->thread_sem);
+					continue;
+				}
+				set_current_state(TASK_RUNNING);
+				ret = mq->cmdq_issue_fn(mq, req);
+				if (ret)
+					pr_err("%s: error while cmdq issuing req\n",
+							mmc_hostname(host));
+			}
+		} else {
+			spin_unlock_irqrestore(q->queue_lock, flags);
+			if (kthread_should_stop()) {
+				set_current_state(TASK_RUNNING);
+				break;
+			}
+			up(&mq->thread_sem);
+			schedule();
+			down(&mq->thread_sem);
+		}
+	} /* loop */
+	up(&mq->thread_sem);
+>>>>>>> p9x
 	return 0;
 }
 
@@ -164,20 +254,29 @@ static int mmc_queue_thread(void *d)
 			cmd_flags = req ? req->cmd_flags : 0;
 			mq->issue_fn(mq, req);
 			if (test_bit(MMC_QUEUE_NEW_REQUEST, &mq->flags)) {
+<<<<<<< HEAD
 				clear_bit(MMC_QUEUE_NEW_REQUEST, &mq->flags);
+=======
+>>>>>>> p9x
 				continue; /* fetch again */
+			} else if (test_bit(MMC_QUEUE_URGENT_REQUEST,
+					&mq->flags) && (mq->mqrq_cur->req &&
+					!(mq->mqrq_cur->req->cmd_flags &
+						MMC_REQ_NOREINSERT_MASK))) {
+				/*
+				 * clean current request when urgent request
+				 * processing in progress and current request is
+				 * not urgent (all existing requests completed
+				 * or reinserted to the block layer
+				 */
+				mq->mqrq_cur->brq.mrq.data = NULL;
+				mq->mqrq_cur->req = NULL;
 			}
 
 			/*
 			 * Current request becomes previous request
 			 * and vice versa.
-			 * In case of special requests, current request
-			 * has been finished. Do not assign it to previous
-			 * request.
 			 */
-			if (cmd_flags & MMC_REQ_SPECIAL_MASK)
-				mq->mqrq_cur->req = NULL;
-
 			mq->mqrq_prev->brq.mrq.data = NULL;
 			mq->mqrq_prev->req = NULL;
 			tmp = mq->mqrq_prev;
@@ -188,6 +287,8 @@ static int mmc_queue_thread(void *d)
 				set_current_state(TASK_RUNNING);
 				break;
 			}
+			mmc_start_delayed_bkops(card);
+			mq->card->host->context_info.is_urgent = false;
 			up(&mq->thread_sem);
 			schedule();
 			down(&mq->thread_sem);
@@ -202,7 +303,11 @@ static void mmc_cmdq_dispatch_req(struct request_queue *q)
 {
 	struct mmc_queue *mq = q->queuedata;
 
+<<<<<<< HEAD
 	wake_up(&mq->card->host->cmdq_ctx.wait);
+=======
+	wake_up_process(mq->thread);
+>>>>>>> p9x
 }
 
 /*
@@ -241,6 +346,47 @@ static void mmc_request_fn(struct request_queue *q)
 		spin_unlock_irqrestore(&cntx->lock, flags);
 	} else if (!mq->mqrq_cur->req && !mq->mqrq_prev->req)
 		wake_up_process(mq->thread);
+}
+
+/*
+ * mmc_urgent_request() - Urgent MMC request handler.
+ * @q: request queue.
+ *
+ * This is called when block layer has urgent request for delivery.  When mmc
+ * context is waiting for the current request to complete, it will be awaken,
+ * current request may be interrupted and re-inserted back to block device
+ * request queue.  The next fetched request should be urgent request, this
+ * will be ensured by block i/o scheduler.
+ */
+static void mmc_urgent_request(struct request_queue *q)
+{
+	unsigned long flags;
+	struct mmc_queue *mq = q->queuedata;
+	struct mmc_context_info *cntx;
+
+	if (!mq) {
+		mmc_request_fn(q);
+		return;
+	}
+	cntx = &mq->card->host->context_info;
+
+	/* critical section with mmc_wait_data_done() */
+	spin_lock_irqsave(&cntx->lock, flags);
+
+	/* do stop flow only when mmc thread is waiting for done */
+	if (mq->mqrq_cur->req || mq->mqrq_prev->req) {
+		/*
+		 * Urgent request must be executed alone
+		 * so disable the write packing
+		 */
+		mmc_blk_disable_wr_packing(mq);
+		cntx->is_urgent = true;
+		spin_unlock_irqrestore(&cntx->lock, flags);
+		wake_up_interruptible(&cntx->wait);
+	} else {
+		spin_unlock_irqrestore(&cntx->lock, flags);
+		mmc_request_fn(q);
+	}
 }
 
 static struct scatterlist *mmc_alloc_sg(int sg_len, int *err)
@@ -340,9 +486,12 @@ int mmc_init_queue(struct mmc_queue *mq, struct mmc_card *card,
 			blk_cleanup_queue(mq->queue);
 		} else {
 			sema_init(&mq->thread_sem, 1);
+<<<<<<< HEAD
 			/* hook for pm qos cmdq init */
 			if (card->host->cmdq_ops->init)
 				card->host->cmdq_ops->init(card->host);
+=======
+>>>>>>> p9x
 			mq->queue->queuedata = mq;
 			mq->thread = kthread_run(mmc_cmdq_thread, mq,
 						 "mmc-cmdqd/%d%s",
@@ -361,6 +510,11 @@ int mmc_init_queue(struct mmc_queue *mq, struct mmc_card *card,
 	mq->queue = blk_init_queue(mmc_request_fn, lock);
 	if (!mq->queue)
 		return -ENOMEM;
+
+	if ((host->caps2 & MMC_CAP2_STOP_REQUEST) &&
+			host->ops->stop_request &&
+			mq->card->ext_csd.hpi_en)
+		blk_urgent_request(mq->queue, mmc_urgent_request);
 
 	mq->mqrq_cur = mqrq_cur;
 	mq->mqrq_prev = mqrq_prev;
@@ -606,7 +760,11 @@ enum blk_eh_timer_return mmc_cmdq_rq_timed_out(struct request *req)
 {
 	struct mmc_queue *mq = req->q->queuedata;
 
+<<<<<<< HEAD
 	pr_err("%s: request with tag: %d flags: 0x%llx timed out\n",
+=======
+	pr_err("%s: request with tag: %d flags: 0x%x timed out\n",
+>>>>>>> p9x
 	       mmc_hostname(mq->card->host), req->tag, req->cmd_flags);
 
 	return mq->cmdq_req_timed_out(req);
@@ -625,8 +783,11 @@ int mmc_cmdq_init(struct mmc_queue *mq, struct mmc_card *card)
 	}
 
 	init_waitqueue_head(&card->host->cmdq_ctx.queue_empty_wq);
+<<<<<<< HEAD
 	init_waitqueue_head(&card->host->cmdq_ctx.wait);
 
+=======
+>>>>>>> p9x
 	mq->mqrq_cmdq = kzalloc(
 			sizeof(struct mmc_queue_req) * q_depth, GFP_KERNEL);
 	if (!mq->mqrq_cmdq) {
@@ -704,11 +865,15 @@ int mmc_queue_suspend(struct mmc_queue *mq, int wait)
 	unsigned long flags;
 	int rc = 0;
 	struct mmc_card *card = mq->card;
+<<<<<<< HEAD
 	struct request *req;
+=======
+>>>>>>> p9x
 
 	if (card->cmdq_init && blk_queue_tagged(q)) {
 		struct mmc_host *host = card->host;
 
+<<<<<<< HEAD
 		if (test_and_set_bit(MMC_QUEUE_SUSPENDED, &mq->flags))
 			goto out;
 
@@ -740,12 +905,42 @@ int mmc_queue_suspend(struct mmc_queue *mq, int wait)
 				rc = -EBUSY;
 			}
 			spin_unlock_irqrestore(q->queue_lock, flags);
+=======
+		spin_lock_irqsave(q->queue_lock, flags);
+		blk_stop_queue(q);
+		spin_unlock_irqrestore(q->queue_lock, flags);
+		if (wait) {
+			/*
+			 * Wait for already queued requests to be issued by
+			 * mmc_cmdqd.
+			 */
+			down(&mq->thread_sem);
+			/* Wait for already issued requests to complete */
+			if (host->cmdq_ctx.active_reqs)
+				wait_for_completion(
+						&mq->cmdq_shutdown_complete);
+
+			mq->cmdq_shutdown(mq);
+		} else if (!test_and_set_bit(MMC_QUEUE_SUSPENDED, &mq->flags)) {
+
+			rc = down_trylock(&mq->thread_sem);
+			if (rc || host->cmdq_ctx.active_reqs) {
+				clear_bit(MMC_QUEUE_SUSPENDED, &mq->flags);
+				spin_lock_irqsave(q->queue_lock, flags);
+				blk_start_queue(q);
+				spin_unlock_irqrestore(q->queue_lock, flags);
+				if (!rc)
+					up(&mq->thread_sem);
+				rc = -EBUSY;
+			}
+>>>>>>> p9x
 		}
 
 		goto out;
 	}
 
 	if (!(test_and_set_bit(MMC_QUEUE_SUSPENDED, &mq->flags))) {
+<<<<<<< HEAD
 		if (!wait) {
 			/* suspend/stop the queue in case of suspend */
 			spin_lock_irqsave(q->queue_lock, flags);
@@ -755,6 +950,11 @@ int mmc_queue_suspend(struct mmc_queue *mq, int wait)
 			/* shutdown the queue in case of shutdown/reboot */
 			blk_cleanup_queue(q);
 		}
+=======
+		spin_lock_irqsave(q->queue_lock, flags);
+		blk_stop_queue(q);
+		spin_unlock_irqrestore(q->queue_lock, flags);
+>>>>>>> p9x
 
 		rc = down_trylock(&mq->thread_sem);
 		if (rc && !wait) {

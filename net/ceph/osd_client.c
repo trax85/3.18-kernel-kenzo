@@ -1233,9 +1233,13 @@ static void __cancel_request(struct ceph_osd_request *req)
 static void __register_linger_request(struct ceph_osd_client *osdc,
 				    struct ceph_osd_request *req)
 {
+<<<<<<< HEAD
 	dout("%s %p tid %llu\n", __func__, req, req->r_tid);
 	WARN_ON(!req->r_linger);
 
+=======
+	dout("__register_linger_request %p\n", req);
+>>>>>>> p9x
 	ceph_osdc_get_request(req);
 	list_add_tail(&req->r_linger_item, &osdc->req_linger);
 	if (req->r_osd)
@@ -1266,6 +1270,21 @@ static void __unregister_linger_request(struct ceph_osd_client *osdc,
 	ceph_osdc_put_request(req);
 }
 
+<<<<<<< HEAD
+=======
+void ceph_osdc_unregister_linger_request(struct ceph_osd_client *osdc,
+					 struct ceph_osd_request *req)
+{
+	mutex_lock(&osdc->request_mutex);
+	if (req->r_linger) {
+		req->r_linger = 0;
+		__unregister_linger_request(osdc, req);
+	}
+	mutex_unlock(&osdc->request_mutex);
+}
+EXPORT_SYMBOL(ceph_osdc_unregister_linger_request);
+
+>>>>>>> p9x
 void ceph_osdc_set_request_linger(struct ceph_osd_client *osdc,
 				  struct ceph_osd_request *req)
 {
@@ -1293,6 +1312,7 @@ static bool __req_should_be_paused(struct ceph_osd_client *osdc,
 }
 
 /*
+<<<<<<< HEAD
  * Calculate mapping of a request to a PG.  Takes tiering into account.
  */
 static int __calc_request_pg(struct ceph_osdmap *osdmap,
@@ -1348,6 +1368,8 @@ static void __enqueue_request(struct ceph_osd_request *req)
 }
 
 /*
+=======
+>>>>>>> p9x
  * Pick an osd (the first 'up' osd in the pg), allocate the osd struct
  * (as needed), and set the request r_osd appropriately.  If there is
  * no up osd, set r_osd to NULL.  Move the request to the appropriate list
@@ -1378,6 +1400,11 @@ static int __map_request(struct ceph_osd_client *osdc,
 	num = ceph_calc_pg_acting(osdc->osdmap, pgid, acting, &o);
 	if (num < 0)
 		num = 0;
+
+	was_paused = req->r_paused;
+	req->r_paused = __req_should_be_paused(osdc, req);
+	if (was_paused && !req->r_paused)
+		force_resend = 1;
 
 	was_paused = req->r_paused;
 	req->r_paused = __req_should_be_paused(osdc, req);
@@ -1780,9 +1807,15 @@ static void handle_reply(struct ceph_osd_client *osdc, struct ceph_msg *msg,
 	for (i = 0; i < numops; i++)
 		req->r_reply_op_result[i] = ceph_decode_32(&p);
 
+<<<<<<< HEAD
 	if (le16_to_cpu(msg->hdr.version) >= 6) {
 		p += 8 + 4; /* skip replay_version */
 		p += 8; /* skip user_version */
+=======
+	already_completed = req->r_got_reply;
+
+	if (!req->r_got_reply) {
+>>>>>>> p9x
 
 		err = ceph_redirect_decode(&p, end, &redir);
 		if (err)
@@ -1842,7 +1875,10 @@ static void handle_reply(struct ceph_osd_client *osdc, struct ceph_msg *msg,
 		__unregister_request(osdc, req);
 
 	mutex_unlock(&osdc->request_mutex);
+<<<<<<< HEAD
 	up_read(&osdc->map_sem);
+=======
+>>>>>>> p9x
 
 	if (!already_completed) {
 		if (req->r_unsafe_callback &&
@@ -1860,6 +1896,7 @@ static void handle_reply(struct ceph_osd_client *osdc, struct ceph_msg *msg,
 		complete_request(req);
 	}
 
+<<<<<<< HEAD
 out:
 	dout("req=%p req->r_linger=%d\n", req, req->r_linger);
 	ceph_osdc_put_request(req);
@@ -1877,6 +1914,14 @@ bad_put:
 	else
 		complete_all(&req->r_completion);
 	complete_request(req);
+=======
+done:
+	dout("req=%p req->r_linger=%d\n", req, req->r_linger);
+	ceph_osdc_put_request(req);
+	return;
+
+bad_put:
+>>>>>>> p9x
 	ceph_osdc_put_request(req);
 bad_mutex:
 	mutex_unlock(&osdc->request_mutex);
@@ -2448,9 +2493,34 @@ int ceph_osdc_start_request(struct ceph_osd_client *osdc,
 
 	down_read(&osdc->map_sem);
 	mutex_lock(&osdc->request_mutex);
+<<<<<<< HEAD
 
 	rc = __ceph_osdc_start_request(osdc, req, nofail);
 
+=======
+	__register_request(osdc, req);
+	req->r_sent = 0;
+	req->r_got_reply = 0;
+	rc = __map_request(osdc, req, 0);
+	if (rc < 0) {
+		if (nofail) {
+			dout("osdc_start_request failed map, "
+				" will retry %lld\n", req->r_tid);
+			rc = 0;
+		} else {
+			__unregister_request(osdc, req);
+		}
+		goto out_unlock;
+	}
+	if (req->r_osd == NULL) {
+		dout("send_request %p no up osds in pg\n", req);
+		ceph_monc_request_next_osdmap(&osdc->client->monc);
+	} else {
+		__send_queued(osdc);
+	}
+	rc = 0;
+out_unlock:
+>>>>>>> p9x
 	mutex_unlock(&osdc->request_mutex);
 	up_read(&osdc->map_sem);
 
@@ -2539,7 +2609,11 @@ EXPORT_SYMBOL(ceph_osdc_sync);
  * Call all pending notify callbacks - for use after a watch is
  * unregistered, to make sure no more callbacks for it will be invoked
  */
+<<<<<<< HEAD
 void ceph_osdc_flush_notifies(struct ceph_osd_client *osdc)
+=======
+extern void ceph_osdc_flush_notifies(struct ceph_osd_client *osdc)
+>>>>>>> p9x
 {
 	flush_workqueue(osdc->notify_wq);
 }
@@ -2598,8 +2672,12 @@ int ceph_osdc_init(struct ceph_osd_client *osdc, struct ceph_client *client)
 	err = -ENOMEM;
 	osdc->notify_wq = create_singlethread_workqueue("ceph-watch-notify");
 	if (!osdc->notify_wq)
+<<<<<<< HEAD
 		goto out_msgpool_reply;
 
+=======
+		goto out_msgpool;
+>>>>>>> p9x
 	return 0;
 
 out_msgpool_reply:

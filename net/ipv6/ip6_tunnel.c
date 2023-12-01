@@ -100,21 +100,36 @@ struct ip6_tnl_net {
 
 static struct net_device_stats *ip6_get_stats(struct net_device *dev)
 {
+<<<<<<< HEAD
 	struct pcpu_sw_netstats tmp, sum = { 0 };
+=======
+	struct pcpu_tstats tmp, sum = { 0 };
+>>>>>>> p9x
 	int i;
 
 	for_each_possible_cpu(i) {
 		unsigned int start;
+<<<<<<< HEAD
 		const struct pcpu_sw_netstats *tstats =
 						   per_cpu_ptr(dev->tstats, i);
 
 		do {
 			start = u64_stats_fetch_begin_irq(&tstats->syncp);
+=======
+		const struct pcpu_tstats *tstats = per_cpu_ptr(dev->tstats, i);
+
+		do {
+			start = u64_stats_fetch_begin_bh(&tstats->syncp);
+>>>>>>> p9x
 			tmp.rx_packets = tstats->rx_packets;
 			tmp.rx_bytes = tstats->rx_bytes;
 			tmp.tx_packets = tstats->tx_packets;
 			tmp.tx_bytes =  tstats->tx_bytes;
+<<<<<<< HEAD
 		} while (u64_stats_fetch_retry_irq(&tstats->syncp, start));
+=======
+		} while (u64_stats_fetch_retry_bh(&tstats->syncp, start));
+>>>>>>> p9x
 
 		sum.rx_packets += tmp.rx_packets;
 		sum.rx_bytes   += tmp.rx_bytes;
@@ -976,12 +991,21 @@ static int ip6_tnl_xmit2(struct sk_buff *skb,
 	struct ipv6_tel_txoption opt;
 	struct dst_entry *dst = NULL, *ndst = NULL;
 	struct net_device *tdev;
+	bool use_cache = false;
 	int mtu;
 	unsigned int max_headroom = sizeof(struct ipv6hdr);
 	u8 proto;
 	int err = -1;
 
-	if (!fl6->flowi6_mark)
+	if (!(t->parms.flags &
+		     (IP6_TNL_F_USE_ORIG_TCLASS | IP6_TNL_F_USE_ORIG_FWMARK))) {
+		/* enable the cache only only if the routing decision does
+		 * not depend on the current inner header value
+		 */
+		use_cache = true;
+	}
+
+	if (use_cache)
 		dst = ip6_tnl_dst_check(t);
 	if (!dst) {
 		ndst = ip6_route_output(net, NULL, fl6);
@@ -1039,7 +1063,12 @@ static int ip6_tnl_xmit2(struct sk_buff *skb,
 		consume_skb(skb);
 		skb = new_skb;
 	}
+<<<<<<< HEAD
 	if (fl6->flowi6_mark) {
+=======
+	skb_dst_drop(skb);
+	if (!use_cache) {
+>>>>>>> p9x
 		skb_dst_set(skb, dst);
 		ndst = NULL;
 	} else {
@@ -1802,10 +1831,13 @@ static int __net_init ip6_tnl_init_net(struct net *net)
 		goto err_alloc_dev;
 	dev_net_set(ip6n->fb_tnl_dev, net);
 	ip6n->fb_tnl_dev->rtnl_link_ops = &ip6_link_ops;
+<<<<<<< HEAD
 	/* FB netdevice is special: we have one, and only one per netns.
 	 * Allowing to move it to another netns is clearly unsafe.
 	 */
 	ip6n->fb_tnl_dev->features |= NETIF_F_NETNS_LOCAL;
+=======
+>>>>>>> p9x
 
 	err = ip6_fb_tnl_dev_init(ip6n->fb_tnl_dev);
 	if (err < 0)

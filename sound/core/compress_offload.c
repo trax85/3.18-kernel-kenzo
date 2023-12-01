@@ -44,6 +44,11 @@
 #include <sound/compress_offload.h>
 #include <sound/compress_driver.h>
 
+<<<<<<< HEAD
+=======
+#define U32_MAX ((u32)~0U)
+
+>>>>>>> p9x
 /* struct snd_compr_codec_caps overflows the ioctl bit size for some
  * architectures, so we need to disable the relevant ioctls.
  */
@@ -152,7 +157,12 @@ static int snd_compr_free(struct inode *inode, struct file *f)
 	case SNDRV_PCM_STATE_RUNNING:
 	case SNDRV_PCM_STATE_DRAINING:
 	case SNDRV_PCM_STATE_PAUSED:
+<<<<<<< HEAD
 		data->stream.ops->trigger(&data->stream, SNDRV_PCM_TRIGGER_STOP);
+=======
+		data->stream.ops->trigger(&data->stream,
+					SNDRV_PCM_TRIGGER_STOP);
+>>>>>>> p9x
 		break;
 	default:
 		break;
@@ -503,8 +513,12 @@ static int snd_compress_check_input(struct snd_compr_params *params)
 {
 	/* first let's check the buffer parameter's */
 	if (params->buffer.fragment_size == 0 ||
+<<<<<<< HEAD
 	    params->buffer.fragments > U32_MAX / params->buffer.fragment_size ||
 	    params->buffer.fragments == 0)
+=======
+			params->buffer.fragments > U32_MAX / params->buffer.fragment_size)
+>>>>>>> p9x
 		return -EINVAL;
 
 	/* now codec parameters */
@@ -719,7 +733,10 @@ static int snd_compr_drain(struct snd_compr_stream *stream)
 		stream->runtime->state = SNDRV_PCM_STATE_DRAINING;
 		wake_up(&stream->runtime->sleep);
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 ret:
 	mutex_unlock(&stream->device->lock);
 	return retval;
@@ -784,7 +801,13 @@ static int snd_compr_set_next_track_param(struct snd_compr_stream *stream,
 		return -EFAULT;
 
 	retval = stream->ops->set_next_track_param(stream, &codec_options);
+<<<<<<< HEAD
 	return retval;
+=======
+	if (retval != 0)
+		return retval;
+	return 0;
+>>>>>>> p9x
 }
 
 static int snd_compress_simple_ioctls(struct file *file,
@@ -809,6 +832,10 @@ static int snd_compress_simple_ioctls(struct file *file,
 		break;
 #endif
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 	case _IOC_NR(SNDRV_COMPRESS_TSTAMP):
 		retval = snd_compr_tstamp(stream, arg);
 		break;
@@ -848,6 +875,10 @@ static long snd_compr_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 
 	mutex_lock(&stream->device->lock);
 	switch (_IOC_NR(cmd)) {
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 	case _IOC_NR(SNDRV_COMPRESS_SET_PARAMS):
 		retval = snd_compr_set_params(stream, arg);
 		break;

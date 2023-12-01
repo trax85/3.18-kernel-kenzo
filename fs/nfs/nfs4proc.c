@@ -332,8 +332,16 @@ static int nfs4_delay(struct rpc_clnt *clnt, long *timeout)
 
 	might_sleep();
 
+<<<<<<< HEAD
 	freezable_schedule_timeout_killable_unsafe(
 		nfs4_update_delay(timeout));
+=======
+	if (*timeout <= 0)
+		*timeout = NFS4_POLL_RETRY_MIN;
+	if (*timeout > NFS4_POLL_RETRY_MAX)
+		*timeout = NFS4_POLL_RETRY_MAX;
+	freezable_schedule_timeout_killable_unsafe(*timeout);
+>>>>>>> p9x
 	if (fatal_signal_pending(current))
 		res = -ERESTARTSYS;
 	return res;
@@ -4502,7 +4510,7 @@ out:
  */
 static ssize_t __nfs4_get_acl_uncached(struct inode *inode, void *buf, size_t buflen)
 {
-	struct page *pages[NFS4ACL_MAXPAGES] = {NULL, };
+	struct page *pages[NFS4ACL_MAXPAGES + 1] = {NULL, };
 	struct nfs_getaclargs args = {
 		.fh = NFS_FH(inode),
 		.acl_pages = pages,
@@ -4516,13 +4524,9 @@ static ssize_t __nfs4_get_acl_uncached(struct inode *inode, void *buf, size_t bu
 		.rpc_argp = &args,
 		.rpc_resp = &res,
 	};
-	unsigned int npages = DIV_ROUND_UP(buflen, PAGE_SIZE);
+	unsigned int npages = DIV_ROUND_UP(buflen, PAGE_SIZE) + 1;
 	int ret = -ENOMEM, i;
 
-	/* As long as we're doing a round trip to the server anyway,
-	 * let's be prepared for a page of acl data. */
-	if (npages == 0)
-		npages = 1;
 	if (npages > ARRAY_SIZE(pages))
 		return -ERANGE;
 
@@ -5119,6 +5123,14 @@ static void nfs4_delegreturn_done(struct rpc_task *task, void *calldata)
 		task->tk_status = 0;
 		if (data->roc)
 			pnfs_roc_set_barrier(data->inode, data->roc_barrier);
+		break;
+	case -NFS4ERR_ADMIN_REVOKED:
+	case -NFS4ERR_DELEG_REVOKED:
+	case -NFS4ERR_BAD_STATEID:
+	case -NFS4ERR_OLD_STATEID:
+	case -NFS4ERR_STALE_STATEID:
+	case -NFS4ERR_EXPIRED:
+		task->tk_status = 0;
 		break;
 	default:
 		if (nfs4_async_handle_error(task, data->res.server,
@@ -7732,7 +7744,11 @@ nfs4_proc_layoutget(struct nfs4_layoutget *lgp, gfp_t gfp_flags)
 
 	lgp->res.layoutp = &lgp->args.layout;
 	lgp->res.seq_res.sr_slot = NULL;
+<<<<<<< HEAD
 	nfs4_init_sequence(&lgp->args.seq_args, &lgp->res.seq_res, 0);
+=======
+	nfs41_init_sequence(&lgp->args.seq_args, &lgp->res.seq_res, 0);
+>>>>>>> p9x
 
 	task = rpc_run_task(&task_setup_data);
 	if (IS_ERR(task))

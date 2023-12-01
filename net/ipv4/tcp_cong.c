@@ -92,6 +92,7 @@ void tcp_assign_congestion_control(struct sock *sk)
 out:
 	rcu_read_unlock();
 
+<<<<<<< HEAD
 	/* Clear out private data before diag gets it and
 	 * the ca has not been initialized.
 	 */
@@ -103,6 +104,8 @@ void tcp_init_congestion_control(struct sock *sk)
 {
 	const struct inet_connection_sock *icsk = inet_csk(sk);
 
+=======
+>>>>>>> p9x
 	tcp_sk(sk)->prior_ssthresh = 0;
 	if (icsk->icsk_ca_ops->init)
 		icsk->icsk_ca_ops->init(sk);

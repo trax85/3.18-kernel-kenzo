@@ -258,9 +258,20 @@ static int pl061_probe(struct amba_device *adev, const struct amba_id *id)
 		irq_base = 0;
 	}
 
+<<<<<<< HEAD
 	chip->base = devm_ioremap_resource(dev, &adev->res);
 	if (IS_ERR(chip->base))
 		return PTR_ERR(chip->base);
+=======
+	if (!devm_request_mem_region(dev, adev->res.start,
+				     resource_size(&adev->res), "pl061"))
+		return -EBUSY;
+
+	chip->base = devm_ioremap(dev, adev->res.start,
+				  resource_size(&adev->res));
+	if (!chip->base)
+		return -ENOMEM;
+>>>>>>> p9x
 
 	spin_lock_init(&chip->lock);
 
@@ -298,6 +309,11 @@ static int pl061_probe(struct amba_device *adev, const struct amba_id *id)
 	}
 	gpiochip_set_chained_irqchip(&chip->gc, &pl061_irqchip,
 				     irq, pl061_irq_handler);
+
+	chip->domain = irq_domain_add_simple(adev->dev.of_node, PL061_GPIO_NR,
+					     irq_base, &pl061_domain_ops, chip);
+	if (!chip->domain)
+		return -ENODEV;
 
 	for (i = 0; i < PL061_GPIO_NR; i++) {
 		if (pdata) {

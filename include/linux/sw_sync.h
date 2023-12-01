@@ -18,9 +18,17 @@
 #define _LINUX_SW_SYNC_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 #include <linux/sync.h>
 #include <uapi/linux/sw_sync.h>
+=======
+
+#ifdef __KERNEL__
+
+#include <linux/kconfig.h>
+#include <linux/sync.h>
+>>>>>>> p9x
 
 struct sw_sync_timeline {
 	struct	sync_timeline	obj;
@@ -44,6 +52,20 @@ static inline struct sw_sync_timeline *sw_sync_timeline_create(const char *name)
 {
 	return NULL;
 }
+<<<<<<< HEAD
+=======
+
+static inline void sw_sync_timeline_inc(struct sw_sync_timeline *obj, u32 inc)
+{
+}
+
+static inline struct sync_pt *sw_sync_pt_create(struct sw_sync_timeline *obj,
+		u32 value)
+{
+	return NULL;
+}
+#endif /* IS_ENABLED(CONFIG_SW_SYNC) */
+>>>>>>> p9x
 
 static inline void sw_sync_timeline_inc(struct sw_sync_timeline *obj, u32 inc)
 {

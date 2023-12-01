@@ -144,7 +144,11 @@ static int sdcardfs_remount_fs2(struct vfsmount *mnt, struct super_block *sb,
 		pr_err("sdcardfs: remount flags 0x%x unsupported\n", *flags);
 		err = -EINVAL;
 	}
+<<<<<<< HEAD
 	pr_info("Remount options were %s for vfsmnt %pK.\n", options, mnt);
+=======
+	pr_info("Remount options were %s for vfsmnt %p.\n", options, mnt);
+>>>>>>> p9x
 	err = parse_options_remount(sb, options, *flags & ~MS_SILENT, mnt->data);
 
 
@@ -311,6 +315,11 @@ static int sdcardfs_show_options(struct vfsmount *mnt, struct seq_file *m,
 		seq_puts(m, ",default_normal");
 	if (opts->reserved_mb != 0)
 		seq_printf(m, ",reserved=%uMB", opts->reserved_mb);
+<<<<<<< HEAD
+=======
+	if (opts->nocache)
+		seq_printf(m, ",nocache");
+>>>>>>> p9x
 
 	return 0;
 };

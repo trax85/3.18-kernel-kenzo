@@ -278,7 +278,11 @@ void pci_msi_unmask_irq(struct irq_data *data)
 	msi_set_mask_bit(data, 0);
 }
 
+<<<<<<< HEAD
 void default_restore_msi_irqs(struct pci_dev *dev)
+=======
+void __read_msi_msg(struct msi_desc *entry, struct msi_msg *msg)
+>>>>>>> p9x
 {
 	struct msi_desc *entry;
 
@@ -370,10 +374,21 @@ static void free_msi_irqs(struct pci_dev *dev)
 	struct device_attribute *dev_attr;
 	int i, count = 0;
 
+<<<<<<< HEAD
 	list_for_each_entry(entry, &dev->msi_list, list)
 		if (entry->irq)
 			for (i = 0; i < entry->nvec_used; i++)
 				BUG_ON(irq_has_action(entry->irq + i));
+=======
+	list_for_each_entry(entry, &dev->msi_list, list) {
+		int i, nvec;
+		if (!entry->irq)
+			continue;
+		nvec = 1 << entry->msi_attrib.multiple;
+		for (i = 0; i < nvec; i++)
+			BUG_ON(irq_has_action(entry->irq + i));
+	}
+>>>>>>> p9x
 
 	pci_msi_teardown_msi_irqs(dev);
 
@@ -564,6 +579,7 @@ error_attrs:
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct msi_desc *msi_setup_entry(struct pci_dev *dev, int nvec)
 {
 	u16 control;
@@ -597,6 +613,8 @@ static struct msi_desc *msi_setup_entry(struct pci_dev *dev, int nvec)
 	return entry;
 }
 
+=======
+>>>>>>> p9x
 static int msi_verify_entries(struct pci_dev *dev)
 {
 	struct msi_desc *entry;
@@ -642,6 +660,13 @@ static int msi_capability_init(struct pci_dev *dev, int nvec)
 
 	/* Configure MSI capability structure */
 	ret = pci_msi_setup_msi_irqs(dev, nvec, PCI_CAP_ID_MSI);
+	if (ret) {
+		msi_mask_irq(entry, mask, ~mask);
+		free_msi_irqs(dev);
+		return ret;
+	}
+
+	ret = msi_verify_entries(dev);
 	if (ret) {
 		msi_mask_irq(entry, mask, ~mask);
 		free_msi_irqs(dev);
@@ -771,6 +796,11 @@ static int msix_capability_init(struct pci_dev *dev,
 	ret = msi_verify_entries(dev);
 	if (ret)
 		goto out_free;
+
+	/* Check if all MSI entries honor device restrictions */
+	ret = msi_verify_entries(dev);
+	if (ret)
+		goto error;
 
 	/*
 	 * Some devices require MSI-X to be enabled before we can touch the

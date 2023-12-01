@@ -321,7 +321,11 @@ static int pscsi_add_device_to_list(struct se_device *dev,
 	dev->dev_attrib.hw_block_size =
 		min_not_zero((int)sd->sector_size, 512);
 	dev->dev_attrib.hw_max_sectors =
+<<<<<<< HEAD
 		min_not_zero(sd->host->max_sectors, queue_max_hw_sectors(q));
+=======
+		min_not_zero((unsigned)sd->host->max_sectors, queue_max_hw_sectors(q));
+>>>>>>> p9x
 	dev->dev_attrib.hw_queue_depth = sd->queue_depth;
 
 	/*

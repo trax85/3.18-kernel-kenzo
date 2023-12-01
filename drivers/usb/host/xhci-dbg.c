@@ -2,6 +2,7 @@
  * xHCI host controller driver
  *
  * Copyright (C) 2008 Intel Corp.
+ * Copyright (c) 2013, The Linux Foundation. All rights reserved.
  *
  * Author: Sarah Sharp
  * Some code borrowed from the Linux EHCI driver.
@@ -32,7 +33,11 @@ void xhci_dbg_regs(struct xhci_hcd *xhci)
 
 	xhci_dbg(xhci, "// xHCI capability registers at %pK:\n",
 			xhci->cap_regs);
+<<<<<<< HEAD
 	temp = readl(&xhci->cap_regs->hc_capbase);
+=======
+	temp = xhci_readl(xhci, &xhci->cap_regs->hc_capbase);
+>>>>>>> p9x
 	xhci_dbg(xhci, "// @%pK = 0x%x (CAPLENGTH AND HCIVERSION)\n",
 			&xhci->cap_regs->hc_capbase, temp);
 	xhci_dbg(xhci, "//   CAPLENGTH: 0x%x\n",
@@ -44,13 +49,21 @@ void xhci_dbg_regs(struct xhci_hcd *xhci)
 
 	xhci_dbg(xhci, "// xHCI operational registers at %pK:\n", xhci->op_regs);
 
+<<<<<<< HEAD
 	temp = readl(&xhci->cap_regs->run_regs_off);
+=======
+	temp = xhci_readl(xhci, &xhci->cap_regs->run_regs_off);
+>>>>>>> p9x
 	xhci_dbg(xhci, "// @%pK = 0x%x RTSOFF\n",
 			&xhci->cap_regs->run_regs_off,
 			(unsigned int) temp & RTSOFF_MASK);
 	xhci_dbg(xhci, "// xHCI runtime registers at %pK:\n", xhci->run_regs);
 
+<<<<<<< HEAD
 	temp = readl(&xhci->cap_regs->db_off);
+=======
+	temp = xhci_readl(xhci, &xhci->cap_regs->db_off);
+>>>>>>> p9x
 	xhci_dbg(xhci, "// @%pK = 0x%x DBOFF\n", &xhci->cap_regs->db_off, temp);
 	xhci_dbg(xhci, "// Doorbell array at %pK:\n", xhci->dba);
 }
@@ -187,12 +200,20 @@ void xhci_print_ir_set(struct xhci_hcd *xhci, int set_num)
 			(unsigned int)temp);
 
 	addr = &ir_set->irq_control;
+<<<<<<< HEAD
 	temp = readl(addr);
+=======
+	temp = xhci_readl(xhci, addr);
+>>>>>>> p9x
 	xhci_dbg(xhci, "  %pK: ir_set.control = 0x%x\n", addr,
 			(unsigned int)temp);
 
 	addr = &ir_set->erst_size;
+<<<<<<< HEAD
 	temp = readl(addr);
+=======
+	temp = xhci_readl(xhci, addr);
+>>>>>>> p9x
 	xhci_dbg(xhci, "  %pK: ir_set.erst_size = 0x%x\n", addr,
 			(unsigned int)temp);
 
@@ -219,7 +240,11 @@ void xhci_print_run_regs(struct xhci_hcd *xhci)
 	int i;
 
 	xhci_dbg(xhci, "xHCI runtime registers at %pK:\n", xhci->run_regs);
+<<<<<<< HEAD
 	temp = readl(&xhci->run_regs->microframe_index);
+=======
+	temp = xhci_readl(xhci, &xhci->run_regs->microframe_index);
+>>>>>>> p9x
 	xhci_dbg(xhci, "  %pK: Microframe index = 0x%x\n",
 			&xhci->run_regs->microframe_index,
 			(unsigned int) temp);
@@ -508,9 +533,13 @@ static void xhci_dbg_ep_ctx(struct xhci_hcd *xhci,
 		dma_addr_t dma = ctx->dma +
 			((unsigned long)ep_ctx - (unsigned long)ctx->bytes);
 
+<<<<<<< HEAD
 		xhci_dbg(xhci, "%s Endpoint %02d Context (ep_index %02d):\n",
 				usb_endpoint_out(epaddr) ? "OUT" : "IN",
 				epaddr & USB_ENDPOINT_NUMBER_MASK, i);
+=======
+		xhci_dbg(xhci, "Endpoint %02d Context:\n", i);
+>>>>>>> p9x
 		xhci_dbg(xhci, "@%pK (virt) @%08llx (dma) %#08x - ep_info\n",
 				&ep_ctx->ep_info,
 				(unsigned long long)dma, ep_ctx->ep_info);
@@ -553,11 +582,14 @@ void xhci_dbg_ctx(struct xhci_hcd *xhci,
 	if (ctx->type == XHCI_CTX_TYPE_INPUT) {
 		struct xhci_input_control_ctx *ctrl_ctx =
 			xhci_get_input_control_ctx(xhci, ctx);
+<<<<<<< HEAD
 		if (!ctrl_ctx) {
 			xhci_warn(xhci, "Could not get input context, bad type.\n");
 			return;
 		}
 
+=======
+>>>>>>> p9x
 		xhci_dbg(xhci, "@%pK (virt) @%08llx (dma) %#08x - drop flags\n",
 			 &ctrl_ctx->drop_flags, (unsigned long long)dma,
 			 ctrl_ctx->drop_flags);
@@ -581,6 +613,7 @@ void xhci_dbg_ctx(struct xhci_hcd *xhci,
 	xhci_dbg_ep_ctx(xhci, ctx, last_ep);
 }
 
+<<<<<<< HEAD
 void xhci_dbg_trace(struct xhci_hcd *xhci, void (*trace)(struct va_format *),
 			const char *fmt, ...)
 {
@@ -595,3 +628,158 @@ void xhci_dbg_trace(struct xhci_hcd *xhci, void (*trace)(struct va_format *),
 	va_end(args);
 }
 EXPORT_SYMBOL_GPL(xhci_dbg_trace);
+=======
+
+enum event_type {
+	EVENT_UNDEF = -1,
+	URB_SUBMIT,
+	URB_COMPLETE,
+	EVENT_NONE,
+};
+
+#define EVENT_STR_LEN	5
+
+static enum event_type xhci_str_to_event(const char *name)
+{
+	if (!strncasecmp("S", name, EVENT_STR_LEN))
+		return URB_SUBMIT;
+	if (!strncasecmp("C", name, EVENT_STR_LEN))
+		return URB_COMPLETE;
+	if (!strncasecmp("", name, EVENT_STR_LEN))
+		return EVENT_NONE;
+
+	return EVENT_UNDEF;
+}
+static void dbg_inc(unsigned *idx)
+{
+	*idx = (*idx + 1) & (DBG_MAX_MSG-1);
+}
+
+/*get_timestamp - returns time of day in us */
+static char *get_timestamp(char *tbuf)
+{
+	unsigned long long t;
+	unsigned long nanosec_rem;
+
+	t = cpu_clock(smp_processor_id());
+	nanosec_rem = do_div(t, 1000000000)/1000;
+	scnprintf(tbuf, TIME_BUF_LEN, "[%5lu.%06lu] ", (unsigned long)t,
+		nanosec_rem);
+	return tbuf;
+}
+
+static int check_log_mask(struct dbg_data *d, int ep_addr, struct urb *urb)
+{
+	int dir, num;
+
+	dir = usb_urb_dir_in(urb) ? USB_DIR_IN : USB_DIR_OUT;
+	num = ep_addr & ~USB_DIR_IN;
+	num = 1 << num;
+
+	if ((dir == USB_DIR_IN) && (num & d->inep_log_mask))
+		return 1;
+	if ((dir == USB_DIR_OUT) && (num & d->outep_log_mask))
+		return 1;
+
+	return 0;
+}
+
+static char *
+get_hex_data(char *dbuf, struct urb *urb, int event, int status, size_t max_len)
+{
+	char *ubuf = urb->transfer_buffer;
+	size_t len =
+		event ? urb->actual_length : urb->transfer_buffer_length;
+
+	if (status == -EINPROGRESS)
+		status = 0;
+
+	/*Only dump ep in completions and epout submissions*/
+	if (len && !status && ((usb_urb_dir_in(urb) && event) ||
+		(usb_urb_dir_in(urb) && !event))) {
+		if (len >= max_len)
+			len = max_len;
+		hex_dump_to_buffer(ubuf, len, 32, 4, dbuf, HEX_DUMP_LEN, 0);
+	} else {
+		dbuf = "";
+	}
+
+	return dbuf;
+}
+
+void __maybe_unused
+xhci_dbg_log_event(struct dbg_data *d, struct urb *urb, char *event,
+		unsigned extra)
+{
+	unsigned long flags;
+	int ep_addr;
+	char tbuf[TIME_BUF_LEN];
+	char dbuf[HEX_DUMP_LEN];
+
+	if (!d->log_events)
+		return;
+
+	if (!urb) {
+		write_lock_irqsave(&d->ctrl_lck, flags);
+		scnprintf(d->ctrl_buf[d->ctrl_idx], DBG_MSG_LEN,
+			"%s: %s : %d", get_timestamp(tbuf), event, extra);
+		dbg_inc(&d->ctrl_idx);
+		write_unlock_irqrestore(&d->ctrl_lck, flags);
+		return;
+	}
+
+	ep_addr = urb->ep->desc.bEndpointAddress;
+	if (!check_log_mask(d, ep_addr, urb))
+		return;
+
+	if ((ep_addr & 0x0f) == 0x0) {
+		/*submit event*/
+		if (!xhci_str_to_event(event)) {
+			write_lock_irqsave(&d->ctrl_lck, flags);
+			scnprintf(d->ctrl_buf[d->ctrl_idx],
+				DBG_MSG_LEN, "%s: [%s : %pK]:[%s] "
+				  "%02x %02x %04x %04x %04x  %u %d %s",
+				  get_timestamp(tbuf), event, urb,
+				  usb_urb_dir_in(urb) ? "in" : "out",
+				  urb->setup_packet[0], urb->setup_packet[1],
+				  (urb->setup_packet[3] << 8) |
+				  urb->setup_packet[2],
+				  (urb->setup_packet[5] << 8) |
+				  urb->setup_packet[4],
+				  (urb->setup_packet[7] << 8) |
+				  urb->setup_packet[6],
+				  urb->transfer_buffer_length, extra,
+				  d->log_payload ? get_hex_data(dbuf, urb,
+				  xhci_str_to_event(event), extra, 16) : "");
+
+			dbg_inc(&d->ctrl_idx);
+			write_unlock_irqrestore(&d->ctrl_lck, flags);
+		} else {
+			write_lock_irqsave(&d->ctrl_lck, flags);
+			scnprintf(d->ctrl_buf[d->ctrl_idx],
+				DBG_MSG_LEN, "%s: [%s : %pK]:[%s] %u %d %s",
+				  get_timestamp(tbuf), event, urb,
+				  usb_urb_dir_in(urb) ? "in" : "out",
+				  urb->actual_length, extra,
+				  d->log_payload ? get_hex_data(dbuf, urb,
+				xhci_str_to_event(event), extra, 16) : "");
+
+			dbg_inc(&d->ctrl_idx);
+			write_unlock_irqrestore(&d->ctrl_lck, flags);
+		}
+	} else {
+		write_lock_irqsave(&d->data_lck, flags);
+		scnprintf(d->data_buf[d->data_idx], DBG_MSG_LEN,
+			  "%s: [%s : %pK]:ep%d[%s]  %u %d %s",
+			  get_timestamp(tbuf), event, urb, ep_addr & 0x0f,
+			  usb_urb_dir_in(urb) ? "in" : "out",
+			  xhci_str_to_event(event) ? urb->actual_length :
+			  urb->transfer_buffer_length, extra,
+			  d->log_payload ? get_hex_data(dbuf, urb,
+				  xhci_str_to_event(event), extra, 32) : "");
+
+		dbg_inc(&d->data_idx);
+		write_unlock_irqrestore(&d->data_lck, flags);
+	}
+}
+>>>>>>> p9x

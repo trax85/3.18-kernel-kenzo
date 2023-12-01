@@ -1650,8 +1650,11 @@ static int ndisc_netdev_event(struct notifier_block *this, unsigned long event, 
 	case NETDEV_CHANGEADDR:
 		neigh_changeaddr(&nd_tbl, dev);
 		fib6_run_gc(0, net, false);
+<<<<<<< HEAD
 		/* fallthrough */
 	case NETDEV_UP:
+=======
+>>>>>>> p9x
 		idev = in6_dev_get(dev);
 		if (!idev)
 			break;
@@ -1783,6 +1786,10 @@ int __init ndisc_init(void)
 				    ndisc_ifinfo_sysctl_change);
 	if (err)
 		goto out_unregister_pernet;
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> p9x
 out:
 #endif
 	return err;

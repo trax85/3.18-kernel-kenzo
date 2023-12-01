@@ -359,6 +359,7 @@ static void pseries_lpar_idle(void)
 	 * Default handler to go into low thread priority and possibly
 	 * low power mode by cedeing processor to hypervisor
 	 */
+<<<<<<< HEAD
 
 	/* Indicate to hypervisor that we are idle. */
 	get_lppaca()->idle = 1;
@@ -373,6 +374,28 @@ static void pseries_lpar_idle(void)
 	cede_processor();
 
 	get_lppaca()->idle = 0;
+=======
+	if (cpuidle_idle_call()) {
+		/* On error, execute default handler
+		 * to go into low thread priority and possibly
+		 * low power mode by cedeing processor to hypervisor
+		 */
+
+		/* Indicate to hypervisor that we are idle. */
+		get_lppaca()->idle = 1;
+
+		/*
+		 * Yield the processor to the hypervisor.  We return if
+		 * an external interrupt occurs (which are driven prior
+		 * to returning here) or if a prod occurs from another
+		 * processor. When returning here, external interrupts
+		 * are enabled.
+		 */
+		cede_processor();
+
+		get_lppaca()->idle = 0;
+	}
+>>>>>>> p9x
 }
 
 /*

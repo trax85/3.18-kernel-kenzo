@@ -16,9 +16,26 @@
 
 static u32 net_secret[NET_SECRET_SIZE] ____cacheline_aligned;
 
+<<<<<<< HEAD
 static __always_inline void net_secret_init(void)
 {
 	net_get_random_once(net_secret, sizeof(net_secret));
+=======
+static void net_secret_init(void)
+{
+	u32 tmp;
+	int i;
+
+	if (likely(net_secret[0]))
+		return;
+
+	for (i = NET_SECRET_SIZE; i > 0;) {
+		do {
+			get_random_bytes(&tmp, sizeof(tmp));
+		} while (!tmp);
+		cmpxchg(&net_secret[--i], 0, tmp);
+	}
+>>>>>>> p9x
 }
 #endif
 

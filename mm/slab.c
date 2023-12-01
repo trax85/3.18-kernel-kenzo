@@ -467,6 +467,144 @@ static struct kmem_cache kmem_cache_boot = {
 
 #define BAD_ALIEN_MAGIC 0x01020304ul
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_LOCKDEP
+
+/*
+ * Slab sometimes uses the kmalloc slabs to store the slab headers
+ * for other slabs "off slab".
+ * The locking for this is tricky in that it nests within the locks
+ * of all other slabs in a few places; to deal with this special
+ * locking we put on-slab caches into a separate lock-class.
+ *
+ * We set lock class for alien array caches which are up during init.
+ * The lock annotation will be lost if all cpus of a node goes down and
+ * then comes back up during hotplug
+ */
+static struct lock_class_key on_slab_l3_key;
+static struct lock_class_key on_slab_alc_key;
+
+static struct lock_class_key debugobj_l3_key;
+static struct lock_class_key debugobj_alc_key;
+
+static void slab_set_lock_classes(struct kmem_cache *cachep,
+		struct lock_class_key *l3_key, struct lock_class_key *alc_key,
+		int q)
+{
+	struct array_cache **alc;
+	struct kmem_cache_node *n;
+	int r;
+
+	n = cachep->node[q];
+	if (!n)
+		return;
+
+	lockdep_set_class(&n->list_lock, l3_key);
+	alc = n->alien;
+	/*
+	 * FIXME: This check for BAD_ALIEN_MAGIC
+	 * should go away when common slab code is taught to
+	 * work even without alien caches.
+	 * Currently, non NUMA code returns BAD_ALIEN_MAGIC
+	 * for alloc_alien_cache,
+	 */
+	if (!alc || (unsigned long)alc == BAD_ALIEN_MAGIC)
+		return;
+	for_each_node(r) {
+		if (alc[r])
+			lockdep_set_class(&alc[r]->lock, alc_key);
+	}
+}
+
+static void slab_set_debugobj_lock_classes_node(struct kmem_cache *cachep, int node)
+{
+	slab_set_lock_classes(cachep, &debugobj_l3_key, &debugobj_alc_key, node);
+}
+
+static void slab_set_debugobj_lock_classes(struct kmem_cache *cachep)
+{
+	int node;
+
+	for_each_online_node(node)
+		slab_set_debugobj_lock_classes_node(cachep, node);
+}
+
+static void init_node_lock_keys(int q)
+{
+	int i;
+
+	if (slab_state < UP)
+		return;
+
+	for (i = 1; i <= KMALLOC_SHIFT_HIGH; i++) {
+		struct kmem_cache_node *n;
+		struct kmem_cache *cache = kmalloc_caches[i];
+
+		if (!cache)
+			continue;
+
+		n = cache->node[q];
+		if (!n || OFF_SLAB(cache))
+			continue;
+
+		slab_set_lock_classes(cache, &on_slab_l3_key,
+				&on_slab_alc_key, q);
+	}
+}
+
+static void on_slab_lock_classes_node(struct kmem_cache *cachep, int q)
+{
+	if (!cachep->node[q])
+		return;
+
+	slab_set_lock_classes(cachep, &on_slab_l3_key,
+			&on_slab_alc_key, q);
+}
+
+static inline void on_slab_lock_classes(struct kmem_cache *cachep)
+{
+	int node;
+
+	VM_BUG_ON(OFF_SLAB(cachep));
+	for_each_node(node)
+		on_slab_lock_classes_node(cachep, node);
+}
+
+static inline void init_lock_keys(void)
+{
+	int node;
+
+	for_each_node(node)
+		init_node_lock_keys(node);
+}
+#else
+static void init_node_lock_keys(int q)
+{
+}
+
+static inline void init_lock_keys(void)
+{
+}
+
+static inline void on_slab_lock_classes(struct kmem_cache *cachep)
+{
+}
+
+static inline void on_slab_lock_classes_node(struct kmem_cache *cachep, int node)
+{
+}
+
+static void slab_set_debugobj_lock_classes_node(struct kmem_cache *cachep, int node)
+{
+}
+
+static void slab_set_debugobj_lock_classes(struct kmem_cache *cachep)
+{
+}
+#endif
+
+>>>>>>> p9x
 static DEFINE_PER_CPU(struct delayed_work, slab_reap_work);
 
 static inline struct array_cache *cpu_cache_get(struct kmem_cache *cachep)
@@ -3458,6 +3596,7 @@ void *kmem_cache_alloc_node_trace(struct kmem_cache *cachep,
 	trace_kmalloc_node(_RET_IP_, ret,
 			   size, cachep->size,
 			   flags, nodeid);
+	kasan_kmalloc(s, ret, size);
 	return ret;
 }
 EXPORT_SYMBOL(kmem_cache_alloc_node_trace);

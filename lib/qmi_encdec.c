@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2015, 2019 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -710,8 +714,13 @@ static int qmi_decode_string_elem(struct elem_info *ei_array, void *buf_dst,
 		decoded_bytes += rc;
 	}
 
+<<<<<<< HEAD
 	if (string_len >= temp_ei->elem_len) {
 		pr_err("%s: String len %d >= Max Len %d\n",
+=======
+	if (string_len > temp_ei->elem_len) {
+		pr_err("%s: String len %d > Max Len %d\n",
+>>>>>>> p9x
 			__func__, string_len, temp_ei->elem_len);
 		return -ETOOSMALL;
 	} else if (string_len > tlv_len) {

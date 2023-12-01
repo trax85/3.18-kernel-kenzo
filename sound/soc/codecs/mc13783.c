@@ -96,6 +96,43 @@ struct mc13783_priv {
 	enum mc13783_ssi_port dac_ssi_port;
 };
 
+<<<<<<< HEAD
+=======
+static unsigned int mc13783_read(struct snd_soc_codec *codec,
+	unsigned int reg)
+{
+	struct mc13783_priv *priv = snd_soc_codec_get_drvdata(codec);
+	unsigned int value = 0;
+
+	mc13xxx_lock(priv->mc13xxx);
+
+	mc13xxx_reg_read(priv->mc13xxx, reg, &value);
+
+	mc13xxx_unlock(priv->mc13xxx);
+
+	return value;
+}
+
+static int mc13783_write(struct snd_soc_codec *codec,
+	unsigned int reg, unsigned int value)
+{
+	struct mc13783_priv *priv = snd_soc_codec_get_drvdata(codec);
+	int ret;
+
+	mc13xxx_lock(priv->mc13xxx);
+
+	ret = mc13xxx_reg_write(priv->mc13xxx, reg, value);
+
+	/* include errata fix for spi audio problems */
+	if (reg == MC13783_AUDIO_CODEC || reg == MC13783_AUDIO_DAC)
+		ret = mc13xxx_reg_write(priv->mc13xxx, reg, value);
+
+	mc13xxx_unlock(priv->mc13xxx);
+
+	return ret;
+}
+
+>>>>>>> p9x
 /* Mapping between sample rates and register value */
 static unsigned int mc13783_rates[] = {
 	8000, 11025, 12000, 16000,
@@ -631,6 +668,11 @@ static int mc13783_probe(struct snd_soc_codec *codec)
 	else
 		mc13xxx_reg_rmw(priv->mc13xxx, MC13783_AUDIO_DAC,
 				AUDIO_SSI_SEL, AUDIO_SSI_SEL);
+<<<<<<< HEAD
+=======
+
+	mc13xxx_unlock(priv->mc13xxx);
+>>>>>>> p9x
 
 	return 0;
 }

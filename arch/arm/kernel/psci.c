@@ -32,9 +32,12 @@ struct psci_operations psci_ops;
 
 static int (*invoke_psci_fn)(u32, u32, u32, u32);
 typedef int (*psci_initcall_t)(const struct device_node *);
+<<<<<<< HEAD
 
 asmlinkage int __invoke_psci_fn_hvc(u32, u32, u32, u32);
 asmlinkage int __invoke_psci_fn_smc(u32, u32, u32, u32);
+=======
+>>>>>>> p9x
 
 enum psci_function {
 	PSCI_FN_CPU_SUSPEND,
@@ -82,6 +85,32 @@ static int psci_get_version(void)
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+static noinline int __invoke_psci_fn_smc(u32 function_id, u32 arg0, u32 arg1,
+					 u32 arg2)
+{
+	asm volatile(
+			__asmeq("%0", "r0")
+			__asmeq("%1", "r1")
+			__asmeq("%2", "r2")
+			__asmeq("%3", "r3")
+			__SMC(0)
+		: "+r" (function_id)
+		: "r" (arg0), "r" (arg1), "r" (arg2));
+
+	return function_id;
+}
+
+static int psci_get_version(void)
+{
+	int err;
+
+	err = invoke_psci_fn(PSCI_0_2_FN_PSCI_VERSION, 0, 0, 0);
+	return err;
+}
+
+>>>>>>> p9x
 static int psci_cpu_suspend(unsigned long  state_id,
 			    unsigned long entry_point)
 {
@@ -183,9 +212,15 @@ static int psci_suspend_finisher(unsigned long state_id)
 }
 
 /*
+<<<<<<< HEAD
  * The PSCI changes are to support OS initiated low power mode where the
  * cluster mode aggregation happens in HLOS. In this case, the cpuidle
  * driver aggregating the cluster low power mode will provide the
+=======
+ * The PSCI changes are to support Os initiated low power mode where the
+ * cluster mode aggregation happens in HLOS. In this case, the cpuidle
+ * driver aggregates the cluster low power mode will provide in the
+>>>>>>> p9x
  * composite stateID to be passed down to the PSCI layer.
  */
 int cpu_psci_cpu_suspend(unsigned long state_id)

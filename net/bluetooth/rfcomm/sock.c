@@ -346,7 +346,11 @@ static int rfcomm_sock_bind(struct socket *sock, struct sockaddr *addr, int addr
 	len = min_t(unsigned int, sizeof(sa), addr_len);
 	memcpy(&sa, addr, len);
 
+<<<<<<< HEAD
 	BT_DBG("sk %p %pMR", sk, &sa.rc_bdaddr);
+=======
+	BT_DBG("sk %pK %pMR", sk, &sa.rc_bdaddr);
+>>>>>>> p9x
 
 	lock_sock(sk);
 
@@ -362,12 +366,20 @@ static int rfcomm_sock_bind(struct socket *sock, struct sockaddr *addr, int addr
 
 	write_lock(&rfcomm_sk_list.lock);
 
+<<<<<<< HEAD
 	if (sa.rc_channel &&
 	    __rfcomm_get_listen_sock_by_addr(sa.rc_channel, &sa.rc_bdaddr)) {
 		err = -EADDRINUSE;
 	} else {
 		/* Save source address */
 		bacpy(&rfcomm_pi(sk)->src, &sa.rc_bdaddr);
+=======
+	if (sa.rc_channel && __rfcomm_get_sock_by_addr(sa.rc_channel, &sa.rc_bdaddr)) {
+		err = -EADDRINUSE;
+	} else {
+		/* Save source address */
+		bacpy(&bt_sk(sk)->src, &sa.rc_bdaddr);
+>>>>>>> p9x
 		rfcomm_pi(sk)->channel = sa.rc_channel;
 		sk->sk_state = BT_BOUND;
 	}
@@ -538,10 +550,13 @@ static int rfcomm_sock_getname(struct socket *sock, struct sockaddr *addr, int *
 	struct sock *sk = sock->sk;
 
 	BT_DBG("sock %pK, sk %pK", sock, sk);
+<<<<<<< HEAD
 
 	if (peer && sk->sk_state != BT_CONNECTED &&
 	    sk->sk_state != BT_CONNECT && sk->sk_state != BT_CONNECT2)
 		return -ENOTCONN;
+=======
+>>>>>>> p9x
 
 	memset(sa, 0, sizeof(*sa));
 	sa->rc_family  = AF_BLUETOOTH;

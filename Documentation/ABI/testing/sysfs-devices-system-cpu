@@ -146,7 +146,11 @@ Description:	Discover and change clock speed of CPUs
 
 What:		/sys/devices/system/cpu/cpu#/cpufreq/freqdomain_cpus
 Date:		June 2013
+<<<<<<< HEAD
 Contact:	linux-pm@vger.kernel.org
+=======
+Contact:	cpufreq@vger.kernel.org
+>>>>>>> p9x
 Description:	Discover CPUs in the same CPU frequency coordination domain
 
 		freqdomain_cpus is the list of CPUs (online+offline) that share

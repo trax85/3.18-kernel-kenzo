@@ -37,7 +37,10 @@
 #include <linux/export.h>
 #include <linux/irqchip/arm-vic.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
 #include <linux/usb/ohci_pdriver.h>
+=======
+>>>>>>> p9x
 
 #include <mach/hardware.h>
 #include <linux/platform_data/video-ep93xx.h>

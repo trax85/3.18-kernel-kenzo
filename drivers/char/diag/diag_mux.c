@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, 2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -23,13 +27,20 @@
 #include <linux/spinlock.h>
 #include <linux/ratelimit.h>
 #include "diagchar.h"
+<<<<<<< HEAD
 #include "diagfwd.h"
+=======
+>>>>>>> p9x
 #include "diag_mux.h"
 #include "diag_usb.h"
 #include "diag_memorydevice.h"
 
+<<<<<<< HEAD
 
 struct diag_mux_state_t *diag_mux;
+=======
+struct diag_logger_t *logger;
+>>>>>>> p9x
 static struct diag_logger_t usb_logger;
 static struct diag_logger_t md_logger;
 
@@ -38,7 +49,10 @@ static struct diag_logger_ops usb_log_ops = {
 	.close = diag_usb_disconnect_all,
 	.queue_read = diag_usb_queue_read,
 	.write = diag_usb_write,
+<<<<<<< HEAD
 	.close_peripheral = NULL
+=======
+>>>>>>> p9x
 };
 
 static struct diag_logger_ops md_log_ops = {
@@ -46,16 +60,27 @@ static struct diag_logger_ops md_log_ops = {
 	.close = diag_md_close_all,
 	.queue_read = NULL,
 	.write = diag_md_write,
+<<<<<<< HEAD
 	.close_peripheral = diag_md_close_peripheral,
+=======
+>>>>>>> p9x
 };
 
 int diag_mux_init()
 {
+<<<<<<< HEAD
 	diag_mux = kzalloc(sizeof(struct diag_mux_state_t),
 			 GFP_KERNEL);
 	if (!diag_mux)
 		return -ENOMEM;
 	kmemleak_not_leak(diag_mux);
+=======
+	logger = kzalloc(NUM_MUX_PROC * sizeof(struct diag_logger_t),
+			 GFP_KERNEL);
+	if (!logger)
+		return -ENOMEM;
+	kmemleak_not_leak(logger);
+>>>>>>> p9x
 
 	usb_logger.mode = DIAG_USB_MODE;
 	usb_logger.log_ops = &usb_log_ops;
@@ -68,17 +93,25 @@ int diag_mux_init()
 	 * Set USB logging as the default logger. This is the mode
 	 * Diag should be in when it initializes.
 	 */
+<<<<<<< HEAD
 	diag_mux->usb_ptr = &usb_logger;
 	diag_mux->md_ptr = &md_logger;
 	diag_mux->logger = &usb_logger;
 	diag_mux->mux_mask = 0;
 	diag_mux->mode = DIAG_USB_MODE;
+=======
+	logger = &usb_logger;
+>>>>>>> p9x
 	return 0;
 }
 
 void diag_mux_exit()
 {
+<<<<<<< HEAD
 	kfree(diag_mux);
+=======
+	kfree(logger);
+>>>>>>> p9x
 }
 
 int diag_mux_register(int proc, int ctx, struct diag_mux_ops *ops)
@@ -112,6 +145,7 @@ int diag_mux_register(int proc, int ctx, struct diag_mux_ops *ops)
 
 int diag_mux_queue_read(int proc)
 {
+<<<<<<< HEAD
 	struct diag_logger_t *logger = NULL;
 
 	if (proc < 0 || proc >= NUM_MUX_PROC)
@@ -127,11 +161,20 @@ int diag_mux_queue_read(int proc)
 	if (logger && logger->log_ops && logger->log_ops->queue_read)
 		return logger->log_ops->queue_read(proc);
 
+=======
+	if (proc < 0 || proc >= NUM_MUX_PROC)
+		return -EINVAL;
+	if (!logger)
+		return -EIO;
+	if (logger->log_ops && logger->log_ops->queue_read)
+		return logger->log_ops->queue_read(proc);
+>>>>>>> p9x
 	return 0;
 }
 
 int diag_mux_write(int proc, unsigned char *buf, int len, int ctx)
 {
+<<<<<<< HEAD
 	struct diag_logger_t *logger = NULL;
 	int peripheral;
 
@@ -149,11 +192,16 @@ int diag_mux_write(int proc, unsigned char *buf, int len, int ctx)
 	else
 		logger = diag_mux->usb_ptr;
 
+=======
+	if (proc < 0 || proc >= NUM_MUX_PROC)
+		return -EINVAL;
+>>>>>>> p9x
 	if (logger && logger->log_ops && logger->log_ops->write)
 		return logger->log_ops->write(proc, buf, len, ctx);
 	return 0;
 }
 
+<<<<<<< HEAD
 int diag_mux_close_peripheral(int proc, uint8_t peripheral)
 {
 	struct diag_logger_t *logger = NULL;
@@ -241,3 +289,30 @@ int diag_mux_switch_logging(int *req_mode, int *peripheral_mask)
 	*peripheral_mask = new_mask;
 	return 0;
 }
+=======
+int diag_mux_switch_logging(int new_mode)
+{
+	struct diag_logger_t *new_logger = NULL;
+
+	switch (new_mode) {
+	case DIAG_USB_MODE:
+		new_logger = &usb_logger;
+		break;
+	case DIAG_MEMORY_DEVICE_MODE:
+		new_logger = &md_logger;
+		break;
+	default:
+		pr_err("diag: Invalid mode %d in %s\n", new_mode, __func__);
+		return -EINVAL;
+	}
+
+	if (logger) {
+		logger->log_ops->close();
+		logger = new_logger;
+		logger->log_ops->open();
+	}
+
+	return 0;
+}
+
+>>>>>>> p9x

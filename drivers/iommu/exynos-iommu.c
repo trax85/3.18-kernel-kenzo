@@ -1145,6 +1145,7 @@ static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *domain,
 	return phys;
 }
 
+<<<<<<< HEAD
 static int exynos_iommu_add_device(struct device *dev)
 {
 	struct iommu_group *group;
@@ -1182,6 +1183,17 @@ static const struct iommu_ops exynos_iommu_ops = {
 	.iova_to_phys = exynos_iommu_iova_to_phys,
 	.add_device = exynos_iommu_add_device,
 	.remove_device = exynos_iommu_remove_device,
+=======
+static struct iommu_ops exynos_iommu_ops = {
+	.domain_init = &exynos_iommu_domain_init,
+	.domain_destroy = &exynos_iommu_domain_destroy,
+	.attach_dev = &exynos_iommu_attach_device,
+	.detach_dev = &exynos_iommu_detach_device,
+	.map = &exynos_iommu_map,
+	.unmap = &exynos_iommu_unmap,
+	.map_sg = default_iommu_map_sg,
+	.iova_to_phys = &exynos_iommu_iova_to_phys,
+>>>>>>> p9x
 	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
 };
 

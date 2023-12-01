@@ -758,6 +758,14 @@ struct omap_hwmod omap2xxx_counter_32k_hwmod = {
 };
 
 /* gpmc */
+<<<<<<< HEAD
+=======
+static struct omap_hwmod_irq_info omap2xxx_gpmc_irqs[] = {
+	{ .irq = 20 + OMAP_INTC_START, },
+	{ .irq = -1 }
+};
+
+>>>>>>> p9x
 struct omap_hwmod omap2xxx_gpmc_hwmod = {
 	.name		= "gpmc",
 	.class		= &omap2xxx_gpmc_hwmod_class,
@@ -797,6 +805,14 @@ static struct omap_hwmod_class omap2_rng_hwmod_class = {
 	.sysc		= &omap2_rng_sysc,
 };
 
+<<<<<<< HEAD
+=======
+static struct omap_hwmod_irq_info omap2_rng_mpu_irqs[] = {
+	{ .irq = 52 + OMAP_INTC_START, },
+	{ .irq = -1 }
+};
+
+>>>>>>> p9x
 struct omap_hwmod omap2xxx_rng_hwmod = {
 	.name		= "rng",
 	.main_clk	= "l4_ck",

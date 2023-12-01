@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -15,8 +19,11 @@
 
 #include <sensor/csid/msm_csid.h>
 
+<<<<<<< HEAD
 uint8_t csid_lane_assign_v3_2[PHY_LANE_MAX] = {0, 1, 2, 3, 4};
 
+=======
+>>>>>>> p9x
 struct csid_reg_parms_t csid_v3_2 = {
 	/* MIPI	CSID registers */
 	0x0,
@@ -53,6 +60,7 @@ struct csid_reg_parms_t csid_v3_2 = {
 	0x4,
 	17,
 	0x30020000,
+<<<<<<< HEAD
 	0xFFFFFFFF,
 	0xFFFFFFFF,
 	0xFFFFFFFF,
@@ -60,5 +68,7 @@ struct csid_reg_parms_t csid_v3_2 = {
 	20,
 	0xFFFFFFFF,
 	0xFFFFFFFF,
+=======
+>>>>>>> p9x
 };
 #endif

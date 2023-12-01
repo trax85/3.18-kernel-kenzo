@@ -186,7 +186,11 @@ static void iscsit_clear_tpg_np_login_thread(
 
 	if (shutdown)
 		tpg_np->tpg_np->enabled = false;
+<<<<<<< HEAD
 	iscsit_reset_np_thread(tpg_np->tpg_np, tpg_np, tpg, shutdown);
+=======
+	iscsit_reset_np_thread(tpg_np->tpg_np, tpg_np, tpg);
+>>>>>>> p9x
 }
 
 static void iscsit_clear_tpg_np_login_threads(
@@ -202,7 +206,11 @@ static void iscsit_clear_tpg_np_login_threads(
 			continue;
 		}
 		spin_unlock(&tpg->tpg_np_lock);
+<<<<<<< HEAD
 		iscsit_clear_tpg_np_login_thread(tpg_np, tpg, shutdown);
+=======
+		iscsit_clear_tpg_np_login_thread(tpg_np, tpg, false);
+>>>>>>> p9x
 		spin_lock(&tpg->tpg_np_lock);
 	}
 	spin_unlock(&tpg->tpg_np_lock);
@@ -261,7 +269,6 @@ err_out:
 		iscsi_release_param_list(tpg->param_list);
 		tpg->param_list = NULL;
 	}
-	kfree(tpg);
 	return -ENOMEM;
 }
 

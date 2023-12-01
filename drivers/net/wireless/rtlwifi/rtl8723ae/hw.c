@@ -953,7 +953,10 @@ int rtl8723e_hw_init(struct ieee80211_hw *hw)
 	 */
 	local_save_flags(flags);
 	local_irq_enable();
+<<<<<<< HEAD
 	rtlhal->fw_ready = false;
+=======
+>>>>>>> p9x
 
 	rtlpriv->intf_ops->disable_aspm(hw);
 	rtstatus = _rtl8712e_init_mac(hw);
@@ -969,6 +972,11 @@ int rtl8723e_hw_init(struct ieee80211_hw *hw)
 			 "Failed to download FW. Init HW without FW now..\n");
 		err = 1;
 		goto exit;
+<<<<<<< HEAD
+=======
+	} else {
+		rtlhal->fw_ready = true;
+>>>>>>> p9x
 	}
 	rtlhal->fw_ready = true;
 
@@ -1043,7 +1051,11 @@ int rtl8723e_hw_init(struct ieee80211_hw *hw)
 		rtl_write_byte(rtlpriv, 0x16, tmp_u1b | 0x90);
 		RT_TRACE(rtlpriv, COMP_INIT, DBG_TRACE, "under 1.5V\n");
 	}
+<<<<<<< HEAD
 	rtl8723e_dm_init(hw);
+=======
+	rtl8723ae_dm_init(hw);
+>>>>>>> p9x
 exit:
 	local_irq_restore(flags);
 	rtlpriv->rtlhal.being_init_adapter = false;

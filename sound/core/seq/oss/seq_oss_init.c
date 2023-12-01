@@ -92,6 +92,10 @@ snd_seq_oss_create_client(void)
 		goto __error;
 
 	system_client = rc;
+<<<<<<< HEAD
+=======
+	debug_printk(("new client = %d\n", rc));
+>>>>>>> p9x
 
 	/* create annoucement receiver port */
 	memset(port, 0, sizeof(*port));
@@ -437,6 +441,11 @@ snd_seq_oss_release(struct seq_oss_devinfo *dp)
 	if (dp->port >= 0)
 		delete_port(dp);
 	delete_seq_queue(queue);
+<<<<<<< HEAD
+=======
+
+	debug_printk(("release done\n"));
+>>>>>>> p9x
 }
 
 

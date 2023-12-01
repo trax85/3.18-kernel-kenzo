@@ -606,7 +606,10 @@ struct btrfs_path {
 	unsigned int skip_locking:1;
 	unsigned int leave_spinning:1;
 	unsigned int search_commit_root:1;
+<<<<<<< HEAD
 	unsigned int need_commit_sem:1;
+=======
+>>>>>>> p9x
 	unsigned int skip_release_on_error:1;
 };
 

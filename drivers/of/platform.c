@@ -182,6 +182,13 @@ static struct platform_device *of_platform_device_create_pdata(
 	if (!dev)
 		goto err_clear_flag;
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_MICROBLAZE)
+	dev->archdata.dma_mask = 0xffffffffUL;
+#endif
+	dev->dev.coherent_dma_mask = DMA_BIT_MASK(sizeof(dma_addr_t) * 8);
+>>>>>>> p9x
 	dev->dev.bus = &platform_bus_type;
 	dev->dev.platform_data = platform_data;
 	of_dma_configure(&dev->dev, dev->dev.of_node);

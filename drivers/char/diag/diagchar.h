@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2008-2019, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2008-2017, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -26,8 +30,11 @@
 #include <asm/atomic.h>
 #include "diagfwd_bridge.h"
 
+<<<<<<< HEAD
 #define THRESHOLD_CLIENT_LIMIT	50
 
+=======
+>>>>>>> p9x
 /* Size of the USB buffers used for read and write*/
 #define USB_MAX_OUT_BUF 4096
 #define APPS_BUF_SIZE	4096
@@ -61,6 +68,7 @@
 #define DIAG_CTRL_MSG_F3_MASK	11
 #define CONTROL_CHAR	0x7E
 
+<<<<<<< HEAD
 #define DIAG_CON_APSS		(0x0001)	/* Bit mask for APSS */
 #define DIAG_CON_MPSS		(0x0002)	/* Bit mask for MPSS */
 #define DIAG_CON_LPASS		(0x0004)	/* Bit mask for LPASS */
@@ -70,6 +78,13 @@
 #define DIAG_CON_ALL		(DIAG_CON_APSS | DIAG_CON_MPSS \
 				| DIAG_CON_LPASS | DIAG_CON_WCNSS \
 				| DIAG_CON_SENSORS)
+=======
+#define DIAG_CON_APSS (0x0001)	/* Bit mask for APSS */
+#define DIAG_CON_MPSS (0x0002)	/* Bit mask for MPSS */
+#define DIAG_CON_LPASS (0x0004)	/* Bit mask for LPASS */
+#define DIAG_CON_WCNSS (0x0008)	/* Bit mask for WCNSS */
+#define DIAG_CON_SENSORS (0x0010) /* Bit mask for Sensors */
+>>>>>>> p9x
 
 #define DIAG_STM_MODEM	0x01
 #define DIAG_STM_LPASS	0x02
@@ -122,8 +137,11 @@
 #define DIAG_EXT_MOBILE_ID	0x06
 #define DIAG_GET_TIME_API	0x21B
 #define DIAG_SET_TIME_API	0x21C
+<<<<<<< HEAD
 #define DIAG_SWITCH_COMMAND	0x081B
 #define DIAG_BUFFERING_MODE	0x080C
+=======
+>>>>>>> p9x
 
 #define DIAG_CMD_OP_LOG_DISABLE		0
 #define DIAG_CMD_OP_GET_LOG_RANGE	1
@@ -163,9 +181,12 @@
 
 #define FEATURE_MASK_LEN	2
 
+<<<<<<< HEAD
 #define DIAG_MD_NONE			0
 #define DIAG_MD_PERIPHERAL		1
 
+=======
+>>>>>>> p9x
 /*
  * The status bit masks when received in a signal handler are to be
  * used in conjunction with the peripheral list bit mask to determine the
@@ -203,11 +224,14 @@
 #define NUM_PERIPHERALS		4
 #define APPS_DATA		(NUM_PERIPHERALS)
 
+<<<<<<< HEAD
 /* Number of sessions possible in Memory Device Mode. +1 for Apps data */
 #define NUM_MD_SESSIONS		(NUM_PERIPHERALS + 1)
 
 #define MD_PERIPHERAL_MASK(x)	(1 << x)
 
+=======
+>>>>>>> p9x
 /*
  * Number of stm processors includes all the peripherals and
  * apps.Added 1 below to indicate apps
@@ -398,6 +422,7 @@ struct diag_partial_pkt_t {
 	unsigned char *data;
 } __packed;
 
+<<<<<<< HEAD
 struct diag_logging_mode_param_t {
 	uint32_t req_mode;
 	uint32_t peripheral_mask;
@@ -421,6 +446,8 @@ struct diag_md_session_t {
 	struct task_struct *task;
 };
 
+=======
+>>>>>>> p9x
 /*
  * High level structure for storing Diag masks.
  *
@@ -471,13 +498,21 @@ struct diagchar_dev {
 	struct class *diagchar_class;
 	struct device *diag_dev;
 	int ref_count;
+<<<<<<< HEAD
 	struct mutex diag_notifier_mutex;
+=======
+	int mask_clear;
+	struct mutex diag_maskclear_mutex;
+>>>>>>> p9x
 	struct mutex diagchar_mutex;
 	struct mutex diag_file_mutex;
 	wait_queue_head_t wait_q;
 	struct diag_client_map *client_map;
 	int *data_ready;
+<<<<<<< HEAD
 	atomic_t data_ready_notif[THRESHOLD_CLIENT_LIMIT];
+=======
+>>>>>>> p9x
 	int num_clients;
 	int polling_reg_flag;
 	int use_device_tree;
@@ -513,7 +548,11 @@ struct diagchar_dev {
 	struct list_head cmd_reg_list;
 	struct mutex cmd_reg_mutex;
 	uint32_t cmd_reg_count;
+<<<<<<< HEAD
 	struct mutex diagfwd_channel_mutex[NUM_PERIPHERALS];
+=======
+	struct mutex diagfwd_channel_mutex;
+>>>>>>> p9x
 	/* Sizes that reflect memory pool sizes */
 	unsigned int poolsize;
 	unsigned int poolsize_hdlc;
@@ -534,7 +573,10 @@ struct diagchar_dev {
 	struct diagfwd_info *diagfwd_dci_cmd[NUM_PERIPHERALS];
 	struct diag_feature_t feature[NUM_PERIPHERALS];
 	struct diag_buffering_mode_t buffering_mode[NUM_PERIPHERALS];
+<<<<<<< HEAD
 	uint8_t buffering_flag[NUM_PERIPHERALS];
+=======
+>>>>>>> p9x
 	struct mutex mode_lock;
 	unsigned char *user_space_data_buf;
 	uint8_t user_space_data_busy;
@@ -567,7 +609,10 @@ struct diagchar_dev {
 	struct workqueue_struct *diag_wq;
 	struct work_struct diag_drain_work;
 	struct work_struct update_user_clients;
+<<<<<<< HEAD
 	struct work_struct update_md_clients;
+=======
+>>>>>>> p9x
 	struct workqueue_struct *diag_cntl_wq;
 	uint8_t log_on_demand_support;
 	uint8_t *apps_req_buf;
@@ -576,12 +621,17 @@ struct diagchar_dev {
 	uint32_t dci_pkt_length;
 	int in_busy_dcipktdata;
 	int logging_mode;
+<<<<<<< HEAD
 	int logging_mask;
 	int mask_check;
 	uint32_t md_session_mask;
 	uint8_t md_session_mode;
 	struct diag_md_session_t *md_session_map[NUM_MD_SESSIONS];
 	struct mutex md_session_lock;
+=======
+	int mask_check;
+	struct diag_md_proc_info md_proc[DIAG_NUM_PROC];
+>>>>>>> p9x
 	/* Power related variables */
 	struct diag_ws_ref_t dci_ws;
 	struct diag_ws_ref_t md_ws;
@@ -606,7 +656,10 @@ struct diagchar_dev {
 #endif
 	int time_sync_enabled;
 	uint8_t uses_time_api;
+<<<<<<< HEAD
 	struct platform_device *pdev;
+=======
+>>>>>>> p9x
 };
 
 extern struct diagchar_dev *driver;
@@ -627,6 +680,10 @@ void diag_ws_on_copy_complete(int type);
 void diag_ws_reset(int type);
 void diag_ws_release(void);
 void chk_logging_wakeup(void);
+<<<<<<< HEAD
+=======
+void diag_clear_masks(void);
+>>>>>>> p9x
 int diag_cmd_add_reg(struct diag_cmd_reg_entry_t *new_entry, uint8_t proc,
 		     int pid);
 struct diag_cmd_reg_entry_t *diag_cmd_search(
@@ -636,6 +693,7 @@ void diag_cmd_remove_reg(struct diag_cmd_reg_entry_t *entry, uint8_t proc);
 void diag_cmd_remove_reg_by_pid(int pid);
 void diag_cmd_remove_reg_by_proc(int proc);
 int diag_cmd_chk_polling(struct diag_cmd_reg_entry_t *entry);
+<<<<<<< HEAD
 int diag_mask_param(void);
 void diag_clear_masks(int pid);
 
@@ -644,4 +702,9 @@ void diag_record_stats(int type, int flag);
 struct diag_md_session_t *diag_md_session_get_pid(int pid);
 struct diag_md_session_t *diag_md_session_get_peripheral(uint8_t peripheral);
 
+=======
+
+void diag_record_stats(int type, int flag);
+
+>>>>>>> p9x
 #endif

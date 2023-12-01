@@ -114,7 +114,10 @@ config IPC_LOGGING
 
 	  If in doubt, say no.
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 # All tracer options should select GENERIC_TRACER. For those options that are
 # enabled by all tracers (context switch and event tracer) they select TRACING.
 # This allows those options to appear when no other tracer is selected. But the

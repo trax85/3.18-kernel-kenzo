@@ -1210,7 +1210,10 @@ int __weak pcibios_enable_device(struct pci_dev *dev, int bars)
 static int do_pci_enable_device(struct pci_dev *dev, int bars)
 {
 	int err;
+<<<<<<< HEAD
 	struct pci_dev *bridge;
+=======
+>>>>>>> p9x
 	u16 cmd;
 	u8 pin;
 

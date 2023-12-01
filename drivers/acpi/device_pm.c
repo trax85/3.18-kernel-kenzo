@@ -342,6 +342,7 @@ int acpi_device_update_power(struct acpi_device *device, int *state_p)
 		*state_p = state;
 
 	return 0;
+<<<<<<< HEAD
 }
 EXPORT_SYMBOL_GPL(acpi_device_update_power);
 
@@ -352,6 +353,8 @@ int acpi_bus_update_power(acpi_handle handle, int *state_p)
 
 	result = acpi_bus_get_device(handle, &device);
 	return result ? result : acpi_device_update_power(device, state_p);
+=======
+>>>>>>> p9x
 }
 EXPORT_SYMBOL_GPL(acpi_bus_update_power);
 

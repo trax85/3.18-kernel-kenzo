@@ -35,6 +35,7 @@ static int msm_shared_heap_unlock(dma_addr_t base,
 		u32 share_type;
 	} request;
 	int resp = 0;
+<<<<<<< HEAD
 
 	request.start = base;
 	request.size = size;
@@ -44,6 +45,22 @@ static int msm_shared_heap_unlock(dma_addr_t base,
 
 	rc = scm_call(SHARED_HEAP_SVC_ID, SHARED_HEAP_CMD_ID, &request,
 				  sizeof(request), &resp, 1);
+=======
+	struct scm_desc desc = {0};
+
+	desc.arginfo = SCM_ARGS(4);
+	desc.args[0] = request.start = base;
+	desc.args[1] = request.size = size;
+	desc.args[2] = request.proc = proc_type;
+	desc.args[3] = request.share_type = SHARED_HEAP_TYPE_READ |
+						SHARED_HEAP_TYPE_WRITE;
+	if (!is_scm_armv8())
+		rc = scm_call(SHARED_HEAP_SVC_ID, SHARED_HEAP_CMD_ID, &request,
+				  sizeof(request), &resp, 1);
+	else
+		rc = scm_call2(SCM_SIP_FNID(SHARED_HEAP_SVC_ID,
+			       SHARED_HEAP_CMD_ID), &desc);
+>>>>>>> p9x
 
 	if (rc)
 		pr_err("shared_heap: Failed to unlock the shared heap %d\n",
@@ -61,13 +78,21 @@ static int msm_shared_heap_populate_base_and_size
 	if (pnode != NULL) {
 		const u32 *addr;
 		u64 len;
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 		addr = of_get_address(pnode, 0, &len, NULL);
 		if (!addr) {
 			of_node_put(pnode);
 			ret = -EINVAL;
 			goto out;
 		}
+<<<<<<< HEAD
 		*size = (size_t)len;
+=======
+		*size = cma_get_size(priv);
+>>>>>>> p9x
 		*base = cma_get_base(priv);
 		of_node_put(pnode);
 	} else {

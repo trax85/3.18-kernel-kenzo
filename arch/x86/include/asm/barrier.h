@@ -96,10 +96,17 @@
 #define set_mb(var, value) do { var = value; barrier(); } while (0)
 #endif /* SMP */
 
+<<<<<<< HEAD
 #if defined(CONFIG_X86_PPRO_FENCE)
 
 /*
  * For this option x86 doesn't have a strong TSO memory
+=======
+#if defined(CONFIG_X86_OOSTORE) || defined(CONFIG_X86_PPRO_FENCE)
+
+/*
+ * For either of these options x86 doesn't have a strong TSO memory
+>>>>>>> p9x
  * model and we should fall back to full barriers.
  */
 

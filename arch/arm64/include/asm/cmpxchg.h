@@ -227,6 +227,7 @@ static inline unsigned long __cmpxchg_mb(volatile void *ptr, unsigned long old,
 			  (unsigned long)(n), sizeof(*(ptr))); \
 	__ret; \
 })
+<<<<<<< HEAD
 
 #define cmpxchg_double(ptr1, ptr2, o1, o2, n1, n2) \
 ({\
@@ -270,6 +271,8 @@ static inline unsigned long __cmpxchg_mb(volatile void *ptr, unsigned long old,
 	preempt_enable();						\
 	__ret;								\
 })
+=======
+>>>>>>> p9x
 
 #define cmpxchg64(ptr,o,n)		cmpxchg((ptr),(o),(n))
 #define cmpxchg64_local(ptr,o,n)	cmpxchg_local((ptr),(o),(n))

@@ -255,10 +255,69 @@ out:
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * LSM hook implementation that checks and/or returns the xfrm sid for the
  * incoming packet.
  */
+int selinux_xfrm_decode_session(struct sk_buff *skb, u32 *sid, int ckall)
+{
+	if (skb == NULL) {
+		*sid = SECSID_NULL;
+		return 0;
+=======
+static int selinux_xfrm_skb_sid_ingress(struct sk_buff *skb,
+					u32 *sid, int ckall)
+{
+	struct sec_path *sp = skb->sp;
+
+	*sid = SECSID_NULL;
+
+	if (sp) {
+		int i, sid_set = 0;
+
+		for (i = sp->len-1; i >= 0; i--) {
+			struct xfrm_state *x = sp->xvec[i];
+			if (selinux_authorizable_xfrm(x)) {
+				struct xfrm_sec_ctx *ctx = x->security;
+
+				if (!sid_set) {
+					*sid = ctx->ctx_sid;
+					sid_set = 1;
+
+					if (!ckall)
+						break;
+				} else if (*sid != ctx->ctx_sid)
+					return -EINVAL;
+			}
+		}
+>>>>>>> p9x
+	}
+	return selinux_xfrm_skb_sid_ingress(skb, sid, ckall);
+}
+
+<<<<<<< HEAD
+int selinux_xfrm_skb_sid(struct sk_buff *skb, u32 *sid)
+=======
+static u32 selinux_xfrm_skb_sid_egress(struct sk_buff *skb)
+{
+	struct dst_entry *dst = skb_dst(skb);
+	struct xfrm_state *x;
+
+	if (dst == NULL)
+		return SECSID_NULL;
+	x = dst->xfrm;
+	if (x == NULL || !selinux_authorizable_xfrm(x))
+		return SECSID_NULL;
+
+	return x->security->ctx_sid;
+}
+
+/*
+ * LSM hook implementation that checks and/or returns the xfrm sid for the
+ * incoming packet.
+ */
+
 int selinux_xfrm_decode_session(struct sk_buff *skb, u32 *sid, int ckall)
 {
 	if (skb == NULL) {
@@ -269,6 +328,23 @@ int selinux_xfrm_decode_session(struct sk_buff *skb, u32 *sid, int ckall)
 }
 
 int selinux_xfrm_skb_sid(struct sk_buff *skb, u32 *sid)
+{
+	int rc;
+
+	rc = selinux_xfrm_skb_sid_ingress(skb, sid, 0);
+	if (rc == 0 && *sid == SECSID_NULL)
+		*sid = selinux_xfrm_skb_sid_egress(skb);
+
+	return rc;
+}
+
+/*
+ * Security blob allocation for xfrm_policy and xfrm_state
+ * CTX does not have a meaningful value on input
+ */
+static int selinux_xfrm_sec_ctx_alloc(struct xfrm_sec_ctx **ctxp,
+	struct xfrm_user_sec_ctx *uctx, u32 sid)
+>>>>>>> p9x
 {
 	int rc;
 

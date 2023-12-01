@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014, 2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -12,7 +16,10 @@
 #ifndef __ESOC_CLIENT_H_
 #define __ESOC_CLIENT_H_
 
+<<<<<<< HEAD
 #include <linux/device.h>
+=======
+>>>>>>> p9x
 #include <linux/esoc_ctrl.h>
 #include <linux/notifier.h>
 
@@ -24,7 +31,10 @@
 struct esoc_desc {
 	const char *name;
 	const char *link;
+<<<<<<< HEAD
 	const char *link_info;
+=======
+>>>>>>> p9x
 	void *priv;
 };
 

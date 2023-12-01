@@ -686,6 +686,7 @@ struct efi_fdt_params {
 	u32 desc_ver;
 };
 
+<<<<<<< HEAD
 typedef struct {
 	u32 revision;
 	u32 parent_handle;
@@ -718,6 +719,8 @@ typedef struct {
 	unsigned long unload;
 } efi_loaded_image_64_t;
 
+=======
+>>>>>>> p9x
 typedef struct {
 	u32 revision;
 	void *parent_handle;
@@ -746,8 +749,9 @@ typedef struct {
 	efi_char16_t filename[1];
 } efi_file_info_t;
 
-typedef struct {
+typedef struct _efi_file_handle {
 	u64 revision;
+<<<<<<< HEAD
 	u32 open;
 	u32 close;
 	u32 delete;
@@ -776,6 +780,8 @@ typedef struct {
 
 typedef struct _efi_file_handle {
 	u64 revision;
+=======
+>>>>>>> p9x
 	efi_status_t (*open)(struct _efi_file_handle *,
 			     struct _efi_file_handle **,
 			     efi_char16_t *, u64, u64);
@@ -875,8 +881,11 @@ static inline efi_status_t efi_query_variable_store(u32 attributes, unsigned lon
 #endif
 extern void __iomem *efi_lookup_mapped_addr(u64 phys_addr);
 extern int efi_config_init(efi_config_table_type_t *arch_tables);
+<<<<<<< HEAD
 extern int efi_config_parse_tables(void *config_tables, int count, int sz,
 				   efi_config_table_type_t *arch_tables);
+=======
+>>>>>>> p9x
 extern u64 efi_get_iobase (void);
 extern u32 efi_mem_type (unsigned long phys_addr);
 extern u64 efi_mem_attributes (unsigned long phys_addr);
@@ -889,15 +898,19 @@ extern void efi_reserve_boot_services(void);
 extern int efi_get_fdt_params(struct efi_fdt_params *params, int verbose);
 extern struct efi_memory_map memmap;
 
+<<<<<<< HEAD
 extern int efi_reboot_quirk_mode;
 extern bool efi_poweroff_required(void);
 
+=======
+>>>>>>> p9x
 /* Iterate through an efi_memory_map */
 #define for_each_efi_memory_desc(m, md)					   \
 	for ((md) = (m)->map;						   \
 	     (md) <= (efi_memory_desc_t *)((m)->map_end - (m)->desc_size); \
 	     (md) = (void *)(md) + (m)->desc_size)
 
+<<<<<<< HEAD
 /*
  * Format an EFI memory descriptor's type and attributes to a user-provided
  * character buffer, as per snprintf(), and return the buffer.
@@ -905,6 +918,8 @@ extern bool efi_poweroff_required(void);
 char * __init efi_md_typeattr_format(char *buf, size_t size,
 				     const efi_memory_desc_t *md);
 
+=======
+>>>>>>> p9x
 /**
  * efi_range_is_wc - check the WC bit on an address range
  * @start: starting kvirt address
@@ -944,12 +959,25 @@ extern int __init efi_setup_pcdp_console(char *);
 #define EFI_ARCH_1		7	/* First arch-specific bit */
 
 #ifdef CONFIG_EFI
+<<<<<<< HEAD
+=======
+# ifdef CONFIG_X86
+
+>>>>>>> p9x
 /*
  * Test whether the above EFI_* bits are enabled.
  */
 static inline bool efi_enabled(int feature)
 {
 	return test_bit(feature, &efi.flags) != 0;
+<<<<<<< HEAD
+=======
+}
+# else
+static inline bool efi_enabled(int feature)
+{
+	return true;
+>>>>>>> p9x
 }
 extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 #else
@@ -1106,6 +1134,13 @@ struct efi_simple_text_output_protocol_64 {
 	u64 output_string;
 	u64 test_string;
 };
+
+struct efi_simple_text_output_protocol {
+	void *reset;
+	efi_status_t (*output_string)(void *, void *);
+	void *test_string;
+};
+
 
 struct efi_simple_text_output_protocol {
 	void *reset;

@@ -2590,9 +2590,47 @@ static long bcm_char_ioctl(struct file *filp, UINT cmd, ULONG arg)
 		status = bcm_char_ioctl_get_device_driver_info(argp, ad);
 		return status;
 
+<<<<<<< HEAD
 	case IOCTL_BCM_TIME_SINCE_NET_ENTRY:
 		status = bcm_char_ioctl_time_since_net_entry(argp, ad);
 		return status;
+=======
+		memset(&DevInfo, 0, sizeof(DevInfo));
+		DevInfo.MaxRDMBufferSize = BUFFER_4K;
+		DevInfo.u32DSDStartOffset = EEPROM_CALPARAM_START;
+		DevInfo.u32RxAlignmentCorrection = 0;
+		DevInfo.u32NVMType = Adapter->eNVMType;
+		DevInfo.u32InterfaceType = BCM_USB;
+
+		if (copy_from_user(&IoBuffer, argp, sizeof(struct bcm_ioctl_buffer)))
+			return -EFAULT;
+
+		if (IoBuffer.OutputLength < sizeof(DevInfo))
+			return -EINVAL;
+
+		if (copy_to_user(IoBuffer.OutputBuffer, &DevInfo, sizeof(DevInfo)))
+			return -EFAULT;
+	}
+	break;
+
+	case IOCTL_BCM_TIME_SINCE_NET_ENTRY: {
+		struct bcm_time_elapsed stTimeElapsedSinceNetEntry = {0};
+
+		BCM_DEBUG_PRINT(Adapter, DBG_TYPE_OTHERS, OSAL_DBG, DBG_LVL_ALL, "IOCTL_BCM_TIME_SINCE_NET_ENTRY called");
+
+		if (copy_from_user(&IoBuffer, argp, sizeof(struct bcm_ioctl_buffer)))
+			return -EFAULT;
+
+		if (IoBuffer.OutputLength < sizeof(struct bcm_time_elapsed))
+			return -EINVAL;
+
+		stTimeElapsedSinceNetEntry.ul64TimeElapsedSinceNetEntry = get_seconds() - Adapter->liTimeSinceLastNetEntry;
+
+		if (copy_to_user(IoBuffer.OutputBuffer, &stTimeElapsedSinceNetEntry, sizeof(struct bcm_time_elapsed)))
+			return -EFAULT;
+	}
+	break;
+>>>>>>> p9x
 
 	case IOCTL_CLOSE_NOTIFICATION:
 		BCM_DEBUG_PRINT(ad, DBG_TYPE_OTHERS, OSAL_DBG, DBG_LVL_ALL,

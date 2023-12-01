@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2009, 2012-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2009, 2012-2014 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -30,8 +34,11 @@
 #define CLKFLAG_NO_RATE_CACHE		0x00004000
 #define CLKFLAG_MEASURE			0x00008000
 #define CLKFLAG_EPROBE_DEFER		0x00010000
+<<<<<<< HEAD
 #define CLKFLAG_PERIPH_OFF_SET		0x00020000
 #define CLKFLAG_PERIPH_OFF_CLEAR	0x00040000
+=======
+>>>>>>> p9x
 
 struct clk_lookup;
 struct clk;
@@ -55,11 +62,14 @@ int clk_reset(struct clk *clk, enum clk_reset_action action);
 /* Set clock-specific configuration parameters */
 int clk_set_flags(struct clk *clk, unsigned long flags);
 
+<<<<<<< HEAD
 /* Set clock duty-cycle as a ratio of numerator/denominator for the desired
  * duty cycle
  */
 int clk_set_duty_cycle(struct clk *clk, u32 numerator, u32 denominator);
 
+=======
+>>>>>>> p9x
 /* returns the mux selection index associated with a particular parent */
 int parent_to_src_sel(struct clk_src *parents, int num_parents, struct clk *p);
 

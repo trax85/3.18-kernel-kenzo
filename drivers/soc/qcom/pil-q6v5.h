@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -32,10 +36,13 @@ struct q6v5_data {
 	struct clk *reg_clk;	   /* CPU access registers */
 	struct clk *gpll0_mss_clk; /* GPLL0 to MSS connection */
 	struct clk *rom_clk;	   /* Boot ROM */
+<<<<<<< HEAD
 	struct clk *snoc_axi_clk;
 	struct clk *mnoc_axi_clk;
 	struct clk *qdss_clk;
 	struct clk *qpic_clk;
+=======
+>>>>>>> p9x
 	void __iomem *axi_halt_base; /* Halt base of q6, mss,
 					nc are in same 4K page */
 	void __iomem *axi_halt_q6;
@@ -49,14 +56,23 @@ struct q6v5_data {
 	bool is_booted;
 	struct pil_desc desc;
 	bool self_auth;
+<<<<<<< HEAD
 	phys_addr_t mba_dp_phys;
 	void *mba_dp_virt;
 	size_t mba_dp_size;
+=======
+	phys_addr_t mba_phys;
+	void *mba_virt;
+	size_t mba_size;
+	phys_addr_t dp_phys;
+	void *dp_virt;
+>>>>>>> p9x
 	size_t dp_size;
 	bool qdsp6v55;
 	bool qdsp6v5_2_0;
 	bool qdsp6v56;
 	bool qdsp6v56_1_3;
+<<<<<<< HEAD
 	bool qdsp6v56_1_5;
 	bool qdsp6v56_1_8;
 	bool qdsp6v56_1_8_inrush_current;
@@ -69,6 +85,12 @@ struct q6v5_data {
 	bool restart_reg_sec;
 	bool override_acc;
 	int override_acc_1;
+=======
+	bool qdsp6v56_1_8;
+	bool non_elf_image;
+	bool restart_reg_sec;
+	bool override_acc;
+>>>>>>> p9x
 	bool ahb_clk_vote;
 	bool mx_spike_wa;
 };

@@ -159,7 +159,10 @@ static int pn_recvmsg(struct kiocb *iocb, struct sock *sk,
 	rval = (flags & MSG_TRUNC) ? skb->len : copylen;
 
 	if (msg->msg_name != NULL) {
+<<<<<<< HEAD
 		__sockaddr_check_size(sizeof(sa));
+=======
+>>>>>>> p9x
 		memcpy(msg->msg_name, &sa, sizeof(sa));
 		*addr_len = sizeof(sa);
 	}

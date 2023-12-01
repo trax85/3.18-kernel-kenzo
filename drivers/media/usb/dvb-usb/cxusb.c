@@ -49,6 +49,9 @@
 /* Max transfer size done by I2C transfer functions */
 #define MAX_XFER_SIZE  80
 
+/* Max transfer size done by I2C transfer functions */
+#define MAX_XFER_SIZE  64
+
 /* debug */
 static int dvb_usb_cxusb_debug;
 module_param_named(debug, dvb_usb_cxusb_debug, int, 0644);

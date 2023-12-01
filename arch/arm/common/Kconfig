@@ -18,9 +18,12 @@ config SHARP_PARAM
 config SHARP_SCOOP
 	bool
 
+<<<<<<< HEAD
 config TI_PRIV_EDMA
 	bool
 
+=======
+>>>>>>> p9x
 config FIQ_GLUE
 	bool
 	select FIQ

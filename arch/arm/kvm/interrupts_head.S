@@ -304,17 +304,26 @@ vcpu	.req	r0		@ vcpu pointer always in r0
 
 	mrc	p15, 0, r2, c14, c1, 0	@ CNTKCTL
 	mrrc	p15, 0, r4, r5, c7	@ PAR
+<<<<<<< HEAD
 	mrc	p15, 0, r6, c10, c3, 0	@ AMAIR0
 	mrc	p15, 0, r7, c10, c3, 1	@ AMAIR1
 
 	.if \store_to_vcpu == 0
 	push	{r2,r4-r7}
+=======
+
+	.if \store_to_vcpu == 0
+	push	{r2,r4-r5}
+>>>>>>> p9x
 	.else
 	str	r2, [vcpu, #CP15_OFFSET(c14_CNTKCTL)]
 	add	r12, vcpu, #CP15_OFFSET(c7_PAR)
 	strd	r4, r5, [r12]
+<<<<<<< HEAD
 	str	r6, [vcpu, #CP15_OFFSET(c10_AMAIR0)]
 	str	r7, [vcpu, #CP15_OFFSET(c10_AMAIR1)]
+=======
+>>>>>>> p9x
 	.endif
 .endm
 
@@ -327,19 +336,29 @@ vcpu	.req	r0		@ vcpu pointer always in r0
  */
 .macro write_cp15_state read_from_vcpu
 	.if \read_from_vcpu == 0
+<<<<<<< HEAD
 	pop	{r2,r4-r7}
+=======
+	pop	{r2,r4-r5}
+>>>>>>> p9x
 	.else
 	ldr	r2, [vcpu, #CP15_OFFSET(c14_CNTKCTL)]
 	add	r12, vcpu, #CP15_OFFSET(c7_PAR)
 	ldrd	r4, r5, [r12]
+<<<<<<< HEAD
 	ldr	r6, [vcpu, #CP15_OFFSET(c10_AMAIR0)]
 	ldr	r7, [vcpu, #CP15_OFFSET(c10_AMAIR1)]
+=======
+>>>>>>> p9x
 	.endif
 
 	mcr	p15, 0, r2, c14, c1, 0	@ CNTKCTL
 	mcrr	p15, 0, r4, r5, c7	@ PAR
+<<<<<<< HEAD
 	mcr	p15, 0, r6, c10, c3, 0	@ AMAIR0
 	mcr	p15, 0, r7, c10, c3, 1	@ AMAIR1
+=======
+>>>>>>> p9x
 
 	.if \read_from_vcpu == 0
 	pop	{r2-r12}

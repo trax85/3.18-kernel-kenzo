@@ -197,6 +197,13 @@ unsigned long arch_get_cpu_efficiency(int cpu)
 	return per_cpu(cpu_efficiency, cpu);
 }
 
+static DEFINE_PER_CPU(unsigned long, cpu_efficiency) = SCHED_POWER_SCALE;
+
+unsigned long arch_get_cpu_efficiency(int cpu)
+{
+	return per_cpu(cpu_efficiency, cpu);
+}
+
 #ifdef CONFIG_OF
 struct cpu_efficiency {
 	const char *compatible;
@@ -219,10 +226,17 @@ static const struct cpu_efficiency table_efficiency[] = {
 	{NULL, },
 };
 
+<<<<<<< HEAD
 static unsigned long *__cpu_capacity;
 #define cpu_capacity(cpu)	__cpu_capacity[cpu]
 
 static unsigned long middle_capacity = 1;
+=======
+unsigned long *__cpu_capacity;
+#define cpu_capacity(cpu)	__cpu_capacity[cpu]
+
+unsigned long middle_capacity = 1;
+>>>>>>> p9x
 
 /*
  * Iterate all CPUs' descriptor in DT and compute the efficiency
@@ -241,6 +255,7 @@ static int __init parse_dt_topology(void)
 	unsigned long capacity = 0;
 	int cpu = 0, ret = 0;
 
+<<<<<<< HEAD
 	cn = of_find_node_by_path("/cpus");
 	if (!cn) {
 		pr_err("No CPU information found in DT\n");
@@ -269,6 +284,15 @@ static int __init parse_dt_topology(void)
 
 	__cpu_capacity = kcalloc(nr_cpu_ids, sizeof(*__cpu_capacity),
 				 GFP_NOWAIT);
+=======
+	alloc_size = nr_cpu_ids * sizeof(*__cpu_capacity);
+	__cpu_capacity = kzalloc(alloc_size, GFP_NOWAIT);
+
+	if (!__cpu_capacity) {
+		pr_err("Memory allocation failed\n");
+		return;
+	}
+>>>>>>> p9x
 
 	for_each_possible_cpu(cpu) {
 		const u32 *rate;
@@ -348,20 +372,33 @@ out:
  * boot. The update of all CPUs is in O(n^2) for heteregeneous system but the
  * function returns directly for SMP system.
  */
+<<<<<<< HEAD
 static void update_cpu_capacity(unsigned int cpu)
+=======
+void update_cpu_power(unsigned int cpu)
+>>>>>>> p9x
 {
 	if (!cpu_capacity(cpu))
 		return;
 
+<<<<<<< HEAD
 	set_capacity_scale(cpu, cpu_capacity(cpu) / middle_capacity);
+=======
+	set_power_scale(cpu, cpu_capacity(cpu) / middle_capacity);
+>>>>>>> p9x
 
 	printk(KERN_INFO "CPU%u: update cpu_capacity %lu\n",
 		cpu, arch_scale_cpu_capacity(NULL, cpu));
 }
 
 #else
+<<<<<<< HEAD
 static inline int parse_dt_topology(void) {}
 static inline void update_cpu_capacity(unsigned int cpuid) {}
+=======
+static inline void parse_dt_topology(void) {}
+static inline void update_cpu_power(unsigned int cpuid) {}
+>>>>>>> p9x
 #endif
 
  /*
@@ -454,7 +491,15 @@ void store_cpu_topology(unsigned int cpuid)
 		cpuid_topo->cluster_id = -1;
 	}
 
+<<<<<<< HEAD
 	pr_info("CPU%u: thread %d, cpu %d, cluster %d, mpidr %x\n",
+=======
+	update_siblings_masks(cpuid);
+
+	update_cpu_power(cpuid);
+
+	printk(KERN_INFO "CPU%u: thread %d, cpu %d, socket %d, mpidr %x\n",
+>>>>>>> p9x
 		cpuid, cpu_topology[cpuid].thread_id,
 		cpu_topology[cpuid].core_id,
 		cpu_topology[cpuid].cluster_id, mpidr);

@@ -955,7 +955,10 @@ int rtl92ce_hw_init(struct ieee80211_hw *hw)
 	local_save_flags(flags);
 	local_irq_enable();
 
+<<<<<<< HEAD
 	rtlhal->fw_ready = false;
+=======
+>>>>>>> p9x
 	rtlpriv->intf_ops->disable_aspm(hw);
 	rtstatus = _rtl92ce_init_mac(hw);
 	if (!rtstatus) {

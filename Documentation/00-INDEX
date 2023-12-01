@@ -91,8 +91,11 @@ bad_memory.txt
 	- how to use kernel parameters to exclude bad RAM regions.
 basic_profiling.txt
 	- basic instructions for those who wants to profile Linux kernel.
+<<<<<<< HEAD
 bcache.txt
 	- Block-layer cache on fast SSDs to improve slow (raid) I/O performance.
+=======
+>>>>>>> p9x
 bif-framework.txt
 	- information about MIPI-BIF support in the Linux kernel.
 binfmt_misc.txt

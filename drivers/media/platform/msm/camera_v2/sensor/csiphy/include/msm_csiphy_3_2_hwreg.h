@@ -25,7 +25,11 @@ struct csiphy_reg_parms_t csiphy_v3_2 = {
 	0x100,
 	0x104,
 	0x108,
+<<<<<<< HEAD
 	0x10C,
+=======
+	0x1FC,
+>>>>>>> p9x
 	0x110,
 	0x128,
 	0x140,

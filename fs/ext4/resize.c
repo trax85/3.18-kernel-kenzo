@@ -1038,7 +1038,7 @@ exit_free:
  * do not copy the full number of backups at this time.  The resize
  * which changed s_groups_count will backup again.
  */
-static void update_backups(struct super_block *sb, int blk_off, char *data,
+static void update_backups(struct super_block *sb, sector_t blk_off, char *data,
 			   int size, int meta_bg)
 {
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
@@ -1063,7 +1063,7 @@ static void update_backups(struct super_block *sb, int blk_off, char *data,
 		group = ext4_list_backups(sb, &three, &five, &seven);
 		last = sbi->s_groups_count;
 	} else {
-		group = ext4_meta_bg_first_group(sb, group) + 1;
+		group = ext4_get_group_number(sb, blk_off) + 1;
 		last = (ext4_group_t)(group + EXT4_DESC_PER_BLOCK(sb) - 2);
 	}
 
@@ -1930,8 +1930,12 @@ retry:
 				le16_to_cpu(es->s_reserved_gdt_blocks);
 			n_group = n_desc_blocks * EXT4_DESC_PER_BLOCK(sb);
 			n_blocks_count = (ext4_fsblk_t)n_group *
+<<<<<<< HEAD
 				EXT4_BLOCKS_PER_GROUP(sb) +
 				le32_to_cpu(es->s_first_data_block);
+=======
+				EXT4_BLOCKS_PER_GROUP(sb);
+>>>>>>> p9x
 			n_group--; /* set to last group number */
 		}
 

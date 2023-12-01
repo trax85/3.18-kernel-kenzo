@@ -1801,7 +1801,13 @@ static void pnfs_list_write_lseg_done(struct inode *inode, struct list_head *lis
 		pnfs_put_lseg(lseg);
 	}
 
+<<<<<<< HEAD
 	pnfs_clear_layoutcommitting(inode);
+=======
+	clear_bit_unlock(NFS_INO_LAYOUTCOMMITTING, bitlock);
+	smp_mb__after_atomic();
+	wake_up_bit(bitlock, NFS_INO_LAYOUTCOMMITTING);
+>>>>>>> p9x
 }
 
 void pnfs_set_lo_fail(struct pnfs_layout_segment *lseg)

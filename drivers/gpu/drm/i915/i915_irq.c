@@ -99,7 +99,11 @@ static const u32 hpd_status_g4x[HPD_NUM_PINS] = {
 	[HPD_PORT_D] = PORTD_HOTPLUG_INT_STATUS
 };
 
+<<<<<<< HEAD
 static const u32 hpd_status_i915[HPD_NUM_PINS] = {
+=======
+static const u32 hpd_status_i915[] = { /* i915 and valleyview are the same */
+>>>>>>> p9x
 	[HPD_CRT] = CRT_HOTPLUG_INT_STATUS,
 	[HPD_SDVO_B] = SDVOB_HOTPLUG_INT_STATUS_I915,
 	[HPD_SDVO_C] = SDVOC_HOTPLUG_INT_STATUS_I915,
@@ -2195,6 +2199,7 @@ static irqreturn_t ironlake_irq_handler(int irq, void *arg)
 	return ret;
 }
 
+<<<<<<< HEAD
 static void bxt_hpd_irq_handler(struct drm_device *dev, u32 hotplug_trigger,
 				const u32 hpd[HPD_NUM_PINS])
 {
@@ -2373,6 +2378,12 @@ static void i915_error_wake_up(struct drm_i915_private *dev_priv,
 			       bool reset_completed)
 {
 	struct intel_engine_cs *ring;
+=======
+static void i915_error_wake_up(struct drm_i915_private *dev_priv,
+			       bool reset_completed)
+{
+	struct intel_ring_buffer *ring;
+>>>>>>> p9x
 	int i;
 
 	/*
@@ -2406,11 +2417,22 @@ static void i915_error_wake_up(struct drm_i915_private *dev_priv,
  */
 static void i915_reset_and_wakeup(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_i915_private *dev_priv = to_i915(dev);
 	struct i915_gpu_error *error = &dev_priv->gpu_error;
 	char *error_event[] = { I915_ERROR_UEVENT "=1", NULL };
 	char *reset_event[] = { I915_RESET_UEVENT "=1", NULL };
 	char *reset_done_event[] = { I915_ERROR_UEVENT "=0", NULL };
+=======
+	struct i915_gpu_error *error = container_of(work, struct i915_gpu_error,
+						    work);
+	drm_i915_private_t *dev_priv = container_of(error, drm_i915_private_t,
+						    gpu_error);
+	struct drm_device *dev = dev_priv->dev;
+	char *error_event[] = { "ERROR=1", NULL };
+	char *reset_event[] = { "RESET=1", NULL };
+	char *reset_done_event[] = { "ERROR=0", NULL };
+>>>>>>> p9x
 	int ret;
 
 	kobject_uevent_env(&dev->primary->kdev->kobj, KOBJ_CHANGE, error_event);
@@ -2431,6 +2453,7 @@ static void i915_reset_and_wakeup(struct drm_device *dev)
 				   reset_event);
 
 		/*
+<<<<<<< HEAD
 		 * In most cases it's guaranteed that we get here with an RPM
 		 * reference held, for example because there is a pending GPU
 		 * request that won't finish until the reset is done. This
@@ -2442,6 +2465,8 @@ static void i915_reset_and_wakeup(struct drm_device *dev)
 		intel_prepare_reset(dev);
 
 		/*
+=======
+>>>>>>> p9x
 		 * All state reset _must_ be completed before we update the
 		 * reset counter, for otherwise waiters might miss the reset
 		 * pending state and not properly drop locks, resulting in
@@ -2449,9 +2474,13 @@ static void i915_reset_and_wakeup(struct drm_device *dev)
 		 */
 		ret = i915_reset(dev);
 
+<<<<<<< HEAD
 		intel_finish_reset(dev);
 
 		intel_runtime_pm_put(dev_priv);
+=======
+		intel_display_handle_reset(dev);
+>>>>>>> p9x
 
 		if (ret == 0) {
 			/*
@@ -2476,6 +2505,280 @@ static void i915_reset_and_wakeup(struct drm_device *dev)
 		/*
 		 * Note: The wake_up also serves as a memory barrier so that
 		 * waiters see the update value of the reset counter atomic_t.
+<<<<<<< HEAD
+=======
+		 */
+		i915_error_wake_up(dev_priv, true);
+	}
+}
+
+/* NB: please notice the memset */
+static void i915_get_extra_instdone(struct drm_device *dev,
+				    uint32_t *instdone)
+{
+	struct drm_i915_private *dev_priv = dev->dev_private;
+	memset(instdone, 0, sizeof(*instdone) * I915_NUM_INSTDONE_REG);
+
+	switch(INTEL_INFO(dev)->gen) {
+	case 2:
+	case 3:
+		instdone[0] = I915_READ(INSTDONE);
+		break;
+	case 4:
+	case 5:
+	case 6:
+		instdone[0] = I915_READ(INSTDONE_I965);
+		instdone[1] = I915_READ(INSTDONE1);
+		break;
+	default:
+		WARN_ONCE(1, "Unsupported platform\n");
+	case 7:
+		instdone[0] = I915_READ(GEN7_INSTDONE_1);
+		instdone[1] = I915_READ(GEN7_SC_INSTDONE);
+		instdone[2] = I915_READ(GEN7_SAMPLER_INSTDONE);
+		instdone[3] = I915_READ(GEN7_ROW_INSTDONE);
+		break;
+	}
+}
+
+#ifdef CONFIG_DEBUG_FS
+static struct drm_i915_error_object *
+i915_error_object_create_sized(struct drm_i915_private *dev_priv,
+			       struct drm_i915_gem_object *src,
+			       const int num_pages)
+{
+	struct drm_i915_error_object *dst;
+	int i;
+	u32 reloc_offset;
+
+	if (src == NULL || src->pages == NULL)
+		return NULL;
+
+	dst = kmalloc(sizeof(*dst) + num_pages * sizeof(u32 *), GFP_ATOMIC);
+	if (dst == NULL)
+		return NULL;
+
+	reloc_offset = src->gtt_offset;
+	for (i = 0; i < num_pages; i++) {
+		unsigned long flags;
+		void *d;
+
+		d = kmalloc(PAGE_SIZE, GFP_ATOMIC);
+		if (d == NULL)
+			goto unwind;
+
+		local_irq_save(flags);
+		if (reloc_offset < dev_priv->gtt.mappable_end &&
+		    src->has_global_gtt_mapping) {
+			void __iomem *s;
+
+			/* Simply ignore tiling or any overlapping fence.
+			 * It's part of the error state, and this hopefully
+			 * captures what the GPU read.
+			 */
+
+			s = io_mapping_map_atomic_wc(dev_priv->gtt.mappable,
+						     reloc_offset);
+			memcpy_fromio(d, s, PAGE_SIZE);
+			io_mapping_unmap_atomic(s);
+		} else if (src->stolen) {
+			unsigned long offset;
+
+			offset = dev_priv->mm.stolen_base;
+			offset += src->stolen->start;
+			offset += i << PAGE_SHIFT;
+
+			memcpy_fromio(d, (void __iomem *) offset, PAGE_SIZE);
+		} else {
+			struct page *page;
+			void *s;
+
+			page = i915_gem_object_get_page(src, i);
+
+			drm_clflush_pages(&page, 1);
+
+			s = kmap_atomic(page);
+			memcpy(d, s, PAGE_SIZE);
+			kunmap_atomic(s);
+
+			drm_clflush_pages(&page, 1);
+		}
+		local_irq_restore(flags);
+
+		dst->pages[i] = d;
+
+		reloc_offset += PAGE_SIZE;
+	}
+	dst->page_count = num_pages;
+	dst->gtt_offset = src->gtt_offset;
+
+	return dst;
+
+unwind:
+	while (i--)
+		kfree(dst->pages[i]);
+	kfree(dst);
+	return NULL;
+}
+#define i915_error_object_create(dev_priv, src) \
+	i915_error_object_create_sized((dev_priv), (src), \
+				       (src)->base.size>>PAGE_SHIFT)
+
+static void
+i915_error_object_free(struct drm_i915_error_object *obj)
+{
+	int page;
+
+	if (obj == NULL)
+		return;
+
+	for (page = 0; page < obj->page_count; page++)
+		kfree(obj->pages[page]);
+
+	kfree(obj);
+}
+
+void
+i915_error_state_free(struct kref *error_ref)
+{
+	struct drm_i915_error_state *error = container_of(error_ref,
+							  typeof(*error), ref);
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(error->ring); i++) {
+		i915_error_object_free(error->ring[i].batchbuffer);
+		i915_error_object_free(error->ring[i].ringbuffer);
+		kfree(error->ring[i].requests);
+	}
+
+	kfree(error->active_bo);
+	kfree(error->overlay);
+	kfree(error);
+}
+static void capture_bo(struct drm_i915_error_buffer *err,
+		       struct drm_i915_gem_object *obj)
+{
+	err->size = obj->base.size;
+	err->name = obj->base.name;
+	err->rseqno = obj->last_read_seqno;
+	err->wseqno = obj->last_write_seqno;
+	err->gtt_offset = obj->gtt_offset;
+	err->read_domains = obj->base.read_domains;
+	err->write_domain = obj->base.write_domain;
+	err->fence_reg = obj->fence_reg;
+	err->pinned = 0;
+	if (obj->pin_count > 0)
+		err->pinned = 1;
+	if (obj->user_pin_count > 0)
+		err->pinned = -1;
+	err->tiling = obj->tiling_mode;
+	err->dirty = obj->dirty;
+	err->purgeable = obj->madv != I915_MADV_WILLNEED;
+	err->ring = obj->ring ? obj->ring->id : -1;
+	err->cache_level = obj->cache_level;
+}
+
+static u32 capture_active_bo(struct drm_i915_error_buffer *err,
+			     int count, struct list_head *head)
+{
+	struct drm_i915_gem_object *obj;
+	int i = 0;
+
+	list_for_each_entry(obj, head, mm_list) {
+		capture_bo(err++, obj);
+		if (++i == count)
+			break;
+	}
+
+	return i;
+}
+
+static u32 capture_pinned_bo(struct drm_i915_error_buffer *err,
+			     int count, struct list_head *head)
+{
+	struct drm_i915_gem_object *obj;
+	int i = 0;
+
+	list_for_each_entry(obj, head, gtt_list) {
+		if (obj->pin_count == 0)
+			continue;
+
+		capture_bo(err++, obj);
+		if (++i == count)
+			break;
+	}
+
+	return i;
+}
+
+static void i915_gem_record_fences(struct drm_device *dev,
+				   struct drm_i915_error_state *error)
+{
+	struct drm_i915_private *dev_priv = dev->dev_private;
+	int i;
+
+	/* Fences */
+	switch (INTEL_INFO(dev)->gen) {
+	case 7:
+	case 6:
+		for (i = 0; i < dev_priv->num_fence_regs; i++)
+			error->fence[i] = I915_READ64(FENCE_REG_SANDYBRIDGE_0 + (i * 8));
+		break;
+	case 5:
+	case 4:
+		for (i = 0; i < 16; i++)
+			error->fence[i] = I915_READ64(FENCE_REG_965_0 + (i * 8));
+		break;
+	case 3:
+		if (IS_I945G(dev) || IS_I945GM(dev) || IS_G33(dev))
+			for (i = 0; i < 8; i++)
+				error->fence[i+8] = I915_READ(FENCE_REG_945_8 + (i * 4));
+	case 2:
+		for (i = 0; i < 8; i++)
+			error->fence[i] = I915_READ(FENCE_REG_830_0 + (i * 4));
+		break;
+
+	default:
+		BUG();
+	}
+}
+
+static struct drm_i915_error_object *
+i915_error_first_batchbuffer(struct drm_i915_private *dev_priv,
+			     struct intel_ring_buffer *ring)
+{
+	struct drm_i915_gem_object *obj;
+	u32 seqno;
+
+	if (!ring->get_seqno)
+		return NULL;
+
+	if (HAS_BROKEN_CS_TLB(dev_priv->dev)) {
+		u32 acthd = I915_READ(ACTHD);
+
+		if (WARN_ON(ring->id != RCS))
+			return NULL;
+
+		obj = ring->private;
+		if (acthd >= obj->gtt_offset &&
+		    acthd < obj->gtt_offset + obj->base.size)
+			return i915_error_object_create(dev_priv, obj);
+	}
+
+	seqno = ring->get_seqno(ring, false);
+	list_for_each_entry(obj, &dev_priv->mm.active_list, mm_list) {
+		if (obj->ring != ring)
+			continue;
+
+		if (i915_seqno_passed(seqno, obj->last_read_seqno))
+			continue;
+
+		if ((obj->base.read_domains & I915_GEM_DOMAIN_COMMAND) == 0)
+			continue;
+
+		/* We need to copy these to an anonymous buffer as the simplest
+		 * method to avoid being overwritten by userspace.
+>>>>>>> p9x
 		 */
 		i915_error_wake_up(dev_priv, true);
 	}
@@ -2587,8 +2890,11 @@ void i915_handle_error(struct drm_device *dev, bool wedged,
 		       const char *fmt, ...)
 {
 	struct drm_i915_private *dev_priv = dev->dev_private;
+<<<<<<< HEAD
 	va_list args;
 	char error_msg[80];
+=======
+>>>>>>> p9x
 
 	va_start(args, fmt);
 	vscnprintf(error_msg, sizeof(error_msg), fmt, args);
@@ -2602,9 +2908,15 @@ void i915_handle_error(struct drm_device *dev, bool wedged,
 				&dev_priv->gpu_error.reset_counter);
 
 		/*
+<<<<<<< HEAD
 		 * Wakeup waiting processes so that the reset function
 		 * i915_reset_and_wakeup doesn't deadlock trying to grab
 		 * various locks. By bumping the reset counter first, the woken
+=======
+		 * Wakeup waiting processes so that the reset work function
+		 * i915_error_work_func doesn't deadlock trying to grab various
+		 * locks. By bumping the reset counter first, the woken
+>>>>>>> p9x
 		 * processes will see a reset in progress and back off,
 		 * releasing their locks and then wait for the reset completion.
 		 * We must do this for _all_ gpu waiters that might hold locks
@@ -2617,7 +2929,63 @@ void i915_handle_error(struct drm_device *dev, bool wedged,
 		i915_error_wake_up(dev_priv, false);
 	}
 
+<<<<<<< HEAD
 	i915_reset_and_wakeup(dev);
+=======
+	/*
+	 * Our reset work can grab modeset locks (since it needs to reset the
+	 * state of outstanding pagelips). Hence it must not be run on our own
+	 * dev-priv->wq work queue for otherwise the flush_work in the pageflip
+	 * code will deadlock.
+	 */
+	schedule_work(&dev_priv->gpu_error.work);
+}
+
+static void __always_unused i915_pageflip_stall_check(struct drm_device *dev, int pipe)
+{
+	drm_i915_private_t *dev_priv = dev->dev_private;
+	struct drm_crtc *crtc = dev_priv->pipe_to_crtc_mapping[pipe];
+	struct intel_crtc *intel_crtc = to_intel_crtc(crtc);
+	struct drm_i915_gem_object *obj;
+	struct intel_unpin_work *work;
+	unsigned long flags;
+	bool stall_detected;
+
+	/* Ignore early vblank irqs */
+	if (intel_crtc == NULL)
+		return;
+
+	spin_lock_irqsave(&dev->event_lock, flags);
+	work = intel_crtc->unpin_work;
+
+	if (work == NULL ||
+	    atomic_read(&work->pending) >= INTEL_FLIP_COMPLETE ||
+	    !work->enable_stall_check) {
+		/* Either the pending flip IRQ arrived, or we're too early. Don't check */
+		spin_unlock_irqrestore(&dev->event_lock, flags);
+		return;
+	}
+
+	/* Potential stall - if we see that the flip has happened, assume a missed interrupt */
+	obj = work->pending_flip_obj;
+	if (INTEL_INFO(dev)->gen >= 4) {
+		int dspsurf = DSPSURF(intel_crtc->plane);
+		stall_detected = I915_HI_DISPBASE(I915_READ(dspsurf)) ==
+					obj->gtt_offset;
+	} else {
+		int dspaddr = DSPADDR(intel_crtc->plane);
+		stall_detected = I915_READ(dspaddr) == (obj->gtt_offset +
+							crtc->y * crtc->fb->pitches[0] +
+							crtc->x * crtc->fb->bits_per_pixel/8);
+	}
+
+	spin_unlock_irqrestore(&dev->event_lock, flags);
+
+	if (stall_detected) {
+		DRM_DEBUG_DRIVER("Pageflip stall detected\n");
+		intel_prepare_page_flip(dev, intel_crtc->plane);
+	}
+>>>>>>> p9x
 }
 
 /* Called from drm generic code, passed 'crtc' which
@@ -4295,8 +4663,29 @@ static irqreturn_t i965_irq_handler(int irq, void *arg)
 		ret = IRQ_HANDLED;
 
 		/* Consume port.  Then clear IIR or we'll miss events */
+<<<<<<< HEAD
 		if (iir & I915_DISPLAY_PORT_INTERRUPT)
 			i9xx_hpd_irq_handler(dev);
+=======
+		if (iir & I915_DISPLAY_PORT_INTERRUPT) {
+			u32 hotplug_status = I915_READ(PORT_HOTPLUG_STAT);
+			u32 hotplug_trigger = hotplug_status & (IS_G4X(dev) ?
+								  HOTPLUG_INT_STATUS_G4X :
+								  HOTPLUG_INT_STATUS_I915);
+
+			DRM_DEBUG_DRIVER("hotplug event received, stat 0x%08x\n",
+				  hotplug_status);
+			if (hotplug_trigger) {
+				if (hotplug_irq_storm_detect(dev, hotplug_trigger,
+							    IS_G4X(dev) ? hpd_status_gen4 : hpd_status_i915))
+					i915_hpd_irq_setup(dev);
+				queue_work(dev_priv->wq,
+					   &dev_priv->hotplug_work);
+			}
+			I915_WRITE(PORT_HOTPLUG_STAT, hotplug_status);
+			I915_READ(PORT_HOTPLUG_STAT);
+		}
+>>>>>>> p9x
 
 		I915_WRITE(IIR, iir & ~flip_mask);
 		new_iir = I915_READ(IIR); /* Flush posted writes */

@@ -5,7 +5,11 @@
  * Copyright (C) 2003 Oliver Endriss
  * Copyright (C) 2004 Andrew de Quincey
  *
+<<<<<<< HEAD
  * Copyright (c) 2012-2014,2017 The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * based on code originally found in av7110.c & dvb_ci.c:
  * Copyright (C) 1999-2003 Ralph  Metzler
@@ -59,6 +63,7 @@ void dvb_ringbuffer_init(struct dvb_ringbuffer *rbuf, void *data, size_t len)
 
 int dvb_ringbuffer_empty(struct dvb_ringbuffer *rbuf)
 {
+<<<<<<< HEAD
 	/* smp_load_acquire() to load write pointer on reader side
 	 * this pairs with smp_store_release() in dvb_ringbuffer_write(),
 	 * dvb_ringbuffer_write_user(), or dvb_ringbuffer_reset()
@@ -66,6 +71,9 @@ int dvb_ringbuffer_empty(struct dvb_ringbuffer *rbuf)
 	 * for memory barriers also see Documentation/circular-buffers.txt
 	 */
 	return (rbuf->pread == smp_load_acquire(&rbuf->pwrite));
+=======
+	return (rbuf->pread == rbuf->pwrite);
+>>>>>>> p9x
 }
 
 
@@ -246,6 +254,35 @@ ssize_t dvb_ringbuffer_write_user(struct dvb_ringbuffer *rbuf,
 	return len;
 }
 
+ssize_t dvb_ringbuffer_write_user(struct dvb_ringbuffer *rbuf,
+					const u8 __user *buf, size_t len)
+{
+	size_t todo = len;
+	size_t split;
+	ssize_t oldpwrite = rbuf->pwrite;
+
+	split = (rbuf->pwrite + len > rbuf->size) ?
+			rbuf->size - rbuf->pwrite :
+			0;
+
+	if (split > 0) {
+		if (copy_from_user(rbuf->data + rbuf->pwrite, buf, split))
+			return -EFAULT;
+		buf += split;
+		todo -= split;
+		rbuf->pwrite = 0;
+	}
+
+	if (copy_from_user(rbuf->data + rbuf->pwrite, buf, todo)) {
+		rbuf->pwrite = oldpwrite;
+		return -EFAULT;
+	}
+
+	rbuf->pwrite = (rbuf->pwrite + todo) % rbuf->size;
+
+	return len;
+}
+
 ssize_t dvb_ringbuffer_pkt_write(struct dvb_ringbuffer *rbuf, u8* buf, size_t len)
 {
 	int status;
@@ -330,6 +367,7 @@ ssize_t dvb_ringbuffer_pkt_read(struct dvb_ringbuffer *rbuf, size_t idx,
 	pktlen = rbuf->data[idx] << 8;
 	pktlen |= rbuf->data[(idx + 1) % rbuf->size];
 	if (offset > pktlen) return -EINVAL;
+
 	if ((offset + len) > pktlen) len = pktlen - offset;
 
 	idx = (idx + DVB_RINGBUFFER_PKTHDRSIZE + offset) % rbuf->size;

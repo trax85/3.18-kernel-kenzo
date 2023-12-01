@@ -1385,6 +1385,7 @@ nfsd4_proc_compound(struct svc_rqst *rqstp,
 
 		/* If op is non-idempotent */
 		if (opdesc->op_flags & OP_MODIFIES_SOMETHING) {
+<<<<<<< HEAD
 			/*
 			 * Don't execute this op if we couldn't encode a
 			 * succesful reply:
@@ -1392,6 +1393,11 @@ nfsd4_proc_compound(struct svc_rqst *rqstp,
 			u32 plen = opdesc->op_rsize_bop(rqstp, op);
 			/*
 			 * Plus if there's another operation, make sure
+=======
+			plen = opdesc->op_rsize_bop(rqstp, op);
+			/*
+			 * If there's still another operation, make sure
+>>>>>>> p9x
 			 * we'll have space to at least encode an error:
 			 */
 			if (resp->opcnt < args->opcnt)

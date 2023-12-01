@@ -598,8 +598,50 @@ void __init mem_init(void)
 			> BITS_PER_LONG);
 
 	high_memory = __va((max_pfn << PAGE_SHIFT));
+<<<<<<< HEAD
 	set_max_mapnr(page_to_pfn(virt_to_page(high_memory - 1)) + 1);
 	free_all_bootmem();
+=======
+
+#ifndef CONFIG_DISCONTIGMEM
+	max_mapnr = page_to_pfn(virt_to_page(high_memory - 1)) + 1;
+	free_all_bootmem();
+#else
+	{
+		int i;
+
+		for (i = 0; i < npmem_ranges; i++)
+			free_all_bootmem_node(NODE_DATA(i));
+	}
+#endif
+
+	codesize = (unsigned long)_etext - (unsigned long)_text;
+	datasize = (unsigned long)_edata - (unsigned long)_etext;
+	initsize = (unsigned long)__init_end - (unsigned long)__init_begin;
+
+	reservedpages = 0;
+{
+	unsigned long pfn;
+#ifdef CONFIG_DISCONTIGMEM
+	int i;
+
+	for (i = 0; i < npmem_ranges; i++) {
+		for (pfn = node_start_pfn(i); pfn < node_end_pfn(i); pfn++) {
+			if (PageReserved(pfn_to_page(pfn)))
+				reservedpages++;
+		}
+	}
+#else /* !CONFIG_DISCONTIGMEM */
+	for (pfn = 0; pfn < max_pfn; pfn++) {
+		/*
+		 * Only count reserved RAM pages
+		 */
+		if (PageReserved(pfn_to_page(pfn)))
+			reservedpages++;
+	}
+#endif
+}
+>>>>>>> p9x
 
 #ifdef CONFIG_PA11
 	if (hppa_dma_ops == &pcxl_dma_ops) {

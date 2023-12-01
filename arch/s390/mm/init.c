@@ -71,6 +71,10 @@ static void __init setup_zero_pages(void)
 		break;
 	case 0x2827:	/* zEC12 */
 	case 0x2828:	/* zEC12 */
+<<<<<<< HEAD
+=======
+	default:
+>>>>>>> p9x
 		order = 5;
 		break;
 	case 0x2964:	/* z13 */

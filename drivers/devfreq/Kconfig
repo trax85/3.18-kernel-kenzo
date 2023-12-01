@@ -79,6 +79,18 @@ config DEVFREQ_GOV_MSM_ADRENO_TZ
 	  Sets the frequency using a "on-demand" algorithm.
 	  This governor is unlikely to be useful for other devices.
 
+<<<<<<< HEAD
+=======
+config ADRENO_IDLER
+	tristate "MSM Adreno idler"
+	depends on DEVFREQ_GOV_MSM_ADRENO_TZ
+	help
+	  Uses a different calculation method on top of Adreno TZ
+	  just for calculating frequency for idle to reduce the
+	  wasted power coming from stock Adreno TZ while
+	  maintaining high-performance.
+
+>>>>>>> p9x
 config MSM_BIMC_BWMON
 	tristate "MSM BIMC Bandwidth monitor hardware"
 	depends on ARCH_MSM
@@ -88,6 +100,7 @@ config MSM_BIMC_BWMON
 	  has the capability to raise an IRQ when the count exceeds a
 	  programmable limit.
 
+<<<<<<< HEAD
 config DEVFREQ_GOV_MSM_GPUBW_MON
 	tristate "GPU BW voting governor"
 	depends on DEVFREQ_GOV_MSM_ADRENO_TZ
@@ -100,12 +113,18 @@ config DEVFREQ_GOV_MSM_GPUBW_MON
 config ARMBW_HWMON
 	tristate "ARM PMU Bandwidth monitor hardware"
 	depends on ARCH_MSM8916 || ARCH_MSM8953 || ARCH_MSM8226 || ARCH_MSM8610
+=======
+config ARMBW_HWMON
+	tristate "ARM PMU Bandwidth monitor hardware"
+	depends on ARCH_MSM8916 || ARCH_MSM8226 || ARCH_MSM8610
+>>>>>>> p9x
 	help
 	  The PMU present on these ARM cores allow for the use of counters to
 	  monitor the traffic coming from each core to the bus. It also has the
 	  capability to raise an IRQ when the counter overflows, which can be
 	  used to get an IRQ when the count exceeds a certain value
 
+<<<<<<< HEAD
 config ARM_MEMLAT_MON
 	tristate "ARM CPU Memory Latency monitor hardware"
 	depends on ARCH_MSM
@@ -115,6 +134,8 @@ config ARM_MEMLAT_MON
 	  This driver uses these counters to implement the APIs needed by
 	  the mem_latency devfreq governor.
 
+=======
+>>>>>>> p9x
 config MSMCCI_HWMON
 	tristate "MSM CCI Cache monitor hardware"
 	depends on ARCH_MSM
@@ -124,6 +145,7 @@ config MSMCCI_HWMON
 	  registers to monitor cache and inform governor. It can also set an
 	  IRQ when count exceeds a programmable limit.
 
+<<<<<<< HEAD
 config MSM_M4M_HWMON
 	tristate "MSM M4M cache monitor hardware"
 	depends on ARCH_MSM
@@ -142,15 +164,45 @@ config DEVFREQ_GOV_MSM_BW_HWMON
 	  the CPU's use of DDR. Since this uses target specific counters it
 	  can conflict with existing profiling tools.  This governor is unlikely
 	  to be useful for non-MSM devices.
+=======
+config DEVFREQ_GOV_MSM_GPUBW_MON
+	tristate "GPU BW voting governor"
+	depends on DEVFREQ_GOV_MSM_ADRENO_TZ
+	help
+	  MSM GPU governor for GPU bus bandwidth voting.
+	  This governor works together with MSM Adreno Trustzone governor,
+	  and select bus frequency votes using an "on-demand" alorithm..
+	  This governor is unlikely to be useful for non-MSM devices.
+
+config DEVFREQ_GOV_MSM_BW_HWMON
+	tristate "HW monitor based governor for device BW"
+	depends on ARCH_MSM_KRAIT || MSM_BIMC_BWMON
+	help
+	  HW monitor based governor for device to DDR bandwidth voting.
+
+	  When this governor is used for Krait CPUs, it sets the Krait CPU BW
+	  vote by using L2 PM counters to monitor the Krait's use of DDR.
+	  Since this uses some of the Krait PM counters it can conflict with
+	  existing profiling tools.  This governor is unlikely to be useful
+	  for non-MSM devices.
+>>>>>>> p9x
 
 config DEVFREQ_GOV_MSM_CACHE_HWMON
 	tristate "HW monitor based governor for cache frequency"
 	help
 	  HW monitor based governor for cache frequency scaling. This
+<<<<<<< HEAD
 	  governor sets the cache frequency by using PM counters to monitor the
 	  CPU's use of cache. Since this governor uses some of the PM counters
 	  it can conflict with existing profiling tools. This governor is
 	  unlikely to be useful for other devices.
+=======
+	  governor currently supports only Krait L2 PM counters.  Sets the
+	  cache frequency by using L2 PM counters to monitor the Krait's use
+	  of the L2.  Since this governor uses some of the PM counters it can
+	  conflict with existing profiling tools.  This governor is unlikely
+	  to be useful for other devices.
+>>>>>>> p9x
 
 config DEVFREQ_GOV_SPDM_HYP
 	bool "MSM SPDM Hypervisor Governor"
@@ -161,6 +213,7 @@ config DEVFREQ_GOV_SPDM_HYP
 	  Sets the frequency using a "on-demand" algorithm.
 	  This governor is unlikely to be useful for other devices.
 
+<<<<<<< HEAD
 config DEVFREQ_GOV_MEMLAT
 	tristate "HW monitor based governor for device BW"
 	depends on ARM_MEMLAT_MON
@@ -171,6 +224,8 @@ config DEVFREQ_GOV_MEMLAT
 	  this uses target specific counters it can conflict with existing profiling
 	  tools.
 
+=======
+>>>>>>> p9x
 comment "DEVFREQ Drivers"
 
 config ARM_EXYNOS4_BUS_DEVFREQ
@@ -194,6 +249,48 @@ config ARM_EXYNOS5_BUS_DEVFREQ
 	  This adds the DEVFREQ driver for Exynos5250 bus interface (vdd_int).
 	  It reads PPMU counters of memory controllers and adjusts the
 	  operating frequencies and voltages with OPP support.
+
+config DEVFREQ_SIMPLE_DEV
+	tristate "Device driver for simple clock device with no status info"
+	select DEVFREQ_GOV_PERFORMANCE
+	select DEVFREQ_GOV_POWERSAVE
+	select DEVFREQ_GOV_USERSPACE
+	select DEVFREQ_GOV_CPUFREQ
+	help
+	  Device driver for simple devices that control their frequency using
+	  clock APIs and don't have any form of status reporting.
+
+config MSM_DEVFREQ_DEVBW
+	bool "MSM DEVFREQ device for device master <-> slave IB/AB BW voting"
+	depends on ARCH_MSM
+	select DEVFREQ_GOV_PERFORMANCE
+	select DEVFREQ_GOV_POWERSAVE
+	select DEVFREQ_GOV_USERSPACE
+	select DEVFREQ_GOV_CPUFREQ
+	default n
+	help
+	  Different devfreq governors use this devfreq device to make CPU to
+	  DDR IB/AB bandwidth votes. This driver provides a SoC topology
+	  agnostic interface to so that some of the devfreq governors can be
+	  shared across SoCs.
+
+config SPDM_SCM
+	bool "MSM SPDM SCM based call support"
+	depends on DEVFREQ_SPDM
+	help
+	  SPDM driver support the dcvs algorithm logic being accessed via
+	  scm or hvc calls. This adds the support for SPDM interaction to
+          tz via SCM based call. If not selected then Hypervior interaction
+          will be activated.
+
+config DEVFREQ_SPDM
+	bool "MSM SPDM based bandwidth voting"
+	depends on ARCH_MSM
+	select DEVFREQ_GOV_SPDM_HYP
+	help
+	  This adds the support for SPDM based bandwidth voting on MSM chipsets.
+	  This driver allows any SPDM based client to vote for bandwidth.
+	  Used with the MSM SPDM Hypervisor Governor.
 
 config DEVFREQ_SIMPLE_DEV
 	tristate "Device driver for simple clock device with no status info"

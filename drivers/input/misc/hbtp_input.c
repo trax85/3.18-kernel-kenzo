@@ -1,5 +1,9 @@
 
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -23,11 +27,14 @@
 #include <linux/regulator/consumer.h>
 #include <uapi/linux/hbtp_input.h>
 #include "../input-compat.h"
+<<<<<<< HEAD
 #if defined(CONFIG_HBTP_INPUT_SECURE_TOUCH)
 #include <linux/gpio.h>
 #include <linux/interrupt.h>
 #endif
 #include <linux/of_gpio.h>
+=======
+>>>>>>> p9x
 
 #if defined(CONFIG_FB)
 #include <linux/notifier.h>
@@ -35,7 +42,10 @@
 #endif
 
 #define HBTP_INPUT_NAME			"hbtp_input"
+<<<<<<< HEAD
 #define DISP_COORDS_SIZE		2
+=======
+>>>>>>> p9x
 
 struct hbtp_data {
 	struct platform_device *pdev;
@@ -47,6 +57,7 @@ struct hbtp_data {
 	struct notifier_block fb_notif;
 #endif
 	struct regulator *vcc_ana;
+<<<<<<< HEAD
 	struct regulator *vcc_dig;
 	int afe_load_ua;
 	int afe_vtg_min_uv;
@@ -75,10 +86,17 @@ struct hbtp_data {
 	bool override_disp_coords;
 	bool manage_afe_power_ana;
 	bool manage_power_dig;
+=======
+	int afe_load_ua;
+	int afe_vtg_min_uv;
+	int afe_vtg_max_uv;
+	bool manage_afe_power;
+>>>>>>> p9x
 };
 
 static struct hbtp_data *hbtp;
 
+<<<<<<< HEAD
 #if defined(CONFIG_HBTP_INPUT_SECURE_TOUCH)
 static irqreturn_t hbtp_filter_interrupt(int irq, void *context)
 {
@@ -333,6 +351,8 @@ static const struct attribute_group secure_touch_attr_group = {
 	.attrs = secure_touch_attrs,
 };
 
+=======
+>>>>>>> p9x
 #if defined(CONFIG_FB)
 static int fb_notifier_callback(struct notifier_block *self,
 				 unsigned long event, void *data)
@@ -341,7 +361,11 @@ static int fb_notifier_callback(struct notifier_block *self,
 	struct fb_event *evdata = data;
 	struct hbtp_data *hbtp_data =
 		container_of(self, struct hbtp_data, fb_notif);
+<<<<<<< HEAD
 	char *envp[2] = {HBTP_EVENT_TYPE_DISPLAY, NULL};
+=======
+	char *envp[] = {HBTP_EVENT_TYPE_DISPLAY, NULL};
+>>>>>>> p9x
 
 	if (evdata && evdata->data && event == FB_EVENT_BLANK &&
 		hbtp_data && hbtp_data->input_dev) {
@@ -349,11 +373,17 @@ static int fb_notifier_callback(struct notifier_block *self,
 		if (blank == FB_BLANK_UNBLANK)
 			kobject_uevent_env(&hbtp_data->input_dev->dev.kobj,
 					KOBJ_ONLINE, envp);
+<<<<<<< HEAD
 		else if (blank == FB_BLANK_POWERDOWN) {
 			hbtp_secure_touch_stop(hbtp, true);
 			kobject_uevent_env(&hbtp_data->input_dev->dev.kobj,
 					KOBJ_OFFLINE, envp);
 		}
+=======
+		else if (blank == FB_BLANK_POWERDOWN)
+			kobject_uevent_env(&hbtp_data->input_dev->dev.kobj,
+					KOBJ_OFFLINE, envp);
+>>>>>>> p9x
 	}
 
 	return 0;
@@ -392,7 +422,12 @@ static int hbtp_input_create_input_dev(struct hbtp_input_absinfo *absinfo)
 {
 	struct input_dev *input_dev;
 	struct hbtp_input_absinfo *abs;
+<<<<<<< HEAD
 	int i, error;
+=======
+	int error;
+	int i;
+>>>>>>> p9x
 
 	input_dev = input_allocate_device();
 	if (!input_dev) {
@@ -424,6 +459,7 @@ static int hbtp_input_create_input_dev(struct hbtp_input_absinfo *absinfo)
 		}
 	}
 
+<<<<<<< HEAD
 	if (hbtp->override_disp_coords) {
 		input_set_abs_params(input_dev, ABS_MT_POSITION_X,
 					0, hbtp->disp_maxx, 0, 0);
@@ -431,6 +467,8 @@ static int hbtp_input_create_input_dev(struct hbtp_input_absinfo *absinfo)
 					0, hbtp->disp_maxy, 0, 0);
 	}
 
+=======
+>>>>>>> p9x
 	error = input_register_device(input_dev);
 	if (error) {
 		pr_err("%s: input_register_device failed\n", __func__);
@@ -475,6 +513,7 @@ static int hbtp_input_report_events(struct hbtp_data *hbtp_data,
 				input_report_abs(hbtp_data->input_dev,
 						ABS_MT_PRESSURE,
 						tch->pressure);
+<<<<<<< HEAD
 				/*
 				 * Scale up/down the X-coordinate as per
 				 * DT property
@@ -498,6 +537,11 @@ static int hbtp_input_report_events(struct hbtp_data *hbtp_data,
 					tch->y = (tch->y * hbtp_data->des_maxy)
 							/ hbtp_data->def_maxy;
 
+=======
+				input_report_abs(hbtp_data->input_dev,
+						ABS_MT_POSITION_X,
+						tch->x);
+>>>>>>> p9x
 				input_report_abs(hbtp_data->input_dev,
 						ABS_MT_POSITION_Y,
 						tch->y);
@@ -520,6 +564,7 @@ static int reg_set_optimum_mode_check(struct regulator *reg, int load_uA)
 
 static int hbtp_pdev_power_on(struct hbtp_data *hbtp, bool on)
 {
+<<<<<<< HEAD
 	int ret;
 
 	if (!hbtp->vcc_ana)
@@ -530,12 +575,19 @@ static int hbtp_pdev_power_on(struct hbtp_data *hbtp, bool on)
 
 	if (!hbtp->vcc_ana && !hbtp->vcc_dig) {
 		pr_err("%s: no regulators available\n", __func__);
+=======
+	int ret, error;
+
+	if (!hbtp->vcc_ana) {
+		pr_err("%s: regulator is not available\n", __func__);
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
 	if (!on)
 		goto reg_off;
 
+<<<<<<< HEAD
 	if (hbtp->vcc_ana) {
 		ret = reg_set_optimum_mode_check(hbtp->vcc_ana,
 			hbtp->afe_load_ua);
@@ -569,10 +621,26 @@ static int hbtp_pdev_power_on(struct hbtp_data *hbtp, bool on)
 			reg_set_optimum_mode_check(hbtp->vcc_dig, 0);
 			return ret;
 		}
+=======
+	ret = reg_set_optimum_mode_check(hbtp->vcc_ana, hbtp->afe_load_ua);
+	if (ret < 0) {
+		pr_err("%s: Regulator vcc_ana set_opt failed rc=%d\n",
+			__func__, ret);
+		return -EINVAL;
+	}
+
+	ret = regulator_enable(hbtp->vcc_ana);
+	if (ret) {
+		pr_err("%s: Regulator vcc_ana enable failed rc=%d\n",
+			__func__, ret);
+		error = -EINVAL;
+		goto error_reg_en_vcc_ana;
+>>>>>>> p9x
 	}
 
 	return 0;
 
+<<<<<<< HEAD
 reg_off:
 	if (hbtp->vcc_ana) {
 		reg_set_optimum_mode_check(hbtp->vcc_ana, 0);
@@ -582,13 +650,26 @@ reg_off:
 		reg_set_optimum_mode_check(hbtp->vcc_dig, 0);
 		regulator_disable(hbtp->vcc_dig);
 	}
+=======
+error_reg_en_vcc_ana:
+	reg_set_optimum_mode_check(hbtp->vcc_ana, 0);
+	return error;
+
+reg_off:
+	reg_set_optimum_mode_check(hbtp->vcc_ana, 0);
+	regulator_disable(hbtp->vcc_ana);
+>>>>>>> p9x
 	return 0;
 }
 
 static long hbtp_input_ioctl_handler(struct file *file, unsigned int cmd,
 				 unsigned long arg, void __user *p)
 {
+<<<<<<< HEAD
 	int error = 0;
+=======
+	int error;
+>>>>>>> p9x
 	struct hbtp_input_mt mt_data;
 	struct hbtp_input_absinfo absinfo[ABS_MT_LAST - ABS_MT_FIRST + 1];
 	struct hbtp_input_key key_data;
@@ -727,6 +808,7 @@ MODULE_ALIAS("devname:" HBTP_INPUT_NAME);
 #ifdef CONFIG_OF
 static int hbtp_parse_dt(struct device *dev)
 {
+<<<<<<< HEAD
 	int rc, size;
 	struct device_node *np = dev->of_node;
 	struct property *prop;
@@ -739,6 +821,15 @@ static int hbtp_parse_dt(struct device *dev)
 		hbtp->manage_power_dig = true;
 
 	if (hbtp->manage_afe_power_ana) {
+=======
+	int rc;
+	struct device_node *np = dev->of_node;
+	u32 temp_val;
+
+	if (of_find_property(np, "vcc_ana-supply", NULL)) {
+		hbtp->manage_afe_power = true;
+
+>>>>>>> p9x
 		rc = of_property_read_u32(np, "qcom,afe-load", &temp_val);
 		if (!rc) {
 			hbtp->afe_load_ua = (int) temp_val;
@@ -763,6 +854,7 @@ static int hbtp_parse_dt(struct device *dev)
 			return rc;
 		}
 	}
+<<<<<<< HEAD
 	if (hbtp->manage_power_dig) {
 		rc = of_property_read_u32(np, "qcom,dig-load", &temp_val);
 		if (!rc) {
@@ -873,6 +965,8 @@ static int hbtp_parse_dt(struct device *dev)
 		}
 
 	}
+=======
+>>>>>>> p9x
 
 	return 0;
 }
@@ -885,8 +979,13 @@ static int hbtp_parse_dt(struct device *dev)
 
 static int hbtp_pdev_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	int error;
 	struct regulator *vcc_ana, *vcc_dig;
+=======
+	int error, ret;
+	struct regulator *vcc_ana;
+>>>>>>> p9x
 
 	if (pdev->dev.of_node) {
 		error = hbtp_parse_dt(&pdev->dev);
@@ -896,6 +995,7 @@ static int hbtp_pdev_probe(struct platform_device *pdev)
 		}
 	}
 
+<<<<<<< HEAD
 	if (hbtp->manage_afe_power_ana) {
 		vcc_ana = regulator_get(&pdev->dev, "vcc_ana");
 		if (IS_ERR(vcc_ana)) {
@@ -913,11 +1013,31 @@ static int hbtp_pdev_probe(struct platform_device *pdev)
 					__func__, error);
 				regulator_put(vcc_ana);
 				return error;
+=======
+	if (hbtp->manage_afe_power) {
+		vcc_ana = regulator_get(&pdev->dev, "vcc_ana");
+		if (IS_ERR(vcc_ana)) {
+			ret = PTR_ERR(vcc_ana);
+			pr_err("%s: regulator get failed vcc_ana rc=%d\n",
+				__func__, ret);
+			return -EINVAL;
+		}
+
+		if (regulator_count_voltages(vcc_ana) > 0) {
+			ret = regulator_set_voltage(vcc_ana,
+				hbtp->afe_vtg_min_uv, hbtp->afe_vtg_max_uv);
+			if (ret) {
+				pr_err("%s: regulator set vtg failed rc=%d\n",
+					__func__, ret);
+				error = -EINVAL;
+				goto error_set_vtg_vcc_ana;
+>>>>>>> p9x
 			}
 		}
 		hbtp->vcc_ana = vcc_ana;
 	}
 
+<<<<<<< HEAD
 	if (hbtp->manage_power_dig) {
 		vcc_dig = regulator_get(&pdev->dev, "vcc_dig");
 		if (IS_ERR(vcc_dig)) {
@@ -970,6 +1090,23 @@ static int hbtp_pdev_remove(struct platform_device *pdev)
 			regulator_put(hbtp->vcc_ana);
 		if (hbtp->vcc_dig)
 			regulator_put(hbtp->vcc_dig);
+=======
+	hbtp->pdev = pdev;
+
+	return 0;
+
+error_set_vtg_vcc_ana:
+	regulator_put(vcc_ana);
+
+	return error;
+};
+
+static int hbtp_pdev_remove(struct platform_device *pdev)
+{
+	if (hbtp->vcc_ana) {
+		hbtp_pdev_power_on(hbtp, false);
+		regulator_put(hbtp->vcc_ana);
+>>>>>>> p9x
 	}
 
 	return 0;

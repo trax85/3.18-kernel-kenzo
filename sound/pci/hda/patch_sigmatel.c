@@ -700,6 +700,7 @@ static bool hp_bnb2011_with_dock(struct hda_codec *codec)
 static bool hp_blike_system(u32 subsystem_id)
 {
 	switch (subsystem_id) {
+	case 0x103c1473: /* HP ProBook 6550b */
 	case 0x103c1520:
 	case 0x103c1521:
 	case 0x103c1523:
@@ -2137,6 +2138,17 @@ static void stac92hd83xxx_fixup_hp_mic_led(struct hda_codec *codec,
 		spec->mic_mute_led_gpio = 0x08; /* GPIO3 */
 		/* resetting controller clears GPIO, so we need to keep on */
 		codec->bus->power_keep_link_on = 1;
+	}
+}
+
+static void stac92hd83xxx_fixup_hp_led_gpio10(struct hda_codec *codec,
+				   const struct hda_fixup *fix, int action)
+{
+	struct sigmatel_spec *spec = codec->spec;
+
+	if (action == HDA_FIXUP_ACT_PRE_PROBE) {
+		spec->gpio_led = 0x10; /* GPIO4 */
+		spec->default_polarity = 0;
 	}
 }
 
@@ -4296,11 +4308,22 @@ static int stac_parse_auto_config(struct hda_codec *codec)
 			return err;
 	}
 
-	stac_init_power_map(codec);
-
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int stac_build_controls(struct hda_codec *codec)
+{
+	int err = snd_hda_gen_build_controls(codec);
+
+	if (err < 0)
+		return err;
+	stac_init_power_map(codec);
+	return 0;
+}
+
+>>>>>>> p9x
 static int stac_init(struct hda_codec *codec)
 {
 	struct sigmatel_spec *spec = codec->spec;
@@ -4411,7 +4434,7 @@ static int stac_suspend(struct hda_codec *codec)
 #endif /* CONFIG_PM */
 
 static const struct hda_codec_ops stac_patch_ops = {
-	.build_controls = snd_hda_gen_build_controls,
+	.build_controls = stac_build_controls,
 	.build_pcms = snd_hda_gen_build_pcms,
 	.init = stac_init,
 	.free = stac_free,

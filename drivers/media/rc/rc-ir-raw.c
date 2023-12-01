@@ -1,6 +1,10 @@
 /* rc-ir-raw.c - handle IR pulse/space events
  *
  * Copyright (C) 2010 by Mauro Carvalho Chehab
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2016 XiaoMi, Inc.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -93,9 +97,16 @@ int ir_raw_event_store(struct rc_dev *dev, struct ir_raw_event *ev)
 EXPORT_SYMBOL_GPL(ir_raw_event_store);
 
 /**
+<<<<<<< HEAD
  * ir_raw_event_store_edge() - notify raw ir decoders of the start of a pulse/space
  * @dev:	the struct rc_dev device descriptor
  * @type:	the type of the event that has occurred
+=======
+ * ir_raw_event_store_edge_with_adjust() - notify raw ir decoders of the start of a pulse/space
+ * @dev:	the struct rc_dev device descriptor
+ * @type:	the type of the event that has occurred
+ * @ns: 	nanosecond add to current time
+>>>>>>> p9x
  *
  * This routine (which may be called from an interrupt context) is used to
  * store the beginning of an ir pulse or space (or the start/end of ir
@@ -105,6 +116,15 @@ EXPORT_SYMBOL_GPL(ir_raw_event_store);
  */
 int ir_raw_event_store_edge(struct rc_dev *dev, enum raw_event_type type)
 {
+<<<<<<< HEAD
+=======
+	return ir_raw_event_store_edge_with_adjust(dev, type, 0);
+}
+EXPORT_SYMBOL_GPL(ir_raw_event_store_edge);
+
+int ir_raw_event_store_edge_with_adjust(struct rc_dev *dev, enum raw_event_type type, s32 ns)
+{
+>>>>>>> p9x
 	ktime_t			now;
 	s64			delta; /* ns */
 	DEFINE_IR_RAW_EVENT(ev);
@@ -114,7 +134,11 @@ int ir_raw_event_store_edge(struct rc_dev *dev, enum raw_event_type type)
 	if (!dev->raw)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	now = ktime_get();
+=======
+	now = ktime_add_ns(ktime_get(), ns);
+>>>>>>> p9x
 	delta = ktime_to_ns(ktime_sub(now, dev->raw->last_event));
 	delay = MS_TO_NS(dev->input_dev->rep[REP_DELAY]);
 
@@ -142,7 +166,11 @@ int ir_raw_event_store_edge(struct rc_dev *dev, enum raw_event_type type)
 	dev->raw->last_type = type;
 	return rc;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(ir_raw_event_store_edge);
+=======
+EXPORT_SYMBOL_GPL(ir_raw_event_store_edge_with_adjust);
+>>>>>>> p9x
 
 /**
  * ir_raw_event_store_with_filter() - pass next pulse/space to decoders with some processing

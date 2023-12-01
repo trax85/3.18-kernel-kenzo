@@ -187,6 +187,7 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 			offset = roundup(offset + trx->length, blocksize);
 			/* Next loop iteration will increase the offset */
 			offset -= blocksize;
+<<<<<<< HEAD
 			continue;
 		}
 
@@ -220,6 +221,8 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 		if (buf[0x000 / 4] == BOARD_DATA_MAGIC2) {
 			bcm47xxpart_add_part(&parts[curr_part++], "board_data",
 					     offset, MTD_WRITEABLE);
+=======
+>>>>>>> p9x
 			continue;
 		}
 	}

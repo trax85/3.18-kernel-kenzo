@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2019, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2014, 2016, 2017 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -17,6 +21,10 @@
 #include <linux/atomic.h>
 #include <linux/wait.h>
 #include <linux/qdsp6v2/apr.h>
+<<<<<<< HEAD
+=======
+#include <linux/ratelimit.h>
+>>>>>>> p9x
 #include <sound/apr_audio-v2.h>
 #include <sound/q6adm-v2.h>
 #include <sound/q6audio-v2.h>
@@ -50,12 +58,20 @@ struct adm_copp {
 	atomic_t topology[AFE_MAX_PORTS][MAX_COPPS_PER_PORT];
 	atomic_t mode[AFE_MAX_PORTS][MAX_COPPS_PER_PORT];
 	atomic_t stat[AFE_MAX_PORTS][MAX_COPPS_PER_PORT];
+<<<<<<< HEAD
 	atomic_t rate[AFE_MAX_PORTS][MAX_COPPS_PER_PORT];
 	atomic_t bit_width[AFE_MAX_PORTS][MAX_COPPS_PER_PORT];
 	atomic_t channels[AFE_MAX_PORTS][MAX_COPPS_PER_PORT];
 	atomic_t app_type[AFE_MAX_PORTS][MAX_COPPS_PER_PORT];
 	atomic_t acdb_id[AFE_MAX_PORTS][MAX_COPPS_PER_PORT];
 	atomic_t session_type[AFE_MAX_PORTS][MAX_COPPS_PER_PORT];
+=======
+	atomic_t cmd_err_code[AFE_MAX_PORTS][MAX_COPPS_PER_PORT];
+	atomic_t rate[AFE_MAX_PORTS][MAX_COPPS_PER_PORT];
+	atomic_t bit_width[AFE_MAX_PORTS][MAX_COPPS_PER_PORT];
+	atomic_t app_type[AFE_MAX_PORTS][MAX_COPPS_PER_PORT];
+	atomic_t acdb_id[AFE_MAX_PORTS][MAX_COPPS_PER_PORT];
+>>>>>>> p9x
 	wait_queue_head_t wait[AFE_MAX_PORTS][MAX_COPPS_PER_PORT];
 	wait_queue_head_t adm_delay_wait[AFE_MAX_PORTS][MAX_COPPS_PER_PORT];
 	atomic_t adm_delay_stat[AFE_MAX_PORTS][MAX_COPPS_PER_PORT];
@@ -76,9 +92,17 @@ struct adm_ctl {
 	struct adm_copp copp;
 
 	atomic_t matrix_map_stat;
+<<<<<<< HEAD
 	wait_queue_head_t matrix_map_wait;
 
 	atomic_t adm_stat;
+=======
+	atomic_t matrix_map_cmd_err_code;
+	wait_queue_head_t matrix_map_wait;
+
+	atomic_t adm_stat;
+	atomic_t adm_cmd_err_code;
+>>>>>>> p9x
 	wait_queue_head_t adm_wait;
 
 	struct cal_type_data *cal_data[ADM_MAX_CAL_TYPES];
@@ -91,9 +115,12 @@ struct adm_ctl {
 
 	int set_custom_topology;
 	int ec_ref_rx;
+<<<<<<< HEAD
 	int num_ec_ref_rx_chans;
 	int ec_ref_rx_bit_width;
 	int ec_ref_rx_sampling_rate;
+=======
+>>>>>>> p9x
 };
 
 static struct adm_ctl			this_adm;
@@ -177,9 +204,14 @@ int adm_get_topology_for_port_from_copp_id(int port_id, int copp_id)
 int adm_get_topology_for_port_copp_idx(int port_id, int copp_idx)
 {
 	int port_idx = adm_validate_and_get_port_index(port_id);
+<<<<<<< HEAD
 	if (port_idx < 0 || copp_idx >= MAX_COPPS_PER_PORT) {
 		pr_err("%s: Invalid port: 0x%x copp id: 0x%x",
 				__func__, port_id, copp_idx);
+=======
+	if (port_idx < 0) {
+		pr_err("%s: Invalid port id: 0x%x", __func__, port_id);
+>>>>>>> p9x
 		return 0;
 	}
 	return atomic_read(&this_adm.copp.topology[port_idx][copp_idx]);
@@ -215,8 +247,12 @@ static int adm_get_copp_id(int port_idx, int copp_idx)
 }
 
 static int adm_get_idx_if_copp_exists(int port_idx, int topology, int mode,
+<<<<<<< HEAD
 				      int rate, int bit_width, int app_type,
 				      int session_type)
+=======
+				 int rate, int bit_width, int app_type)
+>>>>>>> p9x
 {
 	int idx;
 
@@ -230,9 +266,12 @@ static int adm_get_idx_if_copp_exists(int port_idx, int topology, int mode,
 		    (rate == atomic_read(&this_adm.copp.rate[port_idx][idx])) &&
 		    (bit_width ==
 			atomic_read(&this_adm.copp.bit_width[port_idx][idx])) &&
+<<<<<<< HEAD
 		    (session_type ==
 			atomic_read(
 				&this_adm.copp.session_type[port_idx][idx])) &&
+=======
+>>>>>>> p9x
 		    (app_type ==
 			atomic_read(&this_adm.copp.app_type[port_idx][idx])))
 			return idx;
@@ -460,7 +499,11 @@ int srs_trumedia_open(int port_id, int copp_idx, __s32 srs_tech_id,
 					sizeof(struct adm_cmd_set_pp_params_v5);
 		adm_params->payload_addr_lsw = lower_32_bits(
 						this_adm.outband_memmap.paddr);
+<<<<<<< HEAD
 		adm_params->payload_addr_msw = msm_audio_populate_upper_32_bits(
+=======
+		adm_params->payload_addr_msw = populate_upper_32_bits(
+>>>>>>> p9x
 						this_adm.outband_memmap.paddr);
 		adm_params->mem_map_handle = atomic_read(&this_adm.
 					mem_map_handles[ADM_SRS_TRUMEDIA]);
@@ -479,7 +522,12 @@ int srs_trumedia_open(int port_id, int copp_idx, __s32 srs_tech_id,
 			__func__, adm_params->hdr.dest_port,
 			adm_params->payload_size, module_id, param_id);
 
+<<<<<<< HEAD
 	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], -1);
+=======
+	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], 0);
+	atomic_set(&this_adm.copp.cmd_err_code[port_idx][copp_idx], 0);
+>>>>>>> p9x
 	ret = apr_send_pkt(this_adm.apr, (uint32_t *)adm_params);
 	if (ret < 0) {
 		pr_err("SRS - %s: ADM enable for port %d failed\n", __func__,
@@ -489,14 +537,19 @@ int srs_trumedia_open(int port_id, int copp_idx, __s32 srs_tech_id,
 	}
 	/* Wait for the callback with copp id */
 	ret = wait_event_timeout(this_adm.copp.wait[port_idx][copp_idx],
+<<<<<<< HEAD
 			atomic_read(&this_adm.copp.stat
 			[port_idx][copp_idx]) >= 0,
+=======
+			atomic_read(&this_adm.copp.stat[port_idx][copp_idx]),
+>>>>>>> p9x
 			msecs_to_jiffies(TIMEOUT_MS));
 	if (!ret) {
 		pr_err("%s: SRS set params timed out port = %d\n",
 			__func__, port_id);
 		ret = -EINVAL;
 		goto fail_cmd;
+<<<<<<< HEAD
 	} else if (atomic_read(&this_adm.copp.stat
 				[port_idx][copp_idx]) > 0) {
 		pr_err("%s: DSP returned error[%s]\n",
@@ -505,6 +558,16 @@ int srs_trumedia_open(int port_id, int copp_idx, __s32 srs_tech_id,
 				[port_idx][copp_idx])));
 		ret = adsp_err_get_lnx_err_code(
 				atomic_read(&this_adm.copp.stat
+=======
+	} else if (atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx]) > 0) {
+		pr_err("%s: DSP returned error[%s]\n",
+				__func__, adsp_err_get_err_str(
+				atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx])));
+		ret = adsp_err_get_lnx_err_code(
+				atomic_read(&this_adm.copp.cmd_err_code
+>>>>>>> p9x
 					[port_idx][copp_idx]));
 		goto fail_cmd;
 	}
@@ -514,6 +577,7 @@ fail_cmd:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int adm_populate_channel_weight(u16 *ptr,
 					struct msm_pcm_channel_mixer *ch_mixer,
 					int channel_index)
@@ -788,6 +852,8 @@ fail_cmd:
 	return ret;
 }
 
+=======
+>>>>>>> p9x
 int adm_set_stereo_to_custom_stereo(int port_id, int copp_idx,
 				    unsigned int session_id, char *params,
 				    uint32_t params_length)
@@ -839,7 +905,12 @@ int adm_set_stereo_to_custom_stereo(int port_id, int copp_idx,
 	pr_debug("%s: deviceid %d, session_id %d, src_port %d, dest_port %d\n",
 		__func__, adm_params->deviceid, adm_params->sessionid,
 		adm_params->hdr.src_port, adm_params->hdr.dest_port);
+<<<<<<< HEAD
 	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], -1);
+=======
+	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], 0);
+	atomic_set(&this_adm.copp.cmd_err_code[port_idx][copp_idx], 0);
+>>>>>>> p9x
 	rc = apr_send_pkt(this_adm.apr, (uint32_t *)adm_params);
 	if (rc < 0) {
 		pr_err("%s: Set params failed port = 0x%x rc %d\n",
@@ -850,13 +921,18 @@ int adm_set_stereo_to_custom_stereo(int port_id, int copp_idx,
 	/* Wait for the callback */
 	rc = wait_event_timeout(this_adm.copp.wait[port_idx][copp_idx],
 				atomic_read(&this_adm.copp.stat
+<<<<<<< HEAD
 				[port_idx][copp_idx]) >= 0,
+=======
+				[port_idx][copp_idx]),
+>>>>>>> p9x
 				msecs_to_jiffies(TIMEOUT_MS));
 	if (!rc) {
 		pr_err("%s: Set params timed out port = 0x%x\n", __func__,
 			port_id);
 		rc = -EINVAL;
 		goto set_stereo_to_custom_stereo_return;
+<<<<<<< HEAD
 	} else if (atomic_read(&this_adm.copp.stat
 				[port_idx][copp_idx]) > 0) {
 		pr_err("%s: DSP returned error[%s]\n", __func__,
@@ -865,6 +941,16 @@ int adm_set_stereo_to_custom_stereo(int port_id, int copp_idx,
 			[port_idx][copp_idx])));
 		rc = adsp_err_get_lnx_err_code(
 				atomic_read(&this_adm.copp.stat
+=======
+	} else if (atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx]) > 0) {
+		pr_err("%s: DSP returned error[%s]\n", __func__,
+			adsp_err_get_err_str(atomic_read(
+			&this_adm.copp.cmd_err_code
+			[port_idx][copp_idx])));
+		rc = adsp_err_get_lnx_err_code(
+				atomic_read(&this_adm.copp.cmd_err_code
+>>>>>>> p9x
 					[port_idx][copp_idx]));
 		goto set_stereo_to_custom_stereo_return;
 	}
@@ -915,7 +1001,12 @@ int adm_dolby_dap_send_params(int port_id, int copp_idx, char *params,
 	adm_params->mem_map_handle = 0;
 	adm_params->payload_size = params_length;
 
+<<<<<<< HEAD
 	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], -1);
+=======
+	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], 0);
+	atomic_set(&this_adm.copp.cmd_err_code[port_idx][copp_idx], 0);
+>>>>>>> p9x
 	rc = apr_send_pkt(this_adm.apr, (uint32_t *)adm_params);
 	if (rc < 0) {
 		pr_err("%s: Set params failed port = 0x%x rc %d\n",
@@ -925,13 +1016,18 @@ int adm_dolby_dap_send_params(int port_id, int copp_idx, char *params,
 	}
 	/* Wait for the callback */
 	rc = wait_event_timeout(this_adm.copp.wait[port_idx][copp_idx],
+<<<<<<< HEAD
 		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]) >= 0,
+=======
+		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]),
+>>>>>>> p9x
 		msecs_to_jiffies(TIMEOUT_MS));
 	if (!rc) {
 		pr_err("%s: Set params timed out port = 0x%x\n",
 			 __func__, port_id);
 		rc = -EINVAL;
 		goto dolby_dap_send_param_return;
+<<<<<<< HEAD
 	} else if (atomic_read(&this_adm.copp.stat
 				[port_idx][copp_idx]) > 0) {
 		pr_err("%s: DSP returned error[%s]\n",
@@ -940,6 +1036,16 @@ int adm_dolby_dap_send_params(int port_id, int copp_idx, char *params,
 				[port_idx][copp_idx])));
 		rc = adsp_err_get_lnx_err_code(
 				atomic_read(&this_adm.copp.stat
+=======
+	} else if (atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx]) > 0) {
+		pr_err("%s: DSP returned error[%s]\n",
+				__func__, adsp_err_get_err_str(
+				atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx])));
+		rc = adsp_err_get_lnx_err_code(
+				atomic_read(&this_adm.copp.cmd_err_code
+>>>>>>> p9x
 					[port_idx][copp_idx]));
 		goto dolby_dap_send_param_return;
 	}
@@ -990,7 +1096,12 @@ int adm_send_params_v5(int port_id, int copp_idx, char *params,
 	adm_params->mem_map_handle = 0;
 	adm_params->payload_size = params_length;
 
+<<<<<<< HEAD
 	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], -1);
+=======
+	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], 0);
+	atomic_set(&this_adm.copp.cmd_err_code[port_idx][copp_idx], 0);
+>>>>>>> p9x
 	rc = apr_send_pkt(this_adm.apr, (uint32_t *)adm_params);
 	if (rc < 0) {
 		pr_err("%s: Set params failed port = 0x%x rc %d\n",
@@ -1000,13 +1111,18 @@ int adm_send_params_v5(int port_id, int copp_idx, char *params,
 	}
 	/* Wait for the callback */
 	rc = wait_event_timeout(this_adm.copp.wait[port_idx][copp_idx],
+<<<<<<< HEAD
 		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]) >= 0,
+=======
+		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]),
+>>>>>>> p9x
 		msecs_to_jiffies(TIMEOUT_MS));
 	if (!rc) {
 		pr_err("%s: Set params timed out port = 0x%x\n",
 			 __func__, port_id);
 		rc = -EINVAL;
 		goto send_param_return;
+<<<<<<< HEAD
 	} else if (atomic_read(&this_adm.copp.stat
 				[port_idx][copp_idx]) > 0) {
 		pr_err("%s: DSP returned error[%s]\n",
@@ -1015,6 +1131,16 @@ int adm_send_params_v5(int port_id, int copp_idx, char *params,
 				[port_idx][copp_idx])));
 		rc = adsp_err_get_lnx_err_code(
 				atomic_read(&this_adm.copp.stat
+=======
+	} else if (atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx]) > 0) {
+		pr_err("%s: DSP returned error[%s]\n",
+				__func__, adsp_err_get_err_str(
+				atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx])));
+		rc = adsp_err_get_lnx_err_code(
+				atomic_read(&this_adm.copp.cmd_err_code
+>>>>>>> p9x
 					[port_idx][copp_idx]));
 		goto send_param_return;
 	}
@@ -1079,7 +1205,12 @@ int adm_get_params_v2(int port_id, int copp_idx, uint32_t module_id,
 	adm_params->param_max_size = params_length;
 	adm_params->reserved = 0;
 
+<<<<<<< HEAD
 	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], -1);
+=======
+	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], 0);
+	atomic_set(&this_adm.copp.cmd_err_code[port_idx][copp_idx], 0);
+>>>>>>> p9x
 	rc = apr_send_pkt(this_adm.apr, (uint32_t *)adm_params);
 	if (rc < 0) {
 		pr_err("%s: Failed to Get Params on port_id 0x%x %d\n",
@@ -1089,13 +1220,18 @@ int adm_get_params_v2(int port_id, int copp_idx, uint32_t module_id,
 	}
 	/* Wait for the callback with copp id */
 	rc = wait_event_timeout(this_adm.copp.wait[port_idx][copp_idx],
+<<<<<<< HEAD
 	atomic_read(&this_adm.copp.stat[port_idx][copp_idx]) >= 0,
+=======
+	atomic_read(&this_adm.copp.stat[port_idx][copp_idx]),
+>>>>>>> p9x
 		msecs_to_jiffies(TIMEOUT_MS));
 	if (!rc) {
 		pr_err("%s: get params timed out port_id = 0x%x\n", __func__,
 			port_id);
 		rc = -EINVAL;
 		goto adm_get_param_return;
+<<<<<<< HEAD
 	} else if (atomic_read(&this_adm.copp.stat
 				[port_idx][copp_idx]) > 0) {
 		pr_err("%s: DSP returned error[%s]\n",
@@ -1104,6 +1240,16 @@ int adm_get_params_v2(int port_id, int copp_idx, uint32_t module_id,
 				[port_idx][copp_idx])));
 		rc = adsp_err_get_lnx_err_code(
 				atomic_read(&this_adm.copp.stat
+=======
+	} else if (atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx]) > 0) {
+		pr_err("%s: DSP returned error[%s]\n",
+				__func__, adsp_err_get_err_str(
+				atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx])));
+		rc = adsp_err_get_lnx_err_code(
+				atomic_read(&this_adm.copp.cmd_err_code
+>>>>>>> p9x
 					[port_idx][copp_idx]));
 		goto adm_get_param_return;
 	}
@@ -1193,7 +1339,12 @@ int adm_get_pp_topo_module_list(int port_id, int copp_idx, int32_t param_length,
 	adm_pp_module_list->param_max_size = param_length;
 	/* Payload address and mmap handle set to zero by kzalloc */
 
+<<<<<<< HEAD
 	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], -1);
+=======
+	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], 0);
+	atomic_set(&this_adm.copp.cmd_err_code[port_idx][copp_idx], 0);
+>>>>>>> p9x
 
 	rc = apr_send_pkt(this_adm.apr, (uint32_t *)adm_pp_module_list);
 	if (rc < 0) {
@@ -1204,13 +1355,18 @@ int adm_get_pp_topo_module_list(int port_id, int copp_idx, int32_t param_length,
 	}
 	/* Wait for the callback with copp id */
 	rc = wait_event_timeout(this_adm.copp.wait[port_idx][copp_idx],
+<<<<<<< HEAD
 		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]) >= 0,
+=======
+		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]),
+>>>>>>> p9x
 		msecs_to_jiffies(TIMEOUT_MS));
 	if (!rc) {
 		pr_err("%s: get params timed out port = %d\n", __func__,
 			port_id);
 		rc = -EINVAL;
 		goto adm_pp_module_list_l;
+<<<<<<< HEAD
 	} else if (atomic_read(&this_adm.copp.stat
 				[port_idx][copp_idx]) > 0) {
 		pr_err("%s: DSP returned error[%s]\n",
@@ -1219,6 +1375,16 @@ int adm_get_pp_topo_module_list(int port_id, int copp_idx, int32_t param_length,
 				[port_idx][copp_idx])));
 		rc = adsp_err_get_lnx_err_code(
 				atomic_read(&this_adm.copp.stat
+=======
+	} else if (atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx]) > 0) {
+		pr_err("%s: DSP returned error[%s]\n",
+				__func__, adsp_err_get_err_str(
+				atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx])));
+		rc = adsp_err_get_lnx_err_code(
+				atomic_read(&this_adm.copp.cmd_err_code
+>>>>>>> p9x
 					[port_idx][copp_idx]));
 		goto adm_pp_module_list_l;
 	}
@@ -1330,20 +1496,31 @@ static int32_t adm_callback(struct apr_client_data *data, void *priv)
 						   0);
 					atomic_set(&this_adm.copp.stat[i][j],
 						   0);
+<<<<<<< HEAD
 					atomic_set(&this_adm.copp.rate[i][j],
 						   0);
 					atomic_set(
 					&this_adm.copp.channels[i][j],
 						   0);
 					atomic_set(
+=======
+					atomic_set(&this_adm.copp.cmd_err_code
+							[i][j], 0);
+					atomic_set(&this_adm.copp.rate[i][j],
+						   0);
+					atomic_set(
+>>>>>>> p9x
 					    &this_adm.copp.bit_width[i][j], 0);
 					atomic_set(
 					    &this_adm.copp.app_type[i][j], 0);
 					atomic_set(
 					   &this_adm.copp.acdb_id[i][j], 0);
+<<<<<<< HEAD
 					atomic_set(
 					   &this_adm.copp.session_type[i][j],
 					   0);
+=======
+>>>>>>> p9x
 					this_adm.copp.adm_status[i][j] =
 						ADM_STATUS_CALIBRATION_REQUIRED;
 				}
@@ -1380,7 +1557,11 @@ static int32_t adm_callback(struct apr_client_data *data, void *priv)
 	}
 
 	adm_callback_debug_print(data);
+<<<<<<< HEAD
 	if (data->payload_size >= sizeof(uint32_t)) {
+=======
+	if (data->payload_size) {
+>>>>>>> p9x
 		copp_idx = (data->token) & 0XFF;
 		port_idx = ((data->token) >> 16) & 0xFF;
 		client_id = ((data->token) >> 8) & 0xFF;
@@ -1402,6 +1583,7 @@ static int32_t adm_callback(struct apr_client_data *data, void *priv)
 		if (data->opcode == APR_BASIC_RSP_RESULT) {
 			pr_debug("%s: APR_BASIC_RSP_RESULT id 0x%x\n",
 				__func__, payload[0]);
+<<<<<<< HEAD
 			if (!((client_id != ADM_CLIENT_ID_SOURCE_TRACKING) &&
 			      (payload[0] == ADM_CMD_SET_PP_PARAMS_V5))) {
 				if (data->payload_size <
@@ -1411,6 +1593,8 @@ static int32_t adm_callback(struct apr_client_data *data, void *priv)
 					return 0;
 				}
 			}
+=======
+>>>>>>> p9x
 			if (payload[1] != 0) {
 				pr_err("%s: cmd = 0x%x returned error = 0x%x\n",
 					__func__, payload[0], payload[1]);
@@ -1429,6 +1613,7 @@ static int32_t adm_callback(struct apr_client_data *data, void *priv)
 				 * if soft volume is called and already
 				 * interrupted break out of the sequence here
 				 */
+<<<<<<< HEAD
 			case ADM_CMD_DEVICE_OPEN_V5:
 			case ADM_CMD_DEVICE_CLOSE_V5:
 			case ADM_CMD_DEVICE_OPEN_V6:
@@ -1436,27 +1621,55 @@ static int32_t adm_callback(struct apr_client_data *data, void *priv)
 					__func__);
 				atomic_set(&this_adm.copp.stat[port_idx]
 						[copp_idx], payload[1]);
+=======
+			case ADM_CMD_DEVICE_CLOSE_V5:
+				pr_debug("%s: Basic callback received, wake up.\n",
+					__func__);
+				atomic_set(&this_adm.copp.cmd_err_code
+						[port_idx][copp_idx],
+						payload[1]);
+				atomic_set(&this_adm.copp.stat[port_idx]
+							      [copp_idx], 1);
+>>>>>>> p9x
 				wake_up(
 				&this_adm.copp.wait[port_idx][copp_idx]);
 				break;
 			case ADM_CMD_ADD_TOPOLOGIES:
 				pr_debug("%s: callback received, ADM_CMD_ADD_TOPOLOGIES.\n",
 					__func__);
+<<<<<<< HEAD
 				atomic_set(&this_adm.adm_stat, payload[1]);
+=======
+				atomic_set(&this_adm.adm_cmd_err_code,
+					payload[1]);
+				atomic_set(&this_adm.adm_stat, 1);
+>>>>>>> p9x
 				wake_up(&this_adm.adm_wait);
 				break;
 			case ADM_CMD_MATRIX_MAP_ROUTINGS_V5:
 			case ADM_CMD_STREAM_DEVICE_MAP_ROUTINGS_V5:
 				pr_debug("%s: Basic callback received, wake up.\n",
 					__func__);
+<<<<<<< HEAD
 				atomic_set(&this_adm.matrix_map_stat,
 					payload[1]);
+=======
+				atomic_set(&this_adm.matrix_map_cmd_err_code,
+					payload[1]);
+				atomic_set(&this_adm.matrix_map_stat, 1);
+>>>>>>> p9x
 				wake_up(&this_adm.matrix_map_wait);
 				break;
 			case ADM_CMD_SHARED_MEM_UNMAP_REGIONS:
 				pr_debug("%s: ADM_CMD_SHARED_MEM_UNMAP_REGIONS\n",
 					__func__);
+<<<<<<< HEAD
 				atomic_set(&this_adm.adm_stat, payload[1]);
+=======
+				atomic_set(&this_adm.adm_cmd_err_code,
+					payload[1]);
+				atomic_set(&this_adm.adm_stat, 1);
+>>>>>>> p9x
 				wake_up(&this_adm.adm_wait);
 				break;
 			case ADM_CMD_SHARED_MEM_MAP_REGIONS:
@@ -1468,8 +1681,14 @@ static int32_t adm_callback(struct apr_client_data *data, void *priv)
 				if (payload[1] != 0) {
 					pr_err("%s: ADM map error, resuming\n",
 						__func__);
+<<<<<<< HEAD
 					atomic_set(&this_adm.adm_stat,
 						payload[1]);
+=======
+					atomic_set(&this_adm.adm_cmd_err_code,
+						payload[1]);
+					atomic_set(&this_adm.adm_stat, 1);
+>>>>>>> p9x
 					wake_up(&this_adm.adm_wait);
 				}
 				break;
@@ -1488,9 +1707,17 @@ static int32_t adm_callback(struct apr_client_data *data, void *priv)
 						pr_err("%s: ADM get param error = %d\n",
 							__func__, payload[1]);
 
+<<<<<<< HEAD
 					atomic_set(&this_adm.copp.stat
 						[port_idx][copp_idx],
 						payload[1]);
+=======
+					atomic_set(&this_adm.copp.cmd_err_code
+						[port_idx][copp_idx],
+						payload[1]);
+					atomic_set(&this_adm.copp.stat
+						[port_idx][copp_idx], 1);
+>>>>>>> p9x
 					wake_up(&this_adm.copp.wait
 							[port_idx][copp_idx]);
 				} else {
@@ -1506,8 +1733,16 @@ static int32_t adm_callback(struct apr_client_data *data, void *priv)
 			case ADM_CMD_SET_PSPD_MTMX_STRTR_PARAMS_V5:
 				pr_debug("%s: ADM_CMD_SET_PSPD_MTMX_STRTR_PARAMS_V5\n",
 					__func__);
+<<<<<<< HEAD
 				atomic_set(&this_adm.copp.stat[port_idx]
 						[copp_idx], payload[1]);
+=======
+				atomic_set(&this_adm.copp.cmd_err_code
+						[port_idx][copp_idx],
+						payload[1]);
+				atomic_set(&this_adm.copp.stat[port_idx]
+							      [copp_idx], 1);
+>>>>>>> p9x
 				wake_up(
 				&this_adm.copp.wait[port_idx][copp_idx]);
 				break;
@@ -1527,6 +1762,7 @@ static int32_t adm_callback(struct apr_client_data *data, void *priv)
 		}
 
 		switch (data->opcode) {
+<<<<<<< HEAD
 		case ADM_CMDRSP_DEVICE_OPEN_V5:
 		case ADM_CMDRSP_DEVICE_OPEN_V6: {
 			struct adm_cmd_rsp_device_open_v5 *open = NULL;
@@ -1544,12 +1780,31 @@ static int32_t adm_callback(struct apr_client_data *data, void *priv)
 					__func__, open->copp_id);
 				atomic_set(&this_adm.copp.stat[port_idx]
 						[copp_idx], ADSP_EBADPARAM);
+=======
+		case ADM_CMDRSP_DEVICE_OPEN_V5: {
+			struct adm_cmd_rsp_device_open_v5 *open =
+			(struct adm_cmd_rsp_device_open_v5 *)data->payload;
+
+			if (open->copp_id == INVALID_COPP_ID) {
+				pr_err("%s: invalid coppid rxed %d\n",
+					__func__, open->copp_id);
+				atomic_set(&this_adm.copp.cmd_err_code
+					[port_idx][copp_idx], ADSP_EBADPARAM);
+				atomic_set(&this_adm.copp.stat[port_idx]
+							      [copp_idx], 1);
+>>>>>>> p9x
 				wake_up(
 				&this_adm.copp.wait[port_idx][copp_idx]);
 				break;
 			}
+<<<<<<< HEAD
 			atomic_set(&this_adm.copp.stat
 				[port_idx][copp_idx], payload[0]);
+=======
+			atomic_set(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx], payload[0]);
+			atomic_set(&this_adm.copp.stat[port_idx][copp_idx], 1);
+>>>>>>> p9x
 			atomic_set(&this_adm.copp.id[port_idx][copp_idx],
 				   open->copp_id);
 			pr_debug("%s: coppid rxed=%d\n", __func__,
@@ -1593,15 +1848,25 @@ static int32_t adm_callback(struct apr_client_data *data, void *priv)
 							payload[4+i];
 			} else if (payload[0] == 0) {
 				adm_get_parameters[idx] = -1;
+<<<<<<< HEAD
 				pr_debug("%s: Out of band case, setting size to %d\n",
+=======
+				pr_err("%s: Out of band case, setting size to %d\n",
+>>>>>>> p9x
 					__func__, adm_get_parameters[idx]);
 			} else {
 				adm_get_parameters[idx] = -1;
 				pr_err("%s: GET_PP_PARAMS failed, setting size to %d\n",
 					__func__, adm_get_parameters[idx]);
 			}
+<<<<<<< HEAD
 			atomic_set(&this_adm.copp.stat
 				[port_idx][copp_idx], payload[0]);
+=======
+			atomic_set(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx], payload[0]);
+			atomic_set(&this_adm.copp.stat[port_idx][copp_idx], 1);
+>>>>>>> p9x
 			wake_up(&this_adm.copp.wait[port_idx][copp_idx]);
 			break;
 		case ADM_CMDRSP_GET_PP_TOPO_MODULE_LIST:
@@ -1611,6 +1876,7 @@ static int32_t adm_callback(struct apr_client_data *data, void *priv)
 				pr_err("%s: ADM_CMDRSP_GET_PP_TOPO_MODULE_LIST",
 					 __func__);
 				pr_err(":err = 0x%x\n", payload[0]);
+<<<<<<< HEAD
 			} else if (data->payload_size >=
 				   (2 * sizeof(uint32_t))) {
 				if (payload[1] >
@@ -1639,6 +1905,30 @@ static int32_t adm_callback(struct apr_client_data *data, void *priv)
 
 			atomic_set(&this_adm.copp.stat
 				[port_idx][copp_idx], payload[0]);
+=======
+			} else if (payload[1] >
+				   ((ADM_GET_TOPO_MODULE_LIST_LENGTH /
+				   sizeof(uint32_t)) - 1)) {
+				pr_err("%s: ADM_CMDRSP_GET_PP_TOPO_MODULE_LIST",
+					 __func__);
+				pr_err(":size = %d\n", payload[1]);
+			} else {
+				idx = ADM_GET_TOPO_MODULE_LIST_LENGTH *
+					copp_idx;
+				pr_debug("%s:Num modules payload[1] %d\n",
+					 __func__, payload[1]);
+				adm_module_topo_list[idx] = payload[1];
+				for (i = 1; i <= payload[1]; i++) {
+					adm_module_topo_list[idx+i] =
+						payload[1+i];
+					pr_debug("%s:payload[%d] = %x\n",
+						 __func__, (i+1), payload[1+i]);
+				}
+			}
+			atomic_set(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx], payload[0]);
+			atomic_set(&this_adm.copp.stat[port_idx][copp_idx], 1);
+>>>>>>> p9x
 			wake_up(&this_adm.copp.wait[port_idx][copp_idx]);
 			break;
 		case ADM_CMDRSP_SHARED_MEM_MAP_REGIONS:
@@ -1647,7 +1937,11 @@ static int32_t adm_callback(struct apr_client_data *data, void *priv)
 			atomic_set(&this_adm.mem_map_handles[
 				   atomic_read(&this_adm.mem_map_index)],
 				   *payload);
+<<<<<<< HEAD
 			atomic_set(&this_adm.adm_stat, 0);
+=======
+			atomic_set(&this_adm.adm_stat, 1);
+>>>>>>> p9x
 			wake_up(&this_adm.adm_wait);
 			break;
 		default:
@@ -1669,14 +1963,25 @@ static int adm_memory_map_regions(phys_addr_t *buf_add, uint32_t mempool_id,
 	int     ret = 0;
 	int     i = 0;
 	int     cmd_size = 0;
+<<<<<<< HEAD
+=======
+	static DEFINE_RATELIMIT_STATE(rl, HZ/2, 1);
+>>>>>>> p9x
 
 	pr_debug("%s:\n", __func__);
 	if (this_adm.apr == NULL) {
 		this_adm.apr = apr_register("ADSP", "ADM", adm_callback,
 						0xFFFFFFFF, &this_adm);
 		if (this_adm.apr == NULL) {
+<<<<<<< HEAD
 			pr_err("%s: Unable to register ADM\n", __func__);
 			ret = -ENETRESET;
+=======
+			if (__ratelimit(&rl))
+				pr_err("%s: Unable to register ADM\n",
+					__func__);
+			ret = -ENODEV;
+>>>>>>> p9x
 			return ret;
 		}
 		rtac_set_adm_handle(this_adm.apr);
@@ -1713,13 +2018,22 @@ static int adm_memory_map_regions(phys_addr_t *buf_add, uint32_t mempool_id,
 
 	for (i = 0; i < bufcnt; i++) {
 		mregions->shm_addr_lsw = lower_32_bits(buf_add[i]);
+<<<<<<< HEAD
 		mregions->shm_addr_msw =
 				msm_audio_populate_upper_32_bits(buf_add[i]);
+=======
+		mregions->shm_addr_msw = populate_upper_32_bits(buf_add[i]);
+>>>>>>> p9x
 		mregions->mem_size_bytes = bufsz[i];
 		++mregions;
 	}
 
+<<<<<<< HEAD
 	atomic_set(&this_adm.adm_stat, -1);
+=======
+	atomic_set(&this_adm.adm_stat, 0);
+	atomic_set(&this_adm.adm_cmd_err_code, 0);
+>>>>>>> p9x
 	ret = apr_send_pkt(this_adm.apr, (uint32_t *) mmap_region_cmd);
 	if (ret < 0) {
 		pr_err("%s: mmap_regions op[0x%x]rc[%d]\n", __func__,
@@ -1729,18 +2043,31 @@ static int adm_memory_map_regions(phys_addr_t *buf_add, uint32_t mempool_id,
 	}
 
 	ret = wait_event_timeout(this_adm.adm_wait,
+<<<<<<< HEAD
 				 atomic_read(&this_adm.adm_stat) >= 0,
+=======
+				 atomic_read(&this_adm.adm_stat),
+>>>>>>> p9x
 				 5 * HZ);
 	if (!ret) {
 		pr_err("%s: timeout. waited for memory_map\n", __func__);
 		ret = -EINVAL;
 		goto fail_cmd;
+<<<<<<< HEAD
 	} else if (atomic_read(&this_adm.adm_stat) > 0) {
 		pr_err("%s: DSP returned error[%s]\n",
 				__func__, adsp_err_get_err_str(
 				atomic_read(&this_adm.adm_stat)));
 		ret = adsp_err_get_lnx_err_code(
 				atomic_read(&this_adm.adm_stat));
+=======
+	} else if (atomic_read(&this_adm.adm_cmd_err_code) > 0) {
+		pr_err("%s: DSP returned error[%s]\n",
+				__func__, adsp_err_get_err_str(
+				atomic_read(&this_adm.adm_cmd_err_code)));
+		ret = adsp_err_get_lnx_err_code(
+				atomic_read(&this_adm.adm_cmd_err_code));
+>>>>>>> p9x
 		goto fail_cmd;
 	}
 fail_cmd:
@@ -1769,7 +2096,12 @@ static int adm_memory_unmap_regions(void)
 	unmap_regions.hdr.opcode = ADM_CMD_SHARED_MEM_UNMAP_REGIONS;
 	unmap_regions.mem_map_handle = atomic_read(&this_adm.
 		mem_map_handles[atomic_read(&this_adm.mem_map_index)]);
+<<<<<<< HEAD
 	atomic_set(&this_adm.adm_stat, -1);
+=======
+	atomic_set(&this_adm.adm_stat, 0);
+	atomic_set(&this_adm.adm_cmd_err_code, 0);
+>>>>>>> p9x
 	ret = apr_send_pkt(this_adm.apr, (uint32_t *) &unmap_regions);
 	if (ret < 0) {
 		pr_err("%s: mmap_regions op[0x%x]rc[%d]\n", __func__,
@@ -1779,19 +2111,32 @@ static int adm_memory_unmap_regions(void)
 	}
 
 	ret = wait_event_timeout(this_adm.adm_wait,
+<<<<<<< HEAD
 				 atomic_read(&this_adm.adm_stat) >= 0,
+=======
+				 atomic_read(&this_adm.adm_stat),
+>>>>>>> p9x
 				 5 * HZ);
 	if (!ret) {
 		pr_err("%s: timeout. waited for memory_unmap\n",
 		       __func__);
 		ret = -EINVAL;
 		goto fail_cmd;
+<<<<<<< HEAD
 	} else if (atomic_read(&this_adm.adm_stat) > 0) {
 		pr_err("%s: DSP returned error[%s]\n",
 				__func__, adsp_err_get_err_str(
 				atomic_read(&this_adm.adm_stat)));
 		ret = adsp_err_get_lnx_err_code(
 				atomic_read(&this_adm.adm_stat));
+=======
+	} else if (atomic_read(&this_adm.adm_cmd_err_code) > 0) {
+		pr_err("%s: DSP returned error[%s]\n",
+				__func__, adsp_err_get_err_str(
+				atomic_read(&this_adm.adm_cmd_err_code)));
+		ret = adsp_err_get_lnx_err_code(
+				atomic_read(&this_adm.adm_cmd_err_code));
+>>>>>>> p9x
 		goto fail_cmd;
 	} else {
 		pr_debug("%s: Unmap handle 0x%x succeeded\n", __func__,
@@ -1801,6 +2146,7 @@ fail_cmd:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int remap_cal_data(struct cal_block_data *cal_block, int cal_index)
 {
 	int ret = 0;
@@ -1812,6 +2158,12 @@ static int remap_cal_data(struct cal_block_data *cal_block, int cal_index)
 		goto done;
 	}
 
+=======
+static void remap_cal_data(struct cal_block_data *cal_block, int cal_index)
+{
+	int ret = 0;
+
+>>>>>>> p9x
 	if ((cal_block->map_data.map_size > 0) &&
 		(cal_block->map_data.q6map_handle == 0)) {
 		atomic_set(&this_adm.mem_map_index, cal_index);
@@ -1831,7 +2183,11 @@ static int remap_cal_data(struct cal_block_data *cal_block, int cal_index)
 			mem_map_handles[cal_index]);
 	}
 done:
+<<<<<<< HEAD
 	return ret;
+=======
+	return;
+>>>>>>> p9x
 }
 
 static void send_adm_custom_topology(void)
@@ -1855,12 +2211,16 @@ static void send_adm_custom_topology(void)
 
 	pr_debug("%s: Sending cal_index %d\n", __func__, cal_index);
 
+<<<<<<< HEAD
 	result = remap_cal_data(cal_block, cal_index);
 	if (result) {
 		pr_err("%s: Remap_cal_data failed for cal %d!\n",
 			__func__, cal_index);
 		goto unlock;
 	}
+=======
+	remap_cal_data(cal_block, cal_index);
+>>>>>>> p9x
 	atomic_set(&this_adm.mem_map_index, cal_index);
 	atomic_set(&this_adm.mem_map_handles[cal_index],
 		cal_block->map_data.q6map_handle);
@@ -1882,12 +2242,21 @@ static void send_adm_custom_topology(void)
 	adm_top.hdr.token = 0;
 	adm_top.hdr.opcode = ADM_CMD_ADD_TOPOLOGIES;
 	adm_top.payload_addr_lsw = lower_32_bits(cal_block->cal_data.paddr);
+<<<<<<< HEAD
 	adm_top.payload_addr_msw = msm_audio_populate_upper_32_bits(
+=======
+	adm_top.payload_addr_msw = populate_upper_32_bits(
+>>>>>>> p9x
 						cal_block->cal_data.paddr);
 	adm_top.mem_map_handle = cal_block->map_data.q6map_handle;
 	adm_top.payload_size = cal_block->cal_data.size;
 
+<<<<<<< HEAD
 	atomic_set(&this_adm.adm_stat, -1);
+=======
+	atomic_set(&this_adm.adm_stat, 0);
+	atomic_set(&this_adm.adm_cmd_err_code, 0);
+>>>>>>> p9x
 	pr_debug("%s: Sending ADM_CMD_ADD_TOPOLOGIES payload = 0x%pK, size = %d\n",
 		__func__, &cal_block->cal_data.paddr,
 		adm_top.payload_size);
@@ -1899,18 +2268,31 @@ static void send_adm_custom_topology(void)
 	}
 	/* Wait for the callback */
 	result = wait_event_timeout(this_adm.adm_wait,
+<<<<<<< HEAD
 				    atomic_read(&this_adm.adm_stat) >= 0,
+=======
+				    atomic_read(&this_adm.adm_stat),
+>>>>>>> p9x
 				    msecs_to_jiffies(TIMEOUT_MS));
 	if (!result) {
 		pr_err("%s: Set topologies timed out payload size = 0x%zd\n",
 			__func__, cal_block->cal_data.size);
 		goto unlock;
+<<<<<<< HEAD
 	} else if (atomic_read(&this_adm.adm_stat) > 0) {
 		pr_err("%s: DSP returned error[%s]\n",
 				__func__, adsp_err_get_err_str(
 				atomic_read(&this_adm.adm_stat)));
 		result = adsp_err_get_lnx_err_code(
 				atomic_read(&this_adm.adm_stat));
+=======
+	} else if (atomic_read(&this_adm.adm_cmd_err_code) > 0) {
+		pr_err("%s: DSP returned error[%s]\n",
+				__func__, adsp_err_get_err_str(
+				atomic_read(&this_adm.adm_cmd_err_code)));
+		result = adsp_err_get_lnx_err_code(
+				atomic_read(&this_adm.adm_cmd_err_code));
+>>>>>>> p9x
 		goto unlock;
 	}
 unlock:
@@ -1971,12 +2353,21 @@ static int send_adm_cal_block(int port_id, int copp_idx,
 			atomic_read(&this_adm.copp.id[port_idx][copp_idx]);
 	adm_params.hdr.opcode = ADM_CMD_SET_PP_PARAMS_V5;
 	adm_params.payload_addr_lsw = lower_32_bits(cal_block->cal_data.paddr);
+<<<<<<< HEAD
 	adm_params.payload_addr_msw = msm_audio_populate_upper_32_bits(
+=======
+	adm_params.payload_addr_msw = populate_upper_32_bits(
+>>>>>>> p9x
 						cal_block->cal_data.paddr);
 	adm_params.mem_map_handle = cal_block->map_data.q6map_handle;
 	adm_params.payload_size = cal_block->cal_data.size;
 
+<<<<<<< HEAD
 	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], -1);
+=======
+	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], 0);
+	atomic_set(&this_adm.copp.cmd_err_code[port_idx][copp_idx], 0);
+>>>>>>> p9x
 	pr_debug("%s: Sending SET_PARAMS payload = 0x%pK, size = %d\n",
 		__func__, &cal_block->cal_data.paddr,
 		adm_params.payload_size);
@@ -1991,7 +2382,11 @@ static int send_adm_cal_block(int port_id, int copp_idx,
 	}
 	/* Wait for the callback */
 	result = wait_event_timeout(this_adm.copp.wait[port_idx][copp_idx],
+<<<<<<< HEAD
 		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]) >= 0,
+=======
+		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]),
+>>>>>>> p9x
 		msecs_to_jiffies(TIMEOUT_MS));
 	if (!result) {
 		pr_err("%s: Set params timed out port = 0x%x\n",
@@ -2000,6 +2395,7 @@ static int send_adm_cal_block(int port_id, int copp_idx,
 			__func__, port_id, &cal_block->cal_data.paddr);
 		result = -EINVAL;
 		goto done;
+<<<<<<< HEAD
 	} else if (atomic_read(&this_adm.copp.stat
 				[port_idx][copp_idx]) > 0) {
 		pr_err("%s: DSP returned error[%s]\n",
@@ -2008,6 +2404,16 @@ static int send_adm_cal_block(int port_id, int copp_idx,
 				[port_idx][copp_idx])));
 		result = adsp_err_get_lnx_err_code(
 				atomic_read(&this_adm.copp.stat
+=======
+	} else if (atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx]) > 0) {
+		pr_err("%s: DSP returned error[%s]\n",
+				__func__, adsp_err_get_err_str(
+				atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx])));
+		result = adsp_err_get_lnx_err_code(
+				atomic_read(&this_adm.copp.cmd_err_code
+>>>>>>> p9x
 					[port_idx][copp_idx]));
 		goto done;
 	}
@@ -2120,6 +2526,7 @@ static struct cal_block_data *adm_find_cal(int cal_index, int path,
 	return adm_find_cal_by_app_type(cal_index, path, app_type);
 }
 
+<<<<<<< HEAD
 static int adm_remap_and_send_cal_block(int cal_index, int port_id,
 	int copp_idx, struct cal_block_data *cal_block, int perf_mode,
 	int app_type, int acdb_id, int sample_rate)
@@ -2142,6 +2549,8 @@ done:
 	return ret;
 }
 
+=======
+>>>>>>> p9x
 static void send_adm_cal_type(int cal_index, int path, int port_id,
 			      int copp_idx, int perf_mode, int app_type,
 			      int acdb_id, int sample_rate)
@@ -2163,8 +2572,18 @@ static void send_adm_cal_type(int cal_index, int path, int port_id,
 	if (cal_block == NULL)
 		goto unlock;
 
+<<<<<<< HEAD
 	ret = adm_remap_and_send_cal_block(cal_index, port_id, copp_idx,
 		cal_block, perf_mode, app_type, acdb_id, sample_rate);
+=======
+	pr_debug("%s: Sending cal_index cal %d\n", __func__, cal_index);
+	remap_cal_data(cal_block, cal_index);
+	ret = send_adm_cal_block(port_id, copp_idx, cal_block, perf_mode,
+				app_type, acdb_id, sample_rate);
+	if (ret < 0)
+		pr_debug("%s: No cal sent for cal_index %d, port_id = 0x%x! ret %d sample_rate %d\n",
+			__func__, cal_index, port_id, ret, sample_rate);
+>>>>>>> p9x
 unlock:
 	mutex_unlock(&this_adm.cal_data[cal_index]->lock);
 done:
@@ -2235,7 +2654,12 @@ int adm_connect_afe_port(int mode, int session_id, int port_id)
 	cmd.session_id = session_id;
 	cmd.afe_port_id = port_id;
 
+<<<<<<< HEAD
 	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], -1);
+=======
+	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], 0);
+	atomic_set(&this_adm.copp.cmd_err_code[port_idx][copp_idx], 0);
+>>>>>>> p9x
 	ret = apr_send_pkt(this_adm.apr, (uint32_t *)&cmd);
 	if (ret < 0) {
 		pr_err("%s: ADM enable for port_id: 0x%x failed ret %d\n",
@@ -2245,13 +2669,18 @@ int adm_connect_afe_port(int mode, int session_id, int port_id)
 	}
 	/* Wait for the callback with copp id */
 	ret = wait_event_timeout(this_adm.copp.wait[port_idx][copp_idx],
+<<<<<<< HEAD
 		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]) >= 0,
+=======
+		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]),
+>>>>>>> p9x
 		msecs_to_jiffies(TIMEOUT_MS));
 	if (!ret) {
 		pr_err("%s: ADM connect timedout for port_id: 0x%x\n",
 			__func__, port_id);
 		ret = -EINVAL;
 		goto fail_cmd;
+<<<<<<< HEAD
 	} else if (atomic_read(&this_adm.copp.stat
 				[port_idx][copp_idx]) > 0) {
 		pr_err("%s: DSP returned error[%s]\n",
@@ -2260,6 +2689,16 @@ int adm_connect_afe_port(int mode, int session_id, int port_id)
 				[port_idx][copp_idx])));
 		ret = adsp_err_get_lnx_err_code(
 				atomic_read(&this_adm.copp.stat
+=======
+	} else if (atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx]) > 0) {
+		pr_err("%s: DSP returned error[%s]\n",
+				__func__, adsp_err_get_err_str(
+				atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx])));
+		ret = adsp_err_get_lnx_err_code(
+				atomic_read(&this_adm.copp.cmd_err_code
+>>>>>>> p9x
 					[port_idx][copp_idx]));
 		goto fail_cmd;
 	}
@@ -2275,17 +2714,71 @@ int adm_arrange_mch_map(struct adm_cmd_device_open_v5 *open, int path,
 			 int channel_mode)
 {
 	int rc = 0, idx;
+<<<<<<< HEAD
 	memset(open->dev_channel_mapping, 0, PCM_FORMAT_MAX_NUM_CHANNEL);
+=======
+
+	memset(open->dev_channel_mapping, 0,
+	       PCM_FORMAT_MAX_NUM_CHANNEL);
+
+	if (channel_mode == 1)	{
+		open->dev_channel_mapping[0] = PCM_CHANNEL_FC;
+	} else if (channel_mode == 2) {
+		open->dev_channel_mapping[0] = PCM_CHANNEL_FL;
+		open->dev_channel_mapping[1] = PCM_CHANNEL_FR;
+	} else if (channel_mode == 3)	{
+		open->dev_channel_mapping[0] = PCM_CHANNEL_FL;
+		open->dev_channel_mapping[1] = PCM_CHANNEL_FR;
+		open->dev_channel_mapping[2] = PCM_CHANNEL_FC;
+	} else if (channel_mode == 4) {
+		open->dev_channel_mapping[0] = PCM_CHANNEL_FL;
+		open->dev_channel_mapping[1] = PCM_CHANNEL_FR;
+		open->dev_channel_mapping[2] = PCM_CHANNEL_LS;
+		open->dev_channel_mapping[3] = PCM_CHANNEL_RS;
+	} else if (channel_mode == 5) {
+		open->dev_channel_mapping[0] = PCM_CHANNEL_FL;
+		open->dev_channel_mapping[1] = PCM_CHANNEL_FR;
+		open->dev_channel_mapping[2] = PCM_CHANNEL_FC;
+		open->dev_channel_mapping[3] = PCM_CHANNEL_LS;
+		open->dev_channel_mapping[4] = PCM_CHANNEL_RS;
+	} else if (channel_mode == 6) {
+		open->dev_channel_mapping[0] = PCM_CHANNEL_FL;
+		open->dev_channel_mapping[1] = PCM_CHANNEL_FR;
+		open->dev_channel_mapping[2] = PCM_CHANNEL_LFE;
+		open->dev_channel_mapping[3] = PCM_CHANNEL_FC;
+		open->dev_channel_mapping[4] = PCM_CHANNEL_LS;
+		open->dev_channel_mapping[5] = PCM_CHANNEL_RS;
+	} else if (channel_mode == 8) {
+		open->dev_channel_mapping[0] = PCM_CHANNEL_FL;
+		open->dev_channel_mapping[1] = PCM_CHANNEL_FR;
+		open->dev_channel_mapping[2] = PCM_CHANNEL_LFE;
+		open->dev_channel_mapping[3] = PCM_CHANNEL_FC;
+		open->dev_channel_mapping[4] = PCM_CHANNEL_LS;
+		open->dev_channel_mapping[5] = PCM_CHANNEL_RS;
+		open->dev_channel_mapping[6] = PCM_CHANNEL_LB;
+		open->dev_channel_mapping[7] = PCM_CHANNEL_RB;
+	} else {
+		pr_err("%s: invalid num_chan %d\n", __func__,
+			channel_mode);
+		rc = -EINVAL;
+		goto inval_ch_mod;
+	}
+
+>>>>>>> p9x
 	switch (path) {
 	case ADM_PATH_PLAYBACK:
 		idx = ADM_MCH_MAP_IDX_PLAYBACK;
 		break;
 	case ADM_PATH_LIVE_REC:
+<<<<<<< HEAD
 	case ADM_PATH_NONLIVE_REC:
+=======
+>>>>>>> p9x
 		idx = ADM_MCH_MAP_IDX_REC;
 		break;
 	default:
 		goto non_mch_path;
+<<<<<<< HEAD
 	};
 	if ((open->dev_num_channel > 2) && multi_ch_maps[idx].set_channel_map) {
 		memcpy(open->dev_channel_mapping,
@@ -2343,12 +2836,22 @@ int adm_arrange_mch_map(struct adm_cmd_device_open_v5 *open, int path,
 			goto inval_ch_mod;
 		}
 	}
+=======
+		break;
+	};
+
+	if ((open->dev_num_channel > 2) && multi_ch_maps[idx].set_channel_map)
+		memcpy(open->dev_channel_mapping,
+		       multi_ch_maps[idx].channel_mapping,
+		       PCM_FORMAT_MAX_NUM_CHANNEL);
+>>>>>>> p9x
 
 non_mch_path:
 inval_ch_mod:
 	return rc;
 }
 
+<<<<<<< HEAD
 int adm_arrange_mch_ep2_map(struct adm_cmd_device_open_v6 *open_v6,
 			 int channel_mode)
 {
@@ -2416,6 +2919,12 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 {
 	struct adm_cmd_device_open_v5	open;
 	struct adm_cmd_device_open_v6	open_v6;
+=======
+int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
+	     int perf_mode, uint16_t bit_width, int app_type, int acdb_id)
+{
+	struct adm_cmd_device_open_v5	open;
+>>>>>>> p9x
 	int ret = 0;
 	int port_idx, copp_idx, flags;
 	int tmp_port = q6audio_get_port_id(port_id);
@@ -2441,6 +2950,7 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 		rtac_set_adm_handle(this_adm.apr);
 	}
 
+<<<<<<< HEAD
 	if (perf_mode == ULL_POST_PROCESSING_PCM_MODE) {
 		flags = ADM_ULL_POST_PROCESSING_DEVICE_SESSION;
 		if ((topology == DOLBY_ADM_COPP_TOPOLOGY_ID) ||
@@ -2448,6 +2958,9 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 		    (topology == SRS_TRUMEDIA_TOPOLOGY_ID))
 			topology = DEFAULT_COPP_TOPOLOGY;
 	} else if (perf_mode == ULTRA_LOW_LATENCY_PCM_MODE) {
+=======
+	if (perf_mode == ULTRA_LOW_LATENCY_PCM_MODE) {
+>>>>>>> p9x
 		flags = ADM_ULTRA_LOW_LATENCY_DEVICE_SESSION;
 		topology = NULL_COPP_TOPOLOGY;
 		rate = ULL_SUPPORTED_SAMPLE_RATE;
@@ -2471,8 +2984,12 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 		rate = 16000;
 
 	copp_idx = adm_get_idx_if_copp_exists(port_idx, topology, perf_mode,
+<<<<<<< HEAD
 					      rate, bit_width, app_type,
 					      session_type);
+=======
+						rate, bit_width, app_type);
+>>>>>>> p9x
 	if (copp_idx < 0) {
 		copp_idx = adm_get_next_available_copp(port_idx);
 		if (copp_idx >= MAX_COPPS_PER_PORT) {
@@ -2487,17 +3004,23 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 				   perf_mode);
 			atomic_set(&this_adm.copp.rate[port_idx][copp_idx],
 				   rate);
+<<<<<<< HEAD
 			atomic_set(&this_adm.copp.channels[port_idx][copp_idx],
 				   channel_mode);
+=======
+>>>>>>> p9x
 			atomic_set(&this_adm.copp.bit_width[port_idx][copp_idx],
 				   bit_width);
 			atomic_set(&this_adm.copp.app_type[port_idx][copp_idx],
 				   app_type);
 			atomic_set(&this_adm.copp.acdb_id[port_idx][copp_idx],
 				   acdb_id);
+<<<<<<< HEAD
 			atomic_set(
 				&this_adm.copp.session_type[port_idx][copp_idx],
 				   session_type);
+=======
+>>>>>>> p9x
 			set_bit(ADM_STATUS_CALIBRATION_REQUIRED,
 			(void *)&this_adm.copp.adm_status[port_idx][copp_idx]);
 			if (path != ADM_PATH_COMPRESSED_RX)
@@ -2545,10 +3068,17 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 		open.flags = flags;
 		open.mode_of_operation = path;
 		open.endpoint_id_1 = tmp_port;
+<<<<<<< HEAD
 		open.endpoint_id_2 = 0xFFFF;
 
 		if (this_adm.ec_ref_rx && (path != 1) &&
 		    (afe_get_port_type(tmp_port) == MSM_AFE_PORT_TYPE_TX)) {
+=======
+
+		if (this_adm.ec_ref_rx == -1) {
+			open.endpoint_id_2 = 0xFFFF;
+		} else if (this_adm.ec_ref_rx && (path != 1)) {
+>>>>>>> p9x
 			open.endpoint_id_2 = this_adm.ec_ref_rx;
 			this_adm.ec_ref_rx = -1;
 		}
@@ -2570,6 +3100,7 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 			__func__, open.endpoint_id_1, open.sample_rate,
 			open.topology_id);
 
+<<<<<<< HEAD
 		atomic_set(&this_adm.copp.stat[port_idx][copp_idx], -1);
 
 		if ((this_adm.num_ec_ref_rx_chans != 0) && (path != 1) &&
@@ -2615,6 +3146,12 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 		} else {
 			ret = apr_send_pkt(this_adm.apr, (uint32_t *)&open);
 		}
+=======
+		atomic_set(&this_adm.copp.stat[port_idx][copp_idx], 0);
+		atomic_set(&this_adm.copp.cmd_err_code[port_idx][copp_idx], 0);
+
+		ret = apr_send_pkt(this_adm.apr, (uint32_t *)&open);
+>>>>>>> p9x
 		if (ret < 0) {
 			pr_err("%s: port_id: 0x%x for[0x%x] failed %d\n",
 			__func__, tmp_port, port_id, ret);
@@ -2622,13 +3159,18 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 		}
 		/* Wait for the callback with copp id */
 		ret = wait_event_timeout(this_adm.copp.wait[port_idx][copp_idx],
+<<<<<<< HEAD
 			atomic_read(&this_adm.copp.stat
 			[port_idx][copp_idx]) >= 0,
+=======
+			atomic_read(&this_adm.copp.stat[port_idx][copp_idx]),
+>>>>>>> p9x
 			msecs_to_jiffies(TIMEOUT_MS));
 		if (!ret) {
 			pr_err("%s: ADM open timedout for port_id: 0x%x for [0x%x]\n",
 						__func__, tmp_port, port_id);
 			return -EINVAL;
+<<<<<<< HEAD
 		} else if (atomic_read(&this_adm.copp.stat
 					[port_idx][copp_idx]) > 0) {
 			pr_err("%s: DSP returned error[%s]\n",
@@ -2637,6 +3179,16 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 				[port_idx][copp_idx])));
 			return adsp_err_get_lnx_err_code(
 					atomic_read(&this_adm.copp.stat
+=======
+		} else if (atomic_read(&this_adm.copp.cmd_err_code
+					[port_idx][copp_idx]) > 0) {
+			pr_err("%s: DSP returned error[%s]\n",
+				__func__, adsp_err_get_err_str(
+				atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx])));
+			return adsp_err_get_lnx_err_code(
+					atomic_read(&this_adm.copp.cmd_err_code
+>>>>>>> p9x
 						[port_idx][copp_idx]));
 		}
 	}
@@ -2644,6 +3196,7 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 	return copp_idx;
 }
 
+<<<<<<< HEAD
 void adm_copp_mfc_cfg(int port_id, int copp_idx, int dst_sample_rate)
 {
 	struct audproc_mfc_output_media_fmt mfc_cfg;
@@ -2785,6 +3338,9 @@ static void route_set_opcode_matrix_id(
 
 int adm_matrix_map(int path, struct route_payload payload_map, int perf_mode,
 			uint32_t passthr_mode)
+=======
+int adm_matrix_map(int path, struct route_payload payload_map, int perf_mode)
+>>>>>>> p9x
 {
 	struct adm_cmd_matrix_map_routings_v5	*route;
 	struct adm_session_map_node_v5 *node;
@@ -2817,9 +3373,38 @@ int adm_matrix_map(int path, struct route_payload payload_map, int perf_mode,
 	route->hdr.dest_domain = APR_DOMAIN_ADSP;
 	route->hdr.dest_port = 0; /* Ignored */;
 	route->hdr.token = 0;
+<<<<<<< HEAD
 	route->num_sessions = 1;
 	route_set_opcode_matrix_id(&route, path, passthr_mode);
 
+=======
+	if (path == ADM_PATH_COMPRESSED_RX) {
+		pr_debug("%s: ADM_CMD_STREAM_DEVICE_MAP_ROUTINGS_V5 0x%x\n",
+			 __func__, ADM_CMD_STREAM_DEVICE_MAP_ROUTINGS_V5);
+		route->hdr.opcode = ADM_CMD_STREAM_DEVICE_MAP_ROUTINGS_V5;
+	} else {
+		pr_debug("%s: DM_CMD_MATRIX_MAP_ROUTINGS_V5 0x%x\n",
+			 __func__, ADM_CMD_MATRIX_MAP_ROUTINGS_V5);
+		route->hdr.opcode = ADM_CMD_MATRIX_MAP_ROUTINGS_V5;
+	}
+	route->num_sessions = 1;
+
+	switch (path) {
+	case ADM_PATH_PLAYBACK:
+		route->matrix_id = ADM_MATRIX_ID_AUDIO_RX;
+		break;
+	case ADM_PATH_LIVE_REC:
+	case ADM_PATH_NONLIVE_REC:
+		route->matrix_id = ADM_MATRIX_ID_AUDIO_TX;
+		break;
+	case ADM_PATH_COMPRESSED_RX:
+		route->matrix_id = ADM_MATRIX_ID_COMPRESSED_AUDIO_RX;
+		break;
+	default:
+		pr_err("%s: Wrong path set[%d]\n", __func__, path);
+		break;
+	}
+>>>>>>> p9x
 	payload = ((u8 *)matrix_map +
 			sizeof(struct adm_cmd_matrix_map_routings_v5));
 	node = (struct adm_session_map_node_v5 *)payload;
@@ -2840,7 +3425,12 @@ int adm_matrix_map(int path, struct route_payload payload_map, int perf_mode,
 		copps_list[i] = atomic_read(&this_adm.copp.id[port_idx]
 							     [copp_idx]);
 	}
+<<<<<<< HEAD
 	atomic_set(&this_adm.matrix_map_stat, -1);
+=======
+	atomic_set(&this_adm.matrix_map_stat, 0);
+	atomic_set(&this_adm.matrix_map_cmd_err_code, 0);
+>>>>>>> p9x
 
 	ret = apr_send_pkt(this_adm.apr, (uint32_t *)matrix_map);
 	if (ret < 0) {
@@ -2850,19 +3440,32 @@ int adm_matrix_map(int path, struct route_payload payload_map, int perf_mode,
 		goto fail_cmd;
 	}
 	ret = wait_event_timeout(this_adm.matrix_map_wait,
+<<<<<<< HEAD
 				atomic_read(&this_adm.matrix_map_stat) >= 0,
+=======
+				atomic_read(&this_adm.matrix_map_stat),
+>>>>>>> p9x
 				msecs_to_jiffies(TIMEOUT_MS));
 	if (!ret) {
 		pr_err("%s: routing for syream %d failed\n", __func__,
 			payload_map.session_id);
 		ret = -EINVAL;
 		goto fail_cmd;
+<<<<<<< HEAD
 	} else if (atomic_read(&this_adm.matrix_map_stat) > 0) {
 		pr_err("%s: DSP returned error[%s]\n", __func__,
 			adsp_err_get_err_str(atomic_read(
 			&this_adm.matrix_map_stat)));
 		ret = adsp_err_get_lnx_err_code(
 				atomic_read(&this_adm.matrix_map_stat));
+=======
+	} else if (atomic_read(&this_adm.matrix_map_cmd_err_code) > 0) {
+		pr_err("%s: DSP returned error[%s]\n", __func__,
+			adsp_err_get_err_str(atomic_read(
+			&this_adm.matrix_map_cmd_err_code)));
+		ret = adsp_err_get_lnx_err_code(
+				atomic_read(&this_adm.matrix_map_cmd_err_code));
+>>>>>>> p9x
 		goto fail_cmd;
 	}
 
@@ -2871,6 +3474,13 @@ int adm_matrix_map(int path, struct route_payload payload_map, int perf_mode,
 		for (i = 0; i < payload_map.num_copps; i++) {
 			port_idx = afe_get_port_index(payload_map.port_id[i]);
 			copp_idx = payload_map.copp_idx[i];
+<<<<<<< HEAD
+=======
+			if (atomic_read(
+				&this_adm.copp.topology[port_idx][copp_idx]) ==
+				ADM_CMD_COPP_OPEN_TOPOLOGY_ID_DTS_HPX)
+				continue;
+>>>>>>> p9x
 			rtac_add_adm_device(payload_map.port_id[i],
 					    atomic_read(&this_adm.copp.id
 							[port_idx][copp_idx]),
@@ -2909,6 +3519,7 @@ fail_cmd:
 void adm_ec_ref_rx_id(int port_id)
 {
 	this_adm.ec_ref_rx = port_id;
+<<<<<<< HEAD
 	pr_debug("%s: ec_ref_rx:%d\n", __func__, this_adm.ec_ref_rx);
 }
 
@@ -2931,6 +3542,9 @@ void adm_ec_ref_rx_sampling_rate(int sampling_rate)
 	this_adm.ec_ref_rx_sampling_rate = sampling_rate;
 	pr_debug("%s: ec_ref_rx_sampling_rate:%d\n",
 		__func__, this_adm.ec_ref_rx_sampling_rate);
+=======
+	pr_debug("%s: ec_ref_rx:%d", __func__, this_adm.ec_ref_rx);
+>>>>>>> p9x
 }
 
 int adm_close(int port_id, int perf_mode, int copp_idx)
@@ -2986,7 +3600,11 @@ int adm_close(int port_id, int perf_mode, int copp_idx)
 
 
 		if ((afe_get_port_type(port_id) == MSM_AFE_PORT_TYPE_TX) &&
+<<<<<<< HEAD
 		    this_adm.sourceTrackingData.memmap.paddr) {
+=======
+		    (this_adm.sourceTrackingData.memmap.paddr != 0)) {
+>>>>>>> p9x
 			atomic_set(&this_adm.mem_map_index,
 				   ADM_MEM_MAP_INDEX_SOURCE_TRACKING);
 			ret = adm_memory_unmap_regions();
@@ -3025,12 +3643,20 @@ int adm_close(int port_id, int perf_mode, int copp_idx)
 		atomic_set(&this_adm.copp.cnt[port_idx][copp_idx], 0);
 		atomic_set(&this_adm.copp.topology[port_idx][copp_idx], 0);
 		atomic_set(&this_adm.copp.mode[port_idx][copp_idx], 0);
+<<<<<<< HEAD
 		atomic_set(&this_adm.copp.stat[port_idx][copp_idx], -1);
 		atomic_set(&this_adm.copp.rate[port_idx][copp_idx], 0);
 		atomic_set(&this_adm.copp.channels[port_idx][copp_idx], 0);
 		atomic_set(&this_adm.copp.bit_width[port_idx][copp_idx], 0);
 		atomic_set(&this_adm.copp.app_type[port_idx][copp_idx], 0);
 		atomic_set(&this_adm.copp.session_type[port_idx][copp_idx], 0);
+=======
+		atomic_set(&this_adm.copp.stat[port_idx][copp_idx], 0);
+		atomic_set(&this_adm.copp.cmd_err_code[port_idx][copp_idx], 0);
+		atomic_set(&this_adm.copp.rate[port_idx][copp_idx], 0);
+		atomic_set(&this_adm.copp.bit_width[port_idx][copp_idx], 0);
+		atomic_set(&this_adm.copp.app_type[port_idx][copp_idx], 0);
+>>>>>>> p9x
 
 		clear_bit(ADM_STATUS_CALIBRATION_REQUIRED,
 			(void *)&this_adm.copp.adm_status[port_idx][copp_idx]);
@@ -3042,13 +3668,18 @@ int adm_close(int port_id, int perf_mode, int copp_idx)
 		}
 
 		ret = wait_event_timeout(this_adm.copp.wait[port_idx][copp_idx],
+<<<<<<< HEAD
 			atomic_read(&this_adm.copp.stat
 			[port_idx][copp_idx]) >= 0,
+=======
+			atomic_read(&this_adm.copp.stat[port_idx][copp_idx]),
+>>>>>>> p9x
 			msecs_to_jiffies(TIMEOUT_MS));
 		if (!ret) {
 			pr_err("%s: ADM cmd Route timedout for port 0x%x\n",
 				__func__, port_id);
 			return -EINVAL;
+<<<<<<< HEAD
 		} else if (atomic_read(&this_adm.copp.stat
 					[port_idx][copp_idx]) > 0) {
 			pr_err("%s: DSP returned error[%s]\n",
@@ -3057,6 +3688,16 @@ int adm_close(int port_id, int perf_mode, int copp_idx)
 				[port_idx][copp_idx])));
 			return adsp_err_get_lnx_err_code(
 					atomic_read(&this_adm.copp.stat
+=======
+		} else if (atomic_read(&this_adm.copp.cmd_err_code
+					[port_idx][copp_idx]) > 0) {
+			pr_err("%s: DSP returned error[%s]\n",
+				__func__, adsp_err_get_err_str(
+				atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx])));
+			return adsp_err_get_lnx_err_code(
+					atomic_read(&this_adm.copp.cmd_err_code
+>>>>>>> p9x
 						[port_idx][copp_idx]));
 		}
 	}
@@ -3068,6 +3709,7 @@ int adm_close(int port_id, int perf_mode, int copp_idx)
 	return 0;
 }
 
+<<<<<<< HEAD
 int send_rtac_audvol_cal(void)
 {
 	int ret = 0;
@@ -3141,6 +3783,8 @@ unlock:
 	return ret;
 }
 
+=======
+>>>>>>> p9x
 int adm_map_rtac_block(struct rtac_cal_block_data *cal_block)
 {
 	int	result = 0;
@@ -3250,9 +3894,12 @@ static int get_cal_type_index(int32_t cal_type)
 	case ADM_RTAC_APR_CAL_TYPE:
 		ret = ADM_RTAC_APR_CAL;
 		break;
+<<<<<<< HEAD
 	case ADM_RTAC_AUDVOL_CAL_TYPE:
 		ret = ADM_RTAC_AUDVOL_CAL;
 		break;
+=======
+>>>>>>> p9x
 	default:
 		pr_err("%s: invalid cal type %d!\n", __func__, cal_type);
 	}
@@ -3315,6 +3962,11 @@ static int adm_set_cal(int32_t cal_type, size_t data_size, void *data)
 {
 	int				ret = 0;
 	int				cal_index;
+<<<<<<< HEAD
+=======
+	static DEFINE_RATELIMIT_STATE(rl, HZ/2, 1);
+
+>>>>>>> p9x
 	pr_debug("%s:\n", __func__);
 
 	cal_index = get_cal_type_index(cal_type);
@@ -3328,7 +3980,12 @@ static int adm_set_cal(int32_t cal_type, size_t data_size, void *data)
 	ret = cal_utils_set_cal(data_size, data,
 		this_adm.cal_data[cal_index], 0, NULL);
 	if (ret < 0) {
+<<<<<<< HEAD
 		pr_err("%s: cal_utils_set_cal failed, ret = %d, cal type = %d!\n",
+=======
+		if (__ratelimit(&rl))
+			pr_err("%s: cal_utils_set_cal failed, ret = %d, cal type = %d!\n",
+>>>>>>> p9x
 			__func__, ret, cal_type);
 		ret = -EINVAL;
 		goto done;
@@ -3338,8 +3995,11 @@ static int adm_set_cal(int32_t cal_type, size_t data_size, void *data)
 		mutex_lock(&this_adm.cal_data[ADM_CUSTOM_TOP_CAL]->lock);
 		this_adm.set_custom_topology = 1;
 		mutex_unlock(&this_adm.cal_data[ADM_CUSTOM_TOP_CAL]->lock);
+<<<<<<< HEAD
 	} else if (cal_index == ADM_RTAC_AUDVOL_CAL) {
 		send_rtac_audvol_cal();
+=======
+>>>>>>> p9x
 	}
 done:
 	return ret;
@@ -3350,6 +4010,11 @@ static int adm_map_cal_data(int32_t cal_type,
 {
 	int ret = 0;
 	int cal_index;
+<<<<<<< HEAD
+=======
+	static DEFINE_RATELIMIT_STATE(rl, HZ/2, 1);
+
+>>>>>>> p9x
 	pr_debug("%s:\n", __func__);
 
 	cal_index = get_cal_type_index(cal_type);
@@ -3364,8 +4029,14 @@ static int adm_map_cal_data(int32_t cal_type,
 	ret = adm_memory_map_regions(&cal_block->cal_data.paddr, 0,
 		(uint32_t *)&cal_block->map_data.map_size, 1);
 	if (ret < 0) {
+<<<<<<< HEAD
 		pr_err("%s: map did not work! cal_type %i ret %d\n",
 			__func__, cal_index, ret);
+=======
+		if (__ratelimit(&rl))
+			pr_err("%s: map did not work! cal_type %i ret %d\n",
+				__func__, cal_index, ret);
+>>>>>>> p9x
 		ret = -ENODEV;
 		goto done;
 	}
@@ -3390,6 +4061,7 @@ static int adm_unmap_cal_data(int32_t cal_type,
 		goto done;
 	}
 
+<<<<<<< HEAD
 	if (cal_block == NULL) {
 		pr_err("%s: Cal block is NULL!\n",
 						__func__);
@@ -3402,6 +4074,8 @@ static int adm_unmap_cal_data(int32_t cal_type,
 		goto done;
 	}
 
+=======
+>>>>>>> p9x
 	atomic_set(&this_adm.mem_map_handles[cal_index],
 		cal_block->map_data.q6map_handle);
 	atomic_set(&this_adm.mem_map_index, cal_index);
@@ -3458,6 +4132,7 @@ static int adm_init_cal_data(void)
 
 		{{SRS_TRUMEDIA_CAL_TYPE,
 		{NULL, NULL, NULL, NULL, NULL, NULL} },
+<<<<<<< HEAD
 		{NULL, NULL, cal_utils_match_buf_num} },
 
 		{{ADM_RTAC_AUDVOL_CAL_TYPE,
@@ -3465,6 +4140,9 @@ static int adm_init_cal_data(void)
 		adm_set_cal, NULL, NULL} },
 		{adm_map_cal_data, adm_unmap_cal_data,
 		cal_utils_match_buf_num} },
+=======
+		{NULL, NULL, cal_utils_match_buf_num} }
+>>>>>>> p9x
 	};
 	pr_debug("%s:\n", __func__);
 
@@ -3529,7 +4207,12 @@ int adm_set_volume(int port_id, int copp_idx, int volume)
 	audproc_vol.data.reserved = 0;
 	audproc_vol.master_gain = volume;
 
+<<<<<<< HEAD
 	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], -1);
+=======
+	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], 0);
+	atomic_set(&this_adm.copp.cmd_err_code[port_idx][copp_idx], 0);
+>>>>>>> p9x
 	rc = apr_send_pkt(this_adm.apr, (uint32_t *)&audproc_vol);
 	if (rc < 0) {
 		pr_err("%s: Set params failed port = %#x\n",
@@ -3539,13 +4222,18 @@ int adm_set_volume(int port_id, int copp_idx, int volume)
 	}
 	/* Wait for the callback */
 	rc = wait_event_timeout(this_adm.copp.wait[port_idx][copp_idx],
+<<<<<<< HEAD
 		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]) >= 0,
+=======
+		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]),
+>>>>>>> p9x
 		msecs_to_jiffies(TIMEOUT_MS));
 	if (!rc) {
 		pr_err("%s: Vol cntrl Set params timed out port = %#x\n",
 			 __func__, port_id);
 		rc = -EINVAL;
 		goto fail_cmd;
+<<<<<<< HEAD
 	} else if (atomic_read(&this_adm.copp.stat
 				[port_idx][copp_idx]) > 0) {
 		pr_err("%s: DSP returned error[%s]\n",
@@ -3554,6 +4242,16 @@ int adm_set_volume(int port_id, int copp_idx, int volume)
 				[port_idx][copp_idx])));
 		rc = adsp_err_get_lnx_err_code(
 				atomic_read(&this_adm.copp.stat
+=======
+	} else if (atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx]) > 0) {
+		pr_err("%s: DSP returned error[%s]\n",
+				__func__, adsp_err_get_err_str(
+				atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx])));
+		rc = adsp_err_get_lnx_err_code(
+				atomic_read(&this_adm.copp.cmd_err_code
+>>>>>>> p9x
 					[port_idx][copp_idx]));
 		goto fail_cmd;
 	}
@@ -3621,7 +4319,12 @@ int adm_set_softvolume(int port_id, int copp_idx,
 		 audproc_softvol.period, audproc_softvol.step,
 		 audproc_softvol.ramping_curve);
 
+<<<<<<< HEAD
 	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], -1);
+=======
+	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], 0);
+	atomic_set(&this_adm.copp.cmd_err_code[port_idx][copp_idx], 0);
+>>>>>>> p9x
 	rc = apr_send_pkt(this_adm.apr, (uint32_t *)&audproc_softvol);
 	if (rc < 0) {
 		pr_err("%s: Set params failed port = %#x\n",
@@ -3631,13 +4334,18 @@ int adm_set_softvolume(int port_id, int copp_idx,
 	}
 	/* Wait for the callback */
 	rc = wait_event_timeout(this_adm.copp.wait[port_idx][copp_idx],
+<<<<<<< HEAD
 		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]) >= 0,
+=======
+		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]),
+>>>>>>> p9x
 		msecs_to_jiffies(TIMEOUT_MS));
 	if (!rc) {
 		pr_err("%s: Soft volume Set params timed out port = %#x\n",
 			 __func__, port_id);
 		rc = -EINVAL;
 		goto fail_cmd;
+<<<<<<< HEAD
 	} else if (atomic_read(&this_adm.copp.stat
 				[port_idx][copp_idx]) > 0) {
 		pr_err("%s: DSP returned error[%s]\n",
@@ -3812,6 +4520,16 @@ int adm_send_set_multichannel_ec_primary_mic_ch(int port_id , int copp_idx,
 				[port_idx][copp_idx])));
 		rc = adsp_err_get_lnx_err_code(
 				atomic_read(&this_adm.copp.stat
+=======
+	} else if (atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx]) > 0) {
+		pr_err("%s: DSP returned error[%s]\n",
+				__func__, adsp_err_get_err_str(
+				atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx])));
+		rc = adsp_err_get_lnx_err_code(
+				atomic_read(&this_adm.copp.cmd_err_code
+>>>>>>> p9x
 					[port_idx][copp_idx]));
 		goto fail_cmd;
 	}
@@ -3827,7 +4545,11 @@ int adm_param_enable(int port_id, int copp_idx, int module_id,  int enable)
 	int rc  = 0;
 	int port_idx;
 
+<<<<<<< HEAD
 	pr_debug("%s port_id %d, module_id 0x%x, enable %d\n",
+=======
+	pr_debug("%s port_id %d, enable 0x%x, enable %d\n",
+>>>>>>> p9x
 		 __func__, port_id,  module_id,  enable);
 	port_id = afe_convert_virtual_to_portid(port_id);
 	port_idx = adm_validate_and_get_port_index(port_id);
@@ -3871,7 +4593,12 @@ int adm_param_enable(int port_id, int copp_idx, int module_id,  int enable)
 	adm_mod_enable.pp_params.params.reserved = 0;
 	adm_mod_enable.enable = enable;
 
+<<<<<<< HEAD
 	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], -1);
+=======
+	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], 0);
+	atomic_set(&this_adm.copp.cmd_err_code[port_idx][copp_idx], 0);
+>>>>>>> p9x
 
 	rc = apr_send_pkt(this_adm.apr, (uint32_t *)&adm_mod_enable);
 	if (rc < 0) {
@@ -3882,13 +4609,18 @@ int adm_param_enable(int port_id, int copp_idx, int module_id,  int enable)
 	}
 	/* Wait for the callback */
 	rc = wait_event_timeout(this_adm.copp.wait[port_idx][copp_idx],
+<<<<<<< HEAD
 		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]) >= 0,
+=======
+		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]),
+>>>>>>> p9x
 		msecs_to_jiffies(TIMEOUT_MS));
 	if (!rc) {
 		pr_err("%s:  module %x  enable %d timed out on port = %#x\n",
 			 __func__, module_id, enable, port_id);
 		rc = -EINVAL;
 		goto fail_cmd;
+<<<<<<< HEAD
 	} else if (atomic_read(&this_adm.copp.stat
 				[port_idx][copp_idx]) > 0) {
 		pr_err("%s: DSP returned error[%s]\n",
@@ -3897,6 +4629,16 @@ int adm_param_enable(int port_id, int copp_idx, int module_id,  int enable)
 				[port_idx][copp_idx])));
 		rc = adsp_err_get_lnx_err_code(
 				atomic_read(&this_adm.copp.stat
+=======
+	} else if (atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx]) > 0) {
+		pr_err("%s: DSP returned error[%s]\n",
+				__func__, adsp_err_get_err_str(
+				atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx])));
+		rc = adsp_err_get_lnx_err_code(
+				atomic_read(&this_adm.copp.cmd_err_code
+>>>>>>> p9x
 					[port_idx][copp_idx]));
 		goto fail_cmd;
 	}
@@ -3963,7 +4705,12 @@ int adm_send_calibration(int port_id, int copp_idx, int path, int perf_mode,
 	/* payload address and mmap handle initialized to zero by kzalloc */
 	adm_params->payload_size = size;
 
+<<<<<<< HEAD
 	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], -1);
+=======
+	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], 0);
+	atomic_set(&this_adm.copp.cmd_err_code[port_idx][copp_idx], 0);
+>>>>>>> p9x
 	rc = apr_send_pkt(this_adm.apr, (uint32_t *)adm_params);
 	if (rc < 0) {
 		pr_err("%s: Set params failed port = %#x\n",
@@ -3973,13 +4720,18 @@ int adm_send_calibration(int port_id, int copp_idx, int path, int perf_mode,
 	}
 	/* Wait for the callback */
 	rc = wait_event_timeout(this_adm.copp.wait[port_idx][copp_idx],
+<<<<<<< HEAD
 		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]) >= 0,
+=======
+		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]),
+>>>>>>> p9x
 		msecs_to_jiffies(TIMEOUT_MS));
 	if (!rc) {
 		pr_err("%s: Set params timed out port = %#x\n",
 			 __func__, port_id);
 		rc = -EINVAL;
 		goto end;
+<<<<<<< HEAD
 	} else if (atomic_read(&this_adm.copp.stat
 				[port_idx][copp_idx]) > 0) {
 		pr_err("%s: DSP returned error[%s]\n",
@@ -3988,6 +4740,16 @@ int adm_send_calibration(int port_id, int copp_idx, int path, int perf_mode,
 				[port_idx][copp_idx])));
 		rc = adsp_err_get_lnx_err_code(
 				atomic_read(&this_adm.copp.stat
+=======
+	} else if (atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx]) > 0) {
+		pr_err("%s: DSP returned error[%s]\n",
+				__func__, adsp_err_get_err_str(
+				atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx])));
+		rc = adsp_err_get_lnx_err_code(
+				atomic_read(&this_adm.copp.cmd_err_code
+>>>>>>> p9x
 					[port_idx][copp_idx]));
 		goto end;
 	}
@@ -4217,7 +4979,12 @@ int adm_send_compressed_device_mute(int port_id, int copp_idx, bool mute_on)
 	mute_params.params.reserved = 0;
 	mute_params.mute_on = mute_on;
 
+<<<<<<< HEAD
 	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], -1);
+=======
+	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], 0);
+	atomic_set(&this_adm.copp.cmd_err_code[port_idx][copp_idx], 0);
+>>>>>>> p9x
 	ret = apr_send_pkt(this_adm.apr, (uint32_t *)&mute_params);
 	if (ret < 0) {
 		pr_err("%s: device mute for port %d copp %d failed, ret %d\n",
@@ -4228,13 +4995,18 @@ int adm_send_compressed_device_mute(int port_id, int copp_idx, bool mute_on)
 
 	/* Wait for the callback */
 	ret = wait_event_timeout(this_adm.copp.wait[port_idx][copp_idx],
+<<<<<<< HEAD
 		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]) >= 0,
+=======
+		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]),
+>>>>>>> p9x
 		msecs_to_jiffies(TIMEOUT_MS));
 	if (!ret) {
 		pr_err("%s: send device mute for port %d copp %d failed\n",
 			__func__, port_id, copp_idx);
 		ret = -EINVAL;
 		goto end;
+<<<<<<< HEAD
 	} else if (atomic_read(&this_adm.copp.stat
 				[port_idx][copp_idx]) > 0) {
 		pr_err("%s: DSP returned error[%s]\n",
@@ -4243,6 +5015,16 @@ int adm_send_compressed_device_mute(int port_id, int copp_idx, bool mute_on)
 				[port_idx][copp_idx])));
 		ret = adsp_err_get_lnx_err_code(
 				atomic_read(&this_adm.copp.stat
+=======
+	} else if (atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx]) > 0) {
+		pr_err("%s: DSP returned error[%s]\n",
+				__func__, adsp_err_get_err_str(
+				atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx])));
+		ret = adsp_err_get_lnx_err_code(
+				atomic_read(&this_adm.copp.cmd_err_code
+>>>>>>> p9x
 					[port_idx][copp_idx]));
 		goto end;
 	}
@@ -4294,7 +5076,12 @@ int adm_send_compressed_device_latency(int port_id, int copp_idx, int latency)
 	latency_params.params.reserved = 0;
 	latency_params.latency = latency;
 
+<<<<<<< HEAD
 	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], -1);
+=======
+	atomic_set(&this_adm.copp.stat[port_idx][copp_idx], 0);
+	atomic_set(&this_adm.copp.cmd_err_code[port_idx][copp_idx], 0);
+>>>>>>> p9x
 	ret = apr_send_pkt(this_adm.apr, (uint32_t *)&latency_params);
 	if (ret < 0) {
 		pr_err("%s: send device latency err %d for port %d copp %d\n",
@@ -4305,13 +5092,18 @@ int adm_send_compressed_device_latency(int port_id, int copp_idx, int latency)
 
 	/* Wait for the callback */
 	ret = wait_event_timeout(this_adm.copp.wait[port_idx][copp_idx],
+<<<<<<< HEAD
 		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]) >= 0,
+=======
+		atomic_read(&this_adm.copp.stat[port_idx][copp_idx]),
+>>>>>>> p9x
 		msecs_to_jiffies(TIMEOUT_MS));
 	if (!ret) {
 		pr_err("%s: send device latency for port %d failed\n", __func__,
 			port_id);
 		ret = -EINVAL;
 		goto end;
+<<<<<<< HEAD
 	} else if (atomic_read(&this_adm.copp.stat
 				[port_idx][copp_idx]) > 0) {
 		pr_err("%s: DSP returned error[%s]\n",
@@ -4320,6 +5112,16 @@ int adm_send_compressed_device_latency(int port_id, int copp_idx, int latency)
 				[port_idx][copp_idx])));
 		ret = adsp_err_get_lnx_err_code(
 				atomic_read(&this_adm.copp.stat
+=======
+	} else if (atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx]) > 0) {
+		pr_err("%s: DSP returned error[%s]\n",
+				__func__, adsp_err_get_err_str(
+				atomic_read(&this_adm.copp.cmd_err_code
+				[port_idx][copp_idx])));
+		ret = adsp_err_get_lnx_err_code(
+				atomic_read(&this_adm.copp.cmd_err_code
+>>>>>>> p9x
 					[port_idx][copp_idx]));
 		goto end;
 	}
@@ -4463,7 +5265,11 @@ int adm_get_sound_focus(int port_id, int copp_idx,
 				param_payload_len,
 				params_value,
 				ADM_CLIENT_ID_SOURCE_TRACKING);
+<<<<<<< HEAD
 	if (ret) {
+=======
+	if (ret != 0) {
+>>>>>>> p9x
 		pr_err("%s: get parameters failed ret:%d\n", __func__, ret);
 
 		kfree(params_value);
@@ -4517,7 +5323,11 @@ static int adm_source_tracking_alloc_map_memory(void)
 				  &this_adm.sourceTrackingData.memmap.paddr,
 				  &this_adm.sourceTrackingData.memmap.size,
 				  &this_adm.sourceTrackingData.memmap.kvaddr);
+<<<<<<< HEAD
 	if (ret) {
+=======
+	if (ret != 0) {
+>>>>>>> p9x
 		pr_err("%s: failed to allocate memory\n", __func__);
 
 		ret = -EINVAL;
@@ -4572,7 +5382,11 @@ int adm_get_source_tracking(int port_id, int copp_idx,
 	pr_debug("%s: Enter, port_id %d, copp_idx %d\n",
 		  __func__, port_id, copp_idx);
 
+<<<<<<< HEAD
 	if (!this_adm.sourceTrackingData.memmap.paddr) {
+=======
+	if (this_adm.sourceTrackingData.memmap.paddr == 0) {
+>>>>>>> p9x
 		/* Allocate and map shared memory for out of band usage */
 		ret = adm_source_tracking_alloc_map_memory();
 		if (ret != 0) {
@@ -4606,8 +5420,12 @@ int adm_get_source_tracking(int port_id, int copp_idx,
 	admp.data_payload_addr_lsw =
 		lower_32_bits(this_adm.sourceTrackingData.memmap.paddr);
 	admp.data_payload_addr_msw =
+<<<<<<< HEAD
 		msm_audio_populate_upper_32_bits(
 				this_adm.sourceTrackingData.memmap.paddr);
+=======
+		upper_32_bits(this_adm.sourceTrackingData.memmap.paddr);
+>>>>>>> p9x
 	admp.mem_map_handle = atomic_read(&this_adm.mem_map_handles[
 					  ADM_MEM_MAP_INDEX_SOURCE_TRACKING]);
 	admp.module_id = VOICEPROC_MODULE_ID_GENERIC_TX;
@@ -4616,7 +5434,11 @@ int adm_get_source_tracking(int port_id, int copp_idx,
 				+ sizeof(struct adm_param_data_v5);
 	admp.reserved = 0;
 
+<<<<<<< HEAD
 	atomic_set(&this_adm.copp.stat[p_idx][copp_idx], -1);
+=======
+	atomic_set(&this_adm.copp.stat[p_idx][copp_idx], 0);
+>>>>>>> p9x
 
 	ret = apr_send_pkt(this_adm.apr, (uint32_t *)&admp);
 	if (ret < 0) {
@@ -4627,13 +5449,18 @@ int adm_get_source_tracking(int port_id, int copp_idx,
 		goto done;
 	}
 	ret = wait_event_timeout(this_adm.copp.wait[p_idx][copp_idx],
+<<<<<<< HEAD
 			atomic_read(&this_adm.copp.stat[p_idx][copp_idx]) >= 0,
+=======
+			atomic_read(&this_adm.copp.stat[p_idx][copp_idx]),
+>>>>>>> p9x
 			msecs_to_jiffies(TIMEOUT_MS));
 	if (!ret) {
 		pr_err("%s - get params timed out\n", __func__);
 
 		ret = -EINVAL;
 		goto done;
+<<<<<<< HEAD
 	} else if (atomic_read(&this_adm.copp.stat
 				[p_idx][copp_idx]) > 0) {
 		pr_err("%s: DSP returned error[%s]\n",
@@ -4644,6 +5471,8 @@ int adm_get_source_tracking(int port_id, int copp_idx,
 				atomic_read(&this_adm.copp.stat
 					[p_idx][copp_idx]));
 		goto done;
+=======
+>>>>>>> p9x
 	}
 
 	if (this_adm.sourceTrackingData.apr_cmd_status != 0) {
@@ -4694,12 +5523,20 @@ static int __init adm_init(void)
 	int i = 0, j;
 	this_adm.apr = NULL;
 	this_adm.ec_ref_rx = -1;
+<<<<<<< HEAD
 	this_adm.num_ec_ref_rx_chans = 0;
 	this_adm.ec_ref_rx_bit_width = 0;
 	this_adm.ec_ref_rx_sampling_rate = 0;
 	atomic_set(&this_adm.matrix_map_stat, 0);
 	init_waitqueue_head(&this_adm.matrix_map_wait);
 	atomic_set(&this_adm.adm_stat, 0);
+=======
+	atomic_set(&this_adm.matrix_map_stat, 0);
+	atomic_set(&this_adm.matrix_map_cmd_err_code, 0);
+	init_waitqueue_head(&this_adm.matrix_map_wait);
+	atomic_set(&this_adm.adm_stat, 0);
+	atomic_set(&this_adm.adm_cmd_err_code, 0);
+>>>>>>> p9x
 	init_waitqueue_head(&this_adm.adm_wait);
 
 	for (i = 0; i < AFE_MAX_PORTS; i++) {
@@ -4709,12 +5546,20 @@ static int __init adm_init(void)
 			atomic_set(&this_adm.copp.topology[i][j], 0);
 			atomic_set(&this_adm.copp.mode[i][j], 0);
 			atomic_set(&this_adm.copp.stat[i][j], 0);
+<<<<<<< HEAD
 			atomic_set(&this_adm.copp.rate[i][j], 0);
 			atomic_set(&this_adm.copp.channels[i][j], 0);
 			atomic_set(&this_adm.copp.bit_width[i][j], 0);
 			atomic_set(&this_adm.copp.app_type[i][j], 0);
 			atomic_set(&this_adm.copp.acdb_id[i][j], 0);
 			atomic_set(&this_adm.copp.session_type[i][j], 0);
+=======
+			atomic_set(&this_adm.copp.cmd_err_code[i][j], 0);
+			atomic_set(&this_adm.copp.rate[i][j], 0);
+			atomic_set(&this_adm.copp.bit_width[i][j], 0);
+			atomic_set(&this_adm.copp.app_type[i][j], 0);
+			atomic_set(&this_adm.copp.acdb_id[i][j], 0);
+>>>>>>> p9x
 			init_waitqueue_head(&this_adm.copp.wait[i][j]);
 			atomic_set(&this_adm.copp.adm_delay_stat[i][j], 0);
 			init_waitqueue_head(

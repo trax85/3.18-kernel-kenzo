@@ -13,4 +13,8 @@ header-y += video/
 header-y += drm/
 header-y += xen/
 header-y += scsi/
+<<<<<<< HEAD
 header-y += misc/
+=======
+header-y += media/
+>>>>>>> p9x

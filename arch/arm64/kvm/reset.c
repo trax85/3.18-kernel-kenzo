@@ -52,7 +52,11 @@ static bool cpu_has_32bit_el1(void)
 {
 	u64 pfr0;
 
+<<<<<<< HEAD
 	pfr0 = read_system_reg(SYS_ID_AA64PFR0_EL1);
+=======
+	pfr0 = read_cpuid(ID_AA64PFR0_EL1);
+>>>>>>> p9x
 	return !!(pfr0 & 0x20);
 }
 
@@ -90,6 +94,10 @@ int kvm_reset_vcpu(struct kvm_vcpu *vcpu)
 			if (!cpu_has_32bit_el1())
 				return -EINVAL;
 			cpu_reset = &default_regs_reset32;
+<<<<<<< HEAD
+=======
+			vcpu->arch.hcr_el2 &= ~HCR_RW;
+>>>>>>> p9x
 		} else {
 			cpu_reset = &default_regs_reset;
 		}

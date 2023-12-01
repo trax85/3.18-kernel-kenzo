@@ -169,6 +169,35 @@ static ssize_t store_boost(const char *buf, size_t count)
 	return count;
 }
 
+<<<<<<< HEAD
+=======
+static ssize_t store_global_boost(struct kobject *kobj, struct attribute *attr,
+				  const char *buf, size_t count)
+{
+	return _store_boost(buf, count);
+}
+
+static ssize_t show_global_boost(struct kobject *kobj,
+				 struct attribute *attr, char *buf)
+{
+	return sprintf(buf, "%u\n", boost_enabled);
+}
+
+static struct global_attr global_boost = __ATTR(boost, 0644,
+						show_global_boost,
+						store_global_boost);
+
+static ssize_t show_freqdomain_cpus(struct cpufreq_policy *policy, char *buf)
+{
+	struct acpi_cpufreq_data *data = per_cpu(acfreq_data, policy->cpu);
+
+	return cpufreq_show_cpus(data->freqdomain_cpus, buf);
+}
+
+cpufreq_freq_attr_ro(freqdomain_cpus);
+
+#ifdef CONFIG_X86_ACPI_CPUFREQ_CPB
+>>>>>>> p9x
 static ssize_t store_cpb(struct cpufreq_policy *policy, const char *buf,
 			 size_t count)
 {
@@ -223,9 +252,16 @@ static unsigned extract_msr(u32 msr, struct acpi_cpufreq_data *data)
 
 	perf = data->acpi_data;
 
+<<<<<<< HEAD
 	cpufreq_for_each_entry(pos, data->freq_table)
 		if (msr == perf->states[pos->driver_data].status)
 			return pos->frequency;
+=======
+	for (i = 0; data->freq_table[i].frequency != CPUFREQ_TABLE_END; i++) {
+		if (msr == perf->states[data->freq_table[i].driver_data].status)
+			return data->freq_table[i].frequency;
+	}
+>>>>>>> p9x
 	return data->freq_table[0].frequency;
 }
 
@@ -420,7 +456,20 @@ static int acpi_cpufreq_target(struct cpufreq_policy *policy,
 	}
 
 	perf = data->acpi_data;
+<<<<<<< HEAD
 	next_perf_state = data->freq_table[index].driver_data;
+=======
+	result = cpufreq_frequency_table_target(policy,
+						data->freq_table,
+						target_freq,
+						relation, &next_state);
+	if (unlikely(result)) {
+		result = -ENODEV;
+		goto out;
+	}
+
+	next_perf_state = data->freq_table[next_state].driver_data;
+>>>>>>> p9x
 	if (perf->state == next_perf_state) {
 		if (unlikely(data->resume)) {
 			pr_debug("Called after resume, resetting to P%d\n",
@@ -753,7 +802,11 @@ static int acpi_cpufreq_cpu_init(struct cpufreq_policy *policy)
 		goto err_unreg;
 	}
 
+<<<<<<< HEAD
 	data->freq_table = kzalloc(sizeof(*data->freq_table) *
+=======
+	data->freq_table = kmalloc(sizeof(*data->freq_table) *
+>>>>>>> p9x
 		    (perf->state_count+1), GFP_KERNEL);
 	if (!data->freq_table) {
 		result = -ENOMEM;
@@ -914,12 +967,31 @@ static void __init acpi_cpufreq_boost_init(void)
 
 		__register_cpu_notifier(&boost_nb);
 
+<<<<<<< HEAD
 		cpu_notifier_register_done();
 	}
+=======
+		put_online_cpus();
+	} else
+		global_boost.attr.mode = 0444;
+
+	/* We create the boost file in any case, though for systems without
+	 * hardware support it will be read-only and hardwired to return 0.
+	 */
+	if (cpufreq_sysfs_create_file(&(global_boost.attr)))
+		pr_warn(PFX "could not register global boost sysfs file\n");
+	else
+		pr_debug("registered global boost sysfs file\n");
+>>>>>>> p9x
 }
 
 static void acpi_cpufreq_boost_exit(void)
 {
+<<<<<<< HEAD
+=======
+	cpufreq_sysfs_remove_file(&(global_boost.attr));
+
+>>>>>>> p9x
 	if (msrs) {
 		unregister_cpu_notifier(&boost_nb);
 

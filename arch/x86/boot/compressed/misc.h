@@ -8,7 +8,10 @@
  * paravirt and debugging variants are added.)
  */
 #undef CONFIG_PARAVIRT
+<<<<<<< HEAD
 #undef CONFIG_PARAVIRT_SPINLOCKS
+=======
+>>>>>>> p9x
 #undef CONFIG_KASAN
 #ifdef CONFIG_X86_32
 #define _ASM_X86_DESC_H 1

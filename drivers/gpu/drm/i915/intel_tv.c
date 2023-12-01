@@ -929,7 +929,11 @@ intel_tv_compute_config(struct intel_encoder *encoder,
 	pipe_config->pipe_bpp = 8*3;
 
 	/* TV has it's own notion of sync and other mode flags, so clear them. */
+<<<<<<< HEAD
 	pipe_config->base.adjusted_mode.flags = 0;
+=======
+	pipe_config->adjusted_mode.flags = 0;
+>>>>>>> p9x
 
 	/*
 	 * FIXME: We don't check whether the input mode is actually what we want

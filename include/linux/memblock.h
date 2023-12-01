@@ -364,6 +364,10 @@ static inline unsigned long memblock_region_reserved_end_pfn(const struct memblo
 			memblock.memblock_type.cnt - 1;	\
 	     region >= memblock.memblock_type.regions;	\
 	     region--)
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 
 #ifdef CONFIG_ARCH_DISCARD_MEMBLOCK
 #define __init_memblock __meminit

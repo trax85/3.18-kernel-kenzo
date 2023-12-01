@@ -128,6 +128,7 @@ static inline void kvm_set_s2pmd_writable(pmd_t *pmd)
 	(__boundary - 1 < (end) - 1)? __boundary: (end);		\
 })
 
+<<<<<<< HEAD
 #define kvm_pgd_index(addr)			pgd_index(addr)
 
 static inline bool kvm_page_empty(void *ptr)
@@ -164,6 +165,12 @@ static inline bool vcpu_has_cache_enabled(struct kvm_vcpu *vcpu)
 static inline void __coherent_cache_guest_page(struct kvm_vcpu *vcpu, pfn_t pfn,
 					       unsigned long size,
 					       bool ipa_uncached)
+=======
+struct kvm;
+
+static inline void coherent_cache_guest_page(struct kvm_vcpu *vcpu, hva_t hva,
+					     unsigned long size)
+>>>>>>> p9x
 {
 	/*
 	 * If we are going to insert an instruction page and the icache is
@@ -182,6 +189,7 @@ static inline void __coherent_cache_guest_page(struct kvm_vcpu *vcpu, pfn_t pfn,
 	 * solution). For that, we need to kmap one page at a time,
 	 * and iterate over the range.
 	 */
+<<<<<<< HEAD
 
 	bool need_flush = !vcpu_has_cache_enabled(vcpu) || ipa_uncached;
 
@@ -208,11 +216,17 @@ static inline void __coherent_cache_guest_page(struct kvm_vcpu *vcpu, pfn_t pfn,
 
 vipt_cache:
 	if (!icache_is_pipt() && !icache_is_vivt_asid_tagged()) {
+=======
+	if (icache_is_pipt()) {
+		__cpuc_coherent_user_range(hva, hva + size);
+	} else if (!icache_is_vivt_asid_tagged()) {
+>>>>>>> p9x
 		/* any kind of VIPT cache */
 		__flush_icache_all();
 	}
 }
 
+<<<<<<< HEAD
 static inline void __kvm_flush_dcache_pte(pte_t pte)
 {
 	void *va = kmap_atomic(pte_page(pte));
@@ -247,6 +261,12 @@ static inline void __kvm_flush_dcache_pud(pud_t pud)
 
 void kvm_set_way_flush(struct kvm_vcpu *vcpu);
 void kvm_toggle_cache(struct kvm_vcpu *vcpu, bool was_enabled);
+=======
+#define kvm_flush_dcache_to_poc(a,l)	__cpuc_flush_dcache_area((a), (l))
+#define kvm_virt_to_phys(x)		virt_to_idmap((unsigned long)(x))
+
+void stage2_flush_vm(struct kvm *kvm);
+>>>>>>> p9x
 
 #endif	/* !__ASSEMBLY__ */
 

@@ -118,6 +118,14 @@ void bio_integrity_free(struct bio *bio)
 }
 EXPORT_SYMBOL(bio_integrity_free);
 
+static inline unsigned int bip_integrity_vecs(struct bio_integrity_payload *bip)
+{
+	if (bip->bip_slab == BIO_POOL_NONE)
+		return BIP_INLINE_VECS;
+
+	return bvec_nr_vecs(bip->bip_slab);
+}
+
 /**
  * bio_integrity_add_page - Attach integrity metadata
  * @bio:	bio to update
@@ -133,7 +141,11 @@ int bio_integrity_add_page(struct bio *bio, struct page *page,
 	struct bio_integrity_payload *bip = bio_integrity(bio);
 	struct bio_vec *iv;
 
+<<<<<<< HEAD:block/bio-integrity.c
 	if (bip->bip_vcnt >= bip->bip_max_vcnt) {
+=======
+	if (bip->bip_vcnt >= bip_integrity_vecs(bip)) {
+>>>>>>> p9x:fs/bio-integrity.c
 		printk(KERN_ERR "%s: bip_vec full\n", __func__);
 		return 0;
 	}
@@ -345,6 +357,56 @@ int bio_integrity_prep(struct bio *bio)
 EXPORT_SYMBOL(bio_integrity_prep);
 
 /**
+<<<<<<< HEAD:block/bio-integrity.c
+=======
+ * bio_integrity_verify - Verify integrity metadata for a bio
+ * @bio:	bio to verify
+ *
+ * Description: This function is called to verify the integrity of a
+ * bio.	 The data in the bio io_vec is compared to the integrity
+ * metadata returned by the HBA.
+ */
+static int bio_integrity_verify(struct bio *bio)
+{
+	struct blk_integrity *bi = bdev_get_integrity(bio->bi_bdev);
+	struct blk_integrity_exchg bix;
+	struct bio_vec *bv;
+	sector_t sector = bio->bi_integrity->bip_sector;
+	unsigned int i, sectors, total, ret;
+	void *prot_buf = bio->bi_integrity->bip_buf;
+
+	ret = total = 0;
+	bix.disk_name = bio->bi_bdev->bd_disk->disk_name;
+	bix.sector_size = bi->sector_size;
+
+	bio_for_each_segment_all(bv, bio, i) {
+		void *kaddr = kmap_atomic(bv->bv_page);
+		bix.data_buf = kaddr + bv->bv_offset;
+		bix.data_size = bv->bv_len;
+		bix.prot_buf = prot_buf;
+		bix.sector = sector;
+
+		ret = bi->verify_fn(&bix);
+
+		if (ret) {
+			kunmap_atomic(kaddr);
+			return ret;
+		}
+
+		sectors = bv->bv_len / bi->sector_size;
+		sector += sectors;
+		prot_buf += sectors * bi->tuple_size;
+		total += sectors * bi->tuple_size;
+		BUG_ON(total > bio->bi_integrity->bip_size);
+
+		kunmap_atomic(kaddr);
+	}
+
+	return ret;
+}
+
+/**
+>>>>>>> p9x:fs/bio-integrity.c
  * bio_integrity_verify_fn - Integrity I/O completion worker
  * @work:	Work struct stored in bio to be verified
  *

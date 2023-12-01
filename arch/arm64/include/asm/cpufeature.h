@@ -10,7 +10,10 @@
 #define __ASM_CPUFEATURE_H
 
 #include <asm/hwcap.h>
+<<<<<<< HEAD
 #include <asm/sysreg.h>
+=======
+>>>>>>> p9x
 
 /*
  * In the arm64 world (as in the ARM world), elf_hwcap is used both internally
@@ -22,6 +25,7 @@
 #define MAX_CPU_FEATURES	(8 * sizeof(elf_hwcap))
 #define cpu_feature(x)		ilog2(HWCAP_ ## x)
 
+<<<<<<< HEAD
 #define ARM64_WORKAROUND_CLEAN_CACHE		0
 #define ARM64_WORKAROUND_DEVICE_LOAD_ACQUIRE	1
 #define ARM64_WORKAROUND_845719			2
@@ -96,11 +100,14 @@ struct arm64_cpu_capabilities {
 
 extern DECLARE_BITMAP(cpu_hwcaps, ARM64_NCAPS);
 
+=======
+>>>>>>> p9x
 static inline bool cpu_have_feature(unsigned int num)
 {
 	return elf_hwcap & (1UL << num);
 }
 
+<<<<<<< HEAD
 static inline bool cpus_have_cap(unsigned int num)
 {
 	if (num >= ARM64_NCAPS)
@@ -195,4 +202,6 @@ static inline bool system_uses_ttbr0_pan(void)
 
 #endif /* __ASSEMBLY__ */
 
+=======
+>>>>>>> p9x
 #endif

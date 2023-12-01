@@ -241,6 +241,13 @@ static bool ieee80211_prep_hw_scan(struct ieee80211_local *local)
 
 	if (test_bit(SCAN_HW_CANCELLED, &local->scanning))
 		return false;
+<<<<<<< HEAD
+=======
+
+	do {
+		if (local->hw_scan_band == IEEE80211_NUM_BANDS)
+			return false;
+>>>>>>> p9x
 
 	if (local->hw.flags & IEEE80211_SINGLE_HW_SCAN_ON_ALL_BANDS) {
 		for (i = 0; i < req->n_channels; i++) {

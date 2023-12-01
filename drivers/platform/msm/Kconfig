@@ -1,6 +1,7 @@
 menu "Qualcomm MSM specific device drivers"
 	depends on ARCH_MSM
 
+<<<<<<< HEAD
 config MSM_AVTIMER
 	tristate "Avtimer Driver"
 	depends on MSM_QDSP6_APRV2 || MSM_QDSP6_APRV3 || \
@@ -62,6 +63,16 @@ config QPNP_COINCELL
 	  charge a coincell battery or backup capacitor which is used to
 	  maintain PMIC register state when the main battery is removed from the
 	  mobile device.
+=======
+config MSM_SSBI
+	bool "Qualcomm Single-wire Serial Bus Interface (SSBI)"
+	help
+	  If you say yes to this option, support will be included for the
+	  built-in SSBI interface on Qualcomm MSM family processors.
+
+	  This is required for communicating with Qualcomm PMICs and
+	  other devices that have the SSBI interface.
+>>>>>>> p9x
 
 config SPS
 	bool "SPS support"
@@ -95,7 +106,11 @@ config EP_PCIE_HW
 		4. Power management.
 
 config USB_BAM
+<<<<<<< HEAD
 	bool "USB BAM Driver"
+=======
+	boolean "USB BAM Driver"
+>>>>>>> p9x
 	depends on SPS && USB_GADGET
 	help
 	  Enabling this option adds USB BAM Driver.
@@ -120,14 +135,68 @@ config SPS_SUPPORT_NDP_BAM
 	help
 	  No-Data-Path BAM is used to improve BAM performance.
 
+<<<<<<< HEAD
+=======
+config QPNP_POWER_ON
+	tristate "QPNP PMIC POWER-ON Driver"
+	depends on OF_SPMI && SPMI && MSM_QPNP_INT && INPUT
+	help
+	  This driver supports the power-on functionality on Qualcomm
+	  PNP PMIC. It currently supports reporting the change in status of
+	  the KPDPWR_N line (connected to the power-key).
+
+config QPNP_CLKDIV
+	tristate "QPNP PMIC clkdiv driver"
+	depends on OF_SPMI && SPMI
+	help
+	  This driver supports the clkdiv functionality on the Qualcomm
+	  PNP PMIC. It configures the frequency of clkdiv outputs on the
+	  PMIC. These clocks are typically wired through alternate functions
+	  on gpio pins.
+
+>>>>>>> p9x
 config QPNP_VIBRATOR
 	tristate "Vibrator support for QPNP PMIC"
 	depends on OF_SPMI
 	help
 	  This option enables device driver support for the vibrator
+<<<<<<< HEAD
 	  on the Qualcomm technologies Inc's QPNP PMICs. The vibrator
 	  is connected on the VIB_DRV_N line and can be controlled
 	  manually or by the DTEST lines.It uses the android timed-output
+=======
+	  on the Qualcomm's QPNP PMICs. The vibrator is connected on the
+	  VIB_DRV_N line and can be controlled manually or by the DTEST lines.
+	  It uses the android timed-output framework.
+
+config QPNP_REVID
+	tristate "QPNP Revision ID Peripheral"
+	depends on SPMI
+	help
+	  Say 'y' here to include support for the Qualcomm QPNP REVID
+	  peripheral. REVID prints out the PMIC type and revision numbers
+	  in the kernel log along with the PMIC option status. The PMIC
+	  type is mapped to a Qualcomm chip part number and logged as well.
+
+config QPNP_COINCELL
+	tristate "Qualcomm QPNP coincell charger support"
+	depends on SPMI && OF_SPMI
+	help
+	  This driver supports the QPNP coincell peripheral found inside of
+	  Qualcomm QPNP PMIC devices.  The coincell charger provides a means to
+	  charge a coincell battery or backup capacitor which is used to
+	  maintain PMIC register state when the main battery is removed from the
+	  mobile device.
+
+config QPNP_USB_DETECT
+	tristate "Qualcomm QPNP USB VBUS Detection"
+	depends on POWER_SUPPLY
+	help
+	  This driver supports external USB VBUS detection circuitry which
+	  can be connected to Qualcomm QPNP PMIC devices.  The driver will
+	  configure a GPIO from the detector's output line and in turn notify
+	  the USB driver of VBUS presence/disconnection using the power_supply
+>>>>>>> p9x
 	  framework.
 
 config IPA
@@ -143,6 +212,7 @@ config IPA
 	  Kernel and user-space processes can call the IPA driver
 	  to configure IPA core.
 
+<<<<<<< HEAD
 config IPA3
 	tristate "IPA3 support"
 	depends on SPS && NET
@@ -167,6 +237,8 @@ config GSI
 	  and CPUs over various types of interfaces such as MHI, xDCI,
 	  xHCI, GPI, WDI, Ethernet, etc.
 
+=======
+>>>>>>> p9x
 config RMNET_IPA
 	tristate "IPA RMNET WWAN Network Device"
 	depends on IPA && MSM_QMI_INTERFACE
@@ -176,6 +248,7 @@ config RMNET_IPA
 	  for RmNet Data Driver and also exchange of QMI messages between
 	  A7 and Q6 IPA-driver.
 
+<<<<<<< HEAD
 config RMNET_IPA3
 	tristate "IPA3 RMNET WWAN Network Device"
 	depends on IPA3 && MSM_QMI_INTERFACE
@@ -194,6 +267,29 @@ config IPA_UT
 	  into suites according to the sub-unit of the IPA being tested.
 	  The user interface to run and control the tests is debugfs file
 	  system.
+=======
+config KLM
+	boolean "KLM Driver"
+	help
+	  This driver handles the power management of the KLM (Key Ladder Module).
+
+config MSM_AVTIMER
+	tristate "Avtimer Driver"
+	depends on MSM_QDSP6_APRV2
+	help
+		This driver gets the Q6 out of power collapsed state and
+		exposes ioctl control to read avtimer tick.
+
+config SSM
+	tristate "Qualcomm Secure Service Module"
+	depends on QSEECOM
+	depends on MSM_SMD
+	help
+	  Provides an interface for OEM driver to communicate with Trustzone
+	  and modem for key exchange and mode change.
+	  This driver uses Secure Channel Manager interface for trustzone
+	  communication and communicates with modem over SMD channel.
+>>>>>>> p9x
 
 config MSM_MHI
 	tristate "Modem Host Interface Driver"
@@ -214,6 +310,7 @@ config MSM_MHI_UCI
 	  read, write and ioctl operations to communicate with the
 	  attached device.
 
+<<<<<<< HEAD
 config MSM_MHI_DEBUG
 	 bool "MHI debug support"
 	 depends on MSM_MHI
@@ -223,6 +320,8 @@ config MSM_MHI_DEBUG
 	   throughput as individual MHI packets and state transitions
 	   will be logged.
 
+=======
+>>>>>>> p9x
 config MSM_MHI_DEV
         tristate "Modem Device Interface Driver"
 	depends on EP_PCIE && IPA
@@ -233,8 +332,37 @@ config MSM_MHI_DEV
           memory. MHI interacts with the IPA for supporting transfers
 	  on the HW accelerated channels between Host and device.
 
+<<<<<<< HEAD
 config PFT
 	bool "Per-File-Tagger driver"
+=======
+config MSM_MHI_DEBUG
+	 bool "MHI debug support"
+	 depends on MSM_MHI
+	 help
+	   Say yes here to enable debugging support in the MHI transport
+	   and individual MHI client drivers. This option may impact
+	   throughput as individual MHI packets and state transitions
+	   will be logged.
+
+config QCA1530
+	tristate "QCA1530 SoC GNSS Driver"
+	depends on REGULATOR && OF
+	depends on GPIOLIB && OF_GPIO
+	depends on CLKDEV_LOOKUP
+	help
+	  Say Y here to include support for QCA1530 SOC chip.
+
+	  QCA1530 chip enables support for GPS- and GLONASS-based position
+	  determination.
+
+	  To compile this driver as a module, choose M here: the module
+	  will be called qca1530.
+
+config PFT
+	bool "Per-File-Tagger driver"
+	depends on SECURITY
+>>>>>>> p9x
 	default n
 	help
 		This driver is used for tagging enterprise files.
@@ -243,6 +371,44 @@ config PFT
 		registered application.
 		Tagged files are encrypted using the dm-req-crypt driver.
 
+<<<<<<< HEAD
+=======
+config MSM_SPSS
+	tristate "MSM SPSS driver"
+	default n
+	help
+	  Support for Standby Processing Sub-System (SPSS) module.
+
+config MSM_BUS_SCALING
+	bool "Bus scaling driver"
+	default n
+	help
+		This option enables bus scaling on MSM devices.  Bus scaling
+		allows devices to request the clocks be set to rates sufficient
+		for the active devices needs without keeping the clocks at max
+		frequency when a slower speed is sufficient.
+
+config BUS_TOPOLOGY_ADHOC
+	bool "ad-hoc bus scaling topology"
+	default n
+	help
+		This option enables a driver that can handle adhoc bus topologies.
+		Adhoc bus topology driver allows one to many connections and maintains
+		directionality of connections by explicitly listing device connections
+		thus avoiding illegal routes.
+
+config DEBUG_BUS_VOTER
+	bool "direct client to vote bus clocks for debugging purposes"
+	depends on BUS_TOPOLOGY_ADHOC
+	default n
+	help
+		This option enables a driver that allows putting in a bus clock vote.
+		This driver allows clients to use the bus scaling driver to put in a
+		floor vote on bus clocks. This feature is meant to be a shortcut to directly
+		put in a vote for bus clocks instead of using the bus scaling APIs which deal
+		with topology end points and not bus clocks directly.
+
+>>>>>>> p9x
 config I2C_MSM_PROF_DBG
 	tristate "I2C_MSM_PROF_DBG"
 	depends on ARCH_MSM && I2C_MSM_V2
@@ -254,6 +420,7 @@ config I2C_MSM_PROF_DBG
 
 	  This module can also be dynamically linked as a shared kernel object.
 
+<<<<<<< HEAD
 config SEEMP_CORE
 	tristate "SEEMP Core"
 	help
@@ -261,6 +428,13 @@ config SEEMP_CORE
 	  anomalies in various activities. It records task activities in
 	  a log and rates the actions according to whether a typical user would
 	  use the tools.
+=======
+config MSM_UIM_HSL
+	tristate "User Indentification Module (UIM) on UART High Speed"
+	help
+	  If you say yes to this option, support will be included for the
+	  built-in UIM interface on Qualcomm MSM family processors.
+>>>>>>> p9x
 
 config QPNP_HAPTIC
 	tristate "Haptic support for QPNP PMIC"
@@ -270,6 +444,7 @@ config QPNP_HAPTIC
 	  on the Qualcomm Technologies' QPNP PMICs. It uses the android
 	  timed-output framework.
 
+<<<<<<< HEAD
 config GPIO_USB_DETECT
 	tristate "GPIO-based USB VBUS Detection"
 	depends on POWER_SUPPLY
@@ -302,4 +477,12 @@ config BW_MONITOR
 
 source "drivers/platform/msm/spmi/Kconfig"
 
+=======
+config SEEMP_CORE
+	tristate "SEEMP Core"
+	help
+          This option enables Qualcomm Technologies, Inc. Snapdragron Smart Protection to
+          detect anomalies in various activities. It records task activities in a log and
+          rates the actions according to whether a typical user would use the tools.
+>>>>>>> p9x
 endmenu

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2015, 2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -72,6 +76,7 @@ TRACE_EVENT(bus_update_request_end,
 	TP_printk("client-name=%s", __get_str(name))
 );
 
+<<<<<<< HEAD
 TRACE_EVENT(bus_max_votes,
 
 	TP_PROTO(int sec, int nsec, const char *bus_name, const char *ctx,
@@ -110,6 +115,8 @@ TRACE_EVENT(bus_max_votes,
 		__get_str(cl_name))
 );
 
+=======
+>>>>>>> p9x
 TRACE_EVENT(bus_bimc_config_limiter,
 
 	TP_PROTO(int mas_id, unsigned long long cur_lim_bw),

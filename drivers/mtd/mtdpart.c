@@ -324,6 +324,7 @@ static inline void free_partition(struct mtd_part *p)
 
 void part_fill_badblockstats(struct mtd_info *mtd)
 {
+<<<<<<< HEAD
 	uint64_t offs = 0;
 	struct mtd_info *master;
 	struct mtd_part *part;
@@ -339,6 +340,15 @@ void part_fill_badblockstats(struct mtd_info *mtd)
 			if (mtd_block_isreserved(master, offs + part->offset))
 				mtd->ecc_stats.bbtblocks++;
 			else if (mtd_block_isbad(master, offs + part->offset))
+=======
+	struct mtd_part *part = PART(mtd);
+	if (part->master->_block_isbad) {
+		uint64_t offs = 0;
+		mtd->ecc_stats.badblocks = 0;
+		while (offs < mtd->size) {
+			if (mtd_block_isbad(part->master,
+						offs + part->offset))
+>>>>>>> p9x
 				mtd->ecc_stats.badblocks++;
 			offs += mtd->erasesize;
 		}
@@ -664,8 +674,10 @@ int add_mtd_partitions(struct mtd_info *master,
 
 	for (i = 0; i < nbparts; i++) {
 		slave = allocate_partition(master, parts + i, i, cur_offset);
-		if (IS_ERR(slave))
+		if (IS_ERR(slave)) {
+			del_mtd_partitions(master);
 			return PTR_ERR(slave);
+		}
 
 		mutex_lock(&mtd_partitions_mutex);
 		list_add(&slave->list, &mtd_partitions);

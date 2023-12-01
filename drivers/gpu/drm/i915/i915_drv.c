@@ -812,7 +812,28 @@ static int i915_drm_resume(struct drm_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int i915_drm_resume_early(struct drm_device *dev)
+=======
+static int i915_drm_thaw(struct drm_device *dev)
+{
+	int error = 0;
+
+	intel_gt_sanitize(dev);
+
+	if (drm_core_check_feature(dev, DRIVER_MODESET)) {
+		mutex_lock(&dev->struct_mutex);
+		i915_gem_restore_gtt_mappings(dev);
+		mutex_unlock(&dev->struct_mutex);
+	}
+
+	__i915_drm_thaw(dev);
+
+	return error;
+}
+
+int i915_resume(struct drm_device *dev)
+>>>>>>> p9x
 {
 	struct drm_i915_private *dev_priv = dev->dev_private;
 	int ret = 0;
@@ -831,8 +852,25 @@ static int i915_drm_resume_early(struct drm_device *dev)
 
 	pci_set_master(dev->pdev);
 
+<<<<<<< HEAD
 	if (IS_VALLEYVIEW(dev_priv))
 		ret = vlv_resume_prepare(dev_priv, false);
+=======
+	intel_gt_sanitize(dev);
+
+	/*
+	 * Platforms with opregion should have sane BIOS, older ones (gen3 and
+	 * earlier) need this since the BIOS might clear all our scratch PTEs.
+	 */
+	if (drm_core_check_feature(dev, DRIVER_MODESET) &&
+	    !dev_priv->opregion.header) {
+		mutex_lock(&dev->struct_mutex);
+		i915_gem_restore_gtt_mappings(dev);
+		mutex_unlock(&dev->struct_mutex);
+	}
+
+	ret = __i915_drm_thaw(dev);
+>>>>>>> p9x
 	if (ret)
 		DRM_ERROR("Resume prepare failed: %d, continuing anyway\n",
 			  ret);
@@ -1784,3 +1822,139 @@ MODULE_AUTHOR("Intel Corporation");
 
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL and additional rights");
+<<<<<<< HEAD
+=======
+
+/* We give fast paths for the really cool registers */
+#define NEEDS_FORCE_WAKE(dev_priv, reg) \
+	((HAS_FORCE_WAKE((dev_priv)->dev)) && \
+	 ((reg) < 0x40000) &&            \
+	 ((reg) != FORCEWAKE))
+static void
+ilk_dummy_write(struct drm_i915_private *dev_priv)
+{
+	/* WaIssueDummyWriteToWakeupFromRC6: Issue a dummy write to wake up the
+	 * chip from rc6 before touching it for real. MI_MODE is masked, hence
+	 * harmless to write 0 into. */
+	I915_WRITE_NOTRACE(MI_MODE, 0);
+}
+
+static void
+hsw_unclaimed_reg_clear(struct drm_i915_private *dev_priv, u32 reg)
+{
+	if (IS_HASWELL(dev_priv->dev) &&
+	    (I915_READ_NOTRACE(FPGA_DBG) & FPGA_DBG_RM_NOCLAIM)) {
+		DRM_ERROR("Unknown unclaimed register before writing to %x\n",
+			  reg);
+		I915_WRITE_NOTRACE(FPGA_DBG, FPGA_DBG_RM_NOCLAIM);
+	}
+}
+
+static void
+hsw_unclaimed_reg_check(struct drm_i915_private *dev_priv, u32 reg)
+{
+	if (IS_HASWELL(dev_priv->dev) &&
+	    (I915_READ_NOTRACE(FPGA_DBG) & FPGA_DBG_RM_NOCLAIM)) {
+		DRM_ERROR("Unclaimed write to %x\n", reg);
+		I915_WRITE_NOTRACE(FPGA_DBG, FPGA_DBG_RM_NOCLAIM);
+	}
+}
+
+#define __i915_read(x, y) \
+u##x i915_read##x(struct drm_i915_private *dev_priv, u32 reg) { \
+	unsigned long irqflags; \
+	u##x val = 0; \
+	spin_lock_irqsave(&dev_priv->gt_lock, irqflags); \
+	if (IS_GEN5(dev_priv->dev)) \
+		ilk_dummy_write(dev_priv); \
+	if (NEEDS_FORCE_WAKE((dev_priv), (reg))) { \
+		if (dev_priv->forcewake_count == 0) \
+			dev_priv->gt.force_wake_get(dev_priv); \
+		val = read##y(dev_priv->regs + reg); \
+		if (dev_priv->forcewake_count == 0) \
+			dev_priv->gt.force_wake_put(dev_priv); \
+	} else { \
+		val = read##y(dev_priv->regs + reg); \
+	} \
+	spin_unlock_irqrestore(&dev_priv->gt_lock, irqflags); \
+	trace_i915_reg_rw(false, reg, val, sizeof(val)); \
+	return val; \
+}
+
+__i915_read(8, b)
+__i915_read(16, w)
+__i915_read(32, l)
+__i915_read(64, q)
+#undef __i915_read
+
+#define __i915_write(x, y) \
+void i915_write##x(struct drm_i915_private *dev_priv, u32 reg, u##x val) { \
+	unsigned long irqflags; \
+	u32 __fifo_ret = 0; \
+	trace_i915_reg_rw(true, reg, val, sizeof(val)); \
+	spin_lock_irqsave(&dev_priv->gt_lock, irqflags); \
+	if (NEEDS_FORCE_WAKE((dev_priv), (reg))) { \
+		__fifo_ret = __gen6_gt_wait_for_fifo(dev_priv); \
+	} \
+	if (IS_GEN5(dev_priv->dev)) \
+		ilk_dummy_write(dev_priv); \
+	hsw_unclaimed_reg_clear(dev_priv, reg); \
+	write##y(val, dev_priv->regs + reg); \
+	if (unlikely(__fifo_ret)) { \
+		gen6_gt_check_fifodbg(dev_priv); \
+	} \
+	hsw_unclaimed_reg_check(dev_priv, reg); \
+	spin_unlock_irqrestore(&dev_priv->gt_lock, irqflags); \
+}
+__i915_write(8, b)
+__i915_write(16, w)
+__i915_write(32, l)
+__i915_write(64, q)
+#undef __i915_write
+
+static const struct register_whitelist {
+	uint64_t offset;
+	uint32_t size;
+	uint32_t gen_bitmask; /* support gens, 0x10 for 4, 0x30 for 4 and 5, etc. */
+} whitelist[] = {
+	{ RING_TIMESTAMP(RENDER_RING_BASE), 8, 0xF0 },
+};
+
+int i915_reg_read_ioctl(struct drm_device *dev,
+			void *data, struct drm_file *file)
+{
+	struct drm_i915_private *dev_priv = dev->dev_private;
+	struct drm_i915_reg_read *reg = data;
+	struct register_whitelist const *entry = whitelist;
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(whitelist); i++, entry++) {
+		if (entry->offset == reg->offset &&
+		    (1 << INTEL_INFO(dev)->gen & entry->gen_bitmask))
+			break;
+	}
+
+	if (i == ARRAY_SIZE(whitelist))
+		return -EINVAL;
+
+	switch (entry->size) {
+	case 8:
+		reg->val = I915_READ64(reg->offset);
+		break;
+	case 4:
+		reg->val = I915_READ(reg->offset);
+		break;
+	case 2:
+		reg->val = I915_READ16(reg->offset);
+		break;
+	case 1:
+		reg->val = I915_READ8(reg->offset);
+		break;
+	default:
+		WARN_ON(1);
+		return -EINVAL;
+	}
+
+	return 0;
+}
+>>>>>>> p9x

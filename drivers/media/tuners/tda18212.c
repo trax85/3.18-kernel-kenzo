@@ -21,14 +21,131 @@
 #include "tda18212.h"
 #include <linux/regmap.h>
 
+<<<<<<< HEAD
 struct tda18212_dev {
 	struct tda18212_config cfg;
 	struct i2c_client *client;
 	struct regmap *regmap;
+=======
+/* Max transfer size done by I2C transfer functions */
+#define MAX_XFER_SIZE  64
+
+struct tda18212_priv {
+	struct tda18212_config *cfg;
+	struct i2c_adapter *i2c;
+>>>>>>> p9x
 
 	u32 if_frequency;
 };
 
+<<<<<<< HEAD
+=======
+/* write multiple registers */
+static int tda18212_wr_regs(struct tda18212_priv *priv, u8 reg, u8 *val,
+	int len)
+{
+	int ret;
+	u8 buf[MAX_XFER_SIZE];
+	struct i2c_msg msg[1] = {
+		{
+			.addr = priv->cfg->i2c_address,
+			.flags = 0,
+			.len = 1 + len,
+			.buf = buf,
+		}
+	};
+
+	if (1 + len > sizeof(buf)) {
+		dev_warn(&priv->i2c->dev,
+			 "%s: i2c wr reg=%04x: len=%d is too big!\n",
+			 KBUILD_MODNAME, reg, len);
+		return -EINVAL;
+	}
+
+	buf[0] = reg;
+	memcpy(&buf[1], val, len);
+
+	ret = i2c_transfer(priv->i2c, msg, 1);
+	if (ret == 1) {
+		ret = 0;
+	} else {
+		dev_warn(&priv->i2c->dev, "%s: i2c wr failed=%d reg=%02x " \
+				"len=%d\n", KBUILD_MODNAME, ret, reg, len);
+		ret = -EREMOTEIO;
+	}
+	return ret;
+}
+
+/* read multiple registers */
+static int tda18212_rd_regs(struct tda18212_priv *priv, u8 reg, u8 *val,
+	int len)
+{
+	int ret;
+	u8 buf[MAX_XFER_SIZE];
+	struct i2c_msg msg[2] = {
+		{
+			.addr = priv->cfg->i2c_address,
+			.flags = 0,
+			.len = 1,
+			.buf = &reg,
+		}, {
+			.addr = priv->cfg->i2c_address,
+			.flags = I2C_M_RD,
+			.len = len,
+			.buf = buf,
+		}
+	};
+
+	if (len > sizeof(buf)) {
+		dev_warn(&priv->i2c->dev,
+			 "%s: i2c rd reg=%04x: len=%d is too big!\n",
+			 KBUILD_MODNAME, reg, len);
+		return -EINVAL;
+	}
+
+	ret = i2c_transfer(priv->i2c, msg, 2);
+	if (ret == 2) {
+		memcpy(val, buf, len);
+		ret = 0;
+	} else {
+		dev_warn(&priv->i2c->dev, "%s: i2c rd failed=%d reg=%02x " \
+				"len=%d\n", KBUILD_MODNAME, ret, reg, len);
+		ret = -EREMOTEIO;
+	}
+
+	return ret;
+}
+
+/* write single register */
+static int tda18212_wr_reg(struct tda18212_priv *priv, u8 reg, u8 val)
+{
+	return tda18212_wr_regs(priv, reg, &val, 1);
+}
+
+/* read single register */
+static int tda18212_rd_reg(struct tda18212_priv *priv, u8 reg, u8 *val)
+{
+	return tda18212_rd_regs(priv, reg, val, 1);
+}
+
+#if 0 /* keep, useful when developing driver */
+static void tda18212_dump_regs(struct tda18212_priv *priv)
+{
+	int i;
+	u8 buf[256];
+
+	#define TDA18212_RD_LEN 32
+	for (i = 0; i < sizeof(buf); i += TDA18212_RD_LEN)
+		tda18212_rd_regs(priv, i, &buf[i], TDA18212_RD_LEN);
+
+	print_hex_dump(KERN_INFO, "", DUMP_PREFIX_OFFSET, 32, 1, buf,
+		sizeof(buf), true);
+
+	return;
+}
+#endif
+
+>>>>>>> p9x
 static int tda18212_set_params(struct dvb_frontend *fe)
 {
 	struct tda18212_dev *dev = fe->tuner_priv;

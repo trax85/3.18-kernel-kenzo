@@ -38,9 +38,12 @@ int fib_default_rule_add(struct fib_rules_ops *ops,
 	r->flags = flags;
 	r->fr_net = hold_net(ops->fro_net);
 	r->uid_range = fib_kuid_range_unset;
+<<<<<<< HEAD
 
 	r->suppress_prefixlen = -1;
 	r->suppress_ifgroup = -1;
+=======
+>>>>>>> p9x
 
 	/* The lock is not required here, the list in unreacheable
 	 * at the moment this function is called */

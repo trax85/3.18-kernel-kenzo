@@ -20,12 +20,16 @@
 
 #include <linux/list.h>
 
+<<<<<<< HEAD
 struct pt_regs;
 
+=======
+>>>>>>> p9x
 struct undef_hook {
 	struct list_head node;
 	u32 instr_mask;
 	u32 instr_val;
+<<<<<<< HEAD
 	u64 pstate_mask;
 	u64 pstate_val;
 	int (*fn)(struct pt_regs *regs, u32 instr);
@@ -33,6 +37,14 @@ struct undef_hook {
 
 void register_undef_hook(struct undef_hook *hook);
 void unregister_undef_hook(struct undef_hook *hook);
+=======
+	u32 pstate_mask;
+	u32 pstate_val;
+	int (*fn)(struct pt_regs *regs, unsigned int instr);
+};
+
+void register_undef_hook(struct undef_hook *hook);
+>>>>>>> p9x
 
 static inline int in_exception_text(unsigned long ptr)
 {
@@ -43,5 +55,9 @@ static inline int in_exception_text(unsigned long ptr)
 	       ptr < (unsigned long)&__exception_text_end;
 }
 
+<<<<<<< HEAD
 static inline void get_pct_hook_init(void) {}
+=======
+static inline void get_timer_count_hook_init(void) {}
+>>>>>>> p9x
 #endif

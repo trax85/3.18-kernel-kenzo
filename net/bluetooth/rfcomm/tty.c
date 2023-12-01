@@ -84,6 +84,14 @@ static void rfcomm_dev_destruct(struct tty_port *port)
 	struct rfcomm_dlc *dlc = dev->dlc;
 
 	BT_DBG("dev %pK dlc %pK", dev, dlc);
+<<<<<<< HEAD
+=======
+
+	/* Refcount should only hit zero when called from rfcomm_dev_del()
+	   which will have taken us off the list. Everything else are
+	   refcounting bugs. */
+	BUG_ON(!list_empty(&dev->list));
+>>>>>>> p9x
 
 	rfcomm_dlc_lock(dlc);
 	/* Detach DLC if it's owned by this dev */
@@ -345,6 +353,34 @@ static int rfcomm_dev_add(struct rfcomm_dev_req *req, struct rfcomm_dlc *dlc)
 		BT_ERR("Failed to create channel attribute");
 
 	return dev->id;
+<<<<<<< HEAD
+=======
+
+free:
+	kfree(dev);
+	return err;
+}
+
+static void rfcomm_dev_del(struct rfcomm_dev *dev)
+{
+	unsigned long flags;
+	BT_DBG("dev %pK", dev);
+
+	BUG_ON(test_and_set_bit(RFCOMM_TTY_RELEASED, &dev->flags));
+
+	spin_lock_irqsave(&dev->port.lock, flags);
+	if (dev->port.count > 0) {
+		spin_unlock_irqrestore(&dev->port.lock, flags);
+		return;
+	}
+	spin_unlock_irqrestore(&dev->port.lock, flags);
+
+	spin_lock(&rfcomm_dev_lock);
+	list_del_init(&dev->list);
+	spin_unlock(&rfcomm_dev_lock);
+
+	tty_port_put(&dev->port);
+>>>>>>> p9x
 }
 
 /* ---- Send buffer ---- */
@@ -712,10 +748,35 @@ static int rfcomm_tty_install(struct tty_driver *driver, struct tty_struct *tty)
 	struct rfcomm_dlc *dlc;
 	int err;
 
+<<<<<<< HEAD
 	dev = rfcomm_dev_get(tty->index);
 	if (!dev)
 		return -ENODEV;
 
+=======
+	id = tty->index;
+
+	BT_DBG("tty %pK id %d", tty, id);
+
+	/* We don't leak this refcount. For reasons which are not entirely
+	   clear, the TTY layer will call our ->close() method even if the
+	   open fails. We decrease the refcount there, and decreasing it
+	   here too would cause breakage. */
+	dev = rfcomm_dev_get(id);
+	if (!dev)
+		return -ENODEV;
+
+	BT_DBG("dev %pK dst %pMR channel %d opened %d", dev, &dev->dst,
+	       dev->channel, dev->port.count);
+
+	spin_lock_irqsave(&dev->port.lock, flags);
+	if (++dev->port.count > 1) {
+		spin_unlock_irqrestore(&dev->port.lock, flags);
+		return 0;
+	}
+	spin_unlock_irqrestore(&dev->port.lock, flags);
+
+>>>>>>> p9x
 	dlc = dev->dlc;
 
 	/* Attach TTY and open DLC */
@@ -777,7 +838,40 @@ static void rfcomm_tty_close(struct tty_struct *tty, struct file *filp)
 	BT_DBG("tty %pK dev %pK dlc %pK opened %d", tty, dev, dev->dlc,
 	       dev->port.count);
 
+<<<<<<< HEAD
 	tty_port_close(&dev->port, tty, filp);
+=======
+	BT_DBG("tty %pK dev %pK dlc %pK opened %d", tty, dev, dev->dlc,
+	       dev->port.count);
+
+	spin_lock_irqsave(&dev->port.lock, flags);
+	if (!--dev->port.count) {
+		spin_unlock_irqrestore(&dev->port.lock, flags);
+		if (dev->tty_dev->parent)
+			device_move(dev->tty_dev, NULL, DPM_ORDER_DEV_LAST);
+
+		/* Close DLC and dettach TTY */
+		rfcomm_dlc_close(dev->dlc, 0);
+
+		clear_bit(RFCOMM_TTY_ATTACHED, &dev->flags);
+
+		rfcomm_dlc_lock(dev->dlc);
+		tty->driver_data = NULL;
+		dev->port.tty = NULL;
+		rfcomm_dlc_unlock(dev->dlc);
+
+		if (test_bit(RFCOMM_TTY_RELEASED, &dev->flags)) {
+			spin_lock(&rfcomm_dev_lock);
+			list_del_init(&dev->list);
+			spin_unlock(&rfcomm_dev_lock);
+
+			tty_port_put(&dev->port);
+		}
+	} else
+		spin_unlock_irqrestore(&dev->port.lock, flags);
+
+	tty_port_put(&dev->port);
+>>>>>>> p9x
 }
 
 static int rfcomm_tty_write(struct tty_struct *tty, const unsigned char *buf, int count)
@@ -814,8 +908,12 @@ static int rfcomm_tty_write_room(struct tty_struct *tty)
 	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
 	int room = 0;
 
+<<<<<<< HEAD
 	if (dev && dev->dlc)
 		room = rfcomm_room(dev);
+=======
+	BT_DBG("tty %pK", tty);
+>>>>>>> p9x
 
 	BT_DBG("tty %pK room %d", tty, room);
 

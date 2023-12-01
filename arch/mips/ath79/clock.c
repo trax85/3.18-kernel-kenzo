@@ -205,6 +205,7 @@ static void __init ar933x_clocks_init(void)
 		ahb_rate = freq / t;
 	}
 
+<<<<<<< HEAD
 	ath79_add_sys_clkdev("ref", ref_rate);
 	ath79_add_sys_clkdev("cpu", cpu_rate);
 	ath79_add_sys_clkdev("ddr", ddr_rate);
@@ -212,6 +213,10 @@ static void __init ar933x_clocks_init(void)
 
 	clk_add_alias("wdt", NULL, "ahb", NULL);
 	clk_add_alias("uart", NULL, "ref", NULL);
+=======
+	ath79_wdt_clk.rate = ath79_ahb_clk.rate;
+	ath79_uart_clk.rate = ath79_ref_clk.rate;
+>>>>>>> p9x
 }
 
 static u32 __init ar934x_get_pll_freq(u32 ref, u32 ref_div, u32 nint, u32 nfrac,

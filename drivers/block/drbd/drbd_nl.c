@@ -545,14 +545,22 @@ void conn_try_outdate_peer_async(struct drbd_connection *connection)
 {
 	struct task_struct *opa;
 
+<<<<<<< HEAD
 	kref_get(&connection->kref);
+=======
+	kref_get(&tconn->kref);
+>>>>>>> p9x
 	/* We may just have force_sig()'ed this thread
 	 * to get it out of some blocking network function.
 	 * Clear signals; otherwise kthread_run(), which internally uses
 	 * wait_on_completion_killable(), will mistake our pending signal
 	 * for a new fatal signal and fail. */
 	flush_signals(current);
+<<<<<<< HEAD
 	opa = kthread_run(_try_outdate_peer_async, connection, "drbd_async_h");
+=======
+	opa = kthread_run(_try_outdate_peer_async, tconn, "drbd_async_h");
+>>>>>>> p9x
 	if (IS_ERR(opa)) {
 		drbd_err(connection, "out of mem, failed to invoke fence-peer helper\n");
 		kref_put(&connection->kref, drbd_destroy_connection);

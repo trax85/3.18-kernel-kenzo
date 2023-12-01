@@ -1119,6 +1119,7 @@ out:
 int ocfs2_setattr(struct dentry *dentry, struct iattr *attr)
 {
 	int status = 0, size_change;
+	int inode_locked = 0;
 	struct inode *inode = dentry->d_inode;
 	struct super_block *sb = inode->i_sb;
 	struct ocfs2_super *osb = OCFS2_SB(sb);
@@ -1171,6 +1172,7 @@ int ocfs2_setattr(struct dentry *dentry, struct iattr *attr)
 			mlog_errno(status);
 		goto bail_unlock_rw;
 	}
+	inode_locked = 1;
 
 	if (size_change) {
 		status = inode_newsize_ok(inode, attr->ia_size);
@@ -1249,7 +1251,10 @@ int ocfs2_setattr(struct dentry *dentry, struct iattr *attr)
 bail_commit:
 	ocfs2_commit_trans(osb, handle);
 bail_unlock:
-	ocfs2_inode_unlock(inode, 1);
+	if (status) {
+		ocfs2_inode_unlock(inode, 1);
+		inode_locked = 0;
+	}
 bail_unlock_rw:
 	if (size_change)
 		ocfs2_rw_unlock(inode, 1);
@@ -1264,6 +1269,8 @@ bail:
 		if (status < 0)
 			mlog_errno(status);
 	}
+	if (inode_locked)
+		ocfs2_inode_unlock(inode, 1);
 
 	brelse(bh);
 	return status;
@@ -2454,6 +2461,89 @@ out_sems:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static int ocfs2_splice_to_file(struct pipe_inode_info *pipe,
+				struct file *out,
+				struct splice_desc *sd)
+{
+	int ret;
+
+	ret = ocfs2_prepare_inode_for_write(out, &sd->pos,
+					    sd->total_len, 0, NULL, NULL);
+	if (ret < 0) {
+		mlog_errno(ret);
+		return ret;
+	}
+
+	return splice_from_pipe_feed(pipe, sd, pipe_to_file);
+}
+
+static ssize_t ocfs2_file_splice_write(struct pipe_inode_info *pipe,
+				       struct file *out,
+				       loff_t *ppos,
+				       size_t len,
+				       unsigned int flags)
+{
+	int ret;
+	struct address_space *mapping = out->f_mapping;
+	struct inode *inode = mapping->host;
+	struct splice_desc sd = {
+		.flags = flags,
+		.u.file = out,
+	};
+	ret = generic_write_checks(out, ppos, &len, 0);
+	if(ret)
+		return ret;
+	sd.total_len = len;
+	sd.pos = *ppos;
+
+	trace_ocfs2_file_splice_write(inode, out, out->f_path.dentry,
+			(unsigned long long)OCFS2_I(inode)->ip_blkno,
+			out->f_path.dentry->d_name.len,
+			out->f_path.dentry->d_name.name, len);
+
+	pipe_lock(pipe);
+
+	splice_from_pipe_begin(&sd);
+	do {
+		ret = splice_from_pipe_next(pipe, &sd);
+		if (ret <= 0)
+			break;
+
+		mutex_lock_nested(&inode->i_mutex, I_MUTEX_CHILD);
+		ret = ocfs2_rw_lock(inode, 1);
+		if (ret < 0)
+			mlog_errno(ret);
+		else {
+			ret = ocfs2_splice_to_file(pipe, out, &sd);
+			ocfs2_rw_unlock(inode, 1);
+		}
+		mutex_unlock(&inode->i_mutex);
+	} while (ret > 0);
+	splice_from_pipe_end(pipe, &sd);
+
+	pipe_unlock(pipe);
+
+	if (sd.num_spliced)
+		ret = sd.num_spliced;
+
+	if (ret > 0) {
+		int err;
+
+		err = generic_write_sync(out, *ppos, ret);
+		if (err)
+			ret = err;
+		else
+			*ppos += ret;
+
+		balance_dirty_pages_ratelimited(mapping);
+	}
+
+	return ret;
+}
+
+>>>>>>> p9x
 static ssize_t ocfs2_file_splice_read(struct file *in,
 				      loff_t *ppos,
 				      struct pipe_inode_info *pipe,

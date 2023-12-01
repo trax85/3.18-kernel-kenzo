@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2016 XiaoMi, Inc.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -15,7 +20,10 @@
 #include <linux/err.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 #include <linux/io.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>
@@ -36,7 +44,10 @@
 #define EMERGENCY_DLOAD_MAGIC1    0x322A4F99
 #define EMERGENCY_DLOAD_MAGIC2    0xC67E4350
 #define EMERGENCY_DLOAD_MAGIC3    0x77777777
+<<<<<<< HEAD
 #define EMMC_DLOAD_TYPE		0x2
+=======
+>>>>>>> p9x
 
 #define SCM_IO_DISABLE_PMIC_ARBITER	1
 #define SCM_IO_DEASSERT_PS_HOLD		2
@@ -47,12 +58,17 @@
 
 
 static int restart_mode;
+<<<<<<< HEAD
 static void *restart_reason;
+=======
+void *restart_reason;
+>>>>>>> p9x
 static bool scm_pmic_arbiter_disable_supported;
 static bool scm_deassert_ps_hold_supported;
 /* Download mode master kill-switch */
 static void __iomem *msm_ps_hold;
 static phys_addr_t tcsr_boot_misc_detect;
+<<<<<<< HEAD
 static void scm_disable_sdi(void);
 
 #ifdef CONFIG_MSM_DLOAD_MODE
@@ -64,6 +80,8 @@ static int download_mode = 1;
 #else
 static const int download_mode;
 #endif
+=======
+>>>>>>> p9x
 
 #ifdef CONFIG_MSM_DLOAD_MODE
 #define EDL_MODE_PROP "qcom,msm-imem-emergency_download_mode"
@@ -74,6 +92,7 @@ static void *dload_mode_addr;
 static bool dload_mode_enabled;
 static void *emergency_dload_mode_addr;
 static bool scm_dload_supported;
+<<<<<<< HEAD
 static struct kobject dload_kobj;
 static void *dload_type_addr;
 
@@ -95,6 +114,13 @@ struct reset_attribute {
 module_param_call(download_mode, dload_set, param_get_int,
 			&download_mode, 0644);
 
+=======
+
+static int dload_set(const char *val, struct kernel_param *kp);
+static int download_mode;
+module_param_call(download_mode, dload_set, param_get_int,
+			&download_mode, 0644);
+>>>>>>> p9x
 static int panic_prep_restart(struct notifier_block *this,
 			      unsigned long event, void *ptr)
 {
@@ -143,10 +169,16 @@ static void set_dload_mode(int on)
 	ret = scm_set_dload_mode(on ? SCM_DLOAD_MODE : 0, 0);
 	if (ret)
 		pr_err("Failed to set secure DLOAD mode: %d\n", ret);
+<<<<<<< HEAD
+=======
+	else
+		qpnp_pon_system_pwr_off(PON_POWER_OFF_WARM_RESET);
+>>>>>>> p9x
 
 	dload_mode_enabled = on;
 }
 
+<<<<<<< HEAD
 static bool get_dload_mode(void)
 {
 	return dload_mode_enabled;
@@ -177,6 +209,8 @@ static void enable_emergency_dload_mode(void)
 		pr_err("Failed to set secure EDLOAD mode: %d\n", ret);
 }
 
+=======
+>>>>>>> p9x
 static int dload_set(const char *val, struct kernel_param *kp)
 {
 	int ret;
@@ -197,6 +231,7 @@ static int dload_set(const char *val, struct kernel_param *kp)
 
 	return 0;
 }
+<<<<<<< HEAD
 #else
 static void set_dload_mode(int on)
 {
@@ -207,6 +242,15 @@ static void enable_emergency_dload_mode(void)
 {
 	pr_err("dload mode is not enabled on target\n");
 }
+=======
+
+int get_dload_mode(void)
+{
+	return download_mode;
+}
+#else
+#define set_dload_mode(x) do {} while (0)
+>>>>>>> p9x
 
 static bool get_dload_mode(void)
 {
@@ -214,6 +258,7 @@ static bool get_dload_mode(void)
 }
 #endif
 
+<<<<<<< HEAD
 static void scm_disable_sdi(void)
 {
 	int ret;
@@ -234,6 +279,8 @@ static void scm_disable_sdi(void)
 		pr_err("Failed to disable secure wdog debug: %d\n", ret);
 }
 
+=======
+>>>>>>> p9x
 void msm_set_restart_mode(int mode)
 {
 	restart_mode = mode;
@@ -280,6 +327,7 @@ static void msm_restart_prepare(const char *cmd)
 #endif
 
 	if (qpnp_pon_check_hard_reset_stored()) {
+<<<<<<< HEAD
 		/* Set warm reset as true when device is in dload mode */
 		if (get_dload_mode() ||
 			((cmd != NULL && cmd[0] != '\0') &&
@@ -295,6 +343,32 @@ static void msm_restart_prepare(const char *cmd)
  	need_warm_reset = true;
 #endif
 
+=======
+		/* Set warm reset as true when device is in dload mode
+		 *  or device doesn't boot up into recovery, bootloader or rtc.
+		 */
+		if (get_dload_mode() ||
+			((cmd != NULL && cmd[0] != '\0') &&
+			strcmp(cmd, "recovery") &&
+			strcmp(cmd, "bootloader") &&
+			strcmp(cmd, "rtc") &&
+			strcmp(cmd, "dm-verity device corrupted") &&
+			strcmp(cmd, "dm-verity enforcing") &&
+			strcmp(cmd, "keys clear")))
+			need_warm_reset = true;
+	} else {
+		need_warm_reset = (get_dload_mode() ||
+				(cmd != NULL && cmd[0] != '\0'));
+	}
+
+#ifdef CONFIG_MSM_PRESERVE_MEM
+	need_warm_reset = true;
+#endif
+
+	/* To preserve console-ramoops */
+	need_warm_reset = true;
+
+>>>>>>> p9x
 	/* Hard reset the PMIC unless memory contents must be maintained. */
 	if (need_warm_reset) {
 		qpnp_pon_system_pwr_off(PON_POWER_OFF_WARM_RESET);
@@ -302,7 +376,16 @@ static void msm_restart_prepare(const char *cmd)
 		qpnp_pon_system_pwr_off(PON_POWER_OFF_HARD_RESET);
 	}
 
+<<<<<<< HEAD
 	if (cmd != NULL) {
+=======
+       if (in_panic) {
+		qpnp_pon_system_pwr_off(PON_POWER_OFF_WARM_RESET);
+		qpnp_pon_set_restart_reason(
+			PON_RESTART_REASON_PANIC);
+		__raw_writel(0x77665508, restart_reason);
+       } else if (cmd != NULL) {
+>>>>>>> p9x
 		if (!strncmp(cmd, "bootloader", 10)) {
 			qpnp_pon_set_restart_reason(
 				PON_RESTART_REASON_BOOTLOADER);
@@ -316,6 +399,7 @@ static void msm_restart_prepare(const char *cmd)
 				PON_RESTART_REASON_RTC);
 			__raw_writel(0x77665503, restart_reason);
 		} else if (!strcmp(cmd, "dm-verity device corrupted")) {
+<<<<<<< HEAD
 			qpnp_pon_set_restart_reason(
 				PON_RESTART_REASON_DMVERITY_CORRUPTED);
 			__raw_writel(0x77665508, restart_reason);
@@ -326,6 +410,12 @@ static void msm_restart_prepare(const char *cmd)
 		} else if (!strcmp(cmd, "keys clear")) {
 			qpnp_pon_set_restart_reason(
 				PON_RESTART_REASON_KEYS_CLEAR);
+=======
+			__raw_writel(0x77665508, restart_reason);
+		} else if (!strcmp(cmd, "dm-verity enforcing")) {
+			__raw_writel(0x77665509, restart_reason);
+		} else if (!strcmp(cmd, "keys clear")) {
+>>>>>>> p9x
 			__raw_writel(0x7766550a, restart_reason);
 		} else if (!strncmp(cmd, "oem-", 4)) {
 			unsigned long code;
@@ -334,11 +424,23 @@ static void msm_restart_prepare(const char *cmd)
 			if (!ret)
 				__raw_writel(0x6f656d00 | (code & 0xff),
 					     restart_reason);
+<<<<<<< HEAD
 		} else if (!strncmp(cmd, "edl", 3)) {
 			enable_emergency_dload_mode();
 		} else {
 			__raw_writel(0x77665501, restart_reason);
 		}
+=======
+		} else {
+			qpnp_pon_set_restart_reason(
+				PON_RESTART_REASON_NORMAL);
+			__raw_writel(0x77665501, restart_reason);
+		}
+	} else {
+		qpnp_pon_set_restart_reason(
+			PON_RESTART_REASON_NORMAL);
+		__raw_writel(0x77665501, restart_reason);
+>>>>>>> p9x
 	}
 
 	flush_cache_all();
@@ -376,6 +478,16 @@ static void deassert_ps_hold(void)
 
 static void do_msm_restart(enum reboot_mode reboot_mode, const char *cmd)
 {
+<<<<<<< HEAD
+=======
+	int ret;
+	struct scm_desc desc = {
+		.args[0] = 1,
+		.args[1] = 0,
+		.arginfo = SCM_ARGS(2),
+	};
+
+>>>>>>> p9x
 	pr_notice("Going down for restart now\n");
 
 	msm_restart_prepare(cmd);
@@ -386,11 +498,39 @@ static void do_msm_restart(enum reboot_mode reboot_mode, const char *cmd)
 	 * device will take the usual restart path.
 	 */
 
+<<<<<<< HEAD
 	if (WDOG_BITE_ON_PANIC && in_panic)
 		msm_trigger_wdog_bite();
 #endif
 
 	scm_disable_sdi();
+=======
+	if (WDOG_BITE_ON_PANIC && in_panic) {
+		if (!get_dload_mode()) {
+			if (!is_scm_armv8())
+				ret = scm_call_atomic2(SCM_SVC_BOOT,
+					SCM_WDOG_DEBUG_BOOT_PART, 1, 0);
+			else
+				ret = scm_call2_atomic(SCM_SIP_FNID(
+					SCM_SVC_BOOT,
+					SCM_WDOG_DEBUG_BOOT_PART), &desc);
+		}
+
+		msm_trigger_wdog_bite();
+	}
+#endif
+
+	/* Needed to bypass debug image on some chips */
+	if (!is_scm_armv8())
+		ret = scm_call_atomic2(SCM_SVC_BOOT,
+			       SCM_WDOG_DEBUG_BOOT_PART, 1, 0);
+	else
+		ret = scm_call2_atomic(SCM_SIP_FNID(SCM_SVC_BOOT,
+			  SCM_WDOG_DEBUG_BOOT_PART), &desc);
+	if (ret)
+		pr_err("Failed to disable secure wdog debug: %d\n", ret);
+
+>>>>>>> p9x
 	halt_spmi_pmic_arbiter();
 	deassert_ps_hold();
 
@@ -399,11 +539,37 @@ static void do_msm_restart(enum reboot_mode reboot_mode, const char *cmd)
 
 static void do_msm_poweroff(void)
 {
+<<<<<<< HEAD
 	pr_notice("Powering off the SoC\n");
 
 	set_dload_mode(0);
 	scm_disable_sdi();
 	qpnp_pon_system_pwr_off(PON_POWER_OFF_SHUTDOWN);
+=======
+	int ret;
+	struct scm_desc desc = {
+		.args[0] = 1,
+		.args[1] = 0,
+		.arginfo = SCM_ARGS(2),
+	};
+
+	pr_notice("Powering off the SoC\n");
+#ifdef CONFIG_MSM_DLOAD_MODE
+	set_dload_mode(0);
+#endif
+	qpnp_pon_system_pwr_off(PON_POWER_OFF_SHUTDOWN);
+	qpnp_pon_set_restart_reason(
+		PON_RESTART_REASON_UNKNOWN);
+	/* Needed to bypass debug image on some chips */
+	if (!is_scm_armv8())
+		ret = scm_call_atomic2(SCM_SVC_BOOT,
+			       SCM_WDOG_DEBUG_BOOT_PART, 1, 0);
+	else
+		ret = scm_call2_atomic(SCM_SIP_FNID(SCM_SVC_BOOT,
+			  SCM_WDOG_DEBUG_BOOT_PART), &desc);
+	if (ret)
+		pr_err("Failed to disable wdog debug: %d\n", ret);
+>>>>>>> p9x
 
 	halt_spmi_pmic_arbiter();
 	deassert_ps_hold();
@@ -413,6 +579,7 @@ static void do_msm_poweroff(void)
 	return;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_MSM_DLOAD_MODE
 static ssize_t attr_show(struct kobject *kobj, struct attribute *attr,
 				char *buf)
@@ -493,6 +660,8 @@ static struct attribute_group reset_attr_group = {
 };
 #endif
 
+=======
+>>>>>>> p9x
 static int msm_restart_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -523,6 +692,7 @@ static int msm_restart_probe(struct platform_device *pdev)
 			pr_err("unable to map imem EDLOAD mode offset\n");
 	}
 
+<<<<<<< HEAD
 	np = of_find_compatible_node(NULL, NULL,
 				"qcom,msm-imem-dload-type");
 	if (!np) {
@@ -550,6 +720,8 @@ static int msm_restart_probe(struct platform_device *pdev)
 		kobject_del(&dload_kobj);
 	}
 skip_sysfs_create:
+=======
+>>>>>>> p9x
 #endif
 	np = of_find_compatible_node(NULL, NULL,
 				"qcom,msm-imem-restart_reason");
@@ -561,9 +733,19 @@ skip_sysfs_create:
 			pr_err("unable to map imem restart reason offset\n");
 			ret = -ENOMEM;
 			goto err_restart_reason;
+<<<<<<< HEAD
 		}
 	}
 
+=======
+		} else
+			__raw_writel(0x77665510, restart_reason);
+
+	}
+
+	qpnp_pon_set_restart_reason(
+		PON_RESTART_REASON_UNKNOWN);
+>>>>>>> p9x
 	mem = platform_get_resource_byname(pdev, IORESOURCE_MEM, "pshold-base");
 	msm_ps_hold = devm_ioremap_resource(dev, mem);
 	if (IS_ERR(msm_ps_hold))
@@ -584,8 +766,11 @@ skip_sysfs_create:
 		scm_deassert_ps_hold_supported = true;
 
 	set_dload_mode(download_mode);
+<<<<<<< HEAD
 	if (!download_mode)
 		scm_disable_sdi();
+=======
+>>>>>>> p9x
 
 	return 0;
 

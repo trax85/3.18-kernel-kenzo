@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2010-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2010-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -136,11 +140,14 @@ struct apr_svc {
 	void *priv;
 	struct mutex m_lock;
 	spinlock_t w_lock;
+<<<<<<< HEAD
 	uint8_t pkt_owner;
 #ifdef CONFIG_MSM_QDSP6_APRV2_VM
 	uint16_t vm_dest_svc;
 	uint32_t vm_handle;
 #endif
+=======
+>>>>>>> p9x
 };
 
 struct apr_client {
@@ -152,6 +159,7 @@ struct apr_client {
 	struct apr_svc svc[APR_SVC_MAX];
 };
 
+<<<<<<< HEAD
 struct apr_rx_intents {
 	int num_of_intents;
 	uint32_t size;
@@ -160,6 +168,18 @@ struct apr_rx_intents {
 struct apr_pkt_cfg {
 	uint8_t pkt_owner;
 	struct apr_rx_intents intents;
+=======
+struct apr_func_dsp {
+	void (*apr_set_subsys_state)(void);
+	enum apr_subsys_state (*apr_get_adsp_state)(void);
+	const char * (*apr_get_adsp_subsys_name)(void);
+	u16 (*apr_get_data_src)(struct apr_hdr *hdr);
+	int (*apr_get_dest_id)(char *dest);
+	void (*subsys_notif_register)(struct notifier_block *mod_notif,
+		struct notifier_block *lp_notif);
+	u16 (*apr_get_reset_domain)(u16 proc);
+	bool (*apr_register_voice_svc)(void);
+>>>>>>> p9x
 };
 
 int apr_load_adsp_image(void);
@@ -176,19 +196,37 @@ inline int apr_fill_hdr(void *handle, uint32_t *buf, uint16_t src_port,
 
 int apr_send_pkt(void *handle, uint32_t *buf);
 int apr_deregister(void *handle);
+<<<<<<< HEAD
 void subsys_notif_register(struct notifier_block *mod_notif,
+=======
+int subsys_notif_register(struct notifier_block *mod_notif,
+>>>>>>> p9x
 				struct notifier_block *lp_notif);
 int apr_get_dest_id(char *dest);
 uint16_t apr_get_data_src(struct apr_hdr *hdr);
 void change_q6_state(int state);
 void q6audio_dsp_not_responding(void);
 void apr_reset(void *handle);
+<<<<<<< HEAD
 enum apr_subsys_state apr_get_subsys_state(void);
+=======
+>>>>>>> p9x
 enum apr_subsys_state apr_get_modem_state(void);
 void apr_set_modem_state(enum apr_subsys_state state);
 enum apr_subsys_state apr_get_q6_state(void);
 int apr_set_q6_state(enum apr_subsys_state state);
+<<<<<<< HEAD
 void apr_set_subsys_state(void);
 const char *apr_get_lpass_subsys_name(void);
 uint16_t apr_get_reset_domain(uint16_t proc);
+=======
+int apr_set_subsys_state(void);
+enum apr_subsys_state apr_get_adsp_state(void);
+const char *apr_get_lpass_subsys_name(void);
+bool apr_register_voice_svc(void);
+uint16_t apr_get_reset_domain(uint16_t proc);
+int apr_get_v2_ops(struct apr_func_dsp *ops);
+int apr_get_v3_ops(struct apr_func_dsp *ops);
+const char *apr_get_adsp_subsys_name(void);
+>>>>>>> p9x
 #endif

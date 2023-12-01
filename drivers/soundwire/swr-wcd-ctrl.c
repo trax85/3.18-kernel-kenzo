@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2015-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -61,10 +65,13 @@ struct usecase uc[] = {
 	{6, 14, 6600},		/* UC11: 2*(Spkr + Comp + SB) */
 	{2, 3, 2700},		/* UC12: Spkr + SB */
 	{4, 6, 5400},		/* UC13: 2*(Spkr + SB) */
+<<<<<<< HEAD
 	{3, 5, 3900},		/* UC14: Spkr + SB + VI */
 	{6, 10, 7800},		/* UC15: 2*(Spkr + SB + VI) */
 	{2, 3, 3600},		/* UC16: Spkr + VI */
 	{4, 6, 7200},		/* UC17: 2*(Spkr + VI) */
+=======
+>>>>>>> p9x
 };
 #define MAX_USECASE	ARRAY_SIZE(uc)
 
@@ -152,6 +159,7 @@ struct port_params pp[MAX_USECASE][SWR_MSTR_PORT_LEN] = {
 		{7, 6, 0},
 		{63, 13, 31},
 	},
+<<<<<<< HEAD
 	/* UC 14 */
 	{
 		{7, 1, 0},
@@ -179,6 +187,8 @@ struct port_params pp[MAX_USECASE][SWR_MSTR_PORT_LEN] = {
 		{7, 6, 0},
 		{15, 10, 0},
 	},
+=======
+>>>>>>> p9x
 };
 
 enum {
@@ -373,6 +383,7 @@ static int swrm_clk_request(struct swr_mstr_ctrl *swrm, bool enable)
 		return -EINVAL;
 
 	if (enable) {
+<<<<<<< HEAD
 		swrm->clk_ref_count++;
 		if (swrm->clk_ref_count == 1) {
 			swrm->clk(swrm->handle, true);
@@ -384,6 +395,13 @@ static int swrm_clk_request(struct swr_mstr_ctrl *swrm, bool enable)
 	} else if (swrm->clk_ref_count < 0) {
 		pr_err("%s: swrm clk count mismatch\n", __func__);
 		swrm->clk_ref_count = 0;
+=======
+		swrm->clk(swrm->handle, true);
+		swrm->state = SWR_MSTR_UP;
+	} else {
+		swrm->clk(swrm->handle, false);
+		swrm->state = SWR_MSTR_DOWN;
+>>>>>>> p9x
 	}
 	return 0;
 }
@@ -712,11 +730,14 @@ static void swrm_cleanup_disabled_data_ports(struct swr_master *master,
 	int port_disable_cnt = 0;
 	struct swr_mstr_ctrl *swrm = swr_get_ctrl_data(master);
 
+<<<<<<< HEAD
 	if (!swrm) {
 		pr_err("%s: swrm is null\n", __func__);
 		return;
 	}
 
+=======
+>>>>>>> p9x
 	dev_dbg(swrm->dev, "%s: master num_port: %d\n", __func__,
 		master->num_port);
 
@@ -759,7 +780,11 @@ inc_loop:
 			list_del(&mport->list);
 			kfree(mport);
 		}
+<<<<<<< HEAD
 		if (!mport_next || (&mport_next->list == &swrm->mport_list)) {
+=======
+		if (!mport_next) {
+>>>>>>> p9x
 			dev_err(swrm->dev, "%s: end of list\n", __func__);
 			break;
 		}
@@ -782,11 +807,14 @@ static void swrm_slvdev_datapath_control(struct swr_master *master,
 		    SWRM_MCP_FRAME_CTRL_BANK_SSP_PERIOD_BMSK);
 	u8 inactive_bank;
 
+<<<<<<< HEAD
 	if (!swrm) {
 		pr_err("%s: swrm is null\n", __func__);
 		return;
 	}
 
+=======
+>>>>>>> p9x
 	bank = get_inactive_bank_num(swrm);
 
 	dev_dbg(swrm->dev, "%s: enable: %d, cfg_devs: %d\n",
@@ -876,11 +904,14 @@ static void swrm_copy_data_port_config(struct swr_master *master, u8 bank)
 	int len = 0;
 	struct swr_mstr_ctrl *swrm = swr_get_ctrl_data(master);
 
+<<<<<<< HEAD
 	if (!swrm) {
 		pr_err("%s: swrm is null\n", __func__);
 		return;
 	}
 
+=======
+>>>>>>> p9x
 	dev_dbg(swrm->dev, "%s: master num_port: %d\n", __func__,
 		master->num_port);
 
@@ -1027,12 +1058,21 @@ port_fail:
 mem_fail:
 	list_for_each_safe(ptr, next, &swrm->mport_list) {
 		mport = list_entry(ptr, struct swrm_mports, list);
+<<<<<<< HEAD
+=======
+		if (!mport)
+			continue;
+>>>>>>> p9x
 		for (i = 0; i < portinfo->num_port; i++) {
 			if (portinfo->port_id[i] == mstr_ports[mport->id]) {
 				port = swrm_get_port(master,
 						portinfo->port_id[i]);
+<<<<<<< HEAD
 				if (port)
 					port->ch_en = false;
+=======
+				port->ch_en = false;
+>>>>>>> p9x
 				list_del(&mport->list);
 				kfree(mport);
 				break;
@@ -1142,10 +1182,14 @@ static irqreturn_t swr_mstr_interrupt(int irq, void *dev)
 	u8 devnum = 0;
 	int ret = IRQ_HANDLED;
 
+<<<<<<< HEAD
 	mutex_lock(&swrm->reslock);
 	swrm_clk_request(swrm, true);
 	mutex_unlock(&swrm->reslock);
 
+=======
+	pm_runtime_get_sync(&swrm->pdev->dev);
+>>>>>>> p9x
 	intr_sts = swrm->read(swrm->handle, SWRM_INTERRUPT_STATUS);
 	intr_sts &= SWRM_INTERRUPT_STATUS_RMSK;
 	for (i = 0; i < SWRM_INTERRUPT_MAX; i++) {
@@ -1233,10 +1277,15 @@ static irqreturn_t swr_mstr_interrupt(int irq, void *dev)
 			break;
 		}
 	}
+<<<<<<< HEAD
 
 	mutex_lock(&swrm->reslock);
 	swrm_clk_request(swrm, false);
 	mutex_unlock(&swrm->reslock);
+=======
+	pm_runtime_mark_last_busy(&swrm->pdev->dev);
+	pm_runtime_put_autosuspend(&swrm->pdev->dev);
+>>>>>>> p9x
 	return ret;
 }
 
@@ -1427,7 +1476,10 @@ static int swrm_probe(struct platform_device *pdev)
 	swrm->wcmd_id = 0;
 	swrm->slave_status = 0;
 	swrm->num_rx_chs = 0;
+<<<<<<< HEAD
 	swrm->clk_ref_count = 0;
+=======
+>>>>>>> p9x
 	swrm->state = SWR_MSTR_RESUME;
 	init_completion(&swrm->reset);
 	init_completion(&swrm->broadcast);
@@ -1615,6 +1667,19 @@ exit:
 	mutex_unlock(&swrm->reslock);
 	return ret;
 }
+<<<<<<< HEAD
+=======
+
+static int swrm_runtime_idle(struct device *dev)
+{
+	 if (pm_runtime_autosuspend_expiration(dev)) {
+		pm_runtime_autosuspend(dev);
+		return -EAGAIN;
+	}
+	return 0;
+}
+
+>>>>>>> p9x
 #endif /* CONFIG_PM_RUNTIME */
 
 static int swrm_device_down(struct device *dev)
@@ -1825,7 +1890,11 @@ static const struct dev_pm_ops swrm_dev_pm_ops = {
 	SET_RUNTIME_PM_OPS(
 		swrm_runtime_suspend,
 		swrm_runtime_resume,
+<<<<<<< HEAD
 		NULL
+=======
+		swrm_runtime_idle
+>>>>>>> p9x
 	)
 };
 

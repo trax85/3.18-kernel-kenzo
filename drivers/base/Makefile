@@ -7,7 +7,11 @@ obj-y			:= component.o core.o bus.o dd.o syscore.o \
 			   topology.o container.o property.o \
 			   cacheinfo.o
 obj-$(CONFIG_DEVTMPFS)	+= devtmpfs.o
+<<<<<<< HEAD
 obj-$(CONFIG_DMA_CMA) += dma-contiguous.o
+=======
+obj-$(CONFIG_CMA) += dma-contiguous.o dma-removed.o
+>>>>>>> p9x
 obj-y			+= power/
 obj-$(CONFIG_HAS_DMA)	+= dma-mapping.o
 obj-$(CONFIG_HAVE_GENERIC_DMA_COHERENT) += dma-coherent.o dma-removed.o

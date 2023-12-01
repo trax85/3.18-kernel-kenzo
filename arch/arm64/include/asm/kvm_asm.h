@@ -18,8 +18,11 @@
 #ifndef __ARM_KVM_ASM_H__
 #define __ARM_KVM_ASM_H__
 
+<<<<<<< HEAD
 #include <asm/virt.h>
 
+=======
+>>>>>>> p9x
 /*
  * 0 is reserved as an invalid value.
  * Order *must* be kept in sync with the hyp switch code.
@@ -45,6 +48,7 @@
 #define	AMAIR_EL1	19	/* Aux Memory Attribute Indirection Register */
 #define	CNTKCTL_EL1	20	/* Timer Control Register (EL1) */
 #define	PAR_EL1		21	/* Physical Address Register */
+<<<<<<< HEAD
 #define MDSCR_EL1	22	/* Monitor Debug System Control Register */
 #define DBGBCR0_EL1	23	/* Debug Breakpoint Control Registers (0-15) */
 #define DBGBCR15_EL1	38
@@ -64,6 +68,16 @@
 #define	TEECR32_EL1	92	/* ThumbEE Configuration Register */
 #define	TEEHBR32_EL1	93	/* ThumbEE Handler Base Register */
 #define	NR_SYS_REGS	94
+=======
+/* 32bit specific registers. Keep them at the end of the range */
+#define	DACR32_EL2	22	/* Domain Access Control Register */
+#define	IFSR32_EL2	23	/* Instruction Fault Status Register */
+#define	FPEXC32_EL2	24	/* Floating-Point Exception Control Register */
+#define	DBGVCR32_EL2	25	/* Debug Vector Catch Register */
+#define	TEECR32_EL1	26	/* ThumbEE Configuration Register */
+#define	TEEHBR32_EL1	27	/* ThumbEE Handler Base Register */
+#define	NR_SYS_REGS	28
+>>>>>>> p9x
 
 /* 32bit mapping */
 #define c0_MPIDR	(MPIDR_EL1 * 2)	/* MultiProcessor ID Register */
@@ -95,6 +109,7 @@
 #define c10_AMAIR0	(AMAIR_EL1 * 2)	/* Aux Memory Attr Indirection Reg */
 #define c10_AMAIR1	(c10_AMAIR0 + 1)/* Aux Memory Attr Indirection Reg */
 #define c14_CNTKCTL	(CNTKCTL_EL1 * 2) /* Timer Control Register (PL1) */
+<<<<<<< HEAD
 
 #define cp14_DBGDSCRext	(MDSCR_EL1 * 2)
 #define cp14_DBGBCR0	(DBGBCR0_EL1 * 2)
@@ -105,13 +120,19 @@
 #define cp14_DBGDCCINT	(MDCCINT_EL1 * 2)
 
 #define NR_COPRO_REGS	(NR_SYS_REGS * 2)
+=======
+#define NR_CP15_REGS	(NR_SYS_REGS * 2)
+>>>>>>> p9x
 
 #define ARM_EXCEPTION_IRQ	  0
 #define ARM_EXCEPTION_TRAP	  1
 
+<<<<<<< HEAD
 #define KVM_ARM64_DEBUG_DIRTY_SHIFT	0
 #define KVM_ARM64_DEBUG_DIRTY		(1 << KVM_ARM64_DEBUG_DIRTY_SHIFT)
 
+=======
+>>>>>>> p9x
 #ifndef __ASSEMBLY__
 struct kvm;
 struct kvm_vcpu;
@@ -121,13 +142,19 @@ extern char __kvm_hyp_init_end[];
 
 extern char __kvm_hyp_vector[];
 
+<<<<<<< HEAD
 #define	__kvm_hyp_code_start	__hyp_text_start
 #define	__kvm_hyp_code_end	__hyp_text_end
+=======
+extern char __kvm_hyp_code_start[];
+extern char __kvm_hyp_code_end[];
+>>>>>>> p9x
 
 extern void __kvm_flush_vm_context(void);
 extern void __kvm_tlb_flush_vmid_ipa(struct kvm *kvm, phys_addr_t ipa);
 
 extern int __kvm_vcpu_run(struct kvm_vcpu *vcpu);
+<<<<<<< HEAD
 
 extern u64 __vgic_v3_get_ich_vtr_el2(void);
 
@@ -136,6 +163,8 @@ extern char __restore_vgic_v2_state[];
 extern char __save_vgic_v3_state[];
 extern char __restore_vgic_v3_state[];
 
+=======
+>>>>>>> p9x
 #endif
 
 #endif /* __ARM_KVM_ASM_H__ */

@@ -196,7 +196,11 @@ __ext3_set_acl(handle_t *handle, struct inode *inode, int type,
 			name_index = EXT3_XATTR_INDEX_POSIX_ACL_ACCESS;
 			if (acl) {
 				error = posix_acl_update_mode(inode, &inode->i_mode, &acl);
+<<<<<<< HEAD
 				if (error)
+=======
+				if (error < 0)
+>>>>>>> p9x
 					return error;
 				inode->i_ctime = CURRENT_TIME_SEC;
 				ext3_mark_inode_dirty(handle, inode);

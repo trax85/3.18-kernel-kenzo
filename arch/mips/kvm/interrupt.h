@@ -29,8 +29,11 @@
 /* XXXSL More to follow */
 
 extern char __kvm_mips_vcpu_run_end[];
+<<<<<<< HEAD:arch/mips/kvm/interrupt.h
 extern char mips32_exception[], mips32_exceptionEnd[];
 extern char mips32_GuestException[], mips32_GuestExceptionEnd[];
+=======
+>>>>>>> p9x:arch/mips/kvm/kvm_mips_int.h
 
 #define C_TI        (_ULCAST_(1) << 30)
 

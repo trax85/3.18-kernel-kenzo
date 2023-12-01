@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 * Qualcomm Technologies, Inc. RmNet IPA driver module
+=======
+* Qualcomm RmNet IPA driver module
+>>>>>>> p9x
 
 This module enables embedded data calls using IPA HW.
 
@@ -8,11 +12,17 @@ Required properties:
 Optional:
 - qcom,rmnet-ipa-ssr: determine if modem SSR is supported
 - qcom,ipa-loaduC: indicate that ipa uC should be loaded
+<<<<<<< HEAD
 - qcom,ipa-advertise-sg-support: determine how to respond to a query
 regarding scatter-gather capability
+=======
+>>>>>>> p9x
 
 Example:
 	qcom,rmnet-ipa {
 		compatible = "qcom,rmnet-ipa";
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x

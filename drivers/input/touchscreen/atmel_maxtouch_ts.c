@@ -1,7 +1,11 @@
 /*
  * Atmel maXTouch Touchscreen driver
  *
+<<<<<<< HEAD
  * Copyright (c) 2014-2015, The Linux Foundation.  All rights reserved.
+=======
+ * Copyright (c) 2014, The Linux Foundation.  All rights reserved.
+>>>>>>> p9x
  *
  * Linux foundation chooses to take subject only to the GPLv2 license terms,
  * and distributes only under these terms.
@@ -1497,7 +1501,11 @@ static int mxt_soft_reset(struct mxt_data *data)
 
 	dev_info(dev, "Resetting chip\n");
 
+<<<<<<< HEAD
 	reinit_completion(&data->reset_completion);
+=======
+	INIT_COMPLETION(data->reset_completion);
+>>>>>>> p9x
 
 	ret = mxt_t6_command(data, MXT_COMMAND_RESET, MXT_RESET_VALUE, false);
 	if (ret)
@@ -1515,7 +1523,11 @@ static void mxt_update_crc(struct mxt_data *data, u8 cmd, u8 value)
 {
 	/* on failure, CRC is set to 0 and config will always be downloaded */
 	data->config_crc = 0;
+<<<<<<< HEAD
 	reinit_completion(&data->crc_completion);
+=======
+	INIT_COMPLETION(data->crc_completion);
+>>>>>>> p9x
 
 	mxt_t6_command(data, cmd, value, true);
 
@@ -2637,7 +2649,11 @@ static int mxt_regulator_enable(struct mxt_data *data)
 	}
 	msleep(MXT_REGULATOR_DELAY);
 
+<<<<<<< HEAD
 	reinit_completion(&data->bl_completion);
+=======
+	INIT_COMPLETION(data->bl_completion);
+>>>>>>> p9x
 	gpio_set_value(data->pdata->gpio_reset, 1);
 	mxt_wait_for_completion(data, &data->bl_completion, MXT_POWERON_DELAY);
 
@@ -2661,8 +2677,11 @@ static void mxt_regulator_disable(struct mxt_data *data)
 static int mxt_regulator_configure(struct mxt_data *data, bool state)
 {
 	struct device *dev = &data->client->dev;
+<<<<<<< HEAD
 	struct device_node *np = dev->of_node;
 	struct property *prop;
+=======
+>>>>>>> p9x
 	int error = 0;
 
 	/* According to maXTouch power sequencing specification, RESET line
@@ -2712,10 +2731,13 @@ static int mxt_regulator_configure(struct mxt_data *data, bool state)
 
 	data->reg_xvdd = regulator_get(dev, "xvdd");
 	if (IS_ERR(data->reg_xvdd)) {
+<<<<<<< HEAD
 		error = PTR_ERR(data->reg_xvdd);
 		prop = of_find_property(np, "xvdd-supply", NULL);
 		if (prop && (error == -EPROBE_DEFER))
 			return -EPROBE_DEFER;
+=======
+>>>>>>> p9x
 		dev_info(dev, "xvdd regulator is not used\n");
 	} else {
 		if (regulator_count_voltages(data->reg_xvdd) > 0) {
@@ -3357,7 +3379,11 @@ static int mxt_load_fw(struct device *dev)
 	}
 
 	mxt_free_object_table(data);
+<<<<<<< HEAD
 	reinit_completion(&data->bl_completion);
+=======
+	INIT_COMPLETION(data->bl_completion);
+>>>>>>> p9x
 
 	ret = mxt_check_bootloader(data, MXT_WAITING_BOOTLOAD_CMD, false);
 	if (ret) {
@@ -3727,7 +3753,11 @@ static ssize_t mxt_secure_touch_enable_store(struct device *dev,
 			err = -EIO;
 			break;
 		}
+<<<<<<< HEAD
 		reinit_completion(&data->st_powerdown);
+=======
+		INIT_COMPLETION(data->st_powerdown);
+>>>>>>> p9x
 		atomic_set(&data->st_enabled, 1);
 		synchronize_irq(data->client->irq);
 		atomic_set(&data->st_pending_irqs, 0);
@@ -4185,6 +4215,7 @@ static struct i2c_driver mxt_driver = {
 	.id_table	= mxt_id,
 };
 
+<<<<<<< HEAD
 static int __init mxt_init(void)
 {
 	return i2c_add_driver(&mxt_driver);
@@ -4197,6 +4228,9 @@ static void __exit mxt_exit(void)
 
 late_initcall(mxt_init);
 module_exit(mxt_exit);
+=======
+module_i2c_driver(mxt_driver);
+>>>>>>> p9x
 
 /* Module information */
 MODULE_AUTHOR("Joonyoung Shim <jy0922.shim@samsung.com>");

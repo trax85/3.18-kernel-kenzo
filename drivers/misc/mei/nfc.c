@@ -299,8 +299,13 @@ static int mei_nfc_if_version(struct mei_nfc_dev *ndev)
 		return -ENOMEM;
 
 	bytes_recv = __mei_cl_recv(cl, (u8 *)reply, if_version_length);
+<<<<<<< HEAD
 	if (bytes_recv < 0 || bytes_recv < sizeof(struct mei_nfc_reply)) {
 		dev_err(dev->dev, "Could not read IF version\n");
+=======
+	if (bytes_recv < if_version_length) {
+		dev_err(&dev->pdev->dev, "Could not read IF version\n");
+>>>>>>> p9x
 		ret = -EIO;
 		goto err;
 	}
@@ -532,6 +537,12 @@ int mei_nfc_host_init(struct mei_device *dev)
 	if (ret)
 		goto err;
 
+<<<<<<< HEAD
+=======
+	cl->device_uuid = mei_nfc_guid;
+
+
+>>>>>>> p9x
 	list_add_tail(&cl->device_link, &dev->device_list);
 
 	ndev->req_id = 1;

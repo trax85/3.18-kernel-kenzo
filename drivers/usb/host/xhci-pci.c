@@ -131,6 +131,7 @@ static void xhci_pci_quirks(struct device *dev, struct xhci_hcd *xhci)
 		 * PPT chipsets.
 		 */
 		xhci->quirks |= XHCI_SPURIOUS_REBOOT;
+<<<<<<< HEAD
 	}
 	if (pdev->vendor == PCI_VENDOR_ID_INTEL &&
 		pdev->device == PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_XHCI) {
@@ -141,6 +142,8 @@ static void xhci_pci_quirks(struct device *dev, struct xhci_hcd *xhci)
 		 pdev->device == PCI_DEVICE_ID_INTEL_SUNRISEPOINT_H_XHCI ||
 		 pdev->device == PCI_DEVICE_ID_INTEL_CHERRYVIEW_XHCI)) {
 		xhci->quirks |= XHCI_PME_STUCK_QUIRK;
+=======
+>>>>>>> p9x
 	}
 	if (pdev->vendor == PCI_VENDOR_ID_ETRON &&
 			pdev->device == PCI_DEVICE_ID_EJ168) {
@@ -261,6 +264,9 @@ static int xhci_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	if (!(xhci->quirks & XHCI_BROKEN_STREAMS) &&
 			HCC_MAX_PSA(xhci->hcc_params) >= 4)
 		xhci->shared_hcd->can_do_streams = 1;
+
+	/* USB-2 and USB-3 roothubs initialized, allow runtime pm suspend */
+	pm_runtime_put_noidle(&dev->dev);
 
 	/* USB-2 and USB-3 roothubs initialized, allow runtime pm suspend */
 	pm_runtime_put_noidle(&dev->dev);

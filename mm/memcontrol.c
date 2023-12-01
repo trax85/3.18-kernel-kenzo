@@ -313,6 +313,11 @@ struct mem_cgroup {
 	bool		oom_lock;
 	atomic_t	under_oom;
 	atomic_t	oom_wakeups;
+<<<<<<< HEAD
+=======
+
+	atomic_t	refcnt;
+>>>>>>> p9x
 
 	int	swappiness;
 	/* OOM-Killer disable */
@@ -370,9 +375,17 @@ struct mem_cgroup {
 	struct list_head event_list;
 	spinlock_t event_list_lock;
 
+<<<<<<< HEAD
 	struct mem_cgroup_per_node *nodeinfo[0];
 	/* WARNING: nodeinfo must be the last member here */
 };
+=======
+static size_t memcg_size(void)
+{
+	return sizeof(struct mem_cgroup) +
+		nr_node_ids * sizeof(struct mem_cgroup_per_node *);
+}
+>>>>>>> p9x
 
 /* internal only representation about the status of kmem accounting. */
 enum {
@@ -1213,14 +1226,46 @@ struct mem_cgroup *mem_cgroup_iter(struct mem_cgroup *root,
 				goto out_unlock;
 			}
 
+<<<<<<< HEAD
 			last_visited = mem_cgroup_iter_load(iter, root, &seq);
+=======
+			/*
+			 * If the dead_count mismatches, a destruction
+			 * has happened or is happening concurrently.
+			 * If the dead_count matches, a destruction
+			 * might still happen concurrently, but since
+			 * we checked under RCU, that destruction
+			 * won't free the object until we release the
+			 * RCU reader lock.  Thus, the dead_count
+			 * check verifies the pointer is still valid,
+			 * css_tryget() verifies the cgroup pointed to
+			 * is alive.
+			 */
+			dead_count = atomic_read(&root->dead_count);
+			if (dead_count == iter->last_dead_count) {
+				smp_rmb();
+				last_visited = iter->last_visited;
+				if (last_visited && last_visited != root &&
+				    !css_tryget(&last_visited->css))
+					last_visited = NULL;
+			}
+>>>>>>> p9x
 		}
 
 		memcg = __mem_cgroup_iter_next(root, last_visited);
 
 		if (reclaim) {
+<<<<<<< HEAD
 			mem_cgroup_iter_update(iter, last_visited, memcg, root,
 					seq);
+=======
+			if (last_visited && last_visited != root)
+				css_put(&last_visited->css);
+
+			iter->last_visited = memcg;
+			smp_wmb();
+			iter->last_dead_count = dead_count;
+>>>>>>> p9x
 
 			if (!memcg)
 				iter->generation++;
@@ -1962,12 +2007,15 @@ static int mem_cgroup_soft_reclaim(struct mem_cgroup *root_memcg,
 	return total;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_LOCKDEP
 static struct lockdep_map memcg_oom_lock_dep_map = {
 	.name = "memcg_oom_lock",
 };
 #endif
 
+=======
+>>>>>>> p9x
 static DEFINE_SPINLOCK(memcg_oom_lock);
 
 /*
@@ -2005,8 +2053,12 @@ static bool mem_cgroup_oom_trylock(struct mem_cgroup *memcg)
 			}
 			iter->oom_lock = false;
 		}
+<<<<<<< HEAD
 	} else
 		mutex_acquire(&memcg_oom_lock_dep_map, 0, 1, _RET_IP_);
+=======
+	}
+>>>>>>> p9x
 
 	spin_unlock(&memcg_oom_lock);
 
@@ -2018,7 +2070,10 @@ static void mem_cgroup_oom_unlock(struct mem_cgroup *memcg)
 	struct mem_cgroup *iter;
 
 	spin_lock(&memcg_oom_lock);
+<<<<<<< HEAD
 	mutex_release(&memcg_oom_lock_dep_map, 1, _RET_IP_);
+=======
+>>>>>>> p9x
 	for_each_mem_cgroup_tree(iter, memcg)
 		iter->oom_lock = false;
 	spin_unlock(&memcg_oom_lock);
@@ -2453,8 +2508,23 @@ static int memcg_cpu_hotplug_callback(struct notifier_block *nb,
 	return NOTIFY_OK;
 }
 
+<<<<<<< HEAD
 static int try_charge(struct mem_cgroup *memcg, gfp_t gfp_mask,
 		      unsigned int nr_pages)
+=======
+
+/* See __mem_cgroup_try_charge() for details */
+enum {
+	CHARGE_OK,		/* success */
+	CHARGE_RETRY,		/* need to retry but retry is not bad */
+	CHARGE_NOMEM,		/* we can't do more. return -ENOMEM */
+	CHARGE_WOULDBLOCK,	/* GFP_WAIT wasn't set and no enough res. */
+};
+
+static int mem_cgroup_do_charge(struct mem_cgroup *memcg, gfp_t gfp_mask,
+				unsigned int nr_pages, unsigned int min_pages,
+				bool invoke_oom)
+>>>>>>> p9x
 {
 	unsigned int batch = max(CHARGE_BATCH, nr_pages);
 	int nr_retries = MEM_CGROUP_RECLAIM_RETRIES;
@@ -2539,6 +2609,7 @@ retry:
 	if (mem_cgroup_wait_acct_move(mem_over_limit))
 		goto retry;
 
+<<<<<<< HEAD
 	if (nr_retries--)
 		goto retry;
 
@@ -2554,6 +2625,147 @@ nomem:
 		return -ENOMEM;
 bypass:
 	return -EINTR;
+=======
+	if (invoke_oom)
+		mem_cgroup_oom(mem_over_limit, gfp_mask, get_order(csize));
+
+	return CHARGE_NOMEM;
+}
+
+/*
+ * __mem_cgroup_try_charge() does
+ * 1. detect memcg to be charged against from passed *mm and *ptr,
+ * 2. update res_counter
+ * 3. call memory reclaim if necessary.
+ *
+ * In some special case, if the task is fatal, fatal_signal_pending() or
+ * has TIF_MEMDIE, this function returns -EINTR while writing root_mem_cgroup
+ * to *ptr. There are two reasons for this. 1: fatal threads should quit as soon
+ * as possible without any hazards. 2: all pages should have a valid
+ * pc->mem_cgroup. If mm is NULL and the caller doesn't pass a valid memcg
+ * pointer, that is treated as a charge to root_mem_cgroup.
+ *
+ * So __mem_cgroup_try_charge() will return
+ *  0       ...  on success, filling *ptr with a valid memcg pointer.
+ *  -ENOMEM ...  charge failure because of resource limits.
+ *  -EINTR  ...  if thread is fatal. *ptr is filled with root_mem_cgroup.
+ *
+ * Unlike the exported interface, an "oom" parameter is added. if oom==true,
+ * the oom-killer can be invoked.
+ */
+static int __mem_cgroup_try_charge(struct mm_struct *mm,
+				   gfp_t gfp_mask,
+				   unsigned int nr_pages,
+				   struct mem_cgroup **ptr,
+				   bool oom)
+{
+	unsigned int batch = max(CHARGE_BATCH, nr_pages);
+	int nr_oom_retries = MEM_CGROUP_RECLAIM_RETRIES;
+	struct mem_cgroup *memcg = NULL;
+	int ret;
+
+	/*
+	 * Unlike gloval-vm's OOM-kill, we're not in memory shortage
+	 * in system level. So, allow to go ahead dying process in addition to
+	 * MEMDIE process.
+	 */
+	if (unlikely(test_thread_flag(TIF_MEMDIE)
+		     || fatal_signal_pending(current)))
+		goto bypass;
+
+	if (unlikely(task_in_memcg_oom(current)))
+		goto bypass;
+
+	/*
+	 * We always charge the cgroup the mm_struct belongs to.
+	 * The mm_struct's mem_cgroup changes on task migration if the
+	 * thread group leader migrates. It's possible that mm is not
+	 * set, if so charge the root memcg (happens for pagecache usage).
+	 */
+	if (!*ptr && !mm)
+		*ptr = root_mem_cgroup;
+again:
+	if (*ptr) { /* css should be a valid one */
+		memcg = *ptr;
+		if (mem_cgroup_is_root(memcg))
+			goto done;
+		if (consume_stock(memcg, nr_pages))
+			goto done;
+		css_get(&memcg->css);
+	} else {
+		struct task_struct *p;
+
+		rcu_read_lock();
+		p = rcu_dereference(mm->owner);
+		/*
+		 * Because we don't have task_lock(), "p" can exit.
+		 * In that case, "memcg" can point to root or p can be NULL with
+		 * race with swapoff. Then, we have small risk of mis-accouning.
+		 * But such kind of mis-account by race always happens because
+		 * we don't have cgroup_mutex(). It's overkill and we allo that
+		 * small race, here.
+		 * (*) swapoff at el will charge against mm-struct not against
+		 * task-struct. So, mm->owner can be NULL.
+		 */
+		memcg = mem_cgroup_from_task(p);
+		if (!memcg)
+			memcg = root_mem_cgroup;
+		if (mem_cgroup_is_root(memcg)) {
+			rcu_read_unlock();
+			goto done;
+		}
+		if (consume_stock(memcg, nr_pages)) {
+			/*
+			 * It seems dagerous to access memcg without css_get().
+			 * But considering how consume_stok works, it's not
+			 * necessary. If consume_stock success, some charges
+			 * from this memcg are cached on this cpu. So, we
+			 * don't need to call css_get()/css_tryget() before
+			 * calling consume_stock().
+			 */
+			rcu_read_unlock();
+			goto done;
+		}
+		/* after here, we may be blocked. we need to get refcnt */
+		if (!css_tryget(&memcg->css)) {
+			rcu_read_unlock();
+			goto again;
+		}
+		rcu_read_unlock();
+	}
+
+	do {
+		bool invoke_oom = oom && !nr_oom_retries;
+
+		/* If killed, bypass charge */
+		if (fatal_signal_pending(current)) {
+			css_put(&memcg->css);
+			goto bypass;
+		}
+
+		ret = mem_cgroup_do_charge(memcg, gfp_mask, batch,
+					   nr_pages, invoke_oom);
+		switch (ret) {
+		case CHARGE_OK:
+			break;
+		case CHARGE_RETRY: /* not in OOM situation but retry */
+			batch = nr_pages;
+			css_put(&memcg->css);
+			memcg = NULL;
+			goto again;
+		case CHARGE_WOULDBLOCK: /* !__GFP_WAIT */
+			css_put(&memcg->css);
+			goto nomem;
+		case CHARGE_NOMEM: /* OOM routine works */
+			if (!oom || invoke_oom) {
+				css_put(&memcg->css);
+				goto nomem;
+			}
+			nr_oom_retries--;
+			break;
+		}
+	} while (ret != CHARGE_OK);
+>>>>>>> p9x
 
 done_restock:
 	if (batch > nr_pages)
@@ -2922,7 +3134,36 @@ static void memcg_register_cache(struct mem_cgroup *memcg,
 
 static void memcg_unregister_cache(struct kmem_cache *cachep)
 {
+<<<<<<< HEAD
 	struct kmem_cache *root_cache;
+=======
+	size_t size = sizeof(struct memcg_cache_params);
+
+	if (!memcg_kmem_enabled())
+		return 0;
+
+	if (!memcg)
+		size += memcg_limited_groups_array_size * sizeof(void *);
+
+	s->memcg_params = kzalloc(size, GFP_KERNEL);
+	if (!s->memcg_params)
+		return -ENOMEM;
+
+	if (memcg) {
+		s->memcg_params->memcg = memcg;
+		s->memcg_params->root_cache = root_cache;
+		INIT_WORK(&s->memcg_params->destroy,
+				kmem_cache_destroy_work_func);
+	} else
+		s->memcg_params->is_root_cache = true;
+
+	return 0;
+}
+
+void memcg_release_cache(struct kmem_cache *s)
+{
+	struct kmem_cache *root;
+>>>>>>> p9x
 	struct mem_cgroup *memcg;
 	int id;
 
@@ -3278,13 +3519,15 @@ static inline void memcg_unregister_all_caches(struct mem_cgroup *memcg)
  */
 void mem_cgroup_split_huge_fixup(struct page *head)
 {
-	struct page_cgroup *head_pc = lookup_page_cgroup(head);
+	struct page_cgroup *head_pc;
 	struct page_cgroup *pc;
 	struct mem_cgroup *memcg;
 	int i;
 
 	if (mem_cgroup_disabled())
 		return;
+
+	head_pc = lookup_page_cgroup(head);
 
 	memcg = head_pc->mem_cgroup;
 	for (i = 1; i < HPAGE_PMD_NR; i++) {
@@ -5426,6 +5669,7 @@ mem_cgroup_css_online(struct cgroup_subsys_state *css)
 			memory_cgrp_subsys.broken_hierarchy = true;
 	}
 	mutex_unlock(&memcg_create_mutex);
+<<<<<<< HEAD
 
 	ret = memcg_init_kmem(memcg, &memory_cgrp_subsys);
 	if (ret)
@@ -5439,6 +5683,9 @@ mem_cgroup_css_online(struct cgroup_subsys_state *css)
 	smp_store_release(&memcg->initialized, 1);
 
 	return 0;
+=======
+	return error;
+>>>>>>> p9x
 }
 
 /*
@@ -5461,6 +5708,7 @@ static void mem_cgroup_invalidate_reclaim_iterators(struct mem_cgroup *memcg)
 
 static void mem_cgroup_css_offline(struct cgroup_subsys_state *css)
 {
+<<<<<<< HEAD
 	struct mem_cgroup *memcg = mem_cgroup_from_css(css);
 	struct mem_cgroup_event *event, *tmp;
 	struct cgroup_subsys_state *iter;
@@ -5478,6 +5726,10 @@ static void mem_cgroup_css_offline(struct cgroup_subsys_state *css)
 	spin_unlock(&memcg->event_list_lock);
 
 	kmem_cgroup_css_offline(memcg);
+=======
+	struct mem_cgroup *memcg = mem_cgroup_from_cont(cont);
+	struct cgroup *iter;
+>>>>>>> p9x
 
 	mem_cgroup_invalidate_reclaim_iterators(memcg);
 
@@ -5485,10 +5737,23 @@ static void mem_cgroup_css_offline(struct cgroup_subsys_state *css)
 	 * This requires that offlining is serialized.  Right now that is
 	 * guaranteed because css_killed_work_fn() holds the cgroup_mutex.
 	 */
+<<<<<<< HEAD
 	css_for_each_descendant_post(iter, css)
 		mem_cgroup_reparent_charges(mem_cgroup_from_css(iter));
 
 	memcg_unregister_all_caches(memcg);
+=======
+	rcu_read_lock();
+	cgroup_for_each_descendant_post(iter, cont) {
+		rcu_read_unlock();
+		mem_cgroup_reparent_charges(mem_cgroup_from_cont(iter));
+		rcu_read_lock();
+	}
+	rcu_read_unlock();
+	mem_cgroup_reparent_charges(memcg);
+
+	mem_cgroup_destroy_all_caches(memcg);
+>>>>>>> p9x
 	vmpressure_cleanup(&memcg->vmpressure);
 }
 
@@ -5955,7 +6220,17 @@ static int mem_cgroup_can_attach(struct cgroup_subsys_state *css,
 	return ret;
 }
 
+<<<<<<< HEAD
 static void mem_cgroup_cancel_attach(struct cgroup_subsys_state *css,
+=======
+static int mem_cgroup_allow_attach(struct cgroup *cgroup,
+				   struct cgroup_taskset *tset)
+{
+	return subsys_cgroup_allow_attach(cgroup, tset);
+}
+
+static void mem_cgroup_cancel_attach(struct cgroup *cgroup,
+>>>>>>> p9x
 				     struct cgroup_taskset *tset)
 {
 	mem_cgroup_clear_mc();
@@ -6123,7 +6398,16 @@ static int mem_cgroup_can_attach(struct cgroup_subsys_state *css,
 {
 	return 0;
 }
+<<<<<<< HEAD
 static void mem_cgroup_cancel_attach(struct cgroup_subsys_state *css,
+=======
+static int mem_cgroup_allow_attach(struct cgroup *cgroup,
+				   struct cgroup_taskset *tset)
+{
+	return 0;
+}
+static void mem_cgroup_cancel_attach(struct cgroup *cgroup,
+>>>>>>> p9x
 				     struct cgroup_taskset *tset)
 {
 }
@@ -6132,7 +6416,22 @@ static void mem_cgroup_move_task(struct cgroup_subsys_state *css,
 {
 }
 #endif
+static int mem_cgroup_allow_attach(struct cgroup *cgrp,
+				 struct cgroup_taskset *tset)
+{
+	const struct cred *cred = current_cred(), *tcred;
+	struct task_struct *task;
 
+	cgroup_taskset_for_each(task, cgrp, tset) {
+		tcred = __task_cred(task);
+
+		if ((current != task) && !capable(CAP_SYS_ADMIN) &&
+		    cred->euid != tcred->uid && cred->euid != tcred->suid)
+			return -EACCES;
+	}
+
+	return 0;
+}
 /*
  * Cgroup retains root cgroups across [un]mount cycles making it necessary
  * to verify whether we're attached to the default hierarchy on each mount
@@ -6158,6 +6457,7 @@ struct cgroup_subsys memory_cgrp_subsys = {
 	.can_attach = mem_cgroup_can_attach,
 	.cancel_attach = mem_cgroup_cancel_attach,
 	.attach = mem_cgroup_move_task,
+        .allow_attach = mem_cgroup_allow_attach,
 	.bind = mem_cgroup_bind,
 	.legacy_cftypes = mem_cgroup_files,
 	.early_init = 0,

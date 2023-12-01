@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2015, 2017, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -16,7 +20,10 @@
 #define __SDHCI_MSM_H__
 
 #include <linux/mmc/mmc.h>
+<<<<<<< HEAD
 #include <linux/pm_qos.h>
+=======
+>>>>>>> p9x
 #include "sdhci-pltfm.h"
 
 /* This structure keeps information per regulator */
@@ -39,7 +46,13 @@ struct sdhci_msm_reg_data {
 	/* is low power mode setting required for this regulator? */
 	bool lpm_sup;
 	bool set_voltage_sup;
+<<<<<<< HEAD
         bool is_sd_vdd;
+=======
+#ifdef CONFIG_MACH_XIAOMI_KENZO
+	bool is_sd_vdd;
+#endif
+>>>>>>> p9x
 };
 
 /*
@@ -85,6 +98,7 @@ struct sdhci_msm_bus_voting_data {
 	unsigned int bw_vecs_size;
 };
 
+<<<<<<< HEAD
 struct sdhci_msm_cpu_group_map {
 	int nr_groups;
 	cpumask_t *mask;
@@ -128,6 +142,8 @@ struct sdhci_msm_pm_qos_irq {
 	bool enabled;
 };
 
+=======
+>>>>>>> p9x
 struct sdhci_msm_pltfm_data {
 	/* Supported UHS-I Modes */
 	u32 caps;
@@ -138,26 +154,47 @@ struct sdhci_msm_pltfm_data {
 	unsigned long mmc_bus_width;
 	struct sdhci_msm_slot_reg_data *vreg_data;
 	bool nonremovable;
+<<<<<<< HEAD
 	bool nonhotplug;
 	bool largeaddressbus;
 	bool pin_cfg_sts;
 	struct sdhci_msm_pin_data *pin_data;
 	struct sdhci_pinctrl_data *pctrl_data;
         u32 *cpu_dma_latency_us;
+=======
+	bool use_mod_dynamic_qos;
+	bool nonhotplug;
+	bool broken_pwr_cycle_host;
+	bool no_1p8v;
+	bool pin_cfg_sts;
+	struct sdhci_msm_pin_data *pin_data;
+	struct sdhci_pinctrl_data *pctrl_data;
+	u32 *cpu_dma_latency_us;
+>>>>>>> p9x
 	unsigned int cpu_dma_latency_tbl_sz;
 	int status_gpio; /* card detection GPIO that is configured as IRQ */
 	struct sdhci_msm_bus_voting_data *voting_data;
 	u32 *sup_clk_table;
 	unsigned char sup_clk_cnt;
+<<<<<<< HEAD
 	int sdiowakeup_irq;
         enum pm_qos_req_type cpu_affinity_type;
+=======
+	int mpm_sdiowakeup_int;
+	int sdiowakeup_irq;
+	enum pm_qos_req_type cpu_affinity_type;
+>>>>>>> p9x
 	cpumask_t cpu_affinity_mask;
 	u32 *sup_ice_clk_table;
 	unsigned char sup_ice_clk_cnt;
 	u32 ice_clk_max;
 	u32 ice_clk_min;
+<<<<<<< HEAD
 	struct sdhci_msm_pm_qos_data pm_qos_data;
 	bool sdr104_wa;
+=======
+	bool core_3_0v_support;
+>>>>>>> p9x
 };
 
 struct sdhci_msm_bus_vote {
@@ -202,6 +239,7 @@ struct sdhci_msm_host {
 	bool en_auto_cmd21;
 	struct device_attribute auto_cmd21_attr;
 	bool is_sdiowakeup_enabled;
+<<<<<<< HEAD
 	bool sdio_pending_processing;
 	atomic_t controller_clock;
 	bool use_cdclp533;
@@ -236,4 +274,16 @@ void sdhci_msm_pm_qos_cpu_vote(struct sdhci_host *host,
 bool sdhci_msm_pm_qos_cpu_unvote(struct sdhci_host *host, int cpu, bool async);
 
 
+=======
+	atomic_t controller_clock;
+	bool use_cdclp533;
+	bool use_updated_dll_reset;
+	u32 caps_0;
+	enum dev_state mmc_dev_state;
+	struct sdhci_msm_ice_data ice;
+	u32 ice_clk_rate;
+	bool enhanced_strobe;
+	bool tuning_in_progress;
+};
+>>>>>>> p9x
 #endif /* __SDHCI_MSM_H__ */

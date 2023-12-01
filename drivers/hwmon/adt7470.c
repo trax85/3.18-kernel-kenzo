@@ -191,6 +191,21 @@ static inline int adt7470_write_word_data(struct i2c_client *client, u8 reg,
 {
 	return i2c_smbus_write_byte_data(client, reg, value & 0xFF)
 	       || i2c_smbus_write_byte_data(client, reg + 1, value >> 8);
+<<<<<<< HEAD
+=======
+}
+
+static void adt7470_init_client(struct i2c_client *client)
+{
+	int reg = i2c_smbus_read_byte_data(client, ADT7470_REG_CFG);
+
+	if (reg < 0) {
+		dev_err(&client->dev, "cannot read configuration register\n");
+	} else {
+		/* start monitoring (and do a self-test) */
+		i2c_smbus_write_byte_data(client, ADT7470_REG_CFG, reg | 3);
+	}
+>>>>>>> p9x
 }
 
 /* Probe for temperature sensors.  Assumes lock is held */

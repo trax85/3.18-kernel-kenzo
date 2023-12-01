@@ -76,6 +76,7 @@ struct dst_entry *inet6_csk_route_req(struct sock *sk,
 
 	memset(fl6, 0, sizeof(*fl6));
 	fl6->flowi6_proto = IPPROTO_TCP;
+<<<<<<< HEAD
 	fl6->daddr = ireq->ir_v6_rmt_addr;
 	rcu_read_lock();
 	final_p = fl6_update_dst(fl6, rcu_dereference(np->opt), &final);
@@ -85,6 +86,17 @@ struct dst_entry *inet6_csk_route_req(struct sock *sk,
 	fl6->flowi6_mark = ireq->ir_mark;
 	fl6->fl6_dport = ireq->ir_rmt_port;
 	fl6->fl6_sport = htons(ireq->ir_num);
+=======
+	fl6->daddr = treq->rmt_addr;
+	rcu_read_lock();
+	final_p = fl6_update_dst(fl6, rcu_dereference(np->opt), &final);
+	rcu_read_unlock();
+	fl6->saddr = treq->loc_addr;
+	fl6->flowi6_oif = treq->iif;
+	fl6->flowi6_mark = inet_rsk(req)->ir_mark;
+	fl6->fl6_dport = inet_rsk(req)->rmt_port;
+	fl6->fl6_sport = inet_rsk(req)->loc_port;
+>>>>>>> p9x
 	fl6->flowi6_uid = sk->sk_uid;
 	security_req_classify_flow(req, flowi6_to_flowi(fl6));
 

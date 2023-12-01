@@ -194,4 +194,8 @@ module_exit(sha1_neon_mod_fini);
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("SHA1 Secure Hash Algorithm, NEON accelerated");
+<<<<<<< HEAD
 MODULE_ALIAS_CRYPTO("sha1");
+=======
+MODULE_ALIAS("sha1");
+>>>>>>> p9x

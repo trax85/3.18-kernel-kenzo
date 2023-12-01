@@ -166,7 +166,11 @@ EXPORT_SYMBOL(sk_ns_capable);
 /**
  * sk_capable - Socket global capability test
  * @sk: Socket to use a capability on or through
+<<<<<<< HEAD
  * @cap: The global capability to use
+=======
+ * @cap: The global capbility to use
+>>>>>>> p9x
  *
  * Test to see if the opener of the socket had when the socket was
  * created and the current process has the capability @cap in all user
@@ -183,7 +187,11 @@ EXPORT_SYMBOL(sk_capable);
  * @sk: Socket to use a capability on or through
  * @cap: The capability to use
  *
+<<<<<<< HEAD
  * Test to see if the opener of the socket had when the socket was created
+=======
+ * Test to see if the opener of the socket had when the socke was created
+>>>>>>> p9x
  * and the current process has the capability @cap over the network namespace
  * the socket is a member of.
  */
@@ -1548,6 +1556,7 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
 		}
 
 		newsk->sk_err	   = 0;
+		newsk->sk_err_soft = 0;
 		newsk->sk_priority = 0;
 		/*
 		 * Before updating sk_refcnt, we must commit prior changes to memory
@@ -1865,11 +1874,23 @@ bool skb_page_frag_refill(unsigned int sz, struct page_frag *pfrag, gfp_t gfp)
 		put_page(pfrag->page);
 	}
 
+<<<<<<< HEAD
 	pfrag->offset = 0;
 	if (SKB_FRAG_PAGE_ORDER) {
 		pfrag->page = alloc_pages((gfp & ~__GFP_WAIT) | __GFP_COMP |
 					  __GFP_NOWARN | __GFP_NORETRY,
 					  SKB_FRAG_PAGE_ORDER);
+=======
+	/* We restrict high order allocations to users that can afford to wait */
+	order = (sk->sk_allocation & __GFP_WAIT) ? SKB_FRAG_PAGE_ORDER : 0;
+
+	do {
+		gfp_t gfp = sk->sk_allocation;
+
+		if (order)
+			gfp |= __GFP_COMP | __GFP_NOWARN | __GFP_NORETRY;
+		pfrag->page = alloc_pages(gfp, order);
+>>>>>>> p9x
 		if (likely(pfrag->page)) {
 			pfrag->size = PAGE_SIZE << SKB_FRAG_PAGE_ORDER;
 			return true;
@@ -2067,12 +2088,13 @@ EXPORT_SYMBOL(__sk_mem_schedule);
 /**
  *	__sk_reclaim - reclaim memory_allocated
  *	@sk: socket
+ *	@amount: number of bytes (rounded down to a SK_MEM_QUANTUM multiple)
  */
-void __sk_mem_reclaim(struct sock *sk)
+void __sk_mem_reclaim(struct sock *sk, int amount)
 {
-	sk_memory_allocated_sub(sk,
-				sk->sk_forward_alloc >> SK_MEM_QUANTUM_SHIFT);
-	sk->sk_forward_alloc &= SK_MEM_QUANTUM - 1;
+	amount >>= SK_MEM_QUANTUM_SHIFT;
+	sk_memory_allocated_sub(sk, amount);
+	sk->sk_forward_alloc -= amount << SK_MEM_QUANTUM_SHIFT;
 
 	if (sk_under_memory_pressure(sk) &&
 	    (sk_memory_allocated(sk) < sk_prot_mem_limits(sk, 0)))
@@ -2340,12 +2362,15 @@ void sock_init_data(struct socket *sock, struct sock *sk)
 	seqlock_init(&sk->sk_stamp_seq);
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_NET_RX_BUSY_POLL
 	sk->sk_napi_id		=	0;
 	sk->sk_ll_usec		=	sysctl_net_busy_read;
 #endif
 
 	sk->sk_max_pacing_rate = ~0U;
+=======
+>>>>>>> p9x
 	sk->sk_pacing_rate = ~0U;
 	/*
 	 * Before updating sk_refcnt, we must commit prior changes to memory

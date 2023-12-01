@@ -1609,10 +1609,206 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_207S)
 	li	r0, KVM_GUEST_MODE_NONE
 	stb	r0, HSTATE_IN_GUEST(r13)
 
+<<<<<<< HEAD
 	ld	r0, SFS+PPC_LR_STKOFF(r1)
 	addi	r1, r1, SFS
 	mtlr	r0
 	blr
+=======
+	/* Switch DSCR back to host value */
+BEGIN_FTR_SECTION
+	mfspr	r8, SPRN_DSCR
+	ld	r7, HSTATE_DSCR(r13)
+	std	r8, VCPU_DSCR(r9)
+	mtspr	SPRN_DSCR, r7
+END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
+
+	/* Save non-volatile GPRs */
+	std	r14, VCPU_GPR(R14)(r9)
+	std	r15, VCPU_GPR(R15)(r9)
+	std	r16, VCPU_GPR(R16)(r9)
+	std	r17, VCPU_GPR(R17)(r9)
+	std	r18, VCPU_GPR(R18)(r9)
+	std	r19, VCPU_GPR(R19)(r9)
+	std	r20, VCPU_GPR(R20)(r9)
+	std	r21, VCPU_GPR(R21)(r9)
+	std	r22, VCPU_GPR(R22)(r9)
+	std	r23, VCPU_GPR(R23)(r9)
+	std	r24, VCPU_GPR(R24)(r9)
+	std	r25, VCPU_GPR(R25)(r9)
+	std	r26, VCPU_GPR(R26)(r9)
+	std	r27, VCPU_GPR(R27)(r9)
+	std	r28, VCPU_GPR(R28)(r9)
+	std	r29, VCPU_GPR(R29)(r9)
+	std	r30, VCPU_GPR(R30)(r9)
+	std	r31, VCPU_GPR(R31)(r9)
+
+	/* Save SPRGs */
+	mfspr	r3, SPRN_SPRG0
+	mfspr	r4, SPRN_SPRG1
+	mfspr	r5, SPRN_SPRG2
+	mfspr	r6, SPRN_SPRG3
+	std	r3, VCPU_SPRG0(r9)
+	std	r4, VCPU_SPRG1(r9)
+	std	r5, VCPU_SPRG2(r9)
+	std	r6, VCPU_SPRG3(r9)
+
+	/* save FP state */
+	mr	r3, r9
+	bl	.kvmppc_save_fp
+
+	/* Increment yield count if they have a VPA */
+	ld	r8, VCPU_VPA(r9)	/* do they have a VPA? */
+	cmpdi	r8, 0
+	beq	25f
+	lwz	r3, LPPACA_YIELDCOUNT(r8)
+	addi	r3, r3, 1
+	stw	r3, LPPACA_YIELDCOUNT(r8)
+	li	r3, 1
+	stb	r3, VCPU_VPA_DIRTY(r9)
+25:
+	/* Save PMU registers if requested */
+	/* r8 and cr0.eq are live here */
+	li	r3, 1
+	sldi	r3, r3, 31		/* MMCR0_FC (freeze counters) bit */
+	mfspr	r4, SPRN_MMCR0		/* save MMCR0 */
+	mtspr	SPRN_MMCR0, r3		/* freeze all counters, disable ints */
+	mfspr	r6, SPRN_MMCRA
+BEGIN_FTR_SECTION
+	/* On P7, clear MMCRA in order to disable SDAR updates */
+	li	r7, 0
+	mtspr	SPRN_MMCRA, r7
+END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
+	isync
+	beq	21f			/* if no VPA, save PMU stuff anyway */
+	lbz	r7, LPPACA_PMCINUSE(r8)
+	cmpwi	r7, 0			/* did they ask for PMU stuff to be saved? */
+	bne	21f
+	std	r3, VCPU_MMCR(r9)	/* if not, set saved MMCR0 to FC */
+	b	22f
+21:	mfspr	r5, SPRN_MMCR1
+	std	r4, VCPU_MMCR(r9)
+	std	r5, VCPU_MMCR + 8(r9)
+	std	r6, VCPU_MMCR + 16(r9)
+	mfspr	r3, SPRN_PMC1
+	mfspr	r4, SPRN_PMC2
+	mfspr	r5, SPRN_PMC3
+	mfspr	r6, SPRN_PMC4
+	mfspr	r7, SPRN_PMC5
+	mfspr	r8, SPRN_PMC6
+BEGIN_FTR_SECTION
+	mfspr	r10, SPRN_PMC7
+	mfspr	r11, SPRN_PMC8
+END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
+	stw	r3, VCPU_PMC(r9)
+	stw	r4, VCPU_PMC + 4(r9)
+	stw	r5, VCPU_PMC + 8(r9)
+	stw	r6, VCPU_PMC + 12(r9)
+	stw	r7, VCPU_PMC + 16(r9)
+	stw	r8, VCPU_PMC + 20(r9)
+BEGIN_FTR_SECTION
+	stw	r10, VCPU_PMC + 24(r9)
+	stw	r11, VCPU_PMC + 28(r9)
+END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
+22:
+
+	/* Secondary threads go off to take a nap on POWER7 */
+BEGIN_FTR_SECTION
+	lwz	r0,VCPU_PTID(r9)
+	cmpwi	r0,0
+	bne	secondary_nap
+END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
+
+	/* Restore host DABR and DABRX */
+	ld	r5,HSTATE_DABR(r13)
+	li	r6,7
+	mtspr	SPRN_DABR,r5
+	mtspr	SPRN_DABRX,r6
+
+	/* Restore SPRG3 */
+	ld	r3,PACA_SPRG3(r13)
+	mtspr	SPRN_SPRG3,r3
+
+	/*
+	 * Reload DEC.  HDEC interrupts were disabled when
+	 * we reloaded the host's LPCR value.
+	 */
+	ld	r3, HSTATE_DECEXP(r13)
+	mftb	r4
+	subf	r4, r4, r3
+	mtspr	SPRN_DEC, r4
+
+	/* Reload the host's PMU registers */
+	ld	r3, PACALPPACAPTR(r13)	/* is the host using the PMU? */
+	lbz	r4, LPPACA_PMCINUSE(r3)
+	cmpwi	r4, 0
+	beq	23f			/* skip if not */
+	lwz	r3, HSTATE_PMC(r13)
+	lwz	r4, HSTATE_PMC + 4(r13)
+	lwz	r5, HSTATE_PMC + 8(r13)
+	lwz	r6, HSTATE_PMC + 12(r13)
+	lwz	r8, HSTATE_PMC + 16(r13)
+	lwz	r9, HSTATE_PMC + 20(r13)
+BEGIN_FTR_SECTION
+	lwz	r10, HSTATE_PMC + 24(r13)
+	lwz	r11, HSTATE_PMC + 28(r13)
+END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
+	mtspr	SPRN_PMC1, r3
+	mtspr	SPRN_PMC2, r4
+	mtspr	SPRN_PMC3, r5
+	mtspr	SPRN_PMC4, r6
+	mtspr	SPRN_PMC5, r8
+	mtspr	SPRN_PMC6, r9
+BEGIN_FTR_SECTION
+	mtspr	SPRN_PMC7, r10
+	mtspr	SPRN_PMC8, r11
+END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
+	ld	r3, HSTATE_MMCR(r13)
+	ld	r4, HSTATE_MMCR + 8(r13)
+	ld	r5, HSTATE_MMCR + 16(r13)
+	mtspr	SPRN_MMCR1, r4
+	mtspr	SPRN_MMCRA, r5
+	mtspr	SPRN_MMCR0, r3
+	isync
+23:
+	/*
+	 * For external and machine check interrupts, we need
+	 * to call the Linux handler to process the interrupt.
+	 * We do that by jumping to absolute address 0x500 for
+	 * external interrupts, or the machine_check_fwnmi label
+	 * for machine checks (since firmware might have patched
+	 * the vector area at 0x200).  The [h]rfid at the end of the
+	 * handler will return to the book3s_hv_interrupts.S code.
+	 * For other interrupts we do the rfid to get back
+	 * to the book3s_hv_interrupts.S code here.
+	 */
+	ld	r8, HSTATE_VMHANDLER(r13)
+	ld	r7, HSTATE_HOST_MSR(r13)
+
+	cmpwi	cr1, r12, BOOK3S_INTERRUPT_MACHINE_CHECK
+	cmpwi	r12, BOOK3S_INTERRUPT_EXTERNAL
+BEGIN_FTR_SECTION
+	beq	11f
+END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
+
+	/* RFI into the highmem handler, or branch to interrupt handler */
+	mfmsr	r6
+	li	r0, MSR_RI
+	andc	r6, r6, r0
+	mtmsrd	r6, 1			/* Clear RI in MSR */
+	mtsrr0	r8
+	mtsrr1	r7
+	beqa	0x500			/* external interrupt (PPC970) */
+	beq	cr1, 13f		/* machine check */
+	RFI
+
+	/* On POWER7, we have external interrupts set to use HSRR0/1 */
+11:	mtspr	SPRN_HSRR0, r8
+	mtspr	SPRN_HSRR1, r7
+	ba	0x500
+
+13:	b	machine_check_fwnmi
+>>>>>>> p9x
 
 /*
  * Check whether an HDSI is an HPTE not found fault or something else.

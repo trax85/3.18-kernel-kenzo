@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -22,6 +26,7 @@
 #include <asm/arch_timer.h>
 #include <linux/uaccess.h>
 
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/err.h>
 #include <linux/delay.h>
@@ -33,6 +38,8 @@
 
 #define IMAGE_LOAD_CMD 1
 #define IMAGE_UNLOAD_CMD 0
+=======
+>>>>>>> p9x
 #define CLASS_NAME	"ssc"
 #define DRV_NAME	"sensors"
 #define DRV_VERSION	"2.00"
@@ -40,6 +47,7 @@
 #define DSPS_IOCTL_READ_SLOW_TIMER32 _IOR(DSPS_IOCTL_MAGIC, 3, compat_uint_t)
 #endif
 
+<<<<<<< HEAD
 static void __iomem *qdsp6ss_qtmr_base;
 static uint32_t qdsp6ss_qtmr_hi_offset;
 static uint32_t qdsp6ss_qtmr_lo_offset;
@@ -85,6 +93,8 @@ static ssize_t qdsp_qtimer_show(struct device *dev,
 
 static DEVICE_ATTR(qdsp_qtimer, S_IRUGO , qdsp_qtimer_show, NULL);
 
+=======
+>>>>>>> p9x
 struct sns_ssc_control_s {
 	struct class *dev_class;
 	dev_t dev_num;
@@ -93,6 +103,7 @@ struct sns_ssc_control_s {
 };
 static struct sns_ssc_control_s sns_ctl;
 
+<<<<<<< HEAD
 static ssize_t slpi_boot_store(struct kobject *kobj,
 	struct kobj_attribute *attr,
 	const char *buf, size_t count);
@@ -328,6 +339,8 @@ static int slpi_loader_remove(struct platform_device *pdev)
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 /*
  * Read QTimer clock ticks and scale down to 32KHz clock as used
  * in DSPS
@@ -395,12 +408,16 @@ const struct file_operations sensors_ssc_fops = {
 
 static int sensors_ssc_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	int ret = slpi_loader_init_sysfs(pdev);
 
 	if (ret != 0) {
 		dev_err(&pdev->dev, "%s: Error in initing sysfs\n", __func__);
 		return ret;
 	}
+=======
+	int ret = 0;
+>>>>>>> p9x
 
 	sns_ctl.dev_class = class_create(THIS_MODULE, CLASS_NAME);
 	if (sns_ctl.dev_class == NULL) {
@@ -436,8 +453,11 @@ static int sensors_ssc_probe(struct platform_device *pdev)
 		goto cdev_add_err;
 	}
 
+<<<<<<< HEAD
 	INIT_WORK(&slpi_ldr_work, slpi_load_fw);
 
+=======
+>>>>>>> p9x
 	return 0;
 
 cdev_add_err:
@@ -454,7 +474,10 @@ res_err:
 
 static int sensors_ssc_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	slpi_loader_remove(pdev);
+=======
+>>>>>>> p9x
 	cdev_del(sns_ctl.cdev);
 	kfree(sns_ctl.cdev);
 	sns_ctl.cdev = NULL;

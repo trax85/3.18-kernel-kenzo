@@ -24,7 +24,10 @@
 #include <linux/of_irq.h>
 #include <linux/of_platform.h>
 #include <linux/pm_opp.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
+=======
+>>>>>>> p9x
 #include <linux/phy.h>
 #include <linux/reboot.h>
 #include <linux/regmap.h>
@@ -39,6 +42,67 @@
 #include "cpuidle.h"
 #include "hardware.h"
 
+<<<<<<< HEAD
+=======
+static u32 chip_revision;
+
+int imx6q_revision(void)
+{
+	return chip_revision;
+}
+
+static void __init imx6q_init_revision(void)
+{
+	u32 rev = imx_anatop_get_digprog();
+
+	switch (rev & 0xff) {
+	case 0:
+		chip_revision = IMX_CHIP_REVISION_1_0;
+		break;
+	case 1:
+		chip_revision = IMX_CHIP_REVISION_1_1;
+		break;
+	case 2:
+		chip_revision = IMX_CHIP_REVISION_1_2;
+		break;
+	default:
+		chip_revision = IMX_CHIP_REVISION_UNKNOWN;
+	}
+
+	mxc_set_cpu_type(rev >> 16 & 0xff);
+}
+
+static void imx6q_restart(enum reboot_mode mode, const char *cmd)
+{
+	struct device_node *np;
+	void __iomem *wdog_base;
+
+	np = of_find_compatible_node(NULL, NULL, "fsl,imx6q-wdt");
+	wdog_base = of_iomap(np, 0);
+	if (!wdog_base)
+		goto soft;
+
+	imx_src_prepare_restart();
+
+	/* enable wdog */
+	writew_relaxed(1 << 2, wdog_base);
+	/* write twice to ensure the request will not get ignored */
+	writew_relaxed(1 << 2, wdog_base);
+
+	/* wait for reset to assert ... */
+	mdelay(500);
+
+	pr_err("Watchdog reset failed to assert reset\n");
+
+	/* delay to allow the serial port to show the message */
+	mdelay(50);
+
+soft:
+	/* we'll take a jump through zero as a poor second */
+	soft_restart(0);
+}
+
+>>>>>>> p9x
 /* For imx6q sabrelite board: set KSZ9021RN RGMII pad skew */
 static int ksz9021rn_phy_fixup(struct phy_device *phydev)
 {
@@ -316,7 +380,13 @@ static void __init imx6q_opp_check_speed_grading(struct device *cpu_dev)
 	 */
 	val = readl_relaxed(base + OCOTP_CFG3);
 	val >>= OCOTP_CFG3_SPEED_SHIFT;
+<<<<<<< HEAD
 	val &= 0x3;
+=======
+	if ((val & 0x3) != OCOTP_CFG3_SPEED_1P2GHZ)
+		if (dev_pm_opp_disable(cpu_dev, 1200000000))
+			pr_warn("failed to disable 1.2 GHz OPP\n");
+>>>>>>> p9x
 
 	if ((val != OCOTP_CFG3_SPEED_1P2GHZ) && cpu_is_imx6q())
 		if (dev_pm_opp_disable(cpu_dev, 1200000000))

@@ -374,6 +374,7 @@ static int tegra20_ac97_platform_probe(struct platform_device *pdev)
 	ac97->playback_dma_data.addr = mem->start + TEGRA20_AC97_FIFO_TX1;
 	ac97->playback_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
 	ac97->playback_dma_data.maxburst = 4;
+<<<<<<< HEAD
 
 	ret = clk_prepare_enable(ac97->clk_ac97);
 	if (ret) {
@@ -386,6 +387,9 @@ static int tegra20_ac97_platform_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "Failed to set AC'97 ops: %d\n", ret);
 		goto err_clk_disable_unprepare;
 	}
+=======
+	ac97->playback_dma_data.slave_id = of_dma[1];
+>>>>>>> p9x
 
 	ret = snd_soc_register_component(&pdev->dev, &tegra20_ac97_component,
 					 &tegra20_ac97_dai, 1);

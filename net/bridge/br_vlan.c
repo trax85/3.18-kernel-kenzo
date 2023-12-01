@@ -223,7 +223,11 @@ bool br_allowed_ingress(struct net_bridge *br, struct net_port_vlans *v,
 		 * See if pvid is set on this port.  That tells us which
 		 * vlan untagged or priority-tagged traffic belongs to.
 		 */
+<<<<<<< HEAD
 		if (!pvid)
+=======
+		if (pvid == VLAN_N_VID)
+>>>>>>> p9x
 			goto drop;
 
 		/* PVID is set on this port.  Any untagged or priority-tagged

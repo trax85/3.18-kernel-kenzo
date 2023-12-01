@@ -1201,6 +1201,16 @@ static void omap2_mcspi_work(struct omap2_mcspi *mcspi, struct spi_message *m)
 			mcspi_read_cs_reg(spi, OMAP2_MCSPI_MODULCTRL);
 	}
 
+	/*
+	 * The slave driver could have changed spi->mode in which case
+	 * it will be different from cs->mode (the current hardware setup).
+	 * If so, set par_override (even though its not a parity issue) so
+	 * omap2_mcspi_setup_transfer will be called to configure the hardware
+	 * with the correct mode on the first iteration of the loop below.
+	 */
+	if (spi->mode != cs->mode)
+		par_override = 1;
+
 	omap2_mcspi_set_enable(spi, 0);
 
 	if (mcspi->fifo_depth > 0 && t)

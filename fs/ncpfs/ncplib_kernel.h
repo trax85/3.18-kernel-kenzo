@@ -191,7 +191,14 @@ ncp_renew_dentries(struct dentry *parent)
 	struct dentry *dentry;
 
 	spin_lock(&parent->d_lock);
+<<<<<<< HEAD
 	list_for_each_entry(dentry, &parent->d_subdirs, d_child) {
+=======
+	next = parent->d_subdirs.next;
+	while (next != &parent->d_subdirs) {
+		dentry = list_entry(next, struct dentry, d_child);
+
+>>>>>>> p9x
 		if (dentry->d_fsdata == NULL)
 			ncp_age_dentry(server, dentry);
 		else
@@ -207,7 +214,13 @@ ncp_invalidate_dircache_entries(struct dentry *parent)
 	struct dentry *dentry;
 
 	spin_lock(&parent->d_lock);
+<<<<<<< HEAD
 	list_for_each_entry(dentry, &parent->d_subdirs, d_child) {
+=======
+	next = parent->d_subdirs.next;
+	while (next != &parent->d_subdirs) {
+		dentry = list_entry(next, struct dentry, d_child);
+>>>>>>> p9x
 		dentry->d_fsdata = NULL;
 		ncp_age_dentry(server, dentry);
 	}

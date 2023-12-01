@@ -1049,6 +1049,7 @@ static void enic_rq_indicate_buf(struct vnic_rq *rq,
 
 		skb_put(skb, bytes_written);
 		skb->protocol = eth_type_trans(skb, netdev);
+<<<<<<< HEAD
 		skb_record_rx_queue(skb, q_number);
 		if (netdev->features & NETIF_F_RXHASH) {
 			skb_set_hash(skb, rss_hash,
@@ -1058,6 +1059,17 @@ static void enic_rq_indicate_buf(struct vnic_rq *rq,
 				       NIC_CFG_RSS_HASH_TYPE_TCP_IPV4)) ?
 				     PKT_HASH_TYPE_L4 : PKT_HASH_TYPE_L3);
 		}
+=======
+
+		/* Hardware does not provide whole packet checksum. It only
+		 * provides pseudo checksum. Since hw validates the packet
+		 * checksum but not provide us the checksum value. use
+		 * CHECSUM_UNNECESSARY.
+		 */
+		if ((netdev->features & NETIF_F_RXCSUM) && tcp_udp_csum_ok &&
+		    ipv4_csum_ok)
+			skb->ip_summed = CHECKSUM_UNNECESSARY;
+>>>>>>> p9x
 
 		/* Hardware does not provide whole packet checksum. It only
 		 * provides pseudo checksum. Since hw validates the packet

@@ -247,7 +247,49 @@ static void mtip_async_complete(struct mtip_port *port,
 	if (unlikely(cmd->unaligned))
 		up(&port->cmd_slot_unal);
 
+<<<<<<< HEAD
 	blk_mq_end_request(rq, status ? -EIO : 0);
+=======
+	/*
+	 * Try 10 times, because there is a small race here.
+	 *  that's ok, because it's still cheaper than a lock.
+	 *
+	 * Race: Since this section is not protected by lock, same bit
+	 * could be chosen by different process contexts running in
+	 * different processor. So instead of costly lock, we are going
+	 * with loop.
+	 */
+	for (i = 0; i < 10; i++) {
+		slot = find_next_zero_bit(port->allocated,
+					 num_command_slots, 1);
+		if ((slot < num_command_slots) &&
+		    (!test_and_set_bit(slot, port->allocated)))
+			return slot;
+	}
+	dev_warn(&port->dd->pdev->dev, "Failed to get a tag.\n");
+
+	if (mtip_check_surprise_removal(port->dd->pdev)) {
+		/* Device not present, clean outstanding commands */
+		mtip_command_cleanup(port->dd);
+	}
+	return -1;
+}
+
+/*
+ * Release a command slot.
+ *
+ * @port Pointer to the port data structure.
+ * @tag  Tag of command to release
+ *
+ * return value
+ *	None
+ */
+static inline void release_slot(struct mtip_port *port, int tag)
+{
+	smp_mb__before_atomic();
+	clear_bit(tag, port->allocated);
+	smp_mb__after_atomic();
+>>>>>>> p9x
 }
 
 /*
@@ -1314,7 +1356,11 @@ static void mtip_set_timeout(struct driver_data *dd,
 		*timeout = 15000;  /* 15 seconds */
 		break;
 	default:
+<<<<<<< HEAD
 		*timeout = MTIP_IOCTL_CMD_TIMEOUT_MS;
+=======
+		*timeout = MTIP_IOCTL_COMMAND_TIMEOUT_MS;
+>>>>>>> p9x
 		break;
 	}
 }

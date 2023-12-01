@@ -68,6 +68,31 @@ int mei_cl_unlink(struct mei_cl *cl);
 int mei_cl_flush_queues(struct mei_cl *cl);
 struct mei_cl_cb *mei_cl_find_read_cb(struct mei_cl *cl);
 
+<<<<<<< HEAD
+=======
+/**
+ * mei_cl_cmp_id - tells if file private data have same id
+ *
+ * @fe1: private data of 1. file object
+ * @fe2: private data of 2. file object
+ *
+ * returns true  - if ids are the same and not NULL
+ */
+static inline bool mei_cl_cmp_id(const struct mei_cl *cl1,
+				const struct mei_cl *cl2)
+{
+	return cl1 && cl2 &&
+		(cl1->host_client_id == cl2->host_client_id) &&
+		(cl1->me_client_id == cl2->me_client_id);
+}
+static inline bool mei_cl_is_transitioning(struct mei_cl *cl)
+{
+	return (MEI_FILE_INITIALIZING == cl->state ||
+		MEI_FILE_DISCONNECTED == cl->state ||
+		MEI_FILE_DISCONNECTING == cl->state);
+}
+
+>>>>>>> p9x
 
 int mei_cl_flow_ctrl_creds(struct mei_cl *cl);
 

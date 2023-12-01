@@ -19,6 +19,7 @@ int ipv6_frag_init(void);
 void ipv6_frag_exit(void);
 
 /* transport protocols */
+<<<<<<< HEAD
 int pingv6_init(void);
 void pingv6_exit(void);
 int rawv6_init(void);
@@ -29,6 +30,18 @@ int udplitev6_init(void);
 void udplitev6_exit(void);
 int tcpv6_init(void);
 void tcpv6_exit(void);
+=======
+extern int				pingv6_init(void);
+extern void				pingv6_exit(void);
+extern int				rawv6_init(void);
+extern void				rawv6_exit(void);
+extern int				udpv6_init(void);
+extern void				udpv6_exit(void);
+extern int 				udplitev6_init(void);
+extern void 				udplitev6_exit(void);
+extern int				tcpv6_init(void);
+extern void				tcpv6_exit(void);
+>>>>>>> p9x
 
 int udpv6_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len);
 

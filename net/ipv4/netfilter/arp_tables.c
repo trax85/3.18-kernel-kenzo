@@ -683,11 +683,16 @@ static int translate_table(struct xt_table_info *newinfo, void *entry0,
 		}
 	}
 
+<<<<<<< HEAD
 	if (!mark_source_chains(newinfo, repl->valid_hooks, entry0, offsets)) {
 		ret = -ELOOP;
 		goto out_free;
 	}
 	kvfree(offsets);
+=======
+	if (!mark_source_chains(newinfo, repl->valid_hooks, entry0))
+		return -ELOOP;
+>>>>>>> p9x
 
 	/* Finally, each sanity check must pass */
 	i = 0;
@@ -1083,6 +1088,9 @@ static int do_replace(struct net *net, const void __user *user,
 	/* overflow check */
 	if (tmp.num_counters >= INT_MAX / sizeof(struct xt_counters))
 		return -ENOMEM;
+	if (tmp.num_counters == 0)
+		return -EINVAL;
+
 	tmp.name[sizeof(tmp.name)-1] = 0;
 
 	newinfo = xt_alloc_table_info(tmp.size);
@@ -1329,8 +1337,8 @@ static int translate_compat_table(struct xt_table_info **pinfo,
 
 	newinfo->number = compatr->num_entries;
 	for (i = 0; i < NF_ARP_NUMHOOKS; i++) {
-		newinfo->hook_entry[i] = info->hook_entry[i];
-		newinfo->underflow[i] = info->underflow[i];
+		newinfo->hook_entry[i] = compatr->hook_entry[i];
+		newinfo->underflow[i] = compatr->underflow[i];
 	}
 	entry1 = newinfo->entries[raw_smp_processor_id()];
 	pos = entry1;
@@ -1394,6 +1402,9 @@ static int compat_do_replace(struct net *net, void __user *user,
 		return -ENOMEM;
 	if (tmp.num_counters >= INT_MAX / sizeof(struct xt_counters))
 		return -ENOMEM;
+	if (tmp.num_counters == 0)
+		return -EINVAL;
+
 	tmp.name[sizeof(tmp.name)-1] = 0;
 
 	newinfo = xt_alloc_table_info(tmp.size);

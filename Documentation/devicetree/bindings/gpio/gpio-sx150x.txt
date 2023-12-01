@@ -36,9 +36,12 @@ Required properties:
 - sx150x,reset_gpio: System GPIO number connected to NRESET of SX150x devices.
   If "sx150x,reset_onprobe" is true, then the reset_gpio is pulled from low
   to high to reset the SX150x device. (optional)
+<<<<<<< HEAD
  - <supply-name>-supply: phandle to the regulator device
    Required "supply-name" examples are:
 	"vdd" : 1.8v supply for sx150x (io-expander).
+=======
+>>>>>>> p9x
 
 Example:
 
@@ -55,7 +58,10 @@ i2c@f9925000 {
       sx150x,reset_onprobe;
       sx150x,reset_gpio = <&msmgpio 138 0x00>;
       label = "ioexp-gpio";
+<<<<<<< HEAD
       vdd-supply = <&pm8917_l6>;
+=======
+>>>>>>> p9x
    };
 };
 
@@ -63,4 +69,8 @@ Usage:
 gpio_test {
    compatible = "testcode";
    test_gpio = <&ioexp_gpios 5 0x00>;
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> p9x

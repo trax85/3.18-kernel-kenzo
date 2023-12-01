@@ -56,12 +56,17 @@ static LIST_HEAD(rng_list);
 static DEFINE_MUTEX(rng_mutex);
 static int data_avail;
 static u8 *rng_buffer, *rng_fillbuf;
+<<<<<<< HEAD
 static unsigned short current_quality;
 static unsigned short default_quality; /* = 0; default to "off" */
+=======
+static unsigned short current_quality = 700; /* an arbitrary 70% */
+>>>>>>> p9x
 
 module_param(current_quality, ushort, 0644);
 MODULE_PARM_DESC(current_quality,
 		 "current hwrng entropy estimation per mill");
+<<<<<<< HEAD
 module_param(default_quality, ushort, 0644);
 MODULE_PARM_DESC(default_quality,
 		 "default entropy content of hwrng per mill");
@@ -70,6 +75,10 @@ static void start_khwrngd(void);
 
 static inline int rng_get_data(struct hwrng *rng, u8 *buffer, size_t size,
 			       int wait);
+=======
+
+static void start_khwrngd(void);
+>>>>>>> p9x
 
 static size_t rng_buffer_size(void)
 {
@@ -88,6 +97,7 @@ static void add_early_randomness(struct hwrng *rng)
 
 static inline int hwrng_init(struct hwrng *rng)
 {
+<<<<<<< HEAD
 	if (rng->init) {
 		int ret;
 
@@ -102,6 +112,16 @@ static inline int hwrng_init(struct hwrng *rng)
 
 	if (current_quality == 0 && hwrng_fill)
 		kthread_stop(hwrng_fill);
+=======
+	int err;
+
+	if (rng->init) {
+		err = rng->init(rng);
+		if (err)
+			return err;
+	}
+
+>>>>>>> p9x
 	if (current_quality > 0 && !hwrng_fill)
 		start_khwrngd();
 
@@ -346,12 +366,17 @@ static int hwrng_fillfn(void *unused)
 	long rc;
 
 	while (!kthread_should_stop()) {
+<<<<<<< HEAD
 		mutex_lock(&rng_mutex);
 		if (!current_rng) {
 			mutex_unlock(&rng_mutex);
 			break;
 		}
 		mutex_unlock(&rng_mutex);
+=======
+		if (!current_rng)
+			break;
+>>>>>>> p9x
 		rc = rng_get_data(current_rng, rng_fillbuf,
 				  rng_buffer_size(), 1);
 		if (rc <= 0) {
@@ -362,14 +387,22 @@ static int hwrng_fillfn(void *unused)
 		add_hwgenerator_randomness((void *)rng_fillbuf, rc,
 					   rc * current_quality * 8 >> 10);
 	}
+<<<<<<< HEAD
 	hwrng_fill = NULL;
+=======
+	hwrng_fill = 0;
+>>>>>>> p9x
 	return 0;
 }
 
 static void start_khwrngd(void)
 {
 	hwrng_fill = kthread_run(hwrng_fillfn, NULL, "hwrng");
+<<<<<<< HEAD
 	if (IS_ERR(hwrng_fill)) {
+=======
+	if (hwrng_fill == ERR_PTR(-ENOMEM)) {
+>>>>>>> p9x
 		pr_err("hwrng_fill thread creation failed");
 		hwrng_fill = NULL;
 	}

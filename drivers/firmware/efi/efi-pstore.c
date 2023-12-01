@@ -40,7 +40,11 @@ struct pstore_read_data {
 static inline u64 generic_id(unsigned long timestamp,
 			     unsigned int part, int count)
 {
+<<<<<<< HEAD
 	return ((u64) timestamp * 100 + part) * 1000 + count;
+=======
+	return (timestamp * 100 + part) * 1000 + count;
+>>>>>>> p9x
 }
 
 static int efi_pstore_read_func(struct efivar_entry *entry, void *data)
@@ -59,8 +63,13 @@ static int efi_pstore_read_func(struct efivar_entry *entry, void *data)
 	for (i = 0; i < DUMP_NAME_LEN; i++)
 		name[i] = entry->var.VariableName[i];
 
+<<<<<<< HEAD
 	if (sscanf(name, "dump-type%u-%u-%d-%lu-%c",
 		   cb_data->type, &part, &cnt, &time, &data_type) == 5) {
+=======
+	if (sscanf(name, "dump-type%u-%u-%d-%lu",
+		   cb_data->type, &part, &cnt, &time) == 4) {
+>>>>>>> p9x
 		*cb_data->id = generic_id(time, part, cnt);
 		*cb_data->count = cnt;
 		cb_data->timespec->tv_sec = time;

@@ -5,3 +5,8 @@ config ARCH_PICOXCELL
 	select DW_APB_TIMER_OF
 	select HAVE_TCM
 	select NO_IOPORT_MAP
+<<<<<<< HEAD
+=======
+	select SPARSE_IRQ
+	select USE_OF
+>>>>>>> p9x

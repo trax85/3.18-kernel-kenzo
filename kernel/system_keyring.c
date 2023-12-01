@@ -22,7 +22,11 @@ struct key *system_trusted_keyring;
 EXPORT_SYMBOL_GPL(system_trusted_keyring);
 
 extern __initconst const u8 system_certificate_list[];
+<<<<<<< HEAD
 extern __initconst const unsigned long system_certificate_list_size;
+=======
+extern __initconst const u8 system_certificate_list_end[];
+>>>>>>> p9x
 
 /*
  * Load the compiled-in keys
@@ -35,12 +39,19 @@ static __init int system_trusted_keyring_init(void)
 		keyring_alloc(".system_keyring",
 			      KUIDT_INIT(0), KGIDT_INIT(0), current_cred(),
 			      ((KEY_POS_ALL & ~KEY_POS_SETATTR) |
+<<<<<<< HEAD
 			      KEY_USR_VIEW | KEY_USR_READ | KEY_USR_SEARCH),
+=======
+			       KEY_USR_VIEW | KEY_USR_READ),
+>>>>>>> p9x
 			      KEY_ALLOC_NOT_IN_QUOTA, NULL);
 	if (IS_ERR(system_trusted_keyring))
 		panic("Can't allocate system trusted keyring\n");
 
+<<<<<<< HEAD
 	set_bit(KEY_FLAG_TRUSTED_ONLY, &system_trusted_keyring->flags);
+=======
+>>>>>>> p9x
 	return 0;
 }
 
@@ -60,8 +71,13 @@ static __init int load_system_certificate_list(void)
 
 	pr_notice("Loading compiled-in X.509 certificates\n");
 
+<<<<<<< HEAD
 	p = system_certificate_list;
 	end = p + system_certificate_list_size;
+=======
+	end = system_certificate_list_end;
+	p = system_certificate_list;
+>>>>>>> p9x
 	while (p < end) {
 		/* Each cert begins with an ASN.1 SEQUENCE tag and must be more
 		 * than 256 bytes in size.
@@ -81,15 +97,24 @@ static __init int load_system_certificate_list(void)
 					   NULL,
 					   p,
 					   plen,
+<<<<<<< HEAD
 					   ((KEY_POS_ALL & ~KEY_POS_SETATTR) |
 					   KEY_USR_VIEW | KEY_USR_READ),
 					   KEY_ALLOC_NOT_IN_QUOTA |
 					   KEY_ALLOC_TRUSTED);
+=======
+					   (KEY_POS_ALL & ~KEY_POS_SETATTR) |
+					   KEY_USR_VIEW,
+					   KEY_ALLOC_NOT_IN_QUOTA);
+>>>>>>> p9x
 		if (IS_ERR(key)) {
 			pr_err("Problem loading in-kernel X.509 certificate (%ld)\n",
 			       PTR_ERR(key));
 		} else {
+<<<<<<< HEAD
 			set_bit(KEY_FLAG_BUILTIN, &key_ref_to_ptr(key)->flags);
+=======
+>>>>>>> p9x
 			pr_notice("Loaded X.509 cert '%s'\n",
 				  key_ref_to_ptr(key)->description);
 			key_ref_put(key);

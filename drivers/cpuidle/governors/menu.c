@@ -134,12 +134,16 @@ struct menu_device {
 #define LOAD_INT(x) ((x) >> FSHIFT)
 #define LOAD_FRAC(x) LOAD_INT(((x) & (FIXED_1-1)) * 100)
 
+<<<<<<< HEAD
 static inline int get_loadavg(unsigned long load)
 {
 	return LOAD_INT(load) * 10 + LOAD_FRAC(load) / 10;
 }
 
 static inline int which_bucket(unsigned int duration, unsigned long nr_iowaiters)
+=======
+static inline int which_bucket(unsigned int duration)
+>>>>>>> p9x
 {
 	int bucket = 0;
 
@@ -176,6 +180,7 @@ static inline int performance_multiplier(unsigned long nr_iowaiters, unsigned lo
 {
 	int mult = 1;
 
+<<<<<<< HEAD
 	/* for higher loadavg, we are more reluctant */
 
 	/*
@@ -185,6 +190,8 @@ static inline int performance_multiplier(unsigned long nr_iowaiters, unsigned lo
 	 */
 	/* mult += 2 * get_loadavg(); */
 
+=======
+>>>>>>> p9x
 	/* for IO wait tasks (per cpu!) we add 5x each */
 	mult += 10 * nr_iowaiters;
 
@@ -209,11 +216,17 @@ static u64 div_round64(u64 dividend, u32 divisor)
  */
 static void get_typical_interval(struct menu_device *data)
 {
+<<<<<<< HEAD
 	int i, divisor;
 	unsigned int max, thresh;
 	uint64_t avg, stddev;
 
 	thresh = UINT_MAX; /* Discard outliers above this value */
+=======
+	int i = 0, divisor = 0;
+	uint64_t max = 0, avg = 0, stddev = 0;
+	int64_t thresh = LLONG_MAX; /* Discard outliers above this value. */
+>>>>>>> p9x
 
 again:
 
@@ -280,11 +293,24 @@ again:
 	 * This can deal with workloads that have long pauses interspersed
 	 * with sporadic activity with a bunch of short pauses.
 	 */
+<<<<<<< HEAD
 	if ((divisor * 4) <= INTERVALS * 3)
 		return;
 
 	thresh = max - 1;
 	goto again;
+=======
+	if (((avg > stddev * 6) && (divisor * 4 >= INTERVALS * 3))
+							|| stddev <= 20) {
+		data->predicted_us = avg;
+		return;
+
+	} else if ((divisor * 4) > INTERVALS * 3) {
+		/* Exclude the max interval */
+		thresh = max - 1;
+		goto again;
+	}
+>>>>>>> p9x
 }
 
 /**
@@ -297,8 +323,13 @@ static int menu_select(struct cpuidle_driver *drv, struct cpuidle_device *dev)
 	struct menu_device *data = this_cpu_ptr(&menu_devices);
 	int latency_req = pm_qos_request(PM_QOS_CPU_DMA_LATENCY);
 	int i;
+<<<<<<< HEAD
 	unsigned int interactivity_req;
 	unsigned long nr_iowaiters, cpu_load;
+=======
+	int multiplier;
+	struct timespec t;
+>>>>>>> p9x
 
 	if (data->needs_update) {
 		menu_update(drv, dev);
@@ -306,6 +337,10 @@ static int menu_select(struct cpuidle_driver *drv, struct cpuidle_device *dev)
 	}
 
 	data->last_state_idx = CPUIDLE_DRIVER_STATE_START - 1;
+<<<<<<< HEAD
+=======
+	data->exit_us = 0;
+>>>>>>> p9x
 
 	/* Special case when user has set very strict latency requirement */
 	if (unlikely(latency_req == 0))
@@ -327,6 +362,7 @@ static int menu_select(struct cpuidle_driver *drv, struct cpuidle_device *dev)
 					 RESOLUTION * DECAY);
 
 	get_typical_interval(data);
+<<<<<<< HEAD
 
 	/*
 	 * Performance multiplier defines a minimum predicted idle
@@ -336,6 +372,8 @@ static int menu_select(struct cpuidle_driver *drv, struct cpuidle_device *dev)
 	interactivity_req = data->predicted_us / performance_multiplier(nr_iowaiters, cpu_load);
 	if (latency_req > interactivity_req)
 		latency_req = interactivity_req;
+=======
+>>>>>>> p9x
 
 	/*
 	 * We want to default to C1 (hlt), not to busy polling
@@ -362,6 +400,10 @@ static int menu_select(struct cpuidle_driver *drv, struct cpuidle_device *dev)
 			continue;
 
 		data->last_state_idx = i;
+<<<<<<< HEAD
+=======
+		data->exit_us = s->exit_latency;
+>>>>>>> p9x
 	}
 
 	return data->last_state_idx;
@@ -466,7 +508,10 @@ static int menu_enable_device(struct cpuidle_driver *drv,
 				struct cpuidle_device *dev)
 {
 	struct menu_device *data = &per_cpu(menu_devices, dev->cpu);
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> p9x
 
 	memset(data, 0, sizeof(struct menu_device));
 

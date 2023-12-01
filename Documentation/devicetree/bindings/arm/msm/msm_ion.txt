@@ -26,6 +26,10 @@ Required properties for Ion heaps
     - "CP"
     - "DMA"
     - "SECURE_DMA"
+<<<<<<< HEAD
+=======
+    - "REMOVED"
+>>>>>>> p9x
 
 Optional properties for Ion heaps
 

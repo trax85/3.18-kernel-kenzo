@@ -594,7 +594,8 @@ qh_urb_transaction (
 	qtd->urb = urb;
 
 	token = QTD_STS_ACTIVE;
-	token |= (EHCI_TUNE_CERR << 10);
+	if (!ehci->disable_cerr)
+		token |= (EHCI_TUNE_CERR << 10);
 	/* for split transactions, SplitXState initialized to zero */
 
 	len = urb->transfer_buffer_length;
@@ -1149,9 +1150,13 @@ submit_async (
 }
 
 /*-------------------------------------------------------------------------*/
+<<<<<<< HEAD
 #ifdef CONFIG_USB_HCD_TEST_MODE
 /*
  * This function creates the qtds and submits them for the
+=======
+/* This function creates the qtds and submits them for the
+>>>>>>> p9x
  * SINGLE_STEP_SET_FEATURE Test.
  * This is done in two parts: first SETUP req for GetDesc is sent then
  * 15 seconds later, the IN stage for GetDesc starts to req data from dev
@@ -1160,6 +1165,7 @@ submit_async (
  * performed; TRUE - SETUP and FALSE - IN+STATUS
  * Returns 0 if success
  */
+<<<<<<< HEAD
 static int submit_single_step_set_feature(
 	struct usb_hcd  *hcd,
 	struct urb      *urb,
@@ -1168,6 +1174,18 @@ static int submit_single_step_set_feature(
 	struct ehci_hcd		*ehci = hcd_to_ehci(hcd);
 	struct list_head	qtd_list;
 	struct list_head	*head;
+=======
+#ifdef CONFIG_USB_EHCI_EHSET
+static int
+submit_single_step_set_feature(
+	struct usb_hcd  *hcd,
+	struct urb      *urb,
+	int 		is_setup
+) {
+	struct ehci_hcd		*ehci = hcd_to_ehci(hcd);
+	struct list_head	qtd_list;
+	struct list_head	*head ;
+>>>>>>> p9x
 
 	struct ehci_qtd		*qtd, *qtd_prev;
 	dma_addr_t		buf;
@@ -1177,7 +1195,13 @@ static int submit_single_step_set_feature(
 	INIT_LIST_HEAD(&qtd_list);
 	head = &qtd_list;
 
+<<<<<<< HEAD
 	/* URBs map to sequences of QTDs:  one logical transaction */
+=======
+	/*
+	 * URBs map to sequences of QTDs:  one logical transaction
+	 */
+>>>>>>> p9x
 	qtd = ehci_qtd_alloc(ehci, GFP_KERNEL);
 	if (unlikely(!qtd))
 		return -1;
@@ -1188,8 +1212,12 @@ static int submit_single_step_set_feature(
 	token |= (EHCI_TUNE_CERR << 10);
 
 	len = urb->transfer_buffer_length;
+<<<<<<< HEAD
 	/*
 	 * Check if the request is to perform just the SETUP stage (getDesc)
+=======
+	/* Check if the request is to perform just the SETUP stage (getDesc)
+>>>>>>> p9x
 	 * as in SINGLE_STEP_SET_FEATURE test, DATA stage (IN) happens
 	 * 15 secs after the setup
 	 */
@@ -1203,7 +1231,11 @@ static int submit_single_step_set_feature(
 		return 0; /*Return now; we shall come back after 15 seconds*/
 	}
 
+<<<<<<< HEAD
 	/*
+=======
+	/*---------------------------------------------------------------------
+>>>>>>> p9x
 	 * IN: data transfer stage:  buffer setup : start the IN txn phase for
 	 * the get_Desc SETUP which was sent 15seconds back
 	 */
@@ -1216,6 +1248,7 @@ static int submit_single_step_set_feature(
 
 	qtd_fill(ehci, qtd, buf, len, token, maxpacket);
 
+<<<<<<< HEAD
 	/*
 	 * Our IN phase shall always be a short read; so keep the queue running
 	 * and let it advance to the next qtd which zero length OUT status
@@ -1225,6 +1258,18 @@ static int submit_single_step_set_feature(
 	/* STATUS stage for GetDesc control request */
 	token ^= 0x0100;        /* "in" <--> "out"  */
 	token |= QTD_TOGGLE;    /* force DATA1 */
+=======
+	/* Our IN phase shall always be a short read; so keep the queue running
+	* and let it advance to the next qtd which zero length OUT status */
+
+	qtd->hw_alt_next = EHCI_LIST_END(ehci);
+
+	/*----------------------------------------------------------------------
+	 * STATUS stage for GetDesc control request
+	 */
+	token ^= 0x0100;	/* "in" <--> "out"  */
+	token |= QTD_TOGGLE;	/* force DATA1 */
+>>>>>>> p9x
 
 	qtd_prev = qtd;
 	qtd = ehci_qtd_alloc(ehci, GFP_ATOMIC);
@@ -1249,7 +1294,11 @@ cleanup:
 	qtd_list_free(ehci, urb, head);
 	return -1;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_USB_HCD_TEST_MODE */
+=======
+#endif
+>>>>>>> p9x
 
 /*-------------------------------------------------------------------------*/
 

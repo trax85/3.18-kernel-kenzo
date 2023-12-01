@@ -2515,6 +2515,8 @@ static noinline int __btrfs_run_delayed_refs(struct btrfs_trans_handle *trans,
 			default:
 				WARN_ON(1);
 			}
+		} else {
+			list_del_init(&locked_ref->cluster);
 		}
 		spin_unlock(&locked_ref->lock);
 
@@ -8132,8 +8134,11 @@ int btrfs_drop_snapshot(struct btrfs_root *root,
 	int ret;
 	int level;
 	bool root_dropped = false;
+<<<<<<< HEAD
 
 	btrfs_debug(root->fs_info, "Drop subvolume %llu", root->objectid);
+=======
+>>>>>>> p9x
 
 	path = btrfs_alloc_path();
 	if (!path) {
@@ -8351,7 +8356,11 @@ out:
 	 * don't have it in the radix (like when we recover after a power fail
 	 * or unmount) so we don't leak memory.
 	 */
+<<<<<<< HEAD
 	if (!for_reloc && root_dropped == false)
+=======
+	if (root_dropped == false)
+>>>>>>> p9x
 		btrfs_add_dead_root(root);
 	if (err && err != -EAGAIN)
 		btrfs_std_error(root->fs_info, err);

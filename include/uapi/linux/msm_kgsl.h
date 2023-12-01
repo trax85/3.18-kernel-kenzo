@@ -1,9 +1,12 @@
 #ifndef _UAPI_MSM_KGSL_H
 #define _UAPI_MSM_KGSL_H
 
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/ioctl.h>
 
+=======
+>>>>>>> p9x
 /*
  * The KGSL version has proven not to be very useful in userspace if features
  * are cherry picked into other trees out of order so it is frozen as of 3.14.
@@ -43,13 +46,20 @@
 /* This is a cmdbatch exclusive flag - use the CMDBATCH equivalent instead */
 #define KGSL_CONTEXT_SYNC               0x00000400
 #define KGSL_CONTEXT_PWR_CONSTRAINT     0x00000800
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 #define KGSL_CONTEXT_PRIORITY_MASK      0x0000F000
 #define KGSL_CONTEXT_PRIORITY_SHIFT     12
 #define KGSL_CONTEXT_PRIORITY_UNDEF     0
 
 #define KGSL_CONTEXT_IFH_NOP            0x00010000
 #define KGSL_CONTEXT_SECURE             0x00020000
+<<<<<<< HEAD
 #define KGSL_CONTEXT_NO_SNAPSHOT        0x00040000
+=======
+>>>>>>> p9x
 
 #define KGSL_CONTEXT_PREEMPT_STYLE_MASK       0x0E000000
 #define KGSL_CONTEXT_PREEMPT_STYLE_SHIFT      25
@@ -66,8 +76,11 @@
 #define KGSL_CONTEXT_TYPE_RS		4
 #define KGSL_CONTEXT_TYPE_UNKNOWN	0x1E
 
+<<<<<<< HEAD
 #define KGSL_CONTEXT_INVALIDATE_ON_FAULT 0x10000000
 
+=======
+>>>>>>> p9x
 #define KGSL_CONTEXT_INVALID 0xffffffff
 
 /*
@@ -83,11 +96,14 @@
 #define KGSL_CMDBATCH_SUBMIT_IB_LIST	KGSL_CONTEXT_SUBMIT_IB_LIST /* 0x004 */
 #define KGSL_CMDBATCH_CTX_SWITCH	KGSL_CONTEXT_CTX_SWITCH     /* 0x008 */
 #define KGSL_CMDBATCH_PROFILING		0x00000010
+<<<<<<< HEAD
 /*
  * KGSL_CMDBATCH_PROFILING must also be set for KGSL_CMDBATCH_PROFILING_KTIME
  * to take effect, as the latter only affects the time data returned.
  */
 #define KGSL_CMDBATCH_PROFILING_KTIME	0x00000020
+=======
+>>>>>>> p9x
 #define KGSL_CMDBATCH_END_OF_FRAME	KGSL_CONTEXT_END_OF_FRAME   /* 0x100 */
 #define KGSL_CMDBATCH_SYNC		KGSL_CONTEXT_SYNC           /* 0x400 */
 #define KGSL_CMDBATCH_PWR_CONSTRAINT	KGSL_CONTEXT_PWR_CONSTRAINT /* 0x800 */
@@ -121,7 +137,10 @@
 #define KGSL_MEMFLAGS_SECURE      0x00000008ULL
 #define KGSL_MEMFLAGS_GPUREADONLY 0x01000000U
 #define KGSL_MEMFLAGS_GPUWRITEONLY 0x02000000U
+<<<<<<< HEAD
 #define KGSL_MEMFLAGS_FORCE_32BIT 0x100000000ULL
+=======
+>>>>>>> p9x
 
 /* Memory caching hints */
 #define KGSL_CACHEMODE_MASK       0x0C000000U
@@ -212,6 +231,17 @@ enum kgsl_user_mem_type {
 #define KGSL_FLAGS_SOFT_RESET  0x00000100
 #define KGSL_FLAGS_PER_CONTEXT_TIMESTAMPS 0x00000200
 
+<<<<<<< HEAD
+=======
+/* Clock flags to show which clocks should be controled by a given platform */
+#define KGSL_CLK_SRC	0x00000001
+#define KGSL_CLK_CORE	0x00000002
+#define KGSL_CLK_IFACE	0x00000004
+#define KGSL_CLK_MEM	0x00000008
+#define KGSL_CLK_MEM_IFACE 0x00000010
+#define KGSL_CLK_AXI	0x00000020
+
+>>>>>>> p9x
 /* Server Side Sync Timeout in milliseconds */
 #define KGSL_SYNCOBJ_SERVER_TIMEOUT 2000
 
@@ -308,11 +338,15 @@ enum kgsl_timestamp_type {
 #define KGSL_PROP_SP_GENERIC_MEM	0x14
 #define KGSL_PROP_UCODE_VERSION		0x15
 #define KGSL_PROP_GPMU_VERSION		0x16
+<<<<<<< HEAD
 #define KGSL_PROP_HIGHEST_BANK_BIT	0x17
 #define KGSL_PROP_DEVICE_BITNESS	0x18
 #define KGSL_PROP_DEVICE_QDSS_STM	0x19
 #define KGSL_PROP_SECURE_BUFFER_ALIGNMENT 0x23
 #define KGSL_PROP_SECURE_CTXT_SUPPORT 0x24
+=======
+#define KGSL_PROP_DEVICE_BITNESS	0x18
+>>>>>>> p9x
 
 struct kgsl_shadowprop {
 	unsigned long gpuaddr;
@@ -320,11 +354,14 @@ struct kgsl_shadowprop {
 	unsigned int flags; /* contains KGSL_FLAGS_ values */
 };
 
+<<<<<<< HEAD
 struct kgsl_qdss_stm_prop {
 	uint64_t gpuaddr;
 	uint64_t size;
 };
 
+=======
+>>>>>>> p9x
 struct kgsl_version {
 	unsigned int drv_major;
 	unsigned int drv_minor;
@@ -401,12 +438,17 @@ struct kgsl_ibdesc {
 
 /**
  * struct kgsl_cmdbatch_profiling_buffer
+<<<<<<< HEAD
  * @wall_clock_s: Ringbuffer submission time (seconds).
  *                If KGSL_CMDBATCH_PROFILING_KTIME is set, time is provided
  *                in kernel clocks, otherwise wall clock time is used.
  * @wall_clock_ns: Ringbuffer submission time (nanoseconds).
  *                 If KGSL_CMDBATCH_PROFILING_KTIME is set time is provided
  *                 in kernel clocks, otherwise wall clock time is used.
+=======
+ * @wall_clock_s: Wall clock at ringbuffer submission time (seconds)
+ * @wall_clock_ns: Wall clock at ringbuffer submission time (nanoseconds)
+>>>>>>> p9x
  * @gpu_ticks_queued: GPU ticks at ringbuffer submission
  * @gpu_ticks_submitted: GPU ticks when starting cmdbatch execution
  * @gpu_ticks_retired: GPU ticks when finishing cmdbatch execution
@@ -583,6 +625,7 @@ struct kgsl_cmdstream_freememontimestamp_ctxtid {
 
 /* add a block of pmem or fb into the GPU address space */
 struct kgsl_sharedmem_from_pmem {
+<<<<<<< HEAD
         int pmem_fd;
         unsigned long gpuaddr;  /*output param */
         unsigned int len;
@@ -591,6 +634,16 @@ struct kgsl_sharedmem_from_pmem {
 
 #define IOCTL_KGSL_SHAREDMEM_FROM_PMEM \
         _IOWR(KGSL_IOC_TYPE, 0x20, struct kgsl_sharedmem_from_pmem)
+=======
+	int pmem_fd;
+	unsigned long gpuaddr;  /*output param */
+	unsigned int len;
+	unsigned int offset;
+};
+
+#define IOCTL_KGSL_SHAREDMEM_FROM_PMEM \
+	_IOWR(KGSL_IOC_TYPE, 0x20, struct kgsl_sharedmem_from_pmem)
+>>>>>>> p9x
 
 /* remove memory from the GPU's address space */
 struct kgsl_sharedmem_free {
@@ -1197,8 +1250,11 @@ struct kgsl_cff_sync_gpuobj {
  * @va_len: Size in bytes of the virtual region to allocate
  * @mmapsize: Returns the mmap() size of the object
  * @id: Returns the GPU object ID of the new object
+<<<<<<< HEAD
  * @metadata_len: Length of the metdata to copy from the user
  * @metadata: Pointer to the user specified metadata to store for the object
+=======
+>>>>>>> p9x
  */
 struct kgsl_gpuobj_alloc {
 	uint64_t size;
@@ -1206,6 +1262,7 @@ struct kgsl_gpuobj_alloc {
 	uint64_t va_len;
 	uint64_t mmapsize;
 	unsigned int id;
+<<<<<<< HEAD
 	unsigned int metadata_len;
 	uint64_t metadata;
 };
@@ -1213,6 +1270,10 @@ struct kgsl_gpuobj_alloc {
 /* Let the user know that this header supports the gpuobj metadata */
 #define KGSL_GPUOBJ_ALLOC_METADATA_MAX 64
 
+=======
+};
+
+>>>>>>> p9x
 #define IOCTL_KGSL_GPUOBJ_ALLOC \
 	_IOWR(KGSL_IOC_TYPE, 0x45, struct kgsl_gpuobj_alloc)
 
@@ -1409,6 +1470,7 @@ struct kgsl_gpu_command {
 #define IOCTL_KGSL_GPU_COMMAND \
 	_IOWR(KGSL_IOC_TYPE, 0x4A, struct kgsl_gpu_command)
 
+<<<<<<< HEAD
 /**
  * struct kgsl_preemption_counters_query - argument to
  * IOCTL_KGSL_PREEMPTIONCOUNTER_QUERY
@@ -1461,4 +1523,6 @@ struct kgsl_gpuobj_set_info {
 #define IOCTL_KGSL_GPUOBJ_SET_INFO \
 	_IOW(KGSL_IOC_TYPE, 0x4C, struct kgsl_gpuobj_set_info)
 
+=======
+>>>>>>> p9x
 #endif /* _UAPI_MSM_KGSL_H */

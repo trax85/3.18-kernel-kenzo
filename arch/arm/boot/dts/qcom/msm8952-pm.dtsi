@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -10,8 +14,11 @@
  * GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
 #include <dt-bindings/msm/pm.h>
 
+=======
+>>>>>>> p9x
 &soc {
 	qcom,spm@b1d2000 {
 		compatible = "qcom,spm-v2";
@@ -25,7 +32,11 @@
 		qcom,saw2-spm-ctl = <0xe>;
 		qcom,cpu-vctl-list = <&CPU0 &CPU1 &CPU2 &CPU3
 				&CPU4 &CPU5 &CPU6 &CPU7>;
+<<<<<<< HEAD
 		qcom,saw2-pmic-data0 = <0x07030080>;
+=======
+		qcom,saw2-pmic-data0 = <0x03030080>;
+>>>>>>> p9x
 		qcom,saw2-pmic-data1 = <0x00030000>;
 		qcom,saw2-pmic-data4 = <0x00010080>;
 		qcom,saw2-pmic-data5 = <0x00010000>;
@@ -83,7 +94,10 @@
 				qcom,min-child-idx = <1>;
 				qcom,notify-rpm;
 				qcom,is-reset;
+<<<<<<< HEAD
 				qcom,reset-level = <LPM_RESET_LVL_PC>;
+=======
+>>>>>>> p9x
 			};
 
 			qcom,pm-cluster@0{
@@ -116,7 +130,10 @@
 					qcom,energy-overhead = <388012>;
 					qcom,time-overhead = <627>;
 					qcom,min-child-idx = <1>;
+<<<<<<< HEAD
 					qcom,reset-level = <LPM_RESET_LVL_GDHS>;
+=======
+>>>>>>> p9x
 				};
 
 				qcom,pm-cluster-level@2{
@@ -129,7 +146,10 @@
 					qcom,time-overhead = <879>;
 					qcom,min-child-idx = <1>;
 					qcom,is-reset;
+<<<<<<< HEAD
 					qcom,reset-level = <LPM_RESET_LVL_PC>;
+=======
+>>>>>>> p9x
 				};
 
 				qcom,pm-cpu {
@@ -158,9 +178,14 @@
 						qcom,time-overhead = <326>;
 						qcom,use-broadcast-timer;
 						qcom,is-reset;
+<<<<<<< HEAD
 						qcom,reset-level =
 							<LPM_RESET_LVL_PC>;
 					};
+=======
+					};
+
+>>>>>>> p9x
 				};
 			};
 
@@ -194,8 +219,11 @@
 					qcom,energy-overhead = <372429>;
 					qcom,time-overhead = <717>;
 					qcom,min-child-idx = <1>;
+<<<<<<< HEAD
 					qcom,reset-level =
 						<LPM_RESET_LVL_GDHS>;
+=======
+>>>>>>> p9x
 				};
 
 				qcom,pm-cluster-level@2{
@@ -208,8 +236,11 @@
 					qcom,time-overhead = <980>;
 					qcom,min-child-idx = <1>;
 					qcom,is-reset;
+<<<<<<< HEAD
 					qcom,reset-level =
 						<LPM_RESET_LVL_PC>;
+=======
+>>>>>>> p9x
 				};
 
 				qcom,pm-cpu {
@@ -238,14 +269,32 @@
 						qcom,time-overhead = <400>;
 						qcom,use-broadcast-timer;
 						qcom,is-reset;
+<<<<<<< HEAD
 						qcom,reset-level =
 							<LPM_RESET_LVL_PC>;
 					};
+=======
+					};
+
+>>>>>>> p9x
 				};
 			};
 		};
 	};
 
+<<<<<<< HEAD
+=======
+	qcom,lpm-workarounds@0x0b011018 {
+		compatible = "qcom,lpm-workarounds";
+		reg = <0x0b011018 0x4>,
+		      <0x0b011088 0x4>;
+		reg-names = "l2-pwr-sts", "l1-l2-gcc";
+		qcom,lpm-wa-dynamic-clock-gating;
+		qcom,cpu-offline-mask = <0xf>;
+		qcom,non-boot-cpu-index = <4>;
+	};
+
+>>>>>>> p9x
 	qcom,mpm@601d0 {
 		compatible = "qcom,mpm-v2";
 		reg = <0x601d0 0x1000>, /* MSM_RPM_MPM_BASE 4K */
@@ -257,7 +306,12 @@
 		qcom,ipc-bit-offset = <1>;
 		qcom,gic-parent = <&intc>;
 		qcom,gic-map = <2 216>, /* tsens_upper_lower_int */
+<<<<<<< HEAD
 			<50 172>, /* usb1_hs_async_wakeup_irq */
+=======
+			<49 172>, /* usb1_hs_async_wakeup_irq */
+			<58 166>, /* usb_hs_irq */
+>>>>>>> p9x
 			<53 104>, /* mdss_irq */
 			<62 222>, /* ee0_krait_hlos_spmi_periph_irq */
 			<0xff 18>,  /* APC_qgicQTmrSecPhysIrptReq */
@@ -291,6 +345,10 @@
 			<0xff 109>, /* smmu_bus_intr[37] */
 			<0xff 112>, /* smmu_bus_intr[38] */
 			<0xff 114>, /* qdsd_intr_out */
+<<<<<<< HEAD
+=======
+			<0xff 128>, /* blsp1_peripheral_irq[3] */
+>>>>>>> p9x
 			<0xff 129>, /* blsp1_peripheral_irq[4] */
 			<0xff 131>, /* qup_irq */
 			<0xff 137>, /* smmu_intr_bus[44] */
@@ -310,7 +368,10 @@
 			<0xff 153>, /* smmu_bus_intr[58] */
 			<0xff 155>, /* sdc1_irq(0) */
 			<0xff 157>, /* sdc2_irq(0) */
+<<<<<<< HEAD
 			<0xff 166>, /* usb_hs_irq */
+=======
+>>>>>>> p9x
 			<0xff 167>, /* usb1_hs_bam_irq */
 			<0xff 170>, /* sdc1_pwr_cmd_irq */
 			<0xff 173>, /* o_wcss_apss_smd_hi */
@@ -402,6 +463,7 @@
 			<0xff 88>;
 	};
 
+<<<<<<< HEAD
 	qcom,cpu-sleep-status@b088008{
 		compatible = "qcom,cpu-sleep-status";
 		reg = <0xb088008 0x100>,
@@ -413,6 +475,10 @@
 			<0xb1a8008 0x100>,
 			<0xb1b8008 0x100>;
 		qcom,sleep-status-mask= <0x40000>;
+=======
+	qcom,cpu-sleep-status{
+		compatible = "qcom,cpu-sleep-status";
+>>>>>>> p9x
 	};
 
 	qcom,rpm-log@29dc00 {

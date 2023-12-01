@@ -300,7 +300,26 @@ efivar_store_raw(struct efivar_entry *entry, const char *buf, size_t count)
 		memcpy(&entry->var, new_var, count);
 	}
 
+<<<<<<< HEAD
 	err = efivar_entry_set(entry, attributes, size, data, NULL);
+=======
+	if ((new_var->DataSize <= 0) || (new_var->Attributes == 0)){
+		printk(KERN_ERR "efivars: DataSize & Attributes must be valid!\n");
+		return -EINVAL;
+	}
+
+	if ((new_var->Attributes & ~EFI_VARIABLE_MASK) != 0 ||
+	    efivar_validate(new_var->VendorGuid, new_var->VariableName,
+			    new_var->Data, new_var->DataSize) == false) {
+		printk(KERN_ERR "efivars: Malformed variable content\n");
+		return -EINVAL;
+	}
+
+	memcpy(&entry->var, new_var, count);
+
+	err = efivar_entry_set(entry, new_var->Attributes,
+			       new_var->DataSize, new_var->Data, false);
+>>>>>>> p9x
 	if (err) {
 		printk(KERN_WARNING "efivars: set_variable() failed: status=%d\n", err);
 		return -EIO;
@@ -428,6 +447,7 @@ static ssize_t efivar_create(struct file *filp, struct kobject *kobj,
 	if (!capable(CAP_SYS_ADMIN))
 		return -EACCES;
 
+<<<<<<< HEAD
 	if (need_compat) {
 		if (count != sizeof(*compat))
 			return -EINVAL;
@@ -449,6 +469,11 @@ static ssize_t efivar_create(struct file *filp, struct kobject *kobj,
 	if ((attributes & ~EFI_VARIABLE_MASK) != 0 ||
 	    efivar_validate(new_var->VendorGuid, name, data,
 			    size) == false) {
+=======
+	if ((new_var->Attributes & ~EFI_VARIABLE_MASK) != 0 ||
+	    efivar_validate(new_var->VendorGuid, new_var->VariableName,
+			    new_var->Data, new_var->DataSize) == false) {
+>>>>>>> p9x
 		printk(KERN_ERR "efivars: Malformed variable content\n");
 		return -EINVAL;
 	}
@@ -545,7 +570,10 @@ efivar_create_sysfs_entry(struct efivar_entry *new_var)
 	char *short_name;
 	unsigned long utf8_name_size;
 	efi_char16_t *variable_name = new_var->var.VariableName;
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> p9x
 
 	/*
 	 * Length of the variable bytes in UTF8, plus the '-' separator,
@@ -560,9 +588,16 @@ efivar_create_sysfs_entry(struct efivar_entry *new_var)
 
 	ucs2_as_utf8(short_name, variable_name, short_name_size);
 
+<<<<<<< HEAD
 	/* This is ugly, but necessary to separate one vendor's
 	   private variables from another's.         */
 
+=======
+	ucs2_as_utf8(short_name, variable_name, short_name_size);
+
+	/* This is ugly, but necessary to separate one vendor's
+	   private variables from another's.         */
+>>>>>>> p9x
 	short_name[utf8_name_size] = '-';
 	efi_guid_unparse(&new_var->var.VendorGuid,
 			 short_name + utf8_name_size + 1);

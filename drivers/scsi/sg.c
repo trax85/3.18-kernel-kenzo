@@ -174,8 +174,13 @@ typedef struct sg_fd {		/* holds the state of a file descriptor */
 
 typedef struct sg_device { /* holds the state of each scsi generic device */
 	struct scsi_device *device;
+<<<<<<< HEAD
 	wait_queue_head_t open_wait;    /* queue open() when O_EXCL present */
 	struct mutex open_rel_lock;     /* held when in open() or release() */
+=======
+	struct mutex open_rel_lock;
+	wait_queue_head_t o_excl_wait;	/* queue open() when O_EXCL in use */
+>>>>>>> p9x
 	int sg_tablesize;	/* adapter's max scatter-gather table size */
 	u32 index;		/* device index number */
 	struct list_head sfds;
@@ -613,7 +618,10 @@ sg_new_read(Sg_fd * sfp, char __user *buf, size_t count, Sg_request * srp)
 	}
 err_out:
 	err2 = sg_finish_rem_req(srp);
+<<<<<<< HEAD
 	sg_remove_request(sfp, srp);
+=======
+>>>>>>> p9x
 	return err ? : err2 ? : count;
 }
 
@@ -629,11 +637,20 @@ sg_write(struct file *filp, const char __user *buf, size_t count, loff_t * ppos)
 	struct sg_header old_hdr;
 	sg_io_hdr_t *hp;
 	unsigned char cmnd[SG_MAX_CDB_SIZE];
+<<<<<<< HEAD
 	int retval;
 
 	retval = sg_check_file_access(filp, __func__);
 	if (retval)
 		return retval;
+=======
+
+	if (unlikely(segment_eq(get_fs(), KERNEL_DS)))
+		return -EINVAL;
+
+	if (unlikely(segment_eq(get_fs(), KERNEL_DS)))
+		return -EINVAL;
+>>>>>>> p9x
 
 	if ((!(sfp = (Sg_fd *) filp->private_data)) || (!(sdp = sfp->parentdp)))
 		return -ENXIO;
@@ -832,7 +849,11 @@ sg_common_write(Sg_fd * sfp, Sg_request * srp,
 		sg_remove_request(sfp, srp);
 		return k;	/* probably out of space --> ENOMEM */
 	}
+<<<<<<< HEAD
 	if (atomic_read(&sdp->detaching)) {
+=======
+	if (sdp->detached) {
+>>>>>>> p9x
 		if (srp->bio) {
 			if (srp->rq->cmd != srp->rq->__cmd)
 				kfree(srp->rq->cmd);
@@ -990,11 +1011,31 @@ sg_ioctl(struct file *filp, unsigned int cmd_in, unsigned long arg)
 				/* strange ..., for backward compatibility */
 		return sfp->timeout_user;
 	case SG_SET_FORCE_LOW_DMA:
+<<<<<<< HEAD
 		/*
 		 * N.B. This ioctl never worked properly, but failed to
 		 * return an error value. So returning '0' to keep compability
 		 * with legacy applications.
 		 */
+=======
+		result = get_user(val, ip);
+		if (result)
+			return result;
+		if (val) {
+			sfp->low_dma = 1;
+			if ((0 == sfp->low_dma) && (0 == sg_res_in_use(sfp))) {
+				val = (int) sfp->reserve.bufflen;
+				mutex_lock(&sfp->parentdp->open_rel_lock);
+				sg_remove_scat(&sfp->reserve);
+				sg_build_reserve(sfp, val);
+				mutex_unlock(&sfp->parentdp->open_rel_lock);
+			}
+		} else {
+			if (sdp->detached)
+				return -ENODEV;
+			sfp->low_dma = sdp->device->host->unchecked_isa_dma;
+		}
+>>>>>>> p9x
 		return 0;
 	case SG_GET_LOW_DMA:
 		return put_user((int) sdp->device->host->unchecked_isa_dma, ip);
@@ -1067,9 +1108,14 @@ sg_ioctl(struct file *filp, unsigned int cmd_in, unsigned long arg)
 			    sfp->res_in_use) {
 				mutex_unlock(&sfp->f_mutex);
 				return -EBUSY;
+<<<<<<< HEAD
 			}
 
 			sg_remove_scat(sfp, &sfp->reserve);
+=======
+			mutex_lock(&sfp->parentdp->open_rel_lock);
+			sg_remove_scat(&sfp->reserve);
+>>>>>>> p9x
 			sg_build_reserve(sfp, val);
 			mutex_unlock(&sfp->parentdp->open_rel_lock);
 		}
@@ -1120,7 +1166,37 @@ sg_ioctl(struct file *filp, unsigned int cmd_in, unsigned long arg)
 			if (!rinfo)
 				return -ENOMEM;
 			read_lock_irqsave(&sfp->rq_list_lock, iflags);
+<<<<<<< HEAD
 			sg_fill_request_table(sfp, rinfo);
+=======
+			for (srp = sfp->headrp, val = 0; val < SG_MAX_QUEUE;
+			     ++val, srp = srp ? srp->nextrp : srp) {
+				memset(&rinfo[val], 0, SZ_SG_REQ_INFO);
+				if (srp) {
+					rinfo[val].req_state = srp->done + 1;
+					rinfo[val].problem =
+					    srp->header.masked_status &
+					    srp->header.host_status &
+					    srp->header.driver_status;
+					if (srp->done)
+						rinfo[val].duration =
+							srp->header.duration;
+					else {
+						ms = jiffies_to_msecs(jiffies);
+						rinfo[val].duration =
+						    (ms > srp->header.duration) ?
+						    (ms - srp->header.duration) : 0;
+					}
+					rinfo[val].orphan = srp->orphan;
+					rinfo[val].sg_io_owned =
+							srp->sg_io_owned;
+					rinfo[val].pack_id =
+							srp->header.pack_id;
+					rinfo[val].usr_ptr =
+							srp->header.usr_ptr;
+				}
+			}
+>>>>>>> p9x
 			read_unlock_irqrestore(&sfp->rq_list_lock, iflags);
 			result = __copy_to_user(p, rinfo,
 						SZ_SG_REQ_INFO * SG_MAX_QUEUE);
@@ -1786,6 +1862,7 @@ sg_start_req(Sg_request *srp, unsigned char *cmd)
 			return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * NOTE
 	 *
@@ -1809,6 +1886,14 @@ sg_start_req(Sg_request *srp, unsigned char *cmd)
 
 	blk_rq_set_block_pc(rq);
 
+=======
+	rq = blk_get_request(q, rw, GFP_ATOMIC);
+	if (!rq) {
+		kfree(long_cmdp);
+		return -ENOMEM;
+	}
+
+>>>>>>> p9x
 	if (hp->cmd_len > BLK_MAX_CDB)
 		rq->cmd = long_cmdp;
 	memcpy(rq->cmd, cmd, hp->cmd_len);
@@ -1912,7 +1997,10 @@ sg_finish_rem_req(Sg_request *srp)
 	if (srp->bio)
 		ret = blk_rq_unmap_user(srp->bio);
 
+<<<<<<< HEAD
 	if (srp->rq) {
+=======
+>>>>>>> p9x
 		if (srp->rq->cmd != srp->rq->__cmd)
 			kfree(srp->rq->cmd);
 		blk_put_request(srp->rq);
@@ -2722,9 +2810,12 @@ static void sg_proc_debug_helper(struct seq_file *s, Sg_device * sdp)
 			seq_puts(s, cp);
 			blen = srp->data.bufflen;
 			usg = srp->data.k_use_sg;
+<<<<<<< HEAD
 			seq_puts(s, srp->done ?
 				 ((1 == srp->done) ?  "rcv:" : "fin:")
 				  : "act:");
+=======
+>>>>>>> p9x
 			seq_printf(s, srp->done ?
 				   ((1 == srp->done) ?  "rcv:" : "fin:")
 				   : "act:");

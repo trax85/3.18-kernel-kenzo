@@ -42,9 +42,15 @@
 				<0x0 0x8 0x5>;
 			interrupt-names = "kpdpwr", "resin",
 				"resin-bark", "kpdpwr-resin-bark";
+<<<<<<< HEAD
 			qcom,pon-dbc-delay = <62500>;
 			qcom,system-reset;
 			qcom,store-hard-reset-reason; 
+=======
+			qcom,pon-dbc-delay = <15625>;
+			qcom,system-reset;
+			qcom,store-hard-reset-reason;
+>>>>>>> p9x
 
 			qcom,pon_1 {
 				qcom,pon-type = <0>;
@@ -259,9 +265,15 @@
 				qcom,fast-avg-setup = <0>;
 			};
 
+<<<<<<< HEAD
 			chan@77 {
 				label = "pa_therm1";
 				reg = <0x77>;
+=======
+			chan@11 {
+				label = "pa_therm1";
+				reg = <0x11>;
+>>>>>>> p9x
 				qcom,decimation = <0>;
 				qcom,pre-div-channel-scaling = <0>;
 				qcom,calibration-type = "ratiometric";

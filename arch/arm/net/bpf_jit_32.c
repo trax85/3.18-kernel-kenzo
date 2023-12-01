@@ -640,7 +640,11 @@ load_ind:
 			update_on_xread(ctx);
 			emit(ARM_MUL(r_A, r_A, r_X), ctx);
 			break;
+<<<<<<< HEAD
 		case BPF_ALU | BPF_DIV | BPF_K:
+=======
+		case BPF_S_ALU_DIV_K:
+>>>>>>> p9x
 			if (k == 1)
 				break;
 			emit_mov_i(r_scratch, k, ctx);

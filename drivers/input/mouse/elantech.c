@@ -315,7 +315,7 @@ static void elantech_report_semi_mt_data(struct input_dev *dev,
 					 unsigned int x2, unsigned int y2)
 {
 	elantech_set_slot(dev, 0, num_fingers != 0, x1, y1);
-	elantech_set_slot(dev, 1, num_fingers == 2, x2, y2);
+	elantech_set_slot(dev, 1, num_fingers >= 2, x2, y2);
 }
 
 /*
@@ -555,7 +555,10 @@ static void elantech_input_sync_v4(struct psmouse *psmouse)
 	} else {
 		input_report_key(dev, BTN_LEFT, packet[0] & 0x01);
 		input_report_key(dev, BTN_RIGHT, packet[0] & 0x02);
+<<<<<<< HEAD
 		input_report_key(dev, BTN_MIDDLE, packet[0] & 0x04);
+=======
+>>>>>>> p9x
 	}
 
 	input_mt_report_pointer_emulation(dev, true);
@@ -1114,6 +1117,7 @@ static int elantech_get_resolution_v4(struct psmouse *psmouse,
  * Asus UX31               0x361f00        20, 15, 0e      clickpad
  * Asus UX32VD             0x361f02        00, 15, 0e      clickpad
  * Avatar AVIU-145A2       0x361f00        ?               clickpad
+<<<<<<< HEAD
  * Fujitsu CELSIUS H760    0x570f02        40, 14, 0c      3 hw buttons (**)
  * Fujitsu CELSIUS H780    0x5d0f02        41, 16, 0d      3 hw buttons (**)
  * Fujitsu LIFEBOOK E544   0x470f00        d0, 12, 09      2 hw buttons
@@ -1123,6 +1127,10 @@ static int elantech_get_resolution_v4(struct psmouse *psmouse,
  * Gigabyte U2442          0x450f01        58, 17, 0c      2 hw buttons
  * Lenovo L430             0x350f02        b9, 15, 0c      2 hw buttons (*)
  * Lenovo L530             0x350f02        b9, 15, 0c      2 hw buttons (*)
+=======
+ * Gigabyte U2442          0x450f01        58, 17, 0c      2 hw buttons
+ * Lenovo L430             0x350f02        b9, 15, 0c      2 hw buttons (*)
+>>>>>>> p9x
  * Samsung NF210           0x150b00        78, 14, 0a      2 hw buttons
  * Samsung NP770Z5E        0x575f01        10, 15, 0f      clickpad
  * Samsung NP700Z5B        0x361f06        21, 15, 0f      clickpad
@@ -1132,8 +1140,11 @@ static int elantech_get_resolution_v4(struct psmouse *psmouse,
  * Samsung RF710           0x450f00        ?               2 hw buttons
  * System76 Pangolin       0x250f01        ?               2 hw buttons
  * (*) + 3 trackpoint buttons
+<<<<<<< HEAD
  * (**) + 0 trackpoint buttons
  * Note: Lenovo L430 and Lenovo L430 have the same fw_version/caps
+=======
+>>>>>>> p9x
  */
 static void elantech_set_buttonpad_prop(struct psmouse *psmouse)
 {
@@ -1147,6 +1158,7 @@ static void elantech_set_buttonpad_prop(struct psmouse *psmouse)
 }
 
 /*
+<<<<<<< HEAD
  * Some hw_version 4 models do have a middle button
  */
 static const struct dmi_system_id elantech_dmi_has_middle_button[] = {
@@ -1170,6 +1182,8 @@ static const struct dmi_system_id elantech_dmi_has_middle_button[] = {
 };
 
 /*
+=======
+>>>>>>> p9x
  * Set the appropriate event bits for the input subsystem
  */
 static int elantech_set_input_params(struct psmouse *psmouse)
@@ -1494,6 +1508,7 @@ static int elantech_reconnect(struct psmouse *psmouse)
 }
 
 /*
+<<<<<<< HEAD
  * Some hw_version 4 models do not work with crc_disabled
  */
 static const struct dmi_system_id elantech_dmi_force_crc_enabled[] = {
@@ -1531,6 +1546,8 @@ static const struct dmi_system_id elantech_dmi_force_crc_enabled[] = {
 };
 
 /*
+=======
+>>>>>>> p9x
  * Some hw_version 3 models go into error state when we try to set
  * bit 3 and/or bit 1 of r10.
  */
@@ -1543,6 +1560,16 @@ static const struct dmi_system_id no_hw_res_dmi_table[] = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "U2442"),
 		},
 	},
+<<<<<<< HEAD
+=======
+	{
+		/* Fujitsu LIFEBOOK U745 does not work with crc_enabled == 0 */
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK U745"),
+		},
+	},
+>>>>>>> p9x
 #endif
 	{ }
 };
@@ -1598,6 +1625,7 @@ static int elantech_set_properties(struct elantech_data *etd)
 			etd->reports_pressure = true;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * The signatures of v3 and v4 packets change depending on the
 	 * value of this hardware flag.
@@ -1605,6 +1633,8 @@ static int elantech_set_properties(struct elantech_data *etd)
 	etd->crc_enabled = (etd->fw_version & 0x4000) == 0x4000 ||
 			   dmi_check_system(elantech_dmi_force_crc_enabled);
 
+=======
+>>>>>>> p9x
 	/* Enable real hardware resolution on hw_version 3 ? */
 	etd->set_hw_resolution = !dmi_check_system(no_hw_res_dmi_table);
 

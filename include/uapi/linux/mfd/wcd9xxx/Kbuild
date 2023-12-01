@@ -1,2 +1,5 @@
+<<<<<<< HEAD
 header-y += wcd9xxx_registers.h
+=======
+>>>>>>> p9x
 header-y += wcd9320_registers.h

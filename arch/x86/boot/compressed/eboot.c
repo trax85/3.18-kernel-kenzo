@@ -1131,6 +1131,7 @@ struct boot_params *make_boot_params(struct efi_config *c)
 				      "initrd=", hdr->initrd_addr_max,
 				      &ramdisk_addr, &ramdisk_size);
 
+<<<<<<< HEAD
 	if (status != EFI_SUCCESS &&
 	    hdr->xloadflags & XLF_CAN_BE_LOADED_ABOVE_4G) {
 		efi_printk(sys_table, "Trying to load files to higher address\n");
@@ -1138,6 +1139,37 @@ struct boot_params *make_boot_params(struct efi_config *c)
 				      (char *)(unsigned long)hdr->cmd_line_ptr,
 				      "initrd=", -1UL,
 				      &ramdisk_addr, &ramdisk_size);
+=======
+static efi_status_t exit_boot(struct boot_params *boot_params,
+			      void *handle)
+{
+	struct efi_info *efi = &boot_params->efi_info;
+	struct e820entry *e820_map = &boot_params->e820_map[0];
+	struct e820entry *prev = NULL;
+	unsigned long size, key, desc_size, _size;
+	efi_memory_desc_t *mem_map;
+	efi_status_t status;
+	__u32 desc_version;
+	bool called_exit = false;
+	u8 nr_entries;
+	int i;
+
+	size = sizeof(*mem_map) * 32;
+
+again:
+	size += sizeof(*mem_map) * 2;
+	_size = size;
+	status = low_alloc(size, 1, (unsigned long *)&mem_map);
+	if (status != EFI_SUCCESS)
+		return status;
+
+get_map:
+	status = efi_call_phys5(sys_table->boottime->get_memory_map, &size,
+				mem_map, &key, &desc_size, &desc_version);
+	if (status == EFI_BUFFER_TOO_SMALL) {
+		low_free(_size, (unsigned long)mem_map);
+		goto again;
+>>>>>>> p9x
 	}
 
 	if (status != EFI_SUCCESS)
@@ -1162,9 +1194,29 @@ static void add_e820ext(struct boot_params *params,
 	efi_status_t status;
 	unsigned long size;
 
+<<<<<<< HEAD
 	e820ext->type = SETUP_E820_EXT;
 	e820ext->len = nr_entries * sizeof(struct e820entry);
 	e820ext->next = 0;
+=======
+	/* Might as well exit boot services now */
+	status = efi_call_phys2(sys_table->boottime->exit_boot_services,
+				handle, key);
+	if (status != EFI_SUCCESS) {
+		/*
+		 * ExitBootServices() will fail if any of the event
+		 * handlers change the memory map. In which case, we
+		 * must be prepared to retry, but only once so that
+		 * we're guaranteed to exit on repeated failures instead
+		 * of spinning forever.
+		 */
+		if (called_exit)
+			goto free_mem_map;
+
+		called_exit = true;
+		goto get_map;
+	}
+>>>>>>> p9x
 
 	data = (struct setup_data *)(unsigned long)params->hdr.setup_data;
 

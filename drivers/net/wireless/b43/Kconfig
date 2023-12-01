@@ -28,6 +28,7 @@ config B43
 	  If unsure, say M.
 
 config B43_BCMA
+<<<<<<< HEAD
 	bool
 
 config B43_SSB
@@ -55,6 +56,22 @@ config B43_BUSES_SSB
 	select B43_SSB
 
 endchoice
+=======
+	bool "Support for BCMA bus"
+	depends on B43 && (BCMA = y || BCMA = B43)
+	default y
+
+config B43_BCMA_EXTRA
+	bool "Hardware support that overlaps with the brcmsmac driver"
+	depends on B43_BCMA
+	default n if BRCMSMAC
+	default y
+
+config B43_SSB
+	bool
+	depends on B43 && (SSB = y || SSB = B43)
+	default y
+>>>>>>> p9x
 
 # Auto-select SSB PCI-HOST support, if possible
 config B43_PCI_AUTOSELECT

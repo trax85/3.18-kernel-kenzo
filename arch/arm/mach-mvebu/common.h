@@ -14,7 +14,9 @@
 
 #ifndef __ARCH_MVEBU_COMMON_H
 #define __ARCH_MVEBU_COMMON_H
+#include <linux/reboot.h>
 
+<<<<<<< HEAD
 #include <linux/reboot.h>
 
 void mvebu_restart(enum reboot_mode mode, const char *cmd);
@@ -24,5 +26,10 @@ void mvebu_system_controller_set_cpu_boot_addr(void *boot_addr);
 int mvebu_system_controller_get_soc_id(u32 *dev, u32 *rev);
 
 void __iomem *mvebu_get_scu_base(void);
+=======
+void mvebu_restart(enum reboot_mode mode, const char *cmd);
+void armada_370_xp_init_irq(void);
+void armada_370_xp_handle_irq(struct pt_regs *regs);
+>>>>>>> p9x
 
 #endif

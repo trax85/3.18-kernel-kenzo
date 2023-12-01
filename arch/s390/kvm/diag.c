@@ -231,9 +231,12 @@ static int __diag_virtio_hypercall(struct kvm_vcpu *vcpu)
 int kvm_s390_handle_diag(struct kvm_vcpu *vcpu)
 {
 	int code = kvm_s390_get_base_disp_rs(vcpu) & 0xffff;
+<<<<<<< HEAD
 
 	if (vcpu->arch.sie_block->gpsw.mask & PSW_MASK_PSTATE)
 		return kvm_s390_inject_program_int(vcpu, PGM_PRIVILEGED_OP);
+=======
+>>>>>>> p9x
 
 	trace_kvm_s390_handle_diag(vcpu, code);
 	switch (code) {

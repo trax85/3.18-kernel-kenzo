@@ -1,7 +1,11 @@
 /*
    BlueZ - Bluetooth protocol stack for Linux
    Copyright (C) 2000-2001 Qualcomm Incorporated
+<<<<<<< HEAD
    Copyright (C) 2014-2015 The Linux Foundation. All rights reserved.
+=======
+   Copyright (C) 2014 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
 
    Written 2000,2001 by Maxim Krasnyansky <maxk@qualcomm.com>
 

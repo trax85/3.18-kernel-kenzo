@@ -13,8 +13,11 @@
 #ifndef WCD9330_REGISTERS_H
 #define WCD9330_REGISTERS_H
 
+<<<<<<< HEAD
 #include <linux/types.h>
 
+=======
+>>>>>>> p9x
 #define TOMTOM_A_CHIP_CTL			(0x000)
 #define TOMTOM_A_CHIP_CTL__POR				(0x38)
 #define TOMTOM_A_CHIP_STATUS			(0x001)
@@ -1618,9 +1621,12 @@
 		((mask) = ((packed >> 8) & (0xff))); \
 		((val) = ((packed) & (0xff))); \
 	} while (0)
+<<<<<<< HEAD
 
 #define TOMTOM_SB_PGD_PORT_TX_BASE    0x50
 #define TOMTOM_SB_PGD_PORT_RX_BASE    0x40
 #define WCD9330_MAX_REGISTER 0x3FF
 extern const u8 tomtom_reg_readable[WCD9330_MAX_REGISTER + 1];
+=======
+>>>>>>> p9x
 #endif

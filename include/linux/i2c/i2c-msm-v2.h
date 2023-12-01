@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2015,2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -221,7 +225,11 @@ enum i2c_msm_clk_path_vec_idx {
 	I2C_MSM_CLK_PATH_RESUME_VEC,
 };
 #define I2C_MSM_CLK_PATH_AVRG_BW(ctrl) (0)
+<<<<<<< HEAD
 #define I2C_MSM_CLK_PATH_BRST_BW(ctrl) (ctrl->rsrcs.clk_freq_in * 8)
+=======
+#define I2C_MSM_CLK_PATH_BRST_BW(ctrl) (76800000)
+>>>>>>> p9x
 
 enum i2c_msm_gpio_name_idx {
 	I2C_MSM_GPIO_SCL,
@@ -552,7 +560,10 @@ struct i2c_msm_xfer {
 	int                        msg_cnt;
 	enum i2c_msm_xfer_mode_id  mode_id;
 	struct completion          complete;
+<<<<<<< HEAD
 	struct completion          rx_complete;
+=======
+>>>>>>> p9x
 	size_t                     rx_cnt;
 	size_t                     tx_cnt;
 	size_t                     rx_ovrhd_cnt;
@@ -581,8 +592,11 @@ struct i2c_msm_xfer {
  * @rsrcs    resources from platform data including clocks, gpios, irqs, and
  *           memory regions.
  * @mstr_clk_ctl cached value for programming to mstr_clk_ctl register
+<<<<<<< HEAD
  * @i2c_sts_reg	 status of QUP_I2C_MASTER_STATUS register.
  * @qup_op_reg	 status of QUP_OPERATIONAL register.
+=======
+>>>>>>> p9x
  */
 struct i2c_msm_ctrl {
 	struct device             *dev;
@@ -591,8 +605,11 @@ struct i2c_msm_ctrl {
 	struct i2c_msm_dbgfs       dbgfs;
 	struct i2c_msm_resources   rsrcs;
 	u32                        mstr_clk_ctl;
+<<<<<<< HEAD
 	u32			   i2c_sts_reg;
 	u32			   qup_op_reg;
+=======
+>>>>>>> p9x
 	enum i2c_msm_power_state   pwr_state;
 };
 

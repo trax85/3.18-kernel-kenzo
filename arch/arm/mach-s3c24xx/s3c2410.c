@@ -134,3 +134,18 @@ int __init s3c2410a_init(void)
 	s3c2410_dev.bus = &s3c2410a_subsys;
 	return s3c2410_init();
 }
+<<<<<<< HEAD
+=======
+
+void s3c2410_restart(enum reboot_mode mode, const char *cmd)
+{
+	if (mode == REBOOT_SOFT) {
+		soft_restart(0);
+	}
+
+	arch_wdt_reset();
+
+	/* we'll take a jump through zero as a poor second */
+	soft_restart(0);
+}
+>>>>>>> p9x

@@ -162,6 +162,9 @@ enum v4l2_buf_type {
 	 || (type) == V4L2_BUF_TYPE_VBI_OUTPUT			\
 	 || (type) == V4L2_BUF_TYPE_SLICED_VBI_OUTPUT)
 
+#define V4L2_TYPE_IS_PRIVATE(type)				\
+	((type) == V4L2_BUF_TYPE_PRIVATE)
+
 enum v4l2_tuner_type {
 	V4L2_TUNER_RADIO	     = 1,
 	V4L2_TUNER_ANALOG_TV	     = 2,
@@ -476,6 +479,17 @@ struct v4l2_pix_format {
 #define V4L2_PIX_FMT_JPGL	v4l2_fourcc('J', 'P', 'G', 'L') /* JPEG-Lite */
 #define V4L2_PIX_FMT_SE401      v4l2_fourcc('S', '4', '0', '1') /* se401 janggu compressed rgb */
 #define V4L2_PIX_FMT_S5C_UYVY_JPG v4l2_fourcc('S', '5', 'C', 'I') /* S5C73M3 interleaved UYVY/JPEG */
+#define V4L2_PIX_FMT_STATS_COMB v4l2_fourcc('S', 'T', 'C', 'M') /* Composite stats */
+
+#define V4L2_PIX_FMT_STATS_AE   v4l2_fourcc('S', 'T', 'A', 'E') /* AEC stats */
+#define V4L2_PIX_FMT_STATS_AF   v4l2_fourcc('S', 'T', 'A', 'F') /* AF stats */
+#define V4L2_PIX_FMT_STATS_AWB  v4l2_fourcc('S', 'T', 'W', 'B') /* AWB stats */
+#define V4L2_PIX_FMT_STATS_IHST v4l2_fourcc('I', 'H', 'S', 'T') /* IHIST stats */
+#define V4L2_PIX_FMT_STATS_CS   v4l2_fourcc('S', 'T', 'C', 'S') /* Column count stats */
+#define V4L2_PIX_FMT_STATS_RS   v4l2_fourcc('S', 'T', 'R', 'S') /* Row count stats */
+#define V4L2_PIX_FMT_STATS_BG   v4l2_fourcc('S', 'T', 'B', 'G') /* Bayer Grid stats */
+#define V4L2_PIX_FMT_STATS_BF   v4l2_fourcc('S', 'T', 'B', 'F') /* Bayer focus stats */
+#define V4L2_PIX_FMT_STATS_BHST v4l2_fourcc('B', 'H', 'S', 'T') /* Bayer hist stats */
 
 /* SDR formats - used only for Software Defined Radio devices */
 #define V4L2_SDR_FMT_CU8          v4l2_fourcc('C', 'U', '0', '8') /* IQ u8 */
@@ -749,6 +763,7 @@ struct v4l2_buffer {
 #define V4L2_BUF_FLAG_NO_CACHE_INVALIDATE	0x00000800
 #define V4L2_BUF_FLAG_NO_CACHE_CLEAN		0x00001000
 /* Timestamp type */
+<<<<<<< HEAD
 #define V4L2_BUF_FLAG_TIMESTAMP_MASK		0x0000e000
 #define V4L2_BUF_FLAG_TIMESTAMP_UNKNOWN		0x00000000
 #define V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC	0x00002000
@@ -774,6 +789,28 @@ struct v4l2_buffer {
 #define V4L2_MSM_BUF_FLAG_YUV_601_709_CLAMP	0x10000000
 #define V4L2_MSM_BUF_FLAG_MBAFF			0x20000000
 #define V4L2_MSM_BUF_FLAG_DEFER			0x40000000
+=======
+#define V4L2_BUF_FLAG_TIMESTAMP_MASK		0xe000
+#define V4L2_BUF_FLAG_TIMESTAMP_UNKNOWN		0x0000
+#define V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC	0x2000
+#define V4L2_BUF_FLAG_TIMESTAMP_COPY		0x4000
+/* Vendor extensions */
+#define V4L2_QCOM_BUF_FLAG_CODECCONFIG		0x10000
+#define V4L2_QCOM_BUF_FLAG_EOSEQ		0x20000
+#define V4L2_QCOM_BUF_TIMESTAMP_INVALID		0x40000
+#define V4L2_QCOM_BUF_FLAG_IDRFRAME		0x80000	/*Image is a IDR-frame*/
+#define V4L2_QCOM_BUF_FLAG_DECODEONLY		0x100000
+#define V4L2_QCOM_BUF_DATA_CORRUPT		0x200000
+#define V4L2_QCOM_BUF_DROP_FRAME		0x400000
+#define V4L2_QCOM_BUF_INPUT_UNSUPPORTED		0x800000
+#define V4L2_QCOM_BUF_FLAG_EOS			0x1000000
+#define V4L2_QCOM_BUF_TS_DISCONTINUITY		0x2000000
+#define V4L2_QCOM_BUF_TS_ERROR			0x4000000
+#define V4L2_QCOM_BUF_FLAG_READONLY		0x8000000
+#define V4L2_MSM_VIDC_BUF_START_CODE_NOT_FOUND	0x10000000
+#define V4L2_MSM_BUF_FLAG_YUV_601_709_CLAMP	0x20000000
+#define V4L2_MSM_BUF_FLAG_MBAFF			0x40000000
+>>>>>>> p9x
 
 /**
  * struct v4l2_exportbuffer - export of video buffer as DMABUF file descriptor
@@ -1628,7 +1665,10 @@ struct v4l2_encoder_cmd {
 #define V4L2_DEC_CMD_PAUSE       (2)
 #define V4L2_DEC_CMD_RESUME      (3)
 #define V4L2_DEC_QCOM_CMD_FLUSH  (4)
+<<<<<<< HEAD
 #define V4L2_DEC_QCOM_CMD_RECONFIG_HINT  (5)
+=======
+>>>>>>> p9x
 
 /* Flags for V4L2_DEC_CMD_START */
 #define V4L2_DEC_CMD_START_MUTE_AUDIO	(1 << 0)
@@ -1906,6 +1946,7 @@ struct v4l2_streamparm {
 #define V4L2_EVENT_MOTION_DET			6
 #define V4L2_EVENT_PRIVATE_START		0x08000000
 
+<<<<<<< HEAD
 #define V4L2_EVENT_BITDEPTH_FLAG	0x1
 #define V4L2_EVENT_PICSTRUCT_FLAG	0x2
 #define V4L2_EVENT_COLOUR_SPACE_FLAG    0x4
@@ -1913,16 +1954,24 @@ struct v4l2_streamparm {
 #define V4L2_EVENT_MSM_VIDC_START	(V4L2_EVENT_PRIVATE_START + 0x00001000)
 #define V4L2_EVENT_MSM_VIDC_FLUSH_DONE	(V4L2_EVENT_MSM_VIDC_START + 1)
 #define V4L2_EVENT_MSM_VIDC_CLOSE_DONE	(V4L2_EVENT_MSM_VIDC_START + 4)
+=======
+#define V4L2_EVENT_MSM_VIDC_START	(V4L2_EVENT_PRIVATE_START + 0x00001000)
+#define V4L2_EVENT_MSM_VIDC_FLUSH_DONE	(V4L2_EVENT_MSM_VIDC_START + 1)
+>>>>>>> p9x
 #define V4L2_EVENT_MSM_VIDC_PORT_SETTINGS_CHANGED_SUFFICIENT	\
 		(V4L2_EVENT_MSM_VIDC_START + 2)
 #define V4L2_EVENT_MSM_VIDC_PORT_SETTINGS_CHANGED_INSUFFICIENT	\
 		(V4L2_EVENT_MSM_VIDC_START + 3)
+<<<<<<< HEAD
 /*
  * Bitdepth changed insufficient is deprecated now, however retaining
  * to prevent changing the values of the other macros after bitdepth
  */
 #define V4L2_EVENT_MSM_VIDC_PORT_SETTINGS_BITDEPTH_CHANGED_INSUFFICIENT \
 		(V4L2_EVENT_MSM_VIDC_START + 4)
+=======
+#define V4L2_EVENT_MSM_VIDC_CLOSE_DONE	(V4L2_EVENT_MSM_VIDC_START + 4)
+>>>>>>> p9x
 #define V4L2_EVENT_MSM_VIDC_SYS_ERROR	(V4L2_EVENT_MSM_VIDC_START + 5)
 #define V4L2_EVENT_MSM_VIDC_RELEASE_BUFFER_REFERENCE \
 		(V4L2_EVENT_MSM_VIDC_START + 6)
@@ -1932,6 +1981,7 @@ struct v4l2_streamparm {
 #define V4L2_EVENT_MSM_VIDC_MAX_CLIENTS (V4L2_EVENT_MSM_VIDC_START + 9)
 #define V4L2_EVENT_MSM_VIDC_HW_UNSUPPORTED (V4L2_EVENT_MSM_VIDC_START + 10)
 
+<<<<<<< HEAD
 #define V4L2_EVENT_MSM_BA_PRIVATE_EVENT_BASE	\
 		(V4L2_EVENT_PRIVATE_START + 0x00005000)
 #define V4L2_EVENT_MSM_BA_START	V4L2_EVENT_MSM_BA_PRIVATE_EVENT_BASE
@@ -1957,6 +2007,8 @@ struct v4l2_streamparm {
 #define V4L2_EVENT_MSM_BA_ERROR	\
 		(V4L2_EVENT_MSM_BA_START + 11)
 
+=======
+>>>>>>> p9x
 /* Payload for V4L2_EVENT_VSYNC */
 struct v4l2_event_vsync {
 	/* Can be V4L2_FIELD_ANY, _NONE, _TOP or _BOTTOM */

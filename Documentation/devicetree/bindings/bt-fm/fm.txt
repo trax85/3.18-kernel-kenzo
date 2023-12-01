@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 Qti radio iris device
+=======
+Qualcomm radio iris device
+>>>>>>> p9x
 
 -FM RX playback with no RDS
 
@@ -26,3 +30,7 @@ Example:
 	qcom,iris-fm {
 		compatible = "qcom,iris_fm";
 	};
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x

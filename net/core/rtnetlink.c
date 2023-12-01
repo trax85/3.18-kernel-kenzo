@@ -1017,8 +1017,19 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb, struct net_device *dev,
 		goto nla_put_failure;
 
 	if (1) {
+<<<<<<< HEAD
 		struct rtnl_link_ifmap map;
 
+=======
+		struct rtnl_link_ifmap map = {
+			.mem_start   = dev->mem_start,
+			.mem_end     = dev->mem_end,
+			.base_addr   = dev->base_addr,
+			.irq         = dev->irq,
+			.dma         = dev->dma,
+			.port        = dev->if_port,
+		};
+>>>>>>> p9x
 		memset(&map, 0, sizeof(map));
 		map.mem_start   = dev->mem_start;
 		map.mem_end     = dev->mem_end;
@@ -1179,7 +1190,77 @@ nla_put_failure:
 	return -EMSGSIZE;
 }
 
+<<<<<<< HEAD
 static const struct nla_policy ifla_policy[IFLA_MAX+1] = {
+=======
+static int rtnl_dump_ifinfo(struct sk_buff *skb, struct netlink_callback *cb)
+{
+	struct net *net = sock_net(skb->sk);
+	int h, s_h;
+	int idx = 0, s_idx;
+	struct net_device *dev;
+	struct hlist_head *head;
+	struct nlattr *tb[IFLA_MAX+1];
+	u32 ext_filter_mask = 0;
+	int err;
+	int hdrlen;
+
+	s_h = cb->args[0];
+	s_idx = cb->args[1];
+
+	rcu_read_lock();
+	cb->seq = net->dev_base_seq;
+
+	/* A hack to preserve kernel<->userspace interface.
+	 * The correct header is ifinfomsg. It is consistent with rtnl_getlink.
+	 * However, before Linux v3.9 the code here assumed rtgenmsg and that's
+	 * what iproute2 < v3.9.0 used.
+	 * We can detect the old iproute2. Even including the IFLA_EXT_MASK
+	 * attribute, its netlink message is shorter than struct ifinfomsg.
+	 */
+	hdrlen = nlmsg_len(cb->nlh) < sizeof(struct ifinfomsg) ?
+		 sizeof(struct rtgenmsg) : sizeof(struct ifinfomsg);
+
+	if (nlmsg_parse(cb->nlh, hdrlen, tb, IFLA_MAX, ifla_policy) >= 0) {
+
+		if (tb[IFLA_EXT_MASK])
+			ext_filter_mask = nla_get_u32(tb[IFLA_EXT_MASK]);
+	}
+
+	for (h = s_h; h < NETDEV_HASHENTRIES; h++, s_idx = 0) {
+		idx = 0;
+		head = &net->dev_index_head[h];
+		hlist_for_each_entry_rcu(dev, head, index_hlist) {
+			if (idx < s_idx)
+				goto cont;
+			err = rtnl_fill_ifinfo(skb, dev, RTM_NEWLINK,
+					       NETLINK_CB(cb->skb).portid,
+					       cb->nlh->nlmsg_seq, 0,
+					       NLM_F_MULTI,
+					       ext_filter_mask);
+			/* If we ran out of room on the first message,
+			 * we're in trouble
+			 */
+			WARN_ON((err == -EMSGSIZE) && (skb->len == 0));
+
+			if (err <= 0)
+				goto out;
+
+			nl_dump_check_consistent(cb, nlmsg_hdr(skb));
+cont:
+			idx++;
+		}
+	}
+out:
+	rcu_read_unlock();
+	cb->args[1] = idx;
+	cb->args[0] = h;
+
+	return skb->len;
+}
+
+const struct nla_policy ifla_policy[IFLA_MAX+1] = {
+>>>>>>> p9x
 	[IFLA_IFNAME]		= { .type = NLA_STRING, .len = IFNAMSIZ-1 },
 	[IFLA_ADDRESS]		= { .type = NLA_BINARY, .len = MAX_ADDR_LEN },
 	[IFLA_BROADCAST]	= { .type = NLA_BINARY, .len = MAX_ADDR_LEN },
@@ -1220,9 +1301,12 @@ static const struct nla_policy ifla_vf_policy[IFLA_VF_MAX+1] = {
 	[IFLA_VF_VLAN]		= { .len = sizeof(struct ifla_vf_vlan) },
 	[IFLA_VF_TX_RATE]	= { .len = sizeof(struct ifla_vf_tx_rate) },
 	[IFLA_VF_SPOOFCHK]	= { .len = sizeof(struct ifla_vf_spoofchk) },
+<<<<<<< HEAD
 	[IFLA_VF_RATE]		= { .len = sizeof(struct ifla_vf_rate) },
 	[IFLA_VF_LINK_STATE]	= { .len = sizeof(struct ifla_vf_link_state) },
 	[IFLA_VF_RSS_QUERY_EN]	= { .len = sizeof(struct ifla_vf_rss_query_en) },
+=======
+>>>>>>> p9x
 };
 
 static const struct nla_policy ifla_port_policy[IFLA_PORT_MAX+1] = {
@@ -1496,12 +1580,18 @@ static int do_set_master(struct net_device *dev, int ifindex)
 	return 0;
 }
 
+<<<<<<< HEAD
 #define DO_SETLINK_MODIFIED	0x01
 /* notify flag means notify + modified. */
 #define DO_SETLINK_NOTIFY	0x03
 static int do_setlink(const struct sk_buff *skb,
 		      struct net_device *dev, struct ifinfomsg *ifm,
 		      struct nlattr **tb, char *ifname, int status)
+=======
+static int do_setlink(const struct sk_buff *skb,
+		      struct net_device *dev, struct ifinfomsg *ifm,
+		      struct nlattr **tb, char *ifname, int modified)
+>>>>>>> p9x
 {
 	const struct net_device_ops *ops = dev->netdev_ops;
 	int err;
@@ -1790,6 +1880,13 @@ static int rtnl_setlink(struct sk_buff *skb, struct nlmsghdr *nlh)
 		goto errout;
 	}
 
+<<<<<<< HEAD
+=======
+	err = validate_linkmsg(dev, tb);
+	if (err < 0)
+		goto errout;
+
+>>>>>>> p9x
 	err = do_setlink(skb, dev, ifm, tb, ifname, 0);
 errout:
 	return err;
@@ -2058,6 +2155,7 @@ replay:
 				status |= DO_SETLINK_NOTIFY;
 			}
 
+<<<<<<< HEAD
 			if (linkinfo[IFLA_INFO_SLAVE_DATA]) {
 				if (!m_ops || !m_ops->slave_changelink)
 					return -EOPNOTSUPP;
@@ -2070,6 +2168,9 @@ replay:
 			}
 
 			return do_setlink(skb, dev, ifm, tb, ifname, status);
+=======
+			return do_setlink(skb, dev, ifm, tb, ifname, modified);
+>>>>>>> p9x
 		}
 
 		if (!(nlh->nlmsg_flags & NLM_F_CREATE)) {
@@ -2741,6 +2842,7 @@ static int rtnl_bridge_getlink(struct sk_buff *skb, struct netlink_callback *cb)
 	u32 seq = cb->nlh->nlmsg_seq;
 	u32 filter_mask = 0;
 
+<<<<<<< HEAD
 	if (nlmsg_len(cb->nlh) > sizeof(struct ifinfomsg)) {
 		struct nlattr *extfilt;
 
@@ -2753,6 +2855,12 @@ static int rtnl_bridge_getlink(struct sk_buff *skb, struct netlink_callback *cb)
 			filter_mask = nla_get_u32(extfilt);
 		}
 	}
+=======
+	extfilt = nlmsg_find_attr(cb->nlh, sizeof(struct ifinfomsg),
+				  IFLA_EXT_MASK);
+	if (extfilt)
+		filter_mask = nla_get_u32(extfilt);
+>>>>>>> p9x
 
 	rcu_read_lock();
 	for_each_netdev_rcu(net, dev) {

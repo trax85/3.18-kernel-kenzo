@@ -194,11 +194,19 @@ struct cpu_efficiency {
  * Table of relative efficiency of each processors
  * The efficiency value must fit in 20bit and the final
  * cpu_scale value must be in the range
+<<<<<<< HEAD
  *   0 < cpu_scale < 3*SCHED_CAPACITY_SCALE/2
  * in order to return at most 1 when DIV_ROUND_CLOSEST
  * is used to compute the capacity of a CPU.
  * Processors that are not defined in the table,
  * use the default SCHED_CAPACITY_SCALE value for cpu_scale.
+=======
+ *   0 < cpu_scale < 3*SCHED_POWER_SCALE/2
+ * in order to return at most 1 when DIV_ROUND_CLOSEST
+ * is used to compute the capacity of a CPU.
+ * Processors that are not defined in the table,
+ * use the default SCHED_POWER_SCALE value for cpu_scale.
+>>>>>>> p9x
  */
 static const struct cpu_efficiency table_efficiency[] = {
 	{ "arm,cortex-a57", 3891 },
@@ -211,7 +219,11 @@ static unsigned long *__cpu_capacity;
 
 static unsigned long middle_capacity = 1;
 
+<<<<<<< HEAD
 static DEFINE_PER_CPU(unsigned long, cpu_efficiency) = SCHED_CAPACITY_SCALE;
+=======
+static DEFINE_PER_CPU(unsigned long, cpu_efficiency) = SCHED_POWER_SCALE;
+>>>>>>> p9x
 
 unsigned long arch_get_cpu_efficiency(int cpu)
 {
@@ -254,9 +266,19 @@ static int __init parse_dt_topology(void)
 	 * Check that all cores are in the topology; the SMP code will
 	 * only mark cores described in the DT as possible.
 	 */
+<<<<<<< HEAD
 	for_each_possible_cpu(cpu)
 		if (cpu_topology[cpu].cluster_id == -1)
 			ret = -EINVAL;
+=======
+	for_each_possible_cpu(cpu) {
+		if (cpu_topology[cpu].cluster_id == -1) {
+			pr_err("CPU%d: No topology information specified\n",
+			       cpu);
+			ret = -EINVAL;
+		}
+	}
+>>>>>>> p9x
 
 out_map:
 	of_node_put(map);
@@ -337,17 +359,28 @@ static void __init parse_dt_cpu_power(void)
 	 * cpu_scale because all CPUs have the same capacity. Otherwise, we
 	 * compute a middle_capacity factor that will ensure that the capacity
 	 * of an 'average' CPU of the system will be as close as possible to
+<<<<<<< HEAD
 	 * SCHED_CAPACITY_SCALE, which is the default value, but with the
+=======
+	 * SCHED_POWER_SCALE, which is the default value, but with the
+>>>>>>> p9x
 	 * constraint explained near table_efficiency[].
 	 */
 	if (min_capacity == max_capacity)
 		return;
 	else if (4 * max_capacity < (3 * (max_capacity + min_capacity)))
 		middle_capacity = (min_capacity + max_capacity)
+<<<<<<< HEAD
 				>> (SCHED_CAPACITY_SHIFT+1);
 	else
 		middle_capacity = ((max_capacity / 3)
 				>> (SCHED_CAPACITY_SHIFT-1)) + 1;
+=======
+				>> (SCHED_POWER_SHIFT+1);
+	else
+		middle_capacity = ((max_capacity / 3)
+				>> (SCHED_POWER_SHIFT-1)) + 1;
+>>>>>>> p9x
 }
 
 /*
@@ -412,6 +445,7 @@ void store_cpu_topology(unsigned int cpuid)
 
 	mpidr = read_cpuid_mpidr();
 
+<<<<<<< HEAD
 	/* Uniprocessor systems can rely on default topology values */
 	if (mpidr & MPIDR_UP_BITMASK)
 		return;
@@ -422,14 +456,37 @@ void store_cpu_topology(unsigned int cpuid)
 		cpuid_topo->thread_id  = MPIDR_AFFINITY_LEVEL(mpidr, 0);
 		cpuid_topo->core_id    = MPIDR_AFFINITY_LEVEL(mpidr, 1);
 		cpuid_topo->cluster_id = MPIDR_AFFINITY_LEVEL(mpidr, 2);
+=======
+	/* Create cpu topology mapping based on MPIDR. */
+	if (mpidr & MPIDR_UP_BITMASK) {
+		/* Uniprocessor system */
+		cpuid_topo->thread_id  = -1;
+		cpuid_topo->core_id    = MPIDR_AFFINITY_LEVEL(mpidr, 0);
+		cpuid_topo->cluster_id = 0;
+	} else if (mpidr & MPIDR_MT_BITMASK) {
+		/* Multiprocessor system : Multi-threads per core */
+		cpuid_topo->thread_id  = MPIDR_AFFINITY_LEVEL(mpidr, 0);
+		cpuid_topo->core_id    = MPIDR_AFFINITY_LEVEL(mpidr, 1);
+		cpuid_topo->cluster_id = MPIDR_AFFINITY_LEVEL(mpidr, 2) |
+					 MPIDR_AFFINITY_LEVEL(mpidr, 3) << 8;
+>>>>>>> p9x
 	} else {
 		/* Multiprocessor system : Single-thread per core */
 		cpuid_topo->thread_id  = -1;
 		cpuid_topo->core_id    = MPIDR_AFFINITY_LEVEL(mpidr, 0);
+<<<<<<< HEAD
 		cpuid_topo->cluster_id = MPIDR_AFFINITY_LEVEL(mpidr, 1);
 	}
 
 	pr_debug("CPU%u: cluster %d core %d thread %d mpidr %#016llx\n",
+=======
+		cpuid_topo->cluster_id = MPIDR_AFFINITY_LEVEL(mpidr, 1) |
+					 MPIDR_AFFINITY_LEVEL(mpidr, 2) << 8 |
+					 MPIDR_AFFINITY_LEVEL(mpidr, 3) << 16;
+	}
+
+	pr_debug("CPU%u: cluster %d core %d thread %d mpidr %llx\n",
+>>>>>>> p9x
 		 cpuid, cpuid_topo->cluster_id, cpuid_topo->core_id,
 		 cpuid_topo->thread_id, mpidr);
 
@@ -461,25 +518,37 @@ static void __init reset_cpu_power(void)
 	unsigned int cpu;
 
 	for_each_possible_cpu(cpu)
+<<<<<<< HEAD
 		set_power_scale(cpu, SCHED_CAPACITY_SCALE);
+=======
+		set_power_scale(cpu, SCHED_POWER_SCALE);
+>>>>>>> p9x
 }
 
 void __init init_cpu_topology(void)
 {
+<<<<<<< HEAD
 	int cpu;
 
+=======
+>>>>>>> p9x
 	reset_cpu_topology();
 
 	/*
 	 * Discard anything that was parsed if we hit an error so we
 	 * don't use partial information.
 	 */
+<<<<<<< HEAD
 	if (parse_dt_topology()) {
 		reset_cpu_topology();
 	} else {
 		for_each_possible_cpu(cpu)
 			update_siblings_masks(cpu);
 	}
+=======
+	if (parse_dt_topology())
+		reset_cpu_topology();
+>>>>>>> p9x
 
 	reset_cpu_power();
 	parse_dt_cpu_power();

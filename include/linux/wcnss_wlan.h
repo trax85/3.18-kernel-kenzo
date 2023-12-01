@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -38,13 +42,22 @@ struct vregs_level {
 };
 
 struct wcnss_wlan_config {
+<<<<<<< HEAD
 	bool	wcn_external_gpio_support;
+=======
+>>>>>>> p9x
 	int	use_48mhz_xo;
 	int	is_pronto_vadc;
 	int	is_pronto_v3;
 	void __iomem	*msm_wcnss_base;
+<<<<<<< HEAD
 	unsigned int iris_id;
 	int	vbatt;
+=======
+	int	iris_id;
+	int	vbatt;
+	int	pc_disable_latency;
+>>>>>>> p9x
 	struct vregs_level pronto_vlevel[PRONTO_REGULATORS];
 	struct vregs_level iris_vlevel[IRIS_REGULATORS];
 };
@@ -75,8 +88,11 @@ enum {
 #define HAVE_WCNSS_CAL_DOWNLOAD 1
 #define HAVE_CBC_DONE 1
 #define HAVE_WCNSS_RX_BUFF_COUNT 1
+<<<<<<< HEAD
 #define HAVE_WCNSS_SNOC_HIGH_FREQ_VOTING 1
 #define HAVE_WCNSS_5G_DISABLE 1
+=======
+>>>>>>> p9x
 #define WLAN_MAC_ADDR_SIZE (6)
 #define WLAN_RF_REG_ADDR_START_OFFSET	0x3
 #define WLAN_RF_REG_DATA_START_OFFSET	0xf
@@ -120,14 +136,21 @@ int wcnss_get_wlan_mac_address(char mac_addr[WLAN_MAC_ADDR_SIZE]);
 void wcnss_allow_suspend(void);
 void wcnss_prevent_suspend(void);
 int wcnss_hardware_type(void);
+<<<<<<< HEAD
 void *wcnss_prealloc_get(size_t size);
+=======
+void *wcnss_prealloc_get(unsigned int size);
+>>>>>>> p9x
 int wcnss_prealloc_put(void *ptr);
 void wcnss_reset_fiq(bool clk_chk_en);
 void wcnss_suspend_notify(void);
 void wcnss_resume_notify(void);
 void wcnss_riva_log_debug_regs(void);
 void wcnss_pronto_log_debug_regs(void);
+<<<<<<< HEAD
 void wcnss_pronto_dump_regs(void);
+=======
+>>>>>>> p9x
 int wcnss_is_hw_pronto_ver3(void);
 int wcnss_device_ready(void);
 bool wcnss_cbc_complete(void);
@@ -136,14 +159,22 @@ void wcnss_riva_dump_pmic_regs(void);
 int wcnss_xo_auto_detect_enabled(void);
 u32 wcnss_get_wlan_rx_buff_count(void);
 int wcnss_wlan_iris_xo_mode(void);
+<<<<<<< HEAD
 int wcnss_wlan_dual_band_disabled(void);
+=======
+>>>>>>> p9x
 void wcnss_flush_work(struct work_struct *work);
 void wcnss_flush_delayed_work(struct delayed_work *dwork);
 void wcnss_init_work(struct work_struct *work , void *callbackptr);
 void wcnss_init_delayed_work(struct delayed_work *dwork , void *callbackptr);
 int wcnss_get_iris_name(char *iris_version);
+<<<<<<< HEAD
 void wcnss_dump_stack(struct task_struct *task);
 void wcnss_snoc_vote(bool clk_chk_en);
+=======
+void wcnss_en_wlan_led_trigger(void);
+void wcnss_dump_stack(struct task_struct *task);
+>>>>>>> p9x
 
 #ifdef CONFIG_WCNSS_REGISTER_DUMP_ON_BITE
 void wcnss_log_debug_regs_on_bite(void);

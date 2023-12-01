@@ -853,7 +853,11 @@ config HID_ZYDACRON
 
 config HID_SENSOR_HUB
 	tristate "HID Sensors framework support"
+<<<<<<< HEAD
 	depends on HID && HAS_IOMEM
+=======
+	depends on HID
+>>>>>>> p9x
 	select MFD_CORE
 	default n
 	---help---

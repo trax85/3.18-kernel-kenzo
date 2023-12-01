@@ -378,12 +378,21 @@ void vnt_set_antenna_mode(struct vnt_private *priv, u8 antenna_mode)
 
 int vnt_vt3184_init(struct vnt_private *priv)
 {
+<<<<<<< HEAD
 	int status;
 	u16 length;
 	u8 *addr;
 	u8 *agc;
 	u16 length_agc;
 	u8 array[256];
+=======
+	int ntStatus;
+    u16                    wLength;
+    u8 *                   pbyAddr;
+    u8 *                   pbyAgc;
+    u16                    wLengthAgc;
+    u8                    abyArray[256];
+>>>>>>> p9x
 	u8 data;
 
 	status = vnt_control_in(priv, MESSAGE_TYPE_READ, 0,
@@ -463,6 +472,7 @@ int vnt_vt3184_init(struct vnt_private *priv)
 	vnt_control_out(priv, MESSAGE_TYPE_WRITE, 0,
 		MESSAGE_REQUEST_BBREG, length, array);
 
+<<<<<<< HEAD
 	memcpy(array, agc, length_agc);
 
 	vnt_control_out(priv, MESSAGE_TYPE_WRITE, 0,
@@ -486,14 +496,27 @@ int vnt_vt3184_init(struct vnt_private *priv)
 
 	/* Fix for TX USB resets from vendors driver */
 	vnt_control_in(priv, MESSAGE_TYPE_READ, USB_REG4,
+=======
+    RFbRFTableDownload(pDevice);
+
+	/* Fix for TX USB resets from vendors driver */
+	CONTROLnsRequestIn(pDevice, MESSAGE_TYPE_READ, USB_REG4,
+>>>>>>> p9x
 		MESSAGE_REQUEST_MEM, sizeof(data), &data);
 
 	data |= 0x2;
 
+<<<<<<< HEAD
 	vnt_control_out(priv, MESSAGE_TYPE_WRITE, USB_REG4,
 		MESSAGE_REQUEST_MEM, sizeof(data), &data);
 
 	return true;
+=======
+	CONTROLnsRequestOut(pDevice, MESSAGE_TYPE_WRITE, USB_REG4,
+		MESSAGE_REQUEST_MEM, sizeof(data), &data);
+
+    return true;//ntStatus;
+>>>>>>> p9x
 }
 
 /*
@@ -578,6 +601,7 @@ void vnt_update_pre_ed_threshold(struct vnt_private *priv, int scanning)
 			break;
 		}
 
+<<<<<<< HEAD
 		if (priv->bb_pre_ed_rssi <= 45) {
 			ed_inx = 20;
 			cr_201 = 0xff;
@@ -648,6 +672,708 @@ void vnt_update_pre_ed_threshold(struct vnt_private *priv, int scanning)
 			cr_206 = 0x30;
 		}
 		break;
+=======
+	for (ii = RATE_48M; ii >= RATE_6M; ii--)
+		if (pDevice->aulPktNum[ii] > ulMaxPacket) {
+            ulMaxPacket = pDevice->aulPktNum[ii];
+            ulSQ3 = pDevice->aulSQ3Val[ii] / pDevice->aulPktNum[ii];
+        }
+
+    return ulSQ3;
+}
+
+static unsigned long s_ulGetRatio(struct vnt_private *pDevice)
+{
+	int ii, jj;
+	unsigned long ulRatio = 0;
+	unsigned long ulMaxPacket;
+	unsigned long ulPacketNum;
+
+    //This is a thousand-ratio
+    ulMaxPacket = pDevice->aulPktNum[RATE_54M];
+    if ( pDevice->aulPktNum[RATE_54M] != 0 ) {
+        ulPacketNum = pDevice->aulPktNum[RATE_54M];
+        ulRatio = (ulPacketNum * 1000 / pDevice->uDiversityCnt);
+        ulRatio += TOP_RATE_54M;
+    }
+	for (ii = RATE_48M; ii >= RATE_1M; ii--)
+        if ( pDevice->aulPktNum[ii] > ulMaxPacket ) {
+            ulPacketNum = 0;
+            for ( jj=RATE_54M;jj>=ii;jj--)
+                ulPacketNum += pDevice->aulPktNum[jj];
+            ulRatio = (ulPacketNum * 1000 / pDevice->uDiversityCnt);
+            ulRatio += TOP_RATE_48M;
+            ulMaxPacket = pDevice->aulPktNum[ii];
+        }
+
+    return ulRatio;
+}
+
+static void s_vClearSQ3Value(struct vnt_private *pDevice)
+{
+    int ii;
+    pDevice->uDiversityCnt = 0;
+
+    for ( ii=RATE_1M;ii<MAX_RATE;ii++) {
+        pDevice->aulPktNum[ii] = 0;
+        pDevice->aulSQ3Val[ii] = 0;
+    }
+}
+
+/*
+ * Description: Antenna Diversity
+ *
+ * Parameters:
+ *  In:
+ *      pDevice          - Device Structure
+ *      byRSR            - RSR from received packet
+ *      bySQ3            - SQ3 value from received packet
+ *  Out:
+ *      none
+ *
+ * Return Value: none
+ *
+ */
+
+void BBvAntennaDiversity(struct vnt_private *pDevice,
+	u8 byRxRate, u8 bySQ3)
+{
+
+    pDevice->uDiversityCnt++;
+    DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"pDevice->uDiversityCnt = %d\n", (int)pDevice->uDiversityCnt);
+
+    if (byRxRate == 2) {
+        pDevice->aulPktNum[RATE_1M]++;
+    }
+    else if (byRxRate==4) {
+        pDevice->aulPktNum[RATE_2M]++;
+    }
+    else if (byRxRate==11) {
+        pDevice->aulPktNum[RATE_5M]++;
+    }
+    else if (byRxRate==22) {
+        pDevice->aulPktNum[RATE_11M]++;
+    }
+    else if(byRxRate==12){
+        pDevice->aulPktNum[RATE_6M]++;
+        pDevice->aulSQ3Val[RATE_6M] += bySQ3;
+    }
+    else if(byRxRate==18){
+        pDevice->aulPktNum[RATE_9M]++;
+        pDevice->aulSQ3Val[RATE_9M] += bySQ3;
+    }
+    else if(byRxRate==24){
+        pDevice->aulPktNum[RATE_12M]++;
+        pDevice->aulSQ3Val[RATE_12M] += bySQ3;
+    }
+    else if(byRxRate==36){
+        pDevice->aulPktNum[RATE_18M]++;
+        pDevice->aulSQ3Val[RATE_18M] += bySQ3;
+    }
+    else if(byRxRate==48){
+        pDevice->aulPktNum[RATE_24M]++;
+        pDevice->aulSQ3Val[RATE_24M] += bySQ3;
+    }
+    else if(byRxRate==72){
+        pDevice->aulPktNum[RATE_36M]++;
+        pDevice->aulSQ3Val[RATE_36M] += bySQ3;
+    }
+    else if(byRxRate==96){
+        pDevice->aulPktNum[RATE_48M]++;
+        pDevice->aulSQ3Val[RATE_48M] += bySQ3;
+    }
+    else if(byRxRate==108){
+        pDevice->aulPktNum[RATE_54M]++;
+        pDevice->aulSQ3Val[RATE_54M] += bySQ3;
+    }
+
+    if (pDevice->byAntennaState == 0) {
+
+        if (pDevice->uDiversityCnt > pDevice->ulDiversityNValue) {
+            DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"ulDiversityNValue=[%d],54M-[%d]\n",(int)pDevice->ulDiversityNValue, (int)pDevice->aulPktNum[RATE_54M]);
+
+            pDevice->ulSQ3_State0 = s_ulGetLowSQ3(pDevice);
+            pDevice->ulRatio_State0 = s_ulGetRatio(pDevice);
+            DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"SQ3_State0, SQ3= [%08x] rate = [%08x]\n",(int)pDevice->ulSQ3_State0,(int)pDevice->ulRatio_State0);
+
+            if ( ((pDevice->aulPktNum[RATE_54M] < pDevice->ulDiversityNValue/2) &&
+                  (pDevice->ulSQ3_State0 > pDevice->ulSQ3TH) ) ||
+                 (pDevice->ulSQ3_State0 == 0 ) )  {
+
+                if ( pDevice->byTMax == 0 )
+                    return;
+
+		bScheduleCommand((void *) pDevice,
+				 WLAN_CMD_CHANGE_ANTENNA,
+				 NULL);
+
+                pDevice->byAntennaState = 1;
+
+                del_timer(&pDevice->TimerSQ3Tmax3);
+                del_timer(&pDevice->TimerSQ3Tmax2);
+                pDevice->TimerSQ3Tmax1.expires =  RUN_AT(pDevice->byTMax * HZ);
+                add_timer(&pDevice->TimerSQ3Tmax1);
+
+            } else {
+                pDevice->TimerSQ3Tmax3.expires =  RUN_AT(pDevice->byTMax3 * HZ);
+                add_timer(&pDevice->TimerSQ3Tmax3);
+            }
+            s_vClearSQ3Value(pDevice);
+
+        }
+    } else { //byAntennaState == 1
+
+        if (pDevice->uDiversityCnt > pDevice->ulDiversityMValue) {
+
+            del_timer(&pDevice->TimerSQ3Tmax1);
+            pDevice->ulSQ3_State1 = s_ulGetLowSQ3(pDevice);
+            pDevice->ulRatio_State1 = s_ulGetRatio(pDevice);
+            DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"SQ3_State1, rate0 = %08x,rate1 = %08x\n",(int)pDevice->ulRatio_State0,(int)pDevice->ulRatio_State1);
+
+            if ( ((pDevice->ulSQ3_State1 == 0) && (pDevice->ulSQ3_State0 != 0)) ||
+                 ((pDevice->ulSQ3_State1 == 0) && (pDevice->ulSQ3_State0 == 0) && (pDevice->ulRatio_State1 < pDevice->ulRatio_State0)) ||
+                 ((pDevice->ulSQ3_State1 != 0) && (pDevice->ulSQ3_State0 != 0) && (pDevice->ulSQ3_State0 < pDevice->ulSQ3_State1))
+               ) {
+
+		bScheduleCommand((void *) pDevice,
+				 WLAN_CMD_CHANGE_ANTENNA,
+				 NULL);
+
+                pDevice->TimerSQ3Tmax3.expires =  RUN_AT(pDevice->byTMax3 * HZ);
+                pDevice->TimerSQ3Tmax2.expires =  RUN_AT(pDevice->byTMax2 * HZ);
+                add_timer(&pDevice->TimerSQ3Tmax3);
+                add_timer(&pDevice->TimerSQ3Tmax2);
+
+            }
+            pDevice->byAntennaState = 0;
+            s_vClearSQ3Value(pDevice);
+        }
+    } //byAntennaState
+}
+
+/*+
+ *
+ * Description:
+ *  Timer for SQ3 antenna diversity
+ *
+ * Parameters:
+ *  In:
+ *      pvSysSpec1
+ *      hDeviceContext - Pointer to the adapter
+ *      pvSysSpec2
+ *      pvSysSpec3
+ *  Out:
+ *      none
+ *
+ * Return Value: none
+ *
+-*/
+
+void TimerSQ3CallBack(struct vnt_private *pDevice)
+{
+
+    DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"TimerSQ3CallBack...");
+    spin_lock_irq(&pDevice->lock);
+
+    bScheduleCommand((void *) pDevice, WLAN_CMD_CHANGE_ANTENNA, NULL);
+    pDevice->byAntennaState = 0;
+    s_vClearSQ3Value(pDevice);
+    pDevice->TimerSQ3Tmax3.expires =  RUN_AT(pDevice->byTMax3 * HZ);
+    pDevice->TimerSQ3Tmax2.expires =  RUN_AT(pDevice->byTMax2 * HZ);
+    add_timer(&pDevice->TimerSQ3Tmax3);
+    add_timer(&pDevice->TimerSQ3Tmax2);
+
+    spin_unlock_irq(&pDevice->lock);
+}
+
+/*+
+ *
+ * Description:
+ *  Timer for SQ3 antenna diversity
+ *
+ * Parameters:
+ *  In:
+ *      pvSysSpec1
+ *      hDeviceContext - Pointer to the adapter
+ *      pvSysSpec2
+ *      pvSysSpec3
+ *  Out:
+ *      none
+ *
+ * Return Value: none
+ *
+-*/
+
+void TimerSQ3Tmax3CallBack(struct vnt_private *pDevice)
+{
+
+    DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"TimerSQ3Tmax3CallBack...");
+    spin_lock_irq(&pDevice->lock);
+
+    pDevice->ulRatio_State0 = s_ulGetRatio(pDevice);
+    DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"SQ3_State0 = [%08x]\n",(int)pDevice->ulRatio_State0);
+
+    s_vClearSQ3Value(pDevice);
+    if ( pDevice->byTMax == 0 ) {
+        pDevice->TimerSQ3Tmax3.expires =  RUN_AT(pDevice->byTMax3 * HZ);
+        add_timer(&pDevice->TimerSQ3Tmax3);
+        spin_unlock_irq(&pDevice->lock);
+        return;
+    }
+
+    bScheduleCommand((void *) pDevice, WLAN_CMD_CHANGE_ANTENNA, NULL);
+    pDevice->byAntennaState = 1;
+    del_timer(&pDevice->TimerSQ3Tmax3);
+    del_timer(&pDevice->TimerSQ3Tmax2);
+    pDevice->TimerSQ3Tmax1.expires =  RUN_AT(pDevice->byTMax * HZ);
+    add_timer(&pDevice->TimerSQ3Tmax1);
+
+    spin_unlock_irq(&pDevice->lock);
+}
+
+void BBvUpdatePreEDThreshold(struct vnt_private *pDevice, int bScanning)
+{
+
+    switch(pDevice->byRFType)
+    {
+        case RF_AL2230:
+        case RF_AL2230S:
+        case RF_AIROHA7230:
+            //RobertYu:20060627, update new table
+
+            if( bScanning )
+            {   // need Max sensitivity //RSSI -69, -70,....
+                pDevice->byBBPreEDIndex = 0;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x30); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -69, -70, -71,...\n");
+                break;
+            }
+
+            if(pDevice->byBBPreEDRSSI <= 45) { // RSSI 0, -1,-2,....-45
+                if(pDevice->byBBPreEDIndex == 20) break;
+                pDevice->byBBPreEDIndex = 20;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0xFF); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI 0, -1,-2,..-45\n");
+            } else if(pDevice->byBBPreEDRSSI <= 46)  { //RSSI -46
+                if(pDevice->byBBPreEDIndex == 19) break;
+                pDevice->byBBPreEDIndex = 19;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x1A); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -46\n");
+            } else if(pDevice->byBBPreEDRSSI <= 47)  { //RSSI -47
+                if(pDevice->byBBPreEDIndex == 18) break;
+                pDevice->byBBPreEDIndex = 18;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x15); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -47\n");
+            } else if(pDevice->byBBPreEDRSSI <= 49)  { //RSSI -48, -49
+                if(pDevice->byBBPreEDIndex == 17) break;
+                pDevice->byBBPreEDIndex = 17;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x0E); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -48,-49\n");
+            } else if(pDevice->byBBPreEDRSSI <= 51)  { //RSSI -50, -51
+                if(pDevice->byBBPreEDIndex == 16) break;
+                pDevice->byBBPreEDIndex = 16;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x09); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -50,-51\n");
+            } else if(pDevice->byBBPreEDRSSI <= 53)  { //RSSI -52, -53
+                if(pDevice->byBBPreEDIndex == 15) break;
+                pDevice->byBBPreEDIndex = 15;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x06); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -52,-53\n");
+            } else if(pDevice->byBBPreEDRSSI <= 55)  { //RSSI -54, -55
+                if(pDevice->byBBPreEDIndex == 14) break;
+                pDevice->byBBPreEDIndex = 14;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x03); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -54,-55\n");
+            } else if(pDevice->byBBPreEDRSSI <= 56)  { //RSSI -56
+                if(pDevice->byBBPreEDIndex == 13) break;
+                pDevice->byBBPreEDIndex = 13;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x02); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0xA0); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -56\n");
+            } else if(pDevice->byBBPreEDRSSI <= 57)  { //RSSI -57
+                if(pDevice->byBBPreEDIndex == 12) break;
+                pDevice->byBBPreEDIndex = 12;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x02); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x20); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -57\n");
+            } else if(pDevice->byBBPreEDRSSI <= 58)  { //RSSI -58
+                if(pDevice->byBBPreEDIndex == 11) break;
+                pDevice->byBBPreEDIndex = 11;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x01); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0xA0); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -58\n");
+            } else if(pDevice->byBBPreEDRSSI <= 59)  { //RSSI -59
+                if(pDevice->byBBPreEDIndex == 10) break;
+                pDevice->byBBPreEDIndex = 10;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x01); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x54); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -59\n");
+            } else if(pDevice->byBBPreEDRSSI <= 60)  { //RSSI -60
+                if(pDevice->byBBPreEDIndex == 9) break;
+                pDevice->byBBPreEDIndex = 9;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x01); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x18); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -60\n");
+            } else if(pDevice->byBBPreEDRSSI <= 61)  { //RSSI -61
+                if(pDevice->byBBPreEDIndex == 8) break;
+                pDevice->byBBPreEDIndex = 8;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0xE3); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -61\n");
+            } else if(pDevice->byBBPreEDRSSI <= 62)  { //RSSI -62
+                if(pDevice->byBBPreEDIndex == 7) break;
+                pDevice->byBBPreEDIndex = 7;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0xB9); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -62\n");
+            } else if(pDevice->byBBPreEDRSSI <= 63)  { //RSSI -63
+                if(pDevice->byBBPreEDIndex == 6) break;
+                pDevice->byBBPreEDIndex = 6;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x93); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -63\n");
+            } else if(pDevice->byBBPreEDRSSI <= 64)  { //RSSI -64
+                if(pDevice->byBBPreEDIndex == 5) break;
+                pDevice->byBBPreEDIndex = 5;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x79); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -64\n");
+            } else if(pDevice->byBBPreEDRSSI <= 65)  { //RSSI -65
+                if(pDevice->byBBPreEDIndex == 4) break;
+                pDevice->byBBPreEDIndex = 4;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x62); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -65\n");
+            } else if(pDevice->byBBPreEDRSSI <= 66)  { //RSSI -66
+                if(pDevice->byBBPreEDIndex == 3) break;
+                pDevice->byBBPreEDIndex = 3;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x51); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -66\n");
+            } else if(pDevice->byBBPreEDRSSI <= 67)  { //RSSI -67
+                if(pDevice->byBBPreEDIndex == 2) break;
+                pDevice->byBBPreEDIndex = 2;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x43); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -67\n");
+            } else if(pDevice->byBBPreEDRSSI <= 68)  { //RSSI -68
+                if(pDevice->byBBPreEDIndex == 1) break;
+                pDevice->byBBPreEDIndex = 1;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x36); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -68\n");
+            } else { //RSSI -69, -70,....
+                if(pDevice->byBBPreEDIndex == 0) break;
+                pDevice->byBBPreEDIndex = 0;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x30); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -69, -70,...\n");
+            }
+            break;
+
+        case RF_VT3226:
+        case RF_VT3226D0:
+            //RobertYu:20060627, update new table
+
+            if( bScanning )
+            {   // need Max sensitivity  //RSSI -69, -70, ...
+                pDevice->byBBPreEDIndex = 0;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x24); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -69, -70,..\n");
+                break;
+            }
+
+            if(pDevice->byBBPreEDRSSI <= 41) { // RSSI 0, -1,-2,....-41
+                if(pDevice->byBBPreEDIndex == 22) break;
+                pDevice->byBBPreEDIndex = 22;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0xFF); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI 0, -1,-2,..-41\n");
+            } else if(pDevice->byBBPreEDRSSI <= 42)  { //RSSI -42
+                if(pDevice->byBBPreEDIndex == 21) break;
+                pDevice->byBBPreEDIndex = 21;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x36); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -42\n");
+            } else if(pDevice->byBBPreEDRSSI <= 43)  { //RSSI -43
+                if(pDevice->byBBPreEDIndex == 20) break;
+                pDevice->byBBPreEDIndex = 20;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x26); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -43\n");
+            } else if(pDevice->byBBPreEDRSSI <= 45)  { //RSSI -44, -45
+                if(pDevice->byBBPreEDIndex == 19) break;
+                pDevice->byBBPreEDIndex = 19;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x18); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -44,-45\n");
+            } else if(pDevice->byBBPreEDRSSI <= 47)  { //RSSI -46, -47
+                if(pDevice->byBBPreEDIndex == 18) break;
+                pDevice->byBBPreEDIndex = 18;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x11); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -46,-47\n");
+            } else if(pDevice->byBBPreEDRSSI <= 49)  { //RSSI -48, -49
+                if(pDevice->byBBPreEDIndex == 17) break;
+                pDevice->byBBPreEDIndex = 17;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x0a); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -48,-49\n");
+            } else if(pDevice->byBBPreEDRSSI <= 51)  { //RSSI -50, -51
+                if(pDevice->byBBPreEDIndex == 16) break;
+                pDevice->byBBPreEDIndex = 16;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x07); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -50,-51\n");
+            } else if(pDevice->byBBPreEDRSSI <= 53)  { //RSSI -52, -53
+                if(pDevice->byBBPreEDIndex == 15) break;
+                pDevice->byBBPreEDIndex = 15;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x04); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -52,-53\n");
+            } else if(pDevice->byBBPreEDRSSI <= 55)  { //RSSI -54, -55
+                if(pDevice->byBBPreEDIndex == 14) break;
+                pDevice->byBBPreEDIndex = 14;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x02); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0xC0); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -54,-55\n");
+            } else if(pDevice->byBBPreEDRSSI <= 56)  { //RSSI -56
+                if(pDevice->byBBPreEDIndex == 13) break;
+                pDevice->byBBPreEDIndex = 13;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x02); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x30); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -56\n");
+            } else if(pDevice->byBBPreEDRSSI <= 57)  { //RSSI -57
+                if(pDevice->byBBPreEDIndex == 12) break;
+                pDevice->byBBPreEDIndex = 12;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x01); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0xB0); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -57\n");
+            } else if(pDevice->byBBPreEDRSSI <= 58)  { //RSSI -58
+                if(pDevice->byBBPreEDIndex == 11) break;
+                pDevice->byBBPreEDIndex = 11;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x01); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x70); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -58\n");
+            } else if(pDevice->byBBPreEDRSSI <= 59)  { //RSSI -59
+                if(pDevice->byBBPreEDIndex == 10) break;
+                pDevice->byBBPreEDIndex = 10;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x01); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x30); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -59\n");
+            } else if(pDevice->byBBPreEDRSSI <= 60)  { //RSSI -60
+                if(pDevice->byBBPreEDIndex == 9) break;
+                pDevice->byBBPreEDIndex = 9;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0xEA); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -60\n");
+            } else if(pDevice->byBBPreEDRSSI <= 61)  { //RSSI -61
+                if(pDevice->byBBPreEDIndex == 8) break;
+                pDevice->byBBPreEDIndex = 8;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0xC0); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -61\n");
+            } else if(pDevice->byBBPreEDRSSI <= 62)  { //RSSI -62
+                if(pDevice->byBBPreEDIndex == 7) break;
+                pDevice->byBBPreEDIndex = 7;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x9C); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -62\n");
+            } else if(pDevice->byBBPreEDRSSI <= 63)  { //RSSI -63
+                if(pDevice->byBBPreEDIndex == 6) break;
+                pDevice->byBBPreEDIndex = 6;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x80); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -63\n");
+            } else if(pDevice->byBBPreEDRSSI <= 64)  { //RSSI -64
+                if(pDevice->byBBPreEDIndex == 5) break;
+                pDevice->byBBPreEDIndex = 5;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x68); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -64\n");
+            } else if(pDevice->byBBPreEDRSSI <= 65)  { //RSSI -65
+                if(pDevice->byBBPreEDIndex == 4) break;
+                pDevice->byBBPreEDIndex = 4;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x52); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -65\n");
+            } else if(pDevice->byBBPreEDRSSI <= 66)  { //RSSI -66
+                if(pDevice->byBBPreEDIndex == 3) break;
+                pDevice->byBBPreEDIndex = 3;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x43); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -66\n");
+            } else if(pDevice->byBBPreEDRSSI <= 67)  { //RSSI -67
+                if(pDevice->byBBPreEDIndex == 2) break;
+                pDevice->byBBPreEDIndex = 2;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x36); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -67\n");
+            } else if(pDevice->byBBPreEDRSSI <= 68)  { //RSSI -68
+                if(pDevice->byBBPreEDIndex == 1) break;
+                pDevice->byBBPreEDIndex = 1;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x2D); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -68\n");
+            } else { //RSSI -69, -70, ...
+                if(pDevice->byBBPreEDIndex == 0) break;
+                pDevice->byBBPreEDIndex = 0;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x24); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -69, -70,..\n");
+            }
+            break;
+
+        case RF_VT3342A0: //RobertYu:20060627, testing table
+            if( bScanning )
+            {   // need Max sensitivity  //RSSI -67, -68, ...
+                pDevice->byBBPreEDIndex = 0;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x38); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -67, -68,..\n");
+                break;
+            }
+
+            if(pDevice->byBBPreEDRSSI <= 41) { // RSSI 0, -1,-2,....-41
+                if(pDevice->byBBPreEDIndex == 20) break;
+                pDevice->byBBPreEDIndex = 20;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0xFF); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI 0, -1,-2,..-41\n");
+            } else if(pDevice->byBBPreEDRSSI <= 42)  { //RSSI -42
+                if(pDevice->byBBPreEDIndex == 19) break;
+                pDevice->byBBPreEDIndex = 19;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x36); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -42\n");
+            } else if(pDevice->byBBPreEDRSSI <= 43)  { //RSSI -43
+                if(pDevice->byBBPreEDIndex == 18) break;
+                pDevice->byBBPreEDIndex = 18;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x26); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -43\n");
+            } else if(pDevice->byBBPreEDRSSI <= 45)  { //RSSI -44, -45
+                if(pDevice->byBBPreEDIndex == 17) break;
+                pDevice->byBBPreEDIndex = 17;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x18); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -44,-45\n");
+            } else if(pDevice->byBBPreEDRSSI <= 47)  { //RSSI -46, -47
+                if(pDevice->byBBPreEDIndex == 16) break;
+                pDevice->byBBPreEDIndex = 16;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x11); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -46,-47\n");
+            } else if(pDevice->byBBPreEDRSSI <= 49)  { //RSSI -48, -49
+                if(pDevice->byBBPreEDIndex == 15) break;
+                pDevice->byBBPreEDIndex = 15;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x0a); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -48,-49\n");
+            } else if(pDevice->byBBPreEDRSSI <= 51)  { //RSSI -50, -51
+                if(pDevice->byBBPreEDIndex == 14) break;
+                pDevice->byBBPreEDIndex = 14;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x07); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -50,-51\n");
+            } else if(pDevice->byBBPreEDRSSI <= 53)  { //RSSI -52, -53
+                if(pDevice->byBBPreEDIndex == 13) break;
+                pDevice->byBBPreEDIndex = 13;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x04); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x00); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -52,-53\n");
+            } else if(pDevice->byBBPreEDRSSI <= 55)  { //RSSI -54, -55
+                if(pDevice->byBBPreEDIndex == 12) break;
+                pDevice->byBBPreEDIndex = 12;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x02); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0xC0); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -54,-55\n");
+            } else if(pDevice->byBBPreEDRSSI <= 56)  { //RSSI -56
+                if(pDevice->byBBPreEDIndex == 11) break;
+                pDevice->byBBPreEDIndex = 11;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x02); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x30); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -56\n");
+            } else if(pDevice->byBBPreEDRSSI <= 57)  { //RSSI -57
+                if(pDevice->byBBPreEDIndex == 10) break;
+                pDevice->byBBPreEDIndex = 10;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x01); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0xB0); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -57\n");
+            } else if(pDevice->byBBPreEDRSSI <= 58)  { //RSSI -58
+                if(pDevice->byBBPreEDIndex == 9) break;
+                pDevice->byBBPreEDIndex = 9;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x01); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x70); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -58\n");
+            } else if(pDevice->byBBPreEDRSSI <= 59)  { //RSSI -59
+                if(pDevice->byBBPreEDIndex == 8) break;
+                pDevice->byBBPreEDIndex = 8;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x01); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x30); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -59\n");
+            } else if(pDevice->byBBPreEDRSSI <= 60)  { //RSSI -60
+                if(pDevice->byBBPreEDIndex == 7) break;
+                pDevice->byBBPreEDIndex = 7;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0xEA); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -60\n");
+            } else if(pDevice->byBBPreEDRSSI <= 61)  { //RSSI -61
+                if(pDevice->byBBPreEDIndex == 6) break;
+                pDevice->byBBPreEDIndex = 6;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0xC0); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -61\n");
+            } else if(pDevice->byBBPreEDRSSI <= 62)  { //RSSI -62
+                if(pDevice->byBBPreEDIndex == 5) break;
+                pDevice->byBBPreEDIndex = 5;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x9C); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -62\n");
+            } else if(pDevice->byBBPreEDRSSI <= 63)  { //RSSI -63
+                if(pDevice->byBBPreEDIndex == 4) break;
+                pDevice->byBBPreEDIndex = 4;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x80); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -63\n");
+            } else if(pDevice->byBBPreEDRSSI <= 64)  { //RSSI -64
+                if(pDevice->byBBPreEDIndex == 3) break;
+                pDevice->byBBPreEDIndex = 3;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x68); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -64\n");
+            } else if(pDevice->byBBPreEDRSSI <= 65)  { //RSSI -65
+                if(pDevice->byBBPreEDIndex == 2) break;
+                pDevice->byBBPreEDIndex = 2;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x52); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -65\n");
+            } else if(pDevice->byBBPreEDRSSI <= 66)  { //RSSI -66
+                if(pDevice->byBBPreEDIndex == 1) break;
+                pDevice->byBBPreEDIndex = 1;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x43); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -66\n");
+            } else { //RSSI -67, -68, ...
+                if(pDevice->byBBPreEDIndex == 0) break;
+                pDevice->byBBPreEDIndex = 0;
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xC9, 0x00); //CR201(0xC9)
+                ControlvWriteByte(pDevice, MESSAGE_REQUEST_BBREG, 0xCE, 0x38); //CR206(0xCE)
+                DBG_PRT(MSG_LEVEL_DEBUG, KERN_INFO"            pDevice->byBBPreEDRSSI -67, -68,..\n");
+            }
+            break;
+
+    }
+>>>>>>> p9x
 
 	case RF_VT3226:
 	case RF_VT3226D0:

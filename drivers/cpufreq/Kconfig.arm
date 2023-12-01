@@ -92,7 +92,15 @@ config ARM_EXYNOS_CPU_FREQ_BOOST_SW
 
 config ARM_HIGHBANK_CPUFREQ
 	tristate "Calxeda Highbank-based"
+<<<<<<< HEAD
 	depends on ARCH_HIGHBANK && CPUFREQ_DT && REGULATOR
+=======
+	depends on ARCH_HIGHBANK
+	select GENERIC_CPUFREQ_CPU0
+	select PM_OPP
+	select REGULATOR
+
+>>>>>>> p9x
 	default m
 	help
 	  This adds the CPUFreq driver for Calxeda Highbank SoC
@@ -128,6 +136,7 @@ config ARM_OMAP2PLUS_CPUFREQ
 	bool "TI OMAP2+"
 	depends on ARCH_OMAP2PLUS
 	default ARCH_OMAP2PLUS
+<<<<<<< HEAD
 
 config ARM_S3C_CPUFREQ
 	bool
@@ -178,6 +187,8 @@ config ARM_S3C2412_CPUFREQ
 	select S3C2412_IOTIMING
 	help
 	  CPU Frequency scaling support for S3C2412 and S3C2413 SoC CPUs.
+=======
+>>>>>>> p9x
 
 config ARM_S3C2416_CPUFREQ
 	bool "S3C2416 CPU Frequency scaling support"
@@ -241,6 +252,7 @@ config ARM_SPEAR_CPUFREQ
 	help
 	  This adds the CPUFreq driver support for SPEAr SOCs.
 
+<<<<<<< HEAD
 config ARM_TEGRA_CPUFREQ
 	bool "TEGRA CPUFreq support"
 	depends on ARCH_TEGRA
@@ -254,3 +266,11 @@ config CPU_FREQ_MSM
 	default y
 	help
 	  This enables the CPUFreq driver for Qualcomm CPUs.
+=======
+config CPU_FREQ_MSM
+        bool
+        depends on CPU_FREQ && ARCH_MSM
+        default y
+        help
+          This enables the CPUFreq driver for Qualcomm CPUs.
+>>>>>>> p9x

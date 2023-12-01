@@ -27,6 +27,21 @@
 #include "u_ether_configfs.h"
 #include "u_ncm.h"
 
+#undef DBG
+#undef VDBG
+#undef ERROR
+#undef INFO
+
+#define DBG(d, fmt, args...) \
+	dev_dbg(&(d)->gadget->dev , fmt , ## args)
+#define VDBG(d, fmt, args...) \
+	dev_vdbg(&(d)->gadget->dev , fmt , ## args)
+#define ERROR(d, fmt, args...) \
+	dev_err(&(d)->gadget->dev , fmt , ## args)
+#define WARNING(d, fmt, args...) \
+	dev_warn(&(d)->gadget->dev , fmt , ## args)
+#define INFO(d, fmt, args...) \
+	dev_info(&(d)->gadget->dev , fmt , ## args)
 /*
  * This function is a "CDC Network Control Model" (CDC NCM) Ethernet link.
  * NCM is intended to be used with high-speed network attachments.
@@ -170,8 +185,13 @@ static struct usb_cdc_union_desc ncm_union_desc = {
 	/* .bSlaveInterface0 =	DYNAMIC */
 };
 
+<<<<<<< HEAD:drivers/usb/gadget/function/f_ncm.c
 static struct usb_cdc_ether_desc ecm_desc = {
 	.bLength =		sizeof ecm_desc,
+=======
+static struct usb_cdc_ether_desc necm_desc = {
+	.bLength =		sizeof necm_desc,
+>>>>>>> p9x:drivers/usb/gadget/f_ncm.c
 	.bDescriptorType =	USB_DT_CS_INTERFACE,
 	.bDescriptorSubType =	USB_CDC_ETHERNET_TYPE,
 
@@ -259,7 +279,7 @@ static struct usb_descriptor_header *ncm_fs_function[] = {
 	(struct usb_descriptor_header *) &ncm_control_intf,
 	(struct usb_descriptor_header *) &ncm_header_desc,
 	(struct usb_descriptor_header *) &ncm_union_desc,
-	(struct usb_descriptor_header *) &ecm_desc,
+	(struct usb_descriptor_header *) &necm_desc,
 	(struct usb_descriptor_header *) &ncm_desc,
 	(struct usb_descriptor_header *) &fs_ncm_notify_desc,
 	/* data interface, altsettings 0 and 1 */
@@ -305,7 +325,7 @@ static struct usb_descriptor_header *ncm_hs_function[] = {
 	(struct usb_descriptor_header *) &ncm_control_intf,
 	(struct usb_descriptor_header *) &ncm_header_desc,
 	(struct usb_descriptor_header *) &ncm_union_desc,
-	(struct usb_descriptor_header *) &ecm_desc,
+	(struct usb_descriptor_header *) &necm_desc,
 	(struct usb_descriptor_header *) &ncm_desc,
 	(struct usb_descriptor_header *) &hs_ncm_notify_desc,
 	/* data interface, altsettings 0 and 1 */
@@ -373,7 +393,11 @@ static struct usb_descriptor_header *ncm_ss_function[] = {
 	(struct usb_descriptor_header *) &ncm_control_intf,
 	(struct usb_descriptor_header *) &ncm_header_desc,
 	(struct usb_descriptor_header *) &ncm_union_desc,
+<<<<<<< HEAD:drivers/usb/gadget/function/f_ncm.c
 	(struct usb_descriptor_header *) &ecm_desc,
+=======
+	(struct usb_descriptor_header *) &necm_desc,
+>>>>>>> p9x:drivers/usb/gadget/f_ncm.c
 	(struct usb_descriptor_header *) &ncm_desc,
 	(struct usb_descriptor_header *) &ncm_ss_notify_desc,
 	(struct usb_descriptor_header *) &ncm_ss_notify_comp_desc,
@@ -391,13 +415,13 @@ static struct usb_descriptor_header *ncm_ss_function[] = {
 
 #define STRING_CTRL_IDX	0
 #define STRING_MAC_IDX	1
-#define STRING_DATA_IDX	2
+#define NCM_STRING_DATA_IDX	2	/* Avoid a collision with f_mbim.c */
 #define STRING_IAD_IDX	3
 
 static struct usb_string ncm_string_defs[] = {
 	[STRING_CTRL_IDX].s = "CDC Network Control Model (NCM)",
 	[STRING_MAC_IDX].s = "",
-	[STRING_DATA_IDX].s = "CDC Network Data",
+	[NCM_STRING_DATA_IDX].s = "CDC Network Data",
 	[STRING_IAD_IDX].s = "CDC NCM",
 	{  } /* end of list */
 };
@@ -1240,7 +1264,12 @@ static void ncm_close(struct gether *geth)
 
 /* ethernet function driver setup/binding */
 
+<<<<<<< HEAD:drivers/usb/gadget/function/f_ncm.c
 static int ncm_bind(struct usb_configuration *c, struct usb_function *f)
+=======
+static int
+ncm_bind(struct usb_configuration *c, struct usb_function *f)
+>>>>>>> p9x:drivers/usb/gadget/f_ncm.c
 {
 	struct usb_composite_dev *cdev = c->cdev;
 	struct f_ncm		*ncm = func_to_ncm(f);
@@ -1481,11 +1510,49 @@ static void ncm_unbind(struct usb_configuration *c, struct usb_function *f)
 	usb_ep_free_request(ncm->notify, ncm->notify_req);
 }
 
+<<<<<<< HEAD:drivers/usb/gadget/function/f_ncm.c
 static struct usb_function *ncm_alloc(struct usb_function_instance *fi)
 {
 	struct f_ncm		*ncm;
 	struct f_ncm_opts	*opts;
 	int status;
+=======
+/**
+ * ncm_bind_config - add CDC Network link to a configuration
+ * @c: the configuration to support the network link
+ * @ethaddr: a buffer in which the ethernet address of the host side
+ *	side of the link was recorded
+ * Context: single threaded during gadget setup
+ *
+ * Returns zero on success, else negative errno.
+ *
+ * Caller must have called @gether_setup().  Caller is also responsible
+ * for calling @gether_cleanup() before module unload.
+ */
+int ncm_bind_config(struct usb_configuration *c, u8 ethaddr[ETH_ALEN],
+		struct eth_dev *dev)
+{
+	struct f_ncm	*ncm;
+	int		status;
+
+	if (!can_support_ecm(c->cdev->gadget) || !ethaddr)
+		return -EINVAL;
+
+	if (ncm_string_defs[0].id == 0) {
+		status = usb_string_ids_tab(c->cdev, ncm_string_defs);
+		if (status < 0)
+			return status;
+		ncm_control_intf.iInterface =
+			ncm_string_defs[STRING_CTRL_IDX].id;
+
+		status = ncm_string_defs[NCM_STRING_DATA_IDX].id;
+		ncm_data_nop_intf.iInterface = status;
+		ncm_data_intf.iInterface = status;
+
+		necm_desc.iMACAddress = ncm_string_defs[STRING_MAC_IDX].id;
+		ncm_iad_desc.iFunction = ncm_string_defs[STRING_IAD_IDX].id;
+	}
+>>>>>>> p9x:drivers/usb/gadget/f_ncm.c
 
 	/* allocate and initialize one new instance */
 	ncm = kzalloc(sizeof(*ncm), GFP_KERNEL);

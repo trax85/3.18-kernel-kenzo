@@ -856,7 +856,11 @@ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
 
 	BUG_ON(!domain->pgd);
 
+<<<<<<< HEAD
 	if (!domain_pfn_supported(domain, pfn))
+=======
+	if (addr_width < BITS_PER_LONG && pfn >> addr_width)
+>>>>>>> p9x
 		/* Address beyond IOMMU's addressing capabilities. */
 		return NULL;
 
@@ -999,13 +1003,53 @@ next:
 	} while (!first_pte_in_page(++pte) && pfn <= last_pfn);
 }
 
+static void dma_pte_free_level(struct dmar_domain *domain, int level,
+			       struct dma_pte *pte, unsigned long pfn,
+			       unsigned long start_pfn, unsigned long last_pfn)
+{
+	pfn = max(start_pfn, pfn);
+	pte = &pte[pfn_level_offset(pfn, level)];
+
+	do {
+		unsigned long level_pfn;
+		struct dma_pte *level_pte;
+
+		if (!dma_pte_present(pte) || dma_pte_superpage(pte))
+			goto next;
+
+		level_pfn = pfn & level_mask(level - 1);
+		level_pte = phys_to_virt(dma_pte_addr(pte));
+
+		if (level > 2)
+			dma_pte_free_level(domain, level - 1, level_pte,
+					   level_pfn, start_pfn, last_pfn);
+
+		/* If range covers entire pagetable, free it */
+		if (!(start_pfn > level_pfn ||
+		      last_pfn < level_pfn + level_size(level) - 1)) {
+			dma_clear_pte(pte);
+			domain_flush_cache(domain, pte, sizeof(*pte));
+			free_pgtable_page(level_pte);
+		}
+next:
+		pfn += level_size(level);
+	} while (!first_pte_in_page(++pte) && pfn <= last_pfn);
+}
+
 /* free page table pages. last level pte should already be cleared */
 static void dma_pte_free_pagetable(struct dmar_domain *domain,
 				   unsigned long start_pfn,
 				   unsigned long last_pfn)
 {
+<<<<<<< HEAD
 	BUG_ON(!domain_pfn_supported(domain, start_pfn));
 	BUG_ON(!domain_pfn_supported(domain, last_pfn));
+=======
+	int addr_width = agaw_to_width(domain->agaw) - VTD_PAGE_SHIFT;
+
+	BUG_ON(addr_width < BITS_PER_LONG && start_pfn >> addr_width);
+	BUG_ON(addr_width < BITS_PER_LONG && last_pfn >> addr_width);
+>>>>>>> p9x
 	BUG_ON(start_pfn > last_pfn);
 
 	dma_pte_clear_range(domain, start_pfn, last_pfn);
@@ -2002,6 +2046,10 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
 {
 	struct dma_pte *first_pte = NULL, *pte = NULL;
 	phys_addr_t uninitialized_var(pteval);
+<<<<<<< HEAD
+=======
+	int addr_width = agaw_to_width(domain->agaw) - VTD_PAGE_SHIFT;
+>>>>>>> p9x
 	unsigned long sg_res = 0;
 	unsigned int largepage_lvl = 0;
 	unsigned long lvl_pages = 0;

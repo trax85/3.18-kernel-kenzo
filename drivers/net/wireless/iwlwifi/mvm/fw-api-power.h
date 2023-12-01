@@ -101,11 +101,14 @@ struct iwl_ltr_config_cmd {
 	__le32 static_short;
 } __packed;
 
+<<<<<<< HEAD
 /* Radio LP RX Energy Threshold measured in dBm */
 #define POWER_LPRX_RSSI_THRESHOLD	75
 #define POWER_LPRX_RSSI_THRESHOLD_MAX	94
 #define POWER_LPRX_RSSI_THRESHOLD_MIN	30
 
+=======
+>>>>>>> p9x
 /**
  * enum iwl_power_flags - masks for power table command flags
  * @POWER_FLAGS_POWER_SAVE_ENA_MSK: '1' Allow to save power by turning off

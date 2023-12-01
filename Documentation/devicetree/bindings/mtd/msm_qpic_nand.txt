@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 Qualcomm Technologies, Inc. Parallel Interface controller (QPIC) for NAND devices
+=======
+Qualcomm Parallel Interface controller (QPIC) for NAND devices
+>>>>>>> p9x
 
 Required properties:
 - compatible : "qcom,msm-nand".
@@ -7,8 +11,11 @@ Required properties:
 - interrupts : should specify QPIC/BAM interrupt numbers.
 - interrupt-names : should specify relevant names to each interrupts property
   defined.
+<<<<<<< HEAD
 - qcom,reg-adjustment-offset : Specify the base adjustment offset value for the
   version registers
+=======
+>>>>>>> p9x
 
 MTD flash partition layout for NAND devices -
 
@@ -19,9 +26,12 @@ This is now completely optional as the partition information is avaialble from
 bootloader.
 
 Optional properties:
+<<<<<<< HEAD
 - reg : boot_cfg. This is needed only on the targets where both NAND and eMMC
   devices are supported. On eMMC based builds, NAND cannot be enabled by
   default due to the absence of some of its required resources.
+=======
+>>>>>>> p9x
 - reg : The partition offset and size
 - label : The label / name for this partition.
 - read-only: This parameter, if present, indicates that this partition
@@ -39,6 +49,7 @@ Examples:
 	qcom,nand@f9af0000 {
 		compatible = "qcom,msm-nand";
 		reg = <0xf9af0000 0x1000>,
+<<<<<<< HEAD
 		      <0xf9ac4000 0x8000>,
 		      <0x5e02c 0x4>;
 		reg-names = "nand_phys",
@@ -46,6 +57,11 @@ Examples:
 			    "boot_cfg";
 		qcom,reg-adjustment-offset = <0x4000>;
 
+=======
+		      <0xf9ac4000 0x8000>;
+		reg-names = "nand_phys",
+			    "bam_phys";
+>>>>>>> p9x
 		interrupts = <0 279 0>;
 		interrupt-names = "bam_irq";
 

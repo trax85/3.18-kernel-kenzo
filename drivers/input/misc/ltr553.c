@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2015,2017 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -723,7 +727,11 @@ static int ltr553_calc_adc(int ratio, int lux, int gain, int als_int_fac)
 	struct als_coeff *eqtn;
 	int result;
 
+<<<<<<< HEAD
 	/* avoid divided by 0 */
+=======
+	/* avoid devided by 0 */
+>>>>>>> p9x
 	if (ratio == 0)
 		return 0;
 
@@ -1041,14 +1049,20 @@ static void ltr553_report_work(struct work_struct *work)
 	int rc;
 	unsigned int status;
 	u8 buf[7];
+<<<<<<< HEAD
 	int fake_interrupt = 0;
+=======
+>>>>>>> p9x
 
 	mutex_lock(&ltr->ops_lock);
 
 	/* avoid fake interrupt */
 	if (!ltr->power_enabled) {
 		dev_dbg(&ltr->i2c->dev, "fake interrupt triggered\n");
+<<<<<<< HEAD
 		fake_interrupt = 1;
+=======
+>>>>>>> p9x
 		goto exit;
 	}
 
@@ -1086,11 +1100,17 @@ exit:
 	}
 
 	/* clear interrupt */
+<<<<<<< HEAD
 	if (!fake_interrupt) {
 		if (regmap_bulk_read(ltr->regmap, LTR553_REG_ALS_DATA_CH1_0,
 					buf, ARRAY_SIZE(buf)))
 			dev_err(&ltr->i2c->dev, "clear interrupt failed\n");
 	}
+=======
+	if (regmap_bulk_read(ltr->regmap, LTR553_REG_ALS_DATA_CH1_0,
+			buf, ARRAY_SIZE(buf)))
+		dev_err(&ltr->i2c->dev, "clear interrupt failed\n");
+>>>>>>> p9x
 
 	mutex_unlock(&ltr->ops_lock);
 }
@@ -1862,8 +1882,15 @@ static int ltr553_probe(struct i2c_client *client,
 
 	ltr = devm_kzalloc(&client->dev, sizeof(struct ltr553_data),
 			GFP_KERNEL);
+<<<<<<< HEAD
 	if (!ltr)
 		return -ENOMEM;
+=======
+	if (!ltr) {
+		dev_err(&client->dev, "memory allocation failed,\n");
+		return -ENOMEM;
+	}
+>>>>>>> p9x
 
 	ltr->i2c = client;
 
@@ -1963,7 +1990,11 @@ static int ltr553_probe(struct i2c_client *client,
 		device_init_wakeup(&client->dev, 1);
 
 		ltr->workqueue = alloc_workqueue("ltr553_workqueue",
+<<<<<<< HEAD
 				WQ_FREEZABLE, 0);
+=======
+				WQ_NON_REENTRANT | WQ_FREEZABLE, 0);
+>>>>>>> p9x
 		INIT_WORK(&ltr->report_work, ltr553_report_work);
 		INIT_WORK(&ltr->als_enable_work, ltr553_als_enable_work);
 		INIT_WORK(&ltr->als_disable_work, ltr553_als_disable_work);

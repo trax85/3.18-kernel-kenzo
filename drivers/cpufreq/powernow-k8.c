@@ -558,10 +558,18 @@ static void print_basics(struct powernow_k8_data *data)
 	for (j = 0; j < data->numps; j++) {
 		if (data->powernow_table[j].frequency !=
 				CPUFREQ_ENTRY_INVALID) {
+<<<<<<< HEAD
 			pr_info("fid 0x%x (%d MHz), vid 0x%x\n",
 				data->powernow_table[j].driver_data & 0xff,
 				data->powernow_table[j].frequency/1000,
 				data->powernow_table[j].driver_data >> 8);
+=======
+				printk(KERN_INFO PFX
+					"fid 0x%x (%d MHz), vid 0x%x\n",
+					data->powernow_table[j].driver_data & 0xff,
+					data->powernow_table[j].frequency/1000,
+					data->powernow_table[j].driver_data >> 8);
+>>>>>>> p9x
 		}
 	}
 	if (data->batps)
@@ -596,7 +604,11 @@ static int fill_powernow_table(struct powernow_k8_data *data,
 	if (check_pst_table(data, pst, maxvid))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	powernow_table = kzalloc((sizeof(*powernow_table)
+=======
+	powernow_table = kmalloc((sizeof(*powernow_table)
+>>>>>>> p9x
 		* (data->numps + 1)), GFP_KERNEL);
 	if (!powernow_table) {
 		pr_err("powernow_table memory alloc failure\n");
@@ -765,7 +777,11 @@ static int powernow_k8_cpu_init_acpi(struct powernow_k8_data *data)
 	}
 
 	/* fill in data->powernow_table */
+<<<<<<< HEAD
 	powernow_table = kzalloc((sizeof(*powernow_table)
+=======
+	powernow_table = kmalloc((sizeof(*powernow_table)
+>>>>>>> p9x
 		* (data->acpi_data.state_count + 1)), GFP_KERNEL);
 	if (!powernow_table) {
 		pr_debug("powernow_table memory alloc failure\n");
@@ -782,6 +798,10 @@ static int powernow_k8_cpu_init_acpi(struct powernow_k8_data *data)
 
 	powernow_table[data->acpi_data.state_count].frequency =
 		CPUFREQ_TABLE_END;
+<<<<<<< HEAD
+=======
+	powernow_table[data->acpi_data.state_count].driver_data = 0;
+>>>>>>> p9x
 	data->powernow_table = powernow_table;
 
 	if (cpumask_first(cpu_core_mask(data->cpu)) == data->cpu)
@@ -1167,14 +1187,23 @@ out:
 
 static struct cpufreq_driver cpufreq_amd64_driver = {
 	.flags		= CPUFREQ_ASYNC_NOTIFICATION,
+<<<<<<< HEAD
 	.verify		= cpufreq_generic_frequency_table_verify,
 	.target_index	= powernowk8_target,
+=======
+	.verify		= powernowk8_verify,
+	.target		= powernowk8_target,
+>>>>>>> p9x
 	.bios_limit	= acpi_processor_get_bios_limit,
 	.init		= powernowk8_cpu_init,
 	.exit		= powernowk8_cpu_exit,
 	.get		= powernowk8_get,
 	.name		= "powernow-k8",
+<<<<<<< HEAD
 	.attr		= cpufreq_generic_attr,
+=======
+	.attr		= powernow_k8_attr,
+>>>>>>> p9x
 };
 
 static void __request_acpi_cpufreq(void)

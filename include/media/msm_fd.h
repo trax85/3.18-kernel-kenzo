@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -13,6 +17,7 @@
 #define __MSM_FD__
 
 #include <uapi/media/msm_fd.h>
+<<<<<<< HEAD
 #include <linux/compat.h>
 
 #ifdef CONFIG_COMPAT
@@ -33,5 +38,7 @@ struct msm_fd_result32 {
 #define VIDIOC_MSM_FD_GET_RESULT32 \
 	_IOWR('V', BASE_VIDIOC_PRIVATE, struct msm_fd_result32)
 #endif
+=======
+>>>>>>> p9x
 
 #endif /* __MSM_FD__ */

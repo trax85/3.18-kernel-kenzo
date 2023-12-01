@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -61,7 +65,11 @@ ssize_t adreno_coresight_show_register(struct device *dev,
 	}
 	mutex_unlock(&device->mutex);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "0x%X\n", val);
+=======
+	return snprintf(buf, PAGE_SIZE, "0x%X", val);
+>>>>>>> p9x
 }
 
 ssize_t adreno_coresight_store_register(struct device *dev,
@@ -164,7 +172,11 @@ static void adreno_coresight_disable(struct coresight_device *csdev)
 static int _adreno_coresight_get_and_clear(struct adreno_device *adreno_dev)
 {
 	struct adreno_gpudev *gpudev = ADRENO_GPU_DEVICE(adreno_dev);
+<<<<<<< HEAD
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
+=======
+	struct kgsl_device *device = &adreno_dev->dev;
+>>>>>>> p9x
 	struct adreno_coresight *coresight = gpudev->coresight;
 	int i;
 
@@ -189,7 +201,11 @@ static int _adreno_coresight_get_and_clear(struct adreno_device *adreno_dev)
 static int _adreno_coresight_set(struct adreno_device *adreno_dev)
 {
 	struct adreno_gpudev *gpudev = ADRENO_GPU_DEVICE(adreno_dev);
+<<<<<<< HEAD
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
+=======
+	struct kgsl_device *device = &adreno_dev->dev;
+>>>>>>> p9x
 	struct adreno_coresight *coresight = gpudev->coresight;
 	int i;
 
@@ -243,12 +259,19 @@ static int adreno_coresight_enable(struct coresight_device *csdev)
 			coresight->registers[i].value =
 				coresight->registers[i].initial;
 
+<<<<<<< HEAD
 		if (kgsl_state_is_awake(device)) {
 			ret = kgsl_active_count_get(device);
 			if (!ret) {
 				ret = _adreno_coresight_set(adreno_dev);
 				kgsl_active_count_put(device);
 			}
+=======
+		ret = kgsl_active_count_get(device);
+		if (!ret) {
+			ret = _adreno_coresight_set(adreno_dev);
+			kgsl_active_count_put(device);
+>>>>>>> p9x
 		}
 	}
 
@@ -293,14 +316,24 @@ static const struct coresight_ops adreno_coresight_ops = {
 
 void adreno_coresight_remove(struct adreno_device *adreno_dev)
 {
+<<<<<<< HEAD
 	coresight_unregister(adreno_dev->csdev);
 	adreno_dev->csdev = NULL;
+=======
+	struct kgsl_device *device = &adreno_dev->dev;
+	struct kgsl_device_platform_data *pdata =
+		dev_get_platdata(&device->pdev->dev);
+
+	coresight_unregister(pdata->csdev);
+	pdata->csdev = NULL;
+>>>>>>> p9x
 }
 
 int adreno_coresight_init(struct adreno_device *adreno_dev)
 {
 	int ret = 0;
 	struct adreno_gpudev *gpudev = ADRENO_GPU_DEVICE(adreno_dev);
+<<<<<<< HEAD
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
 	struct coresight_desc desc;
 
@@ -308,10 +341,28 @@ int adreno_coresight_init(struct adreno_device *adreno_dev)
 		return -ENODEV;
 
 	if (!IS_ERR_OR_NULL(adreno_dev->csdev))
+=======
+	struct kgsl_device *device = &adreno_dev->dev;
+	struct kgsl_device_platform_data *pdata =
+		dev_get_platdata(&device->pdev->dev);
+	struct coresight_desc desc;
+
+	if (pdata == NULL)
+		return -ENODEV;
+
+	if (gpudev->coresight == NULL)
+		return -ENODEV;
+
+	if (IS_ERR_OR_NULL(pdata->coresight_pdata))
+		return -ENODEV;
+
+	if (pdata->csdev != NULL)
+>>>>>>> p9x
 		return 0;
 
 	memset(&desc, 0, sizeof(desc));
 
+<<<<<<< HEAD
 	desc.pdata = of_get_coresight_platform_data(&device->pdev->dev,
 			device->pdev->dev.of_node);
 	if (IS_ERR_OR_NULL(desc.pdata))
@@ -321,14 +372,27 @@ int adreno_coresight_init(struct adreno_device *adreno_dev)
 	desc.type = CORESIGHT_DEV_TYPE_SOURCE;
 	desc.subtype.source_subtype = CORESIGHT_DEV_SUBTYPE_SOURCE_BUS;
 	desc.ops = &adreno_coresight_ops;
+=======
+	desc.type = CORESIGHT_DEV_TYPE_SOURCE;
+	desc.subtype.source_subtype = CORESIGHT_DEV_SUBTYPE_SOURCE_BUS;
+	desc.ops = &adreno_coresight_ops;
+	desc.pdata = pdata->coresight_pdata;
+>>>>>>> p9x
 	desc.dev = &device->pdev->dev;
 	desc.owner = THIS_MODULE;
 	desc.groups = gpudev->coresight->groups;
 
+<<<<<<< HEAD
 	adreno_dev->csdev = coresight_register(&desc);
 
 	if (IS_ERR(adreno_dev->csdev))
 		ret = PTR_ERR(adreno_dev->csdev);
+=======
+	pdata->csdev = coresight_register(&desc);
+
+	if (IS_ERR(pdata->csdev))
+		ret = PTR_ERR(pdata->csdev);
+>>>>>>> p9x
 
 	return ret;
 }

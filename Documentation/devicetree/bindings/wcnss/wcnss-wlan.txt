@@ -12,7 +12,11 @@ Required properties:
              "riva_ccu_base", "pronto_a2xb_base", "pronto_ccpu_base",
              "pronto_saw2_base", "wlan_tx_phy_aborts","wlan_brdg_err_source",
              "wlan_tx_status", "alarms_txctl", "alarms_tactl",
+<<<<<<< HEAD
              "pronto_mcu_base", "pronto_qfuse".
+=======
+             "pronto_mcu_base".
+>>>>>>> p9x
 - interupts: Pronto to Apps interrupts for tx done and rx pending.
 - qcom,pronto-vddmx-supply: regulator to supply pronto pll.
 - qcom,pronto-vddcx-supply: voltage corner regulator to supply WLAN/BT/FM
@@ -29,7 +33,11 @@ Required properties:
 - qcom,wcnss-vadc: VADC handle for battery voltage notification APIs.
 - pinctrl-<n> : Pinctrl states as described in bindings/pinctrl/pinctrl-bindings.txt
 - pinctrl-names : Names corresponding to the numbered pinctrl states
+<<<<<<< HEAD
 - clocks: from common clock binding: handle to xo, rf_clk and wcnss snoc clocks.
+=======
+- clocks: from common clock binding: handle to xo and rf_clk clocks.
+>>>>>>> p9x
 - clock-names: Names of all the clocks that are accessed by the subsystem
 - qcom,vdd-voltage-level: This property represents (nominal, min, max) voltage
 for iris and pronto regulators in milli-volts.
@@ -39,16 +47,22 @@ iris and pronto regulators in micro-amps.
 Optional properties:
 - qcom,has-autodetect-xo: boolean flag to determine whether Iris XO auto detect
 should be performed during boot up.
+<<<<<<< HEAD
 - qcom,snoc-wcnss-clock-freq: indicates the wcnss snoc clock frequency in Hz.
 If wcnss_snoc clock is specified in the list of clocks, this property needs
 to be set to make it functional.
+=======
+>>>>>>> p9x
 - qcom,wlan-rx-buff-count: WLAN RX buffer count is a configurable value,
 using a smaller count for this buffer will reduce the memory usage.
 - qcom,is-pronto-v3: boolean flag to determine the pronto hardware version
 in use. subsequently correct workqueue will be used by DXE engine to push frames
 in TX data path.
+<<<<<<< HEAD
 - qcom,is-dual-band-disable: boolean flag to determine the WLAN dual band
                              capability.
+=======
+>>>>>>> p9x
 - qcom,is-pronto-vadc: boolean flag to determine Battery voltage feature
 support for pronto hardware.
 - qcom,wcnss-pm : <Core rail LDO#, PA rail LDO#, XO settling time,
@@ -60,12 +74,21 @@ support for pronto hardware.
 	1      -  WCN RPM power collapse enabled
 	1      -  WCN standalone power collapse enabled
 	6      -  GPIO strength value
+<<<<<<< HEAD
 - qcom,has-vsys-adc-channel: boolean flag to determine which ADC HW channel need
 to use for VBATT feature.
 - qcom,has-a2xb-split-reg: boolean flag to determine A2xb split timeout limit
 register is available or not.
 - qcom,wcn-external-gpio-support: boolean flag to determine 3.3v gpio support
 for pronto hardware for a target.
+=======
+- qcom,wlan-indication-enabled: boolean flag to determine if WLAN indication-LED
+will be turned on/off when WLAN is enabled/disabled respectively.
+- qcom,has-vsys-adc-channel: boolean flag to determine which ADC HW channel need
+to use for VBATT feature.
+- qcom,pc-disable-latency: is a configurable value to configure
+pc disable latency value.
+>>>>>>> p9x
 
 Example:
 
@@ -87,7 +110,10 @@ Example:
 
         gpios = <&msmgpio 36 0>, <&msmgpio 37 0>, <&msmgpio 38 0>,
                 <&msmgpio 39 0>, <&msmgpio 40 0>;
+<<<<<<< HEAD
         qcom,wcn-external-gpio-support;
+=======
+>>>>>>> p9x
         qcom,has-48mhz-xo;
         qcom,is-pronto-vt;
         qcom,wlan-rx-buff-count = <512>;
@@ -102,6 +128,7 @@ Example:
         clocks = <&clock_rpm clk_xo_wlan_clk>,
                    <&clock_rpm clk_rf_clk2>,
                    <&clock_debug clk_gcc_debug_mux>,
+<<<<<<< HEAD
                    <&clock_gcc clk_wcnss_m_clk>,
 		   <&clock_gcc clk_snoc_wcnss_a_clk>;
 
@@ -109,5 +136,9 @@ Example:
 			"snoc_wcnss";
 
 	qcom,snoc-wcnss-clock-freq = <200000000>;
+=======
+                   <&clock_gcc clk_wcnss_m_clk>;
+        clock-names = "xo", "rf_clk", "measure", "wcnss_debug";
+>>>>>>> p9x
 	qcom,wcnss-pm = <11 21 1200 1 1 6>;
     };

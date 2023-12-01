@@ -561,6 +561,11 @@ void scsi_run_host_queues(struct Scsi_Host *shost)
 		scsi_run_queue(sdev->request_queue);
 }
 
+<<<<<<< HEAD
+=======
+static void __scsi_release_buffers(struct scsi_cmnd *, int);
+
+>>>>>>> p9x
 static inline unsigned int scsi_sgtable_index(unsigned short nents)
 {
 	unsigned int index;
@@ -924,8 +929,28 @@ void scsi_io_completion(struct scsi_cmnd *cmd, unsigned int good_bytes)
 	 * all bytes in the request we are done now.
 	 */
 	if (!(blk_rq_bytes(req) == 0 && error) &&
+<<<<<<< HEAD
 	    !scsi_end_request(req, error, good_bytes, 0))
 		return;
+=======
+	    !blk_end_request(req, error, good_bytes))
+		goto next_command;
+
+	/*
+	 * Kill remainder if no retrys.
+	 */
+	if (error && scsi_noretry_cmd(cmd)) {
+		blk_end_request_all(req, error);
+		goto next_command;
+	}
+
+	/*
+	 * If there had been no error, but we have leftover bytes in the
+	 * requeues just queue the command up again.
+	 */
+	if (result == 0)
+		goto requeue;
+>>>>>>> p9x
 
 	/*
 	 * Kill remainder if no retrys.
@@ -1047,8 +1072,13 @@ void scsi_io_completion(struct scsi_cmnd *cmd, unsigned int good_bytes)
 				scsi_print_sense("", cmd);
 			scsi_print_command(cmd);
 		}
+<<<<<<< HEAD
 		if (!scsi_end_request(req, error, blk_rq_err_bytes(req), 0))
 			return;
+=======
+		if (!blk_end_request_err(req, error))
+			goto next_command;
+>>>>>>> p9x
 		/*FALLTHRU*/
 	case ACTION_REPREP:
 	requeue:
@@ -1073,6 +1103,11 @@ void scsi_io_completion(struct scsi_cmnd *cmd, unsigned int good_bytes)
 		__scsi_queue_insert(cmd, SCSI_MLQUEUE_DEVICE_BUSY, 0);
 		break;
 	}
+	return;
+
+next_command:
+	__scsi_release_buffers(cmd, 0);
+	scsi_next_command(cmd);
 }
 
 static int scsi_init_sgtable(struct request *req, struct scsi_data_buffer *sdb,
@@ -1113,10 +1148,17 @@ int scsi_init_io(struct scsi_cmnd *cmd, gfp_t gfp_mask)
 {
 	struct scsi_device *sdev = cmd->device;
 	struct request *rq = cmd->request;
+<<<<<<< HEAD
 	bool is_mq = (rq->mq_ctx != NULL);
 	int error;
 
 	BUG_ON(!rq->nr_phys_segments);
+=======
+	int error;
+
+	if (WARN_ON_ONCE(!rq->nr_phys_segments))
+		return -EINVAL;
+>>>>>>> p9x
 
 	error = scsi_init_sgtable(rq, &cmd->sdb, gfp_mask);
 	if (error)
@@ -1269,6 +1311,16 @@ static int scsi_setup_cmnd(struct scsi_device *sdev, struct request *req)
 	default:
 		return BLKPREP_KILL;
 	}
+<<<<<<< HEAD
+=======
+
+	cmd = scsi_get_cmd_from_req(sdev, req);
+	if (unlikely(!cmd))
+		return BLKPREP_DEFER;
+
+	memset(cmd->cmnd, 0, BLK_MAX_CDB);
+	return scsi_init_io(cmd, GFP_ATOMIC);
+>>>>>>> p9x
 }
 
 static int

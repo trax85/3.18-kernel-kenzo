@@ -1,6 +1,10 @@
 /*
  * Copyright (C) 2007 Google, Inc.
+<<<<<<< HEAD
  * Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -36,8 +40,11 @@
 #include <linux/ctype.h>
 #include <linux/msm-sps.h>
 #include <linux/msm-bus.h>
+<<<<<<< HEAD
 #include <linux/spinlock.h>
 #include <linux/ktime.h>
+=======
+>>>>>>> p9x
 #include <soc/qcom/smem.h>
 
 #define PAGE_SIZE_2K 2048
@@ -95,6 +102,10 @@
 #define ONFI_PARAM_PAGE_LENGTH 0x0100
 #define ONFI_PARAMETER_PAGE_SIGNATURE 0x49464E4F
 #define FLASH_READ_ONFI_SIGNATURE_ADDRESS 0x20
+<<<<<<< HEAD
+=======
+#define FLASH_READ_ONFI_PARAMETERS_COMMAND 0xEC
+>>>>>>> p9x
 #define FLASH_READ_ONFI_PARAMETERS_ADDRESS 0x00
 #define FLASH_READ_DEVICE_ID_ADDRESS 0x00
 
@@ -103,8 +114,12 @@
 
 /* QPIC NANDc (NAND Controller) Register Set */
 #define MSM_NAND_REG(info, off)		    (info->nand_phys + off)
+<<<<<<< HEAD
 #define MSM_NAND_REG_ADJUSTED(info, off)    (info->nand_phys_adjusted + off)
 #define MSM_NAND_QPIC_VERSION(info)	    MSM_NAND_REG_ADJUSTED(info, 0x20100)
+=======
+#define MSM_NAND_QPIC_VERSION(info)	    MSM_NAND_REG(info, 0x20100)
+>>>>>>> p9x
 #define MSM_NAND_FLASH_CMD(info)	    MSM_NAND_REG(info, 0x30000)
 #define MSM_NAND_ADDR0(info)                MSM_NAND_REG(info, 0x30004)
 #define MSM_NAND_ADDR1(info)                MSM_NAND_REG(info, 0x30008)
@@ -175,7 +190,11 @@
 
 #define MSM_NAND_CTRL(info)		    MSM_NAND_REG(info, 0x30F00)
 #define BAM_MODE_EN	0
+<<<<<<< HEAD
 #define MSM_NAND_VERSION(info)         MSM_NAND_REG_ADJUSTED(info, 0x30F08)
+=======
+#define MSM_NAND_VERSION(info)         MSM_NAND_REG(info, 0x30F08)
+>>>>>>> p9x
 #define MSM_NAND_READ_LOCATION_0(info)      MSM_NAND_REG(info, 0x30F20)
 #define MSM_NAND_READ_LOCATION_1(info)      MSM_NAND_REG(info, 0x30F24)
 
@@ -183,7 +202,10 @@
 #define MSM_NAND_CMD_PAGE_READ          0x32
 #define MSM_NAND_CMD_PAGE_READ_ECC      0x33
 #define MSM_NAND_CMD_PAGE_READ_ALL      0x34
+<<<<<<< HEAD
 #define MSM_NAND_CMD_PAGE_READ_ONFI     0x35
+=======
+>>>>>>> p9x
 #define MSM_NAND_CMD_PRG_PAGE           0x36
 #define MSM_NAND_CMD_PRG_PAGE_ECC       0x37
 #define MSM_NAND_CMD_PRG_PAGE_ALL       0x39
@@ -203,6 +225,21 @@
 #define CMD_INT_UNLCK	(CMD | INT_UNLCK)
 #define NWD		SPS_IOVEC_FLAG_NWD
 
+<<<<<<< HEAD
+=======
+#define msm_nand_sps_get_iovec(pipe, indx, cnt, ret, label, iovec)	\
+	do {								\
+		do {							\
+			ret = sps_get_iovec((pipe), (iovec));		\
+		} while (((iovec)->addr == 0x0) && ((iovec)->size == 0x0));\
+		if (ret) {						\
+			pr_err("sps_get_iovec failed for pipe %d (ret: %d)\n",\
+					indx, ret);			\
+			goto label;					\
+		}							\
+	} while (--(cnt))
+
+>>>>>>> p9x
 /* Structure that defines a NAND SPS command element */
 struct msm_nand_sps_cmd {
 	struct sps_command_element ce;
@@ -298,6 +335,7 @@ struct msm_nand_clk_data {
 	atomic_t curr_vote;
 };
 
+<<<<<<< HEAD
 struct msm_nand_perf_stats {
 	u64 total_read_size;
 	u64 total_write_size;
@@ -315,6 +353,8 @@ struct msm_nand_perf_stats {
 };
 
 
+=======
+>>>>>>> p9x
 /* Structure that defines NANDc private data. */
 struct msm_nand_info {
 	struct mtd_info		mtd;
@@ -322,7 +362,10 @@ struct msm_nand_info {
 	struct msm_nand_sps_info sps;
 	unsigned long bam_phys;
 	unsigned long nand_phys;
+<<<<<<< HEAD
 	unsigned long nand_phys_adjusted;
+=======
+>>>>>>> p9x
 	void __iomem *bam_base;
 	int bam_irq;
 	/*
@@ -339,9 +382,12 @@ struct msm_nand_info {
 	struct mutex lock;
 	struct flash_identification flash_dev;
 	struct msm_nand_clk_data clk_data;
+<<<<<<< HEAD
 	struct msm_nand_perf_stats perf;
 	u64 dma_mask;
 	struct work_struct	tout_work;
+=======
+>>>>>>> p9x
 };
 
 /* Structure that defines an ONFI parameter page (512B) */

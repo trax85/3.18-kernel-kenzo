@@ -45,7 +45,13 @@
 #include <linux/mmc/sh_mobile_sdhi.h>
 #include <linux/i2c-gpio.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
 
+=======
+#include <mach/common.h>
+#include <mach/irqs.h>
+#include <mach/r8a7740.h>
+>>>>>>> p9x
 #include <media/mt9t112.h>
 #include <media/sh_mobile_ceu.h>
 #include <media/soc_camera.h>
@@ -577,6 +583,7 @@ static struct platform_device hdmi_lcdc_device = {
 	.dev	= {
 		.platform_data	= &hdmi_lcdc_info,
 		.coherent_dma_mask = DMA_BIT_MASK(32),
+<<<<<<< HEAD
 	},
 };
 
@@ -611,6 +618,8 @@ static struct platform_device leds_gpio_device = {
 	.id     = -1,
 	.dev    = {
 		.platform_data  = &leds_gpio_info,
+=======
+>>>>>>> p9x
 	},
 };
 

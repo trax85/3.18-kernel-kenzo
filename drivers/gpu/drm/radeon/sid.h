@@ -509,6 +509,7 @@
 #define		NOOFGROUPS_SHIFT				12
 #define		NOOFGROUPS_MASK					0x00001000
 
+<<<<<<< HEAD
 #define	MC_ARB_DRAM_TIMING				0x2774
 #define	MC_ARB_DRAM_TIMING2				0x2778
 
@@ -526,6 +527,8 @@
 #define		STATE3_MASK				(0x1f << 15)
 #define		STATE3_SHIFT				15
 
+=======
+>>>>>>> p9x
 #define	MC_SEQ_TRAIN_WAKEUP_CNTL			0x28e8
 #define		TRAIN_DONE_D0      			(1 << 30)
 #define		TRAIN_DONE_D1      			(1 << 31)

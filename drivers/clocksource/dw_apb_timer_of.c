@@ -23,7 +23,14 @@
 #include <linux/clk.h>
 #include <linux/sched_clock.h>
 
+<<<<<<< HEAD
 static void __init timer_get_base_and_rate(struct device_node *np,
+=======
+#include <asm/mach/time.h>
+#include <linux/sched_clock.h>
+
+static void timer_get_base_and_rate(struct device_node *np,
+>>>>>>> p9x
 				    void __iomem **base, u32 *rate)
 {
 	struct clk *timer_clk;

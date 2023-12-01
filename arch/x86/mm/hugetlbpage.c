@@ -52,6 +52,20 @@ int pud_huge(pud_t pud)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+struct page *
+follow_huge_pmd(struct mm_struct *mm, unsigned long address,
+		pmd_t *pmd, int write)
+{
+	return NULL;
+}
+
+int pmd_huge_support(void)
+{
+	return 0;
+}
+>>>>>>> p9x
 #else
 
 /*
@@ -69,6 +83,38 @@ int pud_huge(pud_t pud)
 {
 	return !!(pud_val(pud) & _PAGE_PSE);
 }
+<<<<<<< HEAD
+=======
+
+struct page *
+follow_huge_pmd(struct mm_struct *mm, unsigned long address,
+		pmd_t *pmd, int write)
+{
+	struct page *page;
+
+	page = pte_page(*(pte_t *)pmd);
+	if (page)
+		page += ((address & ~PMD_MASK) >> PAGE_SHIFT);
+	return page;
+}
+
+struct page *
+follow_huge_pud(struct mm_struct *mm, unsigned long address,
+		pud_t *pud, int write)
+{
+	struct page *page;
+
+	page = pte_page(*(pte_t *)pud);
+	if (page)
+		page += ((address & ~PUD_MASK) >> PAGE_SHIFT);
+	return page;
+}
+
+int pmd_huge_support(void)
+{
+	return 1;
+}
+>>>>>>> p9x
 #endif
 
 #ifdef CONFIG_HUGETLB_PAGE

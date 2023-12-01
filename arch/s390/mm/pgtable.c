@@ -412,8 +412,13 @@ int gmap_map_segment(struct gmap *gmap, unsigned long from,
 
 	if ((from | to | len) & (PMD_SIZE - 1))
 		return -EINVAL;
+<<<<<<< HEAD
 	if (len == 0 || from + len < from || to + len < to ||
 	    from + len > TASK_MAX_SIZE || to + len > gmap->asce_end)
+=======
+	if (len == 0 || from + len > TASK_MAX_SIZE ||
+	    from + len < from || to + len < to)
+>>>>>>> p9x
 		return -EINVAL;
 
 	flush = 0;

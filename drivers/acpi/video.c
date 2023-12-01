@@ -479,8 +479,21 @@ static struct dmi_system_id video_dmi_table[] __initdata = {
 		},
 	},
 	{
+<<<<<<< HEAD
 	 .callback = video_disable_native_backlight,
 	 .ident = "ThinkPad T520",
+=======
+	 .callback = video_ignore_initial_backlight,
+	 .ident = "Fujitsu E753",
+	 .matches = {
+		DMI_MATCH(DMI_BOARD_VENDOR, "FUJITSU"),
+		DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK E753"),
+		},
+	},
+	{
+	 .callback = video_ignore_initial_backlight,
+	 .ident = "HP Pavilion dm4",
+>>>>>>> p9x
 	 .matches = {
 		DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 		DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad T520"),
@@ -863,6 +876,7 @@ acpi_video_init_brightness(struct acpi_video_device *device)
 	if (!device->cap._BQC)
 		goto set_level;
 
+<<<<<<< HEAD
 	level = acpi_video_bqc_value_to_level(device, level_old);
 	/*
 	 * On some buggy laptops, _BQC returns an uninitialized
@@ -875,6 +889,22 @@ acpi_video_init_brightness(struct acpi_video_device *device)
 			break;
 	if (i == br->count || !level)
 		level = max_level;
+=======
+	if (use_bios_initial_backlight) {
+		level = acpi_video_bqc_value_to_level(device, level_old);
+		/*
+		 * On some buggy laptops, _BQC returns an uninitialized
+		 * value when invoked for the first time, i.e.
+		 * level_old is invalid (no matter whether it's a level
+		 * or an index). Set the backlight to max_level in this case.
+		 */
+		for (i = 2; i < br->count; i++)
+			if (level_old == br->levels[i])
+				break;
+		if (i == br->count || !level)
+			level = max_level;
+	}
+>>>>>>> p9x
 
 set_level:
 	result = acpi_video_device_lcd_set_level(device, level);
@@ -1214,6 +1244,9 @@ static int acpi_video_device_enumerate(struct acpi_video_bus *video)
 	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
 	union acpi_object *dod = NULL;
 	union acpi_object *obj;
+
+	if (!video->cap._DOD)
+		return AE_NOT_EXIST;
 
 	status = acpi_evaluate_object(video->device->handle, "_DOD", NULL, &buffer);
 	if (!ACPI_SUCCESS(status)) {

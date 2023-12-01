@@ -262,7 +262,13 @@ int cfg80211_ibss_wext_join(struct cfg80211_registered_device *rdev,
 					continue;
 				if (chan->flags & IEEE80211_CHAN_DISABLED)
 					continue;
+<<<<<<< HEAD
 				new_chan = chan;
+=======
+				wdev->wext.ibss.chandef.chan = chan;
+				wdev->wext.ibss.chandef.center_freq1 =
+					chan->center_freq;
+>>>>>>> p9x
 				break;
 			}
 
@@ -348,8 +354,14 @@ int cfg80211_ibss_wext_siwfreq(struct net_device *dev,
 		return err;
 
 	if (chan) {
+<<<<<<< HEAD
 		cfg80211_chandef_create(&wdev->wext.ibss.chandef, chan,
 					NL80211_CHAN_NO_HT);
+=======
+		wdev->wext.ibss.chandef.chan = chan;
+		wdev->wext.ibss.chandef.width = NL80211_CHAN_WIDTH_20_NOHT;
+		wdev->wext.ibss.chandef.center_freq1 = freq;
+>>>>>>> p9x
 		wdev->wext.ibss.channel_fixed = true;
 	} else {
 		/* cfg80211_ibss_wext_join will pick one if needed */

@@ -199,9 +199,16 @@ jumptable:
 	jump_slot jumptable, CLOCK_REALTIME_COARSE, realtime_coarse
 	jump_slot jumptable, CLOCK_MONOTONIC_COARSE, monotonic_coarse
 
+<<<<<<< HEAD
 	.if (. - jumptable) != 4 * (JUMPSLOT_MAX + 1)
 	.error	"Wrong jumptable size"
 	.endif
+=======
+	mov	x30, x2
+
+	cmp	w0, #CLOCK_MONOTONIC
+	b.ne	6f
+>>>>>>> p9x
 
 	ALIGN
 realtime:
@@ -217,6 +224,7 @@ realtime:
 	get_nsec_per_sec res=x9
 	lsl	x9, x9, x12
 
+<<<<<<< HEAD
 	get_clock_shifted_nsec res=x15, cycle_last=x10, mult=x11
 	get_ts_realtime res_sec=x10, res_nsec=x11, \
 		clock_nsec=x15, xtime_sec=x13, xtime_nsec=x14, nsec_to_sec=x9
@@ -269,6 +277,14 @@ monotonic_raw:
 	ALIGN
 realtime_coarse:
 	seqcnt_acquire
+=======
+	/* xtime_coarse_nsec is already right-shifted */
+	mov	x12, #0
+
+	/* Get coarse timespec. */
+	adr	vdso_data, _vdso_data
+3:	seqcnt_acquire
+>>>>>>> p9x
 	ldp	x10, x11, [vdso_data, #VDSO_XTIME_CRS_SEC]
 	seqcnt_check fail=realtime_coarse
 	clock_gettime_return
@@ -285,8 +301,41 @@ monotonic_coarse:
 	add_ts sec=x10, nsec=x11, ts_sec=x13, ts_nsec=x14, nsec_to_sec=x9
 	clock_gettime_return
 
+<<<<<<< HEAD
 	ALIGN
 syscall: /* Syscall fallback. */
+=======
+	cmp	w0, #CLOCK_MONOTONIC_COARSE
+	b.ne	6f
+4:
+	/* Add on wtm timespec. */
+	add	x10, x10, x13
+	lsl	x14, x14, x12
+	add	x11, x11, x14
+
+	/* Normalise the new timespec. */
+	mov	x15, #NSEC_PER_SEC_LO16
+	movk	x15, #NSEC_PER_SEC_HI16, lsl #16
+	lsl	x15, x15, x12
+	cmp	x11, x15
+	b.lt	5f
+	sub	x11, x11, x15
+	add	x10, x10, #1
+5:
+	cmp	x11, #0
+	b.ge	6f
+	add	x11, x11, x15
+	sub	x10, x10, #1
+
+6:	/* Store to the user timespec. */
+	lsr	x11, x11, x12
+	stp	x10, x11, [x1, #TSPEC_TV_SEC]
+	mov	x0, xzr
+	ret
+7:
+	mov	x30, x2
+8:	/* Syscall fallback. */
+>>>>>>> p9x
 	mov	x8, #__NR_clock_gettime
 	svc	#0
 	ret

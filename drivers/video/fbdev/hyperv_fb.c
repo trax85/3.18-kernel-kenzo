@@ -892,7 +892,11 @@ static int hvfb_remove(struct hv_device *hdev)
 }
 
 
+<<<<<<< HEAD:drivers/video/fbdev/hyperv_fb.c
 static const struct pci_device_id pci_stub_id_table[] = {
+=======
+static DEFINE_PCI_DEVICE_TABLE(pci_stub_id_table) = {
+>>>>>>> p9x:drivers/video/hyperv_fb.c
 	{
 		.vendor      = PCI_VENDOR_ID_MICROSOFT,
 		.device      = PCI_DEVICE_ID_HYPERV_VIDEO,

@@ -40,6 +40,8 @@
 
 #ifndef __ASSEMBLY__
 
+#include <asm/barrier.h>	/* for smp_rmb() */
+
 /*
  * With 64K pages on hash table, we have a special PTE format that
  * uses a second "half" of the page table to encode sub-page information

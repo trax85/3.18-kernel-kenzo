@@ -201,6 +201,51 @@ void hci_init_sysfs(struct hci_dev *hdev)
 	device_initialize(dev);
 }
 
+<<<<<<< HEAD
+=======
+int hci_add_sysfs(struct hci_dev *hdev)
+{
+	struct device *dev = &hdev->dev;
+	int err;
+
+	BT_DBG("%pK name %s bus %d", hdev, hdev->name, hdev->bus);
+
+	dev_set_name(dev, "%s", hdev->name);
+
+	err = device_add(dev);
+	if (err < 0)
+		return err;
+
+	if (!bt_debugfs)
+		return 0;
+
+	hdev->debugfs = debugfs_create_dir(hdev->name, bt_debugfs);
+	if (!hdev->debugfs)
+		return 0;
+
+	debugfs_create_file("inquiry_cache", 0444, hdev->debugfs,
+			    hdev, &inquiry_cache_fops);
+
+	debugfs_create_file("blacklist", 0444, hdev->debugfs,
+			    hdev, &blacklist_fops);
+
+	debugfs_create_file("uuids", 0444, hdev->debugfs, hdev, &uuids_fops);
+
+	debugfs_create_file("auto_accept_delay", 0444, hdev->debugfs, hdev,
+			    &auto_accept_delay_fops);
+	return 0;
+}
+
+void hci_del_sysfs(struct hci_dev *hdev)
+{
+	BT_DBG("%pK name %s bus %d", hdev, hdev->name, hdev->bus);
+
+	debugfs_remove_recursive(hdev->debugfs);
+
+	device_del(&hdev->dev);
+}
+
+>>>>>>> p9x
 int __init bt_sysfs_init(void)
 {
 	bt_class = class_create(THIS_MODULE, "bluetooth");

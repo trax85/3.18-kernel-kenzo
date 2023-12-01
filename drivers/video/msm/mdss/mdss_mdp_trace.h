@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -85,6 +89,7 @@ DEFINE_EVENT(mdp_sspp_template, mdp_sspp_change,
 	TP_ARGS(pipe)
 );
 
+<<<<<<< HEAD
 TRACE_EVENT(mdp_perf_set_qos_luts,
 	TP_PROTO(u32 pnum, u32 fmt, u32 intf, u32 rot, u32 fl,
 		u32 lut, bool linear),
@@ -135,6 +140,63 @@ TRACE_EVENT(mdp_perf_set_panic_luts,
 			__entry->pnum, __entry->fmt,
 			__entry->mode, __entry->panic_lut,
 			__entry->robust_lut)
+=======
+TRACE_EVENT(mdp_wb_display,
+	TP_PROTO(u32 wb_num, u32 xin_id, u32 intf_num,
+		u32 width, u32 height, u16 dst_w, u16 dst_h, u32 fmt),
+	TP_ARGS(wb_num, xin_id, intf_num, width, height,
+		dst_w, dst_h, fmt),
+	TP_STRUCT__entry(
+			__field(u32, wb_num)
+			__field(u32, xin_id)
+			__field(u32, intf_num)
+			__field(u32, width)
+			__field(u32, height)
+			__field(u32, dst_rect_w)
+			__field(u32, dst_rect_h)
+			__field(u32, fmt)
+	),
+
+	TP_fast_assign(
+			__entry->wb_num = wb_num;
+			__entry->xin_id = xin_id;
+			__entry->intf_num = intf_num;
+			__entry->width = width;
+			__entry->height = height;
+			__entry->dst_rect_w = dst_w;
+			__entry->dst_rect_h = dst_h;
+			__entry->fmt = fmt;
+	),
+
+	TP_printk("wb=%d xin=%d intf=%d wxh=%dx%d dst=[%d,%d] fmt=%d",
+			__entry->wb_num,
+			__entry->xin_id,
+			__entry->intf_num,
+			__entry->width,
+			__entry->height,
+			__entry->dst_rect_w,
+			__entry->dst_rect_h,
+			__entry->fmt)
+);
+
+TRACE_EVENT(mdp_wb_done,
+	TP_PROTO(u32 wb_num, u32 xin_id, u32 intf_num),
+	TP_ARGS(wb_num, xin_id, intf_num),
+	TP_STRUCT__entry(
+			__field(u32, wb_num)
+			__field(u32, xin_id)
+			__field(u32, intf_num)
+	),
+	TP_fast_assign(
+			__entry->wb_num = wb_num;
+			__entry->xin_id = xin_id;
+			__entry->intf_num = intf_num;
+	),
+	TP_printk("wb=%d xin=%d intf=%d",
+			__entry->wb_num,
+			__entry->xin_id,
+			__entry->intf_num)
+>>>>>>> p9x
 );
 
 TRACE_EVENT(mdp_perf_set_wm_levels,
@@ -295,6 +357,7 @@ TRACE_EVENT(mdp_perf_update_bus,
 			__entry->ib_quota)
 );
 
+<<<<<<< HEAD
 TRACE_EVENT(mdp_misr_crc,
 	TP_PROTO(u32 block_id, u32 vsync_cnt, u32 crc),
 	TP_ARGS(block_id, vsync_cnt, crc),
@@ -312,6 +375,8 @@ TRACE_EVENT(mdp_misr_crc,
 			__entry->block_id, __entry->vsync_cnt, __entry->crc)
 );
 
+=======
+>>>>>>> p9x
 TRACE_EVENT(mdp_cmd_pingpong_done,
 	TP_PROTO(struct mdss_mdp_ctl *ctl, u32 pp_num, int koff_cnt),
 	TP_ARGS(ctl, pp_num, koff_cnt),
@@ -410,6 +475,7 @@ TRACE_EVENT(mdp_trace_counter,
 			__get_str(counter_name), __entry->value)
 );
 
+<<<<<<< HEAD
 TRACE_EVENT(rotator_bw_ao_as_context,
 	TP_PROTO(u32 state),
 	TP_ARGS(state),
@@ -424,6 +490,8 @@ TRACE_EVENT(rotator_bw_ao_as_context,
 
 );
 
+=======
+>>>>>>> p9x
 #endif /* if !defined(TRACE_MDSS_MDP_H) || defined(TRACE_HEADER_MULTI_READ) */
 
 /* This part must be outside protection */

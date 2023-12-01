@@ -70,14 +70,56 @@ out:
 	return is_all_countryie_ignore;
 }
 
+<<<<<<< HEAD
 static void cfg80211_sme_free(struct wireless_dev *wdev)
+=======
+
+static bool cfg80211_is_all_countryie_ignore(void)
+{
+	struct cfg80211_registered_device *rdev;
+	struct wireless_dev *wdev;
+	bool is_all_countryie_ignore = true;
+
+	mutex_lock(&cfg80211_mutex);
+
+	list_for_each_entry(rdev, &cfg80211_rdev_list, list) {
+		cfg80211_lock_rdev(rdev);
+		list_for_each_entry(wdev, &rdev->wdev_list, list) {
+			wdev_lock(wdev);
+			if (!(wdev->wiphy->country_ie_pref &
+				NL80211_COUNTRY_IE_IGNORE_CORE)) {
+				is_all_countryie_ignore = false;
+				wdev_unlock(wdev);
+				cfg80211_unlock_rdev(rdev);
+				goto out;
+			}
+			wdev_unlock(wdev);
+		}
+		cfg80211_unlock_rdev(rdev);
+	}
+out:
+	mutex_unlock(&cfg80211_mutex);
+
+	return is_all_countryie_ignore;
+}
+
+
+static void disconnect_work(struct work_struct *work)
+>>>>>>> p9x
 {
 	if (!wdev->conn)
 		return;
 
+<<<<<<< HEAD
 	kfree(wdev->conn->ie);
 	kfree(wdev->conn);
 	wdev->conn = NULL;
+=======
+	if (cfg80211_is_all_countryie_ignore())
+		return;
+
+	regulatory_hint_disconnect();
+>>>>>>> p9x
 }
 
 static int cfg80211_conn_scan(struct wireless_dev *wdev)
@@ -706,13 +748,21 @@ void __cfg80211_connect_result(struct net_device *dev, const u8 *bssid,
 void cfg80211_connect_bss(struct net_device *dev, const u8 *bssid,
 			  struct cfg80211_bss *bss, const u8 *req_ie,
 			  size_t req_ie_len, const u8 *resp_ie,
+<<<<<<< HEAD
 			  size_t resp_ie_len, int status, gfp_t gfp)
+=======
+			  size_t resp_ie_len, u16 status, gfp_t gfp)
+>>>>>>> p9x
 {
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
 	struct cfg80211_event *ev;
 	unsigned long flags;
 
+<<<<<<< HEAD
+=======
+	CFG80211_DEV_WARN_ON(wdev->sme_state != CFG80211_SME_CONNECTING);
+>>>>>>> p9x
 	if (bss) {
 		/* Make sure the bss entry provided by the driver is valid. */
 		struct cfg80211_internal_bss *ibss = bss_from_pub(bss);
@@ -884,6 +934,14 @@ void __cfg80211_disconnected(struct net_device *dev, const u8 *ie,
 		    wdev->iftype != NL80211_IFTYPE_P2P_CLIENT))
 		return;
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_CFG80211_ALLOW_RECONNECT
+	if (wdev->sme_state != CFG80211_SME_CONNECTED)
+		return;
+#endif
+
+>>>>>>> p9x
 	if (wdev->current_bss) {
 		cfg80211_unhold_bss(wdev->current_bss);
 		cfg80211_put_bss(wdev->wiphy, &wdev->current_bss->pub);
@@ -955,8 +1013,20 @@ int cfg80211_connect(struct cfg80211_registered_device *rdev,
 
 	ASSERT_WDEV_LOCK(wdev);
 
+<<<<<<< HEAD
 	if (WARN_ON(wdev->connect_keys)) {
 		kzfree(wdev->connect_keys);
+=======
+#ifndef CONFIG_CFG80211_ALLOW_RECONNECT
+	if (wdev->sme_state != CFG80211_SME_IDLE)
+		return -EALREADY;
+
+	if (WARN_ON(wdev->connect_keys)) {
+#else
+	if (wdev->connect_keys) {
+#endif
+		kfree(wdev->connect_keys);
+>>>>>>> p9x
 		wdev->connect_keys = NULL;
 	}
 

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012,2015-2016 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -31,9 +35,12 @@ struct pcm_afe_info {
 	struct hrtimer hrt;
 	int poll_time;
 	struct afe_audio_client *audio_client;
+<<<<<<< HEAD
 	wait_queue_head_t read_wait;
 	atomic_t rec_bytes_avail;
 	bool reset_event;
+=======
+>>>>>>> p9x
 };
 
 

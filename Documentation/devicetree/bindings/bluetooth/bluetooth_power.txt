@@ -6,8 +6,11 @@ Required properties:
   - compatible: Should be set to one of the following:
 	qca,ar3002
 	qca,qca6174
+<<<<<<< HEAD
 	qca,qca9379
 	qca,wcn3990
+=======
+>>>>>>> p9x
   - qca,bt-reset-gpio: GPIO pin to bring BT Controller out of reset
 
 Optional properties:
@@ -15,6 +18,7 @@ Optional properties:
   - qca,bt-vdd-io-supply: Bluetooth VDD IO regulator handle
   - qca,bt-vdd-ldo-supply: Bluetooth VDD LDO regulator handle. Kept under optional parameters
 		as some of the chipsets doesn't require ldo or it may use from same vddio.
+<<<<<<< HEAD
   - qca,bt-vdd-xtal-supply: Bluetooth VDD XTAL regulator handle
   - qca,bt-vdd-core-supply: Bluetooth VDD CORE regulator handle
   - qca,bt-chip-pwd-supply: Chip power down gpio is required when bluetooth module
@@ -24,10 +28,20 @@ Optional properties:
 		Should be specified in pairs (min, max), units uV
   - qca,bt-vdd-io-voltage-level: specifies VDD IO voltage levels for supply.
 		Should be specified in pairs (min, max), units uV
+=======
+  - qca,bt-chip-pwd-supply: Chip power down gpio is required when bluetooth module
+		and other modules like wifi co-exist in a singe chip and shares a
+		common gpio to bring chip out of reset.
+  - qca,bt-vdd-io-voltage-level: specifies VDD IO voltage levels for supply.
+		Should be specified in pairs (min, max), units uV
+  - qca,bt-vdd-pa-voltage-level: specifies VDD PA voltage levels for supply.
+		Should be specified in pairs (min, max), units uV
+>>>>>>> p9x
   - qca,bt-vdd-ldo-voltage-level: specifies VDD LDO voltage levels for supply.
 		Should be specified in pairs (min, max), units uV
   - qca,bt-vdd-xtal-voltage-level: specifies VDD XTAL voltage levels for supply.
                 Should be specified in pairs (min, max), units uV
+<<<<<<< HEAD
   - qca,bt-vdd-core-voltage-level: specifies VDD CORE voltage levels for supply.
                 Should be specified in pairs (min, max), units uV
  - qca,bt-vdd-io-current-level: specifies VDD IO current level in microamps
@@ -36,6 +50,8 @@ Optional properties:
  - qca,bt-vdd-ldo-current-level: specifies VDD LDO current level in microamps.
  - qca,bt-vdd-pa-current-level: specifies VDD PA current level in microamps.
  - qca,bt-chip-pwd-current-level: specifies Chip Power current level in microamps.
+=======
+>>>>>>> p9x
 
 Example:
   bt-ar3002 {
@@ -44,6 +60,7 @@ Example:
     qca,bt-vdd-io-supply = <&pm8941_s3>;
     qca,bt-vdd-pa-supply = <&pm8941_l19>;
     qca,bt-vdd-xtal-supply = <&pm8994_l30>;
+<<<<<<< HEAD
     qca,bt-vdd-core-supply = <&pm8994_s3>;
     qca,bt-chip-pwd-supply = <&ath_chip_pwd_l>;
 
@@ -57,4 +74,10 @@ Example:
     qca,bt-vdd-core-current-level = <1>; /* LPM/PFM */
     qca,bt-vdd-ldo-current-level = <1>; /* LPM/PFM */
     qca,bt-vdd-pa-current-level = <1>; /* LPM/PFM */
+=======
+    qca,bt-chip-pwd-supply = <&ath_chip_pwd_l>;
+    qca,bt-vdd-io-voltage-level = <1800000 1800000>;
+    qca,bt-vdd-pa-voltage-level = <2900000 2900000>;
+    qca,bt-vdd-xtal-voltage-level = <1800000 1800000>;
+>>>>>>> p9x
   };

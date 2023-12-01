@@ -226,7 +226,11 @@ static int iwl_init_channel_map(struct device *dev, const struct iwl_cfg *cfg,
 	for (ch_idx = 0; ch_idx < num_of_ch; ch_idx++) {
 		ch_flags = __le16_to_cpup(nvm_ch_flags + ch_idx);
 
+<<<<<<< HEAD
 		if (ch_idx >= num_2ghz_channels &&
+=======
+		if (ch_idx >= NUM_2GHZ_CHANNELS &&
+>>>>>>> p9x
 		    !data->sku_cap_band_52GHz_enable)
 			ch_flags &= ~NVM_CHANNEL_VALID;
 

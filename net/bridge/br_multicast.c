@@ -1333,6 +1333,12 @@ static int br_ip6_multicast_query(struct net_bridge *br,
 		goto out;
 	}
 
+	/* RFC2710+RFC3810 (MLDv1+MLDv2) require link-local source addresses */
+	if (!(ipv6_addr_type(&ip6h->saddr) & IPV6_ADDR_LINKLOCAL)) {
+		err = -EINVAL;
+		goto out;
+	}
+
 	if (skb->len == sizeof(*mld)) {
 		if (!pskb_may_pull(skb, sizeof(*mld))) {
 			err = -EINVAL;
@@ -1351,7 +1357,11 @@ static int br_ip6_multicast_query(struct net_bridge *br,
 		if (!mld2q->mld2q_nsrcs)
 			group = &mld2q->mld2q_mca;
 
+<<<<<<< HEAD
 		max_delay = max(msecs_to_jiffies(mldv2_mrc(mld2q)), 1UL);
+=======
+		max_delay = max(msecs_to_jiffies(MLDV2_MRC(ntohs(mld2q->mld2q_mrc))), 1UL);
+>>>>>>> p9x
 	}
 
 	is_general_query = group && ipv6_addr_any(group);

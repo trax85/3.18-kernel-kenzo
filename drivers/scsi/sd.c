@@ -617,6 +617,34 @@ static void scsi_disk_put(struct scsi_disk *sdkp)
 }
 
 struct gendisk *scsi_gendisk_get_from_dev(struct device *dev)
+<<<<<<< HEAD
+=======
+{
+	struct scsi_disk *sdkp;
+
+	mutex_lock(&sd_ref_mutex);
+	sdkp = dev_get_drvdata(dev);
+	if (sdkp)
+		sdkp = __scsi_disk_get(sdkp->disk);
+	mutex_unlock(&sd_ref_mutex);
+	return !sdkp ? NULL : sdkp->disk;
+}
+EXPORT_SYMBOL(scsi_gendisk_get_from_dev);
+
+void scsi_gendisk_put(struct device *dev)
+{
+	struct scsi_disk *sdkp = dev_get_drvdata(dev);
+	struct scsi_device *sdev = sdkp->device;
+
+	mutex_lock(&sd_ref_mutex);
+	put_device(&sdkp->dev);
+	scsi_device_put(sdev);
+	mutex_unlock(&sd_ref_mutex);
+}
+EXPORT_SYMBOL(scsi_gendisk_put);
+
+static void sd_prot_op(struct scsi_cmnd *scmd, unsigned int dif)
+>>>>>>> p9x
 {
 	struct scsi_disk *sdkp;
 
@@ -750,6 +778,12 @@ static int sd_setup_discard_cmnd(struct scsi_cmnd *cmd)
 
 	sector >>= ilog2(sdp->sector_size) - 9;
 	nr_sectors >>= ilog2(sdp->sector_size) - 9;
+<<<<<<< HEAD
+=======
+	rq->timeout = SD_DISCARD_TIMEOUT;
+
+	memset(rq->cmd, 0, rq->cmd_len);
+>>>>>>> p9x
 
 	page = alloc_page(GFP_ATOMIC | __GFP_ZERO);
 	if (!page)
@@ -930,8 +964,36 @@ static int sd_setup_flush_cmnd(struct scsi_cmnd *cmd)
 
 static int sd_setup_read_write_cmnd(struct scsi_cmnd *SCpnt)
 {
+<<<<<<< HEAD
 	struct request *rq = SCpnt->request;
 	struct scsi_device *sdp = SCpnt->device;
+=======
+	struct scsi_cmnd *SCpnt = rq->special;
+
+	if (rq->cmd_flags & REQ_DISCARD) {
+		free_page((unsigned long)rq->buffer);
+		rq->buffer = NULL;
+	}
+	if (SCpnt->cmnd != rq->cmd) {
+		mempool_free(SCpnt->cmnd, sd_cdb_pool);
+		SCpnt->cmnd = NULL;
+		SCpnt->cmd_len = 0;
+	}
+}
+
+/**
+ *	sd_prep_fn - build a scsi (read or write) command from
+ *	information in the request structure.
+ *	@SCpnt: pointer to mid-level's per scsi command structure that
+ *	contains request and into which the scsi command is written
+ *
+ *	Returns 1 if successful and 0 if error (or cannot be done now).
+ **/
+static int sd_prep_fn(struct request_queue *q, struct request *rq)
+{
+	struct scsi_cmnd *SCpnt;
+	struct scsi_device *sdp = q->queuedata;
+>>>>>>> p9x
 	struct gendisk *disk = rq->rq_disk;
 	struct scsi_disk *sdkp;
 	sector_t block = blk_rq_pos(rq);
@@ -1420,6 +1482,89 @@ static int media_not_present(struct scsi_disk *sdkp,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ *	sd_check_events - check media events
+ *	@disk: kernel device descriptor
+ *	@clearing: disk events currently being cleared
+ *
+ *	Returns mask of DISK_EVENT_*.
+ *
+ *	Note: this function is invoked from the block subsystem.
+ **/
+static unsigned int sd_check_events(struct gendisk *disk, unsigned int clearing)
+{
+	struct scsi_disk *sdkp = scsi_disk_get(disk);
+	struct scsi_device *sdp;
+	struct scsi_sense_hdr *sshdr = NULL;
+	int retval;
+
+	if (!sdkp)
+		return 0;
+
+	sdp = sdkp->device;
+	SCSI_LOG_HLQUEUE(3, sd_printk(KERN_INFO, sdkp, "sd_check_events\n"));
+
+	/*
+	 * If the device is offline, don't send any commands - just pretend as
+	 * if the command failed.  If the device ever comes back online, we
+	 * can deal with it then.  It is only because of unrecoverable errors
+	 * that we would ever take a device offline in the first place.
+	 */
+	if (!scsi_device_online(sdp)) {
+		set_media_not_present(sdkp);
+		goto out;
+	}
+
+	/*
+	 * Using TEST_UNIT_READY enables differentiation between drive with
+	 * no cartridge loaded - NOT READY, drive with changed cartridge -
+	 * UNIT ATTENTION, or with same cartridge - GOOD STATUS.
+	 *
+	 * Drives that auto spin down. eg iomega jaz 1G, will be started
+	 * by sd_spinup_disk() from sd_revalidate_disk(), which happens whenever
+	 * sd_revalidate() is called.
+	 */
+	retval = -ENODEV;
+
+	if (scsi_block_when_processing_errors(sdp)) {
+		sshdr  = kzalloc(sizeof(*sshdr), GFP_KERNEL);
+		retval = scsi_test_unit_ready(sdp, SD_TIMEOUT, SD_MAX_RETRIES,
+					      sshdr);
+	}
+
+	/* failed to execute TUR, assume media not present */
+	if (host_byte(retval)) {
+		set_media_not_present(sdkp);
+		goto out;
+	}
+
+	if (media_not_present(sdkp, sshdr))
+		goto out;
+
+	/*
+	 * For removable scsi disk we have to recognise the presence
+	 * of a disk in the drive.
+	 */
+	if (!sdkp->media_present)
+		sdp->changed = 1;
+	sdkp->media_present = 1;
+out:
+	/*
+	 * sdp->changed is set under the following conditions:
+	 *
+	 *	Medium present state has changed in either direction.
+	 *	Device has indicated UNIT_ATTENTION.
+	 */
+	kfree(sshdr);
+	retval = sdp->changed ? DISK_EVENT_MEDIA_CHANGE : 0;
+	sdp->changed = 0;
+	scsi_disk_put(sdkp);
+	return retval;
+}
+
+>>>>>>> p9x
 static int sd_sync_cache(struct scsi_disk *sdkp)
 {
 	int retries, res;
@@ -2423,7 +2568,11 @@ sd_read_cache_type(struct scsi_disk *sdkp, unsigned char *buffer)
 			}
 		}
 
+<<<<<<< HEAD
 		sd_first_printk(KERN_ERR, sdkp, "No Caching mode page found\n");
+=======
+		sd_printk(KERN_ERR, sdkp, "No Caching mode page found\n");
+>>>>>>> p9x
 		goto defaults;
 
 	Page_found:
@@ -2448,6 +2597,18 @@ sd_read_cache_type(struct scsi_disk *sdkp, unsigned char *buffer)
 		/* No cache flush allowed for write protected devices */
 		if (sdkp->WCE && sdkp->write_prot)
 			sdkp->WCE = 0;
+<<<<<<< HEAD
+=======
+
+		if (sdkp->first_scan || old_wce != sdkp->WCE ||
+		    old_rcd != sdkp->RCD || old_dpofua != sdkp->DPOFUA)
+			sd_printk(KERN_NOTICE, sdkp,
+				  "Write cache: %s, read cache: %s, %s\n",
+				  sdkp->WCE ? "enabled" : "disabled",
+				  sdkp->RCD ? "disabled" : "enabled",
+				  sdkp->DPOFUA ? "supports DPO and FUA"
+				  : "doesn't support DPO or FUA");
+>>>>>>> p9x
 
 		return;
 	}
@@ -2886,6 +3047,11 @@ static void sd_probe_async(void *data, async_cookie_t cookie)
 
 	sd_revalidate_disk(gd);
 
+<<<<<<< HEAD
+=======
+	sd_printk(KERN_NOTICE, sdkp, "Attached SCSI %sdisk\n",
+		  sdp->removable ? "removable " : "");
+>>>>>>> p9x
 	scsi_autopm_put_device(sdp);
 	put_device(&sdkp->dev);
 }
@@ -3133,7 +3299,12 @@ static int sd_suspend_common(struct device *dev, bool ignore_stop_errors)
 	if (!sdkp)	/* E.g.: runtime suspend following sd_remove() */
 		return 0;
 
+<<<<<<< HEAD
 	if (sdkp->WCE && sdkp->media_present) {
+=======
+	if (sdkp->WCE) {
+		sd_printk(KERN_DEBUG, sdkp, "Synchronizing SCSI cache\n");
+>>>>>>> p9x
 		ret = sd_sync_cache(sdkp);
 		if (ret) {
 			/* ignore OFFLINE device */
@@ -3145,7 +3316,10 @@ static int sd_suspend_common(struct device *dev, bool ignore_stop_errors)
 
 	if (sdkp->device->manage_start_stop) {
 		sd_printk(KERN_DEBUG, sdkp, "Stopping disk\n");
+<<<<<<< HEAD
 		/* an error is not worth aborting a system sleep */
+=======
+>>>>>>> p9x
 		ret = sd_start_stop_device(sdkp, 0);
 		if (ignore_stop_errors)
 			ret = 0;
@@ -3171,8 +3345,13 @@ static int sd_resume(struct device *dev)
 	struct scsi_disk *sdkp = scsi_disk_get_from_dev(dev);
 	int ret = 0;
 
+<<<<<<< HEAD
 	if (!sdkp)
 		return 0;	/* this can happen */
+=======
+	if (!sdkp)	/* E.g.: runtime resume at the start of sd_probe() */
+		return 0;
+>>>>>>> p9x
 
 	if (!sdkp->device->manage_start_stop)
 		goto done;

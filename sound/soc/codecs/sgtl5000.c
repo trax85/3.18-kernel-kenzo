@@ -35,6 +35,7 @@
 #define SGTL5000_MAX_REG_OFFSET	0x013A
 
 /* default value of sgtl5000 registers */
+<<<<<<< HEAD
 static const struct reg_default sgtl5000_reg_defaults[] = {
 	{ SGTL5000_CHIP_DIG_POWER,		0x0000 },
 	{ SGTL5000_CHIP_CLK_CTRL,		0x0008 },
@@ -74,6 +75,32 @@ static const struct reg_default sgtl5000_reg_defaults[] = {
 	{ SGTL5000_DAP_AVC_THRESHOLD,		0x1473 },
 	{ SGTL5000_DAP_AVC_ATTACK,		0x0028 },
 	{ SGTL5000_DAP_AVC_DECAY,		0x0050 },
+=======
+static const u16 sgtl5000_regs[SGTL5000_MAX_REG_OFFSET] =  {
+	[SGTL5000_CHIP_CLK_CTRL] = 0x0008,
+	[SGTL5000_CHIP_I2S_CTRL] = 0x0010,
+	[SGTL5000_CHIP_SSS_CTRL] = 0x0010,
+	[SGTL5000_CHIP_DAC_VOL] = 0x3c3c,
+	[SGTL5000_CHIP_PAD_STRENGTH] = 0x015f,
+	[SGTL5000_CHIP_ANA_HP_CTRL] = 0x1818,
+	[SGTL5000_CHIP_ANA_CTRL] = 0x0111,
+	[SGTL5000_CHIP_LINE_OUT_VOL] = 0x0404,
+	[SGTL5000_CHIP_ANA_POWER] = 0x7060,
+	[SGTL5000_CHIP_PLL_CTRL] = 0x5000,
+	[SGTL5000_DAP_BASS_ENHANCE] = 0x0040,
+	[SGTL5000_DAP_BASS_ENHANCE_CTRL] = 0x051f,
+	[SGTL5000_DAP_SURROUND] = 0x0040,
+	[SGTL5000_DAP_EQ_BASS_BAND0] = 0x002f,
+	[SGTL5000_DAP_EQ_BASS_BAND1] = 0x002f,
+	[SGTL5000_DAP_EQ_BASS_BAND2] = 0x002f,
+	[SGTL5000_DAP_EQ_BASS_BAND3] = 0x002f,
+	[SGTL5000_DAP_EQ_BASS_BAND4] = 0x002f,
+	[SGTL5000_DAP_MAIN_CHAN] = 0x8000,
+	[SGTL5000_DAP_AVC_CTRL] = 0x0510,
+	[SGTL5000_DAP_AVC_THRESHOLD] = 0x1473,
+	[SGTL5000_DAP_AVC_ATTACK] = 0x0028,
+	[SGTL5000_DAP_AVC_DECAY] = 0x0050,
+>>>>>>> p9x
 };
 
 /* regulator supplies for sgtl5000, VDDD is an optional external supply */
@@ -1265,6 +1292,50 @@ static int sgtl5000_enable_regulators(struct snd_soc_codec *codec)
 	/* wait for all power rails bring up */
 	udelay(10);
 
+<<<<<<< HEAD
+=======
+	/* Need 8 clocks before I2C accesses */
+	udelay(1);
+
+	/* read chip information */
+	reg = snd_soc_read(codec, SGTL5000_CHIP_ID);
+	if (((reg & SGTL5000_PARTID_MASK) >> SGTL5000_PARTID_SHIFT) !=
+	    SGTL5000_PARTID_PART_ID) {
+		dev_err(codec->dev,
+			"Device with ID register %x is not a sgtl5000\n", reg);
+		ret = -ENODEV;
+		goto err_regulator_disable;
+	}
+
+	rev = (reg & SGTL5000_REVID_MASK) >> SGTL5000_REVID_SHIFT;
+	dev_info(codec->dev, "sgtl5000 revision 0x%x\n", rev);
+
+	/*
+	 * workaround for revision 0x11 and later,
+	 * roll back to use internal LDO
+	 */
+	if (external_vddd && rev >= 0x11) {
+		/* disable all regulator first */
+		regulator_bulk_disable(ARRAY_SIZE(sgtl5000->supplies),
+					sgtl5000->supplies);
+		/* free VDDD regulator */
+		regulator_bulk_free(ARRAY_SIZE(sgtl5000->supplies),
+					sgtl5000->supplies);
+
+		ret = sgtl5000_replace_vddd_with_ldo(codec);
+		if (ret)
+			return ret;
+
+		ret = regulator_bulk_enable(ARRAY_SIZE(sgtl5000->supplies),
+						sgtl5000->supplies);
+		if (ret)
+			goto err_regulator_free;
+
+		/* wait for all power rails bring up */
+		udelay(10);
+	}
+
+>>>>>>> p9x
 	return 0;
 
 err_regulator_free:

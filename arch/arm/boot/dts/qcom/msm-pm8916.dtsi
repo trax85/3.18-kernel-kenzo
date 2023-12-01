@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2014, 2016-2017, The Linux Foundation.
  * All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -222,7 +226,10 @@
 			qcom,batt-hot-percentage = <25>;
 			qcom,batt-cold-percentage = <80>;
 			qcom,tchg-mins = <232>;
+<<<<<<< HEAD
 			qcom,resume-soc = <99>;
+=======
+>>>>>>> p9x
 			qcom,chg-vadc = <&pm8916_vadc>;
 			qcom,chg-adc_tm = <&pm8916_adc_tm>;
 
@@ -290,6 +297,10 @@
 			qcom,force-s3-on-suspend;
 			qcom,force-s2-in-charging;
 			qcom,report-charger-eoc;
+<<<<<<< HEAD
+=======
+			qcom,resume-soc = <99>;
+>>>>>>> p9x
 
 			qcom,batt-pres-status@1208 {
 				reg = <0x1208 0x1>;
@@ -601,7 +612,10 @@
 						   "cdc-vdda-cp";
 
 			qcom,cdc-on-demand-supplies = "cdc-vdd-mic-bias";
+<<<<<<< HEAD
 			qcom,subsys-name = "modem";
+=======
+>>>>>>> p9x
 		};
 
 		pm8916_tombak_analog: msm8x16_wcd_codec@f100{

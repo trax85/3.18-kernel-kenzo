@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014, 2016-2017 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -42,6 +46,7 @@
 #define BHI_STATUS_SUCCESS				   (2)
 #define BHI_STATUS_RESET				   (0)
 
+<<<<<<< HEAD
 /* BHIE Offsets */
 #define BHIE_OFFSET (0x0124) /* BHIE register space offset from BHI base */
 #define BHIE_MSMSOCID_OFFS (BHIE_OFFSET + 0x0000)
@@ -74,6 +79,8 @@
 #define BHIE_RXVECSTATUS_STATUS_XFER_COMPL (0x02)
 #define BHIE_RXVECSTATUS_STATUS_ERROR (0x03)
 
+=======
+>>>>>>> p9x
 #define BHI_MAJOR_VERSION 0x0
 #define BHI_MINOR_VERSION 0x1
 
@@ -83,6 +90,7 @@
 #define BHI_READBUF_SIZE sizeof(bhi_info_type)
 
 #define BHI_MAX_IMAGE_SIZE (256 * 1024)
+<<<<<<< HEAD
 #define BHI_DEFAULT_ALIGNMENT (0x1000)
 
 #define BHI_POLL_SLEEP_TIME_MS 100
@@ -92,5 +100,12 @@
 int bhi_probe(struct mhi_device_ctxt *mhi_dev_ctxt);
 void bhi_firmware_download(struct work_struct *work);
 int bhi_rddm(struct mhi_device_ctxt *mhi_dev_ctxt, bool in_panic);
+=======
+
+#define BHI_POLL_SLEEP_TIME 1000
+#define BHI_POLL_NR_RETRIES 10
+
+int bhi_probe(struct mhi_pcie_dev_info *mhi_pcie_device);
+>>>>>>> p9x
 
 #endif

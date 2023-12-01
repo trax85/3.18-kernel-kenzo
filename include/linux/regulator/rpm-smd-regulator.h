@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2013, 2015, 2017 The Linux Foundation. All rights
  * reserved.
+=======
+/* Copyright (c) 2012-2013, 2015 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -59,7 +63,11 @@ enum rpm_regulator_voltage_level {
 	RPM_REGULATOR_LEVEL_NOM			= 256,
 	RPM_REGULATOR_LEVEL_NOM_PLUS		= 320,
 	RPM_REGULATOR_LEVEL_TURBO		= 384,
+<<<<<<< HEAD
 	RPM_REGULATOR_LEVEL_TURBO_NO_CPR	= 416,
+=======
+	RPM_REGULATOR_LEVEL_TURBO_HIGH		= 448,
+>>>>>>> p9x
 	RPM_REGULATOR_LEVEL_BINNING		= 512,
 	RPM_REGULATOR_LEVEL_MAX			= 65535,
 };

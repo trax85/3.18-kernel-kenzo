@@ -17,6 +17,20 @@ config SAMSUNG_PM
 	bool
 	depends on PM && (PLAT_S3C24XX || ARCH_S3C64XX)
 	default y
+<<<<<<< HEAD
+=======
+	select ARCH_REQUIRE_GPIOLIB
+	select ARM_GIC if ARCH_EXYNOS
+	select ARM_VIC if !ARCH_EXYNOS
+	select GIC_NON_BANKED if ARCH_EXYNOS4
+	select NO_IOPORT_MAP
+	select PLAT_SAMSUNG
+	select S3C_GPIO_TRACK
+	select S5P_GPIO_DRVSTR
+	select SAMSUNG_CLKSRC if !COMMON_CLK
+	select SAMSUNG_GPIOLIB_4BIT
+	select SAMSUNG_IRQ_VIC_TIMER
+>>>>>>> p9x
 	help
 	  Base platform power management code for samsung code
 

@@ -2983,6 +2983,19 @@ static struct module *layout_and_allocate(struct load_info *info, int flags)
 	mod = (void *)info->sechdrs[info->index.mod].sh_addr;
 	kmemleak_load_module(mod, info);
 	return mod;
+<<<<<<< HEAD
+=======
+}
+
+static int alloc_module_percpu(struct module *mod, struct load_info *info)
+{
+	Elf_Shdr *pcpusec = &info->sechdrs[info->index.pcpu];
+	if (!pcpusec->sh_size)
+		return 0;
+
+	/* We have a special allocation for this section. */
+	return percpu_modalloc(mod, pcpusec->sh_size, pcpusec->sh_addralign);
+>>>>>>> p9x
 }
 
 /* mod is no longer valid after this! */
@@ -3295,7 +3308,11 @@ static int load_module(struct load_info *info, const char __user *uargs,
 #endif
 
 	/* To avoid stressing percpu allocator, do this once we're unique. */
+<<<<<<< HEAD
 	err = percpu_modalloc(mod, info);
+=======
+	err = alloc_module_percpu(mod, info);
+>>>>>>> p9x
 	if (err)
 		goto unlink_mod;
 
@@ -3637,7 +3654,11 @@ static unsigned long mod_find_symname(struct module *mod, const char *name)
 
 	for (i = 0; i < kallsyms->num_symtab; i++)
 		if (strcmp(name, symname(kallsyms, i)) == 0 &&
+<<<<<<< HEAD
 		    kallsyms->symtab[i].st_shndx != SHN_UNDEF)
+=======
+		    kallsyms->symtab[i].st_info != 'U')
+>>>>>>> p9x
 			return kallsyms->symtab[i].st_value;
 	return 0;
 }
@@ -3681,10 +3702,13 @@ int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
 		if (mod->state == MODULE_STATE_UNFORMED)
 			continue;
 		for (i = 0; i < kallsyms->num_symtab; i++) {
+<<<<<<< HEAD
 
 			if (kallsyms->symtab[i].st_shndx == SHN_UNDEF)
 				continue;
 
+=======
+>>>>>>> p9x
 			ret = fn(data, symname(kallsyms, i),
 				 mod, kallsyms->symtab[i].st_value);
 			if (ret != 0)

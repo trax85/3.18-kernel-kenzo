@@ -31,6 +31,7 @@
 #include <tools/be_byteshift.h>
 #include <tools/le_byteshift.h>
 
+<<<<<<< HEAD
 #ifndef EM_ARCOMPACT
 #define EM_ARCOMPACT	93
 #endif
@@ -39,14 +40,19 @@
 #define EM_XTENSA	94
 #endif
 
+=======
+>>>>>>> p9x
 #ifndef EM_AARCH64
 #define EM_AARCH64	183
 #endif
 
+<<<<<<< HEAD
 #ifndef EM_MICROBLAZE
 #define EM_MICROBLAZE	189
 #endif
 
+=======
+>>>>>>> p9x
 static int fd_map;	/* File descriptor for file being modified. */
 static int mmap_failed; /* Boolean flag. */
 static void *ehdr_curr; /* current ElfXX_Ehdr *  for resource cleanup */
@@ -283,7 +289,10 @@ do_file(char const *const fname)
 	case EM_ARCOMPACT:
 	case EM_ARM:
 	case EM_AARCH64:
+<<<<<<< HEAD
 	case EM_MICROBLAZE:
+=======
+>>>>>>> p9x
 	case EM_MIPS:
 	case EM_XTENSA:
 		break;

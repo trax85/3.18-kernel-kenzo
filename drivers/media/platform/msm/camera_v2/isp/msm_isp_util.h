@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -14,7 +18,10 @@
 
 #include "msm_isp.h"
 #include <soc/qcom/camera2.h>
+<<<<<<< HEAD
 #include "msm_camera_io_util.h"
+=======
+>>>>>>> p9x
 
 /* #define CONFIG_MSM_ISP_DBG 1 */
 
@@ -25,6 +32,7 @@
 #endif
 
 #define ALT_VECTOR_IDX(x) {x = 3 - x; }
+<<<<<<< HEAD
 #define MAX_ISP_PING_PONG_DUMP_SIZE 20
 struct ping_pong_state {
 	uint32_t vfe_id;
@@ -49,15 +57,31 @@ void msm_isp_dump_ping_pong_mismatch(void);
 void msm_isp_get_status(struct vfe_device *vfe_dev,
 	uint32_t *irq_status0, uint32_t *irq_status1);
 void msm_isp_dump_taskelet_debug(void);
+=======
+
+struct msm_isp_bandwidth_mgr {
+	uint32_t bus_client;
+	uint32_t bus_vector_active_idx;
+	uint32_t use_count;
+	struct msm_isp_bandwidth_info client_info[MAX_ISP_CLIENT];
+};
+
+>>>>>>> p9x
 uint32_t msm_isp_get_framedrop_period(
 	enum msm_vfe_frame_skip_pattern frame_skip_pattern);
 void msm_isp_reset_burst_count_and_frame_drop(
 	struct vfe_device *vfe_dev, struct msm_vfe_axi_stream *stream_info);
 
+<<<<<<< HEAD
 int msm_isp_init_bandwidth_mgr(struct vfe_device *vfe_dev,
 			enum msm_isp_hw_client client);
 int msm_isp_update_bandwidth(enum msm_isp_hw_client client,
 			uint64_t ab, uint64_t ib);
+=======
+int msm_isp_init_bandwidth_mgr(enum msm_isp_hw_client client);
+int msm_isp_update_bandwidth(enum msm_isp_hw_client client,
+	uint64_t ab, uint64_t ib);
+>>>>>>> p9x
 void msm_isp_util_get_bandwidth_stats(struct vfe_device *vfe_dev,
 				      struct msm_isp_statistics *stats);
 void msm_isp_util_update_last_overflow_ab_ib(struct vfe_device *vfe_dev);
@@ -88,6 +112,7 @@ void msm_isp_update_error_frame_count(struct vfe_device *vfe_dev);
 void msm_isp_process_error_info(struct vfe_device *vfe_dev);
 int msm_isp_open_node(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh);
 int msm_isp_close_node(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh);
+<<<<<<< HEAD
 long msm_isp_ioctl(struct v4l2_subdev *sd, unsigned int cmd, void *arg);
 void msm_isp_fetch_engine_done_notify(struct vfe_device *vfe_dev,
 	struct msm_vfe_fetch_engine_info *fetch_engine_info);
@@ -101,4 +126,16 @@ void msm_isp_process_overflow_irq(
 	struct vfe_device *vfe_dev,
 	uint32_t *irq_status0, uint32_t *irq_status1,
 	uint32_t force_overflow);
+=======
+void msm_isp_flush_tasklet(struct vfe_device *vfe_dev);
+long msm_isp_ioctl(struct v4l2_subdev *sd, unsigned int cmd, void *arg);
+int msm_isp_get_clk_info(struct vfe_device *vfe_dev,
+	struct platform_device *pdev, struct msm_cam_clk_info *vfe_clk_info);
+void msm_isp_fetch_engine_done_notify(struct vfe_device *vfe_dev,
+	struct msm_vfe_fetch_engine_info *fetch_engine_info);
+void msm_camera_io_dump_2(void __iomem *addr, int size);
+void msm_isp_print_fourcc_error(const char *origin, uint32_t fourcc_format);
+void msm_isp_get_timestamp(struct msm_isp_timestamp *time_stamp);
+
+>>>>>>> p9x
 #endif /* __MSM_ISP_UTIL_H__ */

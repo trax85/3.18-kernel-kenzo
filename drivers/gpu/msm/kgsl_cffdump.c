@@ -72,6 +72,11 @@ struct cff_op_wait_irq {
 	unsigned char op;
 } __packed;
 
+<<<<<<< HEAD
+=======
+#define CFF_OP_RMW              0x0000000a
+
+>>>>>>> p9x
 struct cff_op_write_mem {
 	unsigned char op;
 	uint addr;

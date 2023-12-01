@@ -1,5 +1,6 @@
 
 generic-y += auxvec.h
+<<<<<<< HEAD
 generic-y += barrier.h
 generic-y += clkdev.h
 generic-y += cputime.h
@@ -11,6 +12,15 @@ generic-y += hash.h
 generic-y += hw_irq.h
 generic-y += irq_regs.h
 generic-y += irq_work.h
+=======
+generic-y += clkdev.h
+generic-y += cputime.h
+generic-y += device.h
+generic-y += emergency-restart.h
+generic-y += exec.h
+generic-y += hw_irq.h
+generic-y += irq_regs.h
+>>>>>>> p9x
 generic-y += kdebug.h
 generic-y += kvm_para.h
 generic-y += local.h
@@ -19,9 +29,12 @@ generic-y += mcs_spinlock.h
 generic-y += mutex.h
 generic-y += param.h
 generic-y += percpu.h
+<<<<<<< HEAD
 generic-y += poll.h
 generic-y += preempt.h
 generic-y += segment.h
+=======
+>>>>>>> p9x
 generic-y += topology.h
 generic-y += trace_clock.h
 generic-y += user.h

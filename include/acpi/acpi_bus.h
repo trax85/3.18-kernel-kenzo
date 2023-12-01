@@ -120,7 +120,12 @@ struct acpi_hotplug_profile {
 	int (*scan_dependent)(struct acpi_device *adev);
 	void (*notify_online)(struct acpi_device *adev);
 	bool enabled:1;
+<<<<<<< HEAD
 	bool demand_offline:1;
+=======
+	bool ignore:1;
+	enum acpi_hotplug_mode mode;
+>>>>>>> p9x
 };
 
 static inline struct acpi_hotplug_profile *to_acpi_hotplug_profile(
@@ -510,9 +515,17 @@ struct acpi_pci_root {
 };
 
 /* helper */
+<<<<<<< HEAD
 
 struct acpi_device *acpi_find_child_device(struct acpi_device *parent,
 					   u64 address, bool check_children);
+=======
+acpi_handle acpi_find_child(acpi_handle, u64, bool);
+static inline acpi_handle acpi_get_child(acpi_handle handle, u64 addr)
+{
+	return acpi_find_child(handle, addr, false);
+}
+>>>>>>> p9x
 int acpi_is_root_bridge(acpi_handle);
 struct acpi_pci_root *acpi_pci_find_root(acpi_handle handle);
 

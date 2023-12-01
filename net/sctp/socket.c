@@ -1247,9 +1247,12 @@ static int __sctp_connect(struct sock *sk,
 
 	timeo = sock_sndtimeo(sk, f_flags & O_NONBLOCK);
 
-	err = sctp_wait_for_connect(asoc, &timeo);
-	if ((err == 0 || err == -EINPROGRESS) && assoc_id)
+	if (assoc_id)
 		*assoc_id = asoc->assoc_id;
+	err = sctp_wait_for_connect(asoc, &timeo);
+	/* Note: the asoc may be freed after the return of
+	 * sctp_wait_for_connect.
+	 */
 
 	/* Don't free association on exit. */
 	asoc = NULL;
@@ -1413,9 +1416,15 @@ struct compat_sctp_getaddrs_old {
 };
 #endif
 
+<<<<<<< HEAD
 static int sctp_getsockopt_connectx3(struct sock *sk, int len,
 				     char __user *optval,
 				     int __user *optlen)
+=======
+SCTP_STATIC int sctp_getsockopt_connectx3(struct sock* sk, int len,
+					char __user *optval,
+					int __user *optlen)
+>>>>>>> p9x
 {
 	struct sctp_getaddrs_old param;
 	sctp_assoc_t assoc_id = 0;
@@ -1566,7 +1575,11 @@ static void sctp_close(struct sock *sk, long timeout)
 	 * held and that should be grabbed before socket lock.
 	 */
 	spin_lock_bh(&net->sctp.addr_wq_lock);
+<<<<<<< HEAD
 	bh_lock_sock_nested(sk);
+=======
+	sctp_bh_lock_sock(sk);
+>>>>>>> p9x
 
 	/* Hold the sock, since sk_common_release() will put sock_put()
 	 * and we have just a little more cleanup.
@@ -1574,7 +1587,11 @@ static void sctp_close(struct sock *sk, long timeout)
 	sock_hold(sk);
 	sk_common_release(sk);
 
+<<<<<<< HEAD
 	bh_unlock_sock(sk);
+=======
+	sctp_bh_unlock_sock(sk);
+>>>>>>> p9x
 	spin_unlock_bh(&net->sctp.addr_wq_lock);
 
 	sock_put(sk);
@@ -4190,7 +4207,11 @@ static int sctp_init_sock(struct sock *sk)
 /* Cleanup any SCTP per socket resources. Must be called with
  * sock_net(sk)->sctp.addr_wq_lock held if sp->do_auto_asconf is true
  */
+<<<<<<< HEAD
 static void sctp_destroy_sock(struct sock *sk)
+=======
+SCTP_STATIC void sctp_destroy_sock(struct sock *sk)
+>>>>>>> p9x
 {
 	struct sctp_sock *sp;
 
@@ -4479,6 +4500,12 @@ int sctp_do_peeloff(struct sock *sk, sctp_assoc_t id, struct socket **sockp)
 
 	if (!asoc)
 		return -EINVAL;
+
+	/* If there is a thread waiting on more sndbuf space for
+	 * sending on this asoc, it cannot be peeled.
+	 */
+	if (waitqueue_active(&asoc->wait))
+		return -EBUSY;
 
 	/* An association cannot be branched off from an already peeled-off
 	 * socket, nor is this supported for tcp style sockets.
@@ -6040,7 +6067,11 @@ static int sctp_getsockopt(struct sock *sk, int level, int optname,
 	if (len < 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	lock_sock(sk);
+=======
+	sctp_lock_sock(sk);
+>>>>>>> p9x
 
 	switch (optname) {
 	case SCTP_STATUS:
@@ -7025,9 +7056,13 @@ static int sctp_wait_for_sndbuf(struct sctp_association *asoc, long *timeo_p,
 		 */
 		release_sock(sk);
 		current_timeo = schedule_timeout(current_timeo);
+<<<<<<< HEAD
 		lock_sock(sk);
 		if (sk != asoc->base.sk)
 			goto do_error;
+=======
+		sctp_lock_sock(sk);
+>>>>>>> p9x
 
 		*timeo_p = current_timeo;
 	}
@@ -7297,6 +7332,22 @@ static inline void sctp_copy_descendant(struct sock *sk_to,
 		ancestor_size += sizeof(struct ipv6_pinfo);
 
 	__inet_sk_copy_descendant(sk_to, sk_from, ancestor_size);
+<<<<<<< HEAD
+=======
+}
+
+static inline void sctp_copy_descendant(struct sock *sk_to,
+					const struct sock *sk_from)
+{
+	int ancestor_size = sizeof(struct inet_sock) +
+			    sizeof(struct sctp_sock) -
+			    offsetof(struct sctp_sock, auto_asconf_list);
+
+	if (sk_from->sk_family == PF_INET6)
+		ancestor_size += sizeof(struct ipv6_pinfo);
+
+	__inet_sk_copy_descendant(sk_to, sk_from, ancestor_size);
+>>>>>>> p9x
 }
 
 /* Populate the fields of the newsk from the oldsk and migrate the assoc

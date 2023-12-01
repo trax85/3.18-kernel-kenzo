@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -14,11 +18,14 @@
 
 #include "msm_isp.h"
 
+<<<<<<< HEAD
 #define HANDLE_TO_IDX(handle) (handle & 0xFF)
 #define SRC_TO_INTF(src) \
 	((src < RDI_INTF_0 || src == VFE_AXI_SRC_MAX) ? VFE_PIX_0 : \
 	(VFE_RAW_0 + src - RDI_INTF_0))
 
+=======
+>>>>>>> p9x
 int msm_isp_axi_create_stream(struct vfe_device *vfe_dev,
 	struct msm_vfe_axi_shared_data *axi_data,
 	struct msm_vfe_axi_stream_request_cmd *stream_cfg_cmd);
@@ -43,17 +50,25 @@ int msm_isp_axi_check_stream_state(
 	struct vfe_device *vfe_dev,
 	struct msm_vfe_axi_stream_cfg_cmd *stream_cfg_cmd);
 
+<<<<<<< HEAD
 int msm_isp_calculate_framedrop(
+=======
+void msm_isp_calculate_framedrop(
+>>>>>>> p9x
 	struct msm_vfe_axi_shared_data *axi_data,
 	struct msm_vfe_axi_stream_request_cmd *stream_cfg_cmd);
 void msm_isp_reset_framedrop(struct vfe_device *vfe_dev,
 	struct msm_vfe_axi_stream *stream_info);
 
 int msm_isp_request_axi_stream(struct vfe_device *vfe_dev, void *arg);
+<<<<<<< HEAD
 void msm_isp_get_avtimer_ts(struct msm_isp_timestamp *time_stamp);
 int msm_isp_cfg_axi_stream(struct vfe_device *vfe_dev, void *arg);
 int msm_isp_update_stream_bandwidth(struct vfe_device *vfe_dev,
 	enum msm_vfe_hw_state hw_state);
+=======
+int msm_isp_cfg_axi_stream(struct vfe_device *vfe_dev, void *arg);
+>>>>>>> p9x
 int msm_isp_release_axi_stream(struct vfe_device *vfe_dev, void *arg);
 int msm_isp_update_axi_stream(struct vfe_device *vfe_dev, void *arg);
 void msm_isp_axi_cfg_update(struct vfe_device *vfe_dev,
@@ -76,6 +91,7 @@ void msm_isp_notify(struct vfe_device *vfe_dev, uint32_t event_type,
 
 void msm_isp_process_axi_irq(struct vfe_device *vfe_dev,
 	uint32_t irq_status0, uint32_t irq_status1,
+<<<<<<< HEAD
 	uint32_t pingpong_status, struct msm_isp_timestamp *ts);
 
 void msm_isp_axi_disable_all_wm(struct vfe_device *vfe_dev);
@@ -83,6 +99,14 @@ void msm_isp_axi_disable_all_wm(struct vfe_device *vfe_dev);
 int msm_isp_print_ping_pong_address(struct vfe_device *vfe_dev,
 	unsigned long fault_addr);
 
+=======
+	struct msm_isp_timestamp *ts);
+
+void msm_isp_axi_disable_all_wm(struct vfe_device *vfe_dev);
+
+void msm_isp_halt_send_error(struct vfe_device *vfe_dev, uint32_t event);
+int msm_isp_print_ping_pong_address(struct vfe_device *vfe_dev);
+>>>>>>> p9x
 void msm_isp_increment_frame_id(struct vfe_device *vfe_dev,
 	enum msm_vfe_input_src frame_src, struct msm_isp_timestamp *ts);
 
@@ -90,6 +114,7 @@ int msm_isp_drop_frame(struct vfe_device *vfe_dev,
 	struct msm_vfe_axi_stream *stream_info, struct msm_isp_timestamp *ts,
 	struct msm_isp_sof_info *sof_info);
 
+<<<<<<< HEAD
 void msm_isp_halt(struct vfe_device *vfe_dev);
 void msm_isp_halt_send_error(struct vfe_device *vfe_dev, uint32_t event);
 
@@ -124,4 +149,6 @@ static inline void msm_isp_cfg_stream_scratch(struct vfe_device *vfe_dev,
 int msm_isp_cfg_offline_ping_pong_address(struct vfe_device *vfe_dev,
 	struct msm_vfe_axi_stream *stream_info, uint32_t pingpong_status,
 	uint32_t buf_idx);
+=======
+>>>>>>> p9x
 #endif /* __MSM_ISP_AXI_UTIL_H__ */

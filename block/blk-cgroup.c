@@ -881,6 +881,16 @@ void blkcg_drain_queue(struct request_queue *q)
 	if (!q->root_blkg)
 		return;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * @q could be exiting and already have destroyed all blkgs as
+	 * indicated by NULL root_blkg.  If so, don't confuse policies.
+	 */
+	if (!q->root_blkg)
+		return;
+
+>>>>>>> p9x
 	blk_throtl_drain(q);
 }
 

@@ -42,6 +42,7 @@
 #include "hw-me.h"
 
 /* mei_pci_tbl - PCI Device ID Table */
+<<<<<<< HEAD
 static const struct pci_device_id mei_me_pci_tbl[] = {
 	{MEI_PCI_DEVICE(MEI_DEV_ID_82946GZ, mei_me_legacy_cfg)},
 	{MEI_PCI_DEVICE(MEI_DEV_ID_82G35, mei_me_legacy_cfg)},
@@ -82,6 +83,45 @@ static const struct pci_device_id mei_me_pci_tbl[] = {
 	{MEI_PCI_DEVICE(MEI_DEV_ID_LPT_HR, mei_me_lpt_cfg)},
 	{MEI_PCI_DEVICE(MEI_DEV_ID_WPT_LP, mei_me_pch_cfg)},
 	{MEI_PCI_DEVICE(MEI_DEV_ID_WPT_LP_2, mei_me_pch_cfg)},
+=======
+static DEFINE_PCI_DEVICE_TABLE(mei_me_pci_tbl) = {
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_82946GZ)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_82G35)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_82Q965)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_82G965)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_82GM965)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_82GME965)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_ICH9_82Q35)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_ICH9_82G33)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_ICH9_82Q33)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_ICH9_82X38)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_ICH9_3200)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_ICH9_6)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_ICH9_7)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_ICH9_8)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_ICH9_9)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_ICH9_10)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_ICH9M_1)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_ICH9M_2)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_ICH9M_3)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_ICH9M_4)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_ICH10_1)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_ICH10_2)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_ICH10_3)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_ICH10_4)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_IBXPK_1)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_IBXPK_2)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_CPT_1)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_PBG_1)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_PPT_1)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_PPT_2)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_PPT_3)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_LPT_H)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_LPT_W)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_LPT_LP)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_LPT_HR)},
+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, MEI_DEV_ID_WPT_LP)},
+>>>>>>> p9x
 
 	/* required last entry */
 	{0, }
@@ -108,12 +148,40 @@ static inline void mei_me_unset_pm_domain(struct mei_device *dev) {}
 static bool mei_me_quirk_probe(struct pci_dev *pdev,
 				const struct mei_cfg *cfg)
 {
+<<<<<<< HEAD
 	if (cfg->quirk_probe && cfg->quirk_probe(pdev)) {
 		dev_info(&pdev->dev, "Device doesn't have valid ME Interface\n");
 		return false;
 	}
 
+=======
+	u32 reg;
+	/* Cougar Point || Patsburg */
+	if (ent->device == MEI_DEV_ID_CPT_1 ||
+	    ent->device == MEI_DEV_ID_PBG_1) {
+		pci_read_config_dword(pdev, PCI_CFG_HFS_2, &reg);
+		/* make sure that bit 9 (NM) is up and bit 10 (DM) is down */
+		if ((reg & 0x600) == 0x200)
+			goto no_mei;
+	}
+
+	/* Lynx Point */
+	if (ent->device == MEI_DEV_ID_LPT_H  ||
+	    ent->device == MEI_DEV_ID_LPT_W  ||
+	    ent->device == MEI_DEV_ID_LPT_HR) {
+		/* Read ME FW Status check for SPS Firmware */
+		pci_read_config_dword(pdev, PCI_CFG_HFS_1, &reg);
+		/* if bits [19:16] = 15, running SPS Firmware */
+		if ((reg & 0xf0000) == 0xf0000)
+			goto no_mei;
+	}
+
+>>>>>>> p9x
 	return true;
+
+no_mei:
+	dev_info(&pdev->dev, "Device doesn't have valid ME Interface\n");
+	return false;
 }
 
 /**

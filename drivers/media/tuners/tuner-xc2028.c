@@ -890,6 +890,10 @@ read_not_reliable:
 
 fail:
 	free_firmware(priv);
+<<<<<<< HEAD
+=======
+	priv->state = XC2028_SLEEP;
+>>>>>>> p9x
 
 	if (retry_count < 8) {
 		msleep(50);
@@ -1401,6 +1405,7 @@ static int xc2028_set_config(struct dvb_frontend *fe, void *priv_cfg)
 	/*
 	 * Copy the config data.
 	 */
+<<<<<<< HEAD
 	kfree(priv->ctrl.fname);
 	priv->ctrl.fname = NULL;
 	memcpy(&priv->ctrl, p, sizeof(priv->ctrl));
@@ -1411,6 +1416,9 @@ static int xc2028_set_config(struct dvb_frontend *fe, void *priv_cfg)
 			goto unlock;
 		}
 	}
+=======
+	memcpy(&priv->ctrl, p, sizeof(priv->ctrl));
+>>>>>>> p9x
 
 	/*
 	 * If firmware name changed, frees firmware. As free_firmware will

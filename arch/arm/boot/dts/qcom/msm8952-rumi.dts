@@ -74,10 +74,17 @@
 
 &pm8950_vadc {
 	chan@11 {
+<<<<<<< HEAD
 		/delete-property/ qcom,vadc-thermal-node;
 	};
 	chan@32 {
 		/delete-property/ qcom,vadc-thermal-node;
+=======
+	        /delete-property/ qcom,vadc-thermal-node;
+	};
+	chan@32 {
+	        /delete-property/ qcom,vadc-thermal-node;
+>>>>>>> p9x
 	};
 	chan@3c {
 		/delete-property/ qcom,vadc-thermal-node;

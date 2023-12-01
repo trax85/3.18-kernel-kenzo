@@ -48,7 +48,65 @@ static struct cpufreq_frequency_table kirkwood_freq_table[] = {
 
 static unsigned int kirkwood_cpufreq_get_cpu_frequency(unsigned int cpu)
 {
+<<<<<<< HEAD
 	return clk_get_rate(priv.powersave_clk) / 1000;
+=======
+	if (__clk_is_enabled(priv.powersave_clk))
+		return kirkwood_freq_table[1].frequency;
+	return kirkwood_freq_table[0].frequency;
+}
+
+static void kirkwood_cpufreq_set_cpu_state(struct cpufreq_policy *policy,
+		unsigned int index)
+{
+	struct cpufreq_freqs freqs;
+	unsigned int state = kirkwood_freq_table[index].driver_data;
+	unsigned long reg;
+
+	freqs.old = kirkwood_cpufreq_get_cpu_frequency(0);
+	freqs.new = kirkwood_freq_table[index].frequency;
+
+	cpufreq_notify_transition(policy, &freqs, CPUFREQ_PRECHANGE);
+
+	dev_dbg(priv.dev, "Attempting to set frequency to %i KHz\n",
+		kirkwood_freq_table[index].frequency);
+	dev_dbg(priv.dev, "old frequency was %i KHz\n",
+		kirkwood_cpufreq_get_cpu_frequency(0));
+
+	if (freqs.old != freqs.new) {
+		local_irq_disable();
+
+		/* Disable interrupts to the CPU */
+		reg = readl_relaxed(priv.base);
+		reg |= CPU_SW_INT_BLK;
+		writel_relaxed(reg, priv.base);
+
+		switch (state) {
+		case STATE_CPU_FREQ:
+			clk_disable(priv.powersave_clk);
+			break;
+		case STATE_DDR_FREQ:
+			clk_enable(priv.powersave_clk);
+			break;
+		}
+
+		/* Wait-for-Interrupt, while the hardware changes frequency */
+		cpu_do_idle();
+
+		/* Enable interrupts to the CPU */
+		reg = readl_relaxed(priv.base);
+		reg &= ~CPU_SW_INT_BLK;
+		writel_relaxed(reg, priv.base);
+
+		local_irq_enable();
+	}
+	cpufreq_notify_transition(policy, &freqs, CPUFREQ_POSTCHANGE);
+};
+
+static int kirkwood_cpufreq_verify(struct cpufreq_policy *policy)
+{
+	return cpufreq_frequency_table_verify(policy, kirkwood_freq_table);
+>>>>>>> p9x
 }
 
 static int kirkwood_cpufreq_target(struct cpufreq_policy *policy,
@@ -99,7 +157,11 @@ static struct cpufreq_driver kirkwood_cpufreq_driver = {
 	.target_index = kirkwood_cpufreq_target,
 	.init	= kirkwood_cpufreq_cpu_init,
 	.name	= "kirkwood-cpufreq",
+<<<<<<< HEAD
 	.attr	= cpufreq_generic_attr,
+=======
+	.attr	= kirkwood_cpufreq_attr,
+>>>>>>> p9x
 };
 
 static int kirkwood_cpufreq_probe(struct platform_device *pdev)

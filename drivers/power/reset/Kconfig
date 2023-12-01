@@ -57,6 +57,7 @@ config POWER_RESET_GPIO
 	  If your board needs a GPIO high/low to power down, say Y and
 	  create a binding in your devicetree.
 
+<<<<<<< HEAD
 config POWER_RESET_GPIO_RESTART
 	bool "GPIO restart driver"
 	depends on OF_GPIO
@@ -82,6 +83,11 @@ config POWER_RESET_MSM
 	bool "Qualcomm MSM power-off driver"
 	depends on ARCH_MSM || ARCH_QCOM
 	depends on POWER_RESET
+=======
+config POWER_RESET_MSM
+	bool "Qualcomm MSM power-off driver"
+	depends on POWER_RESET && ARCH_MSM
+>>>>>>> p9x
 	help
 	  Power off and restart support for Qualcomm boards.
 
@@ -95,6 +101,7 @@ config MSM_DLOAD_MODE
 		enabled via another mechanism.
 
 config MSM_PRESERVE_MEM
+<<<<<<< HEAD
  	bool "Always preserve memory on restart"
  	depends on POWER_RESET_MSM
  	help
@@ -102,6 +109,15 @@ config MSM_PRESERVE_MEM
  	  the system will always perform a hard reset, which wipes out
  	  persistent memory contents. Select this option to always perform
  	  a soft reset that preserves memory contents.
+=======
+	bool "Always preserve memory on restart"
+	depends on POWER_RESET_MSM
+	help
+	  If crash to download mode is disabled and restart reason is null
+	  the system will always perform a hard reset, which wipes out
+	  persistent memory contents. Select this option to always perform
+	  a soft reset that preserves memory contents.
+>>>>>>> p9x
 
 config POWER_RESET_QNAP
 	bool "QNAP power-off driver"

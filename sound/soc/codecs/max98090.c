@@ -1786,6 +1786,7 @@ static int max98090_set_bias_level(struct snd_soc_codec *codec,
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
+<<<<<<< HEAD
 		break;
 
 	case SND_SOC_BIAS_PREPARE:
@@ -1815,6 +1816,31 @@ static int max98090_set_bias_level(struct snd_soc_codec *codec,
 		}
 		break;
 
+=======
+		if (max98090->jack_state == M98090_JACK_STATE_HEADSET) {
+			/*
+			 * Set to normal bias level.
+			 */
+			snd_soc_update_bits(codec, M98090_REG_MIC_BIAS_VOLTAGE,
+				M98090_MBVSEL_MASK, M98090_MBVSEL_2V8);
+		}
+		break;
+
+	case SND_SOC_BIAS_PREPARE:
+		break;
+
+	case SND_SOC_BIAS_STANDBY:
+		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+			ret = regcache_sync(max98090->regmap);
+			if (ret != 0) {
+				dev_err(codec->dev,
+					"Failed to sync cache: %d\n", ret);
+				return ret;
+			}
+		}
+		break;
+
+>>>>>>> p9x
 	case SND_SOC_BIAS_OFF:
 		/* Set internal pull-up to lowest power mode */
 		snd_soc_update_bits(codec, M98090_REG_JACK_DETECT,
@@ -2370,6 +2396,20 @@ static int max98090_probe(struct snd_soc_codec *codec)
 	snd_soc_write(codec, M98090_REG_JACK_DETECT,
 		M98090_JDETEN_MASK | M98090_JDEB_25MS);
 
+<<<<<<< HEAD
+=======
+	/* Register for interrupts */
+	dev_dbg(codec->dev, "irq = %d\n", max98090->irq);
+
+	ret = devm_request_threaded_irq(codec->dev, max98090->irq, NULL,
+		max98090_interrupt, IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+		"max98090_interrupt", codec);
+	if (ret < 0) {
+		dev_err(codec->dev, "request_irq failed: %d\n",
+			ret);
+	}
+
+>>>>>>> p9x
 	/*
 	 * Clear any old interrupts.
 	 * An old interrupt ocurring prior to installing the ISR

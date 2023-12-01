@@ -57,8 +57,12 @@ int do_truncate2(struct vfsmount *mnt, struct dentry *dentry, loff_t length,
 		newattrs.ia_valid |= ret | ATTR_FORCE;
 
 	mutex_lock(&dentry->d_inode->i_mutex);
+<<<<<<< HEAD
 	/* Note any delegations or leases have already been broken: */
 	ret = notify_change2(mnt, dentry, &newattrs, NULL);
+=======
+	ret = notify_change2(mnt, dentry, &newattrs);
+>>>>>>> p9x
 	mutex_unlock(&dentry->d_inode->i_mutex);
 	return ret;
 }
@@ -511,7 +515,11 @@ retry_deleg:
 		goto out_unlock;
 	newattrs.ia_mode = (mode & S_IALLUGO) | (inode->i_mode & ~S_IALLUGO);
 	newattrs.ia_valid = ATTR_MODE | ATTR_CTIME;
+<<<<<<< HEAD
 	error = notify_change2(path->mnt, path->dentry, &newattrs, &delegated_inode);
+=======
+	error = notify_change2(path->mnt, path->dentry, &newattrs);
+>>>>>>> p9x
 out_unlock:
 	mutex_unlock(&inode->i_mutex);
 	if (delegated_inode) {
@@ -591,7 +599,11 @@ retry_deleg:
 	mutex_lock(&inode->i_mutex);
 	error = security_path_chown(path, uid, gid);
 	if (!error)
+<<<<<<< HEAD
 		error = notify_change2(path->mnt, path->dentry, &newattrs, &delegated_inode);
+=======
+		error = notify_change2(path->mnt, path->dentry, &newattrs);
+>>>>>>> p9x
 	mutex_unlock(&inode->i_mutex);
 	if (delegated_inode) {
 		error = break_deleg_wait(&delegated_inode);
@@ -664,6 +676,27 @@ out:
 	return error;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * You have to be very careful that these write
+ * counts get cleaned up in error cases and
+ * upon __fput().  This should probably never
+ * be called outside of __dentry_open().
+ */
+static inline int __get_file_write_access(struct inode *inode,
+					  struct vfsmount *mnt)
+{
+	int error = get_write_access(inode);
+	if (error)
+		return error;
+	error = __mnt_want_write(mnt);
+	if (error)
+		put_write_access(inode);
+	return error;
+}
+
+>>>>>>> p9x
 int open_check_o_direct(struct file *f)
 {
 	/* NB: we're sure to have correct a_ops only after f_op->open */
@@ -689,7 +722,18 @@ static int do_dentry_open(struct file *f,
 				FMODE_PREAD | FMODE_PWRITE;
 
 	path_get(&f->f_path);
+<<<<<<< HEAD
 	f->f_inode = inode;
+=======
+	inode = f->f_inode = f->f_path.dentry->d_inode;
+	if (f->f_mode & FMODE_WRITE && !special_file(inode->i_mode)) {
+		error = __get_file_write_access(inode, f->f_path.mnt);
+		if (error)
+			goto cleanup_file;
+		file_take_write(f);
+	}
+
+>>>>>>> p9x
 	f->f_mapping = inode->i_mapping;
 
 	if (unlikely(f->f_flags & O_PATH)) {
@@ -752,9 +796,24 @@ static int do_dentry_open(struct file *f,
 
 cleanup_all:
 	fops_put(f->f_op);
+<<<<<<< HEAD
 	if (f->f_mode & FMODE_WRITER) {
 		put_write_access(inode);
 		__mnt_drop_write(f->f_path.mnt);
+=======
+	if (f->f_mode & FMODE_WRITE) {
+		if (!special_file(inode->i_mode)) {
+			/*
+			 * We don't consider this a real
+			 * mnt_want/drop_write() pair
+			 * because it all happenend right
+			 * here, so just reset the state.
+			 */
+			put_write_access(inode);
+			file_reset_write(f);
+			__mnt_drop_write(f->f_path.mnt);
+		}
+>>>>>>> p9x
 	}
 cleanup_file:
 	path_put(&f->f_path);
@@ -1072,6 +1131,7 @@ int filp_close(struct file *filp, fl_owner_t id)
 		dnotify_flush(filp, id);
 		locks_remove_posix(filp, id);
 	}
+	security_file_close(filp);
 	fput(filp);
 	return retval;
 }

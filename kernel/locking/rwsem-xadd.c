@@ -5,14 +5,18 @@
  *
  * Writer lock-stealing by Alex Shi <alex.shi@intel.com>
  * and Michel Lespinasse <walken@google.com>
+<<<<<<< HEAD
  *
  * Optimistic spinning by Tim Chen <tim.c.chen@intel.com>
  * and Davidlohr Bueso <davidlohr@hp.com>. Based on mutexes.
+=======
+>>>>>>> p9x
  */
 #include <linux/rwsem.h>
 #include <linux/sched.h>
 #include <linux/init.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <linux/sched/rt.h>
 
 #include "mcs_spinlock.h"
@@ -65,6 +69,8 @@
  *	 steal the lock.
  *
  */
+=======
+>>>>>>> p9x
 
 /*
  * Initialize an rwsem:
@@ -82,10 +88,13 @@ void __init_rwsem(struct rw_semaphore *sem, const char *name,
 	sem->count = RWSEM_UNLOCKED_VALUE;
 	raw_spin_lock_init(&sem->wait_lock);
 	INIT_LIST_HEAD(&sem->wait_list);
+<<<<<<< HEAD
 #ifdef CONFIG_RWSEM_SPIN_ON_OWNER
 	sem->owner = NULL;
 	osq_lock_init(&sem->osq);
 #endif
+=======
+>>>>>>> p9x
 }
 
 EXPORT_SYMBOL(__init_rwsem);
@@ -200,9 +209,14 @@ __rwsem_do_wake(struct rw_semaphore *sem, enum rwsem_wake_type wake_type)
 }
 
 /*
+<<<<<<< HEAD
  * Wait for the read lock to be granted
  */
 __visible
+=======
+ * wait for the read lock to be granted
+ */
+>>>>>>> p9x
 struct rw_semaphore __sched *rwsem_down_read_failed(struct rw_semaphore *sem)
 {
 	long count, adjustment = -RWSEM_ACTIVE_READ_BIAS;
@@ -246,6 +260,7 @@ struct rw_semaphore __sched *rwsem_down_read_failed(struct rw_semaphore *sem)
 
 	return sem;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(rwsem_down_read_failed);
 
 static inline bool rwsem_try_write_lock(long count, struct rw_semaphore *sem)
@@ -451,16 +466,67 @@ struct rw_semaphore __sched *rwsem_down_write_failed(struct rw_semaphore *sem)
 	while (true) {
 		if (rwsem_try_write_lock(count, sem))
 			break;
+=======
+
+/*
+ * wait until we successfully acquire the write lock
+ */
+struct rw_semaphore __sched *rwsem_down_write_failed(struct rw_semaphore *sem)
+{
+	long count, adjustment = -RWSEM_ACTIVE_WRITE_BIAS;
+	struct rwsem_waiter waiter;
+	struct task_struct *tsk = current;
+
+	/* set up my own style of waitqueue */
+	waiter.task = tsk;
+	waiter.type = RWSEM_WAITING_FOR_WRITE;
+
+	raw_spin_lock_irq(&sem->wait_lock);
+	if (list_empty(&sem->wait_list))
+		adjustment += RWSEM_WAITING_BIAS;
+	list_add_tail(&waiter.list, &sem->wait_list);
+
+	/* we're now waiting on the lock, but no longer actively locking */
+	count = rwsem_atomic_update(adjustment, sem);
+
+	/* If there were already threads queued before us and there are no
+	 * active writers, the lock must be read owned; so we try to wake
+	 * any read locks that were queued ahead of us. */
+	if (count > RWSEM_WAITING_BIAS &&
+	    adjustment == -RWSEM_ACTIVE_WRITE_BIAS)
+		sem = __rwsem_do_wake(sem, RWSEM_WAKE_READERS);
+
+	/* wait until we successfully acquire the lock */
+	set_task_state(tsk, TASK_UNINTERRUPTIBLE);
+	while (true) {
+		if (!(count & RWSEM_ACTIVE_MASK)) {
+			/* Try acquiring the write lock. */
+			count = RWSEM_ACTIVE_WRITE_BIAS;
+			if (!list_is_singular(&sem->wait_list))
+				count += RWSEM_WAITING_BIAS;
+
+			if (sem->count == RWSEM_WAITING_BIAS &&
+			    cmpxchg(&sem->count, RWSEM_WAITING_BIAS, count) ==
+							RWSEM_WAITING_BIAS)
+				break;
+		}
+
+>>>>>>> p9x
 		raw_spin_unlock_irq(&sem->wait_lock);
 
 		/* Block until there are no active lockers. */
 		do {
 			schedule();
+<<<<<<< HEAD
 			set_current_state(TASK_UNINTERRUPTIBLE);
+=======
+			set_task_state(tsk, TASK_UNINTERRUPTIBLE);
+>>>>>>> p9x
 		} while ((count = sem->count) & RWSEM_ACTIVE_MASK);
 
 		raw_spin_lock_irq(&sem->wait_lock);
 	}
+<<<<<<< HEAD
 	__set_current_state(TASK_RUNNING);
 
 	list_del(&waiter.list);
@@ -469,12 +535,24 @@ struct rw_semaphore __sched *rwsem_down_write_failed(struct rw_semaphore *sem)
 	return sem;
 }
 EXPORT_SYMBOL(rwsem_down_write_failed);
+=======
+
+	list_del(&waiter.list);
+	raw_spin_unlock_irq(&sem->wait_lock);
+	tsk->state = TASK_RUNNING;
+
+	return sem;
+}
+>>>>>>> p9x
 
 /*
  * handle waking up a waiter on the semaphore
  * - up_read/up_write has decremented the active part of count if we come here
  */
+<<<<<<< HEAD
 __visible
+=======
+>>>>>>> p9x
 struct rw_semaphore *rwsem_wake(struct rw_semaphore *sem)
 {
 	unsigned long flags;
@@ -489,14 +567,20 @@ struct rw_semaphore *rwsem_wake(struct rw_semaphore *sem)
 
 	return sem;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(rwsem_wake);
+=======
+>>>>>>> p9x
 
 /*
  * downgrade a write lock into a read lock
  * - caller incremented waiting part of count and discovered it still negative
  * - just wake up any readers at the front of the queue
  */
+<<<<<<< HEAD
 __visible
+=======
+>>>>>>> p9x
 struct rw_semaphore *rwsem_downgrade_wake(struct rw_semaphore *sem)
 {
 	unsigned long flags;
@@ -511,4 +595,11 @@ struct rw_semaphore *rwsem_downgrade_wake(struct rw_semaphore *sem)
 
 	return sem;
 }
+<<<<<<< HEAD
+=======
+
+EXPORT_SYMBOL(rwsem_down_read_failed);
+EXPORT_SYMBOL(rwsem_down_write_failed);
+EXPORT_SYMBOL(rwsem_wake);
+>>>>>>> p9x
 EXPORT_SYMBOL(rwsem_downgrade_wake);

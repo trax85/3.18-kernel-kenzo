@@ -10,6 +10,7 @@ obj-$(CONFIG_OF_TOUCHSCREEN)		+= of_touchscreen.o
 obj-$(CONFIG_TOUCHSCREEN_88PM860X)	+= 88pm860x-ts.o
 obj-$(CONFIG_TOUCHSCREEN_AD7877)	+= ad7877.o
 obj-$(CONFIG_TOUCHSCREEN_AD7879)	+= ad7879.o
+obj-$(CONFIG_TOUCHSCREEN_ATMEL_MXTS)	+= atmel/
 obj-$(CONFIG_TOUCHSCREEN_AD7879_I2C)	+= ad7879-i2c.o
 obj-$(CONFIG_TOUCHSCREEN_AD7879_SPI)	+= ad7879-spi.o
 obj-$(CONFIG_TOUCHSCREEN_ADS7846)	+= ads7846.o
@@ -17,6 +18,10 @@ obj-$(CONFIG_TOUCHSCREEN_AR1021_I2C)	+= ar1021_i2c.o
 #obj-$(CONFIG_TOUCHSCREEN_ATMEL_MXTS)	+= atmel/
 obj-$(CONFIG_TOUCHSCREEN_ATMEL_MXT)	+= atmel_mxt_ts.o
 obj-$(CONFIG_TOUCHSCREEN_ATMEL_MAXTOUCH_TS)	+= atmel_maxtouch_ts.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_TOUCHSCREEN_ATMEL_TSADCC)	+= atmel_tsadcc.o
+>>>>>>> p9x
 obj-$(CONFIG_TOUCHSCREEN_AUO_PIXCIR)	+= auo-pixcir-ts.o
 obj-$(CONFIG_TOUCHSCREEN_BU21013)	+= bu21013_ts.o
 obj-$(CONFIG_TOUCHSCREEN_CY8CTMG110)	+= cy8ctmg110_ts.o
@@ -62,10 +67,14 @@ obj-$(CONFIG_TOUCHSCREEN_PIXCIR)	+= pixcir_i2c_ts.o
 obj-$(CONFIG_TOUCHSCREEN_S3C2410)	+= s3c2410_ts.o
 obj-$(CONFIG_TOUCHSCREEN_ST1232)	+= st1232.o
 obj-$(CONFIG_TOUCHSCREEN_STMPE)		+= stmpe-ts.o
+<<<<<<< HEAD
 obj-$(CONFIG_TOUCHSCREEN_SUN4I)		+= sun4i-ts.o
 obj-$(CONFIG_TOUCHSCREEN_SUR40)		+= sur40.o
 obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_v21) += synaptics_dsx/
 obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_v26) += synaptics_dsx_2.6/
+=======
+obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_v21) += synaptics_dsx/
+>>>>>>> p9x
 obj-$(CONFIG_TOUCHSCREEN_TI_AM335X_TSC)	+= ti_am335x_tsc.o
 obj-$(CONFIG_TOUCHSCREEN_FT5X06)  += focal_mcap_test_lib.a
 obj-$(CONFIG_TOUCHSCREEN_TOUCHIT213)	+= touchit213.o
@@ -87,6 +96,7 @@ obj-$(CONFIG_TOUCHSCREEN_WM97XX_MAINSTONE)	+= mainstone-wm97xx.o
 obj-$(CONFIG_TOUCHSCREEN_WM97XX_ZYLONITE)	+= zylonite-wm97xx.o
 obj-$(CONFIG_TOUCHSCREEN_W90X900)	+= w90p910_ts.o
 obj-$(CONFIG_TOUCHSCREEN_TPS6507X)	+= tps6507x-ts.o
+<<<<<<< HEAD
 obj-$(CONFIG_TOUCHSCREEN_ZFORCE)	+= zforce_ts.o
 obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_I2C_RMI4)		+= synaptics_i2c_rmi4.o
 obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_RMI4_DEV)	+= synaptics_rmi_dev.o
@@ -100,3 +110,22 @@ obj-y	+= lct_tp_fm_info.o
 	obj-y	+= lct_ctp_upgrade.o
 	obj-y	+= lct_if_ctp_upgrade.o
 	obj-$(CONFIG_TOUCHSCREEN_GESTURE)	+= lct_ctp_gesture.o
+=======
+obj-$(CONFIG_TOUCHSCREEN_FT5X06)	+= ft5x06_ts.o
+obj-$(CONFIG_TOUCHSCREEN_FT5X06)  += focal_mcap_test_lib.a
+obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_RMI4_DEV)	+= synaptics_rmi_dev.o
+obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_FW_UPDATE) 	+= synaptics_fw_update.o
+obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_I2C_RMI4)		+= synaptics_i2c_rmi4.o
+obj-$(CONFIG_TOUCHSCREEN_GT9XX)		+= gt9xx/
+obj-$(CONFIG_TOUCHSCREEN_FT5X46)	+= ft5x46/
+obj-$(CONFIG_TOUCHSCREEN_BU21150)	+= bu21150.o
+obj-$(CONFIG_INPUT_MT_WRAPPER)		+= input_mt_wrapper.o
+obj-$(CONFIG_TOUCHSCREEN_IT7260_I2C)	+= it7258_ts_i2c.o
+
+obj-y	+= lct_tp_fm_info.o
+obj-y	+= lct_ctp_selftest.o
+obj-y	+= lct_ctp_upgrade.o
+obj-y	+= lct_if_ctp_upgrade.o
+obj-$(CONFIG_TOUCHSCREEN_GESTURE)	+= lct_ctp_gesture.o
+obj-$(CONFIG_WAKE_GESTURES)		+= wake_gestures.o
+>>>>>>> p9x

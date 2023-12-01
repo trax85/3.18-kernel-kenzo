@@ -381,8 +381,37 @@ void __init mem_init(void)
 
 	register_page_bootmem_info();
 	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
+<<<<<<< HEAD
 	set_max_mapnr(max_pfn);
 	free_all_bootmem();
+=======
+
+#ifdef CONFIG_NEED_MULTIPLE_NODES
+        for_each_online_node(nid) {
+		if (NODE_DATA(nid)->node_spanned_pages != 0) {
+			printk("freeing bootmem node %d\n", nid);
+			free_all_bootmem_node(NODE_DATA(nid));
+		}
+	}
+#else
+	max_mapnr = max_pfn;
+	free_all_bootmem();
+#endif
+	for_each_online_pgdat(pgdat) {
+		for (i = 0; i < pgdat->node_spanned_pages; i++) {
+			if (!pfn_valid(pgdat->node_start_pfn + i))
+				continue;
+			page = pgdat_page_nr(pgdat, i);
+			if (PageReserved(page))
+				reservedpages++;
+		}
+	}
+
+	codesize = (unsigned long)&_sdata - (unsigned long)&_stext;
+	datasize = (unsigned long)&_edata - (unsigned long)&_sdata;
+	initsize = (unsigned long)&__init_end - (unsigned long)&__init_begin;
+	bsssize = (unsigned long)&__bss_stop - (unsigned long)&__bss_start;
+>>>>>>> p9x
 
 #ifdef CONFIG_HIGHMEM
 	{

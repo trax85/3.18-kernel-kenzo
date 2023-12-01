@@ -13,11 +13,18 @@
 &soc {
 	qcom,iommu-domains {
 		compatible = "qcom,iommu-domains";
+<<<<<<< HEAD
 		lpass_q6_smmu: qcom,iommu-domain1 {
 			label = "adsp_io";
 			qcom,iommu-contexts = <&adsp_io>;
 			qcom,virtual-addr-pool = <0x10000000 0x0FFFFFFF>;
 			#iommu-cells = <1>;
+=======
+		qcom,iommu-domain1 {
+			label = "lpass_audio";
+			qcom,iommu-contexts = <&adsp_io>;
+			qcom,virtual-addr-pool = <0x10000000 0x0FFFFFFF>;
+>>>>>>> p9x
 		};
 		/*
 		 * non-secure addr pool from 1500 MB to 3532 MB
@@ -59,6 +66,7 @@
 			qcom,virtual-addr-pool = <0x1000000 0x24800000>;
 			qcom,secure-domain;
 		};
+<<<<<<< HEAD
 
 		/*
 		 * non-secure addr pool from 2048MB to 4096MB
@@ -68,5 +76,7 @@
 			qcom,iommu-contexts = <&adsp_shared>;
 			qcom,virtual-addr-pool = <0x80000000 0x7FFFFFFF>;
 		};
+=======
+>>>>>>> p9x
 	};
 };

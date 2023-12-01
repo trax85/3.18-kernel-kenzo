@@ -118,8 +118,12 @@ struct ci13xxx_ep {
 	struct dma_pool                       *td_pool;
 	struct ci13xxx_td                     *last_zptr;
 	dma_addr_t                            last_zdma;
+<<<<<<< HEAD
 	unsigned long                         dTD_update_fail_count;
 	unsigned long                         dTD_active_re_q_count;
+=======
+	unsigned long dTD_update_fail_count;
+>>>>>>> p9x
 	unsigned long			      prime_fail_count;
 	int				      prime_timer_count;
 	struct timer_list		      prime_timer;
@@ -137,6 +141,10 @@ struct ci13xxx_udc_driver {
 #define CI13XXX_PULLUP_ON_VBUS		BIT(2)
 #define CI13XXX_DISABLE_STREAMING	BIT(3)
 #define CI13XXX_ZERO_ITC		BIT(4)
+<<<<<<< HEAD
+=======
+#define CI13XXX_IS_OTG			BIT(5)
+>>>>>>> p9x
 #define CI13XXX_ENABLE_AHB2AHB_BYPASS	BIT(6)
 
 #define CI13XXX_CONTROLLER_RESET_EVENT			0
@@ -148,8 +156,17 @@ struct ci13xxx_udc_driver {
 #define CI13XXX_CONTROLLER_UDC_STARTED_EVENT		6
 #define CI13XXX_CONTROLLER_ERROR_EVENT			7
 
+<<<<<<< HEAD
 	void	(*notify_event)(struct ci13xxx *udc, unsigned event);
 	bool    (*in_lpm)(struct ci13xxx *udc);
+=======
+	void	(*notify_event) (struct ci13xxx *udc, unsigned event);
+	bool (*cancel_pending_suspend)(struct ci13xxx *udc);
+	bool    (*in_lpm) (struct ci13xxx *udc);
+	void    (*set_fpr_flag) (struct ci13xxx *udc);
+	struct clk *system_clk;
+	struct clk *pclk;
+>>>>>>> p9x
 };
 
 /* CI13XXX UDC descriptor & global resources */
@@ -178,9 +195,23 @@ struct ci13xxx {
 	int                        softconnect; /* is pull-up enable allowed */
 	unsigned long dTD_update_fail_count;
 	struct usb_phy            *transceiver; /* Transceiver struct */
+<<<<<<< HEAD
 	bool                      skip_flush; /* skip flushing remaining EP
 						upon flush timeout for the
 						first EP. */
+=======
+	struct clk                *system_clk;
+	struct clk                *pclk;
+	bool                      skip_flush; /* skip flushing remaining EP
+						upon flush timeout for the
+						first EP. */
+	u32			  max_nominal_system_clk_rate;	/* max freq to
+						be voted for system clock in
+						streaming mode */;
+	u32			  default_system_clk_rate;	/* max freq at
+						which system clock should run
+						in non streaming mode */;
+>>>>>>> p9x
 };
 
 /******************************************************************************

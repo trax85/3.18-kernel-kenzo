@@ -19,13 +19,20 @@
 
 #include <linux/module.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
 #include <linux/vmalloc.h>
+=======
+>>>>>>> p9x
 
 #define DM_MSG_PREFIX			"verity"
 
 #define DM_VERITY_ENV_LENGTH		42
 #define DM_VERITY_ENV_VAR_NAME		"DM_VERITY_ERR_BLOCK_NR"
 
+<<<<<<< HEAD
+=======
+#define DM_VERITY_MEMPOOL_SIZE		4
+>>>>>>> p9x
 #define DM_VERITY_DEFAULT_PREFETCH_SIZE	262144
 
 #define DM_VERITY_MAX_CORRUPTED_ERRS	100
@@ -33,7 +40,10 @@
 #define DM_VERITY_OPT_LOGGING		"ignore_corruption"
 #define DM_VERITY_OPT_RESTART		"restart_on_corruption"
 #define DM_VERITY_OPT_IGN_ZEROES	"ignore_zero_blocks"
+<<<<<<< HEAD
 #define DM_VERITY_OPT_AT_MOST_ONCE	"check_at_most_once"
+=======
+>>>>>>> p9x
 
 #define DM_VERITY_OPTS_MAX		(2 + DM_VERITY_OPTS_FEC)
 
@@ -288,7 +298,11 @@ static int verity_verify_level(struct dm_verity *v, struct dm_verity_io *io,
 			aux->hash_verified = 1;
 		else if (verity_fec_decode(v, io,
 					   DM_VERITY_BLOCK_TYPE_METADATA,
+<<<<<<< HEAD
 					   hash_block, data, NULL) == 0)
+=======
+					   hash_block, data, 0, 0) == 0)
+>>>>>>> p9x
 			aux->hash_verified = 1;
 		else if (verity_handle_err(v,
 					   DM_VERITY_BLOCK_TYPE_METADATA,
@@ -336,6 +350,10 @@ int verity_hash_for_block(struct dm_verity *v, struct dm_verity_io *io,
 		if (unlikely(r))
 			goto out;
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 out:
 	if (!r && v->zero_digest)
 		*is_zero = !memcmp(v->zero_digest, digest, v->digest_size);
@@ -346,6 +364,7 @@ out:
 }
 
 /*
+<<<<<<< HEAD
  * Calls function process for 1 << v->data_dev_block_bits bytes in the bio_vec
  * starting from iter.
  */
@@ -366,17 +385,54 @@ int verity_for_bv_block(struct dm_verity *v, struct dm_verity_io *io,
 
 		page = kmap_atomic(bv.bv_page);
 		len = bv.bv_len;
+=======
+ * Calls function process for 1 << v->data_dev_block_bits bytes in io->io_vec
+ * starting from (vector, offset).
+ */
+int verity_for_bv_block(struct dm_verity *v, struct dm_verity_io *io,
+			unsigned *vector, unsigned *offset,
+			int (*process)(struct dm_verity *v,
+				       struct dm_verity_io *io,
+				       u8 *data, size_t len))
+{
+	unsigned todo = 1 << v->data_dev_block_bits;
+
+	do {
+		int r;
+		struct bio_vec *bv;
+		u8 *page;
+		unsigned len;
+
+		BUG_ON(*vector >= io->io_vec_size);
+		bv = &io->io_vec[*vector];
+		page = kmap_atomic(bv->bv_page);
+		len = bv->bv_len - *offset;
+>>>>>>> p9x
 
 		if (likely(len >= todo))
 			len = todo;
 
+<<<<<<< HEAD
 		r = process(v, io, page + bv.bv_offset, len);
+=======
+		r = process(v, io, page + bv->bv_offset + *offset, len);
+>>>>>>> p9x
 		kunmap_atomic(page);
 
 		if (r < 0)
 			return r;
 
+<<<<<<< HEAD
 		bio_advance_iter(bio, iter, len);
+=======
+		*offset += len;
+
+		if (likely(*offset == bv->bv_len)) {
+			*offset = 0;
+			(*vector)++;
+		}
+
+>>>>>>> p9x
 		todo -= len;
 	} while (todo);
 
@@ -397,6 +453,7 @@ static int verity_bv_zero(struct dm_verity *v, struct dm_verity_io *io,
 }
 
 /*
+<<<<<<< HEAD
  * Moves the bio iter one data block forward.
  */
 static inline void verity_bv_skip_block(struct dm_verity *v,
@@ -409,6 +466,8 @@ static inline void verity_bv_skip_block(struct dm_verity *v,
 }
 
 /*
+=======
+>>>>>>> p9x
  * Verify one "dm_verity_io" structure.
  */
 static int verity_verify_io(struct dm_verity_io *io)
@@ -417,6 +476,7 @@ static int verity_verify_io(struct dm_verity_io *io)
 	struct dm_verity *v = io->v;
 	struct bvec_iter start;
 	unsigned b;
+<<<<<<< HEAD
 
 	for (b = 0; b < io->n_blocks; b++) {
 		int r;
@@ -430,6 +490,16 @@ static int verity_verify_io(struct dm_verity_io *io)
 		}
 
 		r = verity_hash_for_block(v, io, cur_block,
+=======
+	unsigned vector = 0, offset = 0;
+	unsigned start_vector, start_offset;
+
+	for (b = 0; b < io->n_blocks; b++) {
+		int r;
+		struct shash_desc *desc = verity_io_hash_desc(v, io);
+
+		r = verity_hash_for_block(v, io, io->block + b,
+>>>>>>> p9x
 					  verity_io_want_digest(v, io),
 					  &is_zero);
 		if (unlikely(r < 0))
@@ -440,7 +510,11 @@ static int verity_verify_io(struct dm_verity_io *io)
 			 * If we expect a zero block, don't validate, just
 			 * return zeros.
 			 */
+<<<<<<< HEAD
 			r = verity_for_bv_block(v, io, &io->iter,
+=======
+			r = verity_for_bv_block(v, io, &vector, &offset,
+>>>>>>> p9x
 						verity_bv_zero);
 			if (unlikely(r < 0))
 				return r;
@@ -452,8 +526,16 @@ static int verity_verify_io(struct dm_verity_io *io)
 		if (unlikely(r < 0))
 			return r;
 
+<<<<<<< HEAD
 		start = io->iter;
 		r = verity_for_bv_block(v, io, &io->iter, verity_bv_hash_update);
+=======
+		start_vector = vector;
+		start_offset = offset;
+
+		r = verity_for_bv_block(v, io, &vector, &offset,
+					verity_bv_hash_update);
+>>>>>>> p9x
 		if (unlikely(r < 0))
 			return r;
 
@@ -462,6 +544,7 @@ static int verity_verify_io(struct dm_verity_io *io)
 			return r;
 
 		if (likely(memcmp(verity_io_real_digest(v, io),
+<<<<<<< HEAD
 				  verity_io_want_digest(v, io), v->digest_size) == 0)) {
 			if (v->validated_blocks)
 				set_bit(cur_block, v->validated_blocks);
@@ -472,6 +555,15 @@ static int verity_verify_io(struct dm_verity_io *io)
 			continue;
 		else if (verity_handle_err(v, DM_VERITY_BLOCK_TYPE_DATA,
 					   cur_block))
+=======
+				  verity_io_want_digest(v, io), v->digest_size) == 0))
+			continue;
+		else if (verity_fec_decode(v, io, DM_VERITY_BLOCK_TYPE_DATA,
+					   io->block + b, NULL, start_vector, start_offset) == 0)
+			continue;
+		else if (verity_handle_err(v, DM_VERITY_BLOCK_TYPE_DATA,
+					   io->block + b))
+>>>>>>> p9x
 			return -EIO;
 	}
 
@@ -491,7 +583,13 @@ static void verity_finish_io(struct dm_verity_io *io, int error)
 
 	verity_fec_finish_io(io);
 
+<<<<<<< HEAD
 	bio_endio_nodec(bio, error);
+=======
+	verity_fec_finish_io(io, error);
+
+	bio_endio(bio, error);
+>>>>>>> p9x
 }
 
 static void verity_work(struct work_struct *w)
@@ -618,6 +716,8 @@ int verity_map(struct dm_target *ti, struct bio *bio)
 
 	verity_fec_init_io(io);
 
+	verity_fec_init_io(io);
+
 	verity_submit_prefetch(v, io);
 
 	generic_make_request(bio);
@@ -666,8 +766,11 @@ void verity_status(struct dm_target *ti, status_type_t type,
 			args += DM_VERITY_OPTS_FEC;
 		if (v->zero_digest)
 			args++;
+<<<<<<< HEAD
 		if (v->validated_blocks)
 			args++;
+=======
+>>>>>>> p9x
 		if (!args)
 			return;
 		DMEMIT(" %u", args);
@@ -686,8 +789,11 @@ void verity_status(struct dm_target *ti, status_type_t type,
 		}
 		if (v->zero_digest)
 			DMEMIT(" " DM_VERITY_OPT_IGN_ZEROES);
+<<<<<<< HEAD
 		if (v->validated_blocks)
 			DMEMIT(" " DM_VERITY_OPT_AT_MOST_ONCE);
+=======
+>>>>>>> p9x
 		sz = verity_fec_status_table(v, sz, result, maxlen);
 		break;
 	}
@@ -873,6 +979,89 @@ static int verity_parse_opt_args(struct dm_arg_set *as, struct dm_verity *v)
 			r = verity_alloc_most_once(v);
 			if (r)
 				return r;
+			continue;
+
+		} else if (verity_is_fec_opt_arg(arg_name)) {
+			r = verity_fec_parse_opt_args(as, v, &argc, arg_name);
+			if (r)
+				return r;
+			continue;
+		}
+
+		ti->error = "Unrecognized verity feature request";
+		return -EINVAL;
+	} while (argc && !r);
+
+	return r;
+}
+
+static int verity_alloc_zero_digest(struct dm_verity *v)
+{
+	int r = -ENOMEM;
+	struct shash_desc *desc;
+	u8 *zero_data;
+
+	v->zero_digest = kmalloc(v->digest_size, GFP_KERNEL);
+
+	if (!v->zero_digest)
+		return r;
+
+	desc = kmalloc(v->shash_descsize, GFP_KERNEL);
+
+	if (!desc)
+		return r; /* verity_dtr will free zero_digest */
+
+	zero_data = kzalloc(1 << v->data_dev_block_bits, GFP_KERNEL);
+
+	if (!zero_data)
+		goto out;
+
+	r = verity_hash(v, desc, zero_data, 1 << v->data_dev_block_bits,
+			v->zero_digest);
+
+out:
+	kfree(desc);
+	kfree(zero_data);
+
+	return r;
+}
+
+static int verity_parse_opt_args(struct dm_arg_set *as, struct dm_verity *v)
+{
+	int r;
+	unsigned argc;
+	struct dm_target *ti = v->ti;
+	const char *arg_name;
+
+	static struct dm_arg _args[] = {
+		{0, DM_VERITY_OPTS_MAX, "Invalid number of feature args"},
+	};
+
+	r = dm_read_arg_group(_args, as, &argc, &ti->error);
+	if (r)
+		return -EINVAL;
+
+	if (!argc)
+		return 0;
+
+	do {
+		arg_name = dm_shift_arg(as);
+		argc--;
+
+		if (!strcasecmp(arg_name, DM_VERITY_OPT_LOGGING)) {
+			v->mode = DM_VERITY_MODE_LOGGING;
+			continue;
+
+		} else if (!strcasecmp(arg_name, DM_VERITY_OPT_RESTART)) {
+			v->mode = DM_VERITY_MODE_RESTART;
+			continue;
+
+		} else if (!strcasecmp(arg_name, DM_VERITY_OPT_IGN_ZEROES)) {
+			r = verity_alloc_zero_digest(v);
+			if (r) {
+				ti->error = "Cannot allocate zero digest";
+				return r;
+			}
 			continue;
 
 		} else if (verity_is_fec_opt_arg(arg_name)) {
@@ -1114,6 +1303,17 @@ int verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
 		goto bad;
 	}
 
+<<<<<<< HEAD
+=======
+	v->vec_mempool = mempool_create_kmalloc_pool(DM_VERITY_MEMPOOL_SIZE,
+					BIO_MAX_PAGES * sizeof(struct bio_vec));
+	if (!v->vec_mempool) {
+		ti->error = "Cannot allocate vector mempool";
+		r = -ENOMEM;
+		goto bad;
+	}
+
+>>>>>>> p9x
 	/* WQ_UNBOUND greatly improves performance when running on ramdisk */
 	v->verify_wq = alloc_workqueue("kverityd",
 				       WQ_HIGHPRI | WQ_MEM_RECLAIM | WQ_UNBOUND,

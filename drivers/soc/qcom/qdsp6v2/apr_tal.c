@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2010-2011, 2013-2014, 2016 The Linux Foundation.
+=======
+/* Copyright (c) 2010-2011, 2013-2014 The Linux Foundation.
+>>>>>>> p9x
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -42,12 +46,20 @@ static char *svc_names[APR_DEST_MAX][APR_CLIENT_MAX] = {
 
 struct apr_svc_ch_dev apr_svc_ch[APR_DL_MAX][APR_DEST_MAX][APR_CLIENT_MAX];
 
+<<<<<<< HEAD
 int __apr_tal_write(struct apr_svc_ch_dev *apr_ch, void *data,
 			struct apr_pkt_priv *pkt_priv, int len)
+=======
+int __apr_tal_write(struct apr_svc_ch_dev *apr_ch, void *data, int len)
+>>>>>>> p9x
 {
 	int w_len;
 	unsigned long flags;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 	spin_lock_irqsave(&apr_ch->w_lock, flags);
 	if (smd_write_avail(apr_ch->ch) < len) {
 		spin_unlock_irqrestore(&apr_ch->w_lock, flags);
@@ -56,7 +68,10 @@ int __apr_tal_write(struct apr_svc_ch_dev *apr_ch, void *data,
 
 	w_len = smd_write(apr_ch->ch, data, len);
 	spin_unlock_irqrestore(&apr_ch->w_lock, flags);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	pr_debug("apr_tal:w_len = %d\n", w_len);
 
 	if (w_len != len) {
@@ -66,8 +81,12 @@ int __apr_tal_write(struct apr_svc_ch_dev *apr_ch, void *data,
 	return w_len;
 }
 
+<<<<<<< HEAD
 int apr_tal_write(struct apr_svc_ch_dev *apr_ch, void *data,
 			struct apr_pkt_priv *pkt_priv, int len)
+=======
+int apr_tal_write(struct apr_svc_ch_dev *apr_ch, void *data, int len)
+>>>>>>> p9x
 {
 	int rc = 0, retries = 0;
 
@@ -78,7 +97,11 @@ int apr_tal_write(struct apr_svc_ch_dev *apr_ch, void *data,
 		if (rc == -EAGAIN)
 			udelay(50);
 
+<<<<<<< HEAD
 		rc = __apr_tal_write(apr_ch, data, pkt_priv, len);
+=======
+		rc = __apr_tal_write(apr_ch, data, len);
+>>>>>>> p9x
 	} while (rc == -EAGAIN && retries++ < 300);
 
 	if (rc == -EAGAIN)
@@ -146,6 +169,7 @@ check_write_avail:
 	}
 }
 
+<<<<<<< HEAD
 int apr_tal_rx_intents_config(struct apr_svc_ch_dev *apr_ch,
 			int num_of_intents, uint32_t size)
 {
@@ -156,21 +180,33 @@ int apr_tal_rx_intents_config(struct apr_svc_ch_dev *apr_ch,
 }
 
 struct apr_svc_ch_dev *apr_tal_open(uint32_t clnt, uint32_t dest,
+=======
+struct apr_svc_ch_dev *apr_tal_open(uint32_t svc, uint32_t dest,
+>>>>>>> p9x
 				uint32_t dl, apr_svc_cb_fn func, void *priv)
 {
 	int rc;
 
+<<<<<<< HEAD
 	if ((clnt >= APR_CLIENT_MAX) || (dest >= APR_DEST_MAX) ||
+=======
+	if ((svc >= APR_CLIENT_MAX) || (dest >= APR_DEST_MAX) ||
+>>>>>>> p9x
 						(dl >= APR_DL_MAX)) {
 		pr_err("apr_tal: Invalid params\n");
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	if (apr_svc_ch[dl][dest][clnt].ch) {
+=======
+	if (apr_svc_ch[dl][dest][svc].ch) {
+>>>>>>> p9x
 		pr_err("apr_tal: This channel alreday openend\n");
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&apr_svc_ch[dl][dest][clnt].m_lock);
 	if (!apr_svc_ch[dl][dest][clnt].dest_state) {
 		rc = wait_event_timeout(apr_svc_ch[dl][dest][clnt].dest,
@@ -207,10 +243,49 @@ struct apr_svc_ch_dev *apr_tal_open(uint32_t clnt, uint32_t dest,
 
 	if (!apr_svc_ch[dl][dest][clnt].dest_state) {
 		apr_svc_ch[dl][dest][clnt].dest_state = 1;
+=======
+	mutex_lock(&apr_svc_ch[dl][dest][svc].m_lock);
+	if (!apr_svc_ch[dl][dest][svc].dest_state) {
+		rc = wait_event_timeout(apr_svc_ch[dl][dest][svc].dest,
+			apr_svc_ch[dl][dest][svc].dest_state,
+				msecs_to_jiffies(APR_OPEN_TIMEOUT_MS));
+		if (rc == 0) {
+			pr_err("apr_tal:open timeout\n");
+			mutex_unlock(&apr_svc_ch[dl][dest][svc].m_lock);
+			return NULL;
+		}
+		pr_debug("apr_tal:Wakeup done\n");
+		apr_svc_ch[dl][dest][svc].dest_state = 0;
+	}
+	rc = smd_named_open_on_edge(svc_names[dest][svc], dest,
+			&apr_svc_ch[dl][dest][svc].ch,
+			&apr_svc_ch[dl][dest][svc],
+			apr_tal_notify);
+	if (rc < 0) {
+		pr_err("apr_tal: smd_open failed %s\n",
+					svc_names[dest][svc]);
+		mutex_unlock(&apr_svc_ch[dl][dest][svc].m_lock);
+		return NULL;
+	}
+	rc = wait_event_timeout(apr_svc_ch[dl][dest][svc].wait,
+		(apr_svc_ch[dl][dest][svc].smd_state == 1), msecs_to_jiffies(5000));
+	if (rc == 0) {
+		pr_err("apr_tal:TIMEOUT for OPEN event\n");
+		mutex_unlock(&apr_svc_ch[dl][dest][svc].m_lock);
+		apr_tal_close(&apr_svc_ch[dl][dest][svc]);
+		return NULL;
+	}
+
+	smd_disable_read_intr(apr_svc_ch[dl][dest][svc].ch);
+
+	if (!apr_svc_ch[dl][dest][svc].dest_state) {
+		apr_svc_ch[dl][dest][svc].dest_state = 1;
+>>>>>>> p9x
 		pr_debug("apr_tal:Waiting for apr svc init\n");
 		msleep(200);
 		pr_debug("apr_tal:apr svc init done\n");
 	}
+<<<<<<< HEAD
 	apr_svc_ch[dl][dest][clnt].smd_state = 0;
 
 	apr_svc_ch[dl][dest][clnt].func = func;
@@ -218,6 +293,15 @@ struct apr_svc_ch_dev *apr_tal_open(uint32_t clnt, uint32_t dest,
 	mutex_unlock(&apr_svc_ch[dl][dest][clnt].m_lock);
 
 	return &apr_svc_ch[dl][dest][clnt];
+=======
+	apr_svc_ch[dl][dest][svc].smd_state = 0;
+
+	apr_svc_ch[dl][dest][svc].func = func;
+	apr_svc_ch[dl][dest][svc].priv = priv;
+	mutex_unlock(&apr_svc_ch[dl][dest][svc].m_lock);
+
+	return &apr_svc_ch[dl][dest][svc];
+>>>>>>> p9x
 }
 
 int apr_tal_close(struct apr_svc_ch_dev *apr_ch)

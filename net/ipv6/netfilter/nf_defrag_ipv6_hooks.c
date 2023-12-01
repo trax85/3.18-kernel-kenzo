@@ -77,7 +77,11 @@ static unsigned int ipv6_defrag(const struct nf_hook_ops *ops,
 
 	nf_ct_frag6_consume_orig(reasm);
 
+<<<<<<< HEAD
 	NF_HOOK_THRESH(NFPROTO_IPV6, ops->hooknum, reasm,
+=======
+	NF_HOOK_THRESH(NFPROTO_IPV6, hooknum, reasm,
+>>>>>>> p9x
 		       (struct net_device *) in, (struct net_device *) out,
 		       okfn, NF_IP6_PRI_CONNTRACK_DEFRAG + 1);
 

@@ -24,7 +24,10 @@
 #include <asm/memory.h>
 #include <asm/procinfo.h>
 #include <asm/suspend.h>
+<<<<<<< HEAD
 #include <asm/vdso_datapage.h>
+=======
+>>>>>>> p9x
 #include <asm/hardware/cache-l2x0.h>
 #include <linux/kbuild.h>
 

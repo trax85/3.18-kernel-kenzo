@@ -5,7 +5,11 @@
 #include <linux/fb.h>
 #include <linux/init.h>
 #include <linux/string.h>
+<<<<<<< HEAD:drivers/video/fbdev/aty/mach64_cursor.c
 #include "../core/fb_draw.h"
+=======
+#include "../fb_draw.h"
+>>>>>>> p9x:drivers/video/aty/mach64_cursor.c
 
 #include <asm/io.h>
 

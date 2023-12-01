@@ -891,7 +891,11 @@ void rt2x00queue_index_inc(struct queue_entry *entry, enum queue_index index)
 	spin_unlock_irqrestore(&queue->index_lock, irqflags);
 }
 
+<<<<<<< HEAD
 static void rt2x00queue_pause_queue_nocheck(struct data_queue *queue)
+=======
+void rt2x00queue_pause_queue_nocheck(struct data_queue *queue)
+>>>>>>> p9x
 {
 	switch (queue->qid) {
 	case QID_AC_VO:

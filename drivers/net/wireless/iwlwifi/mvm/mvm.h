@@ -87,6 +87,7 @@
 /* A TimeUnit is 1024 microsecond */
 #define MSEC_TO_TU(_msec)	(_msec*1000/1024)
 
+<<<<<<< HEAD
 /* This value represents the number of TUs before CSA "beacon 0" TBTT
  * when the CSA time-event needs to be scheduled to start.  It must be
  * big enough to ensure that we switch in time.
@@ -106,6 +107,15 @@
 #define IWL_MVM_CS_UNBLOCK_TX_TIMEOUT 3
 
 extern const struct ieee80211_ops iwl_mvm_hw_ops;
+=======
+enum iwl_mvm_tx_fifo {
+	IWL_MVM_TX_FIFO_BK = 0,
+	IWL_MVM_TX_FIFO_BE,
+	IWL_MVM_TX_FIFO_VI,
+	IWL_MVM_TX_FIFO_VO,
+	IWL_MVM_TX_FIFO_MCAST = 5,
+};
+>>>>>>> p9x
 
 /**
  * struct iwl_mvm_mod_params - module parameters for iwlmvm

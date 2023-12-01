@@ -31,6 +31,7 @@ typedef struct {
 	void		*vdso;
 } mm_context_t;
 
+<<<<<<< HEAD
 /*
  * This macro is only used by the TLBI code, which cannot race with an
  * ASID change and therefore doesn't need to reload the counter using
@@ -80,14 +81,30 @@ static inline struct bp_hardening_data *arm64_get_bp_hardening_data(void)
 
 static inline void arm64_apply_bp_hardening(void)	{ }
 #endif	/* CONFIG_HARDEN_BRANCH_PREDICTOR */
+=======
+#define INIT_MM_CONTEXT(name) \
+	.context.id_lock = __RAW_SPIN_LOCK_UNLOCKED(name.context.id_lock),
+
+#define ASID(mm)	((mm)->context.id & 0xffff)
+>>>>>>> p9x
+
+#define INIT_MM_CONTEXT(name)	\
+	.context.id_lock    = __RAW_SPIN_LOCK_UNLOCKED(name.context.id_lock),
 
 extern void paging_init(void);
 extern void __iomem *early_io_map(phys_addr_t phys, unsigned long virt);
+<<<<<<< HEAD
 extern void init_mem_pgprot(void);
 extern void mem_text_write_kernel_word(u32 *addr, u32 word);
 extern void create_pgd_mapping(struct mm_struct *mm, phys_addr_t phys,
 			       unsigned long virt, phys_addr_t size,
 			       pgprot_t prot);
+=======
+extern void mem_text_write_kernel_word(u32 *addr, u32 word);
+extern void init_mem_pgprot(void);
+/* create an identity mapping for memory (or io if map_io is true) */
+extern void create_id_mapping(phys_addr_t addr, phys_addr_t size, int map_io);
+>>>>>>> p9x
 
 #endif	/* !__ASSEMBLY__ */
 #endif

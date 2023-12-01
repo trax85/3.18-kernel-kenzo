@@ -258,7 +258,11 @@ int __cfg80211_leave_mesh(struct cfg80211_registered_device *rdev,
 	err = rdev_leave_mesh(rdev, dev);
 	if (!err) {
 		wdev->mesh_id_len = 0;
+<<<<<<< HEAD
 		memset(&wdev->chandef, 0, sizeof(wdev->chandef));
+=======
+		wdev->channel = NULL;
+>>>>>>> p9x
 		rdev_set_qos_map(rdev, dev, NULL);
 	}
 

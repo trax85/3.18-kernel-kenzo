@@ -985,9 +985,12 @@ static void calculate_multiple_pcrs(struct cpu_hw_events *cpuc)
 
 		cpuc->current_idx[i] = idx;
 
+<<<<<<< HEAD
 		if (cp->hw.state & PERF_HES_ARCH)
 			continue;
 
+=======
+>>>>>>> p9x
 		sparc_pmu_start(cp, PERF_EF_RELOAD);
 	}
 out:

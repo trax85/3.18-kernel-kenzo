@@ -18,11 +18,20 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 #define SD_VDD_IS_NOT_OPEN_IF_SLOT_NOT_INSERT 1
 	
 	int sd_slot_plugoutt = 0;
 	extern int  sdhci_msm_disable_sd_vdd(void);
 	
+=======
+#ifdef CONFIG_MACH_XIAOMI_KENZO
+#define SD_VDD_IS_NOT_OPEN_IF_SLOT_NOT_INSERT 1
+
+int sd_slot_plugoutt = 0;
+extern int  sdhci_msm_disable_sd_vdd(void);
+#endif
+>>>>>>> p9x
 
 struct mmc_gpio {
 	struct gpio_desc *ro_gpio;
@@ -30,13 +39,30 @@ struct mmc_gpio {
 	bool override_ro_active_level;
 	bool override_cd_active_level;
 	char *ro_label;
-	char cd_label[0];
+	bool status;
+	char cd_label[0]; /* Must be last entry */
 };
+
+static int mmc_gpio_get_status(struct mmc_host *host)
+{
+	int ret = -ENOSYS;
+	struct mmc_gpio *ctx = host->slot.handler_priv;
+
+	if (!ctx || !gpio_is_valid(ctx->cd_gpio))
+		goto out;
+
+	ret = !gpio_get_value_cansleep(ctx->cd_gpio) ^
+		!!(host->caps2 & MMC_CAP2_CD_ACTIVE_HIGH);
+out:
+	return ret;
+}
+
 
 static irqreturn_t mmc_gpio_cd_irqt(int irq, void *dev_id)
 {
 	/* Schedule a card detection after a debounce timeout */
 	struct mmc_host *host = dev_id;
+<<<<<<< HEAD
 	pr_err(" mmc_gpio_cd_irqt sd_slot_plugoutt = %d\n", sd_slot_plugoutt);
 
 	host->trigger_card_event = true;
@@ -47,6 +73,53 @@ static irqreturn_t mmc_gpio_cd_irqt(int irq, void *dev_id)
 				mmc_detect_change(host, msecs_to_jiffies(0));
 			} else
 				mmc_detect_change(host, msecs_to_jiffies(200));
+=======
+	struct mmc_gpio *ctx = host->slot.handler_priv;
+	int status;
+
+	/*
+	 * In case host->ops are not yet initialized return immediately.
+	 * The card will get detected later when host driver calls
+	 * mmc_add_host() after host->ops are initialized.
+	 */
+	if (!host->ops)
+		goto out;
+
+	if (host->ops->card_event)
+		host->ops->card_event(host);
+
+	status = mmc_gpio_get_status(host);
+	if (unlikely(status < 0))
+		goto out;
+#ifdef CONFIG_MACH_XIAOMI_KENZO
+	#if SD_VDD_IS_NOT_OPEN_IF_SLOT_NOT_INSERT
+	sd_slot_plugoutt = gpio_get_value_cansleep(ctx->cd_gpio);
+	#endif
+	pr_err(" mmc_gpio_cd_irqt sd_slot_plugoutt = %d\n", sd_slot_plugoutt);
+#endif
+
+	if (status ^ ctx->status) {
+		pr_info("%s: slot status change detected (%d -> %d), GPIO_ACTIVE_%s\n",
+				mmc_hostname(host), ctx->status, status,
+				(host->caps2 & MMC_CAP2_CD_ACTIVE_HIGH) ?
+				"HIGH" : "LOW");
+		ctx->status = status;
+
+		/* Schedule a card detection after a debounce timeout */
+#ifdef CONFIG_MACH_XIAOMI_KENZO
+		if (sd_slot_plugoutt == 1) {
+
+			if ((sd_slot_plugoutt == 1) && (mmc_hostname(host) != NULL) && (!strcmp(mmc_hostname(host), "mmc1")))
+				sdhci_msm_disable_sd_vdd();
+			mmc_detect_change(host, msecs_to_jiffies(0));
+		} else
+			mmc_detect_change(host, msecs_to_jiffies(1));
+#else
+		mmc_detect_change(host, msecs_to_jiffies(1));
+#endif
+	}
+out:
+>>>>>>> p9x
 
 	return IRQ_HANDLED;
 }
@@ -168,6 +241,15 @@ void mmc_gpiod_request_cd_irq(struct mmc_host *host)
 	if (irq >= 0 && host->caps & MMC_CAP_NEEDS_POLL)
 		irq = -EINVAL;
 
+	ctx->cd_gpio = gpio;
+	host->slot.cd_irq = irq;
+
+	ret = mmc_gpio_get_status(host);
+	if (ret < 0)
+		return ret;
+
+	ctx->status = ret;
+
 	if (irq >= 0) {
 		ret = devm_request_threaded_irq(&host->class_dev, irq,
 			NULL, mmc_gpio_cd_irqt,
@@ -177,13 +259,12 @@ void mmc_gpiod_request_cd_irq(struct mmc_host *host)
 			irq = ret;
 	}
 
-	host->slot.cd_irq = irq;
-
 	if (irq < 0)
 		host->caps |= MMC_CAP_NEEDS_POLL;
 }
 EXPORT_SYMBOL(mmc_gpiod_request_cd_irq);
 
+<<<<<<< HEAD
 /**
  * mmc_gpio_request_cd - request a gpio for card-detection
  * @host: mmc host
@@ -234,6 +315,8 @@ int mmc_gpio_request_cd(struct mmc_host *host, unsigned int gpio,
 	ctx->override_cd_active_level = true;
 	ctx->cd_gpio = gpio_to_desc(gpio);
 
+=======
+>>>>>>> p9x
 	return 0;
 }
 EXPORT_SYMBOL(mmc_gpio_request_cd);

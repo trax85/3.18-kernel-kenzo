@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2015-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -18,6 +22,7 @@
 #include <linux/pm_wakeup.h>
 #include <linux/sched.h>
 #include <linux/suspend.h>
+<<<<<<< HEAD
 #include <linux/mutex.h>
 #include <linux/rwsem.h>
 #include <net/cnss.h>
@@ -173,6 +178,12 @@ int cnss_wlan_get_dfs_nol(void *info, u16 info_len)
 }
 EXPORT_SYMBOL(cnss_wlan_get_dfs_nol);
 
+=======
+#include <linux/rwsem.h>
+#include <net/cnss.h>
+#include <net/cfg80211.h>
+
+>>>>>>> p9x
 void cnss_init_work(struct work_struct *work, work_func_t func)
 {
 	INIT_WORK(work, func);
@@ -255,6 +266,7 @@ int cnss_set_cpus_allowed_ptr(struct task_struct *task, ulong cpu)
 }
 EXPORT_SYMBOL(cnss_set_cpus_allowed_ptr);
 
+<<<<<<< HEAD
 /* wlan prop driver cannot invoke show_stack
  * function directly, so to invoke this function it
  * call wcnss_dump_stack function
@@ -448,3 +460,5 @@ int cnss_common_unregister_tsf_captured_handler(struct device *dev,
 		return -EINVAL;
 }
 EXPORT_SYMBOL(cnss_common_unregister_tsf_captured_handler);
+=======
+>>>>>>> p9x

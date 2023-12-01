@@ -161,7 +161,10 @@ struct dentry_operations {
 	struct vfsmount *(*d_automount)(struct path *);
 	int (*d_manage)(struct dentry *, bool);
 	void (*d_canonical_path)(const struct path *, struct path *);
+<<<<<<< HEAD
 	struct inode *(*d_select_inode)(struct dentry *, unsigned);
+=======
+>>>>>>> p9x
 } ____cacheline_aligned;
 
 /*
@@ -225,6 +228,8 @@ struct dentry_operations {
 
 #define DCACHE_MAY_FREE			0x00800000
 #define DCACHE_OP_SELECT_INODE		0x02000000 /* Unioned entry: dcache op selects inode */
+
+#define DCACHE_ENCRYPTED_WITH_KEY	0x04000000 /* dir is encrypted with a valid key */
 
 #define DCACHE_ENCRYPTED_WITH_KEY	0x04000000 /* dir is encrypted with a valid key */
 
@@ -408,6 +413,7 @@ static inline bool d_mountpoint(const struct dentry *dentry)
 	return dentry->d_flags & DCACHE_MOUNTED;
 }
 
+<<<<<<< HEAD
 /*
  * Directory cache entry type accessor functions.
  */
@@ -466,6 +472,13 @@ static inline bool d_is_negative(const struct dentry *dentry)
 static inline bool d_is_positive(const struct dentry *dentry)
 {
 	return !d_is_negative(dentry);
+=======
+static inline bool d_is_su(const struct dentry *dentry)
+{
+	return dentry &&
+	       dentry->d_name.len == 2 &&
+	       !memcmp(dentry->d_name.name, "su", 2);
+>>>>>>> p9x
 }
 
 extern int sysctl_vfs_cache_pressure;

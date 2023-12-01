@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2015 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -179,11 +183,18 @@
 #define SMB358_BATT_GOOD_THRE_2P5	0x1
 
 enum {
+<<<<<<< HEAD
 	USER		= BIT(0),
 	THERMAL		= BIT(1),
 	CURRENT		= BIT(2),
 	SOC		= BIT(3),
 	FAKE_BATTERY	= BIT(4),
+=======
+	USER	= BIT(0),
+	THERMAL = BIT(1),
+	CURRENT = BIT(2),
+	SOC	= BIT(3),
+>>>>>>> p9x
 };
 
 struct smb358_regulator {
@@ -208,13 +219,19 @@ struct smb358_charger {
 	bool			chg_autonomous_mode;
 	bool			disable_apsd;
 	bool			using_pmic_therm;
+<<<<<<< HEAD
 	bool			pmic_vbat_sns;
+=======
+>>>>>>> p9x
 	bool			battery_missing;
 	const char		*bms_psy_name;
 	bool			resume_completed;
 	bool			irq_waiting;
 	bool			bms_controlled_charging;
+<<<<<<< HEAD
 	bool			skip_usb_suspend_for_fake_battery;
+=======
+>>>>>>> p9x
 	struct mutex		read_write_lock;
 	struct mutex		path_suspend_lock;
 	struct mutex		irq_complete;
@@ -226,7 +243,10 @@ struct smb358_charger {
 	unsigned int		warm_bat_ma;
 	unsigned int		cool_bat_mv;
 	unsigned int		warm_bat_mv;
+<<<<<<< HEAD
 	unsigned int		connected_rid;
+=======
+>>>>>>> p9x
 
 	/* debugfs related */
 #if defined(CONFIG_DEBUG_FS)
@@ -432,7 +452,11 @@ static int smb358_float_voltage_set(struct smb358_charger *chip, int vfloat_mv)
 	if (VFLOAT_4350MV == vfloat_mv)
 		temp = 0x2B;
 	else if (vfloat_mv > VFLOAT_4350MV)
+<<<<<<< HEAD
 		temp = (vfloat_mv - MIN_FLOAT_MV) / VFLOAT_STEP_MV + 1;
+=======
+		temp = (vfloat_mv - MIN_FLOAT_MV) / VFLOAT_STEP_MV - 1;
+>>>>>>> p9x
 	else
 		temp = (vfloat_mv - MIN_FLOAT_MV) / VFLOAT_STEP_MV;
 
@@ -646,6 +670,7 @@ static int smb358_regulator_init(struct smb358_charger *chip)
 	return rc;
 }
 
+<<<<<<< HEAD
 static int __smb358_path_suspend(struct smb358_charger *chip, bool suspend)
 {
 	int rc;
@@ -693,6 +718,8 @@ static int smb358_path_suspend(struct smb358_charger *chip, int reason,
 }
 
 
+=======
+>>>>>>> p9x
 static int __smb358_charging_disable(struct smb358_charger *chip, bool disable)
 {
 	int rc;
@@ -738,8 +765,11 @@ skip:
 	return rc;
 }
 
+<<<<<<< HEAD
 #define MAX_INV_BATT_ID		7700
 #define MIN_INV_BATT_ID		7300
+=======
+>>>>>>> p9x
 static int smb358_hw_init(struct smb358_charger *chip)
 {
 	int rc;
@@ -792,9 +822,12 @@ static int smb358_hw_init(struct smb358_charger *chip)
 
 	if (!chip->disable_apsd)
 		reg = CHG_CTRL_APSD_EN_BIT;
+<<<<<<< HEAD
 	else
 		reg = 0;
 
+=======
+>>>>>>> p9x
 	rc = smb358_masked_write(chip, CHG_CTRL_REG,
 				CHG_CTRL_APSD_EN_MASK, reg);
 	if (rc) {
@@ -853,6 +886,7 @@ static int smb358_hw_init(struct smb358_charger *chip)
 	if (rc)
 		dev_err(chip->dev, "Couldn't set recharge para rc=%d\n", rc);
 
+<<<<<<< HEAD
 	/* suspend USB path for fake battery */
 	if (!chip->skip_usb_suspend_for_fake_battery) {
 		if ((chip->connected_rid >= MIN_INV_BATT_ID) &&
@@ -864,6 +898,8 @@ static int smb358_hw_init(struct smb358_charger *chip)
 		}
 	}
 
+=======
+>>>>>>> p9x
 	/* enable/disable charging */
 	if (chip->charging_disabled) {
 		rc = smb358_charging_disable(chip, USER, 1);
@@ -1008,9 +1044,13 @@ static int smb358_get_prop_batt_temp(struct smb358_charger *chip)
 	int rc = 0;
 	struct qpnp_vadc_result results;
 
+<<<<<<< HEAD
 	if (!smb358_get_prop_batt_present(chip)
 			|| !chip->vadc_dev
 			|| !chip->using_pmic_therm)
+=======
+	if (!smb358_get_prop_batt_present(chip))
+>>>>>>> p9x
 		return DEFAULT_TEMP;
 
 	rc = qpnp_vadc_read(chip->vadc_dev, LR_MUX1_BATT_THERM, &results);
@@ -1030,9 +1070,12 @@ smb358_get_prop_battery_voltage_now(struct smb358_charger *chip)
 	int rc = 0;
 	struct qpnp_vadc_result results;
 
+<<<<<<< HEAD
 	if (!chip->vadc_dev || !chip->pmic_vbat_sns)
 		return 0;
 
+=======
+>>>>>>> p9x
 	rc = qpnp_vadc_read(chip->vadc_dev, VBAT_SNS, &results);
 	if (rc) {
 		pr_err("Unable to read vbat rc=%d\n", rc);
@@ -1041,6 +1084,54 @@ smb358_get_prop_battery_voltage_now(struct smb358_charger *chip)
 	return results.physical;
 }
 
+<<<<<<< HEAD
+=======
+static int __smb358_path_suspend(struct smb358_charger *chip, bool suspend)
+{
+	int rc;
+
+	rc = smb358_masked_write(chip, CMD_A_REG,
+			CMD_A_CHG_SUSP_EN_MASK,
+				suspend ? CMD_A_CHG_SUSP_EN_BIT : 0);
+	if (rc < 0)
+		dev_err(chip->dev, "Couldn't set CMD_A reg, rc = %d\n", rc);
+	return rc;
+}
+
+static int smb358_path_suspend(struct smb358_charger *chip, int reason,
+							bool suspend)
+{
+	int rc = 0;
+	int suspended;
+
+	mutex_lock(&chip->path_suspend_lock);
+	suspended = chip->usb_suspended;
+
+	if (suspend == false)
+		suspended &= ~reason;
+	else
+		suspended |= reason;
+
+	if (!chip->usb_suspended && suspended) {
+		rc = __smb358_path_suspend(chip, true);
+		chip->usb_suspended = suspended;
+		power_supply_set_online(chip->usb_psy, !chip->usb_suspended);
+		power_supply_changed(chip->usb_psy);
+	} else if (chip->usb_suspended && !suspended) {
+		rc = __smb358_path_suspend(chip, false);
+		chip->usb_suspended = suspended;
+		power_supply_set_online(chip->usb_psy, !chip->usb_suspended);
+		power_supply_changed(chip->usb_psy);
+	}
+
+	if (rc)
+		dev_err(chip->dev, "Couldn't set/unset suspend rc = %d\n", rc);
+
+	mutex_unlock(&chip->path_suspend_lock);
+	return rc;
+}
+
+>>>>>>> p9x
 static int smb358_set_usb_chg_current(struct smb358_charger *chip,
 		int current_ma)
 {
@@ -2117,6 +2208,7 @@ static void dump_regs(struct smb358_charger *chip)
 }
 #endif
 
+<<<<<<< HEAD
 static int smb_parse_batt_id(struct smb358_charger *chip)
 {
 	int rc = 0, rpull = 0, vref = 0;
@@ -2170,6 +2262,8 @@ static int smb_parse_batt_id(struct smb358_charger *chip)
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 static int smb_parse_dt(struct smb358_charger *chip)
 {
 	int rc;
@@ -2194,8 +2288,11 @@ static int smb_parse_dt(struct smb358_charger *chip)
 
 	chip->using_pmic_therm = of_property_read_bool(node,
 						"qcom,using-pmic-therm");
+<<<<<<< HEAD
 	chip->pmic_vbat_sns = of_property_read_bool(node,
 					"qcom,using-vbat-sns");
+=======
+>>>>>>> p9x
 	chip->bms_controlled_charging = of_property_read_bool(node,
 						"qcom,bms-controlled-charging");
 
@@ -2292,6 +2389,7 @@ static int smb_parse_dt(struct smb358_charger *chip)
 		}
 	}
 
+<<<<<<< HEAD
 	chip->skip_usb_suspend_for_fake_battery = of_property_read_bool(node,
 				"qcom,skip-usb-suspend-for-fake-battery");
 	if (!chip->skip_usb_suspend_for_fake_battery) {
@@ -2309,6 +2407,8 @@ static int smb_parse_dt(struct smb358_charger *chip)
 		}
 	}
 
+=======
+>>>>>>> p9x
 	pr_debug("inhibit-disabled = %d, recharge-disabled = %d, recharge-mv = %d,",
 		chip->inhibit_disabled, chip->recharge_disabled,
 						chip->recharge_mv);
@@ -2495,6 +2595,7 @@ static int smb358_charger_probe(struct i2c_client *client,
 	chip->usb_psy = usb_psy;
 	chip->fake_battery_soc = -EINVAL;
 
+<<<<<<< HEAD
 	if (of_find_property(chip->dev->of_node, "qcom,chg-vadc", NULL)) {
 		/* early for VADC get, defer probe if needed */
 		chip->vadc_dev = qpnp_get_vadc(chip->dev, "chg");
@@ -2504,6 +2605,15 @@ static int smb358_charger_probe(struct i2c_client *client,
 				pr_err("vadc property configured incorrectly\n");
 			return rc;
 		}
+=======
+	/* early for VADC get, defer probe if needed */
+	chip->vadc_dev = qpnp_get_vadc(chip->dev, "chg");
+	if (IS_ERR(chip->vadc_dev)) {
+		rc = PTR_ERR(chip->vadc_dev);
+		if (rc != -EPROBE_DEFER)
+			pr_err("vadc property missing\n");
+		return rc;
+>>>>>>> p9x
 	}
 
 	rc = smb_parse_dt(chip);

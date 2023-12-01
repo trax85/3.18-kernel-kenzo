@@ -21,8 +21,12 @@
 #include <crypto/ice.h>
 
 #include "sdhci-msm.h"
+<<<<<<< HEAD
 struct qcom_ice_variant_ops *qcom_ice_get_variant_ops(struct device_node *node);
 struct platform_device *qcom_ice_get_pdevice(struct device_node *node);
+=======
+
+>>>>>>> p9x
 #define SDHC_MSM_CRYPTO_LABEL "sdhc-msm-crypto"
 /* Timeout waiting for ICE initialization, that requires TZ access */
 #define SDHCI_MSM_ICE_COMPLETION_TIMEOUT_MS	500
@@ -105,7 +109,11 @@ inline int sdhci_msm_ice_init(struct sdhci_host *host)
 	return 0;
 }
 
+<<<<<<< HEAD
 inline void sdhci_msm_ice_cfg_reset(struct sdhci_host *host, u32 slot)
+=======
+void sdhci_msm_ice_cfg_reset(struct sdhci_host *host, u32 slot)
+>>>>>>> p9x
 {
 }
 

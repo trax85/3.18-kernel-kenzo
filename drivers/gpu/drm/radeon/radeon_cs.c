@@ -126,6 +126,14 @@ static int radeon_cs_parser_relocs(struct radeon_cs_parser *p)
 		     p->rdev->family == CHIP_RS780 ||
 		     p->rdev->family == CHIP_RS880)) {
 
+<<<<<<< HEAD
+=======
+		/* the first reloc of an UVD job is the msg and that must be in
+		   VRAM, also but everything into VRAM on AGP cards to avoid
+		   image corruptions */
+		if (p->ring == R600_RING_TYPE_UVD_INDEX &&
+		    (i == 0 || drm_pci_device_is_agp(p->rdev->ddev))) {
+>>>>>>> p9x
 			/* TODO: is this still needed for NI+ ? */
 			p->relocs[i].prefered_domains =
 				RADEON_GEM_DOMAIN_VRAM;
@@ -145,7 +153,11 @@ static int radeon_cs_parser_relocs(struct radeon_cs_parser *p)
 				return -EINVAL;
 			}
 
+<<<<<<< HEAD
 			p->relocs[i].prefered_domains = domain;
+=======
+			p->relocs[i].lobj.domain = domain;
+>>>>>>> p9x
 			if (domain == RADEON_GEM_DOMAIN_VRAM)
 				domain |= RADEON_GEM_DOMAIN_GTT;
 			p->relocs[i].allowed_domains = domain;

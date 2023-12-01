@@ -19,6 +19,14 @@
 #define RX        0  /* similar to USB_DIR_OUT but can be used as an index */
 #define TX        1  /* similar to USB_DIR_IN  but can be used as an index */
 
+/* UDC private data:
+ *  16MSb - Vendor ID | 16 LSb Vendor private data
+ */
+#define CI13XX_REQ_VENDOR_ID(id)  (id & 0xFFFF0000UL)
+
+#define MSM_ETD_TYPE			BIT(1)
+#define MSM_EP_PIPE_ID_RESET_VAL	0x1F001F
+
 /* DMA layout of transfer descriptors */
 struct ci_hw_td {
 	/* 0 */
@@ -50,7 +58,11 @@ struct ci_hw_qh {
 #define QH_MAX_PKT            (0x07FFUL << 16)
 #define QH_ZLT                BIT(29)
 #define QH_MULT               (0x0003UL << 30)
+<<<<<<< HEAD
 #define QH_ISO_MULT(x)		((x >> 11) & 0x03)
+=======
+#define QH_MULT_SHIFT         11
+>>>>>>> p9x
 	/* 1 */
 	u32 curr;
 	/* 2 - 8 */
@@ -60,10 +72,18 @@ struct ci_hw_qh {
 	struct usb_ctrlrequest   setup;
 } __attribute__ ((packed, aligned(4)));
 
+<<<<<<< HEAD
 struct td_node {
 	struct list_head	td;
 	dma_addr_t		dma;
 	struct ci_hw_td		*ptr;
+=======
+/* cache of larger request's original attributes */
+struct ci13xxx_multi_req {
+	unsigned             len;
+	unsigned             actual;
+	void                *buf;
+>>>>>>> p9x
 };
 
 /**
@@ -78,7 +98,15 @@ struct td_node {
 struct ci_hw_req {
 	struct usb_request	req;
 	struct list_head	queue;
+<<<<<<< HEAD
 	struct list_head	tds;
+=======
+	struct ci13xxx_td	*ptr;
+	dma_addr_t		dma;
+	struct ci13xxx_td	*zptr;
+	dma_addr_t		zdma;
+	struct ci13xxx_multi_req multi;
+>>>>>>> p9x
 };
 
 #ifdef CONFIG_USB_CHIPIDEA_UDC

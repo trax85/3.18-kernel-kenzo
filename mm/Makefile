@@ -5,6 +5,7 @@
 KASAN_SANITIZE_slab_common.o := n
 KASAN_SANITIZE_slub.o := n
 
+<<<<<<< HEAD
 # These files are disabled because they produce non-interesting and/or
 # flaky coverage that is not a function of syscall inputs. E.g. slab is out of
 # free pages, or a task is migrated between nodes.
@@ -23,6 +24,8 @@ KCOV_INSTRUMENT_vmstat.o := n
 # Since __builtin_frame_address does work as used, disable the warning.
 CFLAGS_usercopy.o += $(call cc-disable-warning, frame-address)
 
+=======
+>>>>>>> p9x
 mmu-y			:= nommu.o
 mmu-$(CONFIG_MMU)	:= fremap.o gup.o highmem.o memory.o mincore.o \
 			   mlock.o mmap.o mprotect.o mremap.o msync.o rmap.o \
@@ -37,10 +40,16 @@ obj-y			:= filemap.o mempool.o oom_kill.o \
 			   readahead.o swap.o truncate.o vmscan.o shmem.o \
 			   util.o mmzone.o vmstat.o backing-dev.o \
 			   mm_init.o mmu_context.o percpu.o slab_common.o \
+<<<<<<< HEAD
 			   compaction.o vmacache.o \
 			   interval_tree.o list_lru.o workingset.o \
 			   iov_iter.o debug.o $(mmu-y) showmem.o \
 			   vmpressure.o
+=======
+			   compaction.o balloon_compaction.o \
+			   interval_tree.o $(mmu-y) \
+			   showmem.o vmpressure.o
+>>>>>>> p9x
 
 obj-y += init-mm.o
 
@@ -59,7 +68,10 @@ obj-$(CONFIG_HAVE_MEMBLOCK) += memblock.o
 obj-$(CONFIG_SWAP)	+= page_io.o swap_state.o swapfile.o swap_ratio.o
 obj-$(CONFIG_FRONTSWAP)	+= frontswap.o
 obj-$(CONFIG_ZSWAP)	+= zswap.o
+<<<<<<< HEAD
 obj-$(CONFIG_ZCACHE)	+= zcache.o
+=======
+>>>>>>> p9x
 obj-$(CONFIG_HAS_DMA)	+= dmapool.o
 obj-$(CONFIG_HUGETLBFS)	+= hugetlb.o
 obj-$(CONFIG_NUMA) 	+= mempolicy.o
@@ -89,6 +101,7 @@ obj-$(CONFIG_DEBUG_KMEMLEAK_TEST) += kmemleak-test.o
 obj-$(CONFIG_CLEANCACHE) += cleancache.o
 obj-$(CONFIG_MEMORY_ISOLATION) += page_isolation.o
 obj-$(CONFIG_PAGE_OWNER) += pageowner.o
+<<<<<<< HEAD
 obj-$(CONFIG_ZPOOL)	+= zpool.o
 obj-$(CONFIG_ZBUD)	+= zbud.o
 obj-$(CONFIG_ZSMALLOC)	+= zsmalloc.o
@@ -98,3 +111,14 @@ obj-$(CONFIG_MEMORY_BALLOON) += balloon_compaction.o
 obj-$(CONFIG_PROCESS_RECLAIM)	+= process_reclaim.o
 obj-$(CONFIG_CMA_DEBUGFS) += cma_debug.o
 obj-$(CONFIG_HARDENED_USERCOPY) += usercopy.o
+=======
+obj-$(CONFIG_ZBUD)	+= zbud.o
+obj-$(CONFIG_ZSMALLOC)	+= zsmalloc.o
+obj-$(CONFIG_GENERIC_EARLY_IOREMAP) += early_ioremap.o
+obj-$(CONFIG_MEMTEST)		+= memtest.o
+obj-$(CONFIG_PROCESS_RECLAIM)	+= process_reclaim.o
+obj-$(CONFIG_ZPOOL)	+= zpool.o
+obj-$(CONFIG_ZSMALLOC)	+= zsmalloc.o
+obj-$(CONFIG_FORCE_RECLAIM)	+= force_reclaim.o
+obj-$(CONFIG_PROCESS_RECLAIM)	+= process_reclaim.o
+>>>>>>> p9x

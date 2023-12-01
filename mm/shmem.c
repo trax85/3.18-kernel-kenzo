@@ -496,6 +496,10 @@ static void shmem_undo_range(struct inode *inode, loff_t lstart, loff_t lend,
 			index = start;
 			continue;
 		}
+<<<<<<< HEAD
+=======
+		mem_cgroup_uncharge_start();
+>>>>>>> p9x
 		for (i = 0; i < pagevec_count(&pvec); i++) {
 			struct page *page = pvec.pages[i];
 
@@ -1275,6 +1279,18 @@ unlock:
 	return error;
 }
 
+/*
+ * This is like autoremove_wake_function, but it removes the wait queue
+ * entry unconditionally - even if something else had already woken the
+ * target.
+ */
+static int synchronous_wake_function(wait_queue_t *wait, unsigned mode, int sync, void *key)
+{
+	int ret = default_wake_function(wait, mode, sync, key);
+	list_del_init(&wait->task_list);
+	return ret;
+}
+
 static int shmem_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 {
 	struct inode *inode = file_inode(vma->vm_file);
@@ -1308,7 +1324,11 @@ static int shmem_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 		    vmf->pgoff >= shmem_falloc->start &&
 		    vmf->pgoff < shmem_falloc->next) {
 			wait_queue_head_t *shmem_falloc_waitq;
+<<<<<<< HEAD
 			DEFINE_WAIT(shmem_fault_wait);
+=======
+			DEFINE_WAIT_FUNC(shmem_fault_wait, synchronous_wake_function);
+>>>>>>> p9x
 
 			ret = VM_FAULT_NOPAGE;
 			if ((vmf->flags & FAULT_FLAG_ALLOW_RETRY) &&
@@ -2070,12 +2090,15 @@ static long shmem_fallocate(struct file *file, int mode, loff_t offset,
 		loff_t unmap_end = round_down(offset + len, PAGE_SIZE) - 1;
 		DECLARE_WAIT_QUEUE_HEAD_ONSTACK(shmem_falloc_waitq);
 
+<<<<<<< HEAD
 		/* protected by i_mutex */
 		if (info->seals & F_SEAL_WRITE) {
 			error = -EPERM;
 			goto out;
 		}
 
+=======
+>>>>>>> p9x
 		shmem_falloc.waitq = &shmem_falloc_waitq;
 		shmem_falloc.start = unmap_start >> PAGE_SHIFT;
 		shmem_falloc.next = (unmap_end + 1) >> PAGE_SHIFT;
@@ -2092,6 +2115,10 @@ static long shmem_fallocate(struct file *file, int mode, loff_t offset,
 		spin_lock(&inode->i_lock);
 		inode->i_private = NULL;
 		wake_up_all(&shmem_falloc_waitq);
+<<<<<<< HEAD
+=======
+		WARN_ON_ONCE(!list_empty(&shmem_falloc_waitq.task_list));
+>>>>>>> p9x
 		spin_unlock(&inode->i_lock);
 		error = 0;
 		goto out;
@@ -2142,8 +2169,13 @@ static long shmem_fallocate(struct file *file, int mode, loff_t offset,
 			/* Remove the !PageUptodate pages we added */
 			if (index > start) {
 				shmem_undo_range(inode,
+<<<<<<< HEAD
 				    (loff_t)start << PAGE_CACHE_SHIFT,
 				    ((loff_t)index << PAGE_CACHE_SHIFT) - 1, true);
+=======
+				 (loff_t)start << PAGE_CACHE_SHIFT,
+				 ((loff_t)index << PAGE_CACHE_SHIFT) - 1, true);
+>>>>>>> p9x
 			}
 			goto undone;
 		}
@@ -2255,6 +2287,37 @@ shmem_tmpfile(struct inode *dir, struct dentry *dentry, umode_t mode)
 	return error;
 out_iput:
 	iput(inode);
+	return error;
+}
+
+static int
+shmem_tmpfile(struct inode *dir, struct dentry *dentry, umode_t mode)
+{
+	struct inode *inode;
+	int error = -ENOSPC;
+
+	inode = shmem_get_inode(dir->i_sb, dir, mode, 0, VM_NORESERVE);
+	if (inode) {
+		error = security_inode_init_security(inode, dir,
+						     NULL,
+						     shmem_initxattrs, NULL);
+		if (error) {
+			if (error != -EOPNOTSUPP) {
+				iput(inode);
+				return error;
+			}
+		}
+#ifdef CONFIG_TMPFS_POSIX_ACL
+		error = generic_acl_init(inode, dir);
+		if (error) {
+			iput(inode);
+			return error;
+		}
+#else
+		error = 0;
+#endif
+		d_tmpfile(dentry, inode);
+	}
 	return error;
 }
 
@@ -3159,7 +3222,11 @@ static const struct inode_operations shmem_dir_inode_operations = {
 	.mkdir		= shmem_mkdir,
 	.rmdir		= shmem_rmdir,
 	.mknod		= shmem_mknod,
+<<<<<<< HEAD
 	.rename2	= shmem_rename2,
+=======
+	.rename		= shmem_rename,
+>>>>>>> p9x
 	.tmpfile	= shmem_tmpfile,
 #endif
 #ifdef CONFIG_TMPFS_XATTR

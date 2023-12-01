@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2010-2016, 2018 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2010-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -69,8 +73,13 @@ struct mpm_irqs {
 	char domain_name[MAX_DOMAIN_NAME];
 };
 
+<<<<<<< HEAD
 #define MAX_MPM_PIN_PER_IRQ 2
 static struct mpm_irqs unlisted_irqs[MSM_MPM_NR_IRQ_DOMAINS];
+=======
+static struct mpm_irqs unlisted_irqs[MSM_MPM_NR_IRQ_DOMAINS];
+
+>>>>>>> p9x
 static int num_mpm_irqs = MSM_MPM_NR_MPM_IRQS;
 static struct hlist_head *irq_hash;
 static unsigned int *msm_mpm_irqs_m2a;
@@ -78,12 +87,18 @@ static unsigned int *msm_mpm_irqs_m2a;
 
 #define MSM_MPM_IRQ_INDEX(irq)  (irq / 32)
 #define MSM_MPM_IRQ_MASK(irq)  BIT(irq % 32)
+<<<<<<< HEAD
 #define MSM_MPM_IRQ_DOMAIN_MASK(domain) BIT(domain)
+=======
+>>>>>>> p9x
 
 #define hashfn(val) (val % num_mpm_irqs)
 #define SCLK_HZ (32768)
 #define ARCH_TIMER_HZ (19200000)
+<<<<<<< HEAD
 #define MAX_IRQ 1024
+=======
+>>>>>>> p9x
 
 struct msm_mpm_device_data {
 	uint16_t *irqs_m2a;
@@ -142,6 +157,7 @@ module_param_named(
 );
 
 enum mpm_state {
+<<<<<<< HEAD
 	MSM_MPM_GIC_IRQ_MAPPING_DONE = BIT(0),
 	MSM_MPM_GPIO_IRQ_MAPPING_DONE = BIT(1),
 	MSM_MPM_DEVICE_PROBED = BIT(2),
@@ -149,11 +165,22 @@ enum mpm_state {
 
 static enum mpm_state msm_mpm_initialized;
 static int mpm_init_irq_domain(struct device_node *node, int irq_domain);
+=======
+	MSM_MPM_IRQ_MAPPING_DONE = BIT(0),
+	MSM_MPM_DEVICE_PROBED = BIT(1),
+};
+
+static enum mpm_state msm_mpm_initialized;
+>>>>>>> p9x
 
 static inline bool msm_mpm_is_initialized(void)
 {
 	return msm_mpm_initialized &
+<<<<<<< HEAD
 		(MSM_MPM_GIC_IRQ_MAPPING_DONE | MSM_MPM_DEVICE_PROBED);
+=======
+		(MSM_MPM_IRQ_MAPPING_DONE | MSM_MPM_DEVICE_PROBED);
+>>>>>>> p9x
 
 }
 
@@ -244,10 +271,16 @@ static inline unsigned int msm_mpm_get_irq_m2a(unsigned int pin)
 	return msm_mpm_irqs_m2a[pin];
 }
 
+<<<<<<< HEAD
 static inline void msm_mpm_get_irq_a2m(struct irq_data *d, uint16_t *mpm_pins)
 {
 	struct mpm_irqs_a2m *node = NULL;
 	int count = 0;
+=======
+static inline uint16_t msm_mpm_get_irq_a2m(struct irq_data *d)
+{
+	struct mpm_irqs_a2m *node = NULL;
+>>>>>>> p9x
 
 	hlist_for_each_entry(node, &irq_hash[hashfn(d->hwirq)], node) {
 		if ((node->hwirq == d->hwirq)
@@ -258,16 +291,24 @@ static inline void msm_mpm_get_irq_a2m(struct irq_data *d, uint16_t *mpm_pins)
 			 */
 			if (node->pin != 0xff)
 				msm_mpm_irqs_m2a[node->pin] = d->irq;
+<<<<<<< HEAD
 			BUG_ON(count >= MAX_MPM_PIN_PER_IRQ);
 			mpm_pins[count] = node->pin;
 			count++;
 		}
 	}
+=======
+			break;
+		}
+	}
+	return node ? node->pin : 0;
+>>>>>>> p9x
 }
 
 static int msm_mpm_enable_irq_exclusive(
 	struct irq_data *d, bool enable, bool wakeset)
 {
+<<<<<<< HEAD
 	uint16_t num = 0;
 	uint16_t mpm_pins[MAX_MPM_PIN_PER_IRQ] = {0};
 
@@ -320,6 +361,51 @@ static int msm_mpm_enable_irq_exclusive(
 				&& !wakeset && !msm_mpm_in_suspend)
 				complete(&wake_wq);
 		}
+=======
+	uint16_t mpm_pin;
+
+	WARN_ON(!d);
+	if (!d)
+		return 0;
+
+	mpm_pin = msm_mpm_get_irq_a2m(d);
+
+	if (mpm_pin == 0xff)
+		return 0;
+
+	if (mpm_pin) {
+		uint32_t *mpm_irq_masks = wakeset ?
+				msm_mpm_wake_irq : msm_mpm_enabled_irq;
+		uint32_t index = MSM_MPM_IRQ_INDEX(mpm_pin);
+		uint32_t mask = MSM_MPM_IRQ_MASK(mpm_pin);
+
+		if (enable)
+			mpm_irq_masks[index] |= mask;
+		else
+			mpm_irq_masks[index] &= ~mask;
+	} else {
+		int i;
+		unsigned long *irq_apps;
+
+		for (i = 0; i < MSM_MPM_NR_IRQ_DOMAINS; i++) {
+			if (d->domain == unlisted_irqs[i].domain)
+				break;
+		}
+
+		if (i == MSM_MPM_NR_IRQ_DOMAINS)
+			return 0;
+		irq_apps = wakeset ? unlisted_irqs[i].wakeup_irqs :
+					unlisted_irqs[i].enabled_irqs;
+
+		if (enable)
+			__set_bit(d->hwirq, irq_apps);
+		else
+			__clear_bit(d->hwirq, irq_apps);
+
+		if ((msm_mpm_initialized & MSM_MPM_DEVICE_PROBED)
+				&& !wakeset && !msm_mpm_in_suspend)
+			complete(&wake_wq);
+>>>>>>> p9x
 	}
 
 	return 0;
@@ -348,6 +434,7 @@ static void msm_mpm_set_edge_ctl(int pin, unsigned int flow_type)
 static int msm_mpm_set_irq_type_exclusive(
 	struct irq_data *d, unsigned int flow_type)
 {
+<<<<<<< HEAD
 	uint16_t num = 0;
 	uint16_t mpm_pins[MAX_MPM_PIN_PER_IRQ] = {0};
 
@@ -374,6 +461,29 @@ static int msm_mpm_set_irq_type_exclusive(
 		}
 	}
 
+=======
+	uint32_t mpm_irq;
+
+	mpm_irq = msm_mpm_get_irq_a2m(d);
+
+	if (mpm_irq == 0xff)
+		return 0;
+
+	if (mpm_irq) {
+		uint32_t index = MSM_MPM_IRQ_INDEX(mpm_irq);
+		uint32_t mask = MSM_MPM_IRQ_MASK(mpm_irq);
+
+		if (index >= MSM_MPM_REG_WIDTH)
+			return -EFAULT;
+
+		msm_mpm_set_edge_ctl(mpm_irq, flow_type);
+
+		if (flow_type &  IRQ_TYPE_LEVEL_HIGH)
+			msm_mpm_polarity[index] |= mask;
+		else
+			msm_mpm_polarity[index] &= ~mask;
+	}
+>>>>>>> p9x
 	return 0;
 }
 
@@ -555,7 +665,11 @@ bool msm_mpm_irqs_detectable(bool from_idle)
 			from_idle);
 }
 
+<<<<<<< HEAD
 void msm_mpm_enter_sleep(uint64_t sclk_count, bool from_idle,
+=======
+void msm_mpm_enter_sleep(uint32_t sclk_count, bool from_idle,
+>>>>>>> p9x
 		const struct cpumask *cpumask)
 {
 	cycle_t wakeup = (u64)sclk_count * ARCH_TIMER_HZ;
@@ -608,6 +722,7 @@ void msm_mpm_exit_sleep(bool from_idle)
 			unsigned int apps_irq = msm_mpm_get_irq_m2a(mpm_irq);
 			struct irq_desc *desc = apps_irq ?
 				irq_to_desc(apps_irq) : NULL;
+<<<<<<< HEAD
 			struct irq_chip *chip = NULL;
 
 			if (desc)
@@ -615,6 +730,10 @@ void msm_mpm_exit_sleep(bool from_idle)
 
 			if (desc && !irqd_is_level_type(&desc->irq_data) &&
 				(!(chip && !strcmp(chip->name, "msmgpio")))) {
+=======
+
+			if (desc && !irqd_is_level_type(&desc->irq_data)) {
+>>>>>>> p9x
 				irq_set_pending(apps_irq);
 				if (from_idle) {
 					raw_spin_lock(&desc->lock);
@@ -687,7 +806,11 @@ static void msm_mpm_work_fn(struct work_struct *work)
 	unsigned long flags;
 	while (1) {
 		bool allow;
+<<<<<<< HEAD
 		wait_for_completion(&wake_wq);
+=======
+		wait_for_completion_interruptible(&wake_wq);
+>>>>>>> p9x
 		spin_lock_irqsave(&msm_mpm_lock, flags);
 		allow = msm_mpm_irqs_detectable(true) &&
 				msm_mpm_gpio_irqs_detectable(true);
@@ -735,7 +858,11 @@ static int msm_mpm_dev_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	dev->mpm_request_reg_base = devm_ioremap_resource(&pdev->dev, res);
+=======
+	dev->mpm_request_reg_base = devm_request_and_ioremap(&pdev->dev, res);
+>>>>>>> p9x
 
 	if (!dev->mpm_request_reg_base) {
 		pr_err("%s(): Unable to iomap\n", __func__);
@@ -808,9 +935,20 @@ static int msm_mpm_dev_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline int __init mpm_irq_domain_size(struct irq_domain *d)
 {
 	return d->revmap_size ?: MAX_IRQ;
+=======
+static inline int __init mpm_irq_domain_linear_size(struct irq_domain *d)
+{
+	return d->revmap_data.linear.size;
+}
+
+static inline int __init mpm_irq_domain_legacy_size(struct irq_domain *d)
+{
+	return d->revmap_data.legacy.size;
+>>>>>>> p9x
 }
 
 static const struct mpm_of mpm_of_map[MSM_MPM_NR_IRQ_DOMAINS] = {
@@ -819,7 +957,11 @@ static const struct mpm_of mpm_of_map[MSM_MPM_NR_IRQ_DOMAINS] = {
 		"qcom,gic-map",
 		"gic",
 		&gic_arch_extn,
+<<<<<<< HEAD
 		mpm_irq_domain_size,
+=======
+		mpm_irq_domain_linear_size,
+>>>>>>> p9x
 	},
 	{
 		"qcom,gpio-parent",
@@ -830,6 +972,7 @@ static const struct mpm_of mpm_of_map[MSM_MPM_NR_IRQ_DOMAINS] = {
 #elif defined(CONFIG_GPIO_MSM_V3)
 		&msm_gpio_irq_extn,
 #else
+<<<<<<< HEAD
 		&mpm_pinctrl_extn,
 #endif
 		mpm_irq_domain_size,
@@ -972,10 +1115,28 @@ static void __of_mpm_init(struct device_node *node)
 
 	if (msm_mpm_initialized & (MSM_MPM_GIC_IRQ_MAPPING_DONE |
 				MSM_MPM_GPIO_IRQ_MAPPING_DONE)) {
+=======
+		NULL,
+#endif
+		mpm_irq_domain_legacy_size,
+	},
+};
+
+static void __init __of_mpm_init(struct device_node *node)
+{
+	const __be32 *list;
+	int i;
+
+	if (msm_mpm_initialized & MSM_MPM_IRQ_MAPPING_DONE) {
+>>>>>>> p9x
 		pr_warn("%s(): MPM driver mapping exists\n", __func__);
 		return;
 	}
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 	/*
 	 * Assumes a default value of 64 MPM interrupts if the DT property
 	 * num_mpm_irqs is not defined. The MPM driver assumes writing to 32
@@ -1020,6 +1181,7 @@ static void __of_mpm_init(struct device_node *node)
 	for (i = 0; i < num_mpm_irqs; i++)
 		INIT_HLIST_HEAD(&irq_hash[i]);
 
+<<<<<<< HEAD
 	return;
 failed_malloc:
 	freeup_memory();
@@ -1027,6 +1189,125 @@ failed_malloc:
 
 
 
+=======
+	for (i = 0; i < MSM_MPM_NR_IRQ_DOMAINS; i++) {
+		struct device_node *parent = NULL;
+		struct mpm_irqs_a2m *mpm_node = NULL;
+		struct irq_domain *domain = NULL;
+		int size;
+
+		parent = of_parse_phandle(node, mpm_of_map[i].pkey, 0);
+
+		if (!parent) {
+			pr_warn("%s(): %s Not found\n", __func__,
+					mpm_of_map[i].pkey);
+			continue;
+		}
+
+		domain = irq_find_host(parent);
+
+		if (!domain) {
+			pr_warn("%s(): Cannot find irq controller for %s\n",
+					__func__, mpm_of_map[i].pkey);
+			continue;
+		}
+
+		size = mpm_of_map[i].get_max_irqs(domain);
+		unlisted_irqs[i].size = size;
+		memcpy(unlisted_irqs[i].domain_name, mpm_of_map[i].name,
+				MAX_DOMAIN_NAME);
+
+		unlisted_irqs[i].enabled_irqs =
+			kzalloc(BITS_TO_LONGS(size) * sizeof(unsigned long),
+					GFP_KERNEL);
+
+		if (!unlisted_irqs[i].enabled_irqs)
+			goto failed_malloc;
+
+		unlisted_irqs[i].wakeup_irqs =
+			kzalloc(BITS_TO_LONGS(size) * sizeof(unsigned long),
+					GFP_KERNEL);
+
+		if (!unlisted_irqs[i].wakeup_irqs)
+			goto failed_malloc;
+
+		unlisted_irqs[i].domain = domain;
+
+		list = of_get_property(node, mpm_of_map[i].map, &size);
+
+		if (!list || !size) {
+			__WARN();
+			continue;
+		}
+
+		/*
+		 * Size is in bytes. Convert to size of uint32_t
+		 */
+		size /= sizeof(*list);
+
+		/*
+		 * The data is represented by a tuple mapping hwirq to a MPM
+		 * pin. The number of mappings in the device tree would be
+		 * size/2
+		 */
+		mpm_node = kzalloc(sizeof(struct mpm_irqs_a2m) * size / 2,
+				GFP_KERNEL);
+		if (!mpm_node)
+			goto failed_malloc;
+
+		while (size) {
+			unsigned long pin = be32_to_cpup(list++);
+			irq_hw_number_t hwirq = be32_to_cpup(list++);
+
+			mpm_node->pin = pin;
+			mpm_node->hwirq = hwirq;
+			mpm_node->parent = parent;
+			mpm_node->domain = domain;
+			INIT_HLIST_NODE(&mpm_node->node);
+
+			hlist_add_head(&mpm_node->node,
+					&irq_hash[hashfn(mpm_node->hwirq)]);
+			size -= 2;
+			mpm_node++;
+		}
+
+		if (mpm_of_map[i].chip) {
+			mpm_of_map[i].chip->irq_mask = msm_mpm_disable_irq;
+			mpm_of_map[i].chip->irq_unmask = msm_mpm_enable_irq;
+			mpm_of_map[i].chip->irq_disable = msm_mpm_disable_irq;
+			mpm_of_map[i].chip->irq_set_type = msm_mpm_set_irq_type;
+			mpm_of_map[i].chip->irq_set_wake = msm_mpm_set_irq_wake;
+		}
+
+	}
+	msm_mpm_initialized |= MSM_MPM_IRQ_MAPPING_DONE;
+
+	return;
+
+failed_malloc:
+	kfree(irq_hash);
+	kfree(msm_mpm_irqs_m2a);
+	kfree(msm_mpm_enabled_irq);
+	kfree(msm_mpm_wake_irq);
+	kfree(msm_mpm_falling_edge);
+	kfree(msm_mpm_rising_edge);
+	kfree(msm_mpm_polarity);
+	for (i = 0; i < MSM_MPM_NR_IRQ_DOMAINS; i++) {
+		if (mpm_of_map[i].chip) {
+			mpm_of_map[i].chip->irq_mask = NULL;
+			mpm_of_map[i].chip->irq_unmask = NULL;
+			mpm_of_map[i].chip->irq_disable = NULL;
+			mpm_of_map[i].chip->irq_set_type = NULL;
+			mpm_of_map[i].chip->irq_set_wake = NULL;
+		}
+
+		kfree(unlisted_irqs[i].enabled_irqs);
+		kfree(unlisted_irqs[i].wakeup_irqs);
+
+	}
+}
+
+>>>>>>> p9x
 static struct of_device_id msm_mpm_match_table[] = {
 	{.compatible = "qcom,mpm-v2"},
 	{},
@@ -1047,6 +1328,7 @@ int __init msm_mpm_device_init(void)
 }
 arch_initcall(msm_mpm_device_init);
 
+<<<<<<< HEAD
 void of_mpm_init(void)
 {
 	struct device_node *node;
@@ -1064,4 +1346,14 @@ void of_mpm_init(void)
 						ret);
 		}
 	}
+=======
+void __init of_mpm_init(void)
+{
+	struct device_node *node;
+
+	node = of_find_matching_node(NULL, msm_mpm_match_table);
+	WARN_ON(!node);
+	if (node)
+		__of_mpm_init(node);
+>>>>>>> p9x
 }

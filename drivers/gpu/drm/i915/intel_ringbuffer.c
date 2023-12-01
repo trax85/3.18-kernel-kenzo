@@ -603,11 +603,14 @@ static int init_ring_common(struct intel_engine_cs *ring)
 		}
 	}
 
+<<<<<<< HEAD
 	if (I915_NEED_GFX_HWS(dev))
 		intel_ring_setup_status_page(ring);
 	else
 		ring_setup_phys_status_page(ring);
 
+=======
+>>>>>>> p9x
 	/* Enforce ordering by reading HEAD register back */
 	I915_READ_HEAD(ring);
 
@@ -721,6 +724,7 @@ static int intel_ring_workarounds_emit(struct drm_i915_gem_request *req)
 	struct drm_i915_private *dev_priv = dev->dev_private;
 	struct i915_workarounds *w = &dev_priv->workarounds;
 
+<<<<<<< HEAD
 	if (w->count == 0)
 		return 0;
 
@@ -728,11 +732,15 @@ static int intel_ring_workarounds_emit(struct drm_i915_gem_request *req)
 	ret = intel_ring_flush_all_caches(req);
 	if (ret)
 		return ret;
+=======
+	obj = pc->obj;
+>>>>>>> p9x
 
 	ret = intel_ring_begin(req, (w->count * 2 + 2));
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	intel_ring_emit(ring, MI_LOAD_REGISTER_IMM(w->count));
 	for (i = 0; i < w->count; i++) {
 		intel_ring_emit(ring, w->reg[i].addr);
@@ -750,6 +758,9 @@ static int intel_ring_workarounds_emit(struct drm_i915_gem_request *req)
 	DRM_DEBUG_DRIVER("Number of Workarounds emitted: %d\n", w->count);
 
 	return 0;
+=======
+	kfree(pc);
+>>>>>>> p9x
 }
 
 static int intel_rcs_ctx_init(struct drm_i915_gem_request *req)
@@ -1219,7 +1230,17 @@ static void render_ring_cleanup(struct intel_engine_cs *ring)
 		dev_priv->semaphore_obj = NULL;
 	}
 
+<<<<<<< HEAD
 	intel_fini_pipe_control(ring);
+=======
+	if (HAS_BROKEN_CS_TLB(dev))
+		drm_gem_object_unreference(to_gem_object(ring->private));
+
+	if (INTEL_INFO(dev)->gen >= 5)
+		cleanup_pipe_control(ring);
+
+	ring->private = NULL;
+>>>>>>> p9x
 }
 
 static int gen8_rcs_signal(struct drm_i915_gem_request *signaller_req,
@@ -1651,6 +1672,52 @@ i8xx_ring_put_irq(struct intel_engine_cs *ring)
 	spin_unlock_irqrestore(&dev_priv->irq_lock, flags);
 }
 
+<<<<<<< HEAD
+=======
+void intel_ring_setup_status_page(struct intel_ring_buffer *ring)
+{
+	struct drm_device *dev = ring->dev;
+	drm_i915_private_t *dev_priv = ring->dev->dev_private;
+	u32 mmio = 0;
+
+	/* The ring status page addresses are no longer next to the rest of
+	 * the ring registers as of gen7.
+	 */
+	if (IS_GEN7(dev)) {
+		switch (ring->id) {
+		case RCS:
+			mmio = RENDER_HWS_PGA_GEN7;
+			break;
+		case BCS:
+			mmio = BLT_HWS_PGA_GEN7;
+			break;
+		case VCS:
+			mmio = BSD_HWS_PGA_GEN7;
+			break;
+		}
+	} else if (IS_GEN6(ring->dev)) {
+		mmio = RING_HWS_PGA_GEN6(ring->mmio_base);
+	} else {
+		mmio = RING_HWS_PGA(ring->mmio_base);
+	}
+
+	I915_WRITE(mmio, (u32)ring->status_page.gfx_addr);
+	POSTING_READ(mmio);
+
+	/* Flush the TLB for this page */
+	if (INTEL_INFO(dev)->gen >= 6) {
+		u32 reg = RING_INSTPM(ring->mmio_base);
+		I915_WRITE(reg,
+			   _MASKED_BIT_ENABLE(INSTPM_TLB_INVALIDATE |
+					      INSTPM_SYNC_FLUSH));
+		if (wait_for((I915_READ(reg) & INSTPM_SYNC_FLUSH) == 0,
+			     1000))
+			DRM_ERROR("%s: wait for SyncFlush to complete for TLB invalidation timed out\n",
+				  ring->name);
+	}
+}
+
+>>>>>>> p9x
 static int
 bsd_ring_flush(struct drm_i915_gem_request *req,
 	       u32     invalidate_domains,
@@ -2267,7 +2334,33 @@ int intel_ring_idle(struct intel_engine_cs *ring)
 
 int intel_ring_alloc_request_extras(struct drm_i915_gem_request *request)
 {
+<<<<<<< HEAD
 	request->ringbuf = request->ring->buffer;
+=======
+	if (ring->outstanding_lazy_request)
+		return 0;
+
+	return i915_gem_get_seqno(ring->dev, &ring->outstanding_lazy_request);
+}
+
+static int __intel_ring_prepare(struct intel_ring_buffer *ring,
+				int bytes)
+{
+	int ret;
+
+	if (unlikely(ring->tail + bytes > ring->effective_size)) {
+		ret = intel_wrap_ring_buffer(ring);
+		if (unlikely(ret))
+			return ret;
+	}
+
+	if (unlikely(ring->space < bytes)) {
+		ret = ring_wait_for_space(ring, bytes);
+		if (unlikely(ret))
+			return ret;
+	}
+
+>>>>>>> p9x
 	return 0;
 }
 
@@ -2397,10 +2490,22 @@ int intel_ring_begin(struct drm_i915_gem_request *req,
 		return ret;
 
 	ret = __intel_ring_prepare(ring, num_dwords * sizeof(uint32_t));
+<<<<<<< HEAD
 	if (ret)
 		return ret;
 
 	ring->buffer->space -= num_dwords * sizeof(uint32_t);
+=======
+	if (ret)
+		return ret;
+
+	/* Preallocate the olr before touching the ring */
+	ret = intel_ring_alloc_seqno(ring);
+	if (ret)
+		return ret;
+
+	ring->space -= num_dwords * sizeof(uint32_t);
+>>>>>>> p9x
 	return 0;
 }
 

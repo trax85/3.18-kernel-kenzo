@@ -56,6 +56,7 @@
 
 
 struct dw8250_data {
+<<<<<<< HEAD
 	u8			usr_reg;
 	int			last_mcr;
 	int			line;
@@ -71,6 +72,13 @@ struct dw8250_data {
 #define BYT_PRV_CLK_N_VAL_SHIFT		16
 #define BYT_PRV_CLK_UPDATE		(1 << 31)
 
+=======
+	int		last_mcr;
+	int		line;
+	struct clk	*clk;
+};
+
+>>>>>>> p9x
 static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
 {
 	struct dw8250_data *d = p->private_data;
@@ -86,9 +94,14 @@ static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
 
 static void dw8250_force_idle(struct uart_port *p)
 {
+<<<<<<< HEAD
 	struct uart_8250_port *up = up_to_u8250p(p);
 
 	serial8250_clear_and_reinit_fifos(up);
+=======
+	serial8250_clear_and_reinit_fifos(container_of
+					  (p, struct uart_8250_port, port));
+>>>>>>> p9x
 	(void)p->serial_in(p, UART_RX);
 }
 
@@ -123,6 +136,7 @@ static unsigned int dw8250_serial_in(struct uart_port *p, int offset)
 	unsigned int value = readb(p->membase + (offset << p->regshift));
 
 	return dw8250_modify_msr(p, offset, value);
+<<<<<<< HEAD
 }
 
 /* Read Back (rb) version to ensure register access ording. */
@@ -130,6 +144,8 @@ static void dw8250_serial_out_rb(struct uart_port *p, int offset, int value)
 {
 	dw8250_serial_out(p, offset, value);
 	dw8250_serial_in(p, UART_LCR);
+=======
+>>>>>>> p9x
 }
 
 static void dw8250_serial_out32(struct uart_port *p, int offset, int value)
@@ -167,14 +183,17 @@ static unsigned int dw8250_serial_in32(struct uart_port *p, int offset)
 
 static int dw8250_handle_irq(struct uart_port *p)
 {
-	struct dw8250_data *d = p->private_data;
 	unsigned int iir = p->serial_in(p, UART_IIR);
 
 	if (serial8250_handle_irq(p, iir)) {
 		return 1;
 	} else if ((iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
 		/* Clear the USR */
+<<<<<<< HEAD
 		(void)p->serial_in(p, d->usr_reg);
+=======
+		(void)p->serial_in(p, DW_UART_USR);
+>>>>>>> p9x
 
 		return 1;
 	}

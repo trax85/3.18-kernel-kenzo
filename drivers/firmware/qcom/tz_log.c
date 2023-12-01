@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -22,8 +26,11 @@
 #include <linux/string.h>
 #include <linux/types.h>
 #include <linux/uaccess.h>
+<<<<<<< HEAD
 #include <linux/of.h>
 
+=======
+>>>>>>> p9x
 #include <soc/qcom/scm.h>
 #include <soc/qcom/qseecomi.h>
 
@@ -54,6 +61,7 @@
  */
 #define TZBSP_MAX_INT_DESC 16
 /*
+<<<<<<< HEAD
  * TZ 3.X version info
  */
 #define QSEE_VERSION_TZ_3_X 0x800000
@@ -67,6 +75,8 @@
 #define TZBSP_TAG_LEN 16
 
 /*
+=======
+>>>>>>> p9x
  * VMID Table
  */
 struct tzdbg_vmid_t {
@@ -85,6 +95,7 @@ struct tzdbg_boot_info_t {
 	uint32_t spare;	/* Reserved for future use. */
 };
 /*
+<<<<<<< HEAD
  * Boot Info Table for 64-bit
  */
 struct tzdbg_boot_info64_t {
@@ -98,6 +109,8 @@ struct tzdbg_boot_info64_t {
 	uint32_t warm_jmp_instr; /* Last Warmboot Jump Address Instruction */
 };
 /*
+=======
+>>>>>>> p9x
  * Reset Info Table
  */
 struct tzdbg_reset_info_t {
@@ -135,6 +148,7 @@ struct tzdbg_int_t {
 };
 
 /*
+<<<<<<< HEAD
  * Interrupt Info Table used in tz version >=4.X
  */
 struct tzdbg_int_t_tz40 {
@@ -155,6 +169,8 @@ struct tzbsp_diag_wakeup_info_t {
 };
 
 /*
+=======
+>>>>>>> p9x
  * Log ring buffer position
  */
 struct tzdbg_log_pos_t {
@@ -208,10 +224,13 @@ struct tzdbg_t {
 	 * Ring Buffer Length
 	 */
 	uint32_t ring_len;
+<<<<<<< HEAD
 
 	/* Offset for Wakeup info */
 	uint32_t wakeup_info_off;
 
+=======
+>>>>>>> p9x
 	/*
 	 * VMID to EE Mapping
 	 */
@@ -226,6 +245,7 @@ struct tzdbg_t {
 	struct tzdbg_reset_info_t reset_info[TZBSP_MAX_CPU_COUNT];
 	uint32_t num_interrupts;
 	struct tzdbg_int_t  int_info[TZBSP_DIAG_INT_NUM];
+<<<<<<< HEAD
 
 	/* Wake up info */
 	struct tzbsp_diag_wakeup_info_t  wakeup_info[TZBSP_MAX_CPU_COUNT];
@@ -236,12 +256,15 @@ struct tzdbg_t {
 
 	uint8_t tag[TZBSP_TAG_LEN];
 
+=======
+>>>>>>> p9x
 	/*
 	 * We need at least 2K for the ring buffer
 	 */
 	struct tzdbg_log_t ring_buffer;	/* TZ Ring Buffer */
 };
 
+<<<<<<< HEAD
 struct hypdbg_log_pos_t {
 	uint16_t wrap;
 	uint16_t offset;
@@ -276,6 +299,8 @@ struct hypdbg_t {
 	uint8_t log_buf_p[];
 };
 
+=======
+>>>>>>> p9x
 /*
  * Enumeration order for VMID's
  */
@@ -287,8 +312,11 @@ enum tzdbg_stats_type {
 	TZDBG_GENERAL,
 	TZDBG_LOG,
 	TZDBG_QSEE_LOG,
+<<<<<<< HEAD
 	TZDBG_HYP_GENERAL,
 	TZDBG_HYP_LOG,
+=======
+>>>>>>> p9x
 	TZDBG_STATS_MAX
 };
 
@@ -299,6 +327,7 @@ struct tzdbg_stat {
 
 struct tzdbg {
 	void __iomem *virt_iobase;
+<<<<<<< HEAD
 	void __iomem *hyp_virt_iobase;
 	struct tzdbg_t *diag_buf;
 	struct hypdbg_t *hyp_diag_buf;
@@ -311,6 +340,16 @@ struct tzdbg {
 };
 
 static struct tzdbg tzdbg = {
+=======
+	struct tzdbg_t *diag_buf;
+	char *disp_buf;
+	int debug_tz[TZDBG_STATS_MAX];
+	struct tzdbg_stat stat[TZDBG_STATS_MAX];
+};
+
+static struct tzdbg tzdbg = {
+
+>>>>>>> p9x
 	.stat[TZDBG_BOOT].name = "boot",
 	.stat[TZDBG_RESET].name = "reset",
 	.stat[TZDBG_INTERRUPT].name = "interrupt",
@@ -318,8 +357,11 @@ static struct tzdbg tzdbg = {
 	.stat[TZDBG_GENERAL].name = "general",
 	.stat[TZDBG_LOG].name = "log",
 	.stat[TZDBG_QSEE_LOG].name = "qsee_log",
+<<<<<<< HEAD
 	.stat[TZDBG_HYP_GENERAL].name = "hyp_general",
 	.stat[TZDBG_HYP_LOG].name = "hyp_log",
+=======
+>>>>>>> p9x
 };
 
 static struct tzdbg_log_t *g_qsee_log;
@@ -379,6 +421,7 @@ static int _disp_tz_boot_stats(void)
 {
 	int i;
 	int len = 0;
+<<<<<<< HEAD
 	struct tzdbg_boot_info_t *ptr = NULL;
 	struct tzdbg_boot_info64_t *ptr_64 = NULL;
 
@@ -441,6 +484,32 @@ static int _disp_tz_boot_stats(void)
 			}
 			ptr++;
 		}
+=======
+	struct tzdbg_boot_info_t *ptr;
+
+	ptr = (struct tzdbg_boot_info_t *)((unsigned char *)tzdbg.diag_buf +
+					tzdbg.diag_buf->boot_info_off);
+
+	for (i = 0; i < tzdbg.diag_buf->cpu_count; i++) {
+		len += snprintf(tzdbg.disp_buf + len,
+				(debug_rw_buf_size - 1) - len,
+				"  CPU #: %d\n"
+				"     Warmboot jump address     : 0x%x\n"
+				"     Warmboot entry CPU counter: 0x%x\n"
+				"     Warmboot exit CPU counter : 0x%x\n"
+				"     Power Collapse entry CPU counter: 0x%x\n"
+				"     Power Collapse exit CPU counter : 0x%x\n",
+				i, ptr->warm_jmp_addr, ptr->wb_entry_cnt,
+				ptr->wb_exit_cnt, ptr->pc_entry_cnt,
+				ptr->pc_exit_cnt);
+
+		if (len > (debug_rw_buf_size - 1)) {
+			pr_warn("%s: Cannot fit all info into the buffer\n",
+								__func__);
+			break;
+		}
+		ptr++;
+>>>>>>> p9x
 	}
 	tzdbg.stat[TZDBG_BOOT].data = tzdbg.disp_buf;
 	return len;
@@ -482,7 +551,10 @@ static int _disp_tz_interrupt_stats(void)
 	int *num_int;
 	unsigned char *ptr;
 	struct tzdbg_int_t *tzdbg_ptr;
+<<<<<<< HEAD
 	struct tzdbg_int_t_tz40 *tzdbg_ptr_tz40;
+=======
+>>>>>>> p9x
 
 	num_int = (uint32_t *)((unsigned char *)tzdbg.diag_buf +
 			(tzdbg.diag_buf->int_info_off - sizeof(uint32_t)));
@@ -491,12 +563,18 @@ static int _disp_tz_interrupt_stats(void)
 	int_info_size = ((tzdbg.diag_buf->ring_off -
 				tzdbg.diag_buf->int_info_off)/(*num_int));
 
+<<<<<<< HEAD
 	pr_info("qsee_version = 0x%x\n", tzdbg.tz_version);
 
 	if (tzdbg.tz_version < QSEE_VERSION_TZ_4_X) {
 		for (i = 0; i < (*num_int); i++) {
 			tzdbg_ptr = (struct tzdbg_int_t *)ptr;
 			len += snprintf(tzdbg.disp_buf + len,
+=======
+	for (i = 0; i < (*num_int); i++) {
+		tzdbg_ptr = (struct tzdbg_int_t *)ptr;
+		len += snprintf(tzdbg.disp_buf + len,
+>>>>>>> p9x
 				(debug_rw_buf_size - 1) - len,
 				"     Interrupt Number          : 0x%x\n"
 				"     Type of Interrupt         : 0x%x\n"
@@ -504,12 +582,18 @@ static int _disp_tz_interrupt_stats(void)
 				tzdbg_ptr->int_num,
 				(uint32_t)tzdbg_ptr->int_info,
 				(uint8_t *)tzdbg_ptr->int_desc);
+<<<<<<< HEAD
 			for (j = 0; j < tzdbg.diag_buf->cpu_count; j++) {
 				len += snprintf(tzdbg.disp_buf + len,
+=======
+		for (j = 0; j < tzdbg.diag_buf->cpu_count; j++) {
+			len += snprintf(tzdbg.disp_buf + len,
+>>>>>>> p9x
 				(debug_rw_buf_size - 1) - len,
 				"     int_count on CPU # %d      : %u\n",
 				(uint32_t)j,
 				(uint32_t)tzdbg_ptr->int_count[j]);
+<<<<<<< HEAD
 			}
 			len += snprintf(tzdbg.disp_buf + len,
 					debug_rw_buf_size - 1, "\n");
@@ -551,6 +635,20 @@ static int _disp_tz_interrupt_stats(void)
 		}
 	}
 
+=======
+		}
+		len += snprintf(tzdbg.disp_buf + len, debug_rw_buf_size - 1,
+									"\n");
+
+		if (len > (debug_rw_buf_size - 1)) {
+			pr_warn("%s: Cannot fit all info into the buffer\n",
+								__func__);
+			break;
+		}
+
+		ptr += int_info_size;
+	}
+>>>>>>> p9x
 	tzdbg.stat[TZDBG_INTERRUPT].data = tzdbg.disp_buf;
 	return len;
 }
@@ -639,6 +737,7 @@ static int _disp_log_stats(struct tzdbg_log_t *log,
 	return len;
 }
 
+<<<<<<< HEAD
 static int __disp_hyp_log_stats(uint8_t *log,
 			struct hypdbg_log_pos_t *log_start, uint32_t log_len,
 			size_t count, uint32_t buf_idx)
@@ -711,6 +810,8 @@ static int __disp_hyp_log_stats(uint8_t *log,
 	return len;
 }
 
+=======
+>>>>>>> p9x
 static int _disp_tz_log_stats(size_t count)
 {
 	static struct tzdbg_log_pos_t log_start = {0};
@@ -723,6 +824,7 @@ static int _disp_tz_log_stats(size_t count)
 				tzdbg.diag_buf->ring_len, count, TZDBG_LOG);
 }
 
+<<<<<<< HEAD
 static int _disp_hyp_log_stats(size_t count)
 {
 	static struct hypdbg_log_pos_t log_start = {0};
@@ -735,6 +837,8 @@ static int _disp_hyp_log_stats(size_t count)
 			tzdbg.hyp_debug_rw_buf_size, count, TZDBG_HYP_LOG);
 }
 
+=======
+>>>>>>> p9x
 static int _disp_qsee_log_stats(size_t count)
 {
 	static struct tzdbg_log_pos_t log_start = {0};
@@ -744,6 +848,7 @@ static int _disp_qsee_log_stats(size_t count)
 			count, TZDBG_QSEE_LOG);
 }
 
+<<<<<<< HEAD
 static int _disp_hyp_general_stats(size_t count)
 {
 	int len = 0;
@@ -780,12 +885,15 @@ static int _disp_hyp_general_stats(size_t count)
 	return len;
 }
 
+=======
+>>>>>>> p9x
 static ssize_t tzdbgfs_read(struct file *file, char __user *buf,
 	size_t count, loff_t *offp)
 {
 	int len = 0;
 	int *tz_id =  file->private_data;
 
+<<<<<<< HEAD
 	if (*tz_id == TZDBG_BOOT || *tz_id == TZDBG_RESET ||
 		*tz_id == TZDBG_INTERRUPT || *tz_id == TZDBG_GENERAL ||
 		*tz_id == TZDBG_VMID || *tz_id == TZDBG_LOG)
@@ -796,6 +904,10 @@ static ssize_t tzdbgfs_read(struct file *file, char __user *buf,
 		memcpy_fromio((void *)tzdbg.hyp_diag_buf, tzdbg.hyp_virt_iobase,
 					tzdbg.hyp_debug_rw_buf_size);
 
+=======
+	memcpy_fromio((void *)tzdbg.diag_buf, tzdbg.virt_iobase,
+						debug_rw_buf_size);
+>>>>>>> p9x
 	switch (*tz_id) {
 	case TZDBG_BOOT:
 		len = _disp_tz_boot_stats();
@@ -825,6 +937,7 @@ static ssize_t tzdbgfs_read(struct file *file, char __user *buf,
 		len = _disp_qsee_log_stats(count);
 		*offp = 0;
 		break;
+<<<<<<< HEAD
 	case TZDBG_HYP_GENERAL:
 		len = _disp_hyp_general_stats(count);
 		break;
@@ -832,6 +945,8 @@ static ssize_t tzdbgfs_read(struct file *file, char __user *buf,
 		len = _disp_hyp_log_stats(count);
 		*offp = 0;
 		break;
+=======
+>>>>>>> p9x
 	default:
 		break;
 	}
@@ -959,12 +1074,15 @@ static int  tzdbgfs_init(struct platform_device *pdev)
 
 	for (i = 0; i < TZDBG_STATS_MAX; i++) {
 		tzdbg.debug_tz[i] = i;
+<<<<<<< HEAD
 		/* Do not create hyp entries in debugfs when hyplog flag is not
 		   enabled in dtsi. */
 		if (!tzdbg.is_hyplog_enabled &&
 		    ((TZDBG_HYP_LOG == tzdbg.debug_tz[i]) ||
 		     (TZDBG_HYP_GENERAL == tzdbg.debug_tz[i])))
 			continue;
+=======
+>>>>>>> p9x
 		dent = debugfs_create_file(tzdbg.stat[i].name,
 				S_IRUGO, dent_dir,
 				&tzdbg.debug_tz[i], &tzdbg_fops);
@@ -974,8 +1092,12 @@ static int  tzdbgfs_init(struct platform_device *pdev)
 			goto err;
 		}
 	}
+<<<<<<< HEAD
 	tzdbg.disp_buf = kzalloc(max(debug_rw_buf_size,
 			tzdbg.hyp_debug_rw_buf_size), GFP_KERNEL);
+=======
+	tzdbg.disp_buf = kzalloc(debug_rw_buf_size, GFP_KERNEL);
+>>>>>>> p9x
 	if (tzdbg.disp_buf == NULL) {
 		pr_err("%s: Can't Allocate memory for tzdbg.disp_buf\n",
 			__func__);
@@ -1002,6 +1124,7 @@ static void tzdbgfs_exit(struct platform_device *pdev)
 			ion_unmap_kernel(g_ion_clnt, g_ihandle);
 			ion_free(g_ion_clnt, g_ihandle);
 		}
+<<<<<<< HEAD
 		ion_client_destroy(g_ion_clnt);
 	}
 }
@@ -1074,6 +1197,10 @@ static void tzdbg_get_tz_version(void)
 	else
 		tzdbg.tz_version = resp.result;
 
+=======
+	ion_client_destroy(g_ion_clnt);
+}
+>>>>>>> p9x
 }
 
 /*
@@ -1085,7 +1212,10 @@ static int tz_log_probe(struct platform_device *pdev)
 	void __iomem *virt_iobase;
 	phys_addr_t tzdiag_phy_iobase;
 	uint32_t *ptr = NULL;
+<<<<<<< HEAD
 	int ret = 0;
+=======
+>>>>>>> p9x
 
 	/*
 	 * Get address that stores the physical location diagnostic data
@@ -1114,6 +1244,7 @@ static int tz_log_probe(struct platform_device *pdev)
 			(unsigned int)(debug_rw_buf_size));
 		return -ENXIO;
 	}
+<<<<<<< HEAD
 
 	if (pdev->dev.of_node) {
 		tzdbg.is_hyplog_enabled = of_property_read_bool(
@@ -1132,6 +1263,8 @@ static int tz_log_probe(struct platform_device *pdev)
 		dev_dbg(&pdev->dev, "Device tree data is not found\n");
 	}
 
+=======
+>>>>>>> p9x
 	/*
 	 * Retrieve the address of diagnostic data
 	 */
@@ -1164,9 +1297,12 @@ static int tz_log_probe(struct platform_device *pdev)
 		goto err;
 
 	tzdbg_register_qsee_log_buf();
+<<<<<<< HEAD
 
 	tzdbg_get_tz_version();
 
+=======
+>>>>>>> p9x
 	return 0;
 err:
 	kfree(tzdbg.diag_buf);
@@ -1177,8 +1313,11 @@ err:
 static int tz_log_remove(struct platform_device *pdev)
 {
 	kzfree(tzdbg.diag_buf);
+<<<<<<< HEAD
 	if (tzdbg.hyp_diag_buf)
 		kzfree(tzdbg.hyp_diag_buf);
+=======
+>>>>>>> p9x
 	tzdbgfs_exit(pdev);
 
 	return 0;
@@ -1197,7 +1336,10 @@ static struct platform_driver tz_log_driver = {
 		.name = "tz_log",
 		.owner = THIS_MODULE,
 		.of_match_table = tzlog_match,
+<<<<<<< HEAD
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+=======
+>>>>>>> p9x
 	},
 };
 
@@ -1216,4 +1358,8 @@ module_exit(tz_log_exit);
 
 MODULE_LICENSE("GPL v2");
 MODULE_DESCRIPTION("TZ Log driver");
+<<<<<<< HEAD
+=======
+MODULE_VERSION("1.1");
+>>>>>>> p9x
 MODULE_ALIAS("platform:tz_log");

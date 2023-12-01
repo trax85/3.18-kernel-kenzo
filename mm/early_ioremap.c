@@ -15,7 +15,10 @@
 #include <linux/mm.h>
 #include <linux/vmalloc.h>
 #include <asm/fixmap.h>
+<<<<<<< HEAD
 #include <asm/early_ioremap.h>
+=======
+>>>>>>> p9x
 
 #ifdef CONFIG_MMU
 static int early_ioremap_debug __initdata;
@@ -218,6 +221,7 @@ early_memremap(resource_size_t phys_addr, unsigned long size)
 	return (__force void *)__early_ioremap(phys_addr, size,
 					       FIXMAP_PAGE_NORMAL);
 }
+<<<<<<< HEAD
 
 #define MAX_MAP_CHUNK	(NR_FIX_BTMAPS << PAGE_SHIFT)
 
@@ -240,6 +244,8 @@ void __init copy_from_early_mem(void *dest, phys_addr_t src, unsigned long size)
 	}
 }
 
+=======
+>>>>>>> p9x
 #else /* CONFIG_MMU */
 
 void __init __iomem *

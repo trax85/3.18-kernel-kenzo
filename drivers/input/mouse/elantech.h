@@ -132,7 +132,10 @@ struct elantech_data {
 	bool paritycheck;
 	bool jumpy_cursor;
 	bool reports_pressure;
+<<<<<<< HEAD
 	bool crc_enabled;
+=======
+>>>>>>> p9x
 	bool set_hw_resolution;
 	unsigned char hw_version;
 	unsigned int fw_version;

@@ -355,8 +355,11 @@ struct pci_dev {
 	unsigned int	__aer_firmware_first:1;
 	unsigned int	broken_intx_masking:1;
 	unsigned int	io_window_1k:1;	/* Intel P2P bridge 1K I/O windows */
+<<<<<<< HEAD
 	unsigned int	irq_managed:1;
 	unsigned int	has_secondary_link:1;
+=======
+>>>>>>> p9x
 	unsigned int	non_compliant_bars:1;	/* broken BARs; ignore them */
 	pci_dev_flags_t dev_flags;
 	atomic_t	enable_cnt;	/* pci_enable_device has been called */
@@ -1882,6 +1885,20 @@ static inline struct eeh_dev *pci_dev_to_eeh_dev(struct pci_dev *pdev)
 int pci_for_each_dma_alias(struct pci_dev *pdev,
 			   int (*fn)(struct pci_dev *pdev,
 				     u16 alias, void *data), void *data);
+<<<<<<< HEAD
+=======
+
+/**
+ * pci_find_upstream_pcie_bridge - find upstream PCIe-to-PCI bridge of a device
+ * @pdev: the PCI device
+ *
+ * if the device is PCIE, return NULL
+ * if the device isn't connected to a PCIe bridge (that is its parent is a
+ * legacy PCI bridge and the bridge is directly connected to bus 0), return its
+ * parent
+ */
+struct pci_dev *pci_find_upstream_pcie_bridge(struct pci_dev *pdev);
+>>>>>>> p9x
 
 /* helper functions for operation of device flag */
 static inline void pci_set_dev_assigned(struct pci_dev *pdev)

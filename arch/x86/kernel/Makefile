@@ -17,6 +17,7 @@ CFLAGS_REMOVE_early_printk.o = -pg
 endif
 
 KASAN_SANITIZE_head$(BITS).o := n
+<<<<<<< HEAD
 KASAN_SANITIZE_dumpstack.o := n
 KASAN_SANITIZE_dumpstack_$(BITS).o := n
 
@@ -27,6 +28,8 @@ KASAN_SANITIZE_dumpstack_$(BITS).o := n
 KCOV_INSTRUMENT		:= n
 
 CFLAGS_irq.o := -I$(src)/../include/asm/trace
+=======
+>>>>>>> p9x
 
 obj-y			:= process_$(BITS).o signal.o entry_$(BITS).o
 obj-y			+= traps.o irq.o irq_$(BITS).o dumpstack_$(BITS).o
@@ -41,7 +44,10 @@ obj-y			+= syscall_$(BITS).o vsyscall_gtod.o
 obj-$(CONFIG_X86_64)	+= vsyscall_64.o
 obj-$(CONFIG_X86_64)	+= vsyscall_emu_64.o
 obj-$(CONFIG_X86_ESPFIX64)	+= espfix_64.o
+<<<<<<< HEAD
 obj-$(CONFIG_SYSFS)	+= ksysfs.o
+=======
+>>>>>>> p9x
 obj-y			+= bootflag.o e820.o
 obj-y			+= pci-dma.o quirks.o topology.o kdebugfs.o
 obj-y			+= alternative.o i8253.o pci-nommu.o hw_breakpoint.o

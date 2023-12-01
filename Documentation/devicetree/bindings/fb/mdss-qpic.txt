@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 Qualcomm Technolgies, Inc.  mdss-qpic
+=======
+Qualcomm mdss-qpic
+>>>>>>> p9x
 
 mdss-qpic is a qpic controller device which supports dma transmission to MIPI
 and LCDC panel.

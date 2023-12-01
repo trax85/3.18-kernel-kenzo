@@ -4813,8 +4813,11 @@ void btrfs_evict_inode(struct inode *inode)
 	/* do we really want it for ->i_nlink > 0 and zero btrfs_root_refs? */
 	if (!special_file(inode->i_mode))
 		btrfs_wait_ordered_range(inode, 0, (u64)-1);
+<<<<<<< HEAD
 
 	btrfs_free_io_failure_record(inode, 0, (u64)-1);
+=======
+>>>>>>> p9x
 
 	if (root->fs_info->log_root_recovering) {
 		BUG_ON(test_bit(BTRFS_INODE_HAS_ORPHAN_ITEM,
@@ -7986,6 +7989,7 @@ static ssize_t btrfs_direct_IO(int rw, struct kiocb *iocb,
 
 	atomic_inc(&inode->i_dio_count);
 	smp_mb__after_atomic();
+<<<<<<< HEAD
 
 	/*
 	 * The generic stuff only does filemap_write_and_wait_range, which
@@ -7998,6 +8002,8 @@ static ssize_t btrfs_direct_IO(int rw, struct kiocb *iocb,
 		     &BTRFS_I(inode)->runtime_flags))
 		filemap_fdatawrite_range(inode->i_mapping, offset,
 					 offset + count - 1);
+=======
+>>>>>>> p9x
 
 	if (rw & WRITE) {
 		/*

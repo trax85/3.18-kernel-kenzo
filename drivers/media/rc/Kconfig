@@ -33,6 +33,27 @@ config IR_LIRC_CODEC
 	   Enable this option to pass raw IR to and from userspace via
 	   the LIRC interface.
 
+config USER_RC_INPUT
+	tristate "User Space Input device wrapper for Remote Control"
+	depends on RC_CORE
+
+	---help---
+	   Say Y if you want to report remote control input events
+	   from userspace.
+
+	   To compile this driver as a module, choose M here: the module will
+	   be called user-rc-input.
+
+config USER_SP_RC_INPUT
+	tristate "User Space Input device wrapper for Standby Processor Remote Control"
+	depends on RC_CORE
+
+	---help---
+	   Say Y if you want to report remote control input events
+	   from userspace.
+
+	   To compile this driver as a module, choose M here: the module will
+	   be called user-sp-input.
 
 config IR_NEC_DECODER
 	tristate "Enable IR raw decoder for the NEC protocol"
@@ -114,6 +135,7 @@ config IR_MCE_KBD_DECODER
 	   Windows Media Center Edition, which you would like to use with
 	   a raw IR receiver in your system.
 
+<<<<<<< HEAD
 config IR_XMP_DECODER
 	tristate "Enable IR raw decoder for the XMP protocol"
 	depends on RC_CORE
@@ -123,11 +145,14 @@ config IR_XMP_DECODER
 	---help---
 	   Enable this option if you have IR with XMP protocol, and
 	   if the IR is decoded in software
+=======
+>>>>>>> p9x
 endif #RC_DECODERS
 
 menuconfig RC_DEVICES
 	bool "Remote Controller devices"
 	depends on RC_CORE
+	default y
 
 if RC_DEVICES
 
@@ -341,6 +366,7 @@ config IR_GPIO_CIR
 	   To compile this driver as a module, choose M here: the module will
 	   be called gpio-ir-recv.
 
+<<<<<<< HEAD
 config RC_ST
 	tristate "ST remote control receiver"
 	depends on RC_CORE
@@ -361,5 +387,42 @@ config IR_SUNXI
 
       To compile this driver as a module, choose M here: the module will
       be called sunxi-ir.
+=======
+config IR_GPIO
+	tristate "GPIO IR remote control"
+	depends on RC_CORE
+	---help---
+	   Say Y if you want to use GPIO based IR.
+
+	   To compile this driver as a module, choose M here: the module will
+	   be called gpio-ir.
+
+config IR_PWM
+	tristate "PWM IR remote control"
+	depends on RC_CORE
+	---help---
+	   Say Y if you want to use PWM based IR.
+
+	   To compile this driver as a module, choose M here: the module will
+	   be called pwm-ir.
+config IR_MSM_GENI
+	tristate "MSM GENI IR Controller"
+	depends on RC_CORE
+	default n
+	---help---
+	   Say Y here to enable support for integrated infrared module
+	   for MSM family processors.
+
+	   To compile this driver as a module, choose M here: the
+	   module will be called msm-geni-ir.
+
+config IR_MSM_GENI_TX
+	bool "MSM GENI IR Controller trasmitter"
+	depends on IR_MSM_GENI
+	default n
+	---help---
+	   Say Y here to enable support for integrated infrared transmitter
+	   for MSM family processors.
+>>>>>>> p9x
 
 endif #RC_DEVICES

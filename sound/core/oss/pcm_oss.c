@@ -833,6 +833,7 @@ static int choose_rate(struct snd_pcm_substream *substream,
 	return snd_pcm_hw_param_near(substream, params, SNDRV_PCM_HW_PARAM_RATE, best_rate, NULL);
 }
 
+<<<<<<< HEAD
 /* parameter locking: returns immediately if tried during streaming */
 static int lock_params(struct snd_pcm_runtime *runtime)
 {
@@ -852,6 +853,10 @@ static void unlock_params(struct snd_pcm_runtime *runtime)
 
 /* call with params_lock held */
 static int snd_pcm_oss_change_params_locked(struct snd_pcm_substream *substream)
+=======
+static int snd_pcm_oss_change_params(struct snd_pcm_substream *substream,
+				     bool trylock)
+>>>>>>> p9x
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_pcm_hw_params *params, *sparams;
@@ -865,9 +870,18 @@ static int snd_pcm_oss_change_params_locked(struct snd_pcm_substream *substream)
 	struct snd_mask sformat_mask;
 	struct snd_mask mask;
 
+<<<<<<< HEAD
 	if (!runtime->oss.params)
 		return 0;
 	sw_params = kzalloc(sizeof(*sw_params), GFP_KERNEL);
+=======
+	if (trylock) {
+		if (!(mutex_trylock(&runtime->oss.params_lock)))
+			return -EAGAIN;
+	} else if (mutex_lock_interruptible(&runtime->oss.params_lock))
+		return -EINTR;
+	sw_params = kmalloc(sizeof(*sw_params), GFP_KERNEL);
+>>>>>>> p9x
 	params = kmalloc(sizeof(*params), GFP_KERNEL);
 	sparams = kmalloc(sizeof(*sparams), GFP_KERNEL);
 	if (!sw_params || !params || !sparams) {
@@ -1170,6 +1184,7 @@ static int snd_pcm_oss_make_ready(struct snd_pcm_substream *substream)
 	runtime = substream->runtime;
 	if (runtime->oss.params) {
 		err = snd_pcm_oss_change_params(substream, false);
+<<<<<<< HEAD
 		if (err < 0)
 			return err;
 	}
@@ -1193,6 +1208,8 @@ static int snd_pcm_oss_make_ready_locked(struct snd_pcm_substream *substream)
 	runtime = substream->runtime;
 	if (runtime->oss.params) {
 		err = snd_pcm_oss_change_params_locked(substream);
+=======
+>>>>>>> p9x
 		if (err < 0)
 			return err;
 	}

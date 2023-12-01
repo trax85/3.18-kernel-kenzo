@@ -495,6 +495,12 @@ int nfs40_walk_client_list(struct nfs_client *new,
 		if (pos->rpc_ops != new->rpc_ops)
 			continue;
 
+<<<<<<< HEAD
+=======
+		if (pos->cl_proto != new->cl_proto)
+			continue;
+
+>>>>>>> p9x
 		if (pos->cl_minorversion != new->cl_minorversion)
 			continue;
 
@@ -630,6 +636,12 @@ int nfs41_walk_client_list(struct nfs_client *new,
 		if (pos->rpc_ops != new->rpc_ops)
 			continue;
 
+<<<<<<< HEAD
+=======
+		if (pos->cl_proto != new->cl_proto)
+			continue;
+
+>>>>>>> p9x
 		if (pos->cl_minorversion != new->cl_minorversion)
 			continue;
 
@@ -667,6 +679,7 @@ int nfs41_walk_client_list(struct nfs_client *new,
 		 * to using the existing nfs_client.
 		 */
 		if (!nfs4_check_clientid_trunking(pos, new))
+<<<<<<< HEAD
 			continue;
 
 		/* Unlike NFSv4.0, we know that NFSv4.1 always uses the
@@ -674,6 +687,8 @@ int nfs41_walk_client_list(struct nfs_client *new,
 		 * uniquifier string on us.
 		 */
 		if (!nfs4_match_client_owner_id(pos, new))
+=======
+>>>>>>> p9x
 			continue;
 
 		atomic_inc(&pos->cl_count);

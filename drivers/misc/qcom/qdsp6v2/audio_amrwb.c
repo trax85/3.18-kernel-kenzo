@@ -2,7 +2,11 @@
  *
  * Copyright (C) 2008 Google, Inc.
  * Copyright (C) 2008 HTC Corporation
+<<<<<<< HEAD
  * Copyright (c) 2011-2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -15,8 +19,11 @@
  *
  */
 
+<<<<<<< HEAD
 #include <linux/compat.h>
 #include <linux/types.h>
+=======
+>>>>>>> p9x
 #include "audio_utils_aio.h"
 
 static struct miscdevice audio_amrwb_misc;
@@ -73,6 +80,7 @@ static long audio_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	return rc;
 }
 
+<<<<<<< HEAD
 static long audio_compat_ioctl(struct file *file, unsigned int cmd,
 			       unsigned long arg)
 {
@@ -118,6 +126,8 @@ static long audio_compat_ioctl(struct file *file, unsigned int cmd,
 	return rc;
 }
 
+=======
+>>>>>>> p9x
 static int audio_open(struct inode *inode, struct file *file)
 {
 	struct q6audio_aio *audio = NULL;
@@ -138,8 +148,11 @@ static int audio_open(struct inode *inode, struct file *file)
 	audio->wakelock_voted = false;
 	audio->audio_ws_mgr = &audio_amrwb_ws_mgr;
 
+<<<<<<< HEAD
 	init_waitqueue_head(&audio->event_wait);
 
+=======
+>>>>>>> p9x
 	audio->ac = q6asm_audio_client_alloc((app_cb) q6_audio_cb,
 					     (void *)audio);
 
@@ -208,7 +221,10 @@ static const struct file_operations audio_amrwb_fops = {
 	.release = audio_aio_release,
 	.unlocked_ioctl = audio_ioctl,
 	.fsync = audio_aio_fsync,
+<<<<<<< HEAD
 	.compat_ioctl = audio_compat_ioctl
+=======
+>>>>>>> p9x
 };
 
 static struct miscdevice audio_amrwb_misc = {

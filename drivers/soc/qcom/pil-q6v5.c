@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2015,2017, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -30,18 +34,27 @@
 #define QDSP6SS_RESET			0x014
 #define QDSP6SS_GFMUX_CTL		0x020
 #define QDSP6SS_PWR_CTL			0x030
+<<<<<<< HEAD
 #define QDSP6V6SS_MEM_PWR_CTL		0x034
 #define QDSP6SS_BHS_STATUS		0x078
 #define QDSP6SS_MEM_PWR_CTL		0x0B0
 #define QDSP6SS_STRAP_ACC		0x110
 #define QDSP6V62SS_BHS_STATUS		0x0C4
+=======
+#define QDSP6SS_MEM_CTL                 0x0B0
+#define QDSP6SS_STRAP_ACC		0x110
+>>>>>>> p9x
 
 /* AXI Halt Register Offsets */
 #define AXI_HALTREQ			0x0
 #define AXI_HALTACK			0x4
 #define AXI_IDLE			0x8
 
+<<<<<<< HEAD
 #define HALT_ACK_TIMEOUT_US		25000
+=======
+#define HALT_ACK_TIMEOUT_US		100000
+>>>>>>> p9x
 
 /* QDSP6SS_RESET */
 #define Q6SS_STOP_CORE			BIT(0)
@@ -75,10 +88,15 @@
 #define L1IU_SLP_NRET_N                 BIT(15)
 #define L1DU_SLP_NRET_N                 BIT(14)
 #define L2PLRU_SLP_NRET_N               BIT(13)
+<<<<<<< HEAD
 #define QDSP6v55_BHS_EN_REST_ACK        BIT(0)
 
 #define HALT_CHECK_MAX_LOOPS            (200)
 #define BHS_CHECK_MAX_LOOPS             (200)
+=======
+
+#define HALT_CHECK_MAX_LOOPS            (200)
+>>>>>>> p9x
 #define QDSP6SS_XO_CBCR                 (0x0038)
 
 #define QDSP6SS_ACC_OVERRIDE_VAL	0x20
@@ -101,18 +119,22 @@ int pil_q6v5_make_proxy_votes(struct pil_desc *pil)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	ret = clk_prepare_enable(drv->qpic_clk);
 	if (ret) {
 		dev_err(pil->dev, "Failed to vote for qpic clk\n");
 		goto err_qpic_vote;
 	}
 
+=======
+>>>>>>> p9x
 	ret = clk_prepare_enable(drv->pnoc_clk);
 	if (ret) {
 		dev_err(pil->dev, "Failed to vote for pnoc\n");
 		goto err_pnoc_vote;
 	}
 
+<<<<<<< HEAD
 	ret = clk_prepare_enable(drv->qdss_clk);
 	if (ret) {
 		dev_err(pil->dev, "Failed to vote for qdss\n");
@@ -120,6 +142,9 @@ int pil_q6v5_make_proxy_votes(struct pil_desc *pil)
 	}
 
 	ret = regulator_set_voltage(drv->vreg_cx, uv, INT_MAX);
+=======
+	ret = regulator_set_voltage(drv->vreg_cx, uv, uv);
+>>>>>>> p9x
 	if (ret) {
 		dev_err(pil->dev, "Failed to request vdd_cx voltage.\n");
 		goto err_cx_voltage;
@@ -152,6 +177,7 @@ err_vreg_pll:
 err_cx_enable:
 	regulator_set_optimum_mode(drv->vreg_cx, 0);
 err_cx_mode:
+<<<<<<< HEAD
 	regulator_set_voltage(drv->vreg_cx, RPM_REGULATOR_CORNER_NONE, INT_MAX);
 err_cx_voltage:
 	clk_disable_unprepare(drv->qdss_clk);
@@ -160,6 +186,12 @@ err_qdss_vote:
 err_pnoc_vote:
 	clk_disable_unprepare(drv->qpic_clk);
 err_qpic_vote:
+=======
+	regulator_set_voltage(drv->vreg_cx, RPM_REGULATOR_CORNER_NONE, uv);
+err_cx_voltage:
+	clk_disable_unprepare(drv->pnoc_clk);
+err_pnoc_vote:
+>>>>>>> p9x
 	clk_disable_unprepare(drv->xo);
 out:
 	return ret;
@@ -183,11 +215,17 @@ void pil_q6v5_remove_proxy_votes(struct pil_desc *pil)
 	}
 	regulator_disable(drv->vreg_cx);
 	regulator_set_optimum_mode(drv->vreg_cx, 0);
+<<<<<<< HEAD
 	regulator_set_voltage(drv->vreg_cx, RPM_REGULATOR_CORNER_NONE, INT_MAX);
 	clk_disable_unprepare(drv->xo);
 	clk_disable_unprepare(drv->qpic_clk);
 	clk_disable_unprepare(drv->pnoc_clk);
 	clk_disable_unprepare(drv->qdss_clk);
+=======
+	regulator_set_voltage(drv->vreg_cx, RPM_REGULATOR_CORNER_NONE, uv);
+	clk_disable_unprepare(drv->xo);
+	clk_disable_unprepare(drv->pnoc_clk);
+>>>>>>> p9x
 }
 EXPORT_SYMBOL(pil_q6v5_remove_proxy_votes);
 
@@ -370,12 +408,15 @@ static int __pil_q6v55_reset(struct pil_desc *pil)
 		writel_relaxed(QDSP6SS_ACC_OVERRIDE_VAL,
 				drv->reg_base + QDSP6SS_STRAP_ACC);
 
+<<<<<<< HEAD
 	/* Override the ACC value with input value */
 	if (!of_property_read_u32(pil->dev->of_node, "qcom,override-acc-1",
 				&drv->override_acc_1))
 		writel_relaxed(drv->override_acc_1,
 				drv->reg_base + QDSP6SS_STRAP_ACC);
 
+=======
+>>>>>>> p9x
 	/* Assert resets, stop core */
 	val = readl_relaxed(drv->reg_base + QDSP6SS_RESET);
 	val |= (Q6SS_CORE_ARES | Q6SS_BUS_ARES_ENA | Q6SS_STOP_CORE);
@@ -392,6 +433,7 @@ static int __pil_q6v55_reset(struct pil_desc *pil)
 	writel_relaxed(val, drv->reg_base + QDSP6SS_PWR_CTL);
 	mb();
 	udelay(1);
+<<<<<<< HEAD
 
 	if (drv->qdsp6v62_1_2 || drv->qdsp6v62_1_5 || drv->qdsp6v62_1_4) {
 		for (i = BHS_CHECK_MAX_LOOPS; i > 0; i--) {
@@ -423,6 +465,15 @@ static int __pil_q6v55_reset(struct pil_desc *pil)
 	val |= QDSP6v55_LDO_BYP;
 	writel_relaxed(val, drv->reg_base + QDSP6SS_PWR_CTL);
 
+=======
+	val |= QDSP6v55_LDO_BYP;
+	writel_relaxed(val, drv->reg_base + QDSP6SS_PWR_CTL);
+
+	/* Remove QMC_MEM clamp */
+	val &= ~QDSP6v55_CLAMP_QMC_MEM;
+	writel_relaxed(val, drv->reg_base + QDSP6SS_PWR_CTL);
+
+>>>>>>> p9x
 	if (drv->qdsp6v56_1_3) {
 		/* Deassert memory peripheral sleep and L2 memory standby */
 		val = readl_relaxed(drv->reg_base + QDSP6SS_PWR_CTL);
@@ -435,6 +486,7 @@ static int __pil_q6v55_reset(struct pil_desc *pil)
 			writel_relaxed(val, drv->reg_base + QDSP6SS_PWR_CTL);
 			udelay(1);
 		}
+<<<<<<< HEAD
 	} else if (drv->qdsp6v56_1_5 || drv->qdsp6v56_1_8
 					|| drv->qdsp6v56_1_10) {
 		/* Deassert QDSP6 compiler memory clamp */
@@ -521,6 +573,22 @@ static int __pil_q6v55_reset(struct pil_desc *pil)
 			 * Wait for 1us for both memory peripheral and
 			 * data array to turn on.
 			 */
+=======
+	} else if (drv->qdsp6v56_1_8) {
+		/* Deassert memory peripheral sleep and L2 memory standby */
+		val = readl_relaxed(drv->reg_base + QDSP6SS_PWR_CTL);
+		val |= (Q6SS_L2DATA_STBY_N | Q6SS_SLP_RET_N);
+		writel_relaxed(val, drv->reg_base + QDSP6SS_PWR_CTL);
+
+		/*
+		 * Enable memories, turn on memory footswitch/head switch
+		 * one bank at a time to avoid in-rush current
+		 */
+		val = readl_relaxed(drv->reg_base + QDSP6SS_MEM_CTL);
+		for (i = 19; i >= 0; i--) {
+			val |= BIT(i);
+			writel_relaxed(val, drv->reg_base + QDSP6SS_MEM_CTL);
+>>>>>>> p9x
 			udelay(1);
 		}
 	} else {
@@ -581,7 +649,11 @@ struct q6v5_data *pil_q6v5_init(struct platform_device *pdev)
 		return ERR_PTR(-ENOMEM);
 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "qdsp6_base");
+<<<<<<< HEAD
 	drv->reg_base = devm_ioremap_resource(&pdev->dev, res);
+=======
+	drv->reg_base = devm_request_and_ioremap(&pdev->dev, res);
+>>>>>>> p9x
 	if (!drv->reg_base)
 		return ERR_PTR(-ENOMEM);
 
@@ -658,6 +730,7 @@ struct q6v5_data *pil_q6v5_init(struct platform_device *pdev)
 
 	drv->qdsp6v56_1_3 = of_property_read_bool(pdev->dev.of_node,
 						"qcom,qdsp6v56-1-3");
+<<<<<<< HEAD
 	drv->qdsp6v56_1_5 = of_property_read_bool(pdev->dev.of_node,
 						"qcom,qdsp6v56-1-5");
 
@@ -681,6 +754,11 @@ struct q6v5_data *pil_q6v5_init(struct platform_device *pdev)
 
 	drv->qdsp6v62_1_5 = of_property_read_bool(pdev->dev.of_node,
 						"qcom,qdsp6v62-1-5");
+=======
+
+	drv->qdsp6v56_1_8 = of_property_read_bool(pdev->dev.of_node,
+						"qcom,qdsp6v56-1-8");
+>>>>>>> p9x
 
 	drv->non_elf_image = of_property_read_bool(pdev->dev.of_node,
 						"qcom,mba-image-is-not-elf");
@@ -697,10 +775,13 @@ struct q6v5_data *pil_q6v5_init(struct platform_device *pdev)
 	if (IS_ERR(drv->xo))
 		return ERR_CAST(drv->xo);
 
+<<<<<<< HEAD
 	drv->qpic_clk = devm_clk_get(&pdev->dev, "qpic");
 	if (IS_ERR(drv->qpic_clk))
 		drv->qpic_clk = NULL;
 
+=======
+>>>>>>> p9x
 	if (of_property_read_bool(pdev->dev.of_node, "qcom,pnoc-clk-vote")) {
 		drv->pnoc_clk = devm_clk_get(&pdev->dev, "pnoc_clk");
 		if (IS_ERR(drv->pnoc_clk))
@@ -709,6 +790,7 @@ struct q6v5_data *pil_q6v5_init(struct platform_device *pdev)
 		drv->pnoc_clk = NULL;
 	}
 
+<<<<<<< HEAD
 	if (of_property_match_string(pdev->dev.of_node,
 			"qcom,proxy-clock-names", "qdss_clk") >= 0) {
 		drv->qdss_clk = devm_clk_get(&pdev->dev, "qdss_clk");
@@ -718,6 +800,8 @@ struct q6v5_data *pil_q6v5_init(struct platform_device *pdev)
 		drv->qdss_clk = NULL;
 	}
 
+=======
+>>>>>>> p9x
 	drv->vreg_cx = devm_regulator_get(&pdev->dev, "vdd_cx");
 	if (IS_ERR(drv->vreg_cx))
 		return ERR_CAST(drv->vreg_cx);

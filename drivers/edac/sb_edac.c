@@ -51,6 +51,39 @@ static int probed;
  */
 #define GET_BITFIELD(v, lo, hi)	\
 	(((v) & GENMASK_ULL(hi, lo)) >> (lo))
+<<<<<<< HEAD
+=======
+
+/*
+ * sbridge Memory Controller Registers
+ */
+
+/*
+ * FIXME: For now, let's order by device function, as it makes
+ * easier for driver's development process. This table should be
+ * moved to pci_id.h when submitted upstream
+ */
+#define PCI_DEVICE_ID_INTEL_SBRIDGE_SAD0	0x3cf4	/* 12.6 */
+#define PCI_DEVICE_ID_INTEL_SBRIDGE_SAD1	0x3cf6	/* 12.7 */
+#define PCI_DEVICE_ID_INTEL_SBRIDGE_BR		0x3cf5	/* 13.6 */
+#define PCI_DEVICE_ID_INTEL_SBRIDGE_IMC_HA0	0x3ca0	/* 14.0 */
+#define PCI_DEVICE_ID_INTEL_SBRIDGE_IMC_TA	0x3ca8	/* 15.0 */
+#define PCI_DEVICE_ID_INTEL_SBRIDGE_IMC_RAS	0x3c71	/* 15.1 */
+#define PCI_DEVICE_ID_INTEL_SBRIDGE_IMC_TAD0	0x3caa	/* 15.2 */
+#define PCI_DEVICE_ID_INTEL_SBRIDGE_IMC_TAD1	0x3cab	/* 15.3 */
+#define PCI_DEVICE_ID_INTEL_SBRIDGE_IMC_TAD2	0x3cac	/* 15.4 */
+#define PCI_DEVICE_ID_INTEL_SBRIDGE_IMC_TAD3	0x3cad	/* 15.5 */
+#define PCI_DEVICE_ID_INTEL_SBRIDGE_IMC_DDRIO	0x3cb8	/* 17.0 */
+
+	/*
+	 * Currently, unused, but will be needed in the future
+	 * implementations, as they hold the error counters
+	 */
+#define PCI_DEVICE_ID_INTEL_SBRIDGE_IMC_ERR0	0x3c72	/* 16.2 */
+#define PCI_DEVICE_ID_INTEL_SBRIDGE_IMC_ERR1	0x3c73	/* 16.3 */
+#define PCI_DEVICE_ID_INTEL_SBRIDGE_IMC_ERR2	0x3c76	/* 16.6 */
+#define PCI_DEVICE_ID_INTEL_SBRIDGE_IMC_ERR3	0x3c77	/* 16.7 */
+>>>>>>> p9x
 
 /* Devices 12 Function 6, Offsets 0x80 to 0xcc */
 static const u32 sbridge_dram_rule[] = {
@@ -1093,7 +1126,11 @@ static int get_memory_error_data(struct mem_ctl_info *mci,
 	u32			tad_offset;
 	u32			rir_way;
 	u32			mb, gb;
+<<<<<<< HEAD
 	u64			ch_addr, offset, limit = 0, prv = 0;
+=======
+	u64			ch_addr, offset, limit, prv = 0;
+>>>>>>> p9x
 
 
 	/*
@@ -1354,7 +1391,11 @@ static int get_memory_error_data(struct mem_ctl_info *mci,
 		if (!IS_RIR_VALID(reg))
 			continue;
 
+<<<<<<< HEAD
 		limit = pvt->info.rir_limit(reg);
+=======
+		limit = RIR_LIMIT(reg);
+>>>>>>> p9x
 		gb = div_u64_rem(limit >> 20, 1024, &mb);
 		edac_dbg(0, "RIR#%d, limit: %u.%03u GB (0x%016Lx), way: %d\n",
 			 n_rir,

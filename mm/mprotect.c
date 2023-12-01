@@ -139,7 +139,11 @@ static inline unsigned long change_pmd_range(struct vm_area_struct *vma,
 	unsigned long next;
 	unsigned long pages = 0;
 	unsigned long nr_huge_updates = 0;
+<<<<<<< HEAD
 	unsigned long mni_start = 0;
+=======
+	bool all_same_node;
+>>>>>>> p9x
 
 	pmd = pmd_offset(pud, addr);
 	do {
@@ -158,9 +162,24 @@ static inline unsigned long change_pmd_range(struct vm_area_struct *vma,
 		if (pmd_trans_huge(*pmd)) {
 			if (next - addr != HPAGE_PMD_SIZE)
 				split_huge_page_pmd(vma, addr, pmd);
+<<<<<<< HEAD
 			else {
 				int nr_ptes = change_huge_pmd(vma, pmd, addr,
 						newprot, prot_numa);
+=======
+			else if (change_huge_pmd(vma, pmd, addr, newprot,
+						 prot_numa)) {
+				pages += HPAGE_PMD_NR;
+				nr_huge_updates++;
+				continue;
+			}
+			/* fall through */
+		}
+		if (pmd_none_or_clear_bad(pmd))
+			continue;
+		pages += change_pte_range(vma, pmd, addr, next, newprot,
+				 dirty_accountable, prot_numa, &all_same_node);
+>>>>>>> p9x
 
 				if (nr_ptes) {
 					if (nr_ptes == HPAGE_PMD_NR) {
@@ -179,11 +198,17 @@ static inline unsigned long change_pmd_range(struct vm_area_struct *vma,
 		pages += this_pages;
 	} while (pmd++, addr = next, addr != end);
 
+<<<<<<< HEAD
 	if (mni_start)
 		mmu_notifier_invalidate_range_end(mm, mni_start, end);
 
 	if (nr_huge_updates)
 		count_vm_numa_events(NUMA_HUGE_PTE_UPDATES, nr_huge_updates);
+=======
+	if (nr_huge_updates)
+		count_vm_numa_events(NUMA_HUGE_PTE_UPDATES, nr_huge_updates);
+
+>>>>>>> p9x
 	return pages;
 }
 
@@ -220,7 +245,11 @@ static unsigned long change_protection_range(struct vm_area_struct *vma,
 	BUG_ON(addr >= end);
 	pgd = pgd_offset(mm, addr);
 	flush_cache_range(vma, addr, end);
+<<<<<<< HEAD
 	set_tlb_flush_pending(mm);
+=======
+	inc_tlb_flush_pending(mm);
+>>>>>>> p9x
 	do {
 		next = pgd_addr_end(addr, end);
 		if (pgd_none_or_clear_bad(pgd))
@@ -232,7 +261,11 @@ static unsigned long change_protection_range(struct vm_area_struct *vma,
 	/* Only flush the TLB if we actually modified any entries: */
 	if (pages)
 		flush_tlb_range(vma, start, end);
+<<<<<<< HEAD
 	clear_tlb_flush_pending(mm);
+=======
+	dec_tlb_flush_pending(mm);
+>>>>>>> p9x
 
 	return pages;
 }

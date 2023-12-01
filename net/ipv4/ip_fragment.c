@@ -641,6 +641,15 @@ int ip_defrag(struct sk_buff *skb, u32 user)
 	net = skb->dev ? dev_net(skb->dev) : dev_net(skb_dst(skb)->dev);
 	IP_INC_STATS_BH(net, IPSTATS_MIB_REASMREQDS);
 
+<<<<<<< HEAD
+=======
+	if (!net->ipv4.frags.high_thresh)
+		goto fail;
+
+	/* Start by cleaning up the memory. */
+	ip_evictor(net);
+
+>>>>>>> p9x
 	/* Lookup (or create) queue header */
 	if ((qp = ip_find(net, ip_hdr(skb), user)) != NULL) {
 		int ret;
@@ -654,6 +663,7 @@ int ip_defrag(struct sk_buff *skb, u32 user)
 		return ret;
 	}
 
+fail:
 	IP_INC_STATS_BH(net, IPSTATS_MIB_REASMFAILS);
 	kfree_skb(skb);
 	return -ENOMEM;
@@ -684,6 +694,7 @@ struct sk_buff *ip_check_defrag(struct sk_buff *skb, u32 user)
 	if (ip_is_fragment(&iph)) {
 		skb = skb_share_check(skb, GFP_ATOMIC);
 		if (skb) {
+<<<<<<< HEAD
 			if (!pskb_may_pull(skb, netoff + iph.ihl * 4)) {
 				kfree_skb(skb);
 				return NULL;
@@ -692,6 +703,12 @@ struct sk_buff *ip_check_defrag(struct sk_buff *skb, u32 user)
 				kfree_skb(skb);
 				return NULL;
 			}
+=======
+			if (!pskb_may_pull(skb, netoff + iph.ihl * 4))
+				return skb;
+			if (pskb_trim_rcsum(skb, netoff + len))
+				return skb;
+>>>>>>> p9x
 			memset(IPCB(skb), 0, sizeof(struct inet_skb_parm));
 			if (ip_defrag(skb, user))
 				return NULL;

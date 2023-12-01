@@ -20,10 +20,13 @@ obj-$(CONFIG_BT_MRVL)		+= btmrvl.o
 obj-$(CONFIG_BT_MRVL_SDIO)	+= btmrvl_sdio.o
 obj-$(CONFIG_BT_WILINK)		+= btwilink.o
 obj-$(CONFIG_MSM_BT_POWER)	+= bluetooth-power.o
+<<<<<<< HEAD
 
 obj-$(CONFIG_BTFM_SLIM)				+= btfm_slim.o
 obj-$(CONFIG_BTFM_SLIM)				+= btfm_slim_codec.o
 obj-$(CONFIG_BTFM_SLIM_WCN3990)		+= btfm_slim_wcn3990.o
+=======
+>>>>>>> p9x
 
 btmrvl-y			:= btmrvl_main.o
 btmrvl-$(CONFIG_DEBUG_FS)	+= btmrvl_debugfs.o

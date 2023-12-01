@@ -431,7 +431,11 @@ static int jfs_remount(struct super_block *sb, int *flags, char *data)
 	int ret;
 
 	sync_filesystem(sb);
+<<<<<<< HEAD
 	if (!parse_options(data, sb, &newLVSize, &flag))
+=======
+	if (!parse_options(data, sb, &newLVSize, &flag)) {
+>>>>>>> p9x
 		return -EINVAL;
 
 	if (newLVSize) {

@@ -395,6 +395,7 @@ extern bool __static_cpu_has_safe(u16 bit);
  */
 static __always_inline __pure bool __static_cpu_has(u16 bit)
 {
+<<<<<<< HEAD
 #ifdef CC_HAVE_ASM_GOTO
 
 #ifdef CONFIG_X86_DEBUG_STATIC_CPU_HAS
@@ -417,6 +418,9 @@ static __always_inline __pure bool __static_cpu_has(u16 bit)
 
 #endif
 
+=======
+#if __GNUC__ > 4 || __GNUC_MINOR__ >= 5
+>>>>>>> p9x
 		asm_volatile_goto("1: jmp %l[t_no]\n"
 			 "2:\n"
 			 ".section .altinstructions,\"a\"\n"

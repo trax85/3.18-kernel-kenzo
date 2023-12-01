@@ -23,6 +23,7 @@
 #include <linux/string.h>
 
 const struct cpu_operations *cpu_ops[NR_CPUS];
+<<<<<<< HEAD
 extern struct of_cpu_method __cpu_method_of_table[];
 static const struct of_cpu_method __cpu_method_of_table_sentinel
 	__used __section(__cpu_method_of_table_end);
@@ -34,6 +35,21 @@ static const struct cpu_operations * __init cpu_get_ops(const char *name)
 	for (; m->method; m++)
 		if (!strcmp(m->method, name))
 			return m->ops;
+=======
+extern struct cpu_operations *__cpu_method_of_table[];
+extern struct cpu_operations *__cpu_method_of_table_end[];
+
+const struct cpu_operations * __init cpu_get_ops(const char *name)
+{
+	const struct cpu_operations **start = (void *)__cpu_method_of_table;
+	const struct cpu_operations **end = (void *)__cpu_method_of_table_end;
+
+	while (start < end) {
+		if (!strcmp((*start)->name, name))
+			return *start;
+		start++;
+	};
+>>>>>>> p9x
 
 	return NULL;
 }

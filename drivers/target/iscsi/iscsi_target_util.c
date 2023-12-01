@@ -310,12 +310,21 @@ int iscsit_sequence_cmd(struct iscsi_conn *conn, struct iscsi_cmd *cmd,
 	default:
 		cmd->i_state = ISTATE_REMOVE;
 		iscsit_add_cmd_to_immediate_queue(cmd, conn, cmd->i_state);
+<<<<<<< HEAD
 		/*
 		 * Existing callers for iscsit_sequence_cmd() will silently
 		 * ignore commands with CMDSN_LOWER_THAN_EXP, so force this
 		 * return for CMDSN_MAXCMDSN_OVERRUN as well..
 		 */
 		ret = CMDSN_LOWER_THAN_EXP;
+=======
+		ret = cmdsn_ret;
+		break;
+	default:
+		reason = ISCSI_REASON_PROTOCOL_ERROR;
+		reject = true;
+		ret = cmdsn_ret;
+>>>>>>> p9x
 		break;
 	}
 	mutex_unlock(&conn->sess->cmdsn_mutex);
@@ -748,7 +757,11 @@ void iscsit_free_cmd(struct iscsi_cmd *cmd, bool shutdown)
 		rc = transport_generic_free_cmd(se_cmd, shutdown);
 		if (!rc && shutdown && se_cmd->se_sess) {
 			__iscsit_free_cmd(cmd, op_scsi, shutdown);
+<<<<<<< HEAD
 			target_put_sess_cmd(se_cmd);
+=======
+			target_put_sess_cmd(se_cmd->se_sess, se_cmd);
+>>>>>>> p9x
 		}
 		break;
 	case ISCSI_OP_REJECT:

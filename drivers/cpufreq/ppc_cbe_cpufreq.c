@@ -103,9 +103,15 @@ static int cbe_cpufreq_cpu_init(struct cpufreq_policy *policy)
 	pr_debug("initializing frequency table\n");
 
 	/* initialize frequency table */
+<<<<<<< HEAD
 	cpufreq_for_each_entry(pos, cbe_freqs) {
 		pos->frequency = max_freq / pos->driver_data;
 		pr_debug("%d: %d\n", (int)(pos - cbe_freqs), pos->frequency);
+=======
+	for (i=0; cbe_freqs[i].frequency!=CPUFREQ_TABLE_END; i++) {
+		cbe_freqs[i].frequency = max_freq / cbe_freqs[i].driver_data;
+		pr_debug("%d: %d\n", i, cbe_freqs[i].frequency);
+>>>>>>> p9x
 	}
 
 	/* if DEBUG is enabled set_pmode() measures the latency

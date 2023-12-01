@@ -10,8 +10,11 @@ Required properties:
   - reg-names: indicates various resources passed to driver by name.
 		Should be "parf", "phy", "dm_core", "elbi", "conf", "io", "bars".
 		These correspond to different modules within the PCIe core.
+<<<<<<< HEAD
   - ranges: For details of ranges properties, please refer to:
     "Documentation\devicetree\bindings\pci\pci.txt"
+=======
+>>>>>>> p9x
   - interrupts: Should be in the format <0 1 2> and it is an index to the
 		interrupt-map that contains PCIe related interrupts.
   - #interrupt-cells: Should provide a value of 1.
@@ -24,6 +27,7 @@ Required properties:
 		     Should be "int_msi", "int_a", "int_b", "int_c", "int_d",
 		     "int_pls_pme", "int_pme_legacy", "int_pls_err",
 		     "int_aer_legacy", "int_pls_link_up",
+<<<<<<< HEAD
 		     "int_pls_link_down", "int_bridge_flush_n",
 		     "msi_0", "msi_1", "msi_2", "msi_3",
 		     "msi_4", "msi_5", "msi_6", "msi_7",
@@ -33,6 +37,9 @@ Required properties:
 		     "msi_20", "msi_21", "msi_22", "msi_23",
 		     "msi_24", "msi_25", "msi_26", "msi_27",
 		     "msi_28", "msi_29", "msi_30", "msi_31"
+=======
+		     "int_pls_link_down", "int_bridge_flush_n"
+>>>>>>> p9x
 		     These correspond to the standard PCIe specification to support
 		     MSIs, virtual IRQ's (INT#), link state notifications.
   - perst-gpio: PERST GPIO specified by PCIe spec.
@@ -47,7 +54,10 @@ Optional Properties:
   - qcom,<supply-name>-voltage-level: specifies voltage levels for supply.
     Should be specified in pairs (max, min, optimal), units uV.
   - clkreq-gpio: CLKREQ GPIO specified by PCIe spec.
+<<<<<<< HEAD
   - qcom,ep-gpio: GPIO which enables a certain type of endpoint for link training.
+=======
+>>>>>>> p9x
   - pinctrl-names: The state name of the pin configuration.
     supports: "default", "sleep"
   - pinctrl-0: For details of pinctrl properties, please refer to:
@@ -72,6 +82,7 @@ Optional Properties:
     endpoint.
   - qcom,n-fts: The number of fast training sequences sent when the link state
     is changed from L0s to L0.
+<<<<<<< HEAD
   - qcom,pcie-phy-ver: version of PCIe PHY.
   - qcom,phy-sequence: The initialization sequence to bring up the PCIe PHY.
     Should be specified in groups (offset, value, delay).
@@ -111,6 +122,16 @@ Optional Properties:
     asserting or de-asserting PERST GPIO.
   - qcom,perst-delay-us-max: The maximum allowed time (unit: us) to sleep after
     asserting or de-asserting PERST GPIO.
+=======
+  - qcom,ep-wakeirq: The endpoint will issue wake signal when it is up, and the
+    root complex has the capability to enumerate the endpoint for this case.
+  - qcom,msi-gicm-addr: MSI address for GICv2m.
+  - qcom,msi-gicm-base: MSI IRQ base for GICv2m.
+  - qcom,ext-ref-clk: The reference clock is external.
+  - qcom,vbg-opt: The vbg optimization is supported.
+  - qcom,ep-latency: The time (unit: ms) to wait for the PCIe endpoint to become
+    stable after power on, before de-assert the PERST to the endpoint.
+>>>>>>> p9x
   - qcom,tlp-rd-size: The max TLP read size (Calculation: 128 times 2 to the
     tlp-rd-size power).
   - Refer to "Documentation/devicetree/bindings/arm/msm/msm_bus.txt" for
@@ -139,6 +160,7 @@ Example:
 		      <0xff300000 0xd00000>;
 		reg-names = "parf", "dm_core", "elbi",
 				"conf", "io", "bars";
+<<<<<<< HEAD
 		ranges = <0x01000000 0x0 0x0c200000 0x0c200000 0x0 0x100000>,
 			<0x02000000 0x0 0x0c300000 0x0c300000 0x0 0xd00000>;
 		interrupt-parent = <&pcie0>;
@@ -224,6 +246,31 @@ Example:
 		wake-gpio = <&msmgpio 69 0>;
 		clkreq-gpio = <&msmgpio 68 0>;
 		qcom,ep-gpio = <&tlmm 94 0>;
+=======
+		interrupt-parent = <&pcie0>;
+		interrupts = <0 1 2 3 4 5 6 7 8 9 10 11 12>;
+		#interrupt-cells = <1>;
+		interrupt-map-mask = <0xffffffff>;
+		interrupt-map = <0 &intc 0 243 0
+				1 &intc 0 244 0
+				2 &intc 0 245 0
+				3 &intc 0 247 0
+				4 &intc 0 248 0
+				5 &intc 0 249 0
+				6 &intc 0 250 0
+				7 &intc 0 251 0
+				8 &intc 0 252 0
+				9 &intc 0 253 0
+				10 &intc 0 254 0
+				11 &intc 0 255 0>;
+		interrupt-names = "int_msi", "int_a", "int_b", "int_c", "int_d",
+				"int_pls_pme", "int_pme_legacy", "int_pls_err",
+				"int_aer_legacy", "int_pls_link_up",
+				"int_pls_link_down", "int_bridge_flush_n";
+		perst-gpio = <&msmgpio 70 0>;
+		wake-gpio = <&msmgpio 69 0>;
+		clkreq-gpio = <&msmgpio 68 0>;
+>>>>>>> p9x
 
 		gdsc-vdd-supply = <&gdsc_pcie_0>;
 		vreg-1.8-supply = <&pma8084_l12>;
@@ -257,11 +304,15 @@ Example:
 		qcom,l1ss-supported;
 		qcom,aux-clk-sync;
 		qcom,n-fts = <0x50>;
+<<<<<<< HEAD
 		qcom,pcie-phy-ver = <1>;
+=======
+>>>>>>> p9x
 		qcom,ep-wakeirq;
 		qcom,msi-gicm-addr = <0xf9040040>;
 		qcom,msi-gicm-base = <0x160>;
 		qcom,ext-ref-clk;
+<<<<<<< HEAD
 		qcom,tlp-rd-size = <0x5>;
 		qcom,common-phy;
 		qcom,smmu-exist;
@@ -272,6 +323,11 @@ Example:
 		qcom,cpl-timeout = <0x2>;
 
 		iommus = <&anoc0_smmu>;
+=======
+		qcom,vbg-opt;
+		qcom,tlp-rd-size = <0x5>;
+		qcom,ep-latency = <100>;
+>>>>>>> p9x
 
 		qcom,msm-bus,name = "pcie0";
 		qcom,msm-bus,num-cases = <2>;

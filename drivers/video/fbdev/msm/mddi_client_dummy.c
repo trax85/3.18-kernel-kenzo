@@ -15,13 +15,16 @@
  * GNU General Public License for more details.
  */
 
+<<<<<<< HEAD:drivers/video/fbdev/msm/mddi_client_dummy.c
 #include <linux/device.h>
 #include <linux/slab.h>
+=======
+>>>>>>> p9x:drivers/video/msm/mddi_client_dummy.c
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
 
-#include <linux/platform_data/video-msm_fb.h>
+#include <mach/msm_fb.h>
 
 struct panel_info {
 	struct platform_device pdev;

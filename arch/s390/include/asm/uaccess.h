@@ -214,29 +214,49 @@ int __put_user_bad(void) __attribute__((noreturn));
 	switch (sizeof(*(ptr))) {				\
 	case 1: {						\
 		unsigned char __x = 0;				\
+<<<<<<< HEAD
 		__gu_err = __get_user_fn(&__x, ptr,		\
 					 sizeof(*(ptr)));	\
+=======
+		__gu_err = __get_user_fn(sizeof (*(ptr)),	\
+					 ptr, &__x);		\
+>>>>>>> p9x
 		(x) = *(__force __typeof__(*(ptr)) *) &__x;	\
 		break;						\
 	};							\
 	case 2: {						\
 		unsigned short __x = 0;				\
+<<<<<<< HEAD
 		__gu_err = __get_user_fn(&__x, ptr,		\
 					 sizeof(*(ptr)));	\
+=======
+		__gu_err = __get_user_fn(sizeof (*(ptr)),	\
+					 ptr, &__x);		\
+>>>>>>> p9x
 		(x) = *(__force __typeof__(*(ptr)) *) &__x;	\
 		break;						\
 	};							\
 	case 4: {						\
 		unsigned int __x = 0;				\
+<<<<<<< HEAD
 		__gu_err = __get_user_fn(&__x, ptr,		\
 					 sizeof(*(ptr)));	\
+=======
+		__gu_err = __get_user_fn(sizeof (*(ptr)),	\
+					 ptr, &__x);		\
+>>>>>>> p9x
 		(x) = *(__force __typeof__(*(ptr)) *) &__x;	\
 		break;						\
 	};							\
 	case 8: {						\
 		unsigned long long __x = 0;			\
+<<<<<<< HEAD
 		__gu_err = __get_user_fn(&__x, ptr,		\
 					 sizeof(*(ptr)));	\
+=======
+		__gu_err = __get_user_fn(sizeof (*(ptr)),	\
+					 ptr, &__x);		\
+>>>>>>> p9x
 		(x) = *(__force __typeof__(*(ptr)) *) &__x;	\
 		break;						\
 	};							\

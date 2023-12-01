@@ -874,7 +874,15 @@ bio_pageinc(struct bio *bio)
 		/* Non-zero page count for non-head members of
 		 * compound pages is no longer allowed by the kernel.
 		 */
+<<<<<<< HEAD
 		page = compound_head(bv.bv_page);
+=======
+		if (unlikely(PageCompound(page)))
+			if (compound_head(page) != page) {
+				pr_crit("page tail used for block I/O\n");
+				BUG();
+			}
+>>>>>>> p9x
 		atomic_inc(&page->_count);
 	}
 }

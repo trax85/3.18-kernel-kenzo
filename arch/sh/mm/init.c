@@ -416,7 +416,26 @@ void __init mem_init(void)
 		high_memory = max_t(void *, high_memory,
 				    __va(pgdat_end_pfn(pgdat) << PAGE_SHIFT));
 
+<<<<<<< HEAD
 	free_all_bootmem();
+=======
+	for_each_online_node(nid) {
+		pg_data_t *pgdat = NODE_DATA(nid);
+		void *node_high_memory;
+
+		num_physpages += pgdat->node_present_pages;
+
+		if (pgdat->node_spanned_pages)
+			free_all_bootmem_node(pgdat);
+
+
+		node_high_memory = (void *)__va((pgdat->node_start_pfn +
+						 pgdat->node_spanned_pages) <<
+						 PAGE_SHIFT);
+		if (node_high_memory > high_memory)
+			high_memory = node_high_memory;
+	}
+>>>>>>> p9x
 
 	/* Set this up early, so we can take care of the zero page */
 	cpu_cache_init();

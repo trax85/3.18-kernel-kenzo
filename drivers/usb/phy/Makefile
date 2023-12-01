@@ -4,8 +4,12 @@
 obj-$(CONFIG_USB_PHY)			+= phy.o
 obj-$(CONFIG_OF)			+= of.o
 obj-$(CONFIG_USB_OTG_WAKELOCK)		+= otg-wakelock.o
+<<<<<<< HEAD
 obj-$(CONFIG_DUAL_ROLE_USB_INTF)	+= class-dual-role.o
+=======
+>>>>>>> p9x
 
+obj-$(CONFIG_DUAL_ROLE_USB_INTF)	+= class-dual-role.o
 # transceiver drivers, keep the list sorted
 
 obj-$(CONFIG_AB8500_USB)		+= phy-ab8500-usb.o
@@ -24,8 +28,15 @@ obj-$(CONFIG_USB_ISP1301)		+= phy-isp1301.o
 obj-$(CONFIG_USB_MSM_OTG)		+= phy-msm-usb.o
 obj-$(CONFIG_USB_MSM_HSPHY)     	+= phy-msm-hsusb.o
 obj-$(CONFIG_USB_MSM_SSPHY)     	+= phy-msm-ssusb.o
+<<<<<<< HEAD
 obj-$(CONFIG_USB_MSM_SSPHY_QMP)     	+= phy-msm-ssusb-qmp.o
 obj-$(CONFIG_MSM_QUSB_PHY)              += phy-msm-qusb.o phy-msm-qusb-v2.o
+=======
+obj-$(CONFIG_USB_MSM_HSPHY_PP)  	+= phy-msm-hsusb-pp.o
+obj-$(CONFIG_USB_MSM_SSPHY_PP)  	+= phy-msm-ssusb-pp.o
+obj-$(CONFIG_USB_MSM_SSPHY_QMP) 	+= phy-msm-ssusb-qmp.o
+obj-$(CONFIG_MSM_QUSB_PHY)		+= phy-msm-qusb.o
+>>>>>>> p9x
 obj-$(CONFIG_USB_MV_OTG)		+= phy-mv-usb.o
 obj-$(CONFIG_USB_MXS_PHY)		+= phy-mxs-usb.o
 obj-$(CONFIG_USB_RCAR_PHY)		+= phy-rcar-usb.o

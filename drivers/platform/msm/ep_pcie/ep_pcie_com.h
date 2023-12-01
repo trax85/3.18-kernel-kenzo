@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -21,7 +25,10 @@
 #include <linux/regulator/consumer.h>
 #include <linux/types.h>
 #include <linux/uaccess.h>
+<<<<<<< HEAD
 #include <linux/delay.h>
+=======
+>>>>>>> p9x
 #include <linux/msm_ep_pcie.h>
 
 #define PCIE20_PARF_SYS_CTRL           0x00
@@ -32,9 +39,16 @@
 #define PCIE20_PARF_PHY_REFCLK         0x4C
 #define PCIE20_PARF_CONFIG_BITS        0x50
 #define PCIE20_PARF_TEST_BUS           0xE4
+<<<<<<< HEAD
 #define PCIE20_PARF_MHI_BASE_ADDR_LOWER 0x178
 #define PCIE20_PARF_MHI_BASE_ADDR_UPPER 0x17c
 #define PCIE20_PARF_MSI_GEN             0x188
+=======
+#define PCIE20_PARF_DBI_BASE_ADDR      0x168
+#define PCIE20_PARF_SLV_ADDR_SPACE_SIZE 0x16C
+#define PCIE20_PARF_MHI_BASE_ADDR_LOWER 0x178
+#define PCIE20_PARF_MHI_BASE_ADDR_UPPER 0x17c
+>>>>>>> p9x
 #define PCIE20_PARF_DEBUG_INT_EN        0x190
 #define PCIE20_PARF_MHI_IPA_DBS                0x198
 #define PCIE20_PARF_MHI_IPA_CDB_TARGET_LOWER   0x19C
@@ -43,6 +57,7 @@
 #define PCIE20_PARF_AXI_MSTR_WR_ADDR_HALT      0x1A8
 #define PCIE20_PARF_Q2A_FLUSH          0x1AC
 #define PCIE20_PARF_LTSSM              0x1B0
+<<<<<<< HEAD
 #define PCIE20_PARF_CFG_BITS           0x210
 #define PCIE20_PARF_LTR_MSI_EXIT_L1SS  0x214
 #define PCIE20_PARF_INT_ALL_STATUS     0x224
@@ -53,6 +68,8 @@
 #define PCIE20_PARF_DBI_BASE_ADDR_HI   0x354
 #define PCIE20_PARF_SLV_ADDR_SPACE_SIZE        0x358
 #define PCIE20_PARF_SLV_ADDR_SPACE_SIZE_HI     0x35C
+=======
+>>>>>>> p9x
 #define PCIE20_PARF_DEVICE_TYPE        0x1000
 
 #define PCIE20_ELBI_VERSION            0x00
@@ -72,7 +89,10 @@
 #define PCIE20_MSI_LOWER               0x54
 #define PCIE20_MSI_UPPER               0x58
 #define PCIE20_MSI_DATA                0x5C
+<<<<<<< HEAD
 #define PCIE20_MSI_MASK                0x60
+=======
+>>>>>>> p9x
 #define PCIE20_DEVICE_CAPABILITIES     0x74
 #define PCIE20_MASK_EP_L1_ACCPT_LATENCY 0xE00
 #define PCIE20_MASK_EP_L0S_ACCPT_LATENCY 0x1C0
@@ -98,6 +118,7 @@
 #define PCIE20_PLR_IATU_LTAR           0x918
 #define PCIE20_PLR_IATU_UTAR           0x91c
 
+<<<<<<< HEAD
 #define PCIE20_MHICFG                  0x110
 #define PCIE20_BHI_EXECENV             0x228
 #define PCIE20_MHIVER                  0x108
@@ -109,6 +130,8 @@
 
 #define PCIE20_AUX_CLK_FREQ_REG        0xB40
 
+=======
+>>>>>>> p9x
 #define PERST_TIMEOUT_US_MIN	              1000
 #define PERST_TIMEOUT_US_MAX	              1000
 #define PERST_CHECK_MAX_COUNT		      30000
@@ -123,10 +146,14 @@
 #define REFCLK_STABILIZATION_DELAY_US_MIN     1000
 #define REFCLK_STABILIZATION_DELAY_US_MAX     1000
 #define PHY_READY_TIMEOUT_COUNT               30000
+<<<<<<< HEAD
 #define MSI_EXIT_L1SS_WAIT	              10
 #define MSI_EXIT_L1SS_WAIT_MAX_COUNT          100
 #define XMLH_LINK_UP                          0x400
 #define PARF_XMLH_LINK_UP                     0x40000000
+=======
+#define XMLH_LINK_UP                          0x400
+>>>>>>> p9x
 
 #define MAX_PROP_SIZE 32
 #define MAX_MSG_LEN 80
@@ -145,8 +172,11 @@
 #define EP_PCIE_OATU_INDEX_CTRL 2
 #define EP_PCIE_OATU_INDEX_DATA 3
 
+<<<<<<< HEAD
 #define EP_PCIE_OATU_UPPER 0x100
 
+=======
+>>>>>>> p9x
 #define EP_PCIE_GEN_DBG(x...) do { \
 	if (ep_pcie_get_debug_mask()) \
 		pr_alert(x); \
@@ -155,6 +185,12 @@
 	} while (0)
 
 #define EP_PCIE_DBG(dev, fmt, arg...) do {			 \
+<<<<<<< HEAD
+=======
+	if ((dev)->ipc_log_sel)   \
+		ipc_log_string((dev)->ipc_log_sel, \
+			"DBG1:%s: " fmt, __func__, arg); \
+>>>>>>> p9x
 	if ((dev)->ipc_log_ful)   \
 		ipc_log_string((dev)->ipc_log_ful, "%s: " fmt, __func__, arg); \
 	if (ep_pcie_get_debug_mask())   \
@@ -162,9 +198,12 @@
 	} while (0)
 
 #define EP_PCIE_DBG2(dev, fmt, arg...) do {			 \
+<<<<<<< HEAD
 	if ((dev)->ipc_log_sel)   \
 		ipc_log_string((dev)->ipc_log_sel, \
 			"DBG1:%s: " fmt, __func__, arg); \
+=======
+>>>>>>> p9x
 	if ((dev)->ipc_log_ful)   \
 		ipc_log_string((dev)->ipc_log_ful, \
 			"DBG2:%s: " fmt, __func__, arg); \
@@ -217,8 +256,11 @@ enum ep_pcie_irq {
 	EP_PCIE_INT_LINK_UP,
 	EP_PCIE_INT_LINK_DOWN,
 	EP_PCIE_INT_BRIDGE_FLUSH_N,
+<<<<<<< HEAD
 	EP_PCIE_INT_BME,
 	EP_PCIE_INT_GLOBAL,
+=======
+>>>>>>> p9x
 	EP_PCIE_MAX_IRQ,
 };
 
@@ -226,7 +268,10 @@ enum ep_pcie_gpio {
 	EP_PCIE_GPIO_PERST,
 	EP_PCIE_GPIO_WAKE,
 	EP_PCIE_GPIO_CLKREQ,
+<<<<<<< HEAD
 	EP_PCIE_GPIO_MDM2AP,
+=======
+>>>>>>> p9x
 	EP_PCIE_MAX_GPIO,
 };
 
@@ -265,6 +310,7 @@ struct ep_pcie_irq_info_t {
 	u32          num;
 };
 
+<<<<<<< HEAD
 /* phy info structure */
 struct ep_pcie_phy_info_t {
 	u32	offset;
@@ -273,6 +319,8 @@ struct ep_pcie_phy_info_t {
 	u32	direction;
 };
 
+=======
+>>>>>>> p9x
 /* pcie endpoint device structure */
 struct ep_pcie_dev_t {
 	struct platform_device       *pdev;
@@ -294,6 +342,7 @@ struct ep_pcie_dev_t {
 	struct msm_bus_scale_pdata   *bus_scale_table;
 	u32                          bus_client;
 	u32                          link_speed;
+<<<<<<< HEAD
 	bool                         active_config;
 	bool                         aggregated_irq;
 	bool                         mhi_a7_irq;
@@ -303,6 +352,8 @@ struct ep_pcie_dev_t {
 	u32                          phy_init_len;
 	struct ep_pcie_phy_info_t    *phy_init;
 	bool                         perst_enum;
+=======
+>>>>>>> p9x
 
 	u32                          rev;
 	u32                          phy_rev;
@@ -318,7 +369,10 @@ struct ep_pcie_dev_t {
 	unsigned long                isr_save_flags;
 	ulong                        linkdown_counter;
 	ulong                        linkup_counter;
+<<<<<<< HEAD
 	ulong                        bme_counter;
+=======
+>>>>>>> p9x
 	ulong                        pm_to_counter;
 	ulong                        d0_counter;
 	ulong                        d3_counter;
@@ -326,10 +380,16 @@ struct ep_pcie_dev_t {
 	ulong                        perst_deast_counter;
 	ulong                        wake_counter;
 	ulong                        msi_counter;
+<<<<<<< HEAD
 	ulong                        global_irq_counter;
 
 	bool                         dump_conf;
 	bool                         config_mmio_init;
+=======
+
+	bool                         dump_conf;
+
+>>>>>>> p9x
 	bool                         enumerated;
 	enum ep_pcie_link_status     link_status;
 	bool                         perst_deast;
@@ -338,6 +398,7 @@ struct ep_pcie_dev_t {
 	bool                         l23_ready;
 	bool                         l1ss_enabled;
 	struct ep_pcie_msi_config    msi_cfg;
+<<<<<<< HEAD
 	bool                         no_notify;
 	bool                         client_ready;
 
@@ -345,6 +406,10 @@ struct ep_pcie_dev_t {
 	struct work_struct	     handle_perst_work;
 	struct work_struct           handle_bme_work;
 	struct work_struct           handle_d3cold_work;
+=======
+
+	struct ep_pcie_register_event *event_reg;
+>>>>>>> p9x
 };
 
 extern struct ep_pcie_dev_t ep_pcie_dev;
@@ -361,14 +426,22 @@ static inline void ep_pcie_write_mask(void __iomem *addr,
 	wmb();
 }
 
+<<<<<<< HEAD
 static inline void ep_pcie_write_reg(void __iomem *base, u32 offset, u32 value)
+=======
+static inline void ep_pcie_write_reg(void *base, u32 offset, u32 value)
+>>>>>>> p9x
 {
 	writel_relaxed(value, base + offset);
 	/* ensure register write goes through before next regiser operation */
 	wmb();
 }
 
+<<<<<<< HEAD
 static inline void ep_pcie_write_reg_field(void __iomem *base, u32 offset,
+=======
+static inline void ep_pcie_write_reg_field(void *base, u32 offset,
+>>>>>>> p9x
 	const u32 mask, u32 val)
 {
 	u32 shift = find_first_bit((void *)&mask, 32);
@@ -381,7 +454,10 @@ static inline void ep_pcie_write_reg_field(void __iomem *base, u32 offset,
 	wmb();
 }
 
+<<<<<<< HEAD
 extern int ep_pcie_core_register_event(struct ep_pcie_register_event *reg);
+=======
+>>>>>>> p9x
 extern int ep_pcie_get_debug_mask(void);
 extern void ep_pcie_phy_init(struct ep_pcie_dev_t *dev);
 extern bool ep_pcie_phy_is_ready(struct ep_pcie_dev_t *dev);

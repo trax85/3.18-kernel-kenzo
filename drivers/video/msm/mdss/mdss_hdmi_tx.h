@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2010-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2010-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -15,16 +19,23 @@
 
 #include <linux/switch.h>
 #include "mdss_hdmi_util.h"
+<<<<<<< HEAD
 #include "mdss_hdmi_panel.h"
 #include "mdss_cec_core.h"
 #include "mdss_hdmi_audio.h"
+=======
+#include "mdss_cec_abstract.h"
+>>>>>>> p9x
 
 #define MAX_SWITCH_NAME_SIZE        5
 
 enum hdmi_tx_io_type {
 	HDMI_TX_CORE_IO,
 	HDMI_TX_QFPROM_IO,
+<<<<<<< HEAD
 	HDMI_TX_HDCP_IO,
+=======
+>>>>>>> p9x
 	HDMI_TX_MAX_IO
 };
 
@@ -43,10 +54,23 @@ struct hdmi_tx_platform_data {
 	bool cond_power_on;
 	struct dss_io_data io[HDMI_TX_MAX_IO];
 	struct dss_module_power power_data[HDMI_TX_MAX_PM];
+<<<<<<< HEAD
 	struct reg_bus_client *reg_bus_clt[HDMI_TX_MAX_PM];
 	/* bitfield representing each module's pin state */
 	u64 pin_states;
 	bool pluggable;
+=======
+	/* bitfield representing each module's pin state */
+	u64 pin_states;
+};
+
+struct hdmi_audio {
+	int sample_rate;
+	int channel_num;
+	int spkr_alloc;
+	int level_shift;
+	int down_mix;
+>>>>>>> p9x
 };
 
 struct hdmi_tx_pinctrl {
@@ -58,14 +82,18 @@ struct hdmi_tx_pinctrl {
 	struct pinctrl_state *state_suspend;
 };
 
+<<<<<<< HEAD
 struct hdmi_tx_ctrl;
 typedef int (*hdmi_tx_evt_handler) (struct hdmi_tx_ctrl *);
 
+=======
+>>>>>>> p9x
 struct hdmi_tx_ctrl {
 	struct platform_device *pdev;
 	struct hdmi_tx_platform_data pdata;
 	struct mdss_panel_data panel_data;
 	struct mdss_util_intf *mdss_util;
+<<<<<<< HEAD
 	struct msm_hdmi_mode_timing_info timing;
 	struct hdmi_tx_pinctrl pin_res;
 	struct mutex mutex;
@@ -96,11 +124,35 @@ struct hdmi_tx_ctrl {
 	u32 vic;
 	u32 hdmi_tx_ver;
 	u32 max_pclk_khz;
+=======
+
+
+	struct hdmi_tx_pinctrl pin_res;
+	struct hdmi_audio audio_data;
+
+	struct mutex mutex;
+	struct mutex lut_lock;
+	struct mutex power_mutex;
+	struct mutex cable_notify_mutex;
+	struct list_head cable_notify_handlers;
+	struct kobject *kobj;
+	struct switch_dev sdev;
+	struct switch_dev audio_sdev;
+	struct workqueue_struct *workq;
+	spinlock_t hpd_state_lock;
+
+	uint32_t video_resolution;
+
+	u32 panel_power_on;
+	u32 panel_suspend;
+
+>>>>>>> p9x
 	u32 hpd_state;
 	u32 hpd_off_pending;
 	u32 hpd_feature_on;
 	u32 hpd_initialized;
 	u32 vote_hdmi_core_on;
+<<<<<<< HEAD
 	u32 dynamic_fps;
 	u32 hdcp14_present;
 	u32 enc_lvl;
@@ -112,10 +164,22 @@ struct hdmi_tx_ctrl {
 	u8 hdcp_status;
 	u8 spd_vendor_name[9];
 	u8 spd_product_description[17];
+=======
+	u8  timing_gen_on;
+	u8  mhl_hpd_on;
+
+	struct hdmi_util_ds_data ds_data;
+	struct completion hpd_int_done;
+	struct completion hpd_off_done;
+	struct work_struct hpd_int_work;
+
+	struct work_struct cable_notify_work;
+>>>>>>> p9x
 
 	bool hdcp_feature_on;
 	bool hpd_disabled;
 	bool ds_registered;
+<<<<<<< HEAD
 	bool scrambler_enabled;
 	bool hdcp1_use_sw_keys;
 	bool hdcp14_sw_keys;
@@ -136,6 +200,30 @@ struct hdmi_tx_ctrl {
 	char disp_switch_name[MAX_SWITCH_NAME_SIZE];
 
 	hdmi_tx_evt_handler evt_handler[MDSS_EVENT_MAX - 1];
+=======
+	bool audio_ack_enabled;
+	u32 present_hdcp;
+
+	u8 spd_vendor_name[9];
+	u8 spd_product_description[17];
+
+	struct hdmi_tx_ddc_ctrl ddc_ctrl;
+
+	void (*hdmi_tx_hpd_done) (void *data);
+	void *downstream_data;
+
+	void *feature_data[HDMI_TX_FEAT_MAX];
+	u32 s3d_mode;
+	atomic_t audio_ack_pending;
+
+	struct cec_ops hdmi_cec_ops;
+	struct cec_cbs hdmi_cec_cbs;
+
+	u8 *edid_buf;
+	u32 edid_buf_size;
+
+	char disp_switch_name[MAX_SWITCH_NAME_SIZE];
+>>>>>>> p9x
 };
 
 #endif /* __MDSS_HDMI_TX_H__ */

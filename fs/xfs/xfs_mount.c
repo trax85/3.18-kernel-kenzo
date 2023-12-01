@@ -264,6 +264,238 @@ out_unwind:
 	return error;
 }
 
+<<<<<<< HEAD
+=======
+void
+xfs_sb_from_disk(
+	struct xfs_sb	*to,
+	xfs_dsb_t	*from)
+{
+	to->sb_magicnum = be32_to_cpu(from->sb_magicnum);
+	to->sb_blocksize = be32_to_cpu(from->sb_blocksize);
+	to->sb_dblocks = be64_to_cpu(from->sb_dblocks);
+	to->sb_rblocks = be64_to_cpu(from->sb_rblocks);
+	to->sb_rextents = be64_to_cpu(from->sb_rextents);
+	memcpy(&to->sb_uuid, &from->sb_uuid, sizeof(to->sb_uuid));
+	to->sb_logstart = be64_to_cpu(from->sb_logstart);
+	to->sb_rootino = be64_to_cpu(from->sb_rootino);
+	to->sb_rbmino = be64_to_cpu(from->sb_rbmino);
+	to->sb_rsumino = be64_to_cpu(from->sb_rsumino);
+	to->sb_rextsize = be32_to_cpu(from->sb_rextsize);
+	to->sb_agblocks = be32_to_cpu(from->sb_agblocks);
+	to->sb_agcount = be32_to_cpu(from->sb_agcount);
+	to->sb_rbmblocks = be32_to_cpu(from->sb_rbmblocks);
+	to->sb_logblocks = be32_to_cpu(from->sb_logblocks);
+	to->sb_versionnum = be16_to_cpu(from->sb_versionnum);
+	to->sb_sectsize = be16_to_cpu(from->sb_sectsize);
+	to->sb_inodesize = be16_to_cpu(from->sb_inodesize);
+	to->sb_inopblock = be16_to_cpu(from->sb_inopblock);
+	memcpy(&to->sb_fname, &from->sb_fname, sizeof(to->sb_fname));
+	to->sb_blocklog = from->sb_blocklog;
+	to->sb_sectlog = from->sb_sectlog;
+	to->sb_inodelog = from->sb_inodelog;
+	to->sb_inopblog = from->sb_inopblog;
+	to->sb_agblklog = from->sb_agblklog;
+	to->sb_rextslog = from->sb_rextslog;
+	to->sb_inprogress = from->sb_inprogress;
+	to->sb_imax_pct = from->sb_imax_pct;
+	to->sb_icount = be64_to_cpu(from->sb_icount);
+	to->sb_ifree = be64_to_cpu(from->sb_ifree);
+	to->sb_fdblocks = be64_to_cpu(from->sb_fdblocks);
+	to->sb_frextents = be64_to_cpu(from->sb_frextents);
+	to->sb_uquotino = be64_to_cpu(from->sb_uquotino);
+	to->sb_gquotino = be64_to_cpu(from->sb_gquotino);
+	to->sb_qflags = be16_to_cpu(from->sb_qflags);
+	to->sb_flags = from->sb_flags;
+	to->sb_shared_vn = from->sb_shared_vn;
+	to->sb_inoalignmt = be32_to_cpu(from->sb_inoalignmt);
+	to->sb_unit = be32_to_cpu(from->sb_unit);
+	to->sb_width = be32_to_cpu(from->sb_width);
+	to->sb_dirblklog = from->sb_dirblklog;
+	to->sb_logsectlog = from->sb_logsectlog;
+	to->sb_logsectsize = be16_to_cpu(from->sb_logsectsize);
+	to->sb_logsunit = be32_to_cpu(from->sb_logsunit);
+	to->sb_features2 = be32_to_cpu(from->sb_features2);
+	to->sb_bad_features2 = be32_to_cpu(from->sb_bad_features2);
+	to->sb_features_compat = be32_to_cpu(from->sb_features_compat);
+	to->sb_features_ro_compat = be32_to_cpu(from->sb_features_ro_compat);
+	to->sb_features_incompat = be32_to_cpu(from->sb_features_incompat);
+	to->sb_features_log_incompat =
+				be32_to_cpu(from->sb_features_log_incompat);
+	to->sb_pad = 0;
+	to->sb_pquotino = be64_to_cpu(from->sb_pquotino);
+	to->sb_lsn = be64_to_cpu(from->sb_lsn);
+}
+
+/*
+ * Copy in core superblock to ondisk one.
+ *
+ * The fields argument is mask of superblock fields to copy.
+ */
+void
+xfs_sb_to_disk(
+	xfs_dsb_t	*to,
+	xfs_sb_t	*from,
+	__int64_t	fields)
+{
+	xfs_caddr_t	to_ptr = (xfs_caddr_t)to;
+	xfs_caddr_t	from_ptr = (xfs_caddr_t)from;
+	xfs_sb_field_t	f;
+	int		first;
+	int		size;
+
+	ASSERT(fields);
+	if (!fields)
+		return;
+
+	while (fields) {
+		f = (xfs_sb_field_t)xfs_lowbit64((__uint64_t)fields);
+		first = xfs_sb_info[f].offset;
+		size = xfs_sb_info[f + 1].offset - first;
+
+		ASSERT(xfs_sb_info[f].type == 0 || xfs_sb_info[f].type == 1);
+
+		if (size == 1 || xfs_sb_info[f].type == 1) {
+			memcpy(to_ptr + first, from_ptr + first, size);
+		} else {
+			switch (size) {
+			case 2:
+				*(__be16 *)(to_ptr + first) =
+					cpu_to_be16(*(__u16 *)(from_ptr + first));
+				break;
+			case 4:
+				*(__be32 *)(to_ptr + first) =
+					cpu_to_be32(*(__u32 *)(from_ptr + first));
+				break;
+			case 8:
+				*(__be64 *)(to_ptr + first) =
+					cpu_to_be64(*(__u64 *)(from_ptr + first));
+				break;
+			default:
+				ASSERT(0);
+			}
+		}
+
+		fields &= ~(1LL << f);
+	}
+}
+
+static int
+xfs_sb_verify(
+	struct xfs_buf	*bp,
+	bool		check_version)
+{
+	struct xfs_mount *mp = bp->b_target->bt_mount;
+	struct xfs_sb	sb;
+
+	xfs_sb_from_disk(&sb, XFS_BUF_TO_SBP(bp));
+
+	/*
+	 * Only check the in progress field for the primary superblock as
+	 * mkfs.xfs doesn't clear it from secondary superblocks.
+	 */
+	return xfs_mount_validate_sb(mp, &sb,
+				     bp->b_maps[0].bm_bn == XFS_SB_DADDR,
+				     check_version);
+}
+
+/*
+ * If the superblock has the CRC feature bit set or the CRC field is non-null,
+ * check that the CRC is valid.  We check the CRC field is non-null because a
+ * single bit error could clear the feature bit and unused parts of the
+ * superblock are supposed to be zero. Hence a non-null crc field indicates that
+ * we've potentially lost a feature bit and we should check it anyway.
+ */
+static void
+xfs_sb_read_verify(
+	struct xfs_buf	*bp)
+{
+	struct xfs_mount *mp = bp->b_target->bt_mount;
+	struct xfs_dsb	*dsb = XFS_BUF_TO_SBP(bp);
+	int		error;
+
+	/*
+	 * open code the version check to avoid needing to convert the entire
+	 * superblock from disk order just to check the version number
+	 */
+	if (dsb->sb_magicnum == cpu_to_be32(XFS_SB_MAGIC) &&
+	    (((be16_to_cpu(dsb->sb_versionnum) & XFS_SB_VERSION_NUMBITS) ==
+						XFS_SB_VERSION_5) ||
+	     dsb->sb_crc != 0)) {
+
+		if (!xfs_verify_cksum(bp->b_addr, be16_to_cpu(dsb->sb_sectsize),
+				      offsetof(struct xfs_sb, sb_crc))) {
+			error = EFSCORRUPTED;
+			goto out_error;
+		}
+	}
+	error = xfs_sb_verify(bp, true);
+
+out_error:
+	if (error) {
+		XFS_CORRUPTION_ERROR(__func__, XFS_ERRLEVEL_LOW, mp, bp->b_addr);
+		xfs_buf_ioerror(bp, error);
+	}
+}
+
+/*
+ * We may be probed for a filesystem match, so we may not want to emit
+ * messages when the superblock buffer is not actually an XFS superblock.
+ * If we find an XFS superblock, the run a normal, noisy mount because we are
+ * really going to mount it and want to know about errors.
+ */
+static void
+xfs_sb_quiet_read_verify(
+	struct xfs_buf	*bp)
+{
+	struct xfs_dsb	*dsb = XFS_BUF_TO_SBP(bp);
+
+
+	if (dsb->sb_magicnum == cpu_to_be32(XFS_SB_MAGIC)) {
+		/* XFS filesystem, verify noisily! */
+		xfs_sb_read_verify(bp);
+		return;
+	}
+	/* quietly fail */
+	xfs_buf_ioerror(bp, EWRONGFS);
+}
+
+static void
+xfs_sb_write_verify(
+	struct xfs_buf		*bp)
+{
+	struct xfs_mount	*mp = bp->b_target->bt_mount;
+	struct xfs_buf_log_item	*bip = bp->b_fspriv;
+	int			error;
+
+	error = xfs_sb_verify(bp, false);
+	if (error) {
+		XFS_CORRUPTION_ERROR(__func__, XFS_ERRLEVEL_LOW, mp, bp->b_addr);
+		xfs_buf_ioerror(bp, error);
+		return;
+	}
+
+	if (!xfs_sb_version_hascrc(&mp->m_sb))
+		return;
+
+	if (bip)
+		XFS_BUF_TO_SBP(bp)->sb_lsn = cpu_to_be64(bip->bli_item.li_lsn);
+
+	xfs_update_cksum(bp->b_addr, BBTOB(bp->b_length),
+			 offsetof(struct xfs_sb, sb_crc));
+}
+
+const struct xfs_buf_ops xfs_sb_buf_ops = {
+	.verify_read = xfs_sb_read_verify,
+	.verify_write = xfs_sb_write_verify,
+};
+
+static const struct xfs_buf_ops xfs_sb_quiet_buf_ops = {
+	.verify_read = xfs_sb_quiet_read_verify,
+	.verify_write = xfs_sb_write_verify,
+};
+
+>>>>>>> p9x
 /*
  * xfs_readsb
  *

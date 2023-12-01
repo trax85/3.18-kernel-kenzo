@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -15,6 +19,7 @@
 #include <linux/device.h>
 #include <linux/skbuff.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/mmc/sdio_func.h>
 #include <linux/interrupt.h>
 
@@ -23,6 +28,16 @@
 #define CNSS_MAX_FILE_NAME	20
 #define PINCTRL_SLEEP  0
 #define PINCTRL_ACTIVE 1
+=======
+#ifdef CONFIG_CNSS_SDIO
+#include <linux/mmc/sdio_func.h>
+#endif
+
+#ifdef CONFIG_CNSS
+#define CNSS_MAX_FILE_NAME	  20
+
+#define MAX_FIRMWARE_SIZE (1 * 1024 * 1024)
+>>>>>>> p9x
 
 enum cnss_bus_width_type {
 	CNSS_BUS_WIDTH_NONE,
@@ -31,12 +46,15 @@ enum cnss_bus_width_type {
 	CNSS_BUS_WIDTH_HIGH
 };
 
+<<<<<<< HEAD
 enum cnss_cc_src {
 	CNSS_SOURCE_CORE,
 	CNSS_SOURCE_11D,
 	CNSS_SOURCE_USER
 };
 
+=======
+>>>>>>> p9x
 /* FW image files */
 struct cnss_fw_files {
 	char image_file[CNSS_MAX_FILE_NAME];
@@ -63,7 +81,10 @@ struct cnss_wlan_driver {
 	int  (*suspend)(struct pci_dev *pdev, pm_message_t state);
 	int  (*resume)(struct pci_dev *pdev);
 	void (*modem_status)(struct pci_dev *, int state);
+<<<<<<< HEAD
 	void (*update_status)(struct pci_dev *pdev, uint32_t status);
+=======
+>>>>>>> p9x
 	struct cnss_wlan_runtime_ops *runtime_ops;
 	const struct pci_device_id *id_table;
 };
@@ -102,6 +123,7 @@ struct cnss_platform_cap {
 	u32 cap_flag;
 };
 
+<<<<<<< HEAD
 /* WLAN driver status, keep it aligned with cnss2 */
 enum cnss_driver_status {
 	CNSS_UNINITIALIZED,
@@ -110,6 +132,13 @@ enum cnss_driver_status {
 	CNSS_RECOVERY,
 	CNSS_FW_DOWN,
 	CNSS_SSR_FAIL,
+=======
+/* WLAN driver status */
+enum cnss_driver_status {
+	CNSS_UNINITIALIZED,
+	CNSS_INITIALIZED,
+	CNSS_LOAD_UNLOAD
+>>>>>>> p9x
 };
 
 enum cnss_runtime_request {
@@ -120,7 +149,10 @@ enum cnss_runtime_request {
 	CNSS_PM_RUNTIME_PUT_NOIDLE,
 	CNSS_PM_REQUEST_RESUME,
 	CNSS_PM_RUNTIME_PUT_AUTO,
+<<<<<<< HEAD
 	CNSS_PM_GET_NORESUME,
+=======
+>>>>>>> p9x
 };
 
 extern int cnss_get_fw_image(struct image_desc_info *image_desc_info);
@@ -133,6 +165,7 @@ extern void cnss_wlan_unregister_driver(struct cnss_wlan_driver *driver);
 extern int cnss_get_fw_files(struct cnss_fw_files *pfw_files);
 extern int cnss_get_fw_files_for_target(struct cnss_fw_files *pfw_files,
 					u32 target_type, u32 target_version);
+<<<<<<< HEAD
 extern void cnss_get_qca9377_fw_files(struct cnss_fw_files *pfw_files,
 					u32 size, u32 tufello_dual_fw);
 
@@ -143,6 +176,13 @@ extern int cnss_get_sha_hash(const u8 *data, u32 data_len,
 					u8 *hash_idx, u8 *out);
 extern void *cnss_get_fw_ptr(void);
 #endif
+=======
+extern int cnss_request_bus_bandwidth(int bandwidth);
+
+extern int cnss_get_sha_hash(const u8 *data, u32 data_len,
+					u8 *hash_idx, u8 *out);
+extern void *cnss_get_fw_ptr(void);
+>>>>>>> p9x
 
 extern int cnss_get_codeswap_struct(struct codeswap_codeseg_info *swap_seg);
 extern int cnss_get_bmi_setup(void);
@@ -156,6 +196,7 @@ extern void cnss_release_pm_sem(void);
 extern void cnss_request_pm_qos_type(int latency_type, u32 qos_val);
 extern void cnss_request_pm_qos(u32 qos_val);
 extern void cnss_remove_pm_qos(void);
+<<<<<<< HEAD
 
 extern void cnss_pci_request_pm_qos_type(int latency_type, u32 qos_val);
 extern void cnss_pci_request_pm_qos(u32 qos_val);
@@ -165,6 +206,8 @@ extern void cnss_sdio_request_pm_qos_type(int latency_type, u32 qos_val);
 extern void cnss_sdio_request_pm_qos(u32 qos_val);
 extern void cnss_sdio_remove_pm_qos(void);
 
+=======
+>>>>>>> p9x
 extern int cnss_get_platform_cap(struct cnss_platform_cap *cap);
 extern void cnss_set_driver_status(enum cnss_driver_status driver_status);
 
@@ -172,6 +215,13 @@ extern void cnss_set_driver_status(enum cnss_driver_status driver_status);
 static inline int wcnss_pre_alloc_reset(void) { return 0; }
 #endif
 
+<<<<<<< HEAD
+=======
+#if !defined(CONFIG_WCNSS_MEM_PRE_ALLOC) || !defined(CONFIG_SLUB_DEBUG)
+static inline void wcnss_prealloc_check_memory_leak(void) {}
+#endif
+
+>>>>>>> p9x
 extern int msm_pcie_enumerate(u32 rc_idx);
 extern int cnss_auto_suspend(void);
 extern int cnss_auto_resume(void);
@@ -181,6 +231,7 @@ extern int cnss_is_auto_suspend_allowed(const char *caller_func);
 
 extern int cnss_pm_runtime_request(struct device *dev, enum
 		cnss_runtime_request request);
+<<<<<<< HEAD
 extern void cnss_set_cc_source(enum cnss_cc_src cc_source);
 extern enum cnss_cc_src cnss_get_cc_source(void);
 #endif
@@ -196,6 +247,37 @@ extern void cnss_schedule_recovery_work(void);
 extern int cnss_pcie_set_wlan_mac_address(const u8 *in, uint32_t len);
 extern u8 *cnss_get_wlan_mac_address(struct device *dev, uint32_t *num);
 extern int cnss_sdio_set_wlan_mac_address(const u8 *in, uint32_t len);
+=======
+#endif
+/* max 20mhz channel count */
+#define CNSS_MAX_CH_NUM       45
+
+extern void cnss_init_work(struct work_struct *work, work_func_t func);
+extern void cnss_flush_work(void *work);
+extern void cnss_flush_delayed_work(void *dwork);
+extern void cnss_get_monotonic_boottime(struct timespec *ts);
+extern void cnss_get_boottime(struct timespec *ts);
+extern void cnss_init_delayed_work(struct delayed_work *work, work_func_t func);
+extern int cnss_vendor_cmd_reply(struct sk_buff *skb);
+
+extern void cnss_pm_wake_lock_init(struct wakeup_source *ws, const char *name);
+extern void cnss_pm_wake_lock(struct wakeup_source *ws);
+extern void cnss_pm_wake_lock_timeout(struct wakeup_source *ws, ulong msec);
+extern void cnss_pm_wake_lock_release(struct wakeup_source *ws);
+extern void cnss_pm_wake_lock_destroy(struct wakeup_source *ws);
+extern int cnss_set_cpus_allowed_ptr(struct task_struct *task, ulong cpu);
+
+extern int cnss_set_wlan_unsafe_channel(u16 *unsafe_ch_list, u16 ch_count);
+extern int cnss_get_wlan_unsafe_channel(u16 *unsafe_ch_list,
+		u16 *ch_count, u16 buf_len);
+extern int cnss_wlan_set_dfs_nol(const void *info, u16 info_len);
+extern int cnss_wlan_get_dfs_nol(void *info, u16 info_len);
+extern void cnss_device_crashed(void);
+extern void cnss_device_self_recovery(void);
+extern int cnss_get_ramdump_mem(unsigned long *address, unsigned long *size);
+extern void *cnss_get_virt_ramdump_mem(unsigned long *size);
+extern void cnss_schedule_recovery_work(void);
+>>>>>>> p9x
 
 enum {
 	CNSS_RESET_SOC = 0,
@@ -204,6 +286,10 @@ enum {
 };
 extern int cnss_get_restart_level(void);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CNSS_SDIO
+>>>>>>> p9x
 struct cnss_sdio_wlan_driver {
 	const char *name;
 	const struct sdio_device_id *id_table;
@@ -226,6 +312,7 @@ extern int cnss_wlan_query_oob_status(void);
 extern int cnss_wlan_register_oob_irq_handler(oob_irq_handler_t handler,
 	    void *pm_oob);
 extern int cnss_wlan_unregister_oob_irq_handler(void *pm_oob);
+<<<<<<< HEAD
 
 
 extern void cnss_dump_stack(struct task_struct *task);
@@ -266,4 +353,7 @@ extern int cnss_common_register_tsf_captured_handler(struct device *dev,
 						     void *ctx);
 extern int cnss_common_unregister_tsf_captured_handler(struct device *dev,
 						       void *ctx);
+=======
+#endif
+>>>>>>> p9x
 #endif /* _NET_CNSS_H_ */

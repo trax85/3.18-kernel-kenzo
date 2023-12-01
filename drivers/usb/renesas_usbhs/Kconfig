@@ -5,7 +5,10 @@
 config USB_RENESAS_USBHS
 	tristate 'Renesas USBHS controller'
 	depends on USB_GADGET
+<<<<<<< HEAD
 	depends on ARCH_SHMOBILE || SUPERH || COMPILE_TEST
+=======
+>>>>>>> p9x
 	default n
 	help
 	  Renesas USBHS is a discrete USB host and peripheral controller chip

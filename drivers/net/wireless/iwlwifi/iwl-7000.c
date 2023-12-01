@@ -69,6 +69,7 @@
 #include "iwl-agn-hw.h"
 
 /* Highest firmware API version supported */
+<<<<<<< HEAD
 #define IWL7260_UCODE_API_MAX	12
 #define IWL3160_UCODE_API_MAX	12
 
@@ -79,6 +80,18 @@
 /* Lowest firmware API version supported */
 #define IWL7260_UCODE_API_MIN	8
 #define IWL3160_UCODE_API_MIN	8
+=======
+#define IWL7260_UCODE_API_MAX	7
+#define IWL3160_UCODE_API_MAX	7
+
+/* Oldest version we won't warn about */
+#define IWL7260_UCODE_API_OK	7
+#define IWL3160_UCODE_API_OK	7
+
+/* Lowest firmware API version supported */
+#define IWL7260_UCODE_API_MIN	7
+#define IWL3160_UCODE_API_MIN	7
+>>>>>>> p9x
 
 /* NVM versions */
 #define IWL7260_NVM_VERSION		0x0a1d
@@ -146,6 +159,7 @@ const struct iwl_cfg iwl7260_2ac_cfg = {
 	.nvm_ver = IWL7260_NVM_VERSION,
 	.nvm_calib_ver = IWL7260_TX_POWER_VERSION,
 	.host_interrupt_operation_mode = true,
+<<<<<<< HEAD
 	.lp_xtal_workaround = true,
 };
 
@@ -161,6 +175,10 @@ const struct iwl_cfg iwl7260_2ac_cfg_high_temp = {
 	.lp_xtal_workaround = true,
 };
 
+=======
+};
+
+>>>>>>> p9x
 const struct iwl_cfg iwl7260_2n_cfg = {
 	.name = "Intel(R) Dual Band Wireless N 7260",
 	.fw_name_pre = IWL7260_FW_PRE,
@@ -169,7 +187,10 @@ const struct iwl_cfg iwl7260_2n_cfg = {
 	.nvm_ver = IWL7260_NVM_VERSION,
 	.nvm_calib_ver = IWL7260_TX_POWER_VERSION,
 	.host_interrupt_operation_mode = true,
+<<<<<<< HEAD
 	.lp_xtal_workaround = true,
+=======
+>>>>>>> p9x
 };
 
 const struct iwl_cfg iwl7260_n_cfg = {
@@ -180,7 +201,10 @@ const struct iwl_cfg iwl7260_n_cfg = {
 	.nvm_ver = IWL7260_NVM_VERSION,
 	.nvm_calib_ver = IWL7260_TX_POWER_VERSION,
 	.host_interrupt_operation_mode = true,
+<<<<<<< HEAD
 	.lp_xtal_workaround = true,
+=======
+>>>>>>> p9x
 };
 
 const struct iwl_cfg iwl3160_2ac_cfg = {
@@ -211,6 +235,7 @@ const struct iwl_cfg iwl3160_n_cfg = {
 	.nvm_ver = IWL3160_NVM_VERSION,
 	.nvm_calib_ver = IWL3160_TX_POWER_VERSION,
 	.host_interrupt_operation_mode = true,
+<<<<<<< HEAD
 };
 
 static const struct iwl_pwr_tx_backoff iwl7265_pwr_tx_backoffs[] = {
@@ -298,6 +323,8 @@ const struct iwl_cfg iwl7265d_n_cfg = {
 	.nvm_ver = IWL7265_NVM_VERSION,
 	.nvm_calib_ver = IWL7265_TX_POWER_VERSION,
 	.pwr_tx_backoffs = iwl7265_pwr_tx_backoffs,
+=======
+>>>>>>> p9x
 };
 
 MODULE_FIRMWARE(IWL7260_MODULE_FIRMWARE(IWL7260_UCODE_API_OK));

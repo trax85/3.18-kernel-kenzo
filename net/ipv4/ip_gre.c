@@ -218,8 +218,13 @@ static int ipgre_rcv(struct sk_buff *skb, const struct tnl_ptk_info *tpi)
 
 	if (tunnel) {
 		skb_pop_mac_header(skb);
+<<<<<<< HEAD
 		ip_tunnel_rcv(tunnel, skb, tpi, log_ecn_error);
 		return PACKET_RCVD;
+=======
+		ip_tunnel_rcv(tunnel, skb, &tpi, hdr_len, log_ecn_error);
+		return 0;
+>>>>>>> p9x
 	}
 	return PACKET_REJECT;
 }

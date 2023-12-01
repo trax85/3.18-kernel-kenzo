@@ -6,6 +6,7 @@
 #include <linux/inet.h>
 #include <linux/kthread.h>
 #include <linux/net.h>
+#include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/socket.h>
 #include <linux/string.h>
@@ -292,11 +293,16 @@ int ceph_msgr_init(void)
 	if (ceph_msgr_slab_init())
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	/*
 	 * The number of active work items is limited by the number of
 	 * connections, so leave @max_active at default.
 	 */
 	ceph_msgr_wq = alloc_workqueue("ceph-msgr", WQ_MEM_RECLAIM, 0);
+=======
+	ceph_msgr_wq = alloc_workqueue("ceph-msgr",
+				       WQ_NON_REENTRANT | WQ_MEM_RECLAIM, 0);
+>>>>>>> p9x
 	if (ceph_msgr_wq)
 		return 0;
 
@@ -477,11 +483,16 @@ static int ceph_tcp_connect(struct ceph_connection *con)
 {
 	struct sockaddr_storage *paddr = &con->peer_addr.in_addr;
 	struct socket *sock;
+	unsigned int noio_flag;
 	int ret;
 
 	BUG_ON(con->sock);
+
+	/* sock_create_kern() allocates with GFP_KERNEL */
+	noio_flag = memalloc_noio_save();
 	ret = sock_create_kern(con->peer_addr.in_addr.ss_family, SOCK_STREAM,
 			       IPPROTO_TCP, &sock);
+	memalloc_noio_restore(noio_flag);
 	if (ret)
 		return ret;
 	sock->sk->sk_allocation = GFP_NOFS;
@@ -1980,19 +1991,29 @@ static int process_connect(struct ceph_connection *con)
 	dout("process_connect on %p tag %d\n", con, (int)con->in_tag);
 
 	if (con->auth_reply_buf) {
+<<<<<<< HEAD
 		int len = le32_to_cpu(con->in_reply.authorizer_len);
 
+=======
+>>>>>>> p9x
 		/*
 		 * Any connection that defines ->get_authorizer()
 		 * should also define ->verify_authorizer_reply().
 		 * See get_connect_authorizer().
 		 */
+<<<<<<< HEAD
 		if (len) {
 			ret = con->ops->verify_authorizer_reply(con, 0);
 			if (ret < 0) {
 				con->error_msg = "bad authorize reply";
 				return ret;
 			}
+=======
+		ret = con->ops->verify_authorizer_reply(con, 0);
+		if (ret < 0) {
+			con->error_msg = "bad authorize reply";
+			return ret;
+>>>>>>> p9x
 		}
 	}
 
@@ -3183,6 +3204,10 @@ struct ceph_msg *ceph_msg_new(int type, int front_len, gfp_t flags,
 	INIT_LIST_HEAD(&m->data);
 
 	/* front */
+<<<<<<< HEAD
+=======
+	m->front_alloc_len = front_len;
+>>>>>>> p9x
 	if (front_len) {
 		m->front.iov_base = ceph_kvmalloc(front_len, flags);
 		if (m->front.iov_base == NULL) {

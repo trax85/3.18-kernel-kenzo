@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2013-2015, Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2013-2014, Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -15,7 +19,11 @@
 #ifndef UFS_QCOM_PHY_QMP_20NM_H_
 #define UFS_QCOM_PHY_QMP_20NM_H_
 
+<<<<<<< HEAD
 #include "phy-qcom-ufs-i.h"
+=======
+#include <linux/phy/phy-qcom-ufs.h>
+>>>>>>> p9x
 
 /* QCOM UFS PHY control registers */
 
@@ -101,7 +109,10 @@
 #define UFS_PHY_RX_MIN_SAVE_CONFIG_TIME_CAPABILITY	PHY_OFF(0xE8)
 #define UFS_PHY_RX_PWM_BURST_CLOSURE_LENGTH_CAPABILITY	PHY_OFF(0xFC)
 #define UFS_PHY_RX_MIN_ACTIVATETIME_CAPABILITY		PHY_OFF(0x100)
+<<<<<<< HEAD
 #define UFS_PHY_LINECFG_DISABLE				PHY_OFF(0x134)
+=======
+>>>>>>> p9x
 #define UFS_PHY_RX_SIGDET_CTRL3				PHY_OFF(0x14c)
 #define UFS_PHY_RMMI_ATTR_CTRL			PHY_OFF(0x160)
 #define UFS_PHY_RMMI_RX_CFGUPDT_L1	(1 << 7)
@@ -119,7 +130,10 @@
 #define UFS_PHY_PCS_READY_STATUS		PHY_OFF(0x174)
 
 #define UFS_PHY_TX_LANE_ENABLE_MASK		0x3
+<<<<<<< HEAD
 #define UFS_PHY_RX_LINECFG_DISABLE_BIT		BIT(1)
+=======
+>>>>>>> p9x
 
 /*
  * This structure represents the 20nm specific phy.

@@ -256,7 +256,10 @@
 #include <linux/fips.h>
 #include <linux/ptrace.h>
 #include <linux/kmemcheck.h>
+<<<<<<< HEAD
 #include <linux/workqueue.h>
+=======
+>>>>>>> p9x
 #include <linux/irq.h>
 #include <linux/syscalls.h>
 #include <linux/completion.h>
@@ -409,6 +412,23 @@ static DECLARE_WAIT_QUEUE_HEAD(random_write_wait);
 static DECLARE_WAIT_QUEUE_HEAD(urandom_init_wait);
 static struct fasync_struct *fasync;
 
+<<<<<<< HEAD
+=======
+static bool debug;
+module_param(debug, bool, 0644);
+#define DEBUG_ENT(fmt, arg...) do { \
+	if (debug) \
+		printk(KERN_DEBUG "random %04d %04d %04d: " \
+		fmt,\
+		input_pool.entropy_count,\
+		blocking_pool.entropy_count,\
+		nonblocking_pool.entropy_count,\
+		## arg); } while (0)
+
+static DEFINE_SPINLOCK(random_ready_list_lock);
+static LIST_HEAD(random_ready_list);
+
+>>>>>>> p9x
 /**********************************************************************
  *
  * OS independent entropy store.   Here are the functions which handle
@@ -589,6 +609,22 @@ static void fast_mix(struct fast_pool *f)
 	f->count++;
 }
 
+static void process_random_ready_list(void)
+{
+	unsigned long flags;
+	struct random_ready_callback *rdy, *tmp;
+
+	spin_lock_irqsave(&random_ready_list_lock, flags);
+	list_for_each_entry_safe(rdy, tmp, &random_ready_list, list) {
+		struct module *owner = rdy->owner;
+
+		list_del_init(&rdy->list);
+		rdy->func(rdy);
+		module_put(owner);
+	}
+	spin_unlock_irqrestore(&random_ready_list_lock, flags);
+}
+
 /*
  * Credit (or debit) the entropy store with n bits of entropy.
  * Use credit_entropy_bits_safe() if the value comes from userspace
@@ -660,7 +696,12 @@ retry:
 		r->entropy_total = 0;
 		if (r == &nonblocking_pool) {
 			prandom_reseed_late();
+<<<<<<< HEAD
 			wake_up_interruptible(&urandom_init_wait);
+=======
+			process_random_ready_list();
+			wake_up_all(&urandom_init_wait);
+>>>>>>> p9x
 			pr_notice("random: %s pool is initialized\n", r->name);
 		}
 	}
@@ -1110,6 +1151,15 @@ static void extract_buf(struct entropy_store *r, __u8 *out)
 	__mix_pool_bytes(r, hash.w, sizeof(hash.w));
 	spin_unlock_irqrestore(&r->lock, flags);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * To avoid duplicates, we atomically extract a portion of the
+	 * pool while mixing, and hash one final time.
+	 */
+	sha_transform(hash.w, extract, workspace);
+	memzero_explicit(extract, sizeof(extract));
+>>>>>>> p9x
 	memzero_explicit(workspace, sizeof(workspace));
 
 	/*
@@ -1249,6 +1299,64 @@ void get_random_bytes(void *buf, int nbytes)
 EXPORT_SYMBOL(get_random_bytes);
 
 /*
+ * Add a callback function that will be invoked when the nonblocking
+ * pool is initialised.
+ *
+ * returns: 0 if callback is successfully added
+ *	    -EALREADY if pool is already initialised (callback not called)
+ *	    -ENOENT if module for callback is not alive
+ */
+int add_random_ready_callback(struct random_ready_callback *rdy)
+{
+	struct module *owner;
+	unsigned long flags;
+	int err = -EALREADY;
+
+	if (likely(nonblocking_pool.initialized))
+		return err;
+
+	owner = rdy->owner;
+	if (!try_module_get(owner))
+		return -ENOENT;
+
+	spin_lock_irqsave(&random_ready_list_lock, flags);
+	if (nonblocking_pool.initialized)
+		goto out;
+
+	owner = NULL;
+
+	list_add(&rdy->list, &random_ready_list);
+	err = 0;
+
+out:
+	spin_unlock_irqrestore(&random_ready_list_lock, flags);
+
+	module_put(owner);
+
+	return err;
+}
+EXPORT_SYMBOL(add_random_ready_callback);
+
+/*
+ * Delete a previously registered readiness callback function.
+ */
+void del_random_ready_callback(struct random_ready_callback *rdy)
+{
+	unsigned long flags;
+	struct module *owner = NULL;
+
+	spin_lock_irqsave(&random_ready_list_lock, flags);
+	if (!list_empty(&rdy->list)) {
+		list_del_init(&rdy->list);
+		owner = rdy->owner;
+	}
+	spin_unlock_irqrestore(&random_ready_list_lock, flags);
+
+	module_put(owner);
+}
+EXPORT_SYMBOL(del_random_ready_callback);
+
+/*
  * This function will use the architecture-specific hardware random
  * number generator if it is available.  The arch-specific hw RNG will
  * almost certainly be faster than what we can do in software, but it
@@ -1366,12 +1474,58 @@ _random_read(int nonblock, char __user *buf, size_t nbytes)
 		if (nonblock)
 			return -EAGAIN;
 
+<<<<<<< HEAD
 		wait_event_interruptible(random_read_wait,
 			ENTROPY_BITS(&input_pool) >=
 			random_read_wakeup_bits);
 		if (signal_pending(current))
 			return -ERESTARTSYS;
+=======
+		n = extract_entropy_user(&blocking_pool, buf, n);
+
+		if (n < 0) {
+			retval = n;
+			break;
+		}
+
+		DEBUG_ENT("read got %zd bits (%zd still needed)\n",
+			  n*8, (nbytes-n)*8);
+
+		if (n == 0) {
+			if (nonblock) {
+				retval = -EAGAIN;
+				break;
+			}
+
+			DEBUG_ENT("sleeping?\n");
+
+			wait_event_interruptible(random_read_wait,
+				input_pool.entropy_count >=
+						 random_read_wakeup_thresh);
+
+			DEBUG_ENT("awake\n");
+
+			if (signal_pending(current)) {
+				retval = -ERESTARTSYS;
+				break;
+			}
+
+			continue;
+		}
+
+		count += n;
+		buf += n;
+		nbytes -= n;
+		break;		/* This break makes the device work */
+				/* like a named pipe */
+>>>>>>> p9x
 	}
+}
+
+static ssize_t
+random_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
+{
+	return _random_read(file->f_flags & O_NONBLOCK, buf, nbytes);
 }
 
 static ssize_t
@@ -1767,7 +1921,11 @@ unsigned long get_random_long(void)
 
 	hash = get_cpu_var(get_random_int_hash);
 
+<<<<<<< HEAD
 	hash[0] += current->pid + jiffies + random_get_entropy();
+=======
+	hash[0] += current->pid + jiffies + get_cycles();
+>>>>>>> p9x
 	md5_transform(hash, random_int_secret);
 	ret = *(unsigned long *)hash;
 	put_cpu_var(get_random_int_hash);
@@ -1809,8 +1967,13 @@ void add_hwgenerator_randomness(const char *buffer, size_t count,
 	 * or when the calling thread is about to terminate.
 	 */
 	wait_event_interruptible(random_write_wait, kthread_should_stop() ||
+<<<<<<< HEAD
 			ENTROPY_BITS(&input_pool) <= random_write_wakeup_bits);
 	mix_pool_bytes(poolp, buffer, count);
+=======
+			ENTROPY_BITS(poolp) <= random_write_wakeup_thresh);
+	mix_pool_bytes(poolp, buffer, count, NULL);
+>>>>>>> p9x
 	credit_entropy_bits(poolp, entropy);
 }
 EXPORT_SYMBOL_GPL(add_hwgenerator_randomness);

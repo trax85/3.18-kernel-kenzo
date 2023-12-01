@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2017, 2019, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, 2017 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -10,7 +14,10 @@
  * GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
 #define pr_fmt(fmt) "CAM-VB2 %s:%d " fmt, __func__, __LINE__
+=======
+>>>>>>> p9x
 #include "msm_vb2.h"
 
 static int msm_vb2_queue_setup(struct vb2_queue *q,
@@ -19,6 +26,7 @@ static int msm_vb2_queue_setup(struct vb2_queue *q,
 	unsigned int sizes[], void *alloc_ctxs[])
 {
 	int i;
+<<<<<<< HEAD
 	struct msm_v4l2_format_data *data = NULL;
 	int rc = -EINVAL;
 
@@ -32,6 +40,17 @@ static int msm_vb2_queue_setup(struct vb2_queue *q,
 	if (data->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
 		if (WARN_ON(data->num_planes > VIDEO_MAX_PLANES))
 			goto done;
+=======
+	struct msm_v4l2_format_data *data = q->drv_priv;
+
+	if (!data) {
+		pr_err("%s: drv_priv NULL\n", __func__);
+		return -EINVAL;
+	}
+	if (data->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
+		if (WARN_ON(data->num_planes > VIDEO_MAX_PLANES))
+			return -EINVAL;
+>>>>>>> p9x
 
 		*num_planes = data->num_planes;
 
@@ -40,6 +59,7 @@ static int msm_vb2_queue_setup(struct vb2_queue *q,
 	} else {
 		pr_err("%s: Unsupported buf type :%d\n", __func__,
 			   data->type);
+<<<<<<< HEAD
 		goto done;
 	}
 	rc = 0;
@@ -50,6 +70,14 @@ done:
 }
 
 static int msm_vb2_buf_init(struct vb2_buffer *vb)
+=======
+		return -EINVAL;
+	}
+	return 0;
+}
+
+int msm_vb2_buf_init(struct vb2_buffer *vb)
+>>>>>>> p9x
 {
 	struct msm_stream *stream;
 	struct msm_session *session;
@@ -107,7 +135,11 @@ static void msm_vb2_buf_queue(struct vb2_buffer *vb)
 	read_unlock_irqrestore(&session->stream_rwlock, rl_flags);
 }
 
+<<<<<<< HEAD
 static void msm_vb2_buf_finish(struct vb2_buffer *vb)
+=======
+static int msm_vb2_buf_finish(struct vb2_buffer *vb)
+>>>>>>> p9x
 {
 	struct msm_vb2_buffer *msm_vb2;
 	struct msm_stream *stream;
@@ -119,6 +151,49 @@ static void msm_vb2_buf_finish(struct vb2_buffer *vb)
 
 	if (!msm_vb2) {
 		pr_err("%s:%d] vb2_buf NULL", __func__, __LINE__);
+<<<<<<< HEAD
+=======
+		return -EINVAL;
+	}
+
+	session = msm_get_session_from_vb2q(vb->vb2_queue);
+	if (IS_ERR_OR_NULL(session))
+		return -EINVAL;
+
+	read_lock_irqsave(&session->stream_rwlock, rl_flags);
+
+	stream = msm_get_stream_from_vb2q(vb->vb2_queue);
+	if (!stream) {
+		pr_err("%s:%d] NULL stream", __func__, __LINE__);
+		read_unlock_irqrestore(&session->stream_rwlock, rl_flags);
+		return -EINVAL;
+	}
+
+	spin_lock_irqsave(&stream->stream_lock, flags);
+	list_for_each_entry_safe(msm_vb2_entry, temp, &(stream->queued_list),
+		list) {
+		if (msm_vb2_entry == msm_vb2) {
+			list_del_init(&msm_vb2_entry->list);
+			break;
+		}
+	}
+	spin_unlock_irqrestore(&stream->stream_lock, flags);
+	read_unlock_irqrestore(&session->stream_rwlock, rl_flags);
+	return 0;
+}
+
+static void msm_vb2_buf_cleanup(struct vb2_buffer *vb)
+{
+	struct msm_vb2_buffer *msm_vb2;
+	struct msm_stream *stream;
+	struct msm_session *session;
+	unsigned long flags, rl_flags;
+
+	msm_vb2 = container_of(vb, struct msm_vb2_buffer, vb2_buf);
+
+	if (!msm_vb2) {
+		pr_err("%s:%d] vb2 NULL", __func__, __LINE__);
+>>>>>>> p9x
 		return;
 	}
 
@@ -136,6 +211,7 @@ static void msm_vb2_buf_finish(struct vb2_buffer *vb)
 	}
 
 	spin_lock_irqsave(&stream->stream_lock, flags);
+<<<<<<< HEAD
 	list_for_each_entry_safe(msm_vb2_entry, temp, &(stream->queued_list),
 		list) {
 		if (msm_vb2_entry == msm_vb2) {
@@ -183,6 +259,9 @@ static void msm_vb2_stop_stream(struct vb2_queue *q)
 			vb2_buffer_done(vb2_buf, VB2_BUF_STATE_DONE);
 			msm_vb2->in_freeq = 0;
 		}
+=======
+	INIT_LIST_HEAD(&stream->queued_list);
+>>>>>>> p9x
 	spin_unlock_irqrestore(&stream->stream_lock, flags);
 	read_unlock_irqrestore(&session->stream_rwlock, rl_flags);
 }
@@ -205,13 +284,21 @@ int msm_vb2_get_stream_state(struct msm_stream *stream)
 }
 EXPORT_SYMBOL(msm_vb2_get_stream_state);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 static struct vb2_ops msm_vb2_get_q_op = {
 	.queue_setup	= msm_vb2_queue_setup,
 	.buf_init	= msm_vb2_buf_init,
 	.buf_queue	= msm_vb2_buf_queue,
+<<<<<<< HEAD
 	.buf_finish	= msm_vb2_buf_finish,
 	.stop_streaming = msm_vb2_stop_stream,
+=======
+	.buf_cleanup	= msm_vb2_buf_cleanup,
+	.buf_finish	= msm_vb2_buf_finish,
+>>>>>>> p9x
 };
 
 
@@ -258,8 +345,13 @@ static struct vb2_buffer *msm_vb2_get_buf(int session_id,
 	unsigned int stream_id)
 {
 	struct msm_stream *stream;
+<<<<<<< HEAD
 	struct vb2_buffer *vb2_buf = NULL;
 	struct msm_session *session;
+=======
+	struct msm_session *session;
+	struct vb2_buffer *vb2_buf = NULL;
+>>>>>>> p9x
 	struct msm_vb2_buffer *msm_vb2 = NULL;
 	unsigned long flags, rl_flags;
 
@@ -301,6 +393,7 @@ end:
 	return vb2_buf;
 }
 
+<<<<<<< HEAD
 static struct vb2_buffer *msm_vb2_get_buf_by_idx(int session_id,
 	unsigned int stream_id, uint32_t index)
 {
@@ -347,6 +440,8 @@ end:
 	return vb2_buf;
 }
 
+=======
+>>>>>>> p9x
 static int msm_vb2_put_buf(struct vb2_buffer *vb, int session_id,
 				unsigned int stream_id)
 {
@@ -376,12 +471,20 @@ static int msm_vb2_put_buf(struct vb2_buffer *vb, int session_id,
 			if (vb2_buf == vb)
 				break;
 		}
+<<<<<<< HEAD
 		if (WARN_ON(vb2_buf != vb)) {
 			pr_err("VB buffer is INVALID vb=%pK, ses_id=%d, str_id=%d\n",
 					vb, session_id, stream_id);
 			spin_unlock_irqrestore(&stream->stream_lock, flags);
 			read_unlock_irqrestore(&session->stream_rwlock,
 				rl_flags);
+=======
+		if (vb2_buf != vb) {
+			pr_err("VB buffer is INVALID vb=%pK, ses_id=%d, str_id=%d\n",
+					vb, session_id, stream_id);
+			spin_unlock_irqrestore(&stream->stream_lock, flags);
+			read_unlock_irqrestore(&session->stream_rwlock, rl_flags);
+>>>>>>> p9x
 			return -EINVAL;
 		}
 		msm_vb2 =
@@ -402,19 +505,32 @@ static int msm_vb2_put_buf(struct vb2_buffer *vb, int session_id,
 }
 
 static int msm_vb2_buf_done(struct vb2_buffer *vb, int session_id,
+<<<<<<< HEAD
 				unsigned int stream_id, uint32_t sequence,
 				struct timeval *ts, uint32_t reserved)
+=======
+				unsigned int stream_id)
+>>>>>>> p9x
 {
 	unsigned long flags, rl_flags;
 	struct msm_vb2_buffer *msm_vb2;
 	struct msm_stream *stream;
+<<<<<<< HEAD
 	struct vb2_buffer *vb2_buf = NULL;
 	struct msm_session *session;
+=======
+	struct msm_session *session;
+	struct vb2_buffer *vb2_buf = NULL;
+>>>>>>> p9x
 	int rc = 0;
 
 	session = msm_get_session(session_id);
 	if (IS_ERR_OR_NULL(session))
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return 0;
+>>>>>>> p9x
 
 	read_lock_irqsave(&session->stream_rwlock, rl_flags);
 
@@ -431,21 +547,32 @@ static int msm_vb2_buf_done(struct vb2_buffer *vb, int session_id,
 			if (vb2_buf == vb)
 				break;
 		}
+<<<<<<< HEAD
 		if (WARN_ON(vb2_buf != vb)) {
 			pr_err("VB buffer is INVALID ses_id=%d, str_id=%d, vb=%pK\n",
 				    session_id, stream_id, vb);
 			spin_unlock_irqrestore(&stream->stream_lock, flags);
 			read_unlock_irqrestore(&session->stream_rwlock,
 				rl_flags);
+=======
+		if (vb2_buf != vb) {
+			pr_err("VB buffer is INVALID ses_id=%d, str_id=%d, vb=%pK\n",
+				    session_id, stream_id, vb);
+			spin_unlock_irqrestore(&stream->stream_lock, flags);
+			read_unlock_irqrestore(&session->stream_rwlock, rl_flags);
+>>>>>>> p9x
 			return -EINVAL;
 		}
 		msm_vb2 =
 			container_of(vb, struct msm_vb2_buffer, vb2_buf);
 		/* put buf before buf done */
 		if (msm_vb2->in_freeq) {
+<<<<<<< HEAD
 			vb->v4l2_buf.sequence = sequence;
 			vb->v4l2_buf.timestamp = *ts;
 			vb->v4l2_buf.reserved = reserved;
+=======
+>>>>>>> p9x
 			vb2_buffer_done(vb, VB2_BUF_STATE_DONE);
 			msm_vb2->in_freeq = 0;
 			rc = 0;
@@ -461,6 +588,7 @@ static int msm_vb2_buf_done(struct vb2_buffer *vb, int session_id,
 	return rc;
 }
 
+<<<<<<< HEAD
 long msm_vb2_return_buf_by_idx(int session_id, unsigned int stream_id,
 				uint32_t index)
 {
@@ -512,16 +640,27 @@ end:
 }
 EXPORT_SYMBOL(msm_vb2_return_buf_by_idx);
 
+=======
+>>>>>>> p9x
 static int msm_vb2_flush_buf(int session_id, unsigned int stream_id)
 {
 	unsigned long flags, rl_flags;
 	struct msm_vb2_buffer *msm_vb2;
+<<<<<<< HEAD
 	struct msm_stream *stream;
 	struct vb2_buffer *vb2_buf = NULL;
 	struct msm_session *session;
 
 	session = msm_get_session(session_id);
 	if (IS_ERR_OR_NULL(session))
+=======
+	struct msm_session *session;
+	struct msm_stream *stream;
+	struct vb2_buffer *vb2_buf = NULL;
+
+	session = msm_get_session(session_id);
+		if (IS_ERR_OR_NULL(session))
+>>>>>>> p9x
 		return -EINVAL;
 
 	read_lock_irqsave(&session->stream_rwlock, rl_flags);
@@ -553,11 +692,20 @@ int msm_vb2_request_cb(struct msm_sd_req_vb2_q *req)
 	}
 
 	req->get_buf = msm_vb2_get_buf;
+<<<<<<< HEAD
 	req->get_buf_by_idx = msm_vb2_get_buf_by_idx;
+=======
+>>>>>>> p9x
 	req->get_vb2_queue = msm_vb2_get_queue;
 	req->put_buf = msm_vb2_put_buf;
 	req->buf_done = msm_vb2_buf_done;
 	req->flush_buf = msm_vb2_flush_buf;
+<<<<<<< HEAD
 	return 0;
 }
 
+=======
+
+	return 0;
+}
+>>>>>>> p9x

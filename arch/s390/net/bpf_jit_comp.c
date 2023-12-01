@@ -242,6 +242,7 @@ static void bpf_jit_noleaks(struct bpf_jit *jit, struct sock_filter *filter)
 		EMIT4(0xa7c80000);
 	/* Clear A if the first register does not set it. */
 	switch (filter[0].code) {
+<<<<<<< HEAD
 	case BPF_LD | BPF_W | BPF_ABS:
 	case BPF_LD | BPF_H | BPF_ABS:
 	case BPF_LD | BPF_B | BPF_ABS:
@@ -253,6 +254,29 @@ static void bpf_jit_noleaks(struct bpf_jit *jit, struct sock_filter *filter)
 	case BPF_LD | BPF_MEM:
 	case BPF_MISC | BPF_TXA:
 	case BPF_RET | BPF_K:
+=======
+	case BPF_S_LD_W_ABS:
+	case BPF_S_LD_H_ABS:
+	case BPF_S_LD_B_ABS:
+	case BPF_S_LD_W_LEN:
+	case BPF_S_LD_W_IND:
+	case BPF_S_LD_H_IND:
+	case BPF_S_LD_B_IND:
+	case BPF_S_LD_IMM:
+	case BPF_S_LD_MEM:
+	case BPF_S_MISC_TXA:
+	case BPF_S_ANC_PROTOCOL:
+	case BPF_S_ANC_PKTTYPE:
+	case BPF_S_ANC_IFINDEX:
+	case BPF_S_ANC_MARK:
+	case BPF_S_ANC_QUEUE:
+	case BPF_S_ANC_HATYPE:
+	case BPF_S_ANC_RXHASH:
+	case BPF_S_ANC_CPU:
+	case BPF_S_ANC_VLAN_TAG:
+	case BPF_S_ANC_VLAN_TAG_PRESENT:
+	case BPF_S_RET_K:
+>>>>>>> p9x
 		/* first instruction sets A register */
 		break;
 	default: /* A = 0 */
@@ -336,7 +360,11 @@ static int bpf_jit_insn(struct bpf_jit *jit, struct sock_filter *filter,
 		/* dlr %r4,%r12 */
 		EMIT4(0xb997004c);
 		break;
+<<<<<<< HEAD
 	case BPF_ALU | BPF_DIV | BPF_K: /* A /= K */
+=======
+	case BPF_S_ALU_DIV_K: /* A /= K */
+>>>>>>> p9x
 		if (K == 1)
 			break;
 		/* lhi %r4,0 */
@@ -357,7 +385,11 @@ static int bpf_jit_insn(struct bpf_jit *jit, struct sock_filter *filter,
 		/* lr %r5,%r4 */
 		EMIT2(0x1854);
 		break;
+<<<<<<< HEAD
 	case BPF_ALU | BPF_MOD | BPF_K: /* A %= K */
+=======
+	case BPF_S_ALU_MOD_K: /* A %= K */
+>>>>>>> p9x
 		if (K == 1) {
 			/* lhi %r5,0 */
 			EMIT4(0xa7580000);

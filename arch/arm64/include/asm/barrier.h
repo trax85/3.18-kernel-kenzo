@@ -35,21 +35,69 @@
 #define rmb()		dsb(ld)
 #define wmb()		dsb(st)
 
+<<<<<<< HEAD
 #define dma_rmb()	dmb(oshld)
 #define dma_wmb()	dmb(oshst)
+=======
+#ifndef CONFIG_SMP
+#define smp_mb()	barrier()
+#define smp_rmb()	barrier()
+#define smp_wmb()	barrier()
+
+#define smp_store_release(p, v)						\
+do {									\
+	compiletime_assert_atomic_type(*p);				\
+	barrier();							\
+	ACCESS_ONCE(*p) = (v);						\
+} while (0)
+
+#define smp_load_acquire(p)						\
+({									\
+	typeof(*p) ___p1 = ACCESS_ONCE(*p);				\
+	compiletime_assert_atomic_type(*p);				\
+	barrier();							\
+	___p1;								\
+})
+
+#else
+>>>>>>> p9x
 
 #define smp_mb()	dmb(ish)
 #define smp_rmb()	dmb(ishld)
 #define smp_wmb()	dmb(ishst)
 
+<<<<<<< HEAD
 #define smp_store_release(p, v)						\
 do {									\
 	union { typeof(*p) __val; char __c[1]; } __u =			\
 		{ .__val = (__force typeof(*p)) (v) }; 			\
+=======
+#ifdef CONFIG_ARM64_STLR_NEEDS_BARRIER
+#define smp_store_release(p, v)						\
+do {									\
+	compiletime_assert_atomic_type(*p);				\
+	switch (sizeof(*p)) {						\
+	case 4:								\
+		asm volatile ("dmb nsh\n"				\
+			      "stlr %w1, %0"				\
+				: "=Q" (*p) : "r" (v) : "memory");	\
+		break;							\
+	case 8:								\
+		asm volatile ("dmb nsh\n"				\
+			      "stlr %1, %0"				\
+				: "=Q" (*p) : "r" (v) : "memory");	\
+		break;							\
+	}								\
+} while (0)
+#else
+#define smp_store_release(p, v)						\
+do {									\
+>>>>>>> p9x
 	compiletime_assert_atomic_type(*p);				\
 	switch (sizeof(*p)) {						\
 	case 4:								\
 		asm volatile ("stlr %w1, %0"				\
+<<<<<<< HEAD
 				: "=Q" (*p)				\
 				: "r" (*(__u32 *)__u.__c)		\
 				: "memory");				\
@@ -62,6 +110,17 @@ do {									\
 		break;							\
 	}								\
 } while (0)
+=======
+				: "=Q" (*p) : "r" (v) : "memory");	\
+		break;							\
+	case 8:								\
+		asm volatile ("stlr %1, %0"				\
+				: "=Q" (*p) : "r" (v) : "memory");	\
+		break;							\
+	}								\
+} while (0)
+#endif
+>>>>>>> p9x
 
 #define smp_load_acquire(p)						\
 ({									\
@@ -79,6 +138,11 @@ do {									\
 	}								\
 	___p1;								\
 })
+<<<<<<< HEAD
+=======
+
+#endif
+>>>>>>> p9x
 
 #define read_barrier_depends()		do { } while(0)
 #define smp_read_barrier_depends()	do { } while(0)

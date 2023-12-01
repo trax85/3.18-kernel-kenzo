@@ -119,9 +119,16 @@ static int init_div_table(void)
 	struct dev_pm_opp *opp;
 
 	rcu_read_lock();
+<<<<<<< HEAD
 	cpufreq_for_each_entry(pos, freq_tbl) {
 		opp = dev_pm_opp_find_freq_exact(dvfs_info->dev,
 					pos->frequency * 1000, true);
+=======
+	for (i = 0; freq_tbl[i].frequency != CPUFREQ_TABLE_END; i++) {
+
+		opp = dev_pm_opp_find_freq_exact(dvfs_info->dev,
+					freq_tbl[i].frequency * 1000, true);
+>>>>>>> p9x
 		if (IS_ERR(opp)) {
 			rcu_read_unlock();
 			dev_err(dvfs_info->dev,
@@ -306,11 +313,18 @@ static int exynos_cpufreq_cpu_init(struct cpufreq_policy *policy)
 }
 
 static struct cpufreq_driver exynos_driver = {
+<<<<<<< HEAD
 	.flags		= CPUFREQ_STICKY | CPUFREQ_ASYNC_NOTIFICATION |
 				CPUFREQ_NEED_INITIAL_FREQ_CHECK,
 	.verify		= cpufreq_generic_frequency_table_verify,
 	.target_index	= exynos_target,
 	.get		= cpufreq_generic_get,
+=======
+	.flags		= CPUFREQ_STICKY | CPUFREQ_ASYNC_NOTIFICATION,
+	.verify		= exynos_verify_speed,
+	.target		= exynos_target,
+	.get		= exynos_getspeed,
+>>>>>>> p9x
 	.init		= exynos_cpufreq_cpu_init,
 	.name		= CPUFREQ_NAME,
 	.attr		= cpufreq_generic_attr,
@@ -423,8 +437,11 @@ static int exynos_cpufreq_probe(struct platform_device *pdev)
 
 err_free_table:
 	dev_pm_opp_free_cpufreq_table(dvfs_info->dev, &dvfs_info->freq_table);
+<<<<<<< HEAD
 err_free_opp:
 	dev_pm_opp_of_remove_table(dvfs_info->dev);
+=======
+>>>>>>> p9x
 err_put_node:
 	of_node_put(np);
 	dev_err(&pdev->dev, "%s: failed initialization\n", __func__);
@@ -435,7 +452,10 @@ static int exynos_cpufreq_remove(struct platform_device *pdev)
 {
 	cpufreq_unregister_driver(&exynos_driver);
 	dev_pm_opp_free_cpufreq_table(dvfs_info->dev, &dvfs_info->freq_table);
+<<<<<<< HEAD
 	dev_pm_opp_of_remove_table(dvfs_info->dev);
+=======
+>>>>>>> p9x
 	return 0;
 }
 

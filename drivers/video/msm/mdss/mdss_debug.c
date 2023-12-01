@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2009-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2009-2017, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -38,16 +42,24 @@
 #define PANEL_TX_MAX_BUF 256
 #define PANEL_CMD_MIN_TX_COUNT 2
 #define PANEL_DATA_NODE_LEN 80
+<<<<<<< HEAD
 /* MDP3 HW Version */
 #define MDP_CORE_HW_VERSION 0x03050306
+=======
+
+static DEFINE_MUTEX(mdss_debug_lock);
+>>>>>>> p9x
 
 /* Hex number + whitespace */
 #define NEXT_VALUE_OFFSET 3
 
+<<<<<<< HEAD
 #define INVALID_XIN_ID     0xFF
 
 static DEFINE_MUTEX(mdss_debug_lock);
 
+=======
+>>>>>>> p9x
 static char panel_reg[2] = {DEFAULT_READ_PANEL_POWER_MODE_REG, 0x00};
 
 static int panel_debug_base_open(struct inode *inode, struct file *file)
@@ -150,10 +162,15 @@ static ssize_t panel_debug_base_reg_write(struct file *file,
 	char *bufp;
 
 	struct mdss_data_type *mdata = mdss_res;
+<<<<<<< HEAD
 	struct mdss_mdp_ctl *ctl = mdata->ctl_off + 0;
 	struct mdss_panel_data *panel_data = NULL;
 	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
 
+=======
+	struct mdss_mdp_ctl *ctl;
+	struct mdss_dsi_ctrl_pdata *ctrl_pdata;
+>>>>>>> p9x
 	struct dsi_cmd_desc dsi_write_cmd = {
 		{0/*data type*/, 1, 0, 0, 0, 0/* len */}, reg};
 	struct dcs_cmd_req cmdreq;
@@ -168,6 +185,7 @@ static ssize_t panel_debug_base_reg_write(struct file *file,
 	if (copy_from_user(buf, user_buf, count))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	if ((mdata->mdp_rev <= MDSS_MDP_HW_REV_105) ||
 			(mdata->mdp_rev == MDP_CORE_HW_VERSION))
 		panel_data = mdss_res->pdata;
@@ -177,6 +195,8 @@ static ssize_t panel_debug_base_reg_write(struct file *file,
 	ctrl_pdata = container_of(panel_data,
 		struct mdss_dsi_ctrl_pdata, panel_data);
 
+=======
+>>>>>>> p9x
 	buf[count] = 0;	/* end of string */
 
 	bufp = buf;
@@ -194,8 +214,12 @@ static ssize_t panel_debug_base_reg_write(struct file *file,
 			break;
 		}
 		/* End of a hex value in given string */
+<<<<<<< HEAD
 		if ((bufp + NEXT_VALUE_OFFSET - 1) < (buf + count))
 			bufp[NEXT_VALUE_OFFSET - 1] = 0;
+=======
+		bufp[NEXT_VALUE_OFFSET - 1] = 0;
+>>>>>>> p9x
 	}
 	if (len < PANEL_CMD_MIN_TX_COUNT) {
 		pr_err("wrong input reg len\n");
@@ -237,8 +261,14 @@ static ssize_t panel_debug_base_reg_read(struct file *file,
 	char *panel_reg_buf, *rx_buf;
 	struct mdss_data_type *mdata = mdss_res;
 	struct mdss_mdp_ctl *ctl = mdata->ctl_off + 0;
+<<<<<<< HEAD
 	struct mdss_panel_data *panel_data = NULL;
 	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
+=======
+	struct mdss_panel_data *panel_data = ctl->panel_data;
+	struct mdss_dsi_ctrl_pdata *ctrl_pdata = container_of(panel_data,
+					struct mdss_dsi_ctrl_pdata, panel_data);
+>>>>>>> p9x
 	int rc = -EFAULT;
 
 	if (!dbg)
@@ -271,6 +301,7 @@ static ssize_t panel_debug_base_reg_read(struct file *file,
 		mdata->debug_inf.debug_enable_clock(1);
 
 	panel_reg[0] = dbg->off;
+<<<<<<< HEAD
 	if ((mdata->mdp_rev <= MDSS_MDP_HW_REV_105) ||
 			(mdata->mdp_rev == MDP_CORE_HW_VERSION))
 		panel_data = mdss_res->pdata;
@@ -282,6 +313,10 @@ static ssize_t panel_debug_base_reg_read(struct file *file,
 
 	mdss_dsi_panel_cmd_read(ctrl_pdata, panel_reg[0],
 		panel_reg[1], NULL, rx_buf, dbg->cnt);
+=======
+	mdss_dsi_panel_cmd_read(ctrl_pdata, panel_reg[0], panel_reg[1],
+				NULL, rx_buf, dbg->cnt);
+>>>>>>> p9x
 
 	len = scnprintf(panel_reg_buf, reg_buf_len, "0x%02zx: ", dbg->off);
 
@@ -381,9 +416,12 @@ int panel_debug_register_base(const char *name, void __iomem *base,
 		goto reg_fail;
 	}
 
+<<<<<<< HEAD
 	/* Initialize list to make sure check for null list will be valid */
 	INIT_LIST_HEAD(&dbg->dump_list);
 
+=======
+>>>>>>> p9x
 	list_add(&dbg->head, &mdd->base_list);
 
 	return 0;
@@ -418,6 +456,7 @@ static int mdss_debug_base_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
  * mdss_debug_base_is_valid_range - verify if requested memory range is valid
  * @off: address offset in bytes
@@ -451,6 +490,8 @@ static bool mdss_debug_base_is_valid_range(u32 off, u32 cnt)
 	return false;
 }
 
+=======
+>>>>>>> p9x
 static ssize_t mdss_debug_base_offset_write(struct file *file,
 		    const char __user *user_buf, size_t count, loff_t *ppos)
 {
@@ -473,8 +514,12 @@ static ssize_t mdss_debug_base_offset_write(struct file *file,
 	if (off % sizeof(u32))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (sscanf(buf, "%5x %x", &off, &cnt) != 2)
 		return -EFAULT;
+=======
+	sscanf(buf, "%5x %x", &off, &cnt);
+>>>>>>> p9x
 
 	if (off > dbg->max_offset)
 		return -EINVAL;
@@ -482,9 +527,12 @@ static ssize_t mdss_debug_base_offset_write(struct file *file,
 	if (cnt > (dbg->max_offset - off))
 		cnt = dbg->max_offset - off;
 
+<<<<<<< HEAD
 	if (!mdss_debug_base_is_valid_range(off, cnt))
 		return -EINVAL;
 
+=======
+>>>>>>> p9x
 	mutex_lock(&mdss_debug_lock);
 	dbg->off = off;
 	dbg->cnt = cnt;
@@ -735,8 +783,13 @@ static void parse_dump_range_name(struct device_node *node,
 		rc = of_property_read_string_index(node,
 			name_prop, index, &st);
 		if (rc) {
+<<<<<<< HEAD
 			pr_err("error reading name. index=%d, rc=%d\n",
 				index, rc);
+=======
+			pr_err("%s: error reading name. index=%d, rc=%d\n",
+				__func__, index, rc);
+>>>>>>> p9x
 			goto error;
 		}
 		snprintf(range_name, range_size, "%s", st);
@@ -748,6 +801,7 @@ error:
 }
 
 static int parse_dt_xlog_dump_list(const u32 *arr, int count,
+<<<<<<< HEAD
 	struct list_head *xlog_dump_list, struct platform_device *pdev,
 	const char *name_prop, const char *xin_prop)
 {
@@ -779,6 +833,14 @@ static int parse_dt_xlog_dump_list(const u32 *arr, int count,
 	} else {
 		total_xin_ids = 0;
 	}
+=======
+	struct list_head *xlog_dump_list, int total_names,
+	struct platform_device *pdev, const char *name_prop)
+{
+	struct range_dump_node *xlog_node;
+	u32 len;
+	int i;
+>>>>>>> p9x
 
 	for (i = 0, len = count * 2; i < len; i += 2) {
 		xlog_node = kzalloc(sizeof(*xlog_node), GFP_KERNEL);
@@ -787,11 +849,15 @@ static int parse_dt_xlog_dump_list(const u32 *arr, int count,
 
 		xlog_node->offset.start = be32_to_cpu(arr[i]);
 		xlog_node->offset.end = be32_to_cpu(arr[i + 1]);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 		parse_dump_range_name(pdev->dev.of_node, total_names, i/2,
 			xlog_node->range_name,
 			ARRAY_SIZE(xlog_node->range_name), name_prop);
 
+<<<<<<< HEAD
 		if ((i / 2) < total_xin_ids)
 			xlog_node->xin_id = offsets[i / 2];
 		else
@@ -801,19 +867,42 @@ static int parse_dt_xlog_dump_list(const u32 *arr, int count,
 	}
 
 	kfree(offsets);
+=======
+		list_add_tail(&xlog_node->head, xlog_dump_list);
+	}
+
+>>>>>>> p9x
 	return 0;
 }
 
 void mdss_debug_register_dump_range(struct platform_device *pdev,
 	struct mdss_debug_base *blk_base, const char *ranges_prop,
+<<<<<<< HEAD
 	const char *name_prop, const char *xin_prop)
 {
 	int mdp_len;
+=======
+	const char *name_prop)
+{
+	int total_dump_names, mdp_len;
+>>>>>>> p9x
 	const u32 *mdp_arr;
 
 	if (!blk_base || !ranges_prop || !name_prop)
 		return;
 
+<<<<<<< HEAD
+=======
+	/* Get the property with the name of the ranges */
+	total_dump_names = of_property_count_strings(pdev->dev.of_node,
+		name_prop);
+	if (total_dump_names < 0) {
+		pr_warn("%s: dump names not found. rc=%d\n", __func__,
+			total_dump_names);
+		total_dump_names = 0;
+	}
+
+>>>>>>> p9x
 	mdp_arr = of_get_property(pdev->dev.of_node, ranges_prop,
 			&mdp_len);
 	if (!mdp_arr) {
@@ -822,15 +911,25 @@ void mdss_debug_register_dump_range(struct platform_device *pdev,
 	} else {
 		/* 2 is the number of entries per row to calculate the rows */
 		mdp_len /= 2 * sizeof(u32);
+<<<<<<< HEAD
 		parse_dt_xlog_dump_list(mdp_arr, mdp_len, &blk_base->dump_list,
 			pdev, name_prop, xin_prop);
+=======
+		parse_dt_xlog_dump_list(mdp_arr, mdp_len,
+			&blk_base->dump_list, total_dump_names, pdev,
+				name_prop);
+>>>>>>> p9x
 	}
 }
 
 static ssize_t mdss_debug_factor_write(struct file *file,
 		    const char __user *user_buf, size_t count, loff_t *ppos)
 {
+<<<<<<< HEAD
 	struct mult_factor *factor  = file->private_data;
+=======
+	struct mdss_fudge_factor *factor  = file->private_data;
+>>>>>>> p9x
 	u32 numer;
 	u32 denom;
 	char buf[32];
@@ -873,7 +972,11 @@ static ssize_t mdss_debug_factor_write(struct file *file,
 static ssize_t mdss_debug_factor_read(struct file *file,
 			char __user *buff, size_t count, loff_t *ppos)
 {
+<<<<<<< HEAD
 	struct mult_factor *factor = file->private_data;
+=======
+	struct mdss_fudge_factor *factor = file->private_data;
+>>>>>>> p9x
 	int len = 0;
 	char buf[32] = {'\0'};
 
@@ -1004,7 +1107,11 @@ static int mdss_debug_set_panic_signal(struct mdss_mdp_pipe *pipe_pool,
 	for (i = 0; i < pool_size; i++) {
 		pipe = pipe_pool + i;
 		if (pipe && (atomic_read(&pipe->kref.refcount) != 0) &&
+<<<<<<< HEAD
 			mdss_mdp_panic_signal_support_mode(mdata)) {
+=======
+			mdss_mdp_panic_signal_support_mode(mdata, pipe)) {
+>>>>>>> p9x
 			mdss_mdp_pipe_panic_signal_ctrl(pipe, enable);
 			pr_debug("pnum:%d count:%d img:%dx%d ",
 				pipe->num, pipe->play_cnt, pipe->img_width,
@@ -1017,7 +1124,11 @@ static int mdss_debug_set_panic_signal(struct mdss_mdp_pipe *pipe_pool,
 		} else if (pipe) {
 			pr_debug("Inactive pipe num:%d supported:%d\n",
 			       atomic_read(&pipe->kref.refcount),
+<<<<<<< HEAD
 			       mdss_mdp_panic_signal_support_mode(mdata));
+=======
+			       mdss_mdp_panic_signal_support_mode(mdata, pipe));
+>>>>>>> p9x
 		}
 	}
 	return cnt;
@@ -1143,15 +1254,22 @@ static ssize_t mdss_debug_perf_bw_limit_write(struct file *file,
 {
 	struct mdss_data_type *mdata = file->private_data;
 	char buf[32];
+<<<<<<< HEAD
 	u32 mode = 0, val = 0;
 	u32 cnt;
+=======
+	u32 mode = 0, val = 0, cnt;
+>>>>>>> p9x
 	struct mdss_max_bw_settings *temp_settings;
 
 	if (!mdata)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	cnt = mdata->max_bw_settings_cnt;
 	temp_settings = mdata->max_bw_settings;
+=======
+>>>>>>> p9x
 
 	if (count >= sizeof(buf))
 		return -EFAULT;
@@ -1160,6 +1278,11 @@ static ssize_t mdss_debug_perf_bw_limit_write(struct file *file,
 		return -EFAULT;
 
 	buf[count] = 0;	/* end of string */
+<<<<<<< HEAD
+=======
+	cnt = mdata->max_bw_settings_cnt;
+	temp_settings = mdata->max_bw_settings;
+>>>>>>> p9x
 
 	if (strnchr(buf, count, ' ')) {
 		/* Parsing buf */
@@ -1218,6 +1341,12 @@ static int mdss_debugfs_perf_init(struct mdss_debug_data *mdd,
 	debugfs_create_file("ib_factor_overlap", 0644, mdd->perf,
 		&mdata->ib_factor_overlap, &mdss_factor_fops);
 
+<<<<<<< HEAD
+=======
+	debugfs_create_file("ib_factor_cmd", 0644, mdd->perf,
+		&mdata->ib_factor_cmd, &mdss_factor_fops);
+
+>>>>>>> p9x
 	debugfs_create_file("clk_factor", 0644, mdd->perf,
 		&mdata->clk_factor, &mdss_factor_fops);
 
@@ -1241,9 +1370,12 @@ static int mdss_debugfs_perf_init(struct mdss_debug_data *mdd,
 	debugfs_create_file("threshold_bw_limit", 0644, mdd->perf,
 		(struct mdss_data_type *)mdata, &mdss_perf_bw_limit_fops);
 
+<<<<<<< HEAD
 	debugfs_create_u32("lines_before_active", 0644, mdd->perf,
 		(u32 *)&mdata->lines_before_active);
 
+=======
+>>>>>>> p9x
 	return 0;
 }
 
@@ -1277,6 +1409,7 @@ int mdss_debugfs_init(struct mdss_data_type *mdata)
 		goto err;
 	}
 
+<<<<<<< HEAD
 	mdd->bordercolor = debugfs_create_dir("bordercolor", mdd->root);
 	if (IS_ERR_OR_NULL(mdd->bordercolor)) {
 		pr_err("debugfs_create_dir for bordercolor failed, error %ld\n",
@@ -1290,14 +1423,29 @@ int mdss_debugfs_init(struct mdss_data_type *mdata)
 		       PTR_ERR(mdd->postproc));
 		goto err;
 	}
+=======
+	debugfs_create_bool("allow_cx_vddmin", 0644, mdd->root,
+		(u32 *)&mdata->allow_cx_vddmin);
+
+	mdd->bordercolor = debugfs_create_dir("bordercolor", mdd->root);
+	if (IS_ERR_OR_NULL(mdd->root)) {
+		pr_err("debugfs_create_dir for mdp failed, error %ld\n",
+		       PTR_ERR(mdd->root));
+		goto err;
+	}
+
+>>>>>>> p9x
 	mdss_debugfs_perf_init(mdd, mdata);
 
 	if (mdss_create_xlog_debug(mdd))
 		goto err;
 
+<<<<<<< HEAD
 	if (mdss_create_frc_debug(mdd))
 		goto err;
 
+=======
+>>>>>>> p9x
 	mdata->debug_inf.debug_data = mdd;
 
 	return 0;
@@ -1323,7 +1471,10 @@ static struct mdss_mdp_misr_map {
 	u32 value_reg;
 	u32 crc_op_mode;
 	u32 crc_index;
+<<<<<<< HEAD
 	u32 last_misr;
+=======
+>>>>>>> p9x
 	bool use_ping;
 	bool is_ping_full;
 	bool is_pong_full;
@@ -1336,7 +1487,10 @@ static struct mdss_mdp_misr_map {
 		.value_reg = MDSS_MDP_LP_MISR_SIGN_DSI0,
 		.crc_op_mode = 0,
 		.crc_index = 0,
+<<<<<<< HEAD
 		.last_misr = 0,
+=======
+>>>>>>> p9x
 		.use_ping = true,
 		.is_ping_full = false,
 		.is_pong_full = false,
@@ -1346,7 +1500,10 @@ static struct mdss_mdp_misr_map {
 		.value_reg = MDSS_MDP_LP_MISR_SIGN_DSI1,
 		.crc_op_mode = 0,
 		.crc_index = 0,
+<<<<<<< HEAD
 		.last_misr = 0,
+=======
+>>>>>>> p9x
 		.use_ping = true,
 		.is_ping_full = false,
 		.is_pong_full = false,
@@ -1356,7 +1513,10 @@ static struct mdss_mdp_misr_map {
 		.value_reg = MDSS_MDP_LP_MISR_SIGN_EDP,
 		.crc_op_mode = 0,
 		.crc_index = 0,
+<<<<<<< HEAD
 		.last_misr = 0,
+=======
+>>>>>>> p9x
 		.use_ping = true,
 		.is_ping_full = false,
 		.is_pong_full = false,
@@ -1366,7 +1526,10 @@ static struct mdss_mdp_misr_map {
 		.value_reg = MDSS_MDP_LP_MISR_SIGN_HDMI,
 		.crc_op_mode = 0,
 		.crc_index = 0,
+<<<<<<< HEAD
 		.last_misr = 0,
+=======
+>>>>>>> p9x
 		.use_ping = true,
 		.is_ping_full = false,
 		.is_pong_full = false,
@@ -1376,7 +1539,10 @@ static struct mdss_mdp_misr_map {
 		.value_reg = MDSS_MDP_LP_MISR_SIGN_MDP,
 		.crc_op_mode = 0,
 		.crc_index = 0,
+<<<<<<< HEAD
 		.last_misr = 0,
+=======
+>>>>>>> p9x
 		.use_ping = true,
 		.is_ping_full = false,
 		.is_pong_full = false,
@@ -1384,8 +1550,12 @@ static struct mdss_mdp_misr_map {
 };
 
 static inline struct mdss_mdp_misr_map *mdss_misr_get_map(u32 block_id,
+<<<<<<< HEAD
 		struct mdss_mdp_ctl *ctl, struct mdss_data_type *mdata,
 		bool is_video_mode)
+=======
+		struct mdss_mdp_ctl *ctl, struct mdss_data_type *mdata)
+>>>>>>> p9x
 {
 	struct mdss_mdp_misr_map *map;
 	struct mdss_mdp_mixer *mixer;
@@ -1403,6 +1573,7 @@ static inline struct mdss_mdp_misr_map *mdss_misr_get_map(u32 block_id,
 			if (ctl) {
 				mixer = mdss_mdp_mixer_get(ctl,
 					MDSS_MDP_MIXER_MUX_DEFAULT);
+<<<<<<< HEAD
 
 				if (mixer) {
 					ctrl_reg = mixer->base +
@@ -1410,6 +1581,12 @@ static inline struct mdss_mdp_misr_map *mdss_misr_get_map(u32 block_id,
 					value_reg = mixer->base +
 					MDSS_MDP_LAYER_MIXER_MISR_SIGNATURE;
 				}
+=======
+				ctrl_reg = mixer->base +
+					MDSS_MDP_LAYER_MIXER_MISR_CTRL;
+				value_reg = mixer->base +
+					MDSS_MDP_LAYER_MIXER_MISR_SIGNATURE;
+>>>>>>> p9x
 			}
 		} else {
 			if (block_id <= DISPLAY_MISR_HDMI) {
@@ -1418,11 +1595,16 @@ static inline struct mdss_mdp_misr_map *mdss_misr_get_map(u32 block_id,
 
 				if ((block_id == DISPLAY_MISR_DSI0 ||
 				     block_id == DISPLAY_MISR_DSI1) &&
+<<<<<<< HEAD
 				     !is_video_mode) {
+=======
+				     (ctl && !ctl->is_video_mode)) {
+>>>>>>> p9x
 					ctrl_reg = intf_base +
 						MDSS_MDP_INTF_CMD_MISR_CTRL;
 					value_reg = intf_base +
 					    MDSS_MDP_INTF_CMD_MISR_SIGNATURE;
+<<<<<<< HEAD
 
 					/*
 					 * extra offset required for
@@ -1435,6 +1617,8 @@ static inline struct mdss_mdp_misr_map *mdss_misr_get_map(u32 block_id,
 						value_reg += 0x8;
 					}
 
+=======
+>>>>>>> p9x
 				} else {
 					ctrl_reg = intf_base +
 						MDSS_MDP_INTF_MISR_CTRL;
@@ -1443,7 +1627,11 @@ static inline struct mdss_mdp_misr_map *mdss_misr_get_map(u32 block_id,
 				}
 			}
 			/*
+<<<<<<< HEAD
 			 * For msm8916/8939, additional offset of 0x10
+=======
+			 * For msm8916/8939/8952, additional offset of 0x10
+>>>>>>> p9x
 			 * is required
 			 */
 			if ((mdata->mdp_rev == MDSS_MDP_HW_REV_106) ||
@@ -1496,6 +1684,7 @@ static bool switch_mdp_misr_offset(struct mdss_mdp_misr_map *map, u32 mdp_rev,
 	return use_mdp_up_misr;
 }
 
+<<<<<<< HEAD
 void mdss_misr_disable(struct mdss_data_type *mdata,
 			struct mdp_misr *req,
 			struct mdss_mdp_ctl *ctl)
@@ -1526,6 +1715,8 @@ void mdss_misr_disable(struct mdss_data_type *mdata,
 	wmb();
 }
 
+=======
+>>>>>>> p9x
 int mdss_misr_set(struct mdss_data_type *mdata,
 			struct mdp_misr *req,
 			struct mdss_mdp_ctl *ctl)
@@ -1542,11 +1733,17 @@ int mdss_misr_set(struct mdss_data_type *mdata,
 			mdata, req, ctl);
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	pr_debug("req[block:%d frame:%d op_mode:%d]\n",
 		req->block_id, req->frame_count, req->crc_op_mode);
 
 	map = mdss_misr_get_map(req->block_id, ctl, mdata,
 		ctl->is_video_mode);
+=======
+
+	map = mdss_misr_get_map(req->block_id, ctl, mdata);
+
+>>>>>>> p9x
 	if (!map) {
 		pr_err("Invalid MISR Block=%d\n", req->block_id);
 		return -EINVAL;
@@ -1558,8 +1755,13 @@ int mdss_misr_set(struct mdss_data_type *mdata,
 	if (req->block_id == DISPLAY_MISR_MDP) {
 		mixer = mdss_mdp_mixer_get(ctl, MDSS_MDP_MIXER_MUX_DEFAULT);
 		if (!mixer) {
+<<<<<<< HEAD
 			pr_err("failed to get default mixer, Block=%d\n",
 				req->block_id);
+=======
+			pr_err("%s: failed to get default mixer, Block=%d\n",
+				__func__, req->block_id);
+>>>>>>> p9x
 			return -EINVAL;
 		}
 		mixer_num = mixer->num;
@@ -1618,9 +1820,14 @@ int mdss_misr_set(struct mdss_data_type *mdata,
 
 		writel_relaxed(config,
 				mdata->mdp_base + map->ctrl_reg);
+<<<<<<< HEAD
 		pr_debug("MISR_CTRL=0x%x [base:0x%pK reg:0x%x config:0x%x]\n",
 				readl_relaxed(mdata->mdp_base + map->ctrl_reg),
 				mdata->mdp_base, map->ctrl_reg, config);
+=======
+		pr_debug("MISR_CTRL = 0x%x",
+				readl_relaxed(mdata->mdp_base + map->ctrl_reg));
+>>>>>>> p9x
 	}
 	mdss_mdp_clk_ctrl(MDP_BLOCK_POWER_OFF);
 	return 0;
@@ -1641,8 +1848,12 @@ char *get_misr_block_name(int misr_block_id)
 
 int mdss_misr_get(struct mdss_data_type *mdata,
 			struct mdp_misr *resp,
+<<<<<<< HEAD
 			struct mdss_mdp_ctl *ctl,
 			bool is_video_mode)
+=======
+			struct mdss_mdp_ctl *ctl)
+>>>>>>> p9x
 {
 	struct mdss_mdp_misr_map *map;
 	struct mdss_mdp_mixer *mixer;
@@ -1650,11 +1861,15 @@ int mdss_misr_get(struct mdss_data_type *mdata,
 	int ret = -1;
 	int i;
 
+<<<<<<< HEAD
 	pr_debug("req[block:%d frame:%d op_mode:%d]\n",
 		resp->block_id, resp->frame_count, resp->crc_op_mode);
 
 	map = mdss_misr_get_map(resp->block_id, ctl, mdata,
 		is_video_mode);
+=======
+	map = mdss_misr_get_map(resp->block_id, ctl, mdata);
+>>>>>>> p9x
 	if (!map) {
 		pr_err("Invalid MISR Block=%d\n", resp->block_id);
 		return -EINVAL;
@@ -1730,14 +1945,19 @@ int mdss_misr_get(struct mdss_data_type *mdata,
 }
 
 /* This function is expected to be called from interrupt context */
+<<<<<<< HEAD
 void mdss_misr_crc_collect(struct mdss_data_type *mdata, int block_id,
 	bool is_video_mode)
+=======
+void mdss_misr_crc_collect(struct mdss_data_type *mdata, int block_id)
+>>>>>>> p9x
 {
 	struct mdss_mdp_misr_map *map;
 	u32 status = 0;
 	u32 crc = 0x0BAD0BAD;
 	bool crc_stored = false;
 
+<<<<<<< HEAD
 	map = mdss_misr_get_map(block_id, NULL, mdata, is_video_mode);
 	if (!map || (map->crc_op_mode != MISR_OP_BM))
 		return;
@@ -1754,13 +1974,30 @@ void mdss_misr_crc_collect(struct mdss_data_type *mdata, int block_id,
 		if (map->use_ping) {
 			if (map->is_ping_full) {
 				pr_err_once("PING Buffer FULL\n");
+=======
+	map = mdss_misr_get_map(block_id, NULL, mdata);
+	if (!map || (map->crc_op_mode != MISR_OP_BM))
+		return;
+	switch_mdp_misr_offset(map, mdata->mdp_rev, block_id);
+
+	status = readl_relaxed(mdata->mdp_base + map->ctrl_reg);
+	if (MDSS_MDP_MISR_CTRL_STATUS & status) {
+		crc = readl_relaxed(mdata->mdp_base + map->value_reg);
+		if (map->use_ping) {
+			if (map->is_ping_full) {
+				pr_err("PING Buffer FULL\n");
+>>>>>>> p9x
 			} else {
 				map->crc_ping[map->crc_index] = crc;
 				crc_stored = true;
 			}
 		} else {
 			if (map->is_pong_full) {
+<<<<<<< HEAD
 				pr_err_once("PONG Buffer FULL\n");
+=======
+				pr_err("PONG Buffer FULL\n");
+>>>>>>> p9x
 			} else {
 				map->crc_pong[map->crc_index] = crc;
 				crc_stored = true;
@@ -1786,7 +2023,11 @@ void mdss_misr_crc_collect(struct mdss_data_type *mdata, int block_id,
 					map->is_pong_full ? "FULL" : "EMPTRY");
 			}
 		} else {
+<<<<<<< HEAD
 			pr_err_once("CRC(%d) Not saved\n", crc);
+=======
+			pr_err("CRC(%d) Not saved\n", crc);
+>>>>>>> p9x
 		}
 
 		if (mdata->mdp_rev < MDSS_MDP_HW_REV_105) {
@@ -1795,9 +2036,13 @@ void mdss_misr_crc_collect(struct mdss_data_type *mdata, int block_id,
 			writel_relaxed(MISR_CRC_BATCH_CFG,
 				mdata->mdp_base + map->ctrl_reg);
 		}
+<<<<<<< HEAD
 
 	} else if (0 == status) {
 
+=======
+	} else if (0 == status) {
+>>>>>>> p9x
 		if (mdata->mdp_rev < MDSS_MDP_HW_REV_105)
 			writel_relaxed(MISR_CRC_BATCH_CFG,
 					mdata->mdp_base + map->ctrl_reg);
@@ -1805,6 +2050,7 @@ void mdss_misr_crc_collect(struct mdss_data_type *mdata, int block_id,
 			writel_relaxed(MISR_CRC_BATCH_CFG |
 					MDSS_MDP_LP_MISR_CTRL_FREE_RUN_MASK,
 					mdata->mdp_base + map->ctrl_reg);
+<<<<<<< HEAD
 
 		pr_debug("$$ Batch CRC Start $$\n");
 	}
@@ -1815,10 +2061,20 @@ void mdss_misr_crc_collect(struct mdss_data_type *mdata, int block_id,
 
 	if (MAX_VSYNC_COUNT == vsync_count) {
 		pr_debug("RESET vsync_count(%d)\n", vsync_count);
+=======
+		pr_debug("$$ Batch CRC Start $$\n");
+	}
+	pr_debug("$$ Vsync Count = %d, CRC=0x%x Indx = %d$$\n",
+		vsync_count, crc, map->crc_index);
+
+	if (MAX_VSYNC_COUNT == vsync_count) {
+		pr_err("RESET vsync_count(%d)\n", vsync_count);
+>>>>>>> p9x
 		vsync_count = 0;
 	} else {
 		vsync_count += 1;
 	}
+<<<<<<< HEAD
 
 }
 
@@ -1843,4 +2099,6 @@ int mdss_dump_misr_data(char **buf, u32 size)
 			);
 
 	return ret;
+=======
+>>>>>>> p9x
 }

@@ -385,7 +385,11 @@ failed:
 		 * existing before ext4_alloc_branch() was called.
 		 */
 		if (i > 0 && i != indirect_blks && branch[i].bh)
+<<<<<<< HEAD
 			ext4_forget(handle, 1, ar->inode, branch[i].bh,
+=======
+			ext4_forget(handle, 1, inode, branch[i].bh,
+>>>>>>> p9x
 				    branch[i].bh->b_blocknr);
 		ext4_free_blocks(handle, ar->inode, NULL, new_blocks[i],
 				 (i == indirect_blks) ? ar->len : 1, 0);
@@ -1318,6 +1322,7 @@ int ext4_ind_remove_space(handle_t *handle, struct inode *inode,
 	int n = 0, n2 = 0;
 	unsigned blocksize = inode->i_sb->s_blocksize;
 
+<<<<<<< HEAD
 	max_block = (EXT4_SB(inode->i_sb)->s_bitmap_maxbytes + blocksize-1)
 					>> EXT4_BLOCK_SIZE_BITS(inode->i_sb);
 	if (end >= max_block)
@@ -1367,6 +1372,39 @@ int ext4_ind_remove_space(handle_t *handle, struct inode *inode,
 				ext4_free_branches(handle, inode, partial->bh,
 					partial->p,
 					partial->p+1, (chain+n-1) - partial);
+=======
+	inc = 1 << ((EXT4_BLOCK_SIZE_BITS(inode->i_sb) - 2) * level);
+	for (i = 0, offset = 0; i < max; i++, i_data++, offset += inc) {
+		if (offset >= count + first)
+			break;
+		if (*i_data == 0 || (offset + inc) <= first)
+			continue;
+		blk = *i_data;
+		if (level > 0) {
+			ext4_lblk_t first2;
+			ext4_lblk_t count2;
+
+			bh = sb_bread(inode->i_sb, le32_to_cpu(blk));
+			if (!bh) {
+				EXT4_ERROR_INODE_BLOCK(inode, le32_to_cpu(blk),
+						       "Read failure");
+				return -EIO;
+			}
+			if (first > offset) {
+				first2 = first - offset;
+				count2 = count;
+			} else {
+				first2 = 0;
+				count2 = count - (offset - first);
+			}
+			ret = free_hole_blocks(handle, inode, bh,
+					       (__le32 *)bh->b_data, level - 1,
+					       first2, count2,
+					       inode->i_sb->s_blocksize >> 2);
+			if (ret) {
+				brelse(bh);
+				goto err;
+>>>>>>> p9x
 			}
 		}
 

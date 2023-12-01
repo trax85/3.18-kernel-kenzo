@@ -49,7 +49,10 @@ static void bc_set_mode(enum clock_event_mode mode,
  */
 static int bc_set_next(ktime_t expires, struct clock_event_device *bc)
 {
+<<<<<<< HEAD
 	int bc_moved;
+=======
+>>>>>>> p9x
 	/*
 	 * We try to cancel the timer first. If the callback is on
 	 * flight on some other cpu then we let it handle it. If we
@@ -61,6 +64,7 @@ static int bc_set_next(ktime_t expires, struct clock_event_device *bc)
 	 * restart the timer because we are in the callback, but we
 	 * can set the expiry time and let the callback return
 	 * HRTIMER_RESTART.
+<<<<<<< HEAD
 	 *
 	 * Since we are in the idle loop at this point and because
 	 * hrtimer_{start/cancel} functions call into tracing,
@@ -70,6 +74,11 @@ static int bc_set_next(ktime_t expires, struct clock_event_device *bc)
 		!hrtimer_start(&bctimer, expires, HRTIMER_MODE_ABS_PINNED) :
 			0);
 	if (bc_moved) {
+=======
+	 */
+	if (hrtimer_try_to_cancel(&bctimer) >= 0) {
+		hrtimer_start(&bctimer, expires, HRTIMER_MODE_ABS_PINNED);
+>>>>>>> p9x
 		/* Bind the "device" to the cpu */
 		bc->bound_on = smp_processor_id();
 	} else if (bc->bound_on == smp_processor_id()) {
@@ -89,7 +98,11 @@ static struct clock_event_device ce_broadcast_hrtimer = {
 	.min_delta_ns		= 1,
 	.max_delta_ns		= KTIME_MAX,
 	.min_delta_ticks	= 1,
+<<<<<<< HEAD
 	.max_delta_ticks	= ULONG_MAX,
+=======
+	.max_delta_ticks	= KTIME_MAX,
+>>>>>>> p9x
 	.mult			= 1,
 	.shift			= 0,
 	.cpumask		= cpu_all_mask,

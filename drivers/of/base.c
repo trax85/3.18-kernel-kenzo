@@ -349,9 +349,15 @@ static bool __of_find_n_match_cpu_property(struct device_node *cpun,
 
 	ac = of_n_addr_cells(cpun);
 	cell = of_get_property(cpun, prop_name, &prop_len);
+<<<<<<< HEAD
 	if (!cell || !ac)
 		return false;
 	prop_len /= sizeof(*cell) * ac;
+=======
+	if (!cell)
+		return false;
+	prop_len /= sizeof(*cell);
+>>>>>>> p9x
 	for (tid = 0; tid < prop_len; tid++) {
 		hwid = of_read_number(cell, ac);
 		if (arch_match_cpu_phys_id(cpu, hwid)) {
@@ -364,6 +370,7 @@ static bool __of_find_n_match_cpu_property(struct device_node *cpun,
 	return false;
 }
 
+<<<<<<< HEAD
 /*
  * arch_find_n_match_cpu_physical_id - See if the given device node is
  * for the cpu corresponding to logical cpu 'cpu'.  Return true if so,
@@ -389,6 +396,8 @@ bool __weak arch_find_n_match_cpu_physical_id(struct device_node *cpun,
 	return false;
 }
 
+=======
+>>>>>>> p9x
 /**
  * of_get_cpu_node - Get device node associated with the given logical CPU
  *
@@ -409,16 +418,40 @@ bool __weak arch_find_n_match_cpu_physical_id(struct device_node *cpun,
  */
 struct device_node *of_get_cpu_node(int cpu, unsigned int *thread)
 {
+<<<<<<< HEAD
 	struct device_node *cpun;
 
 	for_each_node_by_type(cpun, "cpu") {
 		if (arch_find_n_match_cpu_physical_id(cpun, cpu, thread))
+=======
+	struct device_node *cpun, *cpus;
+
+	cpus = of_find_node_by_path("/cpus");
+	if (!cpus) {
+		pr_warn("Missing cpus node, bailing out\n");
+		return NULL;
+	}
+
+	for_each_child_of_node(cpus, cpun) {
+		if (of_node_cmp(cpun->type, "cpu"))
+			continue;
+		/* Check for non-standard "ibm,ppc-interrupt-server#s" property
+		 * for thread ids on PowerPC. If it doesn't exist fallback to
+		 * standard "reg" property.
+		 */
+		if (IS_ENABLED(CONFIG_PPC) &&
+			__of_find_n_match_cpu_property(cpun,
+				"ibm,ppc-interrupt-server#s", cpu, thread))
+			return cpun;
+		if (__of_find_n_match_cpu_property(cpun, "reg", cpu, thread))
+>>>>>>> p9x
 			return cpun;
 	}
 	return NULL;
 }
 EXPORT_SYMBOL(of_get_cpu_node);
 
+<<<<<<< HEAD
 /**
  * __of_device_is_compatible() - Check if the node matches given constraints
  * @device: pointer to node
@@ -448,6 +481,10 @@ EXPORT_SYMBOL(of_get_cpu_node);
  * 9. type && name
  * 10. type
  * 11. name
+=======
+/** Checks if the given "compat" string matches one of the strings in
+ * the device's "compatible" property
+>>>>>>> p9x
  */
 static int __of_device_is_compatible(const struct device_node *device,
 				     const char *compat, const char *type, const char *name)
@@ -1381,7 +1418,11 @@ int of_property_match_string(struct device_node *np, const char *propname,
 EXPORT_SYMBOL_GPL(of_property_match_string);
 
 /**
+<<<<<<< HEAD
  * of_property_read_string_helper() - Utility helper for parsing string properties
+=======
+ * of_property_read_string_util() - Utility helper for parsing string properties
+>>>>>>> p9x
  * @np:		device node from which the property value is to be read.
  * @propname:	name of the property to be searched.
  * @out_strs:	output array of string pointers.

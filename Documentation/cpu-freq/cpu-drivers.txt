@@ -156,7 +156,11 @@ Some cpufreq-capable processors switch the frequency between certain
 limits on their own. These shall use the ->setpolicy call
 
 
+<<<<<<< HEAD
 1.5. target/target_index
+=======
+1.4. target/target_index
+>>>>>>> p9x
 -------------
 
 The target_index call has two arguments: struct cpufreq_policy *policy,
@@ -165,9 +169,12 @@ and unsigned int index (into the exposed frequency table).
 The CPUfreq driver must set the new frequency when called here. The
 actual frequency must be determined by freq_table[index].frequency.
 
+<<<<<<< HEAD
 It should always restore to earlier frequency (i.e. policy->restore_freq) in
 case of errors, even if we switched to intermediate frequency earlier.
 
+=======
+>>>>>>> p9x
 Deprecated:
 ----------
 The target call has three arguments: struct cpufreq_policy *policy,
@@ -253,6 +260,7 @@ is the corresponding frequency table helper for the ->target
 stage. Just pass the values to this function, and the unsigned int
 index returns the number of the frequency table entry which contains
 the frequency the CPU shall be set to.
+<<<<<<< HEAD
 
 The following macros can be used as iterators over cpufreq_frequency_table:
 
@@ -272,3 +280,5 @@ For example:
 		/* Do something with pos */
 		pos->frequency = ...
 	}
+=======
+>>>>>>> p9x

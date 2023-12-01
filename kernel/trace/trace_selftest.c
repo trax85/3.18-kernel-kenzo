@@ -1044,7 +1044,11 @@ static int trace_wakeup_test_thread(void *data)
 		.sched_deadline = 10000000ULL,
 		.sched_period = 10000000ULL
 	};
+<<<<<<< HEAD
 	struct wakeup_test_data *x = data;
+=======
+	struct completion *x = data;
+>>>>>>> p9x
 
 	sched_setattr(current, &attr);
 
@@ -1064,8 +1068,16 @@ static int trace_wakeup_test_thread(void *data)
 
 	/* we are awake, now wait to disappear */
 	while (!kthread_should_stop()) {
+<<<<<<< HEAD
 		schedule();
 		set_current_state(TASK_INTERRUPTIBLE);
+=======
+		/*
+		 * This will likely be the system top priority
+		 * task, do short sleeps to let others run.
+		 */
+		msleep(100);
+>>>>>>> p9x
 	}
 
 	__set_current_state(TASK_RUNNING);
@@ -1077,6 +1089,7 @@ trace_selftest_startup_wakeup(struct tracer *trace, struct trace_array *tr)
 {
 	unsigned long save_max = tr->max_latency;
 	struct task_struct *p;
+<<<<<<< HEAD
 	struct wakeup_test_data data;
 	unsigned long count;
 	int ret;
@@ -1087,13 +1100,27 @@ trace_selftest_startup_wakeup(struct tracer *trace, struct trace_array *tr)
 
 	/* create a -deadline thread */
 	p = kthread_run(trace_wakeup_test_thread, &data, "ftrace-test");
+=======
+	struct completion is_ready;
+	unsigned long count;
+	int ret;
+
+	init_completion(&is_ready);
+
+	/* create a -deadline thread */
+	p = kthread_run(trace_wakeup_test_thread, &is_ready, "ftrace-test");
+>>>>>>> p9x
 	if (IS_ERR(p)) {
 		printk(KERN_CONT "Failed to create ftrace wakeup test thread ");
 		return -1;
 	}
 
 	/* make sure the thread is running at -deadline policy */
+<<<<<<< HEAD
 	wait_for_completion(&data.is_ready);
+=======
+	wait_for_completion(&is_ready);
+>>>>>>> p9x
 
 	/* start the tracing */
 	ret = tracer_init(trace, tr);
@@ -1114,15 +1141,23 @@ trace_selftest_startup_wakeup(struct tracer *trace, struct trace_array *tr)
 		msleep(100);
 	}
 
+<<<<<<< HEAD
 	init_completion(&data.is_ready);
 
 	data.go = 1;
 	/* memory barrier is in the wake_up_process() */
+=======
+	init_completion(&is_ready);
+>>>>>>> p9x
 
 	wake_up_process(p);
 
 	/* Wait for the task to wake up */
+<<<<<<< HEAD
 	wait_for_completion(&data.is_ready);
+=======
+	wait_for_completion(&is_ready);
+>>>>>>> p9x
 
 	/* stop the tracing. */
 	tracing_stop();

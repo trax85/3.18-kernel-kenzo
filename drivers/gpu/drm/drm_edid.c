@@ -71,8 +71,11 @@
 #define EDID_QUIRK_FORCE_REDUCED_BLANKING	(1 << 7)
 /* Force 8bpc */
 #define EDID_QUIRK_FORCE_8BPC			(1 << 8)
+<<<<<<< HEAD
 /* Force 12bpc */
 #define EDID_QUIRK_FORCE_12BPC			(1 << 9)
+=======
+>>>>>>> p9x
 
 struct detailed_mode_closure {
 	struct drm_connector *connector;
@@ -3874,6 +3877,9 @@ int drm_add_edid_modes(struct drm_connector *connector, struct edid *edid)
 
 	if (quirks & EDID_QUIRK_FORCE_12BPC)
 		connector->display_info.bpc = 12;
+
+	if (quirks & EDID_QUIRK_FORCE_8BPC)
+		connector->display_info.bpc = 8;
 
 	return num_modes;
 }

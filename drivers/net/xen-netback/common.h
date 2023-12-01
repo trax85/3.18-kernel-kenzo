@@ -49,6 +49,7 @@
 typedef unsigned int pending_ring_idx_t;
 #define INVALID_PENDING_RING_IDX (~0U)
 
+<<<<<<< HEAD
 struct pending_tx_info {
 	struct xen_netif_tx_request req; /* tx request */
 	/* Callback data for released SKBs. The callback is always
@@ -60,6 +61,43 @@ struct pending_tx_info {
 	 * to the next, or NULL if there is no more slot for this skb.
 	 * ubuf_to_vif is a helper which finds the struct xenvif from a pointer
 	 * to this field.
+=======
+struct xenvif {
+	/* Unique identifier for this interface. */
+	domid_t          domid;
+	unsigned int     handle;
+
+	/* Reference to netback processing backend. */
+	struct xen_netbk *netbk;
+
+	u8               fe_dev_addr[6];
+
+	/* Physical parameters of the comms window. */
+	unsigned int     irq;
+
+	/* List of frontends to notify after a batch of frames sent. */
+	struct list_head notify_list;
+
+	/* The shared rings and indexes. */
+	struct xen_netif_tx_back_ring tx;
+	struct xen_netif_rx_back_ring rx;
+	atomic_t ring_refcnt;
+	wait_queue_head_t waiting_to_unmap;
+
+	/* Frontend feature information. */
+	u8 can_sg:1;
+	u8 gso:1;
+	u8 gso_prefix:1;
+	u8 csum:1;
+
+	/* Internal feature information. */
+	u8 can_queue:1;	    /* can queue packets for receiver? */
+
+	/*
+	 * Allow xenvif_start_xmit() to peek ahead in the rx request
+	 * ring.  This is a prediction of what rx_req_cons will be
+	 * once all queued skbs are put on the ring.
+>>>>>>> p9x
 	 */
 	struct ubuf_info callback_struct;
 };
@@ -195,7 +233,10 @@ struct xenvif_queue { /* Per-queue data for xenvif */
 	unsigned long   remaining_credit;
 	struct timer_list credit_timeout;
 	u64 credit_window_start;
+<<<<<<< HEAD
 	bool rate_limited;
+=======
+>>>>>>> p9x
 
 	/* Statistics */
 	struct xenvif_stats stats;
@@ -266,6 +307,7 @@ struct xenvif *xenvif_alloc(struct device *parent,
 			    domid_t domid,
 			    unsigned int handle);
 
+<<<<<<< HEAD
 int xenvif_init_queue(struct xenvif_queue *queue);
 void xenvif_deinit_queue(struct xenvif_queue *queue);
 
@@ -274,6 +316,17 @@ int xenvif_connect(struct xenvif_queue *queue, unsigned long tx_ring_ref,
 		   unsigned int rx_evtchn);
 void xenvif_disconnect(struct xenvif *vif);
 void xenvif_free(struct xenvif *vif);
+=======
+int xenvif_connect(struct xenvif *vif, unsigned long tx_ring_ref,
+		   unsigned long rx_ring_ref, unsigned int evtchn);
+void xenvif_disconnect(struct xenvif *vif);
+void xenvif_free(struct xenvif *vif);
+
+void xenvif_get(struct xenvif *vif);
+void xenvif_put(struct xenvif *vif);
+void xenvif_get_rings(struct xenvif *vif);
+void xenvif_put_rings(struct xenvif *vif);
+>>>>>>> p9x
 
 int xenvif_xenbus_init(void);
 void xenvif_xenbus_fini(void);

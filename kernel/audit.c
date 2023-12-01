@@ -103,12 +103,20 @@ static __u32	audit_nlk_portid;
  * audit records being dropped. */
 static u32	audit_rate_limit;
 
+<<<<<<< HEAD
 /* Number of outstanding audit_buffers allowed.
  * When set to zero, this means unlimited. */
 static u32	audit_backlog_limit = 64;
 #define AUDIT_BACKLOG_WAIT_TIME (60 * HZ)
 static u32	audit_backlog_wait_time = AUDIT_BACKLOG_WAIT_TIME;
 static u32	audit_backlog_wait_overflow = 0;
+=======
+/* Number of outstanding audit_buffers allowed. */
+static int	audit_backlog_limit = 64;
+#define AUDIT_BACKLOG_WAIT_TIME (60 * HZ)
+static int	audit_backlog_wait_time = AUDIT_BACKLOG_WAIT_TIME;
+static int	audit_backlog_wait_overflow = 0;
+>>>>>>> p9x
 
 /* The identity of the user shutting down the audit system. */
 kuid_t		audit_sig_uid = INVALID_UID;
@@ -670,11 +678,14 @@ static int audit_netlink_ok(struct sk_buff *skb, u16 msg_type)
 	case AUDIT_TTY_SET:
 	case AUDIT_TRIM:
 	case AUDIT_MAKE_EQUIV:
+<<<<<<< HEAD
 		/* Only support auditd and auditctl in initial pid namespace
 		 * for now. */
 		if ((task_active_pid_ns(current) != &init_pid_ns))
 			return -EPERM;
 
+=======
+>>>>>>> p9x
 		if (!netlink_capable(skb, CAP_AUDIT_CONTROL))
 			err = -EPERM;
 		break;
@@ -834,6 +845,7 @@ static int audit_receive_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 	data = nlmsg_data(nlh);
 
 	switch (msg_type) {
+<<<<<<< HEAD
 	case AUDIT_GET: {
 		struct audit_status	s;
 		memset(&s, 0, sizeof(s));
@@ -856,6 +868,26 @@ static int audit_receive_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 		memcpy(&s, data, min_t(size_t, sizeof(s), nlmsg_len(nlh)));
 		if (s.mask & AUDIT_STATUS_ENABLED) {
 			err = audit_set_enabled(s.enabled);
+=======
+	case AUDIT_GET:
+		status_set.mask		 = 0;
+		status_set.enabled	 = audit_enabled;
+		status_set.failure	 = audit_failure;
+		status_set.pid		 = audit_pid;
+		status_set.rate_limit	 = audit_rate_limit;
+		status_set.backlog_limit = audit_backlog_limit;
+		status_set.lost		 = atomic_read(&audit_lost);
+		status_set.backlog	 = skb_queue_len(&audit_skb_queue);
+		audit_send_reply(NETLINK_CB(skb).portid, seq, AUDIT_GET, 0, 0,
+				 &status_set, sizeof(status_set));
+		break;
+	case AUDIT_SET:
+		if (nlmsg_len(nlh) < sizeof(struct audit_status))
+			return -EINVAL;
+		status_get   = (struct audit_status *)data;
+		if (status_get->mask & AUDIT_STATUS_ENABLED) {
+			err = audit_set_enabled(status_get->enabled);
+>>>>>>> p9x
 			if (err < 0)
 				return err;
 		}
@@ -1051,7 +1083,10 @@ static int audit_receive_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 		memset(&s, 0, sizeof(s));
 		/* guard against past and future API changes */
 		memcpy(&s, data, min_t(size_t, sizeof(s), nlmsg_len(nlh)));
+<<<<<<< HEAD
 		/* check if new data is valid */
+=======
+>>>>>>> p9x
 		if ((s.enabled != 0 && s.enabled != 1) ||
 		    (s.log_passwd != 0 && s.log_passwd != 1))
 			err = -EINVAL;
@@ -1385,11 +1420,19 @@ struct audit_buffer *audit_log_start(struct audit_context *ctx, gfp_t gfp_mask,
 		if (gfp_mask & __GFP_WAIT && audit_backlog_wait_time) {
 			long sleep_time;
 
+<<<<<<< HEAD
 			sleep_time = timeout_start + audit_backlog_wait_time - jiffies;
 			if (sleep_time > 0) {
 				sleep_time = wait_for_auditd(sleep_time);
 				if (sleep_time > 0)
 					continue;
+=======
+			sleep_time = timeout_start + audit_backlog_wait_time -
+					jiffies;
+			if ((long)sleep_time > 0) {
+				wait_for_auditd(sleep_time);
+				continue;
+>>>>>>> p9x
 			}
 		}
 		if (audit_rate_check() && printk_ratelimit())

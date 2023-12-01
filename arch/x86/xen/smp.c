@@ -293,6 +293,7 @@ static void __init xen_smp_prepare_boot_cpu(void)
 			make_lowmem_page_readwrite(xen_initial_gdt);
 
 #ifdef CONFIG_X86_32
+<<<<<<< HEAD
 		/*
 		 * Xen starts us with XEN_FLAT_RING1_DS, but linux code
 		 * expects __USER_DS
@@ -311,6 +312,18 @@ static void __init xen_smp_prepare_boot_cpu(void)
 	 * modules patched but not core code.
 	 */
 	xen_init_spinlocks();
+=======
+	/*
+	 * Xen starts us with XEN_FLAT_RING1_DS, but linux code
+	 * expects __USER_DS
+	 */
+	loadsegment(ds, __USER_DS);
+	loadsegment(es, __USER_DS);
+#endif
+
+	xen_filter_cpu_maps();
+	xen_setup_vcpu_info_placement();
+>>>>>>> p9x
 }
 
 static void __init xen_smp_prepare_cpus(unsigned int max_cpus)
@@ -756,6 +769,7 @@ static int xen_hvm_cpu_up(unsigned int cpu, struct task_struct *tidle)
 	WARN_ON(rc);
 	if (!rc)
 		rc =  native_cpu_up(cpu, tidle);
+<<<<<<< HEAD
 
 	/*
 	 * We must initialize the slowpath CPU kicker _after_ the native
@@ -765,6 +779,8 @@ static int xen_hvm_cpu_up(unsigned int cpu, struct task_struct *tidle)
 	 * is checked when IPIs are sent (on HVM at least).
 	 */
 	xen_init_lock_cpu(cpu);
+=======
+>>>>>>> p9x
 	return rc;
 }
 

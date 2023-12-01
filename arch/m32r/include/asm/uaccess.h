@@ -216,7 +216,11 @@ extern int fixup_exception(struct pt_regs *regs);
 ({									\
 	long __gu_err = 0;						\
 	unsigned long __gu_val = 0;					\
+<<<<<<< HEAD
 	might_fault();							\
+=======
+	might_sleep();							\
+>>>>>>> p9x
 	__get_user_size(__gu_val,(ptr),(size),__gu_err);		\
 	(x) = (__typeof__(*(ptr)))__gu_val;				\
 	__gu_err;							\

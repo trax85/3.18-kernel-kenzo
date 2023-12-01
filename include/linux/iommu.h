@@ -19,16 +19,25 @@
 #ifndef __LINUX_IOMMU_H
 #define __LINUX_IOMMU_H
 
+#include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/err.h>
 #include <linux/of.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <trace/events/iommu.h>
+=======
+#include <linux/scatterlist.h>
+>>>>>>> p9x
 
 #define IOMMU_READ	(1 << 0)
 #define IOMMU_WRITE	(1 << 1)
 #define IOMMU_CACHE	(1 << 2) /* DMA cache coherency */
+<<<<<<< HEAD
 #define IOMMU_NOEXEC	(1 << 3)
+=======
+#define IOMMU_EXEC	(1 << 3)
+>>>>>>> p9x
 #define IOMMU_PRIV	(1 << 4)
 #define IOMMU_DEVICE	(1 << 5) /* Indicates access to device memory */
 
@@ -91,6 +100,7 @@ enum iommu_attr {
 	DOMAIN_ATTR_GEOMETRY,
 	DOMAIN_ATTR_PAGING,
 	DOMAIN_ATTR_WINDOWS,
+<<<<<<< HEAD
 	DOMAIN_ATTR_FSL_PAMU_STASH,
 	DOMAIN_ATTR_FSL_PAMU_ENABLE,
 	DOMAIN_ATTR_FSL_PAMUV1,
@@ -109,6 +119,11 @@ enum iommu_attr {
 	DOMAIN_ATTR_FAST,
 	DOMAIN_ATTR_PGTBL_INFO,
 	DOMAIN_ATTR_EARLY_MAP,
+=======
+	DOMAIN_ATTR_COHERENT_HTW_DISABLE,
+	DOMAIN_ATTR_PT_BASE_ADDR,
+	DOMAIN_ATTR_ATOMIC,
+>>>>>>> p9x
 	DOMAIN_ATTR_MAX,
 };
 
@@ -154,6 +169,7 @@ struct iommu_ops {
 		   phys_addr_t paddr, size_t size, int prot);
 	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
 		     size_t size);
+<<<<<<< HEAD
 	size_t (*map_sg)(struct iommu_domain *domain, unsigned long iova,
 			 struct scatterlist *sg, unsigned int nents, int prot);
 	int (*map_range)(struct iommu_domain *domain, unsigned long iova,
@@ -164,6 +180,18 @@ struct iommu_ops {
 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
 	phys_addr_t (*iova_to_phys_hard)(struct iommu_domain *domain,
 					 dma_addr_t iova);
+=======
+	int (*map_range)(struct iommu_domain *domain, unsigned long iova,
+		    struct scatterlist *sg, size_t len, int prot);
+	int (*unmap_range)(struct iommu_domain *domain, unsigned long iova,
+		      size_t len);
+	size_t (*map_sg)(struct iommu_domain *domain, unsigned long iova,
+			 struct scatterlist *sg, unsigned int nents, int prot);
+	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
+	int (*domain_has_cap)(struct iommu_domain *domain,
+			      unsigned long cap);
+	phys_addr_t (*get_pt_base_addr)(struct iommu_domain *domain);
+>>>>>>> p9x
 	int (*add_device)(struct device *dev);
 	void (*remove_device)(struct device *dev);
 	int (*device_group)(struct device *dev, unsigned int *groupid);
@@ -228,11 +256,20 @@ extern int iommu_map_range(struct iommu_domain *domain, unsigned long iova,
 extern int iommu_unmap_range(struct iommu_domain *domain, unsigned long iova,
 		      size_t len);
 extern size_t default_iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+<<<<<<< HEAD
 				struct scatterlist *sg, unsigned int nents,
 				int prot);
 extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova);
 extern phys_addr_t iommu_iova_to_phys_hard(struct iommu_domain *domain,
 					   dma_addr_t iova);
+=======
+				struct scatterlist *sg,unsigned int nents,
+				int prot);
+extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova);
+extern int iommu_domain_has_cap(struct iommu_domain *domain,
+				unsigned long cap);
+extern phys_addr_t iommu_get_pt_base_addr(struct iommu_domain *domain);
+>>>>>>> p9x
 extern void iommu_set_fault_handler(struct iommu_domain *domain,
 			iommu_fault_handler_t handler, void *token);
 extern void iommu_trigger_fault(struct iommu_domain *domain,
@@ -333,6 +370,7 @@ static inline size_t iommu_map_sg(struct iommu_domain *domain,
 				  unsigned long iova, struct scatterlist *sg,
 				  unsigned int nents, int prot)
 {
+<<<<<<< HEAD
 	size_t ret;
 
 	trace_map_sg_start(iova, nents);
@@ -361,6 +399,9 @@ static inline void iommu_disable_config_clocks(struct iommu_domain *domain)
 {
 	if (domain->ops->disable_config_clocks)
 		domain->ops->disable_config_clocks(domain);
+=======
+	return domain->ops->map_sg(domain, iova, sg, nents, prot);
+>>>>>>> p9x
 }
 
 #else /* CONFIG_IOMMU_API */
@@ -415,6 +456,7 @@ static inline int iommu_unmap(struct iommu_domain *domain, unsigned long iova,
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static inline int iommu_map_range(struct iommu_domain *domain,
 				unsigned long iova,
 				struct scatterlist *sg, size_t len, int prot)
@@ -428,6 +470,8 @@ static inline int iommu_unmap_range(struct iommu_domain *domain,
 	return -ENODEV;
 }
 
+=======
+>>>>>>> p9x
 static inline size_t iommu_map_sg(struct iommu_domain *domain,
 				  unsigned long iova, struct scatterlist *sg,
 				  unsigned int nents, int prot)
@@ -447,6 +491,19 @@ static inline void iommu_domain_window_disable(struct iommu_domain *domain,
 {
 }
 
+static inline int iommu_map_range(struct iommu_domain *domain,
+				  unsigned long iova, struct scatterlist *sg,
+				  size_t len, int prot)
+{
+	return -ENODEV;
+}
+
+static inline int iommu_unmap_range(struct iommu_domain *domain,
+				    unsigned long iova, size_t len)
+{
+	return -ENODEV;
+}
+
 static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
 {
 	return 0;
@@ -454,6 +511,11 @@ static inline phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_ad
 
 static inline phys_addr_t iommu_iova_to_phys_hard(struct iommu_domain *domain,
 						  dma_addr_t iova)
+{
+	return 0;
+}
+
+static inline phys_addr_t iommu_get_pt_base_addr(struct iommu_domain *domain)
 {
 	return 0;
 }

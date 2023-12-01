@@ -52,9 +52,12 @@
 #include <asm/tlbflush.h>
 #include <asm/ptrace.h>
 #include <asm/edac.h>
+<<<<<<< HEAD
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/ipi.h>
+=======
+>>>>>>> p9x
 
 /*
  * as from 2.5, kernels no longer have an init_tasks structure
@@ -155,6 +158,9 @@ asmlinkage notrace void secondary_start_kernel(void)
 	set_my_cpu_offset(per_cpu_offset(smp_processor_id()));
 	pr_debug("CPU%u: Booted secondary processor\n", cpu);
 
+	set_my_cpu_offset(per_cpu_offset(smp_processor_id()));
+	pr_debug("CPU%u: Booted secondary processor\n", cpu);
+
 	/*
 	 * TTBR0 is only used for the identity mapping at this stage. Make it
 	 * point to zero page to avoid speculatively fetching new entries.
@@ -166,6 +172,7 @@ asmlinkage notrace void secondary_start_kernel(void)
 	preempt_disable();
 	trace_hardirqs_off();
 
+<<<<<<< HEAD
 	/*
 	 * If the system has established the capabilities, make sure
 	 * this CPU ticks all of those. If it doesn't, the CPU will
@@ -173,10 +180,13 @@ asmlinkage notrace void secondary_start_kernel(void)
 	 */
 	verify_local_cpu_capabilities();
 
+=======
+>>>>>>> p9x
 	if (cpu_ops[cpu]->cpu_postboot)
 		cpu_ops[cpu]->cpu_postboot();
 
 	/*
+<<<<<<< HEAD
 	 * Log the CPU info before it is marked online and might get read.
 	 */
 	cpuinfo_store_cpu();
@@ -186,6 +196,12 @@ asmlinkage notrace void secondary_start_kernel(void)
 	 */
 	smp_store_cpu_info(cpu);
 
+=======
+	 * Enable GIC and timers.
+	 */
+	smp_store_cpu_info(cpu);
+
+>>>>>>> p9x
 	notify_cpu_starting(cpu);
 
 	/*
@@ -198,6 +214,10 @@ asmlinkage notrace void secondary_start_kernel(void)
 	set_cpu_online(cpu, true);
 	complete(&cpu_running);
 
+<<<<<<< HEAD
+=======
+	local_dbg_enable();
+>>>>>>> p9x
 	local_irq_enable();
 	local_async_enable();
 
@@ -249,6 +269,15 @@ int __cpu_disable(void)
 	 * OK - migrate IRQs away from this CPU
 	 */
 	migrate_irqs();
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Remove this CPU from the vm mask set of all processes.
+	 */
+	clear_tasks_mm_cpumask(cpu);
+
+>>>>>>> p9x
 	return 0;
 }
 
@@ -331,17 +360,27 @@ void __ref cpu_die(void)
 void __init smp_cpus_done(unsigned int max_cpus)
 {
 	pr_info("SMP: Total of %d processors activated.\n", num_online_cpus());
+<<<<<<< HEAD
 	setup_cpu_features();
 	apply_alternatives_all();
+=======
+>>>>>>> p9x
 }
 
 void __init smp_prepare_boot_cpu(void)
 {
+<<<<<<< HEAD
 	cpuinfo_store_boot_cpu();
 	set_my_cpu_offset(per_cpu_offset(smp_processor_id()));
 }
 
 void (*__smp_cross_call)(const struct cpumask *, unsigned int);
+=======
+	set_my_cpu_offset(per_cpu_offset(smp_processor_id()));
+}
+
+static void (*smp_cross_call)(const struct cpumask *, unsigned int);
+>>>>>>> p9x
 DEFINE_PER_CPU(bool, pending_ipi);
 
 void smp_cross_call_common(const struct cpumask *cpumask, unsigned int func)
@@ -351,8 +390,13 @@ void smp_cross_call_common(const struct cpumask *cpumask, unsigned int func)
 	for_each_cpu(cpu, cpumask)
 		per_cpu(pending_ipi, cpu) = true;
 
+<<<<<<< HEAD
 	__smp_cross_call(cpumask, func);
+=======
+	smp_cross_call(cpumask, func);
+>>>>>>> p9x
 }
+
 
 /*
  * Enumerate the possible CPU set from the device tree and build the
@@ -528,8 +572,21 @@ void arch_send_wakeup_ipi_mask(const struct cpumask *mask)
 	smp_cross_call_common(mask, IPI_WAKEUP);
 }
 
+<<<<<<< HEAD
 static const char *ipi_types[NR_IPI] __tracepoint_string = {
 #define S(x,s)	[x] = s
+=======
+#ifdef CONFIG_IRQ_WORK
+void arch_irq_work_raise(void)
+{
+	if (smp_cross_call)
+		smp_cross_call(cpumask_of(smp_processor_id()), IPI_IRQ_WORK);
+}
+#endif
+
+static const char *ipi_types[NR_IPI] = {
+#define S(x,s)	[x - IPI_RESCHEDULE] = s
+>>>>>>> p9x
 	S(IPI_RESCHEDULE, "Rescheduling interrupts"),
 	S(IPI_CALL_FUNC, "Function call interrupts"),
 	S(IPI_CALL_FUNC_SINGLE, "Single function call interrupts"),
@@ -616,15 +673,29 @@ static unsigned long backtrace_flag;
 
 static void smp_send_all_cpu_backtrace(void)
 {
+<<<<<<< HEAD
 	unsigned int this_cpu = smp_processor_id();
 	int i;
 
 	if (test_and_set_bit(0, &backtrace_flag))
+=======
+	unsigned int this_cpu;
+	int i;
+
+	this_cpu = get_cpu();;
+	if (test_and_set_bit(0, &backtrace_flag)) {
+>>>>>>> p9x
 		/*
 		 * If there is already a trigger_all_cpu_backtrace() in progress
 		 * (backtrace_flag == 1), don't output double cpu dump infos.
 		 */
+<<<<<<< HEAD
 		return;
+=======
+		put_cpu();
+		return;
+	}
+>>>>>>> p9x
 
 	cpumask_copy(&backtrace_mask, cpu_online_mask);
 	cpu_clear(this_cpu, backtrace_mask);
@@ -636,6 +707,10 @@ static void smp_send_all_cpu_backtrace(void)
 	if (!cpus_empty(backtrace_mask))
 		smp_cross_call_common(&backtrace_mask, IPI_CPU_BACKTRACE);
 
+<<<<<<< HEAD
+=======
+	put_cpu();
+>>>>>>> p9x
 	/* Wait for up to 10 seconds for all other CPUs to do the backtrace */
 	for (i = 0; i < 10 * 1000; i++) {
 		if (cpumask_empty(&backtrace_mask))
@@ -720,6 +795,13 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 	case IPI_WAKEUP:
 		break;
 
+<<<<<<< HEAD
+=======
+	case IPI_CPU_BACKTRACE:
+		ipi_cpu_backtrace(cpu, regs);
+		break;
+
+>>>>>>> p9x
 #ifdef CONFIG_IRQ_WORK
 	case IPI_IRQ_WORK:
 		irq_enter();
@@ -727,17 +809,23 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 		irq_exit();
 		break;
 #endif
+<<<<<<< HEAD
 	case IPI_CPU_BACKTRACE:
 		ipi_cpu_backtrace(cpu, regs);
 		break;
+=======
+>>>>>>> p9x
 
 	default:
 		pr_crit("CPU%u: Unknown IPI message 0x%x\n", cpu, ipinr);
 		break;
 	}
+<<<<<<< HEAD
 
 	if ((unsigned)ipinr < NR_IPI)
 		trace_ipi_exit(ipi_types[ipinr]);
+=======
+>>>>>>> p9x
 	per_cpu(pending_ipi, cpu) = false;
 	set_irq_regs(old_regs);
 }

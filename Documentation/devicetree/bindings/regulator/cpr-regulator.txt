@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 QTI CPR (Core Power Reduction) Regulator
 
 CPR regulator device is for QTI RBCPR (RapidBridge CPR) on
+=======
+Qualcomm CPR (Core Power Reduction) Regulator
+
+CPR regulator device is for Qualcomm RBCPR (RapidBridge CPR) on
+>>>>>>> p9x
 	application processor core. It takes voltage corner level
 	as input and converts it to actual voltage based on the
 	suggestions from factory production process. When CPR is
@@ -719,9 +725,13 @@ Optional properties:
 				closed-loop is enabled. CPR closed-loop will stay enabled above this
 				temperature threshold. This property is required only if
 				'qcom,cpr-thermal-sensor-id' is present.
+<<<<<<< HEAD
 - qcom,disable-closed-loop-in-pc:	Bool property to disable closed-loop CPR during
 				power-collapse. This can be enabled only for single core
 				designs. The property 'qcom,cpr-cpus' is required to enable this logic.
+=======
+
+>>>>>>> p9x
 Example:
 	apc_vreg_corner: regulator@f9018000 {
 		status = "okay";

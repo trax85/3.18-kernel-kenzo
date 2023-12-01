@@ -26,7 +26,10 @@
 #include <linux/delay.h>
 #include <linux/init.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/irq.h>
+=======
+>>>>>>> p9x
 #include <linux/bug.h>
 
 #include <linux/atomic.h>
@@ -640,7 +643,25 @@ asmlinkage int arm_syscall(int no, struct pt_regs *regs)
 		return regs->ARM_r0;
 
 	case NR(set_tls):
+<<<<<<< HEAD
 		set_tls(regs->ARM_r0);
+=======
+		thread->tp_value[0] = regs->ARM_r0;
+		if (tls_emu)
+			return 0;
+		if (has_tls_reg) {
+			asm ("mcr p15, 0, %0, c13, c0, 3"
+				: : "r" (regs->ARM_r0));
+		} else {
+			/*
+			 * User space must never try to access this directly.
+			 * Expect your app to break eventually if you do so.
+			 * The user helper at 0xffff0fe0 must be used instead.
+			 * (see entry-armv.S for details)
+			 */
+			*((unsigned int *)0xffff0ff0) = regs->ARM_r0;
+		}
+>>>>>>> p9x
 		return 0;
 
 #ifdef CONFIG_NEEDS_SYSCALL_FOR_CMPXCHG
@@ -767,12 +788,22 @@ late_initcall(arm_mrc_hook_init);
 
 #endif
 
+<<<<<<< HEAD
 static int get_pct_trap(struct pt_regs *regs, unsigned int instr)
 {
 	u64 cntpct;
 	unsigned int res;
 	int rd = (instr >> 12) & 0xF;
 	int rn =  (instr >> 16) & 0xF;
+=======
+static int get_timer_count_trap(struct pt_regs *regs, unsigned int instr)
+{
+	u64 cval;
+	unsigned int res;
+	int rd = (instr >> 12) & 0xF;
+	int rn =  (instr >> 16) & 0xF;
+	int read_virtual = (instr >> 4) & 1;
+>>>>>>> p9x
 
 	res = arm_check_condition(instr, regs->ARM_cpsr);
 	if (res == ARM_OPCODE_CONDTEST_FAIL) {
@@ -782,13 +813,21 @@ static int get_pct_trap(struct pt_regs *regs, unsigned int instr)
 
 	if (rd == 15 || rn == 15)
 		return 1;
+<<<<<<< HEAD
 	cntpct = arch_counter_get_cntpct();
 	regs->uregs[rd] = cntpct;
 	regs->uregs[rn] = cntpct >> 32;
+=======
+	cval = read_virtual ?
+		arch_counter_get_cntvct() : arch_counter_get_cntpct();
+	regs->uregs[rd] = cval;
+	regs->uregs[rn] = cval >> 32;
+>>>>>>> p9x
 	regs->ARM_pc += 4;
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct undef_hook get_pct_hook = {
 	.instr_mask	= 0x0ff00fff,
 	.instr_val	= 0x0c500f0e,
@@ -802,6 +841,21 @@ void get_pct_hook_init(void)
 	register_undef_hook(&get_pct_hook);
 }
 EXPORT_SYMBOL(get_pct_hook_init);
+=======
+static struct undef_hook get_timer_count_hook = {
+	.instr_mask	= 0x0ff00fef,
+	.instr_val	= 0x0c500f0e,
+	.cpsr_mask	= MODE_MASK,
+	.cpsr_val	= USR_MODE,
+	.fn		= get_timer_count_trap,
+};
+
+void get_timer_count_hook_init(void)
+{
+	register_undef_hook(&get_timer_count_hook);
+}
+EXPORT_SYMBOL(get_timer_count_hook_init);
+>>>>>>> p9x
 
 void __bad_xchg(volatile void *ptr, int size)
 {
@@ -898,7 +952,11 @@ static void __init kuser_init(void *vectors)
 		memcpy(vectors + 0xfe0, vectors + 0xfe8, 4);
 }
 #else
+<<<<<<< HEAD
 static inline void __init kuser_init(void *vectors)
+=======
+static void __init kuser_init(void *vectors)
+>>>>>>> p9x
 {
 }
 #endif
@@ -933,6 +991,7 @@ void __init early_trap_init(void *vectors_base)
 	kuser_init(vectors_base);
 
 	flush_icache_range(vectors, vectors + PAGE_SIZE * 2);
+<<<<<<< HEAD
 #else /* ifndef CONFIG_CPU_V7M */
 	/*
 	 * on V7-M there is no need to copy the vector table to a dedicated
@@ -940,4 +999,7 @@ void __init early_trap_init(void *vectors_base)
 	 * image can be used.
 	 */
 #endif
+=======
+	modify_domain(DOMAIN_USER, DOMAIN_CLIENT);
+>>>>>>> p9x
 }

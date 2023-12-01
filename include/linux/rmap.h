@@ -188,6 +188,11 @@ int page_referenced(struct page *, int is_locked,
 
 int try_to_unmap(struct page *, enum ttu_flags flags,
 			struct vm_area_struct *vma);
+<<<<<<< HEAD
+=======
+int try_to_unmap_one(struct page *, struct vm_area_struct *,
+			unsigned long address, enum ttu_flags flags);
+>>>>>>> p9x
 
 /*
  * Called from mm/filemap_xip.c to unmap empty zero page

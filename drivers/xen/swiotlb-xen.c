@@ -42,11 +42,15 @@
 #include <xen/page.h>
 #include <xen/xen-ops.h>
 #include <xen/hvc-console.h>
+<<<<<<< HEAD
 
 #include <asm/dma-mapping.h>
 #include <asm/xen/page-coherent.h>
 
 #include <trace/events/swiotlb.h>
+=======
+#include <asm/dma-mapping.h>
+>>>>>>> p9x
 /*
  * Used to do a quick range check in swiotlb_tbl_unmap_single and
  * swiotlb_tbl_sync_single_*, to see if the memory was in fact allocated by this

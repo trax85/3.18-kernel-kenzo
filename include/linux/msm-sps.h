@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2016, 2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -115,12 +119,15 @@
 #define SPS_BAM_RES_CONFIRM         (1UL << 7)
 /* Hold memory for BAM DMUX */
 #define SPS_BAM_HOLD_MEM            (1UL << 8)
+<<<<<<< HEAD
 /* Use cached write pointer */
 #define SPS_BAM_CACHED_WP           (1UL << 10)
 /* Reset BAM with pipes connected */
 #define SPS_BAM_FORCE_RESET         (1UL << 11)
 /* BAM IRQ is enabled with IRQF_NO_SUSPEND added*/
 #define SPS_BAM_OPT_IRQ_NO_SUSPEND	(1UL << 12)
+=======
+>>>>>>> p9x
 
 /* BAM device management flags */
 
@@ -309,7 +316,10 @@ enum sps_callback_case {
 	SPS_CALLBACK_BAM_TIMER_IRQ,	    /* Inactivity timer */
 	SPS_CALLBACK_BAM_RES_REQ,	    /* Request resource */
 	SPS_CALLBACK_BAM_RES_REL,	    /* Release resource */
+<<<<<<< HEAD
 	SPS_CALLBACK_BAM_POLL,	            /* To poll each pipe */
+=======
+>>>>>>> p9x
 };
 
 /*
@@ -1625,7 +1635,11 @@ static inline int sps_bam_process_irq(unsigned long dev)
 }
 
 static inline int sps_get_bam_addr(unsigned long dev, phys_addr_t *base,
+<<<<<<< HEAD
 				u32 *size)
+=======
+				u32 *size);
+>>>>>>> p9x
 {
 	return -EPERM;
 }

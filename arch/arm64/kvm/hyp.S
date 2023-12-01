@@ -16,11 +16,18 @@
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip/arm-gic.h>
+>>>>>>> p9x
 
 #include <asm/assembler.h>
 #include <asm/memory.h>
 #include <asm/asm-offsets.h>
+<<<<<<< HEAD
 #include <asm/debug-monitors.h>
+=======
+>>>>>>> p9x
 #include <asm/fpsimdmacros.h>
 #include <asm/kvm.h>
 #include <asm/kvm_asm.h>
@@ -36,6 +43,12 @@
 	.pushsection	.hyp.text, "ax"
 	.align	PAGE_SHIFT
 
+<<<<<<< HEAD
+=======
+__kvm_hyp_code_start:
+	.globl __kvm_hyp_code_start
+
+>>>>>>> p9x
 .macro save_common_regs
 	// x2: base address for cpu context
 	// x3: tmp register
@@ -212,7 +225,10 @@
 	mrs	x22, 	amair_el1
 	mrs	x23, 	cntkctl_el1
 	mrs	x24,	par_el1
+<<<<<<< HEAD
 	mrs	x25,	mdscr_el1
+=======
+>>>>>>> p9x
 
 	stp	x4, x5, [x3]
 	stp	x6, x7, [x3, #16]
@@ -224,6 +240,7 @@
 	stp	x18, x19, [x3, #112]
 	stp	x20, x21, [x3, #128]
 	stp	x22, x23, [x3, #144]
+<<<<<<< HEAD
 	stp	x24, x25, [x3, #160]
 .endm
 
@@ -420,6 +437,9 @@
 
 	mrs	x21, mdccint_el1
 	str	x21, [x2, #CPU_SYSREG_OFFSET(MDCCINT_EL1)]
+=======
+	str	x24, [x3, #160]
+>>>>>>> p9x
 .endm
 
 .macro restore_sysregs
@@ -438,7 +458,11 @@
 	ldp	x18, x19, [x3, #112]
 	ldp	x20, x21, [x3, #128]
 	ldp	x22, x23, [x3, #144]
+<<<<<<< HEAD
 	ldp	x24, x25, [x3, #160]
+=======
+	ldr	x24, [x3, #160]
+>>>>>>> p9x
 
 	msr	vmpidr_el2,	x4
 	msr	csselr_el1,	x5
@@ -461,6 +485,7 @@
 	msr	amair_el1,	x22
 	msr	cntkctl_el1,	x23
 	msr	par_el1,	x24
+<<<<<<< HEAD
 	msr	mdscr_el1,	x25
 .endm
 
@@ -653,6 +678,8 @@
 
 	ldr	x21, [x2, #CPU_SYSREG_OFFSET(MDCCINT_EL1)]
 	msr	mdccint_el1, x21
+=======
+>>>>>>> p9x
 .endm
 
 .macro skip_32bit_state tmp, target
@@ -667,6 +694,7 @@
 	tbz	\tmp, #12, \target
 .endm
 
+<<<<<<< HEAD
 .macro skip_debug_state tmp, target
 	ldr	\tmp, [x0, #VCPU_DEBUG_FLAGS]
 	tbz	\tmp, #KVM_ARM64_DEBUG_DIRTY_SHIFT, \target
@@ -696,6 +724,8 @@
 9999:
 .endm
 
+=======
+>>>>>>> p9x
 .macro save_guest_32bit_state
 	skip_32bit_state x3, 1f
 
@@ -711,6 +741,7 @@
 	mrs	x4, dacr32_el2
 	mrs	x5, ifsr32_el2
 	mrs	x6, fpexc32_el2
+<<<<<<< HEAD
 	stp	x4, x5, [x3]
 	str	x6, [x3, #16]
 
@@ -718,6 +749,12 @@
 	mrs	x7, dbgvcr32_el2
 	str	x7, [x3, #24]
 2:
+=======
+	mrs	x7, dbgvcr32_el2
+	stp	x4, x5, [x3]
+	stp	x6, x7, [x3, #16]
+
+>>>>>>> p9x
 	skip_tee_state x8, 1f
 
 	add	x3, x2, #CPU_SYSREG_OFFSET(TEECR32_EL1)
@@ -740,6 +777,7 @@
 
 	add	x3, x2, #CPU_SYSREG_OFFSET(DACR32_EL2)
 	ldp	x4, x5, [x3]
+<<<<<<< HEAD
 	ldr	x6, [x3, #16]
 	msr	dacr32_el2, x4
 	msr	ifsr32_el2, x5
@@ -749,6 +787,14 @@
 	ldr	x7, [x3, #24]
 	msr	dbgvcr32_el2, x7
 2:
+=======
+	ldp	x6, x7, [x3, #16]
+	msr	dacr32_el2, x4
+	msr	ifsr32_el2, x5
+	msr	fpexc32_el2, x6
+	msr	dbgvcr32_el2, x7
+
+>>>>>>> p9x
 	skip_tee_state x8, 1f
 
 	add	x3, x2, #CPU_SYSREG_OFFSET(TEECR32_EL1)
@@ -759,8 +805,16 @@
 .endm
 
 .macro activate_traps
+<<<<<<< HEAD
 	ldr     x2, [x0, #VCPU_HCR_EL2]
 	msr     hcr_el2, x2
+=======
+	ldr	x2, [x0, #VCPU_IRQ_LINES]
+	ldr	x1, [x0, #VCPU_HCR_EL2]
+	orr	x2, x2, x1
+	msr	hcr_el2, x2
+
+>>>>>>> p9x
 	ldr	x2, =(CPTR_EL2_TTA)
 	msr	cptr_el2, x2
 
@@ -770,6 +824,7 @@
 	mrs	x2, mdcr_el2
 	and	x2, x2, #MDCR_EL2_HPMN_MASK
 	orr	x2, x2, #(MDCR_EL2_TPM | MDCR_EL2_TPMCR)
+<<<<<<< HEAD
 	orr	x2, x2, #(MDCR_EL2_TDRA | MDCR_EL2_TDOSA)
 
 	// Check for KVM_ARM64_DEBUG_DIRTY, and set debug to trap
@@ -778,6 +833,8 @@
 	tbnz	x3, #KVM_ARM64_DEBUG_DIRTY_SHIFT, 1f
 	orr	x2, x2,  #MDCR_EL2_TDA
 1:
+=======
+>>>>>>> p9x
 	msr	mdcr_el2, x2
 .endm
 
@@ -804,6 +861,7 @@
 .endm
 
 /*
+<<<<<<< HEAD
  * Call into the vgic backend for state saving
  */
 .macro save_vgic_state
@@ -831,6 +889,102 @@
 	ldr	x24, [x24, #VGIC_RESTORE_FN]
 	kern_hyp_va	x24
 	blr	x24
+=======
+ * Save the VGIC CPU state into memory
+ * x0: Register pointing to VCPU struct
+ * Do not corrupt x1!!!
+ */
+.macro save_vgic_state
+	/* Get VGIC VCTRL base into x2 */
+	ldr	x2, [x0, #VCPU_KVM]
+	kern_hyp_va	x2
+	ldr	x2, [x2, #KVM_VGIC_VCTRL]
+	kern_hyp_va	x2
+	cbz	x2, 2f		// disabled
+
+	/* Compute the address of struct vgic_cpu */
+	add	x3, x0, #VCPU_VGIC_CPU
+
+	/* Save all interesting registers */
+	ldr	w4, [x2, #GICH_HCR]
+	ldr	w5, [x2, #GICH_VMCR]
+	ldr	w6, [x2, #GICH_MISR]
+	ldr	w7, [x2, #GICH_EISR0]
+	ldr	w8, [x2, #GICH_EISR1]
+	ldr	w9, [x2, #GICH_ELRSR0]
+	ldr	w10, [x2, #GICH_ELRSR1]
+	ldr	w11, [x2, #GICH_APR]
+CPU_BE(	rev	w4,  w4  )
+CPU_BE(	rev	w5,  w5  )
+CPU_BE(	rev	w6,  w6  )
+CPU_BE(	rev	w7,  w7  )
+CPU_BE(	rev	w8,  w8  )
+CPU_BE(	rev	w9,  w9  )
+CPU_BE(	rev	w10, w10 )
+CPU_BE(	rev	w11, w11 )
+
+	str	w4, [x3, #VGIC_CPU_HCR]
+	str	w5, [x3, #VGIC_CPU_VMCR]
+	str	w6, [x3, #VGIC_CPU_MISR]
+	str	w7, [x3, #VGIC_CPU_EISR]
+	str	w8, [x3, #(VGIC_CPU_EISR + 4)]
+	str	w9, [x3, #VGIC_CPU_ELRSR]
+	str	w10, [x3, #(VGIC_CPU_ELRSR + 4)]
+	str	w11, [x3, #VGIC_CPU_APR]
+
+	/* Clear GICH_HCR */
+	str	wzr, [x2, #GICH_HCR]
+
+	/* Save list registers */
+	add	x2, x2, #GICH_LR0
+	ldr	w4, [x3, #VGIC_CPU_NR_LR]
+	add	x3, x3, #VGIC_CPU_LR
+1:	ldr	w5, [x2], #4
+CPU_BE(	rev	w5, w5 )
+	str	w5, [x3], #4
+	sub	w4, w4, #1
+	cbnz	w4, 1b
+2:
+.endm
+
+/*
+ * Restore the VGIC CPU state from memory
+ * x0: Register pointing to VCPU struct
+ */
+.macro restore_vgic_state
+	/* Get VGIC VCTRL base into x2 */
+	ldr	x2, [x0, #VCPU_KVM]
+	kern_hyp_va	x2
+	ldr	x2, [x2, #KVM_VGIC_VCTRL]
+	kern_hyp_va	x2
+	cbz	x2, 2f		// disabled
+
+	/* Compute the address of struct vgic_cpu */
+	add	x3, x0, #VCPU_VGIC_CPU
+
+	/* We only restore a minimal set of registers */
+	ldr	w4, [x3, #VGIC_CPU_HCR]
+	ldr	w5, [x3, #VGIC_CPU_VMCR]
+	ldr	w6, [x3, #VGIC_CPU_APR]
+CPU_BE(	rev	w4, w4 )
+CPU_BE(	rev	w5, w5 )
+CPU_BE(	rev	w6, w6 )
+
+	str	w4, [x2, #GICH_HCR]
+	str	w5, [x2, #GICH_VMCR]
+	str	w6, [x2, #GICH_APR]
+
+	/* Restore list registers */
+	add	x2, x2, #GICH_LR0
+	ldr	w4, [x3, #VGIC_CPU_NR_LR]
+	add	x3, x3, #VGIC_CPU_LR
+1:	ldr	w5, [x3], #4
+CPU_BE(	rev	w5, w5 )
+	str	w5, [x2], #4
+	sub	w4, w4, #1
+	cbnz	w4, 1b
+2:
+>>>>>>> p9x
 .endm
 
 .macro save_timer_state
@@ -843,6 +997,11 @@
 	mrs	x3, cntv_ctl_el0
 	and	x3, x3, #3
 	str	w3, [x0, #VCPU_TIMER_CNTV_CTL]
+<<<<<<< HEAD
+=======
+	bic	x3, x3, #1		// Clear Enable
+	msr	cntv_ctl_el0, x3
+>>>>>>> p9x
 
 	isb
 
@@ -850,9 +1009,12 @@
 	str	x3, [x0, #VCPU_TIMER_CNTV_CVAL]
 
 1:
+<<<<<<< HEAD
 	// Disable the virtual timer
 	msr	cntv_ctl_el0, xzr
 
+=======
+>>>>>>> p9x
 	// Allow physical timer/counter access for the host
 	mrs	x2, cnthctl_el2
 	orr	x2, x2, #3
@@ -896,6 +1058,7 @@ __restore_sysregs:
 	restore_sysregs
 	ret
 
+<<<<<<< HEAD
 __save_debug:
 	save_debug
 	ret
@@ -904,6 +1067,8 @@ __restore_debug:
 	restore_debug
 	ret
 
+=======
+>>>>>>> p9x
 __save_fpsimd:
 	save_fpsimd
 	ret
@@ -935,9 +1100,12 @@ ENTRY(__kvm_vcpu_run)
 	bl __save_fpsimd
 	bl __save_sysregs
 
+<<<<<<< HEAD
 	compute_debug_state 1f
 	bl	__save_debug
 1:
+=======
+>>>>>>> p9x
 	activate_traps
 	activate_vm
 
@@ -949,10 +1117,13 @@ ENTRY(__kvm_vcpu_run)
 
 	bl __restore_sysregs
 	bl __restore_fpsimd
+<<<<<<< HEAD
 
 	skip_debug_state x3, 1f
 	bl	__restore_debug
 1:
+=======
+>>>>>>> p9x
 	restore_guest_32bit_state
 	restore_guest_regs
 
@@ -969,10 +1140,13 @@ __kvm_vcpu_return:
 	save_guest_regs
 	bl __save_fpsimd
 	bl __save_sysregs
+<<<<<<< HEAD
 
 	skip_debug_state x3, 1f
 	bl	__save_debug
 1:
+=======
+>>>>>>> p9x
 	save_guest_32bit_state
 
 	save_timer_state
@@ -987,6 +1161,7 @@ __kvm_vcpu_return:
 
 	bl __restore_sysregs
 	bl __restore_fpsimd
+<<<<<<< HEAD
 
 	skip_debug_state x3, 1f
 	// Clear the dirty flag for the next run, as all the state has
@@ -995,6 +1170,8 @@ __kvm_vcpu_return:
 	str	xzr, [x0, #VCPU_DEBUG_FLAGS]
 	bl	__restore_debug
 1:
+=======
+>>>>>>> p9x
 	restore_host_regs
 
 	mov	x0, x1
@@ -1015,7 +1192,10 @@ ENTRY(__kvm_tlb_flush_vmid_ipa)
 	 * Instead, we invalidate Stage-2 for this IPA, and the
 	 * whole of Stage-1. Weep...
 	 */
+<<<<<<< HEAD
 	lsr	x1, x1, #12
+=======
+>>>>>>> p9x
 	tlbi	ipas2e1is, x1
 	/*
 	 * We have to ensure completion of the invalidation at Stage-2,
@@ -1040,12 +1220,15 @@ ENTRY(__kvm_flush_vm_context)
 	ret
 ENDPROC(__kvm_flush_vm_context)
 
+<<<<<<< HEAD
 	// struct vgic_sr_vectors __vgi_sr_vectors;
 	.align 3
 ENTRY(__vgic_sr_vectors)
 	.skip	VGIC_SR_VECTOR_SZ
 ENDPROC(__vgic_sr_vectors)
 
+=======
+>>>>>>> p9x
 __kvm_hyp_panic:
 	// Guess the context by looking at VTTBR:
 	// If zero, then we're already a host.
@@ -1223,7 +1406,11 @@ el1_trap:
 	mrs	x2, far_el2
 
 2:	mrs	x0, tpidr_el2
+<<<<<<< HEAD
 	str	w1, [x0, #VCPU_ESR_EL2]
+=======
+	str	x1, [x0, #VCPU_ESR_EL2]
+>>>>>>> p9x
 	str	x2, [x0, #VCPU_FAR_EL2]
 	str	x3, [x0, #VCPU_HPFAR_EL2]
 
@@ -1273,4 +1460,10 @@ ENTRY(__kvm_hyp_vector)
 	ventry	el1_error_invalid		// Error 32-bit EL1
 ENDPROC(__kvm_hyp_vector)
 
+<<<<<<< HEAD
+=======
+__kvm_hyp_code_end:
+	.globl	__kvm_hyp_code_end
+
+>>>>>>> p9x
 	.popsection

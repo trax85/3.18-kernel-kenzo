@@ -648,11 +648,18 @@ static int udf_remount_fs(struct super_block *sb, int *flags, char *options)
 	struct udf_options uopt;
 	struct udf_sb_info *sbi = UDF_SB(sb);
 	int error = 0;
+<<<<<<< HEAD
 	struct logicalVolIntegrityDescImpUse *lvidiu = udf_sb_lvidiu(sb);
 
 	sync_filesystem(sb);
 	if (lvidiu) {
 		int write_rev = le16_to_cpu(lvidiu->minUDFWriteRev);
+=======
+	sync_filesystem(sb);
+
+	if (sbi->s_lvid_bh) {
+		int write_rev = le16_to_cpu(udf_sb_lvidiu(sbi)->minUDFWriteRev);
+>>>>>>> p9x
 		if (write_rev > UDF_MAX_WRITE_VERSION && !(*flags & MS_RDONLY))
 			return -EACCES;
 	}
@@ -1001,7 +1008,11 @@ static int udf_load_metadata_files(struct super_block *sb, int partition)
 
 		if (IS_ERR(fe)) {
 			udf_err(sb, "Both metadata and mirror metadata inode efe can not found\n");
+<<<<<<< HEAD
 			return PTR_ERR(fe);
+=======
+			return -EIO;
+>>>>>>> p9x
 		}
 		mdata->s_mirror_fe = fe;
 	} else
@@ -1020,13 +1031,22 @@ static int udf_load_metadata_files(struct super_block *sb, int partition)
 		udf_debug("Bitmap file location: block = %d part = %d\n",
 			  addr.logicalBlockNum, addr.partitionReferenceNum);
 
+<<<<<<< HEAD
 		fe = udf_iget_special(sb, &addr);
 		if (IS_ERR(fe)) {
+=======
+		mdata->s_bitmap_fe = udf_iget(sb, &addr);
+		if (mdata->s_bitmap_fe == NULL) {
+>>>>>>> p9x
 			if (sb->s_flags & MS_RDONLY)
 				udf_warn(sb, "bitmap inode efe not found but it's ok since the disc is mounted read-only\n");
 			else {
 				udf_err(sb, "bitmap inode efe not found and attempted read-write mount\n");
+<<<<<<< HEAD
 				return PTR_ERR(fe);
+=======
+				return -EIO;
+>>>>>>> p9x
 			}
 		} else
 			mdata->s_bitmap_fe = fe;
@@ -1123,7 +1143,11 @@ static int udf_fill_partdesc_info(struct super_block *sb,
 		if (IS_ERR(inode)) {
 			udf_debug("cannot load unallocSpaceTable (part %d)\n",
 				  p_index);
+<<<<<<< HEAD
 			return PTR_ERR(inode);
+=======
+			return -EIO;
+>>>>>>> p9x
 		}
 		map->s_uspace.s_table = inode;
 		map->s_partition_flags |= UDF_PART_FLAG_UNALLOC_TABLE;
@@ -1158,7 +1182,11 @@ static int udf_fill_partdesc_info(struct super_block *sb,
 		if (IS_ERR(inode)) {
 			udf_debug("cannot load freedSpaceTable (part %d)\n",
 				  p_index);
+<<<<<<< HEAD
 			return PTR_ERR(inode);
+=======
+			return -EIO;
+>>>>>>> p9x
 		}
 		map->s_fspace.s_table = inode;
 		map->s_partition_flags |= UDF_PART_FLAG_FREED_TABLE;
@@ -2222,7 +2250,11 @@ static int udf_fill_super(struct super_block *sb, void *options, int silent)
 	if (IS_ERR(inode)) {
 		udf_err(sb, "Error in udf_iget, block=%d, partition=%d\n",
 		       rootdir.logicalBlockNum, rootdir.partitionReferenceNum);
+<<<<<<< HEAD
 		ret = PTR_ERR(inode);
+=======
+		ret = -EIO;
+>>>>>>> p9x
 		goto error_out;
 	}
 

@@ -137,6 +137,7 @@ static void fuse_file_put(struct fuse_file *ff, bool sync)
 	if (atomic_dec_and_test(&ff->count)) {
 		struct fuse_req *req = ff->reserved_req;
 
+<<<<<<< HEAD
 		if (ff->fc->no_open) {
 			/*
 			 * Drop the release request when client does not
@@ -146,6 +147,10 @@ static void fuse_file_put(struct fuse_file *ff, bool sync)
 			path_put(&req->misc.release.path);
 			fuse_put_request(ff->fc, req);
 		} else if (sync) {
+=======
+		if (sync) {
+			req->force = 1;
+>>>>>>> p9x
 			req->background = 0;
 			fuse_request_send(ff->fc, req);
 			path_put(&req->misc.release.path);
@@ -169,6 +174,7 @@ int fuse_do_open(struct fuse_conn *fc, u64 nodeid, struct file *file,
 	if (!ff)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	ff->fh = 0;
 	ff->open_flags = FOPEN_KEEP_CACHE; /* Default for no-open */
 	if (!fc->no_open || isdir) {
@@ -187,6 +193,13 @@ int fuse_do_open(struct fuse_conn *fc, u64 nodeid, struct file *file,
 		} else {
 			fc->no_open = 1;
 		}
+=======
+	err = fuse_send_open(fc, nodeid, file, opcode, &outarg,
+			     &(ff->rw_lower_file));
+	if (err) {
+		fuse_file_free(ff);
+		return err;
+>>>>>>> p9x
 	}
 
 	if (isdir)
@@ -337,7 +350,14 @@ static int fuse_release(struct inode *inode, struct file *file)
 
 	/* see fuse_vma_close() for !writeback_cache case */
 	if (fc->writeback_cache)
+<<<<<<< HEAD
 		write_inode_now(inode, 1);
+=======
+		filemap_write_and_wait(file->f_mapping);
+
+	if (test_bit(FUSE_I_MTIME_DIRTY, &get_fuse_inode(inode)->state))
+		fuse_flush_mtime(file, true);
+>>>>>>> p9x
 
 	fuse_release_common(file, FUSE_RELEASE);
 
@@ -399,6 +419,10 @@ static bool fuse_range_is_writeback(struct inode *inode, pgoff_t idx_from,
 
 		BUG_ON(req->inode != inode);
 		curr_index = req->misc.write.in.offset >> PAGE_CACHE_SHIFT;
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 		if (idx_from < curr_index + req->num_pages &&
 		    curr_index <= idx_to) {
 			found = true;
@@ -459,7 +483,11 @@ static int fuse_flush(struct file *file, fl_owner_t id)
 	if (fc->no_flush)
 		return 0;
 
+<<<<<<< HEAD
 	err = write_inode_now(inode, 1);
+=======
+	err = filemap_write_and_wait(file->f_mapping);
+>>>>>>> p9x
 	if (err)
 		return err;
 
@@ -467,6 +495,7 @@ static int fuse_flush(struct file *file, fl_owner_t id)
 	fuse_sync_writes(inode);
 	mutex_unlock(&inode->i_mutex);
 
+<<<<<<< HEAD
 	if (test_bit(AS_ENOSPC, &file->f_mapping->flags) &&
 	    test_and_clear_bit(AS_ENOSPC, &file->f_mapping->flags))
 		err = -ENOSPC;
@@ -476,6 +505,8 @@ static int fuse_flush(struct file *file, fl_owner_t id)
 	if (err)
 		return err;
 
+=======
+>>>>>>> p9x
 	req = fuse_get_req_nofail_nopages(fc, file);
 	memset(&inarg, 0, sizeof(inarg));
 	inarg.fh = ff->fh;
@@ -522,6 +553,7 @@ int fuse_fsync_common(struct file *file, loff_t start, loff_t end,
 
 	fuse_sync_writes(inode);
 
+<<<<<<< HEAD
 	/*
 	 * Due to implementation of fuse writeback
 	 * filemap_write_and_wait_range() does not catch errors.
@@ -542,6 +574,13 @@ int fuse_fsync_common(struct file *file, loff_t start, loff_t end,
 
 	if ((!isdir && fc->no_fsync) || (isdir && fc->no_fsyncdir))
 		goto out;
+=======
+	if (test_bit(FUSE_I_MTIME_DIRTY, &get_fuse_inode(inode)->state)) {
+		int err = fuse_flush_mtime(file, false);
+		if (err)
+			goto out;
+	}
+>>>>>>> p9x
 
 	req = fuse_get_req_nopages(fc);
 	if (IS_ERR(req)) {
@@ -1030,9 +1069,15 @@ static ssize_t fuse_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
 	}
 
 	if (ff && ff->shortcircuit_enabled && ff->rw_lower_file)
+<<<<<<< HEAD
 		ret_val = fuse_shortcircuit_read_iter(iocb, to);
 	else
 		ret_val = generic_file_read_iter(iocb, to);
+=======
+		ret_val = fuse_shortcircuit_aio_read(iocb, iov, nr_segs, pos);
+	else
+		ret_val = generic_file_aio_read(iocb, iov, nr_segs, pos);
+>>>>>>> p9x
 
 	return ret_val;
 }
@@ -1171,6 +1216,11 @@ static ssize_t fuse_fill_write_pages(struct fuse_req *req,
 		tmp = iov_iter_copy_from_user_atomic(page, ii, offset, bytes);
 		flush_dcache_page(page);
 
+<<<<<<< HEAD
+=======
+		mark_page_accessed(page);
+
+>>>>>>> p9x
 		iov_iter_advance(ii, tmp);
 		if (!tmp) {
 			unlock_page(page);
@@ -1268,7 +1318,12 @@ static ssize_t fuse_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
 	struct file *file = iocb->ki_filp;
 	struct address_space *mapping = file->f_mapping;
 	struct fuse_file *ff = file->private_data;
+<<<<<<< HEAD
 	size_t count = iov_iter_count(from);
+=======
+	size_t count = 0;
+	size_t ocount = 0;
+>>>>>>> p9x
 	ssize_t written = 0;
 	ssize_t written_buffered = 0;
 	struct inode *inode = mapping->host;
@@ -1281,6 +1336,14 @@ static ssize_t fuse_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
 		err = fuse_update_attributes(mapping->host, NULL, file, NULL);
 		if (err)
 			return err;
+<<<<<<< HEAD
+=======
+
+		return generic_file_aio_write(iocb, iov, nr_segs, pos);
+	}
+
+	BUG_ON(iocb->ki_pos != pos);
+>>>>>>> p9x
 
 		return generic_file_write_iter(iocb, from);
 	}
@@ -1307,7 +1370,24 @@ static ssize_t fuse_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
 		goto out;
 
 	if (ff && ff->shortcircuit_enabled && ff->rw_lower_file) {
+<<<<<<< HEAD
 		written = fuse_shortcircuit_write_iter(iocb, from);
+=======
+		/* Use iocb->ki_pos instead of pos to handle the cases of files
+		 * that are opened with O_APPEND. For example if multiple
+		 * processes open the same file with O_APPEND then the
+		 * iocb->ki_pos will not be equal to the new pos value that is
+		 * updated with the file size(to guarantee appends even when
+		 * the file has grown due to the writes by another process).
+		 * We should use iocb->pos here since the lower filesystem
+		 * is expected to adjust for O_APPEND anyway and may need to
+		 * adjust the size for the file changes that occur due to
+		 * some processes writing directly to the lower filesystem
+		 * without using fuse.
+		 */
+		written = fuse_shortcircuit_aio_write(iocb, iov, nr_segs,
+							iocb->ki_pos);
+>>>>>>> p9x
 		goto out;
 	}
 
@@ -1429,8 +1509,14 @@ static inline int fuse_iter_npages(const struct iov_iter *ii_p)
 	return iov_iter_npages(ii_p, FUSE_MAX_PAGES_PER_REQ);
 }
 
+<<<<<<< HEAD
 ssize_t fuse_direct_io(struct fuse_io_priv *io, struct iov_iter *iter,
 		       loff_t *ppos, int flags)
+=======
+ssize_t fuse_direct_io(struct fuse_io_priv *io, const struct iovec *iov,
+		       unsigned long nr_segs, size_t count, loff_t *ppos,
+		       int flags)
+>>>>>>> p9x
 {
 	int write = flags & FUSE_DIO_WRITE;
 	int cuse = flags & FUSE_DIO_CUSE;
@@ -1440,7 +1526,10 @@ ssize_t fuse_direct_io(struct fuse_io_priv *io, struct iov_iter *iter,
 	struct fuse_conn *fc = ff->fc;
 	size_t nmax = write ? fc->max_write : fc->max_read;
 	loff_t pos = *ppos;
+<<<<<<< HEAD
 	size_t count = iov_iter_count(iter);
+=======
+>>>>>>> p9x
 	pgoff_t idx_from = pos >> PAGE_CACHE_SHIFT;
 	pgoff_t idx_to = (pos + count - 1) >> PAGE_CACHE_SHIFT;
 	ssize_t res = 0;
@@ -1550,10 +1639,16 @@ static ssize_t __fuse_direct_write(struct fuse_io_priv *io,
 
 
 	res = generic_write_checks(file, ppos, &count, 0);
+<<<<<<< HEAD
 	if (!res) {
 		iov_iter_truncate(iter, count);
 		res = fuse_direct_io(io, iter, ppos, FUSE_DIO_WRITE);
 	}
+=======
+	if (!res)
+		res = fuse_direct_io(io, iov, nr_segs, count, ppos,
+				     FUSE_DIO_WRITE);
+>>>>>>> p9x
 
 	fuse_invalidate_attr(inode);
 
@@ -1836,6 +1931,7 @@ static int fuse_writepage(struct page *page, struct writeback_control *wbc)
 	return err;
 }
 
+<<<<<<< HEAD
 struct fuse_fill_wb_data {
 	struct fuse_req *req;
 	struct fuse_file *ff;
@@ -2068,6 +2164,8 @@ out:
 	return err;
 }
 
+=======
+>>>>>>> p9x
 /*
  * It's worthy to make sure that space is reserved on disk for the write,
  * but how to implement it without killing performance need more thinking.
@@ -2972,6 +3070,7 @@ fuse_direct_IO(int rw, struct kiocb *iocb, struct iov_iter *iter,
 	loff_t i_size;
 	size_t count = iov_iter_count(iter);
 	struct fuse_io_priv *io;
+	bool is_sync = is_sync_kiocb(iocb);
 
 	pos = offset;
 	inode = file->f_mapping->host;
@@ -3011,7 +3110,7 @@ fuse_direct_IO(int rw, struct kiocb *iocb, struct iov_iter *iter,
 	 * to wait on real async I/O requests, so we must submit this request
 	 * synchronously.
 	 */
-	if (!is_sync_kiocb(iocb) && (offset + count > i_size) && rw == WRITE)
+	if (!is_sync && (offset + count > i_size) && rw == WRITE)
 		io->async = false;
 
 	if (rw == WRITE)
@@ -3023,7 +3122,7 @@ fuse_direct_IO(int rw, struct kiocb *iocb, struct iov_iter *iter,
 		fuse_aio_complete(io, ret < 0 ? ret : 0, -1);
 
 		/* we have a non-extending, async request, so return */
-		if (!is_sync_kiocb(iocb))
+		if (!is_sync)
 			return -EIOCBQUEUED;
 
 		ret = wait_on_sync_kiocb(iocb);
@@ -3107,8 +3206,17 @@ static long fuse_file_fallocate(struct file *file, int mode, loff_t offset,
 	if (!(mode & FALLOC_FL_KEEP_SIZE)) {
 		bool changed = fuse_write_update_size(inode, offset + length);
 
+<<<<<<< HEAD
 		if (changed && fc->writeback_cache)
 			file_update_time(file);
+=======
+		if (changed && fc->writeback_cache) {
+			struct fuse_inode *fi = get_fuse_inode(inode);
+
+			inode->i_mtime = current_fs_time(inode->i_sb);
+			set_bit(FUSE_I_MTIME_DIRTY, &fi->state);
+		}
+>>>>>>> p9x
 	}
 
 	if (mode & FALLOC_FL_PUNCH_HOLE)

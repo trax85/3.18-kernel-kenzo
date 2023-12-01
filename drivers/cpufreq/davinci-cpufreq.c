@@ -60,13 +60,35 @@ static int davinci_verify_speed(struct cpufreq_policy *policy)
 
 static int davinci_target(struct cpufreq_policy *policy, unsigned int idx)
 {
+<<<<<<< HEAD
+=======
+	if (cpu)
+		return 0;
+
+	return clk_get_rate(cpufreq.armclk) / 1000;
+}
+
+static int davinci_target(struct cpufreq_policy *policy, unsigned int idx)
+{
+	int ret = 0;
+	struct cpufreq_freqs freqs;
+>>>>>>> p9x
 	struct davinci_cpufreq_config *pdata = cpufreq.dev->platform_data;
 	struct clk *armclk = cpufreq.armclk;
 	unsigned int old_freq, new_freq;
 	int ret = 0;
 
+<<<<<<< HEAD
 	old_freq = policy->cur;
 	new_freq = pdata->freq_table[idx].frequency;
+=======
+	freqs.old = davinci_getspeed(0);
+	freqs.new = pdata->freq_table[idx].frequency;
+
+	dev_dbg(cpufreq.dev, "transition: %u --> %u\n", freqs.old, freqs.new);
+
+	cpufreq_notify_transition(policy, &freqs, CPUFREQ_PRECHANGE);
+>>>>>>> p9x
 
 	/* if moving to higher frequency, up the voltage beforehand */
 	if (pdata->set_voltage && new_freq > old_freq) {
@@ -123,7 +145,11 @@ static struct cpufreq_driver davinci_driver = {
 	.flags		= CPUFREQ_STICKY | CPUFREQ_NEED_INITIAL_FREQ_CHECK,
 	.verify		= davinci_verify_speed,
 	.target_index	= davinci_target,
+<<<<<<< HEAD
 	.get		= cpufreq_generic_get,
+=======
+	.get		= davinci_getspeed,
+>>>>>>> p9x
 	.init		= davinci_cpu_init,
 	.name		= "davinci",
 	.attr		= cpufreq_generic_attr,

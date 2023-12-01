@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -22,6 +26,18 @@
 
 #define MODULE_NAME "gladiator_error_reporting"
 
+<<<<<<< HEAD
+=======
+/* SCM call service and command ID */
+#define SCM_TZ_SVC_INFO			0x6
+#define TZ_INFO_GET_SECURE_STATE	0x4
+
+/* Secure State Check */
+#define SEC_STATE_VALID(a)       (a & BIT(0))
+#define SCM_SECURE_BOOT_ENABLED  1
+#define SCM_SECURE_BOOT_DISABLED 0
+
+>>>>>>> p9x
 /* Register Offsets */
 #define GLADIATOR_ID_COREID	0x0
 #define GLADIATOR_ID_REVISIONID	0x4
@@ -362,7 +378,10 @@ static void decode_obs_errlog(u32 err_reg, unsigned int err_log)
 static u32 get_gld_offset(unsigned int err_log)
 {
 	u32 offset = 0;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	switch (err_log) {
 	case ERR_LOG0:
 		offset = GLADIATOR_ERRLOG0;
@@ -401,7 +420,10 @@ static u32 get_gld_offset(unsigned int err_log)
 static u32 get_obs_offset(unsigned int err_log)
 {
 	u32 offset = 0;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	switch (err_log) {
 	case ERR_LOG0:
 		offset = OBSERVER_0_ERRLOG0;
@@ -593,6 +615,32 @@ bail:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static int scm_is_gladiator_erp_available(void)
+{
+	int ret;
+	struct scm_desc desc = {0};
+
+	desc.args[0] = 0;
+	desc.arginfo = 0;
+	ret = scm_call2(SCM_SIP_FNID(SCM_TZ_SVC_INFO,
+				TZ_INFO_GET_SECURE_STATE),
+				&desc);
+	if (ret) {
+		pr_err("gladiator_error_reporting: SCM call failed\n");
+		return -ENODEV;
+	}
+
+	if (SEC_STATE_VALID(desc.ret[0]))
+		ret = SCM_SECURE_BOOT_DISABLED;
+	else
+		ret = SCM_SECURE_BOOT_ENABLED;
+
+	return ret;
+}
+
+>>>>>>> p9x
 static struct platform_driver gladiator_erp_driver = {
 	.probe = gladiator_erp_probe,
 	.driver = {
@@ -605,9 +653,14 @@ static struct platform_driver gladiator_erp_driver = {
 static int init_gladiator_erp(void)
 {
 	int ret;
+<<<<<<< HEAD
 
 	ret = scm_is_secure_device();
 	if (!ret) {
+=======
+	ret = scm_is_gladiator_erp_available();
+	if (ret) {
+>>>>>>> p9x
 		pr_info("Gladiator Error Reporting not available %d\n", ret);
 		return -ENODEV;
 	}

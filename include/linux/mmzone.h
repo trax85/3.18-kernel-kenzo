@@ -58,7 +58,7 @@ enum {
 	MIGRATE_PCPTYPES, /* the number of types on the pcp lists */
 	MIGRATE_RESERVE = MIGRATE_PCPTYPES,
 #ifdef CONFIG_MEMORY_ISOLATION
-	MIGRATE_ISOLATE,	/* can't allocate from here */
+	MIGRATE_ISOLATE  ,	/* can't allocate from here */
 #endif
 	MIGRATE_TYPES
 };
@@ -75,12 +75,18 @@ extern int *get_migratetype_fallbacks(int mtype);
 bool is_cma_pageblock(struct page *page);
 #  define is_migrate_cma(migratetype) unlikely((migratetype) == MIGRATE_CMA)
 #  define get_cma_migrate_type() MIGRATE_CMA
+<<<<<<< HEAD
 #  define is_migrate_cma_page(_page) (get_pageblock_migratetype(_page) == MIGRATE_CMA)
+=======
+>>>>>>> p9x
 #else
 #  define is_cma_pageblock(page) false
 #  define is_migrate_cma(migratetype) false
 #  define get_cma_migrate_type() MIGRATE_MOVABLE
+<<<<<<< HEAD
 #  define is_migrate_cma_page(_page) false
+=======
+>>>>>>> p9x
 #endif
 
 #define for_each_migratetype_order(order, type) \
@@ -92,6 +98,7 @@ extern int page_group_by_mobility_disabled;
 #define NR_MIGRATETYPE_BITS (PB_migrate_end - PB_migrate + 1)
 #define MIGRATETYPE_MASK ((1UL << NR_MIGRATETYPE_BITS) - 1)
 
+<<<<<<< HEAD
 #define get_pageblock_migratetype(page)					\
 	get_pfnblock_flags_mask(page, page_to_pfn(page),		\
 			PB_migrate_end, MIGRATETYPE_MASK)
@@ -101,6 +108,12 @@ static inline int get_pfnblock_migratetype(struct page *page, unsigned long pfn)
 	BUILD_BUG_ON(PB_migrate_end - PB_migrate != 2);
 	return get_pfnblock_flags_mask(page, pfn, PB_migrate_end,
 					MIGRATETYPE_MASK);
+=======
+static inline int get_pageblock_migratetype(struct page *page)
+{
+	BUILD_BUG_ON(PB_migrate_end - PB_migrate != 2);
+	return get_pageblock_flags_mask(page, PB_migrate_end, MIGRATETYPE_MASK);
+>>>>>>> p9x
 }
 
 struct free_area {
@@ -377,6 +390,40 @@ struct zone {
 #ifdef CONFIG_CMA
 	bool			cma_alloc;
 #endif
+<<<<<<< HEAD
+=======
+	struct per_cpu_pageset __percpu *pageset;
+	/*
+	 * free areas of different sizes
+	 */
+	spinlock_t		lock;
+#if defined CONFIG_COMPACTION || defined CONFIG_CMA
+	/* Set to true when the PG_migrate_skip bits should be cleared */
+	bool			compact_blockskip_flush;
+
+	/* pfns where compaction scanners should start */
+	unsigned long		compact_cached_free_pfn;
+	unsigned long		compact_cached_migrate_pfn;
+#endif
+
+#ifdef CONFIG_MEMORY_ISOLATION
+	/*
+	 * Number of isolated pageblock. It is used to solve incorrect
+	 * freepage counting problem due to racy retrieving migratetype
+	 * of pageblock. Protected by zone->lock.
+	 */
+	unsigned long           nr_isolate_pageblock;
+#endif
+
+#ifdef CONFIG_MEMORY_HOTPLUG
+	/* see spanned/present_pages for more description */
+	seqlock_t		span_seqlock;
+#endif
+#ifdef CONFIG_CMA
+	bool			cma_alloc;
+#endif
+	struct free_area	free_area[MAX_ORDER];
+>>>>>>> p9x
 
 #ifndef CONFIG_SPARSEMEM
 	/*
@@ -429,8 +476,14 @@ struct zone {
 	 * give them a chance of being in the same cacheline.
 	 *
 	 * Write access to present_pages at runtime should be protected by
+<<<<<<< HEAD
 	 * mem_hotplug_begin/end(). Any reader who can't tolerant drift of
 	 * present_pages should get_online_mems() to get a stable value.
+=======
+	 * lock_memory_hotplug()/unlock_memory_hotplug().  Any reader who can't
+	 * tolerant drift of present_pages should hold memory hotplug lock to
+	 * get a stable value.
+>>>>>>> p9x
 	 *
 	 * Read access to managed_pages should be safe because it's unsigned
 	 * long. Write access to zone->managed_pages and totalram_pages are
@@ -555,15 +608,63 @@ enum zone_flags {
 	ZONE_CONGESTED,			/* zone has many dirty pages backed by
 					 * a congested BDI
 					 */
+<<<<<<< HEAD
 	ZONE_DIRTY,			/* reclaim scanning has recently found
+=======
+	ZONE_TAIL_LRU_DIRTY,		/* reclaim scanning has recently found
+>>>>>>> p9x
 					 * many dirty file pages at the tail
 					 * of the LRU.
 					 */
 	ZONE_WRITEBACK,			/* reclaim scanning has recently found
 					 * many pages under writeback
 					 */
+<<<<<<< HEAD
 	ZONE_FAIR_DEPLETED,		/* fair zone policy batch depleted */
 };
+=======
+} zone_flags_t;
+
+static inline void zone_set_flag(struct zone *zone, zone_flags_t flag)
+{
+	set_bit(flag, &zone->flags);
+}
+
+static inline int zone_test_and_set_flag(struct zone *zone, zone_flags_t flag)
+{
+	return test_and_set_bit(flag, &zone->flags);
+}
+
+static inline void zone_clear_flag(struct zone *zone, zone_flags_t flag)
+{
+	clear_bit(flag, &zone->flags);
+}
+
+static inline int zone_is_reclaim_congested(const struct zone *zone)
+{
+	return test_bit(ZONE_CONGESTED, &zone->flags);
+}
+
+static inline int zone_is_reclaim_dirty(const struct zone *zone)
+{
+	return test_bit(ZONE_TAIL_LRU_DIRTY, &zone->flags);
+}
+
+static inline int zone_is_reclaim_writeback(const struct zone *zone)
+{
+	return test_bit(ZONE_WRITEBACK, &zone->flags);
+}
+
+static inline int zone_is_reclaim_locked(const struct zone *zone)
+{
+	return test_bit(ZONE_RECLAIM_LOCKED, &zone->flags);
+}
+
+static inline int zone_is_oom_locked(const struct zone *zone)
+{
+	return test_bit(ZONE_OOM_LOCKED, &zone->flags);
+}
+>>>>>>> p9x
 
 static inline unsigned long zone_end_pfn(const struct zone *zone)
 {
@@ -989,7 +1090,6 @@ static inline int zonelist_node_idx(struct zoneref *zoneref)
  * @z - The cursor used as a starting point for the search
  * @highest_zoneidx - The zone index of the highest zone to return
  * @nodes - An optional nodemask to filter the zonelist with
- * @zone - The first suitable zone found is returned via this parameter
  *
  * This function returns the next zone at or below a given zone index that is
  * within the allowed nodemask using a cursor as the starting point for the
@@ -999,8 +1099,7 @@ static inline int zonelist_node_idx(struct zoneref *zoneref)
  */
 struct zoneref *next_zones_zonelist(struct zoneref *z,
 					enum zone_type highest_zoneidx,
-					nodemask_t *nodes,
-					struct zone **zone);
+					nodemask_t *nodes);
 
 /**
  * first_zones_zonelist - Returns the first zone at or below highest_zoneidx within the allowed nodemask in a zonelist
@@ -1019,8 +1118,10 @@ static inline struct zoneref *first_zones_zonelist(struct zonelist *zonelist,
 					nodemask_t *nodes,
 					struct zone **zone)
 {
-	return next_zones_zonelist(zonelist->_zonerefs, highest_zoneidx, nodes,
-								zone);
+	struct zoneref *z = next_zones_zonelist(zonelist->_zonerefs,
+							highest_zoneidx, nodes);
+	*zone = zonelist_zone(z);
+	return z;
 }
 
 /**
@@ -1037,7 +1138,8 @@ static inline struct zoneref *first_zones_zonelist(struct zonelist *zonelist,
 #define for_each_zone_zonelist_nodemask(zone, z, zlist, highidx, nodemask) \
 	for (z = first_zones_zonelist(zlist, highidx, nodemask, &zone);	\
 		zone;							\
-		z = next_zones_zonelist(++z, highidx, nodemask, &zone))	\
+		z = next_zones_zonelist(++z, highidx, nodemask),	\
+			zone = zonelist_zone(z))			\
 
 /**
  * for_each_zone_zonelist - helper macro to iterate over valid zones in a zonelist at or below a given zone index
@@ -1090,8 +1192,14 @@ static inline unsigned long early_pfn_to_nid(unsigned long pfn)
 #error Allocator MAX_ORDER exceeds SECTION_SIZE
 #endif
 
-#define pfn_to_section_nr(pfn) ((pfn) >> PFN_SECTION_SHIFT)
-#define section_nr_to_pfn(sec) ((sec) << PFN_SECTION_SHIFT)
+static inline unsigned long pfn_to_section_nr(unsigned long pfn)
+{
+	return pfn >> PFN_SECTION_SHIFT;
+}
+static inline unsigned long section_nr_to_pfn(unsigned long sec)
+{
+	return sec << PFN_SECTION_SHIFT;
+}
 
 #define SECTION_ALIGN_UP(pfn)	(((pfn) + PAGES_PER_SECTION - 1) & PAGE_SECTION_MASK)
 #define SECTION_ALIGN_DOWN(pfn)	((pfn) & PAGE_SECTION_MASK)
@@ -1228,7 +1336,10 @@ static inline int pfn_present(unsigned long pfn)
 #define pfn_to_nid(pfn)		(0)
 #endif
 
+#ifndef early_pfn_valid
 #define early_pfn_valid(pfn)	pfn_valid(pfn)
+#endif
+
 void sparse_init(void);
 #else
 #define sparse_init()	do {} while (0)

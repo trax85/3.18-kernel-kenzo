@@ -57,7 +57,25 @@ static int loongson2_cpufreq_target(struct cpufreq_policy *policy,
 
 	freq =
 	    ((cpu_clock_freq / 1000) *
+<<<<<<< HEAD
 	     loongson2_clockmod_table[index].driver_data) / 8;
+=======
+	     loongson2_clockmod_table[newstate].driver_data) / 8;
+	if (freq < policy->min || freq > policy->max)
+		return -EINVAL;
+
+	pr_debug("cpufreq: requested frequency %u Hz\n", target_freq * 1000);
+
+	freqs.old = loongson2_cpufreq_get(cpu);
+	freqs.new = freq;
+	freqs.flags = 0;
+
+	if (freqs.new == freqs.old)
+		return 0;
+
+	/* notifiers */
+	cpufreq_notify_transition(policy, &freqs, CPUFREQ_PRECHANGE);
+>>>>>>> p9x
 
 	set_cpus_allowed_ptr(current, &cpus_allowed);
 
@@ -92,11 +110,20 @@ static int loongson2_cpufreq_cpu_init(struct cpufreq_policy *policy)
 	     i++)
 		loongson2_clockmod_table[i].frequency = (rate * i) / 8;
 
+<<<<<<< HEAD
 	ret = clk_set_rate(cpuclk, rate * 1000);
+=======
+	ret = clk_set_rate(cpuclk, rate);
+>>>>>>> p9x
 	if (ret) {
 		clk_put(cpuclk);
 		return ret;
 	}
+<<<<<<< HEAD
+=======
+
+	policy->cur = loongson2_cpufreq_get(policy->cpu);
+>>>>>>> p9x
 
 	policy->clk = cpuclk;
 	return cpufreq_generic_init(policy, &loongson2_clockmod_table[0], 0);

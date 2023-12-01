@@ -17,6 +17,10 @@
 #include <linux/smp.h>
 #include <linux/errno.h>
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/percpu.h>
+>>>>>>> p9x
 #include <linux/cpumask.h>
 #include <linux/rcupdate.h>
 #include <linux/static_key.h>
@@ -49,7 +53,26 @@ for_each_kernel_tracepoint(void (*fct)(struct tracepoint *tp, void *priv),
 #ifdef CONFIG_MODULES
 struct tp_module {
 	struct list_head list;
+<<<<<<< HEAD
 	struct module *mod;
+=======
+	unsigned int num_tracepoints;
+	struct tracepoint * const *tracepoints_ptrs;
+};
+bool trace_module_has_bad_taint(struct module *mod);
+#else
+static inline bool trace_module_has_bad_taint(struct module *mod)
+{
+	return false;
+}
+#endif /* CONFIG_MODULES */
+
+struct tracepoint_iter {
+#ifdef CONFIG_MODULES
+	struct tp_module *module;
+#endif /* CONFIG_MODULES */
+	struct tracepoint * const *tracepoint;
+>>>>>>> p9x
 };
 
 bool trace_module_has_bad_taint(struct module *mod);

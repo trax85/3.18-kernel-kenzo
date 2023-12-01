@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2015, 2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -521,7 +525,11 @@ static void msm8994_ext_control(struct snd_soc_codec *codec)
 {
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
 
+<<<<<<< HEAD
 	mutex_lock(&codec->mutex);
+=======
+	mutex_lock(&dapm->codec->mutex);
+>>>>>>> p9x
 	pr_debug("%s: msm8994_spk_control = %d", __func__, msm8994_spk_control);
 	if (msm8994_spk_control == MSM8994_SPK_ON) {
 		snd_soc_dapm_enable_pin(dapm, "Lineout_1 amp");
@@ -530,7 +538,11 @@ static void msm8994_ext_control(struct snd_soc_codec *codec)
 		snd_soc_dapm_disable_pin(dapm, "Lineout_1 amp");
 		snd_soc_dapm_disable_pin(dapm, "Lineout_2 amp");
 	}
+<<<<<<< HEAD
 	mutex_unlock(&codec->mutex);
+=======
+	mutex_unlock(&dapm->codec->mutex);
+>>>>>>> p9x
 	snd_soc_dapm_sync(dapm);
 }
 
@@ -546,7 +558,11 @@ static int msm8994_get_spk(struct snd_kcontrol *kcontrol,
 static int msm8994_set_spk(struct snd_kcontrol *kcontrol,
 		       struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+=======
+	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+>>>>>>> p9x
 
 	pr_debug("%s()\n", __func__);
 	if (msm8994_spk_control == ucontrol->value.integer.value[0])
@@ -1726,7 +1742,11 @@ static const struct snd_kcontrol_new msm_snd_controls[] = {
 
 static bool msm8994_swap_gnd_mic(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
 	struct snd_soc_card *card = codec->component.card;
+=======
+	struct snd_soc_card *card = codec->card;
+>>>>>>> p9x
 	struct msm8994_asoc_mach_data *pdata = snd_soc_card_get_drvdata(card);
 	int value = gpio_get_value_cansleep(pdata->us_euro_gpio);
 	pr_debug("%s: swap select switch %d to %d\n", __func__, value, !value);
@@ -2572,7 +2592,11 @@ static struct snd_soc_dai_link msm8994_common_dai_links[] = {
 		.name = "MSM8994 Compr8",
 		.stream_name = "COMPR8",
 		.cpu_dai_name = "MultiMedia8",
+<<<<<<< HEAD
 		.platform_name = "msm-compr-dsp",
+=======
+		.platform_name = "msm-compress-dsp",
+>>>>>>> p9x
 		.dynamic = 1,
 		.trigger = {SND_SOC_DPCM_TRIGGER_POST,
 			 SND_SOC_DPCM_TRIGGER_POST},

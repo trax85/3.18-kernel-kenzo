@@ -530,6 +530,18 @@ static int core_scsi3_pr_seq_non_holder(
 
 			return 0;
 		}
+       } else if (we && registered_nexus) {
+               /*
+                * Reads are allowed for Write Exclusive locks
+                * from all registrants.
+                */
+               if (cmd->data_direction == DMA_FROM_DEVICE) {
+                       pr_debug("Allowing READ CDB: 0x%02x for %s"
+                               " reservation\n", cdb[0],
+                               core_scsi3_pr_dump_type(pr_reg_type));
+
+                       return 0;
+               }
 	}
 	pr_debug("%s Conflict for %sregistered nexus %s CDB: 0x%2x"
 		" for %s reservation\n", transport_dump_cmd_direction(cmd),
@@ -676,7 +688,12 @@ static struct t10_pr_registration *__core_scsi3_alloc_registration(
 	 */
 	spin_lock(&dev->se_port_lock);
 	list_for_each_entry_safe(port, port_tmp, &dev->dev_sep_list, sep_list) {
+<<<<<<< HEAD
 		atomic_inc_mb(&port->sep_tg_pt_ref_cnt);
+=======
+		atomic_inc(&port->sep_tg_pt_ref_cnt);
+		smp_mb__after_atomic();
+>>>>>>> p9x
 		spin_unlock(&dev->se_port_lock);
 
 		spin_lock_bh(&port->sep_alua_lock);
@@ -710,7 +727,12 @@ static struct t10_pr_registration *__core_scsi3_alloc_registration(
 			if (strcmp(nacl->initiatorname, nacl_tmp->initiatorname))
 				continue;
 
+<<<<<<< HEAD
 			atomic_inc_mb(&deve_tmp->pr_ref_count);
+=======
+			atomic_inc(&deve_tmp->pr_ref_count);
+			smp_mb__after_atomic();
+>>>>>>> p9x
 			spin_unlock_bh(&port->sep_alua_lock);
 			/*
 			 * Grab a configfs group dependency that is released
@@ -722,8 +744,15 @@ static struct t10_pr_registration *__core_scsi3_alloc_registration(
 			if (ret < 0) {
 				pr_err("core_scsi3_lunacl_depend"
 						"_item() failed\n");
+<<<<<<< HEAD
 				atomic_dec_mb(&port->sep_tg_pt_ref_cnt);
 				atomic_dec_mb(&deve_tmp->pr_ref_count);
+=======
+				atomic_dec(&port->sep_tg_pt_ref_cnt);
+				smp_mb__after_atomic();
+				atomic_dec(&deve_tmp->pr_ref_count);
+				smp_mb__after_atomic();
+>>>>>>> p9x
 				goto out;
 			}
 			/*
@@ -737,8 +766,15 @@ static struct t10_pr_registration *__core_scsi3_alloc_registration(
 						nacl_tmp, deve_tmp, NULL,
 						sa_res_key, all_tg_pt, aptpl);
 			if (!pr_reg_atp) {
+<<<<<<< HEAD
 				atomic_dec_mb(&port->sep_tg_pt_ref_cnt);
 				atomic_dec_mb(&deve_tmp->pr_ref_count);
+=======
+				atomic_dec(&port->sep_tg_pt_ref_cnt);
+				smp_mb__after_atomic();
+				atomic_dec(&deve_tmp->pr_ref_count);
+				smp_mb__after_atomic();
+>>>>>>> p9x
 				core_scsi3_lunacl_undepend_item(deve_tmp);
 				goto out;
 			}
@@ -750,7 +786,12 @@ static struct t10_pr_registration *__core_scsi3_alloc_registration(
 		spin_unlock_bh(&port->sep_alua_lock);
 
 		spin_lock(&dev->se_port_lock);
+<<<<<<< HEAD
 		atomic_dec_mb(&port->sep_tg_pt_ref_cnt);
+=======
+		atomic_dec(&port->sep_tg_pt_ref_cnt);
+		smp_mb__after_atomic();
+>>>>>>> p9x
 	}
 	spin_unlock(&dev->se_port_lock);
 
@@ -1105,7 +1146,12 @@ static struct t10_pr_registration *__core_scsi3_locate_pr_reg(
 				if (dev->dev_attrib.enforce_pr_isids)
 					continue;
 			}
+<<<<<<< HEAD
 			atomic_inc_mb(&pr_reg->pr_res_holders);
+=======
+			atomic_inc(&pr_reg->pr_res_holders);
+			smp_mb__after_atomic();
+>>>>>>> p9x
 			spin_unlock(&pr_tmpl->registration_lock);
 			return pr_reg;
 		}
@@ -1119,7 +1165,12 @@ static struct t10_pr_registration *__core_scsi3_locate_pr_reg(
 		if (strcmp(isid, pr_reg->pr_reg_isid))
 			continue;
 
+<<<<<<< HEAD
 		atomic_inc_mb(&pr_reg->pr_res_holders);
+=======
+		atomic_inc(&pr_reg->pr_res_holders);
+		smp_mb__after_atomic();
+>>>>>>> p9x
 		spin_unlock(&pr_tmpl->registration_lock);
 		return pr_reg;
 	}
@@ -1148,7 +1199,12 @@ static struct t10_pr_registration *core_scsi3_locate_pr_reg(
 
 static void core_scsi3_put_pr_reg(struct t10_pr_registration *pr_reg)
 {
+<<<<<<< HEAD
 	atomic_dec_mb(&pr_reg->pr_res_holders);
+=======
+	atomic_dec(&pr_reg->pr_res_holders);
+	smp_mb__after_atomic();
+>>>>>>> p9x
 }
 
 static int core_scsi3_check_implicit_release(
@@ -1341,7 +1397,12 @@ static void core_scsi3_tpg_undepend_item(struct se_portal_group *tpg)
 	configfs_undepend_item(tpg->se_tpg_tfo->tf_subsys,
 			&tpg->tpg_group.cg_item);
 
+<<<<<<< HEAD
 	atomic_dec_mb(&tpg->tpg_pr_ref_count);
+=======
+	atomic_dec(&tpg->tpg_pr_ref_count);
+	smp_mb__after_atomic();
+>>>>>>> p9x
 }
 
 static int core_scsi3_nodeacl_depend_item(struct se_node_acl *nacl)
@@ -1360,14 +1421,24 @@ static void core_scsi3_nodeacl_undepend_item(struct se_node_acl *nacl)
 	struct se_portal_group *tpg = nacl->se_tpg;
 
 	if (nacl->dynamic_node_acl) {
+<<<<<<< HEAD
 		atomic_dec_mb(&nacl->acl_pr_ref_count);
+=======
+		atomic_dec(&nacl->acl_pr_ref_count);
+		smp_mb__after_atomic();
+>>>>>>> p9x
 		return;
 	}
 
 	configfs_undepend_item(tpg->se_tpg_tfo->tf_subsys,
 			&nacl->acl_group.cg_item);
 
+<<<<<<< HEAD
 	atomic_dec_mb(&nacl->acl_pr_ref_count);
+=======
+	atomic_dec(&nacl->acl_pr_ref_count);
+	smp_mb__after_atomic();
+>>>>>>> p9x
 }
 
 static int core_scsi3_lunacl_depend_item(struct se_dev_entry *se_deve)
@@ -1397,7 +1468,12 @@ static void core_scsi3_lunacl_undepend_item(struct se_dev_entry *se_deve)
 	 * For nacl->dynamic_node_acl=1
 	 */
 	if (!lun_acl) {
+<<<<<<< HEAD
 		atomic_dec_mb(&se_deve->pr_ref_count);
+=======
+		atomic_dec(&se_deve->pr_ref_count);
+		smp_mb__after_atomic();
+>>>>>>> p9x
 		return;
 	}
 	nacl = lun_acl->se_lun_nacl;
@@ -1406,7 +1482,12 @@ static void core_scsi3_lunacl_undepend_item(struct se_dev_entry *se_deve)
 	configfs_undepend_item(tpg->se_tpg_tfo->tf_subsys,
 			&lun_acl->se_lun_group.cg_item);
 
+<<<<<<< HEAD
 	atomic_dec_mb(&se_deve->pr_ref_count);
+=======
+	atomic_dec(&se_deve->pr_ref_count);
+	smp_mb__after_atomic();
+>>>>>>> p9x
 }
 
 static sense_reason_t
@@ -1539,13 +1620,23 @@ core_scsi3_decode_spec_i_port(
 			if (!i_str)
 				continue;
 
+<<<<<<< HEAD
 			atomic_inc_mb(&tmp_tpg->tpg_pr_ref_count);
+=======
+			atomic_inc(&tmp_tpg->tpg_pr_ref_count);
+			smp_mb__after_atomic();
+>>>>>>> p9x
 			spin_unlock(&dev->se_port_lock);
 
 			if (core_scsi3_tpg_depend_item(tmp_tpg)) {
 				pr_err(" core_scsi3_tpg_depend_item()"
 					" for tmp_tpg\n");
+<<<<<<< HEAD
 				atomic_dec_mb(&tmp_tpg->tpg_pr_ref_count);
+=======
+				atomic_dec(&tmp_tpg->tpg_pr_ref_count);
+				smp_mb__after_atomic();
+>>>>>>> p9x
 				ret = TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
 				goto out_unmap;
 			}
@@ -1557,8 +1648,15 @@ core_scsi3_decode_spec_i_port(
 			spin_lock_irq(&tmp_tpg->acl_node_lock);
 			dest_node_acl = __core_tpg_get_initiator_node_acl(
 						tmp_tpg, i_str);
+<<<<<<< HEAD
 			if (dest_node_acl)
 				atomic_inc_mb(&dest_node_acl->acl_pr_ref_count);
+=======
+			if (dest_node_acl) {
+				atomic_inc(&dest_node_acl->acl_pr_ref_count);
+				smp_mb__after_atomic();
+			}
+>>>>>>> p9x
 			spin_unlock_irq(&tmp_tpg->acl_node_lock);
 
 			if (!dest_node_acl) {
@@ -1570,7 +1668,12 @@ core_scsi3_decode_spec_i_port(
 			if (core_scsi3_nodeacl_depend_item(dest_node_acl)) {
 				pr_err("configfs_depend_item() failed"
 					" for dest_node_acl->acl_group\n");
+<<<<<<< HEAD
 				atomic_dec_mb(&dest_node_acl->acl_pr_ref_count);
+=======
+				atomic_dec(&dest_node_acl->acl_pr_ref_count);
+				smp_mb__after_atomic();
+>>>>>>> p9x
 				core_scsi3_tpg_undepend_item(tmp_tpg);
 				ret = TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
 				goto out_unmap;
@@ -1629,7 +1732,12 @@ core_scsi3_decode_spec_i_port(
 		if (core_scsi3_lunacl_depend_item(dest_se_deve)) {
 			pr_err("core_scsi3_lunacl_depend_item()"
 					" failed\n");
+<<<<<<< HEAD
 			atomic_dec_mb(&dest_se_deve->pr_ref_count);
+=======
+			atomic_dec(&dest_se_deve->pr_ref_count);
+			smp_mb__after_atomic();
+>>>>>>> p9x
 			core_scsi3_nodeacl_undepend_item(dest_node_acl);
 			core_scsi3_tpg_undepend_item(dest_tpg);
 			ret = TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
@@ -2272,6 +2380,7 @@ core_scsi3_pro_reserve(struct se_cmd *cmd, int type, int scope, u64 res_key)
 	spin_lock(&dev->dev_reservation_lock);
 	pr_res_holder = dev->dev_pr_res_holder;
 	if (pr_res_holder) {
+		int pr_res_type = pr_res_holder->pr_res_type;
 		/*
 		 * From spc4r17 Section 5.7.9: Reserving:
 		 *
@@ -2282,7 +2391,9 @@ core_scsi3_pro_reserve(struct se_cmd *cmd, int type, int scope, u64 res_key)
 		 * the logical unit, then the command shall be completed with
 		 * RESERVATION CONFLICT status.
 		 */
-		if (pr_res_holder != pr_reg) {
+		if ((pr_res_holder != pr_reg) &&
+		    (pr_res_type != PR_TYPE_WRITE_EXCLUSIVE_ALLREG) &&
+		    (pr_res_type != PR_TYPE_EXCLUSIVE_ACCESS_ALLREG)) {
 			struct se_node_acl *pr_res_nacl = pr_res_holder->pr_reg_nacl;
 			pr_err("SPC-3 PR: Attempted RESERVE from"
 				" [%s]: %s while reservation already held by"
@@ -3151,13 +3262,23 @@ core_scsi3_emulate_pro_register_and_move(struct se_cmd *cmd, u64 res_key,
 		if (!dest_tf_ops)
 			continue;
 
+<<<<<<< HEAD
 		atomic_inc_mb(&dest_se_tpg->tpg_pr_ref_count);
+=======
+		atomic_inc(&dest_se_tpg->tpg_pr_ref_count);
+		smp_mb__after_atomic();
+>>>>>>> p9x
 		spin_unlock(&dev->se_port_lock);
 
 		if (core_scsi3_tpg_depend_item(dest_se_tpg)) {
 			pr_err("core_scsi3_tpg_depend_item() failed"
 				" for dest_se_tpg\n");
+<<<<<<< HEAD
 			atomic_dec_mb(&dest_se_tpg->tpg_pr_ref_count);
+=======
+			atomic_dec(&dest_se_tpg->tpg_pr_ref_count);
+			smp_mb__after_atomic();
+>>>>>>> p9x
 			ret = TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
 			goto out_put_pr_reg;
 		}
@@ -3253,8 +3374,15 @@ after_iport_check:
 	spin_lock_irq(&dest_se_tpg->acl_node_lock);
 	dest_node_acl = __core_tpg_get_initiator_node_acl(dest_se_tpg,
 				initiator_str);
+<<<<<<< HEAD
 	if (dest_node_acl)
 		atomic_inc_mb(&dest_node_acl->acl_pr_ref_count);
+=======
+	if (dest_node_acl) {
+		atomic_inc(&dest_node_acl->acl_pr_ref_count);
+		smp_mb__after_atomic();
+	}
+>>>>>>> p9x
 	spin_unlock_irq(&dest_se_tpg->acl_node_lock);
 
 	if (!dest_node_acl) {
@@ -3268,7 +3396,12 @@ after_iport_check:
 	if (core_scsi3_nodeacl_depend_item(dest_node_acl)) {
 		pr_err("core_scsi3_nodeacl_depend_item() for"
 			" dest_node_acl\n");
+<<<<<<< HEAD
 		atomic_dec_mb(&dest_node_acl->acl_pr_ref_count);
+=======
+		atomic_dec(&dest_node_acl->acl_pr_ref_count);
+		smp_mb__after_atomic();
+>>>>>>> p9x
 		dest_node_acl = NULL;
 		ret = TCM_INVALID_PARAMETER_LIST;
 		goto out;
@@ -3292,7 +3425,12 @@ after_iport_check:
 
 	if (core_scsi3_lunacl_depend_item(dest_se_deve)) {
 		pr_err("core_scsi3_lunacl_depend_item() failed\n");
+<<<<<<< HEAD
 		atomic_dec_mb(&dest_se_deve->pr_ref_count);
+=======
+		atomic_dec(&dest_se_deve->pr_ref_count);
+		smp_mb__after_atomic();
+>>>>>>> p9x
 		dest_se_deve = NULL;
 		ret = TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
 		goto out;
@@ -3840,7 +3978,8 @@ core_scsi3_pri_read_full_status(struct se_cmd *cmd)
 	unsigned char *buf;
 	u32 add_desc_len = 0, add_len = 0, desc_len, exp_desc_len;
 	u32 off = 8; /* off into first Full Status descriptor */
-	int format_code = 0;
+	int format_code = 0, pr_res_type = 0, pr_res_scope = 0;
+	bool all_reg = false;
 
 	if (cmd->data_length < 8) {
 		pr_err("PRIN SA READ_FULL_STATUS SCSI Data Length: %u"
@@ -3857,6 +3996,19 @@ core_scsi3_pri_read_full_status(struct se_cmd *cmd)
 	buf[2] = ((dev->t10_pr.pr_generation >> 8) & 0xff);
 	buf[3] = (dev->t10_pr.pr_generation & 0xff);
 
+	spin_lock(&dev->dev_reservation_lock);
+	if (dev->dev_pr_res_holder) {
+		struct t10_pr_registration *pr_holder = dev->dev_pr_res_holder;
+
+		if (pr_holder->pr_res_type == PR_TYPE_WRITE_EXCLUSIVE_ALLREG ||
+		    pr_holder->pr_res_type == PR_TYPE_EXCLUSIVE_ACCESS_ALLREG) {
+			all_reg = true;
+			pr_res_type = pr_holder->pr_res_type;
+			pr_res_scope = pr_holder->pr_res_scope;
+		}
+	}
+	spin_unlock(&dev->dev_reservation_lock);
+
 	spin_lock(&pr_tmpl->registration_lock);
 	list_for_each_entry_safe(pr_reg, pr_reg_tmp,
 			&pr_tmpl->registration_list, pr_reg_list) {
@@ -3865,7 +4017,12 @@ core_scsi3_pri_read_full_status(struct se_cmd *cmd)
 		se_tpg = pr_reg->pr_reg_nacl->se_tpg;
 		add_desc_len = 0;
 
+<<<<<<< HEAD
 		atomic_inc_mb(&pr_reg->pr_res_holders);
+=======
+		atomic_inc(&pr_reg->pr_res_holders);
+		smp_mb__after_atomic();
+>>>>>>> p9x
 		spin_unlock(&pr_tmpl->registration_lock);
 		/*
 		 * Determine expected length of $FABRIC_MOD specific
@@ -3878,7 +4035,12 @@ core_scsi3_pri_read_full_status(struct se_cmd *cmd)
 			pr_warn("SPC-3 PRIN READ_FULL_STATUS ran"
 				" out of buffer: %d\n", cmd->data_length);
 			spin_lock(&pr_tmpl->registration_lock);
+<<<<<<< HEAD
 			atomic_dec_mb(&pr_reg->pr_res_holders);
+=======
+			atomic_dec(&pr_reg->pr_res_holders);
+			smp_mb__after_atomic();
+>>>>>>> p9x
 			break;
 		}
 		/*
@@ -3904,14 +4066,20 @@ core_scsi3_pri_read_full_status(struct se_cmd *cmd)
 		 * reservation holder for PR_HOLDER bit.
 		 *
 		 * Also, if this registration is the reservation
-		 * holder, fill in SCOPE and TYPE in the next byte.
+		 * holder or there is an All Registrants reservation
+		 * active, fill in SCOPE and TYPE in the next byte.
 		 */
 		if (pr_reg->pr_res_holder) {
 			buf[off++] |= 0x01;
 			buf[off++] = (pr_reg->pr_res_scope & 0xf0) |
 				     (pr_reg->pr_res_type & 0x0f);
-		} else
+		} else if (all_reg) {
+			buf[off++] |= 0x01;
+			buf[off++] = (pr_res_scope & 0xf0) |
+				     (pr_res_type & 0x0f);
+		} else {
 			off += 2;
+		}
 
 		off += 4; /* Skip over reserved area */
 		/*
@@ -3939,7 +4107,12 @@ core_scsi3_pri_read_full_status(struct se_cmd *cmd)
 				se_nacl, pr_reg, &format_code, &buf[off+4]);
 
 		spin_lock(&pr_tmpl->registration_lock);
+<<<<<<< HEAD
 		atomic_dec_mb(&pr_reg->pr_res_holders);
+=======
+		atomic_dec(&pr_reg->pr_res_holders);
+		smp_mb__after_atomic();
+>>>>>>> p9x
 		/*
 		 * Set the ADDITIONAL DESCRIPTOR LENGTH
 		 */

@@ -32,8 +32,13 @@
 #define TRACER_TIMEOUT 10000
 
 #define etm_writel(t, id, v, x) \
+<<<<<<< HEAD
 	(writel_relaxed((v), (t)->etm_regs[(id)] + (x)))
 #define etm_readl(t, id, x) (readl_relaxed((t)->etm_regs[(id)] + (x)))
+=======
+	(__raw_writel((v), (t)->etm_regs[(id)] + (x)))
+#define etm_readl(t, id, x) (__raw_readl((t)->etm_regs[(id)] + (x)))
+>>>>>>> p9x
 
 /* CoreSight Management Registers */
 #define CSMR_LOCKACCESS 0xfb0

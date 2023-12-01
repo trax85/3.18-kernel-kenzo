@@ -66,11 +66,18 @@ static int zlib_uncompress(struct squashfs_sb_info *msblk, void *strm,
 	struct buffer_head **bh, int b, int offset, int length,
 	struct squashfs_page_actor *output)
 {
+<<<<<<< HEAD
 	void *buf = NULL;
 	int zlib_err, zlib_init = 0, k = 0;
 	z_stream *stream = strm;
 
 	stream->avail_out = PAGE_SIZE;
+=======
+	int zlib_err, zlib_init = 0, k = 0;
+	z_stream *stream = strm;
+
+	stream->avail_out = PAGE_CACHE_SIZE;
+>>>>>>> p9x
 	stream->next_out = squashfs_first_page(output);
 	stream->avail_in = 0;
 
@@ -85,6 +92,7 @@ static int zlib_uncompress(struct squashfs_sb_info *msblk, void *strm,
 
 		if (stream->avail_out == 0) {
 			stream->next_out = squashfs_next_page(output);
+<<<<<<< HEAD
 			if (!IS_ERR(stream->next_out))
 				stream->avail_out = PAGE_SIZE;
 		}
@@ -96,6 +104,10 @@ static int zlib_uncompress(struct squashfs_sb_info *msblk, void *strm,
 					goto out;
 			}
 			stream->next_out = buf;
+=======
+			if (stream->next_out != NULL)
+				stream->avail_out = PAGE_CACHE_SIZE;
+>>>>>>> p9x
 		}
 
 		if (!zlib_init) {
@@ -125,7 +137,10 @@ static int zlib_uncompress(struct squashfs_sb_info *msblk, void *strm,
 	if (k < b)
 		goto out;
 
+<<<<<<< HEAD
 	kfree(buf);
+=======
+>>>>>>> p9x
 	return stream->total_out;
 
 out:

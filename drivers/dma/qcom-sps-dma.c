@@ -159,7 +159,11 @@ static void qbam_free_chan(struct dma_chan *chan)
 	mutex_lock(&qbam_chan->lock);
 	if (qbam_disconnect_chan(qbam_chan))
 		qbam_err(qbam_dev,
+<<<<<<< HEAD
 			"error free_chan() failed to disconnect(pipe:%d)\n",
+=======
+			"error free_chan() faild to disconnect(pipe:%d)\n",
+>>>>>>> p9x
 			qbam_chan->bam_pipe.index);
 	qbam_chan->pending_desc.sgl = NULL;
 	qbam_chan->pending_desc.sg_len = 0;
@@ -206,11 +210,16 @@ static struct dma_chan *qbam_dma_xlate(struct of_phandle_args *dma_spec,
 
 	/* allocate a channel */
 	qbam_chan = kzalloc(sizeof(*qbam_chan), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!qbam_chan) {
 		qbam_err(qbam_dev, "error kmalloc(size:%llu) failed\n",
 			 (u64) sizeof(*qbam_chan));
 		return NULL;
 	}
+=======
+	if (!qbam_chan)
+		return NULL;
+>>>>>>> p9x
 
 	/* allocate BAM resources for that channel */
 	qbam_chan->bam_pipe.handle = sps_alloc_endpoint();
@@ -442,8 +451,13 @@ static int qbam_slave_cfg(struct qbam_channel *qbam_chan,
 						  GFP_KERNEL);
 	if (!pipe_cfg->desc.base) {
 		qbam_err(qbam_dev,
+<<<<<<< HEAD
 			"error dma_alloc_coherent(desc-sz:%llu * n-descs:%d)\n",
 			(u64) sizeof(struct sps_iovec),
+=======
+			"error dma_alloc_coherent(desc-sz:%d * n-descs:%d)\n",
+			pipe_cfg->desc.size,
+>>>>>>> p9x
 			qbam_chan->bam_pipe.num_descriptors);
 		return -ENOMEM;
 	}
@@ -638,11 +652,17 @@ static int qbam_probe(struct platform_device *pdev)
 	struct device_node *of_node = pdev->dev.of_node;
 
 	qbam_dev = devm_kzalloc(&pdev->dev, sizeof(*qbam_dev), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!qbam_dev) {
 		qbam_err(qbam_dev, "error kmalloc(size:%llu) failed",
 			(u64) sizeof(*qbam_dev));
 		return -ENOMEM;
 	}
+=======
+	if (!qbam_dev)
+		return -ENOMEM;
+
+>>>>>>> p9x
 	qbam_dev->dma_dev.dev = &pdev->dev;
 	platform_set_drvdata(pdev, qbam_dev);
 

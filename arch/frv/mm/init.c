@@ -118,9 +118,12 @@ void __init mem_init(void)
 
 	/* this will put all low memory onto the freelists */
 	free_all_bootmem();
+<<<<<<< HEAD
 #if defined(CONFIG_MMU) && defined(CONFIG_HIGHMEM)
 	{
 		unsigned long pfn;
+=======
+>>>>>>> p9x
 
 		for (pfn = get_num_physpages() - 1;
 		     pfn >= num_mappedpages; pfn--)

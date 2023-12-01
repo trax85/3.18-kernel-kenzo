@@ -150,6 +150,10 @@ static void sha2_finup(struct shash_desc *desc, const u8 *data,
 	kernel_neon_begin_partial(28);
 	sha2_ce_transform(blocks, data, sctx->state, NULL, len);
 	kernel_neon_end();
+<<<<<<< HEAD
+=======
+	data += blocks * SHA256_BLOCK_SIZE;
+>>>>>>> p9x
 }
 
 static int sha224_finup(struct shash_desc *desc, const u8 *data,

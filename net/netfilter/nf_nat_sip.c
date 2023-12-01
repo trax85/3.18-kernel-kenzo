@@ -115,8 +115,13 @@ static int map_addr(struct sk_buff *skb, unsigned int protoff,
 	    ct->tuplehash[dir].tuple.src.u.udp.port != port) {
 		newaddr = ct->tuplehash[!dir].tuple.dst.u3;
 		newport = 0;
+<<<<<<< HEAD
 	} else if (nf_inet_addr_cmp(&ct->tuplehash[dir].tuple.dst.u3, addr) &&
 		   ct->tuplehash[dir].tuple.dst.u.udp.port != port) {
+=======
+	} else if (nf_inet_addr_cmp(&ct->tuplehash[dir].tuple.dst.u3, addr)
+		  && ct->tuplehash[dir].tuple.dst.u.udp.port != port) {
+>>>>>>> p9x
 		newaddr = ct->tuplehash[!dir].tuple.src.u3;
 		newport = 0;
 	} else
@@ -129,7 +134,11 @@ static int map_addr(struct sk_buff *skb, unsigned int protoff,
 		buflen = sip_sprintf_addr(ct, buffer, &newaddr, false);
 	else
 		buflen = sip_sprintf_addr_port(ct, buffer, &newaddr,
+<<<<<<< HEAD
 					       ntohs(newport));
+=======
+						ntohs(newport));
+>>>>>>> p9x
 
 	return mangle_packet(skb, protoff, dataoff, dptr, datalen,
 			     matchoff, matchlen, buffer, buflen);

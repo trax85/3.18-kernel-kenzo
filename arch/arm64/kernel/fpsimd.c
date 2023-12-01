@@ -17,7 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+<<<<<<< HEAD
 #include <linux/cpu.h>
+=======
+>>>>>>> p9x
 #include <linux/cpu_pm.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -37,6 +40,7 @@
 #define FPEXC_IXF	(1 << 4)
 #define FPEXC_IDF	(1 << 7)
 
+<<<<<<< HEAD
 #define FP_SIMD_BIT	31
 
 /*
@@ -106,6 +110,8 @@ void fpsimd_settings_disable(void)
 {
 	clear_app_setting_bit(FP_SIMD_BIT);
 }
+=======
+>>>>>>> p9x
 
 /*
  * Trapped FP/ASIMD access.
@@ -159,6 +165,7 @@ void do_fpsimd_exc(unsigned int esr, struct pt_regs *regs)
 
 void fpsimd_thread_switch(struct task_struct *next)
 {
+<<<<<<< HEAD
 	/*
 	 * Save the current FPSIMD state to memory, but only if whatever is in
 	 * the registers is in fact the most recent userland FPSIMD state of
@@ -198,14 +205,25 @@ void fpsimd_thread_switch(struct task_struct *next)
 		else
 			fpsimd_disable_trap();
 	}
+=======
+	if (current->mm)
+		fpsimd_save_state(&current->thread.fpsimd_state);
+
+	if (next->mm)
+		fpsimd_load_state(&next->thread.fpsimd_state);
+>>>>>>> p9x
 }
 
 void fpsimd_flush_thread(void)
 {
 	preempt_disable();
 	memset(&current->thread.fpsimd_state, 0, sizeof(struct fpsimd_state));
+<<<<<<< HEAD
 	fpsimd_flush_task_state(current);
 	set_thread_flag(TIF_FOREIGN_FPSTATE);
+=======
+	fpsimd_load_state(&current->thread.fpsimd_state);
+>>>>>>> p9x
 	preempt_enable();
 }
 
@@ -216,12 +234,17 @@ void fpsimd_flush_thread(void)
 void fpsimd_preserve_current_state(void)
 {
 	preempt_disable();
+<<<<<<< HEAD
 	if (!test_thread_flag(TIF_FOREIGN_FPSTATE))
 		fpsimd_save_state(&current->thread.fpsimd_state);
+=======
+	fpsimd_save_state(&current->thread.fpsimd_state);
+>>>>>>> p9x
 	preempt_enable();
 }
 
 /*
+<<<<<<< HEAD
  * Load the userland FPSIMD state of 'current' from memory, but only if the
  * FPSIMD state already held in the registers is /not/ the most recent FPSIMD
  * state of 'current'
@@ -243,11 +266,15 @@ void fpsimd_restore_current_state(void)
  * Load an updated userland FPSIMD state for 'current' from memory and set the
  * flag that indicates that the FPSIMD register contents are the most recent
  * FPSIMD state of 'current'
+=======
+ * Load an updated userland FPSIMD state for 'current' from memory
+>>>>>>> p9x
  */
 void fpsimd_update_current_state(struct fpsimd_state *state)
 {
 	preempt_disable();
 	fpsimd_load_state(state);
+<<<<<<< HEAD
 	if (test_and_clear_thread_flag(TIF_FOREIGN_FPSTATE)) {
 		struct fpsimd_state *st = &current->thread.fpsimd_state;
 
@@ -265,6 +292,11 @@ void fpsimd_flush_task_state(struct task_struct *t)
 	t->thread.fpsimd_state.cpu = NR_CPUS;
 }
 
+=======
+	preempt_enable();
+}
+
+>>>>>>> p9x
 #ifdef CONFIG_KERNEL_MODE_NEON
 
 static DEFINE_PER_CPU(struct fpsimd_partial_state, hardirq_fpsimdstate);
@@ -289,10 +321,15 @@ void kernel_neon_begin_partial(u32 num_regs)
 		 * registers.
 		 */
 		preempt_disable();
+<<<<<<< HEAD
 		if (current->mm &&
 		    !test_and_set_thread_flag(TIF_FOREIGN_FPSTATE))
 			fpsimd_save_state(&current->thread.fpsimd_state);
 		this_cpu_write(fpsimd_last_state, NULL);
+=======
+		if (current->mm)
+			fpsimd_save_state(&current->thread.fpsimd_state);
+>>>>>>> p9x
 	}
 }
 EXPORT_SYMBOL(kernel_neon_begin_partial);
@@ -304,6 +341,12 @@ void kernel_neon_end(void)
 			in_irq() ? &hardirq_fpsimdstate : &softirq_fpsimdstate);
 		fpsimd_load_partial_state(s);
 	} else {
+<<<<<<< HEAD
+=======
+		if (current->mm)
+			fpsimd_load_state(&current->thread.fpsimd_state);
+
+>>>>>>> p9x
 		preempt_enable();
 	}
 }
@@ -317,6 +360,7 @@ static int fpsimd_cpu_pm_notifier(struct notifier_block *self,
 {
 	switch (cmd) {
 	case CPU_PM_ENTER:
+<<<<<<< HEAD
 		if (current->mm && !test_thread_flag(TIF_FOREIGN_FPSTATE))
 			fpsimd_save_state(&current->thread.fpsimd_state);
 		this_cpu_write(fpsimd_last_state, NULL);
@@ -324,6 +368,14 @@ static int fpsimd_cpu_pm_notifier(struct notifier_block *self,
 	case CPU_PM_EXIT:
 		if (current->mm)
 			set_thread_flag(TIF_FOREIGN_FPSTATE);
+=======
+		if (current->mm)
+			fpsimd_save_state(&current->thread.fpsimd_state);
+		break;
+	case CPU_PM_EXIT:
+		if (current->mm)
+			fpsimd_load_state(&current->thread.fpsimd_state);
+>>>>>>> p9x
 		break;
 	case CPU_PM_ENTER_FAILED:
 	default:
@@ -336,7 +388,11 @@ static struct notifier_block fpsimd_cpu_pm_notifier_block = {
 	.notifier_call = fpsimd_cpu_pm_notifier,
 };
 
+<<<<<<< HEAD
 static void __init fpsimd_pm_init(void)
+=======
+static void fpsimd_pm_init(void)
+>>>>>>> p9x
 {
 	cpu_pm_register_notifier(&fpsimd_cpu_pm_notifier_block);
 }
@@ -345,6 +401,7 @@ static void __init fpsimd_pm_init(void)
 static inline void fpsimd_pm_init(void) { }
 #endif /* CONFIG_CPU_PM */
 
+<<<<<<< HEAD
 #ifdef CONFIG_HOTPLUG_CPU
 static int fpsimd_cpu_hotplug_notifier(struct notifier_block *nfb,
 				       unsigned long action,
@@ -374,6 +431,8 @@ static inline void fpsimd_hotplug_init(void)
 static inline void fpsimd_hotplug_init(void) { }
 #endif
 
+=======
+>>>>>>> p9x
 /*
  * FP/SIMD support code initialisation.
  */
@@ -388,6 +447,8 @@ static int __init fpsimd_init(void)
 
 	if (!(elf_hwcap & HWCAP_ASIMD))
 		pr_notice("Advanced SIMD is not implemented\n");
+
+	fpsimd_pm_init();
 
 	return 0;
 }

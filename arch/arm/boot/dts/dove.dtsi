@@ -54,6 +54,7 @@
 			msi-parent = <&intc>;
 			bus-range = <0x00 0xff>;
 
+<<<<<<< HEAD
 			ranges = <0x82000000 0x0 0x40000 MBUS_ID(0xf0, 0x01) 0x40000 0 0x2000
 			          0x82000000 0x0 0x80000 MBUS_ID(0xf0, 0x01) 0x80000 0 0x2000
 				  0x82000000 0x1 0x0 MBUS_ID(0x04, 0xe8) 0 1 0   /* Port 0.0 Mem */
@@ -68,6 +69,25 @@
 				reg = <0x0800 0 0 0 0>;
 				clocks = <&gate_clk 4>;
 				marvell,pcie-port = <0>;
+=======
+		uart2: serial@12200 {
+			compatible = "ns16550a";
+			reg = <0x12200 0x100>;
+			reg-shift = <2>;
+			interrupts = <9>;
+			clocks = <&core_clk 0>;
+			status = "disabled";
+		};
+
+		uart3: serial@12300 {
+			compatible = "ns16550a";
+			reg = <0x12300 0x100>;
+			reg-shift = <2>;
+			interrupts = <10>;
+			clocks = <&core_clk 0>;
+			status = "disabled";
+		};
+>>>>>>> p9x
 
 				#address-cells = <3>;
 				#size-cells = <2>;

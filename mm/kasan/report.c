@@ -4,7 +4,11 @@
  * Copyright (c) 2014 Samsung Electronics Co., Ltd.
  * Author: Andrey Ryabinin <a.ryabinin@samsung.com>
  *
+<<<<<<< HEAD
  * Some code borrowed from https://github.com/xairy/kasan-prototype by
+=======
+ * Some of code borrowed from https://github.com/xairy/linux by
+>>>>>>> p9x
  *        Andrey Konovalov <adech.fo@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,7 +26,10 @@
 #include <linux/string.h>
 #include <linux/types.h>
 #include <linux/kasan.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> p9x
 
 #include <asm/sections.h>
 
@@ -49,12 +56,18 @@ static const void *find_first_bad_addr(const void *addr, size_t size)
 
 static void print_error_description(struct kasan_access_info *info)
 {
+<<<<<<< HEAD
 	const char *bug_type = "unknown-crash";
 	u8 *shadow_addr;
+=======
+	const char *bug_type = "unknown crash";
+	u8 shadow_val;
+>>>>>>> p9x
 
 	info->first_bad_addr = find_first_bad_addr(info->access_addr,
 						info->access_size);
 
+<<<<<<< HEAD
 	shadow_addr = (u8 *)kasan_mem_to_shadow(info->first_bad_addr);
 
 	/*
@@ -92,6 +105,24 @@ static void print_error_description(struct kasan_access_info *info)
 	}
 
 	pr_err("BUG: KASAN: %s in %pS at addr %p\n",
+=======
+	shadow_val = *(u8 *)kasan_mem_to_shadow(info->first_bad_addr);
+
+	switch (shadow_val) {
+	case KASAN_FREE_PAGE:
+	case KASAN_KMALLOC_FREE:
+		bug_type = "use after free";
+		break;
+	case KASAN_PAGE_REDZONE:
+	case KASAN_KMALLOC_REDZONE:
+	case KASAN_GLOBAL_REDZONE:
+	case 0 ... KASAN_SHADOW_SCALE_SIZE - 1:
+		bug_type = "out of bounds access";
+		break;
+	}
+
+	pr_err("BUG: KASan: %s in %pS at addr %p\n",
+>>>>>>> p9x
 		bug_type, (void *)info->ip,
 		info->access_addr);
 	pr_err("%s of size %zu by task %s/%d\n",
@@ -101,11 +132,17 @@ static void print_error_description(struct kasan_access_info *info)
 
 static inline bool kernel_or_module_addr(const void *addr)
 {
+<<<<<<< HEAD
 	if (addr >= (void *)_stext && addr < (void *)_end)
 		return true;
 	if (is_module_address((unsigned long)addr))
 		return true;
 	return false;
+=======
+	return (addr >= (void *)_stext && addr < (void *)_end)
+		|| (addr >= (void *)MODULES_VADDR
+			&& addr < (void *)MODULES_END);
+>>>>>>> p9x
 }
 
 static inline bool init_task_stack_addr(const void *addr)
@@ -179,6 +216,7 @@ static void print_shadow_for_address(const void *addr)
 	for (i = -SHADOW_ROWS_AROUND_ADDR; i <= SHADOW_ROWS_AROUND_ADDR; i++) {
 		const void *kaddr = kasan_shadow_to_mem(shadow_row);
 		char buffer[4 + (BITS_PER_LONG/8)*2];
+<<<<<<< HEAD
 		char shadow_buf[SHADOW_BYTES_PER_ROW];
 
 		snprintf(buffer, sizeof(buffer),
@@ -192,6 +230,17 @@ static void print_shadow_for_address(const void *addr)
 		print_hex_dump(KERN_ERR, buffer,
 			DUMP_PREFIX_NONE, SHADOW_BYTES_PER_ROW, 1,
 			shadow_buf, SHADOW_BYTES_PER_ROW, 0);
+=======
+
+		snprintf(buffer, sizeof(buffer),
+			(i == 0) ? ">%p: " : " %p: ", kaddr);
+
+		kasan_disable_current();
+		print_hex_dump(KERN_ERR, buffer,
+			DUMP_PREFIX_NONE, SHADOW_BYTES_PER_ROW, 1,
+			shadow_row, SHADOW_BYTES_PER_ROW, 0);
+		kasan_enable_current();
+>>>>>>> p9x
 
 		if (row_is_guilty(shadow_row, shadow))
 			pr_err("%*c\n",
@@ -204,6 +253,7 @@ static void print_shadow_for_address(const void *addr)
 
 static DEFINE_SPINLOCK(report_lock);
 
+<<<<<<< HEAD
 static void kasan_report_error(struct kasan_access_info *info)
 {
 	unsigned long flags;
@@ -241,6 +291,39 @@ static void kasan_report_error(struct kasan_access_info *info)
 	add_taint(TAINT_BAD_PAGE, LOCKDEP_NOW_UNRELIABLE);
 	spin_unlock_irqrestore(&report_lock, flags);
 	kasan_enable_current();
+=======
+void kasan_report_error(struct kasan_access_info *info)
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&report_lock, flags);
+	pr_err("================================="
+		"=================================\n");
+	print_error_description(info);
+	print_address_description(info);
+	print_shadow_for_address(info->first_bad_addr);
+	pr_err("================================="
+		"=================================\n");
+	spin_unlock_irqrestore(&report_lock, flags);
+}
+
+void kasan_report_user_access(struct kasan_access_info *info)
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&report_lock, flags);
+	pr_err("================================="
+		"=================================\n");
+	pr_err("BUG: KASan: user-memory-access on address %p\n",
+		info->access_addr);
+	pr_err("%s of size %zu by task %s/%d\n",
+		info->is_write ? "Write" : "Read",
+		info->access_size, current->comm, task_pid_nr(current));
+	dump_stack();
+	pr_err("================================="
+		"=================================\n");
+	spin_unlock_irqrestore(&report_lock, flags);
+>>>>>>> p9x
 }
 
 void kasan_report(unsigned long addr, size_t size,
@@ -248,14 +331,21 @@ void kasan_report(unsigned long addr, size_t size,
 {
 	struct kasan_access_info info;
 
+<<<<<<< HEAD
 	if (likely(!kasan_report_enabled()))
+=======
+	if (likely(!kasan_enabled()))
+>>>>>>> p9x
 		return;
 
 	info.access_addr = (void *)addr;
 	info.access_size = size;
 	info.is_write = is_write;
 	info.ip = ip;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	kasan_report_error(&info);
 }
 

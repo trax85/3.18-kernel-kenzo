@@ -2,8 +2,11 @@
  * Copyright (C) 2013 Huawei Ltd.
  * Author: Jiang Liu <liuj97@gmail.com>
  *
+<<<<<<< HEAD
  * Copyright (C) 2014 Zi Shen Lim <zlim.lnx@gmail.com>
  *
+=======
+>>>>>>> p9x
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
@@ -17,6 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <linux/bitops.h>
+<<<<<<< HEAD
 #include <linux/bug.h>
 #include <linux/compiler.h>
 #include <linux/kernel.h>
@@ -35,6 +39,16 @@
 #define AARCH64_INSN_SF_BIT	BIT(31)
 #define AARCH64_INSN_N_BIT	BIT(22)
 
+=======
+#include <linux/compiler.h>
+#include <linux/kernel.h>
+#include <linux/smp.h>
+#include <linux/stop_machine.h>
+#include <linux/uaccess.h>
+#include <asm/cacheflush.h>
+#include <asm/insn.h>
+
+>>>>>>> p9x
 static int aarch64_insn_encoding_class[] = {
 	AARCH64_INSN_CLS_UNKNOWN,
 	AARCH64_INSN_CLS_UNKNOWN,
@@ -77,6 +91,7 @@ bool __kprobes aarch64_insn_is_nop(u32 insn)
 	}
 }
 
+<<<<<<< HEAD
 bool aarch64_insn_is_branch_imm(u32 insn)
 {
 	return (aarch64_insn_is_b(insn) || aarch64_insn_is_bl(insn) ||
@@ -111,6 +126,8 @@ static void __kprobes patch_unmap(int fixmap)
 {
 	clear_fixmap(fixmap);
 }
+=======
+>>>>>>> p9x
 /*
  * In ARMv8-A, A64 instructions have a fixed length of 32 bits and are always
  * little-endian.
@@ -127,6 +144,7 @@ int __kprobes aarch64_insn_read(void *addr, u32 *insnp)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __kprobes __aarch64_insn_write(void *addr, u32 insn)
 {
 	void *waddr = addr;
@@ -148,6 +166,12 @@ int __kprobes aarch64_insn_write(void *addr, u32 insn)
 {
 	insn = cpu_to_le32(insn);
 	return __aarch64_insn_write(addr, insn);
+=======
+int __kprobes aarch64_insn_write(void *addr, u32 insn)
+{
+	insn = cpu_to_le32(insn);
+	return probe_kernel_write(addr, &insn, AARCH64_INSN_SIZE);
+>>>>>>> p9x
 }
 
 static bool __kprobes __aarch64_insn_hotpatch_safe(u32 insn)
@@ -219,10 +243,16 @@ static int __kprobes aarch64_insn_patch_text_cb(void *arg)
 		 * which ends with "dsb; isb" pair guaranteeing global
 		 * visibility.
 		 */
+<<<<<<< HEAD
 		/* Notify other processors with an additional increment. */
 		atomic_inc(&pp->cpu_count);
 	} else {
 		while (atomic_read(&pp->cpu_count) <= num_online_cpus())
+=======
+		atomic_set(&pp->cpu_count, -1);
+	} else {
+		while (atomic_read(&pp->cpu_count) != -1)
+>>>>>>> p9x
 			cpu_relax();
 		isb();
 	}
@@ -274,6 +304,7 @@ int __kprobes aarch64_insn_patch_text(void *addrs[], u32 insns[], int cnt)
 	return aarch64_insn_patch_text_sync(addrs, insns, cnt);
 }
 
+<<<<<<< HEAD
 static int __kprobes aarch64_get_imm_shift_mask(enum aarch64_insn_imm_type type,
 						u32 *maskp, int *shiftp)
 {
@@ -281,6 +312,25 @@ static int __kprobes aarch64_get_imm_shift_mask(enum aarch64_insn_imm_type type,
 	int shift;
 
 	switch (type) {
+=======
+u32 __kprobes aarch64_insn_encode_immediate(enum aarch64_insn_imm_type type,
+				  u32 insn, u64 imm)
+{
+	u32 immlo, immhi, lomask, himask, mask;
+	int shift;
+
+	switch (type) {
+	case AARCH64_INSN_IMM_ADR:
+		lomask = 0x3;
+		himask = 0x7ffff;
+		immlo = imm & lomask;
+		imm >>= 2;
+		immhi = imm & himask;
+		imm = (immlo << 24) | (immhi);
+		mask = (lomask << 24) | (himask);
+		shift = 5;
+		break;
+>>>>>>> p9x
 	case AARCH64_INSN_IMM_26:
 		mask = BIT(26) - 1;
 		shift = 0;
@@ -305,6 +355,7 @@ static int __kprobes aarch64_get_imm_shift_mask(enum aarch64_insn_imm_type type,
 		mask = BIT(9) - 1;
 		shift = 12;
 		break;
+<<<<<<< HEAD
 	case AARCH64_INSN_IMM_7:
 		mask = BIT(7) - 1;
 		shift = 15;
@@ -381,6 +432,12 @@ u32 __kprobes aarch64_insn_encode_immediate(enum aarch64_insn_imm_type type,
 			       type);
 			return 0;
 		}
+=======
+	default:
+		pr_err("aarch64_insn_encode_immediate: unknown immediate encoding %d\n",
+			type);
+		return 0;
+>>>>>>> p9x
 	}
 
 	/* Update the immediate field. */
@@ -390,6 +447,7 @@ u32 __kprobes aarch64_insn_encode_immediate(enum aarch64_insn_imm_type type,
 	return insn;
 }
 
+<<<<<<< HEAD
 static u32 aarch64_insn_encode_register(enum aarch64_insn_register_type type,
 					u32 insn,
 					enum aarch64_insn_register reg)
@@ -460,6 +518,12 @@ static u32 aarch64_insn_encode_ldst_size(enum aarch64_insn_size_type type,
 static inline long branch_imm_common(unsigned long pc, unsigned long addr,
 				     long range)
 {
+=======
+u32 __kprobes aarch64_insn_gen_branch_imm(unsigned long pc, unsigned long addr,
+					  enum aarch64_insn_branch_type type)
+{
+	u32 insn;
+>>>>>>> p9x
 	long offset;
 
 	/*
@@ -468,6 +532,7 @@ static inline long branch_imm_common(unsigned long pc, unsigned long addr,
 	 */
 	BUG_ON((pc & 0x3) || (addr & 0x3));
 
+<<<<<<< HEAD
 	offset = ((long)addr - (long)pc);
 	BUG_ON(offset < -range || offset >= range);
 
@@ -480,11 +545,14 @@ u32 __kprobes aarch64_insn_gen_branch_imm(unsigned long pc, unsigned long addr,
 	u32 insn;
 	long offset;
 
+=======
+>>>>>>> p9x
 	/*
 	 * B/BL support [-128M, 128M) offset
 	 * ARM64 virtual address arrangement guarantees all kernel and module
 	 * texts are within +/-128M.
 	 */
+<<<<<<< HEAD
 	offset = branch_imm_common(pc, addr, SZ_128M);
 
 	switch (type) {
@@ -498,11 +566,21 @@ u32 __kprobes aarch64_insn_gen_branch_imm(unsigned long pc, unsigned long addr,
 		BUG_ON(1);
 		return AARCH64_BREAK_FAULT;
 	}
+=======
+	offset = ((long)addr - (long)pc);
+	BUG_ON(offset < -SZ_128M || offset >= SZ_128M);
+
+	if (type == AARCH64_INSN_BRANCH_LINK)
+		insn = aarch64_insn_get_bl_value();
+	else
+		insn = aarch64_insn_get_b_value();
+>>>>>>> p9x
 
 	return aarch64_insn_encode_immediate(AARCH64_INSN_IMM_26, insn,
 					     offset >> 2);
 }
 
+<<<<<<< HEAD
 u32 aarch64_insn_gen_comp_branch_imm(unsigned long pc, unsigned long addr,
 				     enum aarch64_insn_register reg,
 				     enum aarch64_insn_variant variant,
@@ -559,6 +637,8 @@ u32 aarch64_insn_gen_cond_branch_imm(unsigned long pc, unsigned long addr,
 					     offset >> 2);
 }
 
+=======
+>>>>>>> p9x
 u32 __kprobes aarch64_insn_gen_hint(enum aarch64_insn_hint_op op)
 {
 	return aarch64_insn_get_hint_value() | op;
@@ -568,6 +648,7 @@ u32 __kprobes aarch64_insn_gen_nop(void)
 {
 	return aarch64_insn_gen_hint(AARCH64_INSN_HINT_NOP);
 }
+<<<<<<< HEAD
 
 u32 aarch64_insn_gen_branch_reg(enum aarch64_insn_register reg,
 				enum aarch64_insn_branch_type type)
@@ -1143,3 +1224,5 @@ u32 aarch32_insn_mcr_extract_crm(u32 insn)
 {
 	return insn & CRM_MASK;
 }
+=======
+>>>>>>> p9x

@@ -8,6 +8,7 @@
 #include <asm/fixmap.h>
 #include <asm/smp_plat.h>
 #include <asm/opcodes.h>
+#include <asm/mmu_writeable.h>
 
 #include "patch.h"
 
@@ -61,6 +62,10 @@ void __kprobes __patch_text_real(void *addr, unsigned int insn, bool remap)
 	unsigned long flags;
 	void *waddr = addr;
 	int size;
+	unsigned long flags;
+
+	mem_text_writeable_spinlock(&flags);
+	mem_text_address_writeable((unsigned long)addr);
 
 	if (remap)
 		waddr = patch_map(addr, FIX_TEXT_POKE0, &flags);
@@ -107,6 +112,9 @@ void __kprobes __patch_text_real(void *addr, unsigned int insn, bool remap)
 
 	flush_icache_range((uintptr_t)(addr),
 			   (uintptr_t)(addr) + size);
+
+	mem_text_address_restore();
+	mem_text_writeable_spinunlock(&flags);
 }
 
 static int __kprobes patch_text_stop_machine(void *data)

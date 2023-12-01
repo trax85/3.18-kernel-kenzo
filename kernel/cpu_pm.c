@@ -221,7 +221,10 @@ static int cpu_pm_suspend(void)
 
 static void cpu_pm_resume(void)
 {
+<<<<<<< HEAD
 	from_suspend = false;
+=======
+>>>>>>> p9x
 	cpu_cluster_pm_exit(0);
 	cpu_pm_exit();
 }

@@ -173,8 +173,14 @@ void ttm_tt_destroy(struct ttm_tt *ttm)
 		ttm_tt_unbind(ttm);
 	}
 
+<<<<<<< HEAD
 	if (ttm->state == tt_unbound)
 		ttm_tt_unpopulate(ttm);
+=======
+	if (ttm->state == tt_unbound) {
+		ttm->bdev->driver->ttm_tt_unpopulate(ttm);
+	}
+>>>>>>> p9x
 
 	if (!(ttm->page_flags & TTM_PAGE_FLAG_PERSISTENT_SWAP) &&
 	    ttm->swap_storage)

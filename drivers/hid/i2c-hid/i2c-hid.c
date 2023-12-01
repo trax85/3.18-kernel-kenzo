@@ -136,10 +136,17 @@ struct i2c_hid {
 						   * register of the HID
 						   * descriptor. */
 	unsigned int		bufsize;	/* i2c buffer size */
+<<<<<<< HEAD
 	u8			*inbuf;		/* Input buffer */
 	u8			*rawbuf;	/* Raw Input buffer */
 	u8			*cmdbuf;	/* Command buffer */
 	u8			*argsbuf;	/* Command arguments buffer */
+=======
+	char			*inbuf;		/* Input buffer */
+	char			*rawbuf;	/* Raw Input buffer */
+	char			*cmdbuf;	/* Command buffer */
+	char			*argsbuf;	/* Command arguments buffer */
+>>>>>>> p9x
 
 	unsigned long		flags;		/* device flags */
 
@@ -358,6 +365,15 @@ static int i2c_hid_hwreset(struct i2c_client *client)
 	ret = i2c_hid_set_power(client, I2C_HID_PWR_ON);
 	if (ret)
 		return ret;
+
+	/*
+	 * The HID over I2C specification states that if a DEVICE needs time
+	 * after the PWR_ON request, it should utilise CLOCK stretching.
+	 * However, it has been observered that the Windows driver provides a
+	 * 1ms sleep between the PWR_ON and RESET requests and that some devices
+	 * rely on this.
+	 */
+	usleep_range(1000, 5000);
 
 	i2c_hid_dbg(ihid, "resetting...\n");
 

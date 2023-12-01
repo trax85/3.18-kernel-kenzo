@@ -64,11 +64,16 @@ struct v4l2_ioctl_ops {
 					   struct v4l2_format *f);
 	int (*vidioc_g_fmt_vid_out_mplane)(struct file *file, void *fh,
 					   struct v4l2_format *f);
+<<<<<<< HEAD
 	int (*vidioc_g_fmt_sdr_cap)    (struct file *file, void *fh,
 					struct v4l2_format *f);
         int (*vidioc_g_fmt_type_private)(struct file *file, void *fh,
 					struct v4l2_format *f);
 
+=======
+	int (*vidioc_g_fmt_type_private)(struct file *file, void *fh,
+					struct v4l2_format *f);
+>>>>>>> p9x
 	/* VIDIOC_S_FMT handlers */
 	int (*vidioc_s_fmt_vid_cap)    (struct file *file, void *fh,
 					struct v4l2_format *f);

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -14,6 +18,7 @@
 #define _NET_CNSS_PREALLOC_H_
 
 #define WCNSS_PRE_ALLOC_GET_THRESHOLD (4*1024)
+<<<<<<< HEAD
 #ifdef CONFIG_WCNSS_SKB_PRE_ALLOC
 #define WCNSS_PRE_SKB_ALLOC_GET_THRESHOLD (50*1024)
 #endif
@@ -35,5 +40,15 @@ extern int wcnss_skb_pre_alloc_reset(void);
 extern struct sk_buff *wcnss_skb_prealloc_get(unsigned int size);
 extern int wcnss_skb_prealloc_put(struct sk_buff *skb);
 #endif
+=======
+#define WCNSS_PRE_SKB_ALLOC_GET_THRESHOLD (50*1024)
+
+extern void *wcnss_prealloc_get(unsigned int size);
+extern int wcnss_prealloc_put(void *ptr);
+extern int wcnss_pre_alloc_reset(void);
+void wcnss_prealloc_check_memory_leak(void);
+extern struct sk_buff *wcnss_skb_prealloc_get(unsigned int size);
+extern int wcnss_skb_prealloc_put(struct sk_buff *skb);
+>>>>>>> p9x
 
 #endif /* _NET_CNSS__PREALLOC_H_ */

@@ -87,8 +87,11 @@ int pciehp_unconfigure_device(struct slot *p_slot)
 		 __func__, pci_domain_nr(parent), parent->number);
 	pciehp_get_adapter_status(p_slot, &presence);
 
+<<<<<<< HEAD
 	pci_lock_rescan_remove();
 
+=======
+>>>>>>> p9x
 	/*
 	 * Stopping an SR-IOV PF device removes all the associated VFs,
 	 * which will update the bus->devices list and confuse the

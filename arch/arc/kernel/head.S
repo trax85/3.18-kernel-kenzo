@@ -59,7 +59,11 @@ stext:
 	; Don't clobber r0-r2 yet. It might have bootloader provided info
 	;-------------------------------------------------------------------
 
+<<<<<<< HEAD
 	CPU_EARLY_SETUP
+=======
+	sr	@_int_vec_base_lds, [AUX_INTR_VEC_BASE]
+>>>>>>> p9x
 
 #ifdef CONFIG_SMP
 	; Ensure Boot (Master) proceeds. Others wait in platform dependent way
@@ -113,7 +117,11 @@ stext:
 
 first_lines_of_secondary:
 
+<<<<<<< HEAD
 	CPU_EARLY_SETUP
+=======
+	sr	@_int_vec_base_lds, [AUX_INTR_VEC_BASE]
+>>>>>>> p9x
 
 	; setup per-cpu idle task as "current" on this CPU
 	ld	r0, [@secondary_idle_tsk]

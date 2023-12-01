@@ -1899,7 +1899,11 @@ static int set_armss_rate(unsigned long rate)
 		return -EINVAL;
 
 	/* Set the new arm opp. */
+<<<<<<< HEAD
 	return db8500_prcmu_set_arm_opp(pos->driver_data);
+=======
+	return db8500_prcmu_set_arm_opp(db8500_cpufreq_table[i].driver_data);
+>>>>>>> p9x
 }
 
 static int set_plldsi_rate(unsigned long rate)

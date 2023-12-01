@@ -13,7 +13,12 @@ obj-$(CONFIG_IR_SANYO_DECODER) += ir-sanyo-decoder.o
 obj-$(CONFIG_IR_SHARP_DECODER) += ir-sharp-decoder.o
 obj-$(CONFIG_IR_MCE_KBD_DECODER) += ir-mce_kbd-decoder.o
 obj-$(CONFIG_IR_LIRC_CODEC) += ir-lirc-codec.o
+<<<<<<< HEAD
 obj-$(CONFIG_IR_XMP_DECODER) += ir-xmp-decoder.o
+=======
+obj-$(CONFIG_USER_RC_INPUT) += user-rc-input.o
+obj-$(CONFIG_USER_SP_RC_INPUT) += user-sp-rc-input.o
+>>>>>>> p9x
 
 # stand-alone IR receivers/transmitters
 obj-$(CONFIG_RC_ATI_REMOTE) += ati_remote.o
@@ -30,8 +35,14 @@ obj-$(CONFIG_IR_STREAMZAP) += streamzap.o
 obj-$(CONFIG_IR_WINBOND_CIR) += winbond-cir.o
 obj-$(CONFIG_RC_LOOPBACK) += rc-loopback.o
 obj-$(CONFIG_IR_GPIO_CIR) += gpio-ir-recv.o
+obj-$(CONFIG_IR_GPIO) += gpio-ir.o
+obj-$(CONFIG_IR_PWM) += pwm-ir.o
 obj-$(CONFIG_IR_IGUANA) += iguanair.o
 obj-$(CONFIG_IR_TTUSBIR) += ttusbir.o
+<<<<<<< HEAD
 obj-$(CONFIG_RC_ST) += st_rc.o
 obj-$(CONFIG_IR_SUNXI) += sunxi-cir.o
 obj-$(CONFIG_IR_IMG) += img-ir/
+=======
+obj-$(CONFIG_IR_MSM_GENI) += msm-geni-ir.o
+>>>>>>> p9x

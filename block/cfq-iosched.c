@@ -1306,11 +1306,14 @@ cfq_group_service_tree_add(struct cfq_rb_root *st, struct cfq_group *cfqg)
 	/* add to the service tree */
 	BUG_ON(!RB_EMPTY_NODE(&cfqg->rb_node));
 
+<<<<<<< HEAD
 	/*
 	 * Update leaf_weight.  We cannot update weight at this point
 	 * because cfqg might already have been activated and is
 	 * contributing its current weight to the parent's child_weight.
 	 */
+=======
+>>>>>>> p9x
 	cfq_update_group_leaf_weight(cfqg);
 	__cfq_group_service_tree_add(st, cfqg);
 
@@ -3018,6 +3021,9 @@ static void cfq_choose_cfqg(struct cfq_data *cfqd)
 {
 	struct cfq_group *cfqg = cfq_get_next_cfqg(cfqd);
 
+	if (!cfqg)
+		return;
+
 	cfqd->serving_group = cfqg;
 
 	/* Restore the workload type data */
@@ -4396,7 +4402,11 @@ static int cfq_init_queue(struct request_queue *q, struct elevator_type *e)
 	if (!eq)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	cfqd = kzalloc_node(sizeof(*cfqd), GFP_KERNEL, q->node);
+=======
+	cfqd = kmalloc_node(sizeof(*cfqd), GFP_KERNEL | __GFP_ZERO, q->node);
+>>>>>>> p9x
 	if (!cfqd) {
 		kobject_put(&eq->kobj);
 		return -ENOMEM;

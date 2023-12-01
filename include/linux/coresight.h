@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012, 2015 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -13,6 +17,7 @@
 #ifndef _LINUX_CORESIGHT_H
 #define _LINUX_CORESIGHT_H
 
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_MSM
 #include "coresight_msm.h"
 #else
@@ -43,6 +48,31 @@
 #define CORESIGHT_UNLOCK	0xc5acce55
 
 extern struct bus_type coresight_bustype;
+=======
+#include <linux/device.h>
+
+/* Peripheral id registers (0xFD0-0xFEC) */
+#define CORESIGHT_PERIPHIDR4	(0xFD0)
+#define CORESIGHT_PERIPHIDR5	(0xFD4)
+#define CORESIGHT_PERIPHIDR6	(0xFD8)
+#define CORESIGHT_PERIPHIDR7	(0xFDC)
+#define CORESIGHT_PERIPHIDR0	(0xFE0)
+#define CORESIGHT_PERIPHIDR1	(0xFE4)
+#define CORESIGHT_PERIPHIDR2	(0xFE8)
+#define CORESIGHT_PERIPHIDR3	(0xFEC)
+/* Component id registers (0xFF0-0xFFC) */
+#define CORESIGHT_COMPIDR0	(0xFF0)
+#define CORESIGHT_COMPIDR1	(0xFF4)
+#define CORESIGHT_COMPIDR2	(0xFF8)
+#define CORESIGHT_COMPIDR3	(0xFFC)
+
+#define ETM_ARCH_V1_0		(0x00)
+#define ETM_ARCH_V1_2		(0x02)
+#define ETM_ARCH_V3_3		(0x23)
+#define ETM_ARCH_V3_5		(0x25)
+#define PFT_ARCH_MAJOR		(0x30)
+#define PFT_ARCH_V1_1		(0x31)
+>>>>>>> p9x
 
 enum coresight_clk_rate {
 	CORESIGHT_CLK_RATE_OFF,
@@ -79,6 +109,7 @@ enum coresight_dev_subtype_source {
 	CORESIGHT_DEV_SUBTYPE_SOURCE_SOFTWARE,
 };
 
+<<<<<<< HEAD
 /**
  * struct coresight_dev_subtype - further characterisation of a type
  * @sink_subtype:	type of sink this component is, as defined
@@ -88,12 +119,15 @@ enum coresight_dev_subtype_source {
  * @source_subtype:	type of source this component is, as defined
 			by @coresight_dev_subtype_source.
  */
+=======
+>>>>>>> p9x
 struct coresight_dev_subtype {
 	enum coresight_dev_subtype_sink sink_subtype;
 	enum coresight_dev_subtype_link link_subtype;
 	enum coresight_dev_subtype_source source_subtype;
 };
 
+<<<<<<< HEAD
 /**
  * struct coresight_platform_data - data harvested from the DT specification
  * @cpu:	the CPU a source belongs to. Only applicable for ETM/PTMs.
@@ -130,6 +164,19 @@ struct coresight_platform_data {
  * @groups	:operations specific to this component. These will end up
 		in the component's sysfs sub-directory.
  */
+=======
+struct coresight_platform_data {
+	int id;
+	const char *name;
+	int nr_inports;
+	const int *outports;
+	const int *child_ids;
+	const int *child_ports;
+	int nr_outports;
+	bool default_sink;
+};
+
+>>>>>>> p9x
 struct coresight_desc {
 	enum coresight_dev_type type;
 	struct coresight_dev_subtype subtype;
@@ -137,6 +184,7 @@ struct coresight_desc {
 	struct coresight_platform_data *pdata;
 	struct device *dev;
 	const struct attribute_group **groups;
+<<<<<<< HEAD
 };
 
 /**
@@ -176,19 +224,51 @@ struct coresight_device {
 	struct coresight_connection *conns;
 	int nr_inport;
 	int nr_outport;
+=======
+	struct module *owner;
+};
+
+struct coresight_connection {
+	int outport;
+	int child_id;
+	int child_port;
+	struct coresight_device *child_dev;
+	struct list_head link;
+};
+
+struct coresight_refcnt {
+	int sink_refcnt;
+	int *link_refcnts;
+	int source_refcnt;
+};
+
+struct coresight_device {
+	int id;
+	struct coresight_connection *conns;
+	int nr_conns;
+>>>>>>> p9x
 	enum coresight_dev_type type;
 	struct coresight_dev_subtype subtype;
 	const struct coresight_ops *ops;
 	struct device dev;
+<<<<<<< HEAD
 	atomic_t *refcnt;
 	struct list_head path_link;
 	bool orphan;
 	bool enable;	/* true only if configured as part of a path */
 	bool activated;	/* true only if a sink is part of a path */
+=======
+	struct coresight_refcnt refcnt;
+	struct list_head dev_link;
+	struct list_head path_link;
+	struct module *owner;
+	bool enable;
+>>>>>>> p9x
 };
 
 #define to_coresight_device(d) container_of(d, struct coresight_device, dev)
 
+<<<<<<< HEAD
 #define source_ops(csdev)	csdev->ops->source_ops
 #define sink_ops(csdev)		csdev->ops->sink_ops
 #define link_ops(csdev)		csdev->ops->link_ops
@@ -210,11 +290,20 @@ struct coresight_ops_sink {
  * @enable:	enables flow between iport and oport.
  * @disable:	disables flow between iport and oport.
  */
+=======
+struct coresight_ops_sink {
+	int (*enable)(struct coresight_device *csdev);
+	void (*disable)(struct coresight_device *csdev);
+	void (*abort)(struct coresight_device *csdev);
+};
+
+>>>>>>> p9x
 struct coresight_ops_link {
 	int (*enable)(struct coresight_device *csdev, int iport, int oport);
 	void (*disable)(struct coresight_device *csdev, int iport, int oport);
 };
 
+<<<<<<< HEAD
 /**
  * struct coresight_ops_source - basic operations for a source
  * Operations available for sources.
@@ -225,6 +314,9 @@ struct coresight_ops_link {
  */
 struct coresight_ops_source {
 	int (*trace_id)(struct coresight_device *csdev);
+=======
+struct coresight_ops_source {
+>>>>>>> p9x
 	int (*enable)(struct coresight_device *csdev);
 	void (*disable)(struct coresight_device *csdev);
 };
@@ -241,8 +333,12 @@ coresight_register(struct coresight_desc *desc);
 extern void coresight_unregister(struct coresight_device *csdev);
 extern int coresight_enable(struct coresight_device *csdev);
 extern void coresight_disable(struct coresight_device *csdev);
+<<<<<<< HEAD
 extern int coresight_timeout(void __iomem *addr, u32 offset,
 			     int position, int value);
+=======
+extern void coresight_abort(void);
+>>>>>>> p9x
 #else
 static inline struct coresight_device *
 coresight_register(struct coresight_desc *desc) { return NULL; }
@@ -250,6 +346,7 @@ static inline void coresight_unregister(struct coresight_device *csdev) {}
 static inline int
 coresight_enable(struct coresight_device *csdev) { return -ENOSYS; }
 static inline void coresight_disable(struct coresight_device *csdev) {}
+<<<<<<< HEAD
 static inline int coresight_timeout(void __iomem *addr, u32 offset,
 				     int position, int value) { return 1; }
 #endif
@@ -282,6 +379,9 @@ static inline unsigned long
 coresight_vpid_to_pid(unsigned long vpid) { return vpid; }
 #endif
 
+=======
+static inline void coresight_abort(void) {}
+>>>>>>> p9x
 #endif
 
 #endif

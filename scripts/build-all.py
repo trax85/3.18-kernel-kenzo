@@ -300,6 +300,7 @@ def scan_configs():
     names = []
     arch_pats = (
         r'[fm]sm[0-9]*_defconfig',
+<<<<<<< HEAD
         r'msmcortex*_defconfig',
         r'apq*_defconfig',
         r'qsd*_defconfig',
@@ -310,6 +311,15 @@ def scan_configs():
     arch64_pats = (
         r'apq*_defconfig',
         r'msm*_defconfig',
+=======
+        r'apq*_defconfig',
+        r'qsd*_defconfig',
+        r'mdm*_defconfig',
+	r'mpq*_defconfig',
+        )
+    arch64_pats = (
+	r'msm*_defconfig',
+>>>>>>> p9x
         )
     for p in arch_pats:
         for n in glob.glob('arch/arm/configs/' + p):

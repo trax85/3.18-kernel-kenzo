@@ -1,6 +1,10 @@
 menuconfig ION
 	bool "Ion Memory Manager"
+<<<<<<< HEAD
 	depends on HAVE_MEMBLOCK && HAS_DMA && MMU
+=======
+	depends on HAVE_MEMBLOCK
+>>>>>>> p9x
 	select GENERIC_ALLOCATOR
 	select DMA_SHARED_BUFFER
 	---help---
@@ -17,6 +21,7 @@ config ION_TEST
 	  Choose this option to create a device that can be used to test the
 	  kernel and device side ION functions.
 
+<<<<<<< HEAD
 config ION_DUMMY
 	bool "Dummy Ion driver"
 	depends on ION
@@ -27,6 +32,8 @@ config ION_DUMMY
 	  one doesn't have access to hardware drivers that
 	  use ION.
 
+=======
+>>>>>>> p9x
 config ION_TEGRA
 	tristate "Ion for Tegra"
 	depends on ARCH_TEGRA && ION
@@ -36,7 +43,10 @@ config ION_TEGRA
 config ION_MSM
 	tristate "Ion for MSM"
 	depends on ARCH_MSM && ION
+<<<<<<< HEAD
 	select MSM_SECURE_BUFFER
+=======
+>>>>>>> p9x
 	help
 	  Choose this option if you wish to use ion on an MSM target.
 
@@ -46,6 +56,7 @@ config ALLOC_BUFFERS_IN_4K_CHUNKS
 	help
           Choose this option if you want ION to allocate buffers in
           only 4KB chunks.
+<<<<<<< HEAD
 
 config ION_POOL_CACHE_POLICY
 	bool "Ion set page pool cache policy"
@@ -54,3 +65,5 @@ config ION_POOL_CACHE_POLICY
 	help
 	  Choose this option if need to explicity set cache policy of the
 	  pages in the page pool.
+=======
+>>>>>>> p9x

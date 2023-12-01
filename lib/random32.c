@@ -36,6 +36,7 @@
 #include <linux/export.h>
 #include <linux/jiffies.h>
 #include <linux/random.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
 #include <asm/unaligned.h>
 
@@ -46,6 +47,9 @@ static inline void prandom_state_selftest(void)
 {
 }
 #endif
+=======
+#include <linux/timer.h>
+>>>>>>> p9x
 
 static DEFINE_PER_CPU(struct rnd_state, net_rand_state);
 
@@ -183,9 +187,14 @@ void prandom_seed(u32 entropy)
 	 */
 	for_each_possible_cpu (i) {
 		struct rnd_state *state = &per_cpu(net_rand_state, i);
+<<<<<<< HEAD
 
 		state->s1 = __seed(state->s1 ^ entropy, 2U);
 		prandom_warmup(state);
+=======
+		state->s1 = __seed(state->s1 ^ entropy, 2);
+		prandom_u32_state(state);
+>>>>>>> p9x
 	}
 }
 EXPORT_SYMBOL(prandom_seed);
@@ -204,8 +213,23 @@ static int __init prandom_init(void)
 		struct rnd_state *state = &per_cpu(net_rand_state,i);
 		u32 weak_seed = (i + jiffies) ^ random_get_entropy();
 
+<<<<<<< HEAD
 		prandom_seed_early(state, weak_seed, true);
 		prandom_warmup(state);
+=======
+#define LCG(x)	((x) * 69069)	/* super-duper LCG */
+		state->s1 = __seed(LCG(i + jiffies), 2);
+		state->s2 = __seed(LCG(state->s1), 8);
+		state->s3 = __seed(LCG(state->s2), 16);
+
+		/* "warm it up" */
+		prandom_u32_state(state);
+		prandom_u32_state(state);
+		prandom_u32_state(state);
+		prandom_u32_state(state);
+		prandom_u32_state(state);
+		prandom_u32_state(state);
+>>>>>>> p9x
 	}
 
 	return 0;
@@ -213,7 +237,10 @@ static int __init prandom_init(void)
 core_initcall(prandom_init);
 
 static void __prandom_timer(unsigned long dontcare);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 static DEFINE_TIMER(seed_timer, __prandom_timer, 0, 0);
 
 static void __prandom_timer(unsigned long dontcare)
@@ -225,13 +252,21 @@ static void __prandom_timer(unsigned long dontcare)
 	prandom_seed(entropy);
 
 	/* reseed every ~60 seconds, in [40 .. 80) interval with slack */
+<<<<<<< HEAD
 	expires = 40 + prandom_u32_max(40);
+=======
+	expires = 40 + (prandom_u32() % 40);
+>>>>>>> p9x
 	seed_timer.expires = jiffies + msecs_to_jiffies(expires * MSEC_PER_SEC);
 
 	add_timer(&seed_timer);
 }
 
+<<<<<<< HEAD
 static void __init __prandom_start_seed_timer(void)
+=======
+static void prandom_start_seed_timer(void)
+>>>>>>> p9x
 {
 	set_timer_slack(&seed_timer, HZ);
 	seed_timer.expires = jiffies + msecs_to_jiffies(40 * MSEC_PER_SEC);
@@ -249,6 +284,7 @@ static void __prandom_reseed(bool late)
 	static bool latch = false;
 	static DEFINE_SPINLOCK(lock);
 
+<<<<<<< HEAD
 	/* Asking for random bytes might result in bytes getting
 	 * moved into the nonblocking pool and thus marking it
 	 * as initialized. In this case we would double back into
@@ -265,6 +301,12 @@ static void __prandom_reseed(bool late)
 	if (latch && !late)
 		goto out;
 
+=======
+	/* only allow initial seeding (late == false) once */
+	spin_lock_irqsave(&lock, flags);
+	if (latch && !late)
+		goto out;
+>>>>>>> p9x
 	latch = true;
 
 	for_each_possible_cpu(i) {
@@ -272,10 +314,16 @@ static void __prandom_reseed(bool late)
 		u32 seeds[4];
 
 		get_random_bytes(&seeds, sizeof(seeds));
+<<<<<<< HEAD
 		state->s1 = __seed(seeds[0],   2U);
 		state->s2 = __seed(seeds[1],   8U);
 		state->s3 = __seed(seeds[2],  16U);
 		state->s4 = __seed(seeds[3], 128U);
+=======
+		state->s1 = __seed(seeds[0], 2);
+		state->s2 = __seed(seeds[1], 8);
+		state->s3 = __seed(seeds[2], 16);
+>>>>>>> p9x
 
 		prandom_warmup(state);
 	}
@@ -291,7 +339,11 @@ void prandom_reseed_late(void)
 static int __init prandom_reseed(void)
 {
 	__prandom_reseed(false);
+<<<<<<< HEAD
 	__prandom_start_seed_timer();
+=======
+	prandom_start_seed_timer();
+>>>>>>> p9x
 	return 0;
 }
 late_initcall(prandom_reseed);

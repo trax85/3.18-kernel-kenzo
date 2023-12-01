@@ -92,6 +92,7 @@ enum {
 	AUDIO_CORE_METAINFO_CAL_TYPE,
 	SRS_TRUMEDIA_CAL_TYPE,
 
+<<<<<<< HEAD
 	CORE_CUSTOM_TOPOLOGIES_CAL_TYPE,
 	ADM_RTAC_AUDVOL_CAL_TYPE,
 
@@ -104,6 +105,12 @@ enum {
 #define AFE_FB_SPKR_PROT_TH_VI_CAL_TYPE AFE_FB_SPKR_PROT_TH_VI_CAL_TYPE
 #define AFE_FB_SPKR_PROT_EX_VI_CAL_TYPE AFE_FB_SPKR_PROT_EX_VI_CAL_TYPE
 
+=======
+	ULP_LSM_TOPOLOGY_ID_CAL_TYPE,
+	MAX_CAL_TYPES,
+};
+
+>>>>>>> p9x
 enum {
 	VERSION_0_0,
 };
@@ -276,9 +283,13 @@ enum msm_spkr_prot_states {
 	MSM_SPKR_PROT_DISABLED,
 	MSM_SPKR_PROT_NOT_CALIBRATED,
 	MSM_SPKR_PROT_PRE_CALIBRATED,
+<<<<<<< HEAD
 	MSM_SPKR_PROT_IN_FTM_MODE
 };
 #define MSM_SPKR_PROT_IN_FTM_MODE MSM_SPKR_PROT_IN_FTM_MODE
+=======
+};
+>>>>>>> p9x
 
 enum msm_spkr_count {
 	SP_V2_SPKR_1,
@@ -290,6 +301,7 @@ struct audio_cal_info_spk_prot_cfg {
 	int32_t		r0[SP_V2_NUM_MAX_SPKRS];
 	int32_t		t0[SP_V2_NUM_MAX_SPKRS];
 	uint32_t	quick_calib_flag;
+<<<<<<< HEAD
 	uint32_t	mode;
 	/*
 	 * 0 - Start spk prot
@@ -330,6 +342,11 @@ struct audio_cal_info_sp_th_vi_param {
 	int32_t		r_dc_q24[SP_V2_NUM_MAX_SPKRS];
 	int32_t		temp_q22[SP_V2_NUM_MAX_SPKRS];
 	int32_t		status[SP_V2_NUM_MAX_SPKRS];
+=======
+	uint32_t	mode; /*0 - Start spk prot
+	1 - Start calib
+	2 - Disable spk prot*/
+>>>>>>> p9x
 };
 
 struct audio_cal_info_msm_spk_prot_status {
@@ -537,6 +554,7 @@ struct audio_cal_fb_spk_prot_cfg {
 	struct audio_cal_type_fb_spk_prot_cfg	cal_type;
 };
 
+<<<<<<< HEAD
 struct audio_cal_type_sp_th_vi_ftm_cfg {
 	struct audio_cal_type_header		cal_hdr;
 	struct audio_cal_data			cal_data;
@@ -558,6 +576,8 @@ struct audio_cal_sp_ex_vi_ftm_cfg {
 	struct audio_cal_header			hdr;
 	struct audio_cal_type_sp_ex_vi_ftm_cfg	cal_type;
 };
+=======
+>>>>>>> p9x
 struct audio_cal_type_hw_delay {
 	struct audio_cal_type_header	cal_hdr;
 	struct audio_cal_data		cal_data;
@@ -669,6 +689,7 @@ struct audio_cal_fb_spk_prot_status {
 	struct audio_cal_type_fb_spk_prot_status	cal_type;
 };
 
+<<<<<<< HEAD
 struct audio_cal_type_sp_th_vi_param {
 	struct audio_cal_type_header			cal_hdr;
 	struct audio_cal_data				cal_data;
@@ -689,4 +710,6 @@ struct audio_cal_sp_ex_vi_param {
 	struct audio_cal_header				hdr;
 	struct audio_cal_type_sp_ex_vi_param		cal_type;
 };
+=======
+>>>>>>> p9x
 #endif /* _UAPI_MSM_AUDIO_CALIBRATION_H */

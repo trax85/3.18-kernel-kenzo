@@ -8,7 +8,10 @@
  *   written by Ralf Baechle <ralf@linux-mips.org>
  */
 #include <linux/compiler.h>
+<<<<<<< HEAD
 #include <linux/vmalloc.h>
+=======
+>>>>>>> p9x
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/console.h>
@@ -460,6 +463,24 @@ static void octeon_halt(void)
 static char __read_mostly octeon_system_type[80];
 
 static int __init init_octeon_system_type(void)
+<<<<<<< HEAD
+=======
+{
+	snprintf(octeon_system_type, sizeof(octeon_system_type), "%s (%s)",
+		cvmx_board_type_to_string(octeon_bootinfo->board_type),
+		octeon_model_get_string(read_c0_prid()));
+
+	return 0;
+}
+early_initcall(init_octeon_system_type);
+
+/**
+ * Handle all the error condition interrupts that might occur.
+ *
+ */
+#ifdef CONFIG_CAVIUM_DECODE_RSL
+static irqreturn_t octeon_rlm_interrupt(int cpl, void *dev_id)
+>>>>>>> p9x
 {
 	snprintf(octeon_system_type, sizeof(octeon_system_type), "%s (%s)",
 		cvmx_board_type_to_string(octeon_bootinfo->board_type),

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2010 Marco Stornelli <marco.stornelli@gmail.com>
  * Copyright (C) 2011 Kees Cook <keescook@chromium.org>
+ * Copyright (C) 2016 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -150,6 +151,7 @@ ramoops_get_next_prz(struct persistent_ram_zone *przs[], uint *c, uint max,
 	return prz;
 }
 
+<<<<<<< HEAD
 static void ramoops_read_kmsg_hdr(char *buffer, struct timespec *time,
 				  bool *compressed)
 {
@@ -171,6 +173,8 @@ static void ramoops_read_kmsg_hdr(char *buffer, struct timespec *time,
 	}
 }
 
+=======
+>>>>>>> p9x
 static bool prz_ok(struct persistent_ram_zone *prz)
 {
 	return !!prz && !!(persistent_ram_old_size(prz) +
@@ -410,7 +414,11 @@ static int ramoops_init_przs(struct device *dev, struct ramoops_context *cxt,
 
 		cxt->przs[i] = persistent_ram_new(*paddr, sz, 0,
 						  &cxt->ecc_info,
+<<<<<<< HEAD
 						  cxt->memtype, 0);
+=======
+						  cxt->memtype);
+>>>>>>> p9x
 		if (IS_ERR(cxt->przs[i])) {
 			err = PTR_ERR(cxt->przs[i]);
 			dev_err(dev, "failed to request mem region (0x%zx@0x%llx): %d\n",
@@ -440,8 +448,12 @@ static int ramoops_init_prz(struct device *dev, struct ramoops_context *cxt,
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	*prz = persistent_ram_new(*paddr, sz, sig, &cxt->ecc_info,
 				  cxt->memtype, 0);
+=======
+	*prz = persistent_ram_new(*paddr, sz, sig, &cxt->ecc_info, cxt->memtype);
+>>>>>>> p9x
 	if (IS_ERR(*prz)) {
 		int err = PTR_ERR(*prz);
 
@@ -612,6 +624,7 @@ static struct platform_driver ramoops_driver = {
 };
 
 extern void emergency_unlock_console(void);
+<<<<<<< HEAD
 	static int ramoops_console_notify (struct notifier_block *this,
 			unsigned long event, void *ptr)
 	{
@@ -631,6 +644,27 @@ extern void emergency_unlock_console(void);
 	{
 		atomic_notifier_chain_register(&panic_notifier_list, &ramoop_nb);
 	}
+=======
+static int ramoops_console_notify (struct notifier_block *this,
+		unsigned long event, void *ptr)
+{
+	printk("\n");
+	pr_emerg("ramoops unlock console ...\n");
+	emergency_unlock_console();
+
+	return 0;
+}
+
+static struct notifier_block ramoop_nb = {
+	.notifier_call = ramoops_console_notify,
+	.priority = INT_MAX,
+};
+
+static void ramoops_prepare(void)
+{
+	atomic_notifier_chain_register(&panic_notifier_list, &ramoop_nb);
+}
+>>>>>>> p9x
 
 static void ramoops_register_dummy(void)
 {
@@ -669,6 +703,7 @@ static void ramoops_register_dummy(void)
 
 static struct ramoops_platform_data ramoops_data;
 
+<<<<<<< HEAD
 	static struct platform_device ramoops_dev  = {
 		.name = "ramoops",
 		.dev = {
@@ -708,6 +743,46 @@ static struct ramoops_platform_data ramoops_data;
 	}
 	core_initcall(msm_register_ramoops_device);
 
+=======
+static struct platform_device ramoops_dev  = {
+	.name = "ramoops",
+	.dev = {
+		.platform_data = &ramoops_data,
+	},
+};
+
+static int __init ramoops_memreserve(char *p)
+{
+	unsigned long size;
+
+	if (!p)
+		return 1;
+
+	size = memparse(p, &p) & PAGE_MASK;
+	ramoops_data.mem_size = size;
+	ramoops_data.mem_address = memblock_end_of_DRAM() - size;
+	ramoops_data.console_size = size / 2;
+	ramoops_data.pmsg_size = size / 2;
+	ramoops_data.dump_oops = 1;
+
+	pr_info("msm_reserve_ramoops_memory addr=%lx,size=%lx \n", ramoops_data.mem_address, ramoops_data.mem_size);
+	pr_info("msm_reserve_ramoops_memory record_size=%lx,ftrace_size=%lx \n", ramoops_data.record_size, ramoops_data.ftrace_size);
+
+	memblock_reserve(ramoops_data.mem_address, ramoops_data.mem_size);
+
+	return 0;
+}
+early_param("ramoops_memreserve", ramoops_memreserve);
+
+static int __init msm_register_ramoops_device(void)
+{
+	pr_info("msm_register_ramoops_device \n");
+	if (platform_device_register(&ramoops_dev))
+		pr_info("Unable to register ramoops platform device\n");
+	return 0;
+}
+core_initcall(msm_register_ramoops_device);
+>>>>>>> p9x
 static int __init ramoops_init(void)
 {
 	ramoops_register_dummy();
@@ -722,6 +797,7 @@ static void __exit ramoops_exit(void)
 	platform_device_unregister(dummy);
 	atomic_notifier_chain_unregister(&panic_notifier_list, &ramoop_nb);
 	kfree(dummy_data);
+	atomic_notifier_chain_unregister(&panic_notifier_list, &ramoop_nb);
 }
 module_exit(ramoops_exit);
 

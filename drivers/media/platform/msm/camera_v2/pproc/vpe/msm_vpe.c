@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2016 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -27,10 +31,13 @@
 #include <media/media-entity.h>
 #include <media/msmb_generic_buf_mgr.h>
 #include <media/msmb_pproc.h>
+<<<<<<< HEAD
 #include <asm/dma-iommu.h>
 #include <linux/dma-direction.h>
 #include <linux/dma-attrs.h>
 #include <linux/dma-buf.h>
+=======
+>>>>>>> p9x
 #include "msm_vpe.h"
 #include "msm_camera_io_util.h"
 
@@ -205,6 +212,7 @@ static unsigned long msm_vpe_queue_buffer_info(struct vpe_device *vpe_dev,
 	}
 
 	buff->map_info.buff_info = *buffer_info;
+<<<<<<< HEAD
 	buff->map_info.dbuf = dma_buf_get(buffer_info->fd);
 	if (IS_ERR_OR_NULL(buff->map_info.dbuf)) {
 		pr_err("Ion dma get buf failed\n");
@@ -234,6 +242,22 @@ static unsigned long msm_vpe_queue_buffer_info(struct vpe_device *vpe_dev,
 		&buff->map_info.len, 0, 0)) {
 		pr_err("%s: cannot map address", __func__);
 		goto err_detachment;
+=======
+	buff->map_info.ion_handle = ion_import_dma_buf(vpe_dev->client,
+		buffer_info->fd);
+	if (IS_ERR_OR_NULL(buff->map_info.ion_handle)) {
+		pr_err("ION import failed\n");
+		goto queue_buff_error1;
+	}
+
+	rc = ion_map_iommu(vpe_dev->client, buff->map_info.ion_handle,
+		vpe_dev->domain_num, 0, SZ_4K, 0,
+		&buff->map_info.phy_addr,
+		&buff->map_info.len, 0, 0);
+	if (rc < 0) {
+		pr_err("ION mmap failed\n");
+		goto queue_buff_error2;
+>>>>>>> p9x
 	}
 
 	INIT_LIST_HEAD(&buff->entry);
@@ -241,6 +265,7 @@ static unsigned long msm_vpe_queue_buffer_info(struct vpe_device *vpe_dev,
 
 	return buff->map_info.phy_addr;
 
+<<<<<<< HEAD
 err_detachment:
 	dma_buf_unmap_attachment(buff->map_info.attachment,
 		buff->map_info.table, DMA_BIDIRECTIONAL);
@@ -250,17 +275,35 @@ err_put:
 	dma_buf_put(buff->map_info.dbuf);
 err_get:
 	kzfree(buff);
+=======
+queue_buff_error2:
+	ion_unmap_iommu(vpe_dev->client, buff->map_info.ion_handle,
+		vpe_dev->domain_num, 0);
+queue_buff_error1:
+	ion_free(vpe_dev->client, buff->map_info.ion_handle);
+	buff->map_info.ion_handle = NULL;
+	kzfree(buff);
+
+>>>>>>> p9x
 	return 0;
 }
 
 static void msm_vpe_dequeue_buffer_info(struct vpe_device *vpe_dev,
 	struct msm_vpe_buffer_map_list_t *buff)
 {
+<<<<<<< HEAD
 	msm_unmap_dma_buf(buff->map_info.table, vpe_dev->domain_num, 0);
 	dma_buf_unmap_attachment(buff->map_info.attachment,
 		buff->map_info.table, DMA_BIDIRECTIONAL);
 	dma_buf_detach(buff->map_info.dbuf, buff->map_info.attachment);
 	dma_buf_put(buff->map_info.dbuf);
+=======
+	ion_unmap_iommu(vpe_dev->client, buff->map_info.ion_handle,
+		vpe_dev->domain_num, 0);
+	ion_free(vpe_dev->client, buff->map_info.ion_handle);
+	buff->map_info.ion_handle = NULL;
+
+>>>>>>> p9x
 	list_del_init(&buff->entry);
 	kzfree(buff);
 
@@ -994,12 +1037,21 @@ static int vpe_start(struct vpe_device *vpe_dev)
 {
 	/*  enable the frame irq, bit 0 = Display list 0 ROI done */
 	msm_camera_io_w_mb(1, vpe_dev->base + VPE_INTR_ENABLE_OFFSET);
+<<<<<<< HEAD
 	msm_camera_io_dump(vpe_dev->base, 0x120, CONFIG_MSM_VPE_DBG);
 	msm_camera_io_dump(vpe_dev->base + 0x00400, 0x18, CONFIG_MSM_VPE_DBG);
 	msm_camera_io_dump(vpe_dev->base + 0x10000, 0x250, CONFIG_MSM_VPE_DBG);
 	msm_camera_io_dump(vpe_dev->base + 0x30000, 0x20, CONFIG_MSM_VPE_DBG);
 	msm_camera_io_dump(vpe_dev->base + 0x50000, 0x30, CONFIG_MSM_VPE_DBG);
 	msm_camera_io_dump(vpe_dev->base + 0x50400, 0x10, CONFIG_MSM_VPE_DBG);
+=======
+	msm_camera_io_dump(vpe_dev->base, 0x120);
+	msm_camera_io_dump(vpe_dev->base + 0x00400, 0x18);
+	msm_camera_io_dump(vpe_dev->base + 0x10000, 0x250);
+	msm_camera_io_dump(vpe_dev->base + 0x30000, 0x20);
+	msm_camera_io_dump(vpe_dev->base + 0x50000, 0x30);
+	msm_camera_io_dump(vpe_dev->base + 0x50400, 0x10);
+>>>>>>> p9x
 
 	/*
 	 * This triggers the operation. When the VPE is done,
@@ -1030,8 +1082,13 @@ static int vpe_reset(struct vpe_device *vpe_dev)
 	msm_camera_io_w(0x10, vpe_dev->base + VPE_SW_RESET_OFFSET);
 	/* then poll the reset bit, it should be self-cleared. */
 	while (1) {
+<<<<<<< HEAD
 		rc = msm_camera_io_r(
 			vpe_dev->base + VPE_SW_RESET_OFFSET) & 0x10;
+=======
+		rc = msm_camera_io_r(vpe_dev->base + VPE_SW_RESET_OFFSET) \
+			& 0x10;
+>>>>>>> p9x
 		if (rc == 0)
 			break;
 		cpu_relax();
@@ -1054,6 +1111,7 @@ static int vpe_reset(struct vpe_device *vpe_dev)
 	return rc;
 }
 
+<<<<<<< HEAD
 static int vpe_update_scale_coef(struct vpe_device *vpe_dev, uint32_t *p)
 {
 	uint32_t i, offset;
@@ -1064,6 +1122,12 @@ static int vpe_update_scale_coef(struct vpe_device *vpe_dev, uint32_t *p)
 		return -EINVAL;
 	}
 
+=======
+static void vpe_update_scale_coef(struct vpe_device *vpe_dev, uint32_t *p)
+{
+	uint32_t i, offset;
+	offset = *p;
+>>>>>>> p9x
 	for (i = offset; i < (VPE_SCALE_COEFF_NUM + offset); i++) {
 		VPE_DBG("Setting scale table %d\n", i);
 		msm_camera_io_w(*(++p),
@@ -1071,8 +1135,11 @@ static int vpe_update_scale_coef(struct vpe_device *vpe_dev, uint32_t *p)
 		msm_camera_io_w(*(++p),
 			vpe_dev->base + VPE_SCALE_COEFF_MSBn(i));
 	}
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> p9x
 }
 
 static void vpe_input_plane_config(struct vpe_device *vpe_dev, uint32_t *p)
@@ -1110,16 +1177,24 @@ static void vpe_operation_config(struct vpe_device *vpe_dev, uint32_t *p)
  */
 static void msm_vpe_transaction_setup(struct vpe_device *vpe_dev, void *data)
 {
+<<<<<<< HEAD
 	int i, rc = 0;
+=======
+	int i;
+>>>>>>> p9x
 	void *iter = data;
 
 	vpe_mem_dump("vpe_transaction", data, VPE_TRANSACTION_SETUP_CONFIG_LEN);
 
 	for (i = 0; i < VPE_NUM_SCALER_TABLES; ++i) {
+<<<<<<< HEAD
 		rc = vpe_update_scale_coef(vpe_dev, (uint32_t *)iter);
 		if (rc != 0)
 			return;
 
+=======
+		vpe_update_scale_coef(vpe_dev, (uint32_t *)iter);
+>>>>>>> p9x
 		iter += VPE_SCALER_CONFIG_LEN;
 	}
 	vpe_input_plane_config(vpe_dev, (uint32_t *)iter);
@@ -1595,7 +1670,16 @@ static int vpe_probe(struct platform_device *pdev)
 	vpe_dev->msm_sd.sd.entity.group_id = MSM_CAMERA_SUBDEV_VPE;
 	vpe_dev->msm_sd.sd.entity.name = pdev->name;
 	msm_sd_register(&vpe_dev->msm_sd);
+<<<<<<< HEAD
 	msm_cam_copy_v4l2_subdev_fops(&msm_vpe_v4l2_subdev_fops);
+=======
+	msm_vpe_v4l2_subdev_fops.owner = v4l2_subdev_fops.owner;
+	msm_vpe_v4l2_subdev_fops.open = v4l2_subdev_fops.open;
+	msm_vpe_v4l2_subdev_fops.unlocked_ioctl = msm_vpe_subdev_fops_ioctl;
+	msm_vpe_v4l2_subdev_fops.release = v4l2_subdev_fops.release;
+	msm_vpe_v4l2_subdev_fops.poll = v4l2_subdev_fops.poll;
+
+>>>>>>> p9x
 	vpe_dev->msm_sd.sd.devnode->fops = &msm_vpe_v4l2_subdev_fops;
 	vpe_dev->msm_sd.sd.entity.revision = vpe_dev->msm_sd.sd.devnode->num;
 	vpe_dev->state = VPE_STATE_BOOT;

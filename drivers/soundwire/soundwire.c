@@ -196,7 +196,11 @@ int of_register_swr_devices(struct swr_master *master)
 				node->full_name);
 			continue;
 		}
+<<<<<<< HEAD
 		if (of_property_read_u64(node, "reg", &addr)) {
+=======
+		if (of_property_read_u64(node, "reg", (u64 *)&addr)) {
+>>>>>>> p9x
 			dev_err(&master->dev, "of_swr:invalid reg %s\n",
 				node->full_name);
 			continue;

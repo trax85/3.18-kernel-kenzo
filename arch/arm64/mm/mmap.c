@@ -47,7 +47,11 @@ static int mmap_is_legacy(void)
 	return sysctl_legacy_va_layout;
 }
 
+<<<<<<< HEAD
 unsigned long arch_mmap_rnd(void)
+=======
+static unsigned long mmap_rnd(void)
+>>>>>>> p9x
 {
 	unsigned long rnd;
 

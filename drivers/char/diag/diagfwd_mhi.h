@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -45,16 +49,26 @@
 #define DIAG_MHI_NAME_SZ	24
 
 struct diag_mhi_buf_tbl_t {
+<<<<<<< HEAD
 	struct list_head link;
 	unsigned char *buf;
 	int len;
+=======
+	unsigned char *buf;
+	int len;
+	struct list_head link;
+>>>>>>> p9x
 };
 
 struct diag_mhi_ch_t {
 	uint8_t type;
 	u32 channel;
 	enum MHI_CLIENT_CHANNEL chan;
+<<<<<<< HEAD
 	atomic_t opened;
+=======
+	uint8_t opened;
+>>>>>>> p9x
 	spinlock_t lock;
 	struct mhi_client_info_t client_info;
 	struct mhi_client_handle *hdl;
@@ -65,7 +79,10 @@ struct diag_mhi_info {
 	int id;
 	int dev_id;
 	int mempool;
+<<<<<<< HEAD
 	int mempool_init;
+=======
+>>>>>>> p9x
 	int num_read;
 	uint8_t enabled;
 	char name[DIAG_MHI_NAME_SZ];

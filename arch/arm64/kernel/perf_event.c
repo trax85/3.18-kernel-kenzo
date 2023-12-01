@@ -39,6 +39,8 @@
 #include <asm/pmu.h>
 #include <asm/stacktrace.h>
 
+#include <soc/qcom/cti-pmu-irq.h>
+
 /*
  * ARMv8 supports a maximum of 32 events.
  * The cycle counter is included in this total.
@@ -53,9 +55,42 @@ static DEFINE_PER_CPU(u32, armv8_pm_pmuserenr);
 static DEFINE_PER_CPU(u32, hotplug_down);
 
 #define to_arm_pmu(p) (container_of(p, struct arm_pmu, pmu))
+static struct pmu_hw_events *armpmu_get_cpu_events(void);
+static atomic_t cti_irq_workaround;
 
 /* Set at runtime when we know what CPU type we are. */
 static struct arm_pmu *cpu_pmu;
+static int msm_pmu_use_irq = 1;
+static int apply_cti_pmu_wa;
+
+void arm64_pmu_irq_handled_externally(void)
+{
+	msm_pmu_use_irq = 0;
+}
+
+void arm64_pmu_lock(raw_spinlock_t *lock, unsigned long *flags)
+{
+	struct pmu_hw_events *events_cpu;
+
+	if (lock) {
+		raw_spin_lock_irqsave(lock, *flags);
+	} else  {
+		events_cpu = armpmu_get_cpu_events();
+		raw_spin_lock_irqsave(&events_cpu->pmu_lock, *flags);
+	}
+}
+
+void arm64_pmu_unlock(raw_spinlock_t *lock, unsigned long *flags)
+{
+	struct pmu_hw_events *events_cpu;
+
+	if (lock) {
+		raw_spin_unlock_irqrestore(lock, *flags);
+	} else  {
+		events_cpu = armpmu_get_cpu_events();
+		raw_spin_unlock_irqrestore(&events_cpu->pmu_lock, *flags);
+	}
+}
 
 int
 armpmu_get_max_events(void)
@@ -417,6 +452,10 @@ armpmu_reserve_hardware(struct arm_pmu *armpmu)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 	err = armpmu->request_irq(armpmu, armpmu->handle_irq);
 	if (err) {
 		armpmu_release_hardware(armpmu);
@@ -990,7 +1029,7 @@ static void armv8pmu_enable_event(struct hw_perf_event *hwc, int idx)
 	 * Enable counter and interrupt, and set the counter to count
 	 * the event that we're interested in.
 	 */
-	raw_spin_lock_irqsave(&events->pmu_lock, flags);
+	arm64_pmu_lock(&events->pmu_lock, &flags);
 
 	/*
 	 * Disable counter
@@ -1017,7 +1056,7 @@ static void armv8pmu_enable_event(struct hw_perf_event *hwc, int idx)
 	 */
 	armv8pmu_enable_counter(idx);
 
-	raw_spin_unlock_irqrestore(&events->pmu_lock, flags);
+	arm64_pmu_unlock(&events->pmu_lock, &flags);
 }
 
 static void armv8pmu_disable_event(struct hw_perf_event *hwc, int idx)
@@ -1028,7 +1067,7 @@ static void armv8pmu_disable_event(struct hw_perf_event *hwc, int idx)
 	/*
 	 * Disable counter and interrupt
 	 */
-	raw_spin_lock_irqsave(&events->pmu_lock, flags);
+	arm64_pmu_lock(&events->pmu_lock, &flags);
 
 	/*
 	 * Disable counter
@@ -1040,7 +1079,7 @@ static void armv8pmu_disable_event(struct hw_perf_event *hwc, int idx)
 	 */
 	armv8pmu_disable_intens(idx);
 
-	raw_spin_unlock_irqrestore(&events->pmu_lock, flags);
+	arm64_pmu_unlock(&events->pmu_lock, &flags);
 }
 
 static int armv8pmu_request_irq(struct arm_pmu *cpu_pmu, irq_handler_t handler)
@@ -1061,6 +1100,18 @@ static int armv8pmu_request_irq(struct arm_pmu *cpu_pmu, irq_handler_t handler)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
+=======
+	if (!msm_pmu_use_irq) {
+		pr_info("EDAC driver requests for the PMU interrupt\n");
+		goto out;
+	} else {
+		if ((atomic_add_return(1, &cti_irq_workaround) == 1) &&
+		    apply_cti_pmu_wa)
+			schedule_on_each_cpu(msm_enable_cti_pmu_workaround);
+	}
+
+>>>>>>> p9x
 	if (irq_is_percpu(irq)) {
 		err = request_percpu_irq(irq, handler,
 				"arm-pmu", &cpu_hw_events);
@@ -1103,6 +1154,10 @@ static int armv8pmu_request_irq(struct arm_pmu *cpu_pmu, irq_handler_t handler)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+out:
+>>>>>>> p9x
 	return 0;
 }
 
@@ -1127,8 +1182,15 @@ static void armv8pmu_free_irq(struct arm_pmu *cpu_pmu)
 	cpu_pmu->pmu_state = ARM_PMU_STATE_GOING_DOWN;
 
 	if (irq_is_percpu(irq)) {
+<<<<<<< HEAD
 		on_each_cpu(armpmu_disable_percpu_irq, &irq, 1);
 		free_percpu_irq(irq, &cpu_hw_events);
+=======
+		if (msm_pmu_use_irq) {
+			on_each_cpu(armpmu_disable_percpu_irq, &irq, 1);
+			free_percpu_irq(irq, &cpu_hw_events);
+		}
+>>>>>>> p9x
 	} else {
 		for (i = 0; i < irqs; ++i) {
 			if (!cpumask_test_and_clear_cpu(i,
@@ -1142,13 +1204,21 @@ static void armv8pmu_free_irq(struct arm_pmu *cpu_pmu)
 	cpu_pmu->pmu_state = ARM_PMU_STATE_OFF;
 }
 
+<<<<<<< HEAD
 static irqreturn_t armv8pmu_handle_irq(int irq_num, void *dev)
+=======
+irqreturn_t armv8pmu_handle_irq(int irq_num, void *dev)
+>>>>>>> p9x
 {
 	u32 pmovsr;
 	struct perf_sample_data data;
 	struct pmu_hw_events *cpuc;
 	struct pt_regs *regs;
 	int idx;
+	int cpu = raw_smp_processor_id();
+
+	if (msm_pmu_use_irq && apply_cti_pmu_wa)
+		msm_cti_pmu_irq_ack(cpu);
 
 	/*
 	 * Get and reset the IRQ flags
@@ -1209,10 +1279,10 @@ static void armv8pmu_start(void)
 	unsigned long flags;
 	struct pmu_hw_events *events = cpu_pmu->get_hw_events();
 
-	raw_spin_lock_irqsave(&events->pmu_lock, flags);
+	arm64_pmu_lock(&events->pmu_lock, &flags);
 	/* Enable all counters */
 	armv8pmu_pmcr_write(armv8pmu_pmcr_read() | ARMV8_PMCR_E);
-	raw_spin_unlock_irqrestore(&events->pmu_lock, flags);
+	arm64_pmu_unlock(&events->pmu_lock, &flags);
 }
 
 static void armv8pmu_stop(void)
@@ -1220,10 +1290,10 @@ static void armv8pmu_stop(void)
 	unsigned long flags;
 	struct pmu_hw_events *events = cpu_pmu->get_hw_events();
 
-	raw_spin_lock_irqsave(&events->pmu_lock, flags);
+	arm64_pmu_lock(&events->pmu_lock, &flags);
 	/* Disable all counters */
 	armv8pmu_pmcr_write(armv8pmu_pmcr_read() & ~ARMV8_PMCR_E);
-	raw_spin_unlock_irqrestore(&events->pmu_lock, flags);
+	arm64_pmu_unlock(&events->pmu_lock, &flags);
 }
 
 static int armv8pmu_get_event_idx(struct pmu_hw_events *cpuc,
@@ -1357,6 +1427,9 @@ static u32 __init armv8pmu_read_num_pmnc_events(void)
 	/* Read the nb of CNTx counters supported from PMNC */
 	nb_cnt = (armv8pmu_pmcr_read() >> ARMV8_PMCR_N_SHIFT) & ARMV8_PMCR_N_MASK;
 
+#ifdef CONFIG_EDAC_CORTEX_ARM64
+	nb_cnt -= 1;
+#endif
 	/* Add the CPU cycles counter and return */
 	return nb_cnt + 1;
 }
@@ -1420,6 +1493,7 @@ static void armpmu_update_counters(void *x)
 	}
 }
 
+<<<<<<< HEAD
 static void armpmu_idle_update(void)
 {
 	struct pmu_hw_events *hw_events;
@@ -1440,6 +1514,8 @@ static void armpmu_idle_update(void)
 	}
 }
 
+=======
+>>>>>>> p9x
 static void armpmu_hotplug_enable(void *parm_pmu)
 {
 	struct arm_pmu *armpmu = parm_pmu;
@@ -1519,8 +1595,13 @@ static int __cpuinit cpu_pmu_notify(struct notifier_block *b,
 				smp_call_function_single(cpu,
 					armpmu_hotplug_disable, cpu_pmu, 1);
 			/* Disarm the PMU IRQ before disappearing. */
+<<<<<<< HEAD
 			if (cpu_pmu->plat_device) {
 				irq = cpu_pmu->percpu_irq;
+=======
+			if (msm_pmu_use_irq && cpu_pmu->plat_device) {
+				irq = platform_get_irq(cpu_pmu->plat_device, 0);
+>>>>>>> p9x
 				smp_call_function_single(cpu,
 					    armpmu_disable_percpu_irq, &irq, 1);
 			}
@@ -1536,8 +1617,13 @@ static int __cpuinit cpu_pmu_notify(struct notifier_block *b,
 			cpu_pmu->restore_pm_registers(hcpu);
 		if (cpu_pmu->pmu_state == ARM_PMU_STATE_RUNNING) {
 			/* Arm the PMU IRQ before appearing. */
+<<<<<<< HEAD
 			if (cpu_pmu->plat_device) {
 				irq = cpu_pmu->percpu_irq;
+=======
+			if (msm_pmu_use_irq && cpu_pmu->plat_device) {
+				irq = platform_get_irq(cpu_pmu->plat_device, 0);
+>>>>>>> p9x
 				armpmu_enable_percpu_irq(&irq);
 			}
 			if (cpu_has_active_perf(cpu)) {
@@ -1551,7 +1637,11 @@ static int __cpuinit cpu_pmu_notify(struct notifier_block *b,
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct notifier_block cpu_pmu_hotplug_notifier __cpuinitdata = {
+=======
+static struct notifier_block __cpuinitdata cpu_pmu_hotplug_notifier = {
+>>>>>>> p9x
 	.notifier_call = cpu_pmu_notify,
 };
 
@@ -1605,6 +1695,7 @@ static struct notifier_block perf_cpu_pm_notifier_block = {
 	.notifier_call = perf_cpu_pm_notifier,
 };
 
+<<<<<<< HEAD
 static int perf_cpu_idle_notifier(struct notifier_block *nb,
 				unsigned long action, void *data)
 {
@@ -1618,6 +1709,8 @@ static struct notifier_block perf_cpu_idle_nb = {
 	.notifier_call = perf_cpu_idle_notifier,
 };
 
+=======
+>>>>>>> p9x
 /*
  * PMU platform driver and devicetree bindings.
  */
@@ -1648,7 +1741,12 @@ static int armpmu_device_probe(struct platform_device *pdev)
 	}
 
 	cpu_pmu->plat_device = pdev;
+<<<<<<< HEAD
 	cpu_pmu->percpu_irq = platform_get_irq(cpu_pmu->plat_device, 0);
+=======
+	apply_cti_pmu_wa = of_property_read_bool(pdev->dev.of_node,
+						 "qcom,apply-cti-pmu-wa");
+>>>>>>> p9x
 	return 0;
 }
 
@@ -1672,8 +1770,11 @@ static int __init register_pmu_driver(void)
 	if (err)
 		goto err_cpu_pm;
 
+<<<<<<< HEAD
 	idle_notifier_register(&perf_cpu_idle_nb);
 
+=======
+>>>>>>> p9x
 	err = platform_driver_register(&armpmu_driver);
 	if (err)
 		goto err_driver;
@@ -1681,7 +1782,10 @@ static int __init register_pmu_driver(void)
 
 err_driver:
 	cpu_pm_unregister_notifier(&perf_cpu_pm_notifier_block);
+<<<<<<< HEAD
 	idle_notifier_unregister(&perf_cpu_idle_nb);
+=======
+>>>>>>> p9x
 err_cpu_pm:
 	unregister_cpu_notifier(&cpu_pmu_hotplug_notifier);
 	return err;
@@ -1925,9 +2029,13 @@ static __ref void reset_pmu_force(void)
 	for_each_possible_cpu(cpu) {
 		if (!cpu_online(cpu)) {
 			save_online_mask |= BIT(cpu);
+<<<<<<< HEAD
 			lock_device_hotplug();
 			ret = device_online(get_cpu_device(cpu));
 			unlock_device_hotplug();
+=======
+			ret = cpu_up(cpu);
+>>>>>>> p9x
 			if (ret)
 				pr_err("Failed to bring up CPU: %d, ret: %d\n",
 				       cpu, ret);
@@ -1939,9 +2047,13 @@ static __ref void reset_pmu_force(void)
 		armpmu_release_hardware(cpu_pmu);
 	for_each_possible_cpu(cpu) {
 		if ((save_online_mask & BIT(cpu)) && cpu_online(cpu)) {
+<<<<<<< HEAD
 			lock_device_hotplug();
 			ret = device_offline(get_cpu_device(cpu));
 			unlock_device_hotplug();
+=======
+			ret = cpu_down(cpu);
+>>>>>>> p9x
 			if (ret)
 				pr_err("Failed to bring down CPU: %d, ret: %d\n",
 						cpu, ret);

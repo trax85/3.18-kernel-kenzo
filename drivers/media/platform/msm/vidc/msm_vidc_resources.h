@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2017, 2019, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -14,6 +18,7 @@
 #ifndef __MSM_VIDC_RESOURCES_H__
 #define __MSM_VIDC_RESOURCES_H__
 
+<<<<<<< HEAD
 #include <linux/devfreq.h>
 #include <linux/platform_device.h>
 #include <media/msm_vidc.h>
@@ -22,6 +27,21 @@
 struct version_table {
 	u32 version_mask;
 	u32 version_shift;
+=======
+#include <linux/platform_device.h>
+#include <media/msm_vidc.h>
+#define MAX_BUFFER_TYPES 32
+#define IDLE_TIME_WINDOW_SIZE 30
+
+struct clock_voltage_table {
+	u32 clock_freq;
+	u32 voltage_idx;
+};
+
+struct clock_voltage_info {
+	struct clock_voltage_table *cv_table;
+	u32 count;
+>>>>>>> p9x
 };
 
 struct load_freq_table {
@@ -30,6 +50,7 @@ struct load_freq_table {
 	u32 supported_codecs;
 };
 
+<<<<<<< HEAD
 struct dcvs_table {
 	u32 load;
 	u32 load_low;
@@ -47,6 +68,8 @@ struct imem_ab_table {
 	u32 imem_ab;
 };
 
+=======
+>>>>>>> p9x
 struct reg_value_pair {
 	u32 reg;
 	u32 value;
@@ -67,6 +90,7 @@ struct addr_set {
 	int count;
 };
 
+<<<<<<< HEAD
 struct context_bank_info {
 	struct list_head list;
 	const char *name;
@@ -75,6 +99,21 @@ struct context_bank_info {
 	struct addr_range addr_range;
 	struct device *dev;
 	struct dma_iommu_mapping *mapping;
+=======
+struct iommu_info {
+	const char *name;
+	u32 buffer_type[MAX_BUFFER_TYPES];
+	struct iommu_group *group;
+	int domain;
+	bool is_secure;
+	struct addr_range addr_range[MAX_BUFFER_TYPES];
+	int npartitions;
+};
+
+struct iommu_set {
+	struct iommu_info *iommu_maps;
+	u32 count;
+>>>>>>> p9x
 };
 
 struct buffer_usage_table {
@@ -102,8 +141,13 @@ struct clock_info {
 	const char *name;
 	struct clk *clk;
 	struct load_freq_table *load_freq_tbl;
+<<<<<<< HEAD
 	u32 count;
 	bool has_scaling;
+=======
+	u32 count; /* == has_scaling iff count != 0 */
+	bool has_gating;
+>>>>>>> p9x
 };
 
 struct clock_set {
@@ -111,6 +155,7 @@ struct clock_set {
 	u32 count;
 };
 
+<<<<<<< HEAD
 struct bus_info {
 	char *name;
 	int master;
@@ -121,6 +166,21 @@ struct bus_info {
 	struct devfreq_dev_profile devfreq_prof;
 	struct devfreq *devfreq;
 	struct msm_bus_client_handle *client;
+=======
+enum msm_vidc_power_mode {
+	VIDC_POWER_NORMAL = BIT(0),
+	VIDC_POWER_LOW = BIT(1),
+	VIDC_POWER_TURBO = BIT(2),
+	VIDC_POWER_LOW_LATENCY = BIT(3),
+};
+
+struct bus_info {
+	struct msm_bus_scale_pdata *pdata;
+	u32 priv;
+	u32 sessions_supported; /* bitmask */
+	bool passive;
+	enum msm_vidc_power_mode power_mode;
+>>>>>>> p9x
 };
 
 struct bus_set {
@@ -128,6 +188,7 @@ struct bus_set {
 	u32 count;
 };
 
+<<<<<<< HEAD
 enum imem_type {
 	IMEM_NONE,
 	IMEM_OCMEM,
@@ -150,11 +211,14 @@ struct clock_freq_table {
 	u32 count;
 };
 
+=======
+>>>>>>> p9x
 struct msm_vidc_platform_resources {
 	phys_addr_t firmware_base;
 	phys_addr_t register_base;
 	uint32_t register_size;
 	uint32_t irq;
+<<<<<<< HEAD
 	struct version_table *pf_ver_tbl;
 	struct version_table *pf_cap_tbl;
 	struct version_table *pf_speedbin_tbl;
@@ -196,6 +260,40 @@ struct msm_vidc_platform_resources {
 static inline bool is_iommu_present(struct msm_vidc_platform_resources *res)
 {
 	return !list_empty(&res->context_banks);
+=======
+	struct load_freq_table *load_freq_tbl;
+	uint32_t load_freq_tbl_size;
+	struct reg_set reg_set;
+	struct addr_set qdss_addr_set;
+	struct iommu_set iommu_group_set;
+	struct buffer_usage_set buffer_usage_set;
+	uint32_t ocmem_size;
+	uint32_t max_load;
+	uint32_t dcvs_min_load;
+	uint32_t dcvs_min_mbperframe;
+	struct platform_device *pdev;
+	struct regulator_set regulator_set;
+	struct clock_set clock_set;
+	struct clock_voltage_info cv_info;
+	struct clock_voltage_info cv_info_vp9d;
+	struct bus_set bus_set;
+	uint32_t power_modes;
+	bool dynamic_bw_update;
+	bool use_non_secure_pil;
+	bool sw_power_collapsible;
+	bool sys_idle_indicator;
+	bool early_fw_load;
+	bool thermal_mitigable;
+	const char *fw_name;
+};
+
+static inline int is_iommu_present(struct msm_vidc_platform_resources *res)
+{
+	if (res)
+		return (res->iommu_group_set.count > 0 &&
+				res->iommu_group_set.iommu_maps != NULL);
+	return 0;
+>>>>>>> p9x
 }
 
 extern uint32_t msm_vidc_pwr_collapse_delay;

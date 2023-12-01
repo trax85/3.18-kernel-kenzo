@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2016, 2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -32,6 +36,10 @@
 
 #include <linux/msm-sps.h>
 #include <linux/msm-bus.h>
+<<<<<<< HEAD
+=======
+#include <mach/hardware.h>
+>>>>>>> p9x
 
 #include "mdss_fb.h"
 #include "mdss_qpic.h"
@@ -46,7 +54,11 @@ struct qpic_data_type *qpic_res;
 /* for debugging */
 static u32 use_bam = true;
 static u32 use_irq = true;
+<<<<<<< HEAD
 static u32 use_vsync;
+=======
+static u32 use_vsync = true;
+>>>>>>> p9x
 
 static const struct of_device_id mdss_qpic_dt_match[] = {
 	{ .compatible = "qcom,mdss_qpic",},
@@ -67,6 +79,7 @@ static struct platform_driver mdss_qpic_driver = {
 	},
 };
 
+<<<<<<< HEAD
 static void mdss_qpic_clk_ctrl(bool enable)
 {
 	if (enable) {
@@ -82,27 +95,65 @@ static void mdss_qpic_clk_ctrl(bool enable)
 	}
 }
 
+=======
+>>>>>>> p9x
 int qpic_on(struct msm_fb_data_type *mfd)
 {
 	int ret;
 
+<<<<<<< HEAD
 	mdss_qpic_clk_ctrl(true);
 
 	ret = mdss_qpic_panel_on(qpic_res->panel_data, &qpic_res->panel_io);
 	qpic_res->qpic_is_on = true;
+=======
+	if (qpic_res->qpic_a_clk)
+		clk_prepare_enable(qpic_res->qpic_a_clk);
+
+	if ((!qpic_res->lk_transition_done) &&
+			(QPIC_INP(QPIC_REG_QPIC_LCDC_CTRL) & (1 << 8))) {
+		qpic_res->splash_screen_transition = true;
+		qpic_res->panel_io.splash_screen_transition = true;
+	}
+
+	ret = mdss_qpic_panel_on(qpic_res->panel_data, &qpic_res->panel_io);
+	qpic_res->qpic_is_on = true;
+	if (!qpic_res->lk_transition_done) {
+		qpic_res->splash_screen_transition = false;
+		qpic_res->panel_io.splash_screen_transition = false;
+		qpic_res->lk_transition_done = true;
+	}
+
+	if (qpic_res->qpic_a_clk)
+		clk_disable_unprepare(qpic_res->qpic_a_clk);
+>>>>>>> p9x
 	return ret;
 }
 
 int qpic_off(struct msm_fb_data_type *mfd)
 {
 	int ret;
+<<<<<<< HEAD
+=======
+
+	if (qpic_res->qpic_a_clk)
+		clk_prepare_enable(qpic_res->qpic_a_clk);
+
+>>>>>>> p9x
 	ret = mdss_qpic_panel_off(qpic_res->panel_data, &qpic_res->panel_io);
 	if (use_irq)
 		qpic_interrupt_en(false);
 
+<<<<<<< HEAD
 	mdss_qpic_clk_ctrl(false);
 	qpic_res->qpic_is_on = false;
 
+=======
+	if (qpic_res->qpic_a_clk)
+		clk_disable_unprepare(qpic_res->qpic_a_clk);
+
+	qpic_res->qpic_is_on = false;
+>>>>>>> p9x
 	return ret;
 }
 
@@ -133,7 +184,11 @@ static void mdss_qpic_pan_display(struct msm_fb_data_type *mfd)
 	}
 
 	if (!qpic_res->qpic_is_on) {
+<<<<<<< HEAD
 		pr_err("%s: Failed since panel is not ON\n", __func__);
+=======
+		pr_err("Panel is not on\n");
+>>>>>>> p9x
 		return;
 	}
 
@@ -154,11 +209,25 @@ static void mdss_qpic_pan_display(struct msm_fb_data_type *mfd)
 		fb_offset = (u32)mfd->fbi->screen_base + offset;
 
 	msm_qpic_bus_set_vote(1);
+<<<<<<< HEAD
 	mdss_qpic_panel_on(qpic_res->panel_data, &qpic_res->panel_io);
 	size = fbi->var.xres * fbi->var.yres * bpp;
 
 	qpic_send_frame(0, 0, fbi->var.xres - 1, fbi->var.yres - 1,
 		(u32 *)fb_offset, size);
+=======
+	size = fbi->var.xres * fbi->var.yres * bpp;
+
+	if (qpic_res->qpic_a_clk)
+		clk_prepare_enable(qpic_res->qpic_a_clk);
+
+	qpic_send_frame(0, 0, fbi->var.xres - 1, fbi->var.yres - 1,
+		(u32 *)fb_offset, size);
+
+	if (qpic_res->qpic_a_clk)
+		clk_disable_unprepare(qpic_res->qpic_a_clk);
+
+>>>>>>> p9x
 	msm_qpic_bus_set_vote(0);
 }
 
@@ -229,7 +298,10 @@ int mdss_qpic_overlay_init(struct msm_fb_data_type *mfd)
 	qpic_interface->dma_fnc = mdss_qpic_pan_display;
 	qpic_interface->ioctl_handler = NULL;
 	qpic_interface->kickoff_fnc = NULL;
+<<<<<<< HEAD
 	qpic_interface->is_twm_en = NULL;
+=======
+>>>>>>> p9x
 	return 0;
 }
 
@@ -238,9 +310,12 @@ int qpic_register_panel(struct mdss_panel_data *pdata)
 	struct platform_device *mdss_fb_dev = NULL;
 	int rc;
 
+<<<<<<< HEAD
 	if (!qpic_res)
 		return -ENODEV;
 
+=======
+>>>>>>> p9x
 	mdss_fb_dev = platform_device_alloc("mdss_fb", pdata->panel_info.pdest);
 	if (!mdss_fb_dev) {
 		pr_err("unable to allocate mdss_fb device\n");
@@ -363,7 +438,11 @@ void mdss_qpic_reset(void)
 
 	QPIC_OUTP(QPIC_REG_QPIC_LCDC_RESET, 1 << 0);
 	/* wait 100 us after reset as suggested by hw */
+<<<<<<< HEAD
 	usleep_range(100, 100);
+=======
+	usleep(100);
+>>>>>>> p9x
 	time_end = (u32)ktime_to_ms(ktime_get()) +
 		QPIC_MAX_VSYNC_WAIT_TIME;
 	while (((QPIC_INP(QPIC_REG_QPIC_LCDC_STTS) & (1 << 8)) == 0)) {
@@ -372,7 +451,11 @@ void mdss_qpic_reset(void)
 			break;
 		}
 		/* yield 100 us for next polling by experiment*/
+<<<<<<< HEAD
 		usleep_range(100, 100);
+=======
+		usleep(100);
+>>>>>>> p9x
 	}
 }
 
@@ -479,7 +562,11 @@ static int qpic_wait_for_fifo(void)
 		data &= 0x3F;
 		if (data == 0)
 			return ret;
+<<<<<<< HEAD
 		reinit_completion(&qpic_res->fifo_eof_comp);
+=======
+		INIT_COMPLETION(qpic_res->fifo_eof_comp);
+>>>>>>> p9x
 		QPIC_OUTP(QPIC_REG_QPIC_LCDC_IRQ_EN, (1 << 4));
 		ret = wait_for_completion_timeout(&qpic_res->fifo_eof_comp,
 				msecs_to_jiffies(QPIC_MAX_VSYNC_WAIT_TIME));
@@ -499,7 +586,11 @@ static int qpic_wait_for_fifo(void)
 			if (data == 0)
 				break;
 			/* yield 10 us for next polling by experiment*/
+<<<<<<< HEAD
 			usleep_range(10, 10);
+=======
+			usleep(10);
+>>>>>>> p9x
 			if (ktime_to_ms(ktime_get()) > time_end) {
 				pr_err("%s time out", __func__);
 				ret = -EBUSY;
@@ -518,7 +609,11 @@ static int qpic_wait_for_eof(void)
 		data = QPIC_INP(QPIC_REG_QPIC_LCDC_IRQ_STTS);
 		if (data & (1 << 2))
 			return ret;
+<<<<<<< HEAD
 		reinit_completion(&qpic_res->fifo_eof_comp);
+=======
+		INIT_COMPLETION(qpic_res->fifo_eof_comp);
+>>>>>>> p9x
 		QPIC_OUTP(QPIC_REG_QPIC_LCDC_IRQ_EN, (1 << 2));
 		ret = wait_for_completion_timeout(&qpic_res->fifo_eof_comp,
 				msecs_to_jiffies(QPIC_MAX_VSYNC_WAIT_TIME));
@@ -537,7 +632,11 @@ static int qpic_wait_for_eof(void)
 			if (data & (1 << 2))
 				break;
 			/* yield 10 us for next polling by experiment*/
+<<<<<<< HEAD
 			usleep_range(10, 10);
+=======
+			usleep(10);
+>>>>>>> p9x
 			if (ktime_to_ms(ktime_get()) > time_end) {
 				pr_err("%s wait for eof time out\n", __func__);
 				qpic_dump_reg();
@@ -628,7 +727,13 @@ int mdss_qpic_init(void)
 {
 	int ret = 0;
 	u32 data;
+<<<<<<< HEAD
 	mdss_qpic_reset();
+=======
+
+	if (!qpic_res->splash_screen_transition)
+		mdss_qpic_reset();
+>>>>>>> p9x
 
 	pr_info("%s version=%x", __func__, QPIC_INP(QPIC_REG_LCDC_VERSION));
 	data = QPIC_INP(QPIC_REG_QPIC_LCDC_CTRL);
@@ -718,7 +823,10 @@ static int mdss_qpic_probe(struct platform_device *pdev)
 		.fb_stride = mdss_qpic_fb_stride,
 	};
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	if (!pdev->dev.of_node) {
 		pr_err("qpic driver only supports device tree probe\n");
 		return -ENOTSUPP;
@@ -759,8 +867,12 @@ static int mdss_qpic_probe(struct platform_device *pdev)
 	}
 	qpic_res->qpic_phys = res->start;
 	pr_info("MDSS QPIC HW Base phy_Address=0x%x virt=0x%x\n",
+<<<<<<< HEAD
 		(int) res->start,
 		(int) qpic_res->qpic_base);
+=======
+		(int) res->start, (int) qpic_res->qpic_base);
+>>>>>>> p9x
 
 	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
 	if (!res) {
@@ -768,6 +880,7 @@ static int mdss_qpic_probe(struct platform_device *pdev)
 		rc = -ENOMEM;
 		goto probe_done;
 	}
+<<<<<<< HEAD
 
 	qpic_res->qpic_a_clk = clk_get(&pdev->dev, "core_a_clk");
 	if (IS_ERR(qpic_res->qpic_a_clk))
@@ -776,6 +889,15 @@ static int mdss_qpic_probe(struct platform_device *pdev)
 	qpic_res->qpic_clk = clk_get(&pdev->dev, "core_clk");
 	if (IS_ERR(qpic_res->qpic_clk))
 		pr_err("%s: Can't find core_clk", __func__);
+=======
+	qpic_res->qpic_a_clk = clk_get(&pdev->dev, "core_a_clk");
+	if (IS_ERR(qpic_res->qpic_a_clk)) {
+		pr_err("%s: Can't find core_a_clk", __func__);
+		qpic_res->qpic_a_clk = NULL;
+		rc = -EPERM;
+		goto probe_done;
+	}
+>>>>>>> p9x
 
 	qpic_res->irq = res->start;
 	qpic_res->res_init = true;

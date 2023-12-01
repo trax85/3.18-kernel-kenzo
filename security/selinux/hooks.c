@@ -86,6 +86,7 @@
 #include <linux/shm.h>
 #include <linux/pfk.h>
 
+
 #include "avc.h"
 #include "objsec.h"
 #include "netif.h"
@@ -160,6 +161,17 @@ static int selinux_secmark_enabled(void)
 static int selinux_peerlbl_enabled(void)
 {
 	return (selinux_policycap_alwaysnetwork || netlbl_enabled() || selinux_xfrm_enabled());
+}
+
+static int selinux_netcache_avc_callback(u32 event)
+{
+	if (event == AVC_CALLBACK_RESET) {
+		sel_netif_flush();
+		sel_netnode_flush();
+		sel_netport_flush();
+		synchronize_net();
+	}
+	return 0;
 }
 
 static int selinux_netcache_avc_callback(u32 event)
@@ -457,9 +469,31 @@ static int sb_finish_set_opts(struct super_block *sb)
 		       sb->s_id, sb->s_type->name,
 		       labeling_behaviors[sbsec->behavior-1]);
 
+<<<<<<< HEAD
 	sbsec->flags |= SE_SBINITIALIZED;
 	if (selinux_is_sblabel_mnt(sb))
 		sbsec->flags |= SBLABEL_MNT;
+=======
+	if (sbsec->behavior == SECURITY_FS_USE_GENFS ||
+	    sbsec->behavior == SECURITY_FS_USE_MNTPOINT ||
+	    sbsec->behavior == SECURITY_FS_USE_NONE ||
+	    sbsec->behavior > ARRAY_SIZE(labeling_behaviors))
+		sbsec->flags &= ~SE_SBLABELSUPP;
+
+	/* Special handling. Is genfs but also has in-core setxattr handler*/
+	if (!strcmp(sb->s_type->name, "sysfs") ||
+	    !strcmp(sb->s_type->name, "pstore") ||
+	    !strcmp(sb->s_type->name, "debugfs") ||
+	    !strcmp(sb->s_type->name, "rootfs"))
+		sbsec->flags |= SE_SBLABELSUPP;
+
+	/*
+	 * Special handling for rootfs. Is genfs but supports
+	 * setting SELinux context on in-core inodes.
+	 */
+	if (strncmp(sb->s_type->name, "rootfs", sizeof("rootfs")) == 0)
+		sbsec->flags |= SE_SBLABELSUPP;
+>>>>>>> p9x
 
 	/* Initialize the root inode. */
 	rc = inode_doinit_with_dentry(root_inode, root);
@@ -735,6 +769,14 @@ static int selinux_set_mnt_opts(struct super_block *sb,
 
 	if (strcmp(sb->s_type->name, "proc") == 0)
 		sbsec->flags |= SE_SBPROC | SE_SBGENFS;
+<<<<<<< HEAD
+=======
+
+	if (!strcmp(sb->s_type->name, "debugfs") ||
+	    !strcmp(sb->s_type->name, "sysfs") ||
+	    !strcmp(sb->s_type->name, "pstore"))
+		sbsec->flags |= SE_SBGENFS;
+>>>>>>> p9x
 
 	if (!strcmp(sb->s_type->name, "debugfs") ||
 	    !strcmp(sb->s_type->name, "tracefs") ||
@@ -1982,10 +2024,18 @@ static int selinux_binder_transfer_file(struct task_struct *from, struct task_st
 	struct inode *inode = file->f_path.dentry->d_inode;
 	struct inode_security_struct *isec = inode->i_security;
 	struct common_audit_data ad;
+<<<<<<< HEAD
+=======
+	struct selinux_audit_data sad = {0,};
+>>>>>>> p9x
 	int rc;
 
 	ad.type = LSM_AUDIT_DATA_PATH;
 	ad.u.path = file->f_path;
+<<<<<<< HEAD
+=======
+	ad.selinux_audit_data = &sad;
+>>>>>>> p9x
 
 	if (sid != fsec->sid) {
 		rc = avc_has_perm(sid, fsec->sid,
@@ -4046,12 +4096,17 @@ static int selinux_skb_peerlbl_sid(struct sk_buff *skb, u16 family, u32 *sid)
 	u32 nlbl_sid;
 	u32 nlbl_type;
 
+<<<<<<< HEAD
 	err = selinux_xfrm_skb_sid(skb, &xfrm_sid);
 	if (unlikely(err))
 		return -EACCES;
 	err = selinux_netlbl_skbuff_getsid(skb, family, &nlbl_type, &nlbl_sid);
 	if (unlikely(err))
 		return -EACCES;
+=======
+	selinux_xfrm_skb_sid(skb, &xfrm_sid);
+	selinux_netlbl_skbuff_getsid(skb, family, &nlbl_type, &nlbl_sid);
+>>>>>>> p9x
 
 	err = security_net_peersid_resolve(nlbl_sid, nlbl_type, xfrm_sid, sid);
 	if (unlikely(err)) {
@@ -4109,8 +4164,16 @@ static int sock_has_perm(struct task_struct *task, struct sock *sk, u32 perms)
 	struct lsm_network_audit net = {0,};
 	u32 tsid = task_sid(task);
 
+<<<<<<< HEAD
 	if (!sksec)
 		return -EFAULT;
+=======
+	if (unlikely(!sksec)) {
+		pr_warn("SELinux: sksec is NULL, socket is already freed\n");
+		return -EINVAL;
+	}
+
+>>>>>>> p9x
 	if (sksec->sid == SECINITSID_KERNEL)
 		return 0;
 
@@ -4705,7 +4768,11 @@ static int selinux_inet_conn_request(struct sock *sk, struct sk_buff *skb,
 {
 	struct sk_security_struct *sksec = sk->sk_security;
 	int err;
+<<<<<<< HEAD
 	u16 family = req->rsk_ops->family;
+=======
+	u16 family = sk->sk_family;
+>>>>>>> p9x
 	u32 connsid;
 	u32 peersid;
 
@@ -5080,7 +5147,11 @@ static unsigned int selinux_ip_postroute(struct sk_buff *skb,
 		return selinux_ip_postroute_compat(skb, ifindex, family);
 
 	secmark_active = selinux_secmark_enabled();
+<<<<<<< HEAD
 	peerlbl_active = selinux_peerlbl_enabled();
+=======
+	peerlbl_active = netlbl_enabled() || selinux_xfrm_enabled();
+>>>>>>> p9x
 	if (!secmark_active && !peerlbl_active)
 		return NF_ACCEPT;
 
@@ -5093,6 +5164,10 @@ static unsigned int selinux_ip_postroute(struct sk_buff *skb,
 	 * when the packet is on it's final way out.
 	 * NOTE: there appear to be some IPv6 multicast cases where skb->dst
 	 *       is NULL, in this case go ahead and apply access control.
+<<<<<<< HEAD
+=======
+	 *       is NULL, in this case go ahead and apply access control.
+>>>>>>> p9x
 	 * NOTE: if this is a local socket (skb->sk != NULL) that is in the
 	 *       TCP listening state we cannot wait until the XFRM processing
 	 *       is done as we will miss out on the SA label if we do;
@@ -5145,7 +5220,10 @@ static unsigned int selinux_ip_postroute(struct sk_buff *skb,
 			case PF_INET6:
 				if (IP6CB(skb)->flags & IP6SKB_XFRM_TRANSFORMED)
 					return NF_ACCEPT;
+<<<<<<< HEAD
 				break;
+=======
+>>>>>>> p9x
 			default:
 				return NF_DROP_ERR(-ECONNREFUSED);
 			}

@@ -132,6 +132,7 @@ extern unsigned long arch_randomize_brk(struct mm_struct *mm);
 #define arch_randomize_brk arch_randomize_brk
 
 #ifdef CONFIG_MMU
+<<<<<<< HEAD
 #ifdef CONFIG_VDSO
 #define ARCH_DLINFO						\
 do {								\
@@ -139,6 +140,8 @@ do {								\
 		    (elf_addr_t)current->mm->context.vdso);	\
 } while (0)
 #endif
+=======
+>>>>>>> p9x
 #define ARCH_HAS_SETUP_ADDITIONAL_PAGES 1
 struct linux_binprm;
 int arch_setup_additional_pages(struct linux_binprm *, int);

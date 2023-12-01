@@ -120,7 +120,10 @@ struct acm {
 	unsigned int throttle_req:1;			/* throttle requested */
 	u8 bInterval;
 	struct usb_anchor delayed;			/* writes queued for a device about to be woken */
+<<<<<<< HEAD
 	unsigned long quirks;
+=======
+>>>>>>> p9x
 };
 
 #define CDC_DATA_INTERFACE_TYPE	0x0a

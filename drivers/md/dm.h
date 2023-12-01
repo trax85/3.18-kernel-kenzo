@@ -17,8 +17,11 @@
 #include <linux/hdreg.h>
 #include <linux/completion.h>
 #include <linux/kobject.h>
+<<<<<<< HEAD
 
 #include "dm-stats.h"
+=======
+>>>>>>> p9x
 
 /*
  * Suspend feature flags

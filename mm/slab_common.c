@@ -93,6 +93,25 @@ static int kmem_cache_sanity_check(const char *name, size_t size)
 			       s->object_size);
 			continue;
 		}
+<<<<<<< HEAD
+=======
+
+#if !defined(CONFIG_SLUB)
+		/*
+		 * For simplicity, we won't check this in the list of memcg
+		 * caches. We have control over memcg naming, and if there
+		 * aren't duplicates in the global list, there won't be any
+		 * duplicates in the memcg lists as well.
+		 */
+		if (!memcg && !strcmp(s->name, name)) {
+			pr_err("%s (%s): Cache name already exists.\n",
+			       __func__, name);
+			dump_stack();
+			s = NULL;
+			return -EINVAL;
+		}
+#endif
+>>>>>>> p9x
 	}
 
 	WARN_ON(strchr(name, ' '));	/* It confuses parsers */
@@ -775,6 +794,7 @@ void __init create_kmalloc_caches(unsigned long flags)
 }
 #endif /* !CONFIG_SLOB */
 
+<<<<<<< HEAD
 /*
  * To avoid unnecessary overhead, we pass through large allocation requests
  * directly to the page allocator. We use __GFP_COMP, because we will need to
@@ -804,6 +824,8 @@ void *kmalloc_order_trace(size_t size, gfp_t flags, unsigned int order)
 EXPORT_SYMBOL(kmalloc_order_trace);
 #endif
 
+=======
+>>>>>>> p9x
 #ifdef CONFIG_SLABINFO
 
 #ifdef CONFIG_SLAB

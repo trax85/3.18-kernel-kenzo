@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2010-2011, 2016 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -20,7 +24,11 @@
 /* APR Client IDs */
 #define APR_CLIENT_AUDIO	0x0
 #define APR_CLIENT_VOICE	0x1
+<<<<<<< HEAD
 #define APR_CLIENT_MAX		0x2
+=======
+#define APR_CLIENT_MAX	0x2
+>>>>>>> p9x
 
 #define APR_DL_SMD    0
 #define APR_DL_MAX    1
@@ -29,6 +37,7 @@
 #define APR_DEST_QDSP6 1
 #define APR_DEST_MAX   2
 
+<<<<<<< HEAD
 #if defined(CONFIG_MSM_QDSP6_APRV2_GLINK) || \
 	defined(CONFIG_MSM_QDSP6_APRV3_GLINK)
 #define APR_MAX_BUF			512
@@ -90,6 +99,17 @@ struct apr_svc_ch_dev {
 	bool               if_remote_intent_ready;
 };
 #else
+=======
+#define APR_MAX_BUF   8192
+
+#define APR_OPEN_TIMEOUT_MS 5000
+
+typedef void (*apr_svc_cb_fn)(void *buf, int len, void *priv);
+struct apr_svc_ch_dev *apr_tal_open(uint32_t svc, uint32_t dest,
+			uint32_t dl, apr_svc_cb_fn func, void *priv);
+int apr_tal_write(struct apr_svc_ch_dev *apr_ch, void *data, int len);
+int apr_tal_close(struct apr_svc_ch_dev *apr_ch);
+>>>>>>> p9x
 struct apr_svc_ch_dev {
 	struct smd_channel *ch;
 	spinlock_t         lock;
@@ -103,6 +123,9 @@ struct apr_svc_ch_dev {
 	wait_queue_head_t  dest;
 	uint32_t           dest_state;
 };
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> p9x
 
 #endif

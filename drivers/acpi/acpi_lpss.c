@@ -359,10 +359,14 @@ static int acpi_lpss_create_device(struct acpi_device *adev,
 
 	pdata->dev_desc = dev_desc;
 
+<<<<<<< HEAD
 	if (dev_desc->setup)
 		dev_desc->setup(pdata);
 
 	if (dev_desc->flags & LPSS_CLK) {
+=======
+	if (dev_desc->clk_required) {
+>>>>>>> p9x
 		ret = register_device_clock(adev, pdata);
 		if (ret) {
 			/* Skip the device, but continue the namespace scan. */

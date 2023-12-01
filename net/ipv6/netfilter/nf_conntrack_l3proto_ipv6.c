@@ -169,13 +169,21 @@ out:
 	return nf_conntrack_confirm(skb);
 }
 
+<<<<<<< HEAD
 static unsigned int ipv6_conntrack_in(const struct nf_hook_ops *ops,
+=======
+static unsigned int ipv6_conntrack_in(unsigned int hooknum,
+>>>>>>> p9x
 				      struct sk_buff *skb,
 				      const struct net_device *in,
 				      const struct net_device *out,
 				      int (*okfn)(struct sk_buff *))
 {
+<<<<<<< HEAD
 	return nf_conntrack_in(dev_net(in), PF_INET6, ops->hooknum, skb);
+=======
+	return nf_conntrack_in(dev_net(in), PF_INET6, hooknum, skb);
+>>>>>>> p9x
 }
 
 static unsigned int ipv6_conntrack_local(const struct nf_hook_ops *ops,
@@ -189,7 +197,11 @@ static unsigned int ipv6_conntrack_local(const struct nf_hook_ops *ops,
 		net_notice_ratelimited("ipv6_conntrack_local: packet too short\n");
 		return NF_ACCEPT;
 	}
+<<<<<<< HEAD
 	return nf_conntrack_in(dev_net(out), PF_INET6, ops->hooknum, skb);
+=======
+	return nf_conntrack_in(dev_net(out), PF_INET6, hooknum, skb);
+>>>>>>> p9x
 }
 
 static struct nf_hook_ops ipv6_conntrack_ops[] __read_mostly = {

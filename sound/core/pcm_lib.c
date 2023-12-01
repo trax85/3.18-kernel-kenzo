@@ -2667,6 +2667,10 @@ int snd_pcm_add_volume_ctls(struct snd_pcm *pcm, int stream,
 	};
 	int err;
 	int size;
+<<<<<<< HEAD
+=======
+	char *buf;
+>>>>>>> p9x
 
 	info = kzalloc(sizeof(*info), GFP_KERNEL);
 	if (!info)
@@ -2677,6 +2681,7 @@ int snd_pcm_add_volume_ctls(struct snd_pcm *pcm, int stream,
 	info->max_length = max_length;
 	size = sizeof("Playback ") + sizeof(" Volume") +
 		STRING_LENGTH_OF_INT*sizeof(char) + 1;
+<<<<<<< HEAD
 	knew.name = kzalloc(size, GFP_KERNEL);
 	if (!knew.name) {
 		kfree(info);
@@ -2687,6 +2692,19 @@ int snd_pcm_add_volume_ctls(struct snd_pcm *pcm, int stream,
 			"Playback", pcm->device, "Volume");
 	else
 		snprintf((char *)knew.name, size, "%s %d %s",
+=======
+	buf = kzalloc(size, GFP_KERNEL);
+	if (!buf) {
+		kfree(info);
+		return -ENOMEM;
+	}
+	knew.name = buf;
+	if (stream == SNDRV_PCM_STREAM_PLAYBACK)
+		snprintf(buf, size, "%s %d %s",
+			"Playback", pcm->device, "Volume");
+	else
+		snprintf(buf, size, "%s %d %s",
+>>>>>>> p9x
 			"Capture", pcm->device, "Volume");
 	knew.device = pcm->device;
 	knew.count = pcm->streams[stream].substream_count;

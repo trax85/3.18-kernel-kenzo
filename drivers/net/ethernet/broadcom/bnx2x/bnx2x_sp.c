@@ -1036,6 +1036,102 @@ static void bnx2x_set_one_vlan_e2(struct bnx2x *bp,
 					rule_cnt);
 }
 
+<<<<<<< HEAD
+=======
+static void bnx2x_set_one_vlan_mac_e2(struct bnx2x *bp,
+				      struct bnx2x_vlan_mac_obj *o,
+				      struct bnx2x_exeq_elem *elem,
+				      int rule_idx, int cam_offset)
+{
+	struct bnx2x_raw_obj *raw = &o->raw;
+	struct eth_classify_rules_ramrod_data *data =
+		(struct eth_classify_rules_ramrod_data *)(raw->rdata);
+	int rule_cnt = rule_idx + 1;
+	union eth_classify_rule_cmd *rule_entry = &data->rules[rule_idx];
+	enum bnx2x_vlan_mac_cmd cmd = elem->cmd_data.vlan_mac.cmd;
+	bool add = (cmd == BNX2X_VLAN_MAC_ADD) ? true : false;
+	u16 vlan = elem->cmd_data.vlan_mac.u.vlan_mac.vlan;
+	u8 *mac = elem->cmd_data.vlan_mac.u.vlan_mac.mac;
+
+
+	/* Reset the ramrod data buffer for the first rule */
+	if (rule_idx == 0)
+		memset(data, 0, sizeof(*data));
+
+	/* Set a rule header */
+	bnx2x_vlan_mac_set_cmd_hdr_e2(bp, o, add, CLASSIFY_RULE_OPCODE_PAIR,
+				      &rule_entry->pair.header);
+
+	/* Set VLAN and MAC themselvs */
+	rule_entry->pair.vlan = cpu_to_le16(vlan);
+	bnx2x_set_fw_mac_addr(&rule_entry->pair.mac_msb,
+			      &rule_entry->pair.mac_mid,
+			      &rule_entry->pair.mac_lsb, mac);
+	rule_entry->pair.inner_mac =
+		cpu_to_le16(elem->cmd_data.vlan_mac.u.vlan_mac.is_inner_mac);
+	/* MOVE: Add a rule that will add this MAC to the target Queue */
+	if (cmd == BNX2X_VLAN_MAC_MOVE) {
+		rule_entry++;
+		rule_cnt++;
+
+		/* Setup ramrod data */
+		bnx2x_vlan_mac_set_cmd_hdr_e2(bp,
+					elem->cmd_data.vlan_mac.target_obj,
+					      true, CLASSIFY_RULE_OPCODE_PAIR,
+					      &rule_entry->pair.header);
+
+		/* Set a VLAN itself */
+		rule_entry->pair.vlan = cpu_to_le16(vlan);
+		bnx2x_set_fw_mac_addr(&rule_entry->pair.mac_msb,
+				      &rule_entry->pair.mac_mid,
+				      &rule_entry->pair.mac_lsb, mac);
+		rule_entry->pair.inner_mac =
+			cpu_to_le16(elem->cmd_data.vlan_mac.u.
+						vlan_mac.is_inner_mac);
+	}
+
+	/* Set the ramrod data header */
+	/* TODO: take this to the higher level in order to prevent multiple
+		 writing */
+	bnx2x_vlan_mac_set_rdata_hdr_e2(raw->cid, raw->state, &data->header,
+					rule_cnt);
+}
+
+/**
+ * bnx2x_set_one_vlan_mac_e1h -
+ *
+ * @bp:		device handle
+ * @o:		bnx2x_vlan_mac_obj
+ * @elem:	bnx2x_exeq_elem
+ * @rule_idx:	rule_idx
+ * @cam_offset:	cam_offset
+ */
+static void bnx2x_set_one_vlan_mac_e1h(struct bnx2x *bp,
+				       struct bnx2x_vlan_mac_obj *o,
+				       struct bnx2x_exeq_elem *elem,
+				       int rule_idx, int cam_offset)
+{
+	struct bnx2x_raw_obj *raw = &o->raw;
+	struct mac_configuration_cmd *config =
+		(struct mac_configuration_cmd *)(raw->rdata);
+	/*
+	 * 57710 and 57711 do not support MOVE command,
+	 * so it's either ADD or DEL
+	 */
+	bool add = (elem->cmd_data.vlan_mac.cmd == BNX2X_VLAN_MAC_ADD) ?
+		true : false;
+
+	/* Reset the ramrod data buffer */
+	memset(config, 0, sizeof(*config));
+
+	bnx2x_vlan_mac_set_rdata_e1x(bp, o, BNX2X_FILTER_VLAN_MAC_PENDING,
+				     cam_offset, add,
+				     elem->cmd_data.vlan_mac.u.vlan_mac.mac,
+				     elem->cmd_data.vlan_mac.u.vlan_mac.vlan,
+				     ETH_VLAN_FILTER_CLASSIFY, config);
+}
+
+>>>>>>> p9x
 /**
  * bnx2x_vlan_mac_restore - reconfigure next MAC/VLAN/VLAN-MAC element
  *

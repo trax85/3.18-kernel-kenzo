@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2015, 2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -19,7 +23,11 @@
 #include <linux/kernel.h>
 #include <linux/bitops.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include "ep_pcie_com.h"
+=======
+#include <linux/msm_ep_pcie.h>
+>>>>>>> p9x
 
 LIST_HEAD(head);
 
@@ -107,10 +115,20 @@ EXPORT_SYMBOL(ep_pcie_get_phandle);
 int ep_pcie_register_event(struct ep_pcie_hw *phandle,
 			struct ep_pcie_register_event *reg)
 {
+<<<<<<< HEAD
 	if (phandle)
 		return phandle->register_event(reg);
 
 	return ep_pcie_core_register_event(reg);
+=======
+	if (phandle) {
+		return phandle->register_event(reg);
+	} else {
+		pr_err("ep_pcie:%s: the input driver handle is NULL.",
+			__func__);
+		return -EINVAL;
+	}
+>>>>>>> p9x
 }
 EXPORT_SYMBOL(ep_pcie_register_event);
 
@@ -227,6 +245,7 @@ int ep_pcie_disable_endpoint(struct ep_pcie_hw *phandle)
 	}
 }
 EXPORT_SYMBOL(ep_pcie_disable_endpoint);
+<<<<<<< HEAD
 
 int ep_pcie_mask_irq_event(struct ep_pcie_hw *phandle,
 				enum ep_pcie_irq_event event,
@@ -239,3 +258,5 @@ int ep_pcie_mask_irq_event(struct ep_pcie_hw *phandle,
 	return -EINVAL;
 }
 EXPORT_SYMBOL(ep_pcie_mask_irq_event);
+=======
+>>>>>>> p9x

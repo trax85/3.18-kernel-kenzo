@@ -78,6 +78,15 @@ _GLOBAL(tm_abort)
 	TABORT(R3)
 	blr
 
+<<<<<<< HEAD
+=======
+	.section	".toc","aw"
+DSCR_DEFAULT:
+	.tc dscr_default[TC],dscr_default
+
+	.section	".text"
+
+>>>>>>> p9x
 /* void tm_reclaim(struct thread_struct *thread,
  *                 unsigned long orig_msr,
  *		   uint8_t cause)
@@ -199,6 +208,7 @@ dont_backup_fp:
 	std	r1, PACATMSCRATCH(r13)
 	ld	r1, PACAR1(r13)
 
+<<<<<<< HEAD
 	std	r11, GPR11(r1)			/* Temporary stash */
 
 	/*
@@ -220,6 +230,10 @@ dont_backup_fp:
 	mtmsrd	r11, 1
 
 	/* Store the PPR in r11 and reset to decent value */
+=======
+	/* Store the PPR in r11 and reset to decent value */
+	std	r11, GPR11(r1)			/* Temporary stash */
+>>>>>>> p9x
 	mfspr	r11, SPRN_PPR
 	HMT_MEDIUM
 
@@ -227,6 +241,8 @@ dont_backup_fp:
 	std	r7, GPR7(r1)			/* Temporary stash */
 	std	r12, GPR12(r1)			/* ''   ''    ''   */
 	ld	r12, STK_PARAM(R3)(r1)		/* Param 0, thread_struct * */
+
+	std	r11, THREAD_TM_PPR(r12)		/* Store PPR and free r11 */
 
 	std	r11, THREAD_TM_PPR(r12)		/* Store PPR and free r11 */
 
@@ -244,11 +260,19 @@ dont_backup_fp:
 	SAVE_GPR(8, r7)				/* user r8 */
 	SAVE_GPR(9, r7)				/* user r9 */
 	SAVE_GPR(10, r7)			/* user r10 */
+<<<<<<< HEAD
 	ld	r3, GPR1(r1)			/* user r1 */
 	ld	r4, GPR7(r1)			/* user r7 */
 	ld	r5, GPR11(r1)			/* user r11 */
 	ld	r6, GPR12(r1)			/* user r12 */
 	ld	r8, GPR13(r1)			/* user r13 */
+=======
+	ld	r3, PACATMSCRATCH(r13)		/* user r1 */
+	ld	r4, GPR7(r1)			/* user r7 */
+	ld	r5, GPR11(r1)			/* user r11 */
+	ld	r6, GPR12(r1)			/* user r12 */
+	GET_SCRATCH0(8)				/* user r13 */
+>>>>>>> p9x
 	std	r3, GPR1(r7)
 	std	r4, GPR7(r7)
 	std	r5, GPR11(r7)
@@ -313,10 +337,18 @@ dont_backup_fp:
 	ld	r0, 16(r1)
 	mtcr	r4
 	mtlr	r0
+<<<<<<< HEAD
 	ld	r2, STK_GOT(r1)
 
 	/* Load CPU's default DSCR */
 	ld	r0, PACA_DSCR(r13)
+=======
+	ld	r2, 40(r1)
+
+	/* Load system default DSCR */
+	ld	r4, DSCR_DEFAULT@toc(r2)
+	ld	r0, 0(r4)
+>>>>>>> p9x
 	mtspr	SPRN_DSCR, r0
 
 	blr
@@ -400,6 +432,7 @@ dont_restore_fp:
 	mtmsr	r6				/* FP/Vec off again! */
 
 restore_gprs:
+<<<<<<< HEAD
 
 	/* ******************** CR,LR,CCR,MSR ********** */
 	ld	r4, _CTR(r7)
@@ -409,6 +442,18 @@ restore_gprs:
 	mtctr	r4
 	mtlr	r5
 	mtxer	r8
+=======
+
+	/* ******************** CR,LR,CCR,MSR ********** */
+	ld	r4, _CTR(r7)
+	ld	r5, _LINK(r7)
+	ld	r6, _CCR(r7)
+	ld	r8, _XER(r7)
+
+	mtctr	r4
+	mtlr	r5
+	mtcr	r6
+	mtxer	r8
 
 	/* ******************** TAR ******************** */
 	ld	r4, THREAD_TM_TAR(r3)
@@ -417,9 +462,22 @@ restore_gprs:
 	/* Load up the PPR and DSCR in GPRs only at this stage */
 	ld	r5, THREAD_TM_DSCR(r3)
 	ld	r6, THREAD_TM_PPR(r3)
+>>>>>>> p9x
+
+	/* ******************** TAR ******************** */
+	ld	r4, THREAD_TM_TAR(r3)
+	mtspr	SPRN_TAR,	r4
+
+<<<<<<< HEAD
+	/* Load up the PPR and DSCR in GPRs only at this stage */
+	ld	r5, THREAD_TM_DSCR(r3)
+	ld	r6, THREAD_TM_PPR(r3)
 
 	REST_GPR(0, r7)				/* GPR0 */
 	REST_2GPRS(2, r7)			/* GPR2-3 */
+=======
+	REST_4GPRS(0, r7)			/* GPR0-3 */
+>>>>>>> p9x
 	REST_GPR(4, r7)				/* GPR4 */
 	REST_4GPRS(8, r7)			/* GPR8-11 */
 	REST_2GPRS(12, r7)			/* GPR12-13 */
@@ -431,6 +489,7 @@ restore_gprs:
 	mtspr	SPRN_DSCR, r5
 	mtspr	SPRN_PPR, r6
 
+<<<<<<< HEAD
 	/* Do final sanity check on TEXASR to make sure FS is set.  Do this
 	 * here before we load up the userspace r1 so any bugs we hit will get
 	 * a call chain */
@@ -483,6 +542,11 @@ restore_gprs:
 	SET_SCRATCH0(r1)
 	ld	r5, -8(r1)
 	ld	r1, -16(r1)
+=======
+	REST_GPR(5, r7)				/* GPR5-7 */
+	REST_GPR(6, r7)
+	ld	r7, GPR7(r7)
+>>>>>>> p9x
 
 	/* Commit register state as checkpointed state: */
 	TRECHKPT
@@ -510,10 +574,18 @@ restore_gprs:
 	ld	r0, 16(r1)
 	mtcr	r4
 	mtlr	r0
+<<<<<<< HEAD
 	ld	r2, STK_GOT(r1)
 
 	/* Load CPU's default DSCR */
 	ld	r0, PACA_DSCR(r13)
+=======
+	ld	r2, 40(r1)
+
+	/* Load system default DSCR */
+	ld	r4, DSCR_DEFAULT@toc(r2)
+	ld	r0, 0(r4)
+>>>>>>> p9x
 	mtspr	SPRN_DSCR, r0
 
 	blr

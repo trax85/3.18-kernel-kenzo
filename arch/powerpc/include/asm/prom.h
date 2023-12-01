@@ -72,9 +72,26 @@ struct boot_param_header {
 /* Parse the ibm,dma-window property of an OF node into the busno, phys and
  * size parameters.
  */
+<<<<<<< HEAD
 void of_parse_dma_window(struct device_node *dn, const __be32 *dma_window,
 			 unsigned long *busno, unsigned long *phys,
 			 unsigned long *size);
+=======
+void of_parse_dma_window(struct device_node *dn, const void *dma_window_prop,
+		unsigned long *busno, unsigned long *phys, unsigned long *size);
+
+extern void kdump_move_device_tree(void);
+
+/* cache lookup */
+struct device_node *of_find_next_cache_node(struct device_node *np);
+
+#ifdef CONFIG_NUMA
+extern int of_node_to_nid(struct device_node *device);
+#else
+static inline int of_node_to_nid(struct device_node *device) { return 0; }
+#endif
+#define of_node_to_nid of_node_to_nid
+>>>>>>> p9x
 
 extern void of_instantiate_rtc(void);
 

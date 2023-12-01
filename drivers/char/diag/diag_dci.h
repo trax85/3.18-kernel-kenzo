@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -263,7 +267,10 @@ extern struct mutex dci_stat_mutex;
 #endif
 
 int diag_dci_init(void);
+<<<<<<< HEAD
 void diag_dci_channel_init(void);
+=======
+>>>>>>> p9x
 void diag_dci_exit(void);
 int diag_dci_register_client(struct diag_dci_reg_tbl_t *reg_entry);
 int diag_dci_deinit_client(struct diag_dci_client_tbl *entry);

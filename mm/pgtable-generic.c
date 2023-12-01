@@ -195,7 +195,11 @@ void pmdp_invalidate(struct vm_area_struct *vma, unsigned long address,
 	pmd_t entry = *pmdp;
 	if (pmd_numa(entry))
 		entry = pmd_mknonnuma(entry);
+<<<<<<< HEAD
 	set_pmd_at(vma->vm_mm, address, pmdp, pmd_mknotpresent(entry));
+=======
+	set_pmd_at(vma->vm_mm, address, pmdp, pmd_mknotpresent(*pmdp));
+>>>>>>> p9x
 	flush_tlb_range(vma, address, address + HPAGE_PMD_SIZE);
 }
 #endif /* CONFIG_TRANSPARENT_HUGEPAGE */

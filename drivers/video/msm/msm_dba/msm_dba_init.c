@@ -35,7 +35,10 @@ static DEFINE_MUTEX(init_mutex);
 int msm_dba_add_probed_device(struct msm_dba_device_info *dev)
 {
 	struct msm_dba_device_list *node;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	if (!dev) {
 		pr_err("%s: Invalid params\n", __func__);
 		return -EINVAL;
@@ -45,6 +48,10 @@ int msm_dba_add_probed_device(struct msm_dba_device_info *dev)
 
 	node = kzalloc(sizeof(*node), GFP_KERNEL);
 	if (!node) {
+<<<<<<< HEAD
+=======
+		pr_err("%s: Not enough memory\n", __func__);
+>>>>>>> p9x
 		mutex_unlock(&init_mutex);
 		return -ENOMEM;
 	}
@@ -53,8 +60,14 @@ int msm_dba_add_probed_device(struct msm_dba_device_info *dev)
 	node->dev = dev;
 	list_add(&node->list, &device_list);
 
+<<<<<<< HEAD
 	pr_debug("%s: Added new device (%s, %d)\n", __func__, dev->chip_name,
 						dev->instance_id);
+=======
+	pr_debug("%s: Added new device (%s, %d)", __func__, dev->chip_name,
+						dev->instance_id);
+
+>>>>>>> p9x
 	mutex_unlock(&init_mutex);
 
 	return 0;

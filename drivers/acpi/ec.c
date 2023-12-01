@@ -206,9 +206,18 @@ static bool advance_transaction(struct acpi_ec *ec)
 	u8 status;
 	bool wakeup = false;
 
+<<<<<<< HEAD
 	pr_debug("===== %s (%d) =====\n",
 		 in_interrupt() ? "IRQ" : "TASK", smp_processor_id());
 	status = acpi_ec_read_status(ec);
+=======
+static void advance_transaction(struct acpi_ec *ec, u8 status)
+{
+	unsigned long flags;
+	struct transaction *t;
+
+	spin_lock_irqsave(&ec->lock, flags);
+>>>>>>> p9x
 	t = ec->curr;
 	if (!t)
 		goto err;
@@ -1090,12 +1099,15 @@ static struct dmi_system_id ec_dmi_table[] __initdata = {
 	ec_validate_ecdt, "ASUS hardware", {
 	DMI_MATCH(DMI_SYS_VENDOR, "ASUSTek Computer Inc."),
 	DMI_MATCH(DMI_PRODUCT_NAME, "L4R"),}, NULL},
+<<<<<<< HEAD
 	{
 	ec_clear_on_resume, "Samsung hardware", {
 	DMI_MATCH(DMI_SYS_VENDOR, "SAMSUNG ELECTRONICS CO., LTD.")}, NULL},
 	{
 	ec_flag_query_handshake, "Acer hardware", {
 	DMI_MATCH(DMI_SYS_VENDOR, "Acer"), }, NULL},
+=======
+>>>>>>> p9x
 	{},
 };
 

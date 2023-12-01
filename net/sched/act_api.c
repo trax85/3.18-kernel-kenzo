@@ -802,7 +802,11 @@ static int tca_action_flush(struct net *net, struct nlattr *nla,
 	if (nest == NULL)
 		goto out_module_put;
 
+<<<<<<< HEAD
 	err = a.ops->walk(skb, &dcb, RTM_DELACTION, &a);
+=======
+	err = a->ops->walk(skb, &dcb, RTM_DELACTION, a);
+>>>>>>> p9x
 	if (err <= 0)
 		goto out_module_put;
 

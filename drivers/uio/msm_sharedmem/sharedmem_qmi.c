@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2015, 2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014, 2017, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -73,8 +77,11 @@ void sharedmem_qmi_add_entry(struct sharemem_qmi_entry *qmi_entry)
 	struct shared_addr_list *list_entry;
 
 	list_entry = kzalloc(sizeof(*list_entry), GFP_KERNEL);
+<<<<<<< HEAD
 
 	/* If we cannot add the entry log the failure and bail */
+=======
+>>>>>>> p9x
 	if (list_entry == NULL) {
 		pr_err("Alloc of new list entry failed\n");
 		return;

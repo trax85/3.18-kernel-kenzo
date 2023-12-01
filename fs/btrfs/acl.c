@@ -141,7 +141,63 @@ int btrfs_init_acl(struct btrfs_trans_handle *trans,
 	if (!dir)
 		return 0;
 
+<<<<<<< HEAD
 	ret = posix_acl_create(dir, &inode->i_mode, &default_acl, &acl);
+=======
+	if (!S_ISLNK(inode->i_mode)) {
+		if (IS_POSIXACL(dir)) {
+			acl = btrfs_get_acl(dir, ACL_TYPE_DEFAULT);
+			if (IS_ERR(acl))
+				return PTR_ERR(acl);
+		}
+
+		if (!acl)
+			inode->i_mode &= ~current_umask();
+	}
+
+	if (IS_POSIXACL(dir) && acl) {
+		if (S_ISDIR(inode->i_mode)) {
+			ret = btrfs_set_acl(trans, inode, acl,
+					    ACL_TYPE_DEFAULT);
+			if (ret)
+				goto failed;
+		}
+		ret = posix_acl_create(&acl, GFP_NOFS, &inode->i_mode);
+		if (ret < 0)
+			return ret;
+
+		if (ret > 0) {
+			/* we need an acl */
+			ret = btrfs_set_acl(trans, inode, acl, ACL_TYPE_ACCESS);
+		} else if (ret < 0) {
+			cache_no_acl(inode);
+		}
+	} else {
+		cache_no_acl(inode);
+	}
+failed:
+	posix_acl_release(acl);
+
+	return ret;
+}
+
+int btrfs_acl_chmod(struct inode *inode)
+{
+	struct posix_acl *acl;
+	int ret = 0;
+
+	if (S_ISLNK(inode->i_mode))
+		return -EOPNOTSUPP;
+
+	if (!IS_POSIXACL(inode))
+		return 0;
+
+	acl = btrfs_get_acl(inode, ACL_TYPE_ACCESS);
+	if (IS_ERR_OR_NULL(acl))
+		return PTR_ERR(acl);
+
+	ret = posix_acl_chmod(&acl, GFP_KERNEL, inode->i_mode);
+>>>>>>> p9x
 	if (ret)
 		return ret;
 

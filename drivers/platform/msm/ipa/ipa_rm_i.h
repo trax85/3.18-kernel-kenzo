@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -16,6 +20,7 @@
 #include <linux/workqueue.h>
 #include <linux/ipa.h>
 #include "ipa_rm_resource.h"
+<<<<<<< HEAD
 #include "ipa_common_i.h"
 
 #define IPA_RM_DRV_NAME "ipa_rm"
@@ -46,6 +51,15 @@
 		IPA_IPC_LOGGING(ipa_get_ipc_logbuf_low(), \
 			IPA_RM_DRV_NAME " %s:%d " fmt, ## args); \
 	} while (0)
+=======
+
+#define IPA_RM_DRV_NAME "ipa_rm"
+
+#define IPA_RM_DBG(fmt, args...) \
+	pr_debug(IPA_RM_DRV_NAME " %s:%d " fmt, __func__, __LINE__, ## args)
+#define IPA_RM_ERR(fmt, args...) \
+	pr_err(IPA_RM_DRV_NAME " %s:%d " fmt, __func__, __LINE__, ## args)
+>>>>>>> p9x
 
 #define IPA_RM_RESOURCE_CONS_MAX \
 	(IPA_RM_RESOURCE_MAX - IPA_RM_RESOURCE_PROD_MAX)
@@ -118,7 +132,10 @@ struct ipa_rm_wq_suspend_resume_work_type {
 	enum ipa_rm_resource_name	resource_name;
 	enum ipa_rm_resource_state	prev_state;
 	u32				needed_bw;
+<<<<<<< HEAD
 	bool				inc_usage_count;
+=======
+>>>>>>> p9x
 
 };
 
@@ -129,8 +146,12 @@ int ipa_rm_wq_send_cmd(enum ipa_rm_wq_cmd wq_cmd,
 
 int ipa_rm_wq_send_resume_cmd(enum ipa_rm_resource_name resource_name,
 		enum ipa_rm_resource_state prev_state,
+<<<<<<< HEAD
 		u32 needed_bw,
 		bool inc_usage_count);
+=======
+		u32 needed_bw);
+>>>>>>> p9x
 
 int ipa_rm_wq_send_suspend_cmd(enum ipa_rm_resource_name resource_name,
 		enum ipa_rm_resource_state prev_state,
@@ -148,12 +169,15 @@ int ipa_rm_request_resource_with_timer(enum ipa_rm_resource_name resource_name);
 
 void delayed_release_work_func(struct work_struct *work);
 
+<<<<<<< HEAD
 int ipa_rm_add_dependency_from_ioctl(enum ipa_rm_resource_name resource_name,
 	enum ipa_rm_resource_name depends_on_name);
 
 int ipa_rm_delete_dependency_from_ioctl(enum ipa_rm_resource_name resource_name,
 	enum ipa_rm_resource_name depends_on_name);
 
+=======
+>>>>>>> p9x
 void ipa_rm_exit(void);
 
 #endif /* _IPA_RM_I_H_ */

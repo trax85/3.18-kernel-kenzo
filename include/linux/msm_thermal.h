@@ -55,7 +55,10 @@ struct msm_thermal_data {
 	int32_t vdd_rstr_temp_degC;
 	int32_t vdd_rstr_temp_hyst_degC;
 	int32_t vdd_mx_min;
+<<<<<<< HEAD
 	int32_t vdd_cx_min;
+=======
+>>>>>>> p9x
 	int32_t psm_temp_degC;
 	int32_t psm_temp_hyst_degC;
 	int32_t ocr_temp_degC;
@@ -84,6 +87,7 @@ enum sensor_id_type {
 	THERM_ID_MAX_NR,
 };
 
+<<<<<<< HEAD
 struct threshold_info;
 struct therm_threshold {
 	int32_t                     sensor_id;
@@ -100,6 +104,42 @@ struct threshold_info {
 	bool                         thresh_triggered;
 	struct list_head             list_ptr;
 	struct therm_threshold       *thresh_list;
+=======
+enum msm_therm_progressive_state {
+	MSM_THERM_PROGRESSIVE_SAMPLING,
+	MSM_THERM_PROGRESSIVE_PAUSED,
+	MSM_THERM_PROGRESSIVE_MONITOR,
+	MSM_THERM_PROGRESSIVE_NR,
+};
+
+enum msm_therm_monitor_type {
+	MSM_THERM_MONITOR,
+	MSM_THERM_PROGRESSIVE,
+	MSM_THERM_NR,
+};
+
+struct threshold_info;
+struct therm_threshold {
+	int32_t                          sensor_id;
+	enum sensor_id_type              id_type;
+	struct sensor_threshold          threshold[MAX_THRESHOLD];
+	int32_t                          trip_triggered;
+	void (*notify)(struct therm_threshold *);
+	struct threshold_info            *parent;
+	enum msm_therm_progressive_state prog_state;
+	bool                             prog_trip_clear;
+	int32_t                          cur_state;
+};
+
+struct threshold_info {
+	uint32_t                    thresh_ct;
+	bool                        thresh_triggered;
+	struct list_head            list_ptr;
+	enum msm_therm_monitor_type algo_type;
+	struct mutex                lock;
+	long                        curr_max_temp;
+	struct therm_threshold      *thresh_list;
+>>>>>>> p9x
 };
 
 enum device_req_type {
@@ -170,6 +210,10 @@ extern int msm_thermal_get_cluster_voltage_plan(uint32_t cluster,
  *                             sensor(s) with high and low thresholds and
  *                             threshold callback.
  *
+<<<<<<< HEAD
+=======
+ * @dev: Client device structure.
+>>>>>>> p9x
  * @thresh_inp: Client threshold data structure.
  * @sensor_id: Sensor h/w ID to be monitored. Use MONITOR_ALL_TSENS
  *             to monitor all temperature sensors.
@@ -182,7 +226,12 @@ extern int msm_thermal_get_cluster_voltage_plan(uint32_t cluster,
  * on failure. MACRO IS_HI_THRESHOLD_SET/IS_LOW_THRESHOLD_SET can be used
  * to decipher which threshold being set.
  */
+<<<<<<< HEAD
 extern int sensor_mgr_init_threshold(struct threshold_info *thresh_inp,
+=======
+extern int sensor_mgr_init_threshold(struct device *dev,
+				struct threshold_info *thresh_inp,
+>>>>>>> p9x
 				int sensor_id, int32_t high_temp,
 				int32_t low_temp,
 				void (*callback)(struct therm_threshold *));
@@ -213,9 +262,17 @@ extern int sensor_mgr_set_threshold(uint32_t zone_id,
  *                              removes threshold from sensor manager
  *                              threshold list.
  *
+<<<<<<< HEAD
  * @thresh_inp: The threshold info which needs to be removed.
  */
 extern void sensor_mgr_remove_threshold(struct threshold_info *thresh_inp);
+=======
+ * @dev: Client device structure.
+ * @thresh_inp: The threshold info which needs to be removed.
+ */
+extern void sensor_mgr_remove_threshold(struct device *dev,
+				struct threshold_info *thresh_inp);
+>>>>>>> p9x
 /**
  * devmgr_register_mitigation_client - Register for a device and
  *                                     gets a handle for mitigation.
@@ -287,7 +344,12 @@ static inline int msm_thermal_get_cluster_voltage_plan(uint32_t cluster,
 {
 	return -ENOSYS;
 }
+<<<<<<< HEAD
 static inline int sensor_mgr_init_threshold(struct threshold_info *thresh_inp,
+=======
+static inline int sensor_mgr_init_threshold(struct device *dev,
+				struct threshold_info *thresh_inp,
+>>>>>>> p9x
 				int sensor_id, int32_t high_temp,
 				int32_t low_temp,
 				void (*callback)(struct therm_threshold *))
@@ -304,7 +366,11 @@ static inline int sensor_mgr_set_threshold(uint32_t zone_id,
 {
 	return -ENOSYS;
 }
+<<<<<<< HEAD
 static inline void sensor_mgr_remove_threshold(
+=======
+static inline void sensor_mgr_remove_threshold(struct device *dev,
+>>>>>>> p9x
 				struct threshold_info *thresh_inp)
 {
 }

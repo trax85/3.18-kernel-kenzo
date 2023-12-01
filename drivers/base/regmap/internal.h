@@ -139,7 +139,10 @@ struct regmap {
 	bool use_single_rw;
 	/* if set, the device supports multi write mode */
 	bool can_multi_write;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	struct rb_root range_tree;
 	void *selector_work_buf;	/* Scratch buffer used for selector */
 };
@@ -231,6 +234,10 @@ int regcache_lookup_reg(struct regmap *map, unsigned int reg);
 
 int _regmap_raw_write(struct regmap *map, unsigned int reg,
 		      const void *val, size_t val_len);
+
+int _regmap_raw_multi_reg_write(struct regmap *map,
+				const struct reg_default *regs,
+				size_t num_regs);
 
 int _regmap_raw_multi_reg_write(struct regmap *map,
 				const struct reg_default *regs,

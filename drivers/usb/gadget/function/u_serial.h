@@ -78,6 +78,7 @@ void gserial_free_line(unsigned char port_line);
 int gserial_connect(struct gserial *, u8 port_num);
 void gserial_disconnect(struct gserial *);
 
+<<<<<<< HEAD:drivers/usb/gadget/function/u_serial.h
 int gsmd_setup(struct usb_gadget *g, unsigned n_ports);
 int gsmd_connect(struct gserial *, u8 port_num);
 void gsmd_disconnect(struct gserial *, u8 portno);
@@ -85,6 +86,19 @@ void gsmd_suspend(struct gserial *, u8 port_num);
 void gsmd_resume(struct gserial *, u8 port_num);
 int gsmd_write(u8 portno, char *buf, unsigned int size);
 
+=======
+/* sdio related functions */
+int gsdio_setup(struct usb_gadget *g, unsigned n_ports);
+int gsdio_connect(struct gserial *, u8 port_num);
+void gsdio_disconnect(struct gserial *, u8 portno);
+
+int gsmd_setup(struct usb_gadget *g, unsigned n_ports);
+int gsmd_connect(struct gserial *, u8 port_num);
+void gsmd_disconnect(struct gserial *, u8 portno);
+int gsmd_write(u8 portno, char *buf, unsigned int size);
+
+
+>>>>>>> p9x:drivers/usb/gadget/u_serial.h
 /* functions are bound to configurations by a config or gadget driver */
 int gser_bind_config(struct usb_configuration *c, u8 port_num);
 int obex_bind_config(struct usb_configuration *c, u8 port_num);

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012,2013,2015, Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2013, Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -22,11 +26,14 @@
 		#address-cells = <1>;
 		#size-cells = <1>;
 
+<<<<<<< HEAD
 		pm8019_revid: qcom,revid@100 {
 			compatible = "qcom,qpnp-revid";
 			reg = <0x100 0x100>;
 		};
 
+=======
+>>>>>>> p9x
 		qcom,power_on@800 {
 			compatible = "qcom,qpnp-power-on";
 			reg = <0x800 0x100>;
@@ -215,7 +222,10 @@
 						"high-thr-en-set",
 						"low-thr-en-set";
 			qcom,adc-bit-resolution = <15>;
+<<<<<<< HEAD
 			qcom,adc_tm-vadc = <&pm8019_vadc>;
+=======
+>>>>>>> p9x
 			qcom,adc-vdd-reference = <1800>;
 		};
 	};

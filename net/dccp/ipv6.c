@@ -70,7 +70,7 @@ static void dccp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 			u8 type, u8 code, int offset, __be32 info)
 {
 	const struct ipv6hdr *hdr = (const struct ipv6hdr *)skb->data;
-	const struct dccp_hdr *dh = (struct dccp_hdr *)(skb->data + offset);
+	const struct dccp_hdr *dh;
 	struct dccp_sock *dp;
 	struct ipv6_pinfo *np;
 	struct sock *sk;
@@ -78,12 +78,13 @@ static void dccp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 	__u64 seq;
 	struct net *net = dev_net(skb->dev);
 
-	if (skb->len < offset + sizeof(*dh) ||
-	    skb->len < offset + __dccp_basic_hdr_len(dh)) {
-		ICMP6_INC_STATS_BH(net, __in6_dev_get(skb->dev),
-				   ICMP6_MIB_INERRORS);
-		return;
-	}
+	/* Only need dccph_dport & dccph_sport which are the first
+	 * 4 bytes in dccp header.
+	 * Our caller (icmpv6_notify()) already pulled 8 bytes for us.
+	 */
+	BUILD_BUG_ON(offsetofend(struct dccp_hdr, dccph_sport) > 8);
+	BUILD_BUG_ON(offsetofend(struct dccp_hdr, dccph_dport) > 8);
+	dh = (struct dccp_hdr *)(skb->data + offset);
 
 	sk = inet6_lookup(net, &dccp_hashinfo,
 			&hdr->daddr, dh->dccph_dport,
@@ -243,9 +244,15 @@ static int dccp_v6_send_response(struct sock *sk, struct request_sock *req)
 		struct dccp_hdr *dh = dccp_hdr(skb);
 
 		dh->dccph_checksum = dccp_v6_csum_finish(skb,
+<<<<<<< HEAD
 							 &ireq->ir_v6_loc_addr,
 							 &ireq->ir_v6_rmt_addr);
 		fl6.daddr = ireq->ir_v6_rmt_addr;
+=======
+							 &ireq6->loc_addr,
+							 &ireq6->rmt_addr);
+		fl6.daddr = ireq6->rmt_addr;
+>>>>>>> p9x
 		rcu_read_lock();
 		err = ip6_xmit(sk, skb, &fl6, rcu_dereference(np->opt),
 			       np->tclass);
@@ -473,8 +480,13 @@ static struct sock *dccp_v6_request_recv_sock(struct sock *sk,
 		newnp->ipv6_mc_list = NULL;
 		newnp->ipv6_ac_list = NULL;
 		newnp->ipv6_fl_list = NULL;
+<<<<<<< HEAD
 		newnp->mcast_oif   = inet_iif(skb);
 		newnp->mcast_hops  = ip_hdr(skb)->ttl;
+=======
+		newnp->mcast_oif   = inet6_iif(skb);
+		newnp->mcast_hops  = ipv6_hdr(skb)->hop_limit;
+>>>>>>> p9x
 
 		/*
 		 * No need to charge this sock to the relevant IPv6 refcnt debug socks count
@@ -551,8 +563,11 @@ static struct sock *dccp_v6_request_recv_sock(struct sock *sk,
 	newnp->ipv6_mc_list = NULL;
 	newnp->ipv6_ac_list = NULL;
 	newnp->ipv6_fl_list = NULL;
+<<<<<<< HEAD
 
 	/* Clone pktoptions received with SYN */
+=======
+>>>>>>> p9x
 	newnp->pktoptions = NULL;
 	if (ireq->pktopts != NULL) {
 		newnp->pktoptions = skb_clone(ireq->pktopts, GFP_ATOMIC);
@@ -1014,6 +1029,7 @@ static const struct inet_connection_sock_af_ops dccp_ipv6_mapped = {
 	.getsockopt	   = ipv6_getsockopt,
 	.addr2sockaddr	   = inet6_csk_addr2sockaddr,
 	.sockaddr_len	   = sizeof(struct sockaddr_in6),
+	.bind_conflict	   = inet6_csk_bind_conflict,
 #ifdef CONFIG_COMPAT
 	.compat_setsockopt = compat_ipv6_setsockopt,
 	.compat_getsockopt = compat_ipv6_getsockopt,

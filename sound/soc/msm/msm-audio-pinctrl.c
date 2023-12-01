@@ -152,6 +152,10 @@ int msm_gpioset_initialize(enum pinctrl_client client,
 	gpioset_info[client].gpiosets_comb_names = devm_kzalloc(dev,
 				num_strings * sizeof(char *), GFP_KERNEL);
 	if (!gpioset_info[client].gpiosets_comb_names) {
+<<<<<<< HEAD
+=======
+		dev_err(dev, "Can't allocate gpio set combination names data\n");
+>>>>>>> p9x
 		ret = -ENOMEM;
 		goto err;
 	}
@@ -163,6 +167,11 @@ int msm_gpioset_initialize(enum pinctrl_client client,
 		gpioset_info[client].gpiosets_comb_names[i] = devm_kzalloc(dev,
 				(strlen(gpioset_comb_str) + 1), GFP_KERNEL);
 		if (!gpioset_info[client].gpiosets_comb_names[i]) {
+<<<<<<< HEAD
+=======
+			dev_err(dev, "%s: Can't allocate combinations[%d] data\n",
+					__func__, i);
+>>>>>>> p9x
 			ret = -ENOMEM;
 			goto err;
 		}
@@ -180,6 +189,10 @@ int msm_gpioset_initialize(enum pinctrl_client client,
 	pinctrl_info[client].cdc_lines = devm_kzalloc(dev,
 		num_strings * sizeof(char *), GFP_KERNEL);
 	if (!pinctrl_info[client].cdc_lines) {
+<<<<<<< HEAD
+=======
+		dev_err(dev, "Can't allocate pinctrl_info.cdc_lines data\n");
+>>>>>>> p9x
 		ret = -ENOMEM;
 		goto err;
 	}

@@ -230,7 +230,12 @@ struct mod_kallsyms {
 	char *strtab;
 };
 
+<<<<<<< HEAD
 struct module {
+=======
+struct module
+{
+>>>>>>> p9x
 	enum module_state state;
 
 	/* Member of list of modules */

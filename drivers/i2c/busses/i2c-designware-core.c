@@ -412,12 +412,15 @@ static void i2c_dw_xfer_init(struct dw_i2c_dev *dev)
 
 	dw_writel(dev, ic_con, DW_IC_CON);
 
+<<<<<<< HEAD
 	/*
 	 * Set the slave (target) address and enable 10-bit addressing mode
 	 * if applicable.
 	 */
 	dw_writel(dev, msgs[dev->msg_write_idx].addr | ic_tar, DW_IC_TAR);
 
+=======
+>>>>>>> p9x
 	/* enforce disabled interrupts (due to HW issues) */
 	i2c_dw_disable_int(dev);
 

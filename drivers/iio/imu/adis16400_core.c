@@ -690,6 +690,18 @@ static const struct iio_chan_spec adis16334_channels[] = {
 	ADIS16400_ACCEL_CHAN(Z, ADIS16400_ZACCL_OUT, 14),
 	ADIS16400_TEMP_CHAN(ADIS16350_XTEMP_OUT, 12),
 	IIO_CHAN_SOFT_TIMESTAMP(ADIS16400_SCAN_TIMESTAMP),
+<<<<<<< HEAD
+=======
+};
+
+static struct attribute *adis16400_attributes[] = {
+	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+	NULL
+};
+
+static const struct attribute_group adis16400_attribute_group = {
+	.attrs = adis16400_attributes,
+>>>>>>> p9x
 };
 
 static struct adis16400_chip_info adis16400_chips[] = {

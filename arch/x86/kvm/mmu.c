@@ -2818,7 +2818,11 @@ static bool fast_page_fault(struct kvm_vcpu *vcpu, gva_t gva, int level,
 	if (!VALID_PAGE(vcpu->arch.mmu.root_hpa))
 		return false;
 
+<<<<<<< HEAD
 	if (!page_fault_can_be_fast(error_code))
+=======
+	if (!page_fault_can_be_fast(vcpu, error_code))
+>>>>>>> p9x
 		return false;
 
 	walk_shadow_page_lockless_begin(vcpu);
@@ -4090,6 +4094,10 @@ void kvm_mmu_pte_write(struct kvm_vcpu *vcpu, gpa_t gpa,
 	++vcpu->kvm->stat.mmu_pte_write;
 	kvm_mmu_audit(vcpu, AUDIT_PRE_PTE_WRITE);
 
+<<<<<<< HEAD
+=======
+	mask.cr0_wp = mask.cr4_pae = mask.nxe = mask.smep_andnot_wp = 1;
+>>>>>>> p9x
 	for_each_gfn_indirect_valid_sp(vcpu->kvm, sp, gfn) {
 		if (detect_write_misaligned(sp, gpa, bytes) ||
 		      detect_write_flooding(sp)) {

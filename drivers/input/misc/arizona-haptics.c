@@ -73,6 +73,8 @@ static void arizona_haptics_work(struct work_struct *work)
 			return;
 		}
 
+		mutex_unlock(dapm_mutex);
+
 		ret = snd_soc_dapm_sync(arizona->dapm);
 		if (ret != 0) {
 			dev_err(arizona->dev, "Failed to sync DAPM: %d\n",
@@ -87,6 +89,8 @@ static void arizona_haptics_work(struct work_struct *work)
 				ret);
 			return;
 		}
+
+		mutex_unlock(dapm_mutex);
 
 		ret = snd_soc_dapm_sync(arizona->dapm);
 		if (ret != 0) {

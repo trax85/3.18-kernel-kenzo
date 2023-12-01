@@ -71,7 +71,11 @@ struct snd_compr_tstamp {
 	__u32 pcm_io_frames;
 	__u32 sampling_rate;
 	uint64_t timestamp;
+<<<<<<< HEAD
 } __attribute__((packed, aligned(4)));
+=======
+};
+>>>>>>> p9x
 
 /**
  * struct snd_compr_avail: avail descriptor
@@ -81,7 +85,11 @@ struct snd_compr_tstamp {
 struct snd_compr_avail {
 	__u64 avail;
 	struct snd_compr_tstamp tstamp;
+<<<<<<< HEAD
 } __attribute__((packed, aligned(4)));
+=======
+} __attribute__((packed));
+>>>>>>> p9x
 
 enum snd_compr_direction {
 	SND_COMPRESS_PLAYBACK = 0,
@@ -131,6 +139,16 @@ struct snd_compr_audio_info {
 	uint32_t frame_size;
 	uint32_t reserved[15];
 } __attribute__((packed, aligned(4)));
+
+/**
+ * struct snd_compr_audio_info: compressed input audio information
+ * @frame_size: legth of the encoded frame with valid data
+ * @reserved: reserved for furture use
+ */
+struct snd_compr_audio_info {
+	uint32_t frame_size;
+	uint32_t reserved[15];
+};
 
 /**
  * @SNDRV_COMPRESS_ENCODER_PADDING: no of samples appended by the encoder at the
@@ -195,7 +213,11 @@ struct snd_compr_metadata {
 #define SNDRV_COMPRESS_NEXT_TRACK	_IO('C', 0x35)
 #define SNDRV_COMPRESS_PARTIAL_DRAIN	_IO('C', 0x36)
 #define SNDRV_COMPRESS_SET_NEXT_TRACK_PARAM\
+<<<<<<< HEAD
 					_IOW('C', 0x80, union snd_codec_options)
+=======
+					_IOW('C', 0x37, union snd_codec_options)
+>>>>>>> p9x
 /*
  * TODO
  * 1. add mmap support

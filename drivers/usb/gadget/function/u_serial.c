@@ -4,7 +4,11 @@
  * Copyright (C) 2003 Al Borchers (alborchers@steinerpoint.com)
  * Copyright (C) 2008 David Brownell
  * Copyright (C) 2008 by Nokia Corporation
+<<<<<<< HEAD:drivers/usb/gadget/function/u_serial.c
  * Copyright (c) 2013-2015, 2017 The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2013-2015 The Linux Foundation. All rights reserved.
+>>>>>>> p9x:drivers/usb/gadget/u_serial.c
  *
  * This code also borrows from usbserial.c, which is
  * Copyright (C) 1999 - 2002 Greg Kroah-Hartman (greg@kroah.com)
@@ -415,8 +419,11 @@ __acquires(&port->port_lock)
 					printk(KERN_ERR "%s: %s err %d\n",
 					__func__, "queue", status);
 					list_add(&req->list, pool);
+<<<<<<< HEAD:drivers/usb/gadget/function/u_serial.c
 				} else {
 					port->write_started++;
+=======
+>>>>>>> p9x:drivers/usb/gadget/u_serial.c
 				}
 				prev_len = 0;
 			}
@@ -1102,7 +1109,11 @@ static void gs_unthrottle(struct tty_struct *tty)
 		 * read queue backs up enough we'll be NAKing OUT packets.
 		 */
 		queue_work(gserial_wq, &port->push);
+<<<<<<< HEAD:drivers/usb/gadget/function/u_serial.c
 		pr_vdebug("ttyGS%d: unthrottle\n", port->port_num);
+=======
+		pr_vdebug(PREFIX "%d: unthrottle\n", port->port_num);
+>>>>>>> p9x:drivers/usb/gadget/u_serial.c
 	}
 	spin_unlock_irqrestore(&port->port_lock, flags);
 }
@@ -1115,7 +1126,11 @@ static int gs_break_ctl(struct tty_struct *tty, int duration)
 
 	if (!port)
 		return 0;
+<<<<<<< HEAD:drivers/usb/gadget/function/u_serial.c
 	pr_vdebug("gs_break_ctl: ttyGS%d, send break (%d) \n",
+=======
+	pr_vdebug("gs_break_ctl: ttyGS%d, send break (%d)\n",
+>>>>>>> p9x:drivers/usb/gadget/u_serial.c
 			port->port_num, duration);
 
 	spin_lock_irq(&port->port_lock);
@@ -1243,9 +1258,12 @@ gs_port_alloc(unsigned port_num, struct usb_cdc_line_coding *coding)
 	spin_lock_init(&port->port_lock);
 	init_waitqueue_head(&port->drain_wait);
 
+<<<<<<< HEAD:drivers/usb/gadget/function/u_serial.c
 	pr_debug("%s open:ttyGS%d and set 8388608, avail:%d\n", __func__,
 		port_num, tty_buffer_space_avail(&port->port));
 
+=======
+>>>>>>> p9x:drivers/usb/gadget/u_serial.c
 	INIT_WORK(&port->push, gs_rx_push);
 
 	INIT_LIST_HEAD(&port->read_pool);
@@ -1360,6 +1378,7 @@ const struct file_operations debug_adb_ops = {
 	.read = debug_read_status,
 };
 
+<<<<<<< HEAD:drivers/usb/gadget/function/u_serial.c
 static ssize_t usb_gser_rw_write(struct file *file, const char __user *ubuf,
 				size_t count, loff_t *ppos)
 {
@@ -1399,6 +1418,8 @@ const struct file_operations debug_rem_wakeup_fops = {
 	.write = usb_gser_rw_write,
 };
 
+=======
+>>>>>>> p9x:drivers/usb/gadget/u_serial.c
 struct dentry *gs_dent;
 static void usb_debugfs_init(struct gs_port *ui_dev, int port_num)
 {
@@ -1416,8 +1437,11 @@ static void usb_debugfs_init(struct gs_port *ui_dev, int port_num)
 			&debug_adb_ops);
 	debugfs_create_file("reset", S_IRUGO | S_IWUSR,
 			gs_dent, ui_dev, &debug_rst_ops);
+<<<<<<< HEAD:drivers/usb/gadget/function/u_serial.c
 	debugfs_create_file("remote_wakeup", S_IWUSR,
 			gs_dent, ui_dev, &debug_rem_wakeup_fops);
+=======
+>>>>>>> p9x:drivers/usb/gadget/u_serial.c
 }
 
 static void usb_debugfs_remove(void)
@@ -1709,6 +1733,9 @@ static int userial_init(void)
 		goto fail;
 	}
 
+	for (i = 0; i < MAX_U_SERIAL_PORTS; i++)
+		usb_debugfs_init(ports[i].port, i);
+
 	pr_debug("%s: registered %d ttyGS* device%s\n", __func__,
 			MAX_U_SERIAL_PORTS,
 			(MAX_U_SERIAL_PORTS == 1) ? "" : "s");
@@ -1725,6 +1752,10 @@ module_init(userial_init);
 
 static void userial_cleanup(void)
 {
+<<<<<<< HEAD:drivers/usb/gadget/function/u_serial.c
+=======
+	usb_debugfs_remove();
+>>>>>>> p9x:drivers/usb/gadget/u_serial.c
 	destroy_workqueue(gserial_wq);
 	tty_unregister_driver(gs_tty_driver);
 	put_tty_driver(gs_tty_driver);

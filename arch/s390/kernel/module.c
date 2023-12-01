@@ -50,7 +50,11 @@ void *module_alloc(unsigned long size)
 	if (PAGE_ALIGN(size) > MODULES_LEN)
 		return NULL;
 	return __vmalloc_node_range(size, 1, MODULES_VADDR, MODULES_END,
+<<<<<<< HEAD
 				    GFP_KERNEL, PAGE_KERNEL, 0, NUMA_NO_NODE,
+=======
+				    GFP_KERNEL, PAGE_KERNEL, NUMA_NO_NODE,
+>>>>>>> p9x
 				    __builtin_return_address(0));
 }
 #endif

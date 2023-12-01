@@ -3,7 +3,10 @@
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
 #include <asm/assembler.h>
+=======
+>>>>>>> p9x
 #include <asm/kexec.h>
 
 	.align	3	/* not needed for this code, but keeps fncpy() happy */

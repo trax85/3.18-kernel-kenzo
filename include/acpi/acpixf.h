@@ -430,6 +430,7 @@ ACPI_EXTERNAL_RETURN_STATUS(acpi_status __init acpi_load_tables(void))
  */
 ACPI_EXTERNAL_RETURN_STATUS(acpi_status __init acpi_reallocate_root_table(void))
 
+<<<<<<< HEAD
 ACPI_EXTERNAL_RETURN_STATUS(acpi_status __init
 			    acpi_find_root_pointer(acpi_physical_address *
 						   rsdp_address))
@@ -452,6 +453,31 @@ ACPI_EXTERNAL_RETURN_STATUS(acpi_status
 ACPI_EXTERNAL_RETURN_STATUS(acpi_status
 			     acpi_remove_table_handler(acpi_table_handler
 						       handler))
+=======
+acpi_status acpi_find_root_pointer(acpi_physical_address *rsdp_address);
+
+acpi_status acpi_unload_table_id(acpi_owner_id id);
+
+acpi_status
+acpi_get_table_header(acpi_string signature,
+		      u32 instance, struct acpi_table_header *out_table_header);
+
+acpi_status
+acpi_get_table_with_size(acpi_string signature,
+	       u32 instance, struct acpi_table_header **out_table,
+	       acpi_size *tbl_size);
+acpi_status
+acpi_get_table(acpi_string signature,
+	       u32 instance, struct acpi_table_header **out_table);
+
+acpi_status
+acpi_get_table_by_index(u32 table_index, struct acpi_table_header **out_table);
+
+acpi_status
+acpi_install_table_handler(acpi_table_handler handler, void *context);
+
+acpi_status acpi_remove_table_handler(acpi_table_handler handler);
+>>>>>>> p9x
 
 /*
  * Namespace and name interfaces

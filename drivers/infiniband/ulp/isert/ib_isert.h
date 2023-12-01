@@ -153,6 +153,7 @@ struct isert_conn {
 	struct completion	conn_wait;
 	struct completion	conn_wait_comp_err;
 	struct kref		conn_kref;
+<<<<<<< HEAD
 	struct list_head	conn_fr_pool;
 	int			conn_fr_pool_size;
 	/* lock to protect fastreg pool */
@@ -161,6 +162,9 @@ struct isert_conn {
 #define ISERT_COMP_BATCH_COUNT	8
 	int			conn_comp_batch;
 	struct llist_head	conn_comp_llist;
+=======
+	struct work_struct	release_work;
+>>>>>>> p9x
 };
 
 #define ISERT_MAX_CQ 64

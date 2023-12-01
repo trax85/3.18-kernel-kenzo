@@ -341,6 +341,44 @@ static int genl_validate_ops(const struct genl_family *family)
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * genl_unregister_ops - unregister generic netlink operations
+ * @family: generic netlink family
+ * @ops: operations to be unregistered
+ *
+ * Unregisters the specified operations and unassigns them from the
+ * specified family. The operation blocks until the current message
+ * processing has finished and doesn't start again until the
+ * unregister process has finished.
+ *
+ * Note: It is not necessary to unregister all operations before
+ *       unregistering the family, unregistering the family will cause
+ *       all assigned operations to be unregistered automatically.
+ *
+ * Returns 0 on success or a negative error code.
+ */
+int genl_unregister_ops(struct genl_family *family, struct genl_ops *ops)
+{
+	struct genl_ops *rc;
+
+	genl_lock_all();
+	list_for_each_entry(rc, &family->ops_list, ops_list) {
+		if (rc == ops) {
+			list_del(&ops->ops_list);
+			genl_unlock_all();
+			genl_ctrl_event(CTRL_CMD_DELOPS, ops);
+			return 0;
+		}
+	}
+	genl_unlock_all();
+
+	return -ENOENT;
+}
+EXPORT_SYMBOL(genl_unregister_ops);
+
+/**
+>>>>>>> p9x
  * __genl_register_family - register a generic netlink family
  * @family: generic netlink family
  *
@@ -420,6 +458,55 @@ errout:
 	return err;
 }
 EXPORT_SYMBOL(__genl_register_family);
+<<<<<<< HEAD
+=======
+
+/**
+ * __genl_register_family_with_ops - register a generic netlink family
+ * @family: generic netlink family
+ * @ops: operations to be registered
+ * @n_ops: number of elements to register
+ *
+ * Registers the specified family and operations from the specified table.
+ * Only one family may be registered with the same family name or identifier.
+ *
+ * The family id may equal GENL_ID_GENERATE causing an unique id to
+ * be automatically generated and assigned.
+ *
+ * Either a doit or dumpit callback must be specified for every registered
+ * operation or the function will fail. Only one operation structure per
+ * command identifier may be registered.
+ *
+ * See include/net/genetlink.h for more documenation on the operations
+ * structure.
+ *
+ * This is equivalent to calling genl_register_family() followed by
+ * genl_register_ops() for every operation entry in the table taking
+ * care to unregister the family on error path.
+ *
+ * Return 0 on success or a negative error code.
+ */
+int __genl_register_family_with_ops(struct genl_family *family,
+	struct genl_ops *ops, size_t n_ops)
+{
+	int err, i;
+
+	err = __genl_register_family(family);
+	if (err)
+		return err;
+
+	for (i = 0; i < n_ops; ++i, ++ops) {
+		err = genl_register_ops(family, ops);
+		if (err)
+			goto err_out;
+	}
+	return 0;
+err_out:
+	genl_unregister_family(family);
+	return err;
+}
+EXPORT_SYMBOL(__genl_register_family_with_ops);
+>>>>>>> p9x
 
 /**
  * genl_unregister_family - unregister generic netlink family
@@ -507,6 +594,7 @@ void *genlmsg_put(struct sk_buff *skb, u32 portid, u32 seq,
 }
 EXPORT_SYMBOL(genlmsg_put);
 
+<<<<<<< HEAD
 static int genl_lock_start(struct netlink_callback *cb)
 {
 	/* our ops are always const - netlink API doesn't propagate that */
@@ -525,6 +613,11 @@ static int genl_lock_dumpit(struct sk_buff *skb, struct netlink_callback *cb)
 {
 	/* our ops are always const - netlink API doesn't propagate that */
 	const struct genl_ops *ops = cb->data;
+=======
+static int genl_lock_dumpit(struct sk_buff *skb, struct netlink_callback *cb)
+{
+	struct genl_ops *ops = cb->data;
+>>>>>>> p9x
 	int rc;
 
 	genl_lock();
@@ -535,8 +628,12 @@ static int genl_lock_dumpit(struct sk_buff *skb, struct netlink_callback *cb)
 
 static int genl_lock_done(struct netlink_callback *cb)
 {
+<<<<<<< HEAD
 	/* our ops are always const - netlink API doesn't propagate that */
 	const struct genl_ops *ops = cb->data;
+=======
+	struct genl_ops *ops = cb->data;
+>>>>>>> p9x
 	int rc = 0;
 
 	if (ops->done) {
@@ -583,9 +680,13 @@ static int genl_family_rcv_msg(struct genl_family *family,
 		if (!family->parallel_ops) {
 			struct netlink_dump_control c = {
 				.module = family->module,
+<<<<<<< HEAD
 				/* we have const, but the netlink API doesn't */
 				.data = (void *)ops,
 				.start = genl_lock_start,
+=======
+				.data = ops,
+>>>>>>> p9x
 				.dump = genl_lock_dumpit,
 				.done = genl_lock_done,
 			};
@@ -597,7 +698,10 @@ static int genl_family_rcv_msg(struct genl_family *family,
 		} else {
 			struct netlink_dump_control c = {
 				.module = family->module,
+<<<<<<< HEAD
 				.start = ops->start,
+=======
+>>>>>>> p9x
 				.dump = ops->dumpit,
 				.done = ops->done,
 			};

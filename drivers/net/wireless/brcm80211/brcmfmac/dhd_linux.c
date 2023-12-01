@@ -1073,14 +1073,27 @@ int brcmf_netdev_wait_pend8021x(struct net_device *ndev)
 
 static void brcmf_driver_register(struct work_struct *work)
 {
+<<<<<<< HEAD
+=======
+	struct brcmf_bus *bus = ifp->drvr->bus_if;
+
+	return bus->chip << 4 | bus->chiprev;
+}
+
+static void brcmf_driver_register(struct work_struct *work)
+{
+>>>>>>> p9x
 #ifdef CONFIG_BRCMFMAC_SDIO
 	brcmf_sdio_register();
 #endif
 #ifdef CONFIG_BRCMFMAC_USB
 	brcmf_usb_register();
+<<<<<<< HEAD
 #endif
 #ifdef CONFIG_BRCMFMAC_PCIE
 	brcmf_pcie_register();
+=======
+>>>>>>> p9x
 #endif
 }
 static DECLARE_WORK(brcmf_driver_work, brcmf_driver_register);

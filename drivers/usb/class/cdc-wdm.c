@@ -269,9 +269,15 @@ static void wdm_int_callback(struct urb *urb)
 	}
 
 	spin_lock(&desc->iuspin);
+<<<<<<< HEAD
 	responding = test_and_set_bit(WDM_RESPONDING, &desc->flags);
 	if (!desc->resp_count++ && !responding
 		&& !test_bit(WDM_DISCONNECTING, &desc->flags)
+=======
+	clear_bit(WDM_READ, &desc->flags);
+	responding = test_and_set_bit(WDM_RESPONDING, &desc->flags);
+	if (!responding && !test_bit(WDM_DISCONNECTING, &desc->flags)
+>>>>>>> p9x
 		&& !test_bit(WDM_SUSPENDING, &desc->flags)) {
 		rv = usb_submit_urb(desc->response, GFP_ATOMIC);
 		dev_dbg(&desc->intf->dev, "%s: usb_submit_urb %d",

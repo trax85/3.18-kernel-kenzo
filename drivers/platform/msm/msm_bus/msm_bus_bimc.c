@@ -219,6 +219,7 @@ enum bimc_m_bke_health_3 {
 	M_BKE_HEALTH_3_CONFIG_PRIOLVL_SHFT		= 0x0,
 };
 
+<<<<<<< HEAD
 /* S_ARB_GENERIC */
 
 #define S_ARB_REG_BASE(b)	((b) + 0x00049000)
@@ -235,6 +236,8 @@ enum bimc_s_arb_mode {
 	S_ARB_MODE_PRIO_RR_EN_SHFT		= 0x0,
 };
 
+=======
+>>>>>>> p9x
 #define BKE_HEALTH_MASK \
 	(M_BKE_HEALTH_0_CONFIG_LIMIT_CMDS_BMSK |\
 	M_BKE_HEALTH_0_CONFIG_AREQPRIO_BMSK |\
@@ -286,6 +289,7 @@ void msm_bus_bimc_set_mas_clk_gate(struct msm_bus_bimc_info *binfo,
 	wmb();
 }
 
+<<<<<<< HEAD
 void msm_bus_bimc_arb_en(struct msm_bus_bimc_info *binfo,
 	uint32_t slv_index, bool en)
 {
@@ -307,6 +311,8 @@ void msm_bus_bimc_arb_en(struct msm_bus_bimc_info *binfo,
 	}
 }
 
+=======
+>>>>>>> p9x
 static void set_qos_mode(void __iomem *baddr, uint32_t index, uint32_t val0,
 	uint32_t val1, uint32_t val2)
 {

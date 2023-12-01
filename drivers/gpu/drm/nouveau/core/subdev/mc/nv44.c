@@ -24,7 +24,31 @@
 
 #include "nv04.h"
 
+<<<<<<< HEAD
 int
+=======
+struct nv44_mc_priv {
+	struct nouveau_mc base;
+};
+
+static int
+nv44_mc_ctor(struct nouveau_object *parent, struct nouveau_object *engine,
+	     struct nouveau_oclass *oclass, void *data, u32 size,
+	     struct nouveau_object **pobject)
+{
+	struct nv44_mc_priv *priv;
+	int ret;
+
+	ret = nouveau_mc_create(parent, engine, oclass, nv04_mc_intr, &priv);
+	*pobject = nv_object(priv);
+	if (ret)
+		return ret;
+
+	return 0;
+}
+
+static int
+>>>>>>> p9x
 nv44_mc_init(struct nouveau_object *object)
 {
 	struct nv04_mc_priv *priv = (void *)object;

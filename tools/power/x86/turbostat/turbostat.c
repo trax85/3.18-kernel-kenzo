@@ -21,7 +21,10 @@
 
 #define _GNU_SOURCE
 #include MSRHEADER
+<<<<<<< HEAD
 #include <stdarg.h>
+=======
+>>>>>>> p9x
 #include <stdio.h>
 #include <err.h>
 #include <unistd.h>

@@ -23,7 +23,10 @@ generic-y += param.h
 generic-y += parport.h
 generic-y += percpu.h
 generic-y += poll.h
+<<<<<<< HEAD
 generic-y += preempt.h
+=======
+>>>>>>> p9x
 generic-y += resource.h
 generic-y += scatterlist.h
 generic-y += sembuf.h

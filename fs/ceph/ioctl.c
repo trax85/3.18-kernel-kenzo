@@ -212,10 +212,15 @@ static long ceph_ioctl_get_dataloc(struct file *file, void __user *arg)
 	snprintf(dl.object_name, sizeof(dl.object_name), "%llx.%08llx",
 		 ceph_ino(inode), dl.object_no);
 
+<<<<<<< HEAD
 	oloc.pool = ceph_file_layout_pg_pool(ci->i_layout);
 	ceph_oid_set_name(&oid, dl.object_name);
 
 	r = ceph_oloc_oid_to_pg(osdc->osdmap, &oloc, &oid, &pgid);
+=======
+	r = ceph_calc_ceph_pg(&pgid, dl.object_name, osdc->osdmap,
+				ceph_file_layout_pg_pool(ci->i_layout));
+>>>>>>> p9x
 	if (r < 0) {
 		up_read(&osdc->map_sem);
 		return r;

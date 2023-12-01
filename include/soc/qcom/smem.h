@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -25,7 +29,10 @@ enum {
 	SMEM_RPM,
 	SMEM_TZ,
 	SMEM_SPSS,
+<<<<<<< HEAD
 	SMEM_HYP,
+=======
+>>>>>>> p9x
 	NUM_SMEM_SUBSYSTEMS,
 };
 
@@ -76,7 +83,11 @@ enum {
 	SMEM_SMD_BASE_ID,
 	SMEM_SMEM_LOG_IDX = SMEM_SMD_BASE_ID + SMEM_NUM_SMD_STREAM_CHANNELS,
 	SMEM_SMEM_LOG_EVENTS,
+<<<<<<< HEAD
 	SMEM_XBL_LOADER_CORE_INFO,
+=======
+	SMEM_SMEM_STATIC_LOG_IDX,
+>>>>>>> p9x
 	SMEM_SMEM_STATIC_LOG_EVENTS,
 	SMEM_SMEM_SLOW_CLOCK_SYNC,
 	SMEM_SMEM_SLOW_CLOCK_VALUE,

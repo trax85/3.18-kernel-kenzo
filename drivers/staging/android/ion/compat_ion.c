@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * drivers/staging/android/ion/compat_ion.c
+=======
+ * drivers/gpu/ion/compat_ion.c
+>>>>>>> p9x
  *
  * Copyright (C) 2013 Google, Inc.
  *
@@ -125,7 +129,11 @@ long compat_ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	long ret;
 
+<<<<<<< HEAD
 	if (!filp->f_op->unlocked_ioctl)
+=======
+	if (!filp->f_op || !filp->f_op->unlocked_ioctl)
+>>>>>>> p9x
 		return -ENOTTY;
 
 	switch (cmd) {

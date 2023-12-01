@@ -454,7 +454,7 @@ ssize_t do_sync_write(struct file *filp, const char __user *buf, size_t len, lof
 	kiocb.ki_pos = *ppos;
 	kiocb.ki_nbytes = len;
 
-	ret = filp->f_op->aio_write(&kiocb, &iov, 1, kiocb.ki_pos);
+	ret = filp->f_op->aio_write(&kiocb, &iov, 1, *ppos);
 	if (-EIOCBQUEUED == ret)
 		ret = wait_on_sync_kiocb(&kiocb);
 	*ppos = kiocb.ki_pos;
@@ -1095,6 +1095,7 @@ static long __compat_sys_preadv64(unsigned long fd,
 	return ret;
 }
 
+<<<<<<< HEAD
 #ifdef __ARCH_WANT_COMPAT_SYS_PREADV64
 COMPAT_SYSCALL_DEFINE4(preadv64, unsigned long, fd,
 		const struct compat_iovec __user *,vec,
@@ -1106,6 +1107,10 @@ COMPAT_SYSCALL_DEFINE4(preadv64, unsigned long, fd,
 
 COMPAT_SYSCALL_DEFINE5(preadv, compat_ulong_t, fd,
 		const struct compat_iovec __user *,vec,
+=======
+COMPAT_SYSCALL_DEFINE5(preadv, compat_ulong_t, fd,
+		const struct compat_iovec __user *,vec,
+>>>>>>> p9x
 		compat_ulong_t, vlen, u32, pos_low, u32, pos_high)
 {
 	loff_t pos = ((loff_t)pos_high << 32) | pos_low;
@@ -1172,6 +1177,7 @@ static long __compat_sys_pwritev64(unsigned long fd,
 	return ret;
 }
 
+<<<<<<< HEAD
 #ifdef __ARCH_WANT_COMPAT_SYS_PWRITEV64
 COMPAT_SYSCALL_DEFINE4(pwritev64, unsigned long, fd,
 		const struct compat_iovec __user *,vec,
@@ -1183,6 +1189,10 @@ COMPAT_SYSCALL_DEFINE4(pwritev64, unsigned long, fd,
 
 COMPAT_SYSCALL_DEFINE5(pwritev, compat_ulong_t, fd,
 		const struct compat_iovec __user *,vec,
+=======
+COMPAT_SYSCALL_DEFINE5(pwritev, compat_ulong_t, fd,
+		const struct compat_iovec __user *,vec,
+>>>>>>> p9x
 		compat_ulong_t, vlen, u32, pos_low, u32, pos_high)
 {
 	loff_t pos = ((loff_t)pos_high << 32) | pos_low;

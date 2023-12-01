@@ -32,6 +32,7 @@
 struct sockaddr_sco {
 	sa_family_t	sco_family;
 	bdaddr_t	sco_bdaddr;
+	__u16		sco_pkt_type;
 };
 
 /* SCO socket options */
@@ -46,4 +47,33 @@ struct sco_conninfo {
 	__u8  dev_class[3];
 };
 
+<<<<<<< HEAD
+=======
+/* ---- SCO connections ---- */
+struct sco_conn {
+	struct hci_conn	*hcon;
+
+	bdaddr_t	*dst;
+	bdaddr_t	*src;
+
+	spinlock_t	lock;
+	struct sock	*sk;
+
+	unsigned int    mtu;
+};
+
+#define sco_conn_lock(c)	spin_lock(&c->lock);
+#define sco_conn_unlock(c)	spin_unlock(&c->lock);
+
+/* ----- SCO socket info ----- */
+#define sco_pi(sk) ((struct sco_pinfo *) sk)
+
+struct sco_pinfo {
+	struct bt_sock	bt;
+	__u16		pkt_type;
+
+	struct sco_conn	*conn;
+};
+
+>>>>>>> p9x
 #endif /* __SCO_H */

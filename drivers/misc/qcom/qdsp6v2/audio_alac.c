@@ -19,16 +19,32 @@
 static struct miscdevice audio_alac_misc;
 static struct ws_mgr audio_alac_ws_mgr;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DEBUG_FS
+>>>>>>> p9x
 static const struct file_operations audio_alac_debug_fops = {
 	.read = audio_aio_debug_read,
 	.open = audio_aio_debug_open,
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 static struct dentry *config_debugfs_create_file(const char *name, void *data)
 {
 	return debugfs_create_file(name, S_IFREG | S_IRUGO,
 				NULL, (void *)data, &audio_alac_debug_fops);
 }
+<<<<<<< HEAD
+=======
+#else
+static struct dentry *config_debugfs_create_file(const char *name, void *data)
+{
+	return NULL;
+}
+#endif
+>>>>>>> p9x
 
 static int alac_channel_map(u8 *channel_mapping, uint32_t channels);
 
@@ -272,13 +288,21 @@ static int audio_open(struct inode *inode, struct file *file)
 	char name[sizeof "msm_alac_" + 5];
 	audio = kzalloc(sizeof(struct q6audio_aio), GFP_KERNEL);
 
+<<<<<<< HEAD
 	if (!audio) {
+=======
+	if (audio == NULL) {
+>>>>>>> p9x
 		pr_err("Could not allocate memory for alac decode driver\n");
 		return -ENOMEM;
 	}
 	audio->codec_cfg = kzalloc(sizeof(struct msm_audio_alac_config),
 					GFP_KERNEL);
+<<<<<<< HEAD
 	if (!audio->codec_cfg) {
+=======
+	if (audio->codec_cfg == NULL) {
+>>>>>>> p9x
 		pr_err("%s:Could not allocate memory for alac config\n",
 			__func__);
 		kfree(audio);
@@ -290,8 +314,11 @@ static int audio_open(struct inode *inode, struct file *file)
 	audio->wakelock_voted = false;
 	audio->audio_ws_mgr = &audio_alac_ws_mgr;
 
+<<<<<<< HEAD
 	init_waitqueue_head(&audio->event_wait);
 
+=======
+>>>>>>> p9x
 	audio->ac = q6asm_audio_client_alloc((app_cb) q6_audio_cb,
 					     (void *)audio);
 

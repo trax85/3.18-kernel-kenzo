@@ -756,6 +756,17 @@ void __init mem_init(void)
 
 	/* this will put all low memory onto the freelists */
 	free_all_bootmem();
+<<<<<<< HEAD
+=======
+
+	reservedpages = 0;
+	for (tmp = 0; tmp < max_low_pfn; tmp++)
+		/*
+		 * Only count reserved RAM pages:
+		 */
+		if (page_is_ram(tmp) && PageReserved(pfn_to_page(tmp)))
+			reservedpages++;
+>>>>>>> p9x
 
 	after_bootmem = 1;
 

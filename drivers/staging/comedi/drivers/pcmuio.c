@@ -630,11 +630,19 @@ static void pcmuio_detach(struct comedi_device *dev)
 	struct pcmuio_private *devpriv = dev->private;
 
 	if (devpriv) {
+<<<<<<< HEAD
 		pcmuio_reset(dev);
 
 		/* free the 2nd irq if used, the core will free the 1st one */
 		if (devpriv->irq2 && devpriv->irq2 != dev->irq)
 			free_irq(devpriv->irq2, dev);
+=======
+		for (i = 0; i < MAX_ASICS; ++i) {
+			if (devpriv->asics[i].irq)
+				free_irq(devpriv->asics[i].irq, dev);
+		}
+		kfree(devpriv->sprivs);
+>>>>>>> p9x
 	}
 	comedi_legacy_detach(dev);
 }

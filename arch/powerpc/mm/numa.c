@@ -540,7 +540,11 @@ static int of_drconf_to_nid_single(struct of_drconf_cell *drmem,
  */
 static int numa_setup_cpu(unsigned long lcpu)
 {
+<<<<<<< HEAD
 	int nid = -1;
+=======
+	int nid;
+>>>>>>> p9x
 	struct device_node *cpu;
 
 	/*
@@ -557,10 +561,15 @@ static int numa_setup_cpu(unsigned long lcpu)
 
 	if (!cpu) {
 		WARN_ON(1);
+<<<<<<< HEAD
 		if (cpu_present(lcpu))
 			goto out_present;
 		else
 			goto out;
+=======
+		nid = 0;
+		goto out;
+>>>>>>> p9x
 	}
 
 	nid = of_node_to_nid_single(cpu);
@@ -1513,10 +1522,15 @@ static int update_cpu_topology(void *data)
 		if (cpu != update->cpu)
 			continue;
 
+<<<<<<< HEAD
 		unmap_cpu_from_node(cpu);
 		map_cpu_to_node(cpu, new_nid);
 		set_cpu_numa_node(cpu, new_nid);
 		set_cpu_numa_mem(cpu, local_memory_node(new_nid));
+=======
+		unmap_cpu_from_node(update->cpu);
+		map_cpu_to_node(update->cpu, update->new_nid);
+>>>>>>> p9x
 		vdso_getcpu_init();
 	}
 
@@ -1562,9 +1576,12 @@ int arch_update_cpu_topology(void)
 	cpumask_t updated_cpus;
 	struct device *dev;
 	int weight, new_nid, i = 0;
+<<<<<<< HEAD
 
 	if (!prrn_enabled && !vphn_enabled)
 		return 0;
+=======
+>>>>>>> p9x
 
 	weight = cpumask_weight(&cpu_associativity_changes_mask);
 	if (!weight)

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2017, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -58,6 +62,11 @@ struct rmnet_mux_val {
 	bool mux_hdr_set;
 	uint32_t  hdr_hdl;
 };
+<<<<<<< HEAD
+=======
+int rmnet_ipa_query_tethering_stats_all(
+	struct wan_ioctl_query_tether_stats_all *data);
+>>>>>>> p9x
 
 int rmnet_ipa_poll_tethering_stats(struct wan_ioctl_poll_tethering_stats *data);
 int rmnet_ipa_set_data_quota(struct wan_ioctl_set_data_quota *data);

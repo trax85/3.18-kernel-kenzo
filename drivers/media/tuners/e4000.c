@@ -19,7 +19,99 @@
  */
 
 #include "e4000_priv.h"
+<<<<<<< HEAD
 #include <linux/math64.h>
+=======
+
+/* Max transfer size done by I2C transfer functions */
+#define MAX_XFER_SIZE  64
+
+/* write multiple registers */
+static int e4000_wr_regs(struct e4000_priv *priv, u8 reg, u8 *val, int len)
+{
+	int ret;
+	u8 buf[MAX_XFER_SIZE];
+	struct i2c_msg msg[1] = {
+		{
+			.addr = priv->cfg->i2c_addr,
+			.flags = 0,
+			.len = 1 + len,
+			.buf = buf,
+		}
+	};
+
+	if (1 + len > sizeof(buf)) {
+		dev_warn(&priv->i2c->dev,
+			 "%s: i2c wr reg=%04x: len=%d is too big!\n",
+			 KBUILD_MODNAME, reg, len);
+		return -EINVAL;
+	}
+
+	buf[0] = reg;
+	memcpy(&buf[1], val, len);
+
+	ret = i2c_transfer(priv->i2c, msg, 1);
+	if (ret == 1) {
+		ret = 0;
+	} else {
+		dev_warn(&priv->i2c->dev, "%s: i2c wr failed=%d reg=%02x " \
+				"len=%d\n", KBUILD_MODNAME, ret, reg, len);
+		ret = -EREMOTEIO;
+	}
+	return ret;
+}
+
+/* read multiple registers */
+static int e4000_rd_regs(struct e4000_priv *priv, u8 reg, u8 *val, int len)
+{
+	int ret;
+	u8 buf[MAX_XFER_SIZE];
+	struct i2c_msg msg[2] = {
+		{
+			.addr = priv->cfg->i2c_addr,
+			.flags = 0,
+			.len = 1,
+			.buf = &reg,
+		}, {
+			.addr = priv->cfg->i2c_addr,
+			.flags = I2C_M_RD,
+			.len = len,
+			.buf = buf,
+		}
+	};
+
+	if (len > sizeof(buf)) {
+		dev_warn(&priv->i2c->dev,
+			 "%s: i2c rd reg=%04x: len=%d is too big!\n",
+			 KBUILD_MODNAME, reg, len);
+		return -EINVAL;
+	}
+
+	ret = i2c_transfer(priv->i2c, msg, 2);
+	if (ret == 2) {
+		memcpy(val, buf, len);
+		ret = 0;
+	} else {
+		dev_warn(&priv->i2c->dev, "%s: i2c rd failed=%d reg=%02x " \
+				"len=%d\n", KBUILD_MODNAME, ret, reg, len);
+		ret = -EREMOTEIO;
+	}
+
+	return ret;
+}
+
+/* write single register */
+static int e4000_wr_reg(struct e4000_priv *priv, u8 reg, u8 val)
+{
+	return e4000_wr_regs(priv, reg, &val, 1);
+}
+
+/* read single register */
+static int e4000_rd_reg(struct e4000_priv *priv, u8 reg, u8 *val)
+{
+	return e4000_rd_regs(priv, reg, val, 1);
+}
+>>>>>>> p9x
 
 static int e4000_init(struct dvb_frontend *fe)
 {

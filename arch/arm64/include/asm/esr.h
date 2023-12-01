@@ -54,6 +54,7 @@
 #define ESR_EL1_EC_BKPT32	(0x38)
 #define ESR_EL1_EC_BRK64	(0x3C)
 
+<<<<<<< HEAD
 #define ESR_ELx_EC_UNKNOWN	(0x00)
 #define ESR_ELx_EC_WFx		(0x01)
 /* Unallocated EC: 0x02 */
@@ -134,6 +135,8 @@
 #define ESR_ELx_COND_MASK	(UL(0xF) << ESR_ELx_COND_SHIFT)
 #define ESR_ELx_WFx_ISS_WFE	(UL(1) << 0)
 
+=======
+>>>>>>> p9x
 /* ISS field definitions for System instruction traps */
 #define ESR_ELx_SYS64_ISS_RES0_SHIFT	22
 #define ESR_ELx_SYS64_ISS_RES0_MASK	(UL(0x7) << ESR_ELx_SYS64_ISS_RES0_SHIFT)
@@ -174,10 +177,13 @@
 #define ESR_ELx_SYS64_ISS_SYS_CNTFRQ	(ESR_ELx_SYS64_ISS_SYS_VAL(3, 3, 0, 14, 0) | \
 					 ESR_ELx_SYS64_ISS_DIR_READ)
 
+<<<<<<< HEAD
 #ifndef __ASSEMBLY__
 #include <asm/types.h>
 
 const char *esr_get_class_string(u32 esr);
 #endif /* __ASSEMBLY */
 
+=======
+>>>>>>> p9x
 #endif /* __ASM_ESR_H */

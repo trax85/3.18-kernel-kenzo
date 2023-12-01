@@ -1080,10 +1080,22 @@ static int tpiu_probe(struct platform_device *pdev)
 	struct resource *res;
 	struct coresight_desc *desc;
 
+<<<<<<< HEAD
 	pdata = of_get_coresight_platform_data(dev, pdev->dev.of_node);
 	if (IS_ERR(pdata))
 		return PTR_ERR(pdata);
 	pdev->dev.platform_data = pdata;
+=======
+	if (coresight_fuse_access_disabled())
+		return -EPERM;
+
+	if (pdev->dev.of_node) {
+		pdata = of_get_coresight_platform_data(dev, pdev->dev.of_node);
+		if (IS_ERR(pdata))
+			return PTR_ERR(pdata);
+		pdev->dev.platform_data = pdata;
+	}
+>>>>>>> p9x
 
 	drvdata = devm_kzalloc(dev, sizeof(*drvdata), GFP_KERNEL);
 	if (!drvdata)
@@ -1113,19 +1125,30 @@ static int tpiu_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	if (!coresight_authstatus_enabled(drvdata->base)) {
 		clk_disable_unprepare(drvdata->clk);
 		return -EPERM;
 	}
 
+=======
+>>>>>>> p9x
 	/* Disable tpiu to support older targets that need this */
 	__tpiu_disable(drvdata);
 
 	clk_disable_unprepare(drvdata->clk);
 
+<<<<<<< HEAD
 	ret = tpiu_parse_of_data(pdev, drvdata);
 	if (ret)
 		return ret;
+=======
+	if (pdev->dev.of_node) {
+		ret = tpiu_parse_of_data(pdev, drvdata);
+		if (ret)
+			return ret;
+	}
+>>>>>>> p9x
 
 	desc = devm_kzalloc(dev, sizeof(*desc), GFP_KERNEL);
 	if (!desc)

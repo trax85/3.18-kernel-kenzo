@@ -8,7 +8,10 @@ Required properties:
 
 - compatible : should be one of
 	"arm,armv8-pmuv3"
+<<<<<<< HEAD
 	"arm,cortex-a17-pmu"
+=======
+>>>>>>> p9x
 	"arm,cortex-a15-pmu"
 	"arm,cortex-a12-pmu"
 	"arm,cortex-a9-pmu"

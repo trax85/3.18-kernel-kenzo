@@ -741,6 +741,7 @@ int xt_check_entry_offsets(const void *base,
 }
 EXPORT_SYMBOL(xt_check_entry_offsets);
 
+<<<<<<< HEAD
 /**
  * xt_alloc_entry_offsets - allocate array to store rule head offsets
  *
@@ -791,6 +792,8 @@ bool xt_find_jump_offset(const unsigned int *offsets,
 }
 EXPORT_SYMBOL(xt_find_jump_offset);
 
+=======
+>>>>>>> p9x
 int xt_check_target(struct xt_tgchk_param *par,
 		    unsigned int size, u_int8_t proto, bool inv_proto)
 {
@@ -880,7 +883,11 @@ void *xt_copy_counters_from_user(const void __user *user, unsigned int len,
 		if (copy_from_user(&compat_tmp, user, sizeof(compat_tmp)) != 0)
 			return ERR_PTR(-EFAULT);
 
+<<<<<<< HEAD
 		memcpy(info->name, compat_tmp.name, sizeof(info->name) - 1);
+=======
+		strlcpy(info->name, compat_tmp.name, sizeof(info->name));
+>>>>>>> p9x
 		info->num_counters = compat_tmp.num_counters;
 		user += sizeof(compat_tmp);
 	} else
@@ -893,9 +900,15 @@ void *xt_copy_counters_from_user(const void __user *user, unsigned int len,
 		if (copy_from_user(info, user, sizeof(*info)) != 0)
 			return ERR_PTR(-EFAULT);
 
+<<<<<<< HEAD
 		user += sizeof(*info);
 	}
 	info->name[sizeof(info->name) - 1] = '\0';
+=======
+		info->name[sizeof(info->name) - 1] = '\0';
+		user += sizeof(*info);
+	}
+>>>>>>> p9x
 
 	size = sizeof(struct xt_counters);
 	size *= info->num_counters;

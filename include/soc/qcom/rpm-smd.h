@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012, 2014-2015, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012, 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -116,6 +120,7 @@ void msm_rpm_free_request(struct msm_rpm_request *handle);
 int msm_rpm_send_request(struct msm_rpm_request *handle);
 
 /**
+<<<<<<< HEAD
  * msm_rpm_send_request_noack() - Send the RPM messages using SMD. The function
  * assigns a message id before sending the data out to the RPM. RPM hardware
  * uses the message id to acknowledge the messages, but this API does not wait
@@ -129,6 +134,8 @@ int msm_rpm_send_request(struct msm_rpm_request *handle);
 void *msm_rpm_send_request_noack(struct msm_rpm_request *handle);
 
 /**
+=======
+>>>>>>> p9x
  * msm_rpm_send_request_noirq() - Send the RPM messages using SMD. The
  * function assigns a message id before sending the data out to the RPM.
  * RPM hardware uses the message id to acknowledge the messages. This function
@@ -180,6 +187,7 @@ int msm_rpm_send_message(enum msm_rpm_set set, uint32_t rsc_type,
 		uint32_t rsc_id, struct msm_rpm_kvp *kvp, int nelems);
 
 /**
+<<<<<<< HEAD
  * msm_rpm_send_message_noack() -Wrapper function for clients to send data
  * given an array of key value pairs without waiting for ack.
  *
@@ -196,6 +204,8 @@ void *msm_rpm_send_message_noack(enum msm_rpm_set set, uint32_t rsc_type,
 		uint32_t rsc_id, struct msm_rpm_kvp *kvp, int nelems);
 
 /**
+=======
+>>>>>>> p9x
  * msm_rpm_send_message_noirq() -Wrapper function for clients to send data
  * given an array of key value pairs. This function is similar to the
  * msm_rpm_send_message() except that it has to be called with interrupts
@@ -266,11 +276,14 @@ static inline int msm_rpm_send_request_noirq(struct msm_rpm_request *handle)
 
 }
 
+<<<<<<< HEAD
 static inline void *msm_rpm_send_request_noack(struct msm_rpm_request *handle)
 {
 	return NULL;
 }
 
+=======
+>>>>>>> p9x
 static inline int msm_rpm_send_message(enum msm_rpm_set set, uint32_t rsc_type,
 		uint32_t rsc_id, struct msm_rpm_kvp *kvp, int nelems)
 {
@@ -284,6 +297,7 @@ static inline int msm_rpm_send_message_noirq(enum msm_rpm_set set,
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void *msm_rpm_send_message_noack(enum msm_rpm_set set,
 		uint32_t rsc_type, uint32_t rsc_id, struct msm_rpm_kvp *kvp,
 		int nelems)
@@ -291,6 +305,8 @@ static inline void *msm_rpm_send_message_noack(enum msm_rpm_set set,
 	return NULL;
 }
 
+=======
+>>>>>>> p9x
 static inline int msm_rpm_wait_for_ack(uint32_t msg_id)
 {
 	return 0;

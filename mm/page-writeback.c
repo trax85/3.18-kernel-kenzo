@@ -116,7 +116,7 @@ int block_dump;
  * Flag that puts the machine in "laptop mode". Doubles as a timeout in jiffies:
  * a full sync is triggered after this time elapses without any disk activity.
  */
-int laptop_mode;
+int laptop_mode = 1;
 
 EXPORT_SYMBOL(laptop_mode);
 
@@ -572,15 +572,24 @@ unsigned long bdi_dirty_limit(struct backing_dev_info *bdi, unsigned long dirty)
  * (5) the closer to setpoint, the smaller |df/dx| (and the reverse)
  *     => fast response on large errors; small oscillation near setpoint
  */
+<<<<<<< HEAD
 static long long pos_ratio_polynom(unsigned long setpoint,
+=======
+static inline long long pos_ratio_polynom(unsigned long setpoint,
+>>>>>>> p9x
 					  unsigned long dirty,
 					  unsigned long limit)
 {
 	long long pos_ratio;
 	long x;
 
+<<<<<<< HEAD
 	x = div64_s64(((s64)setpoint - (s64)dirty) << RATELIMIT_CALC_SHIFT,
 		      (limit - setpoint) | 1);
+=======
+	x = div_s64(((s64)setpoint - (s64)dirty) << RATELIMIT_CALC_SHIFT,
+		    limit - setpoint + 1);
+>>>>>>> p9x
 	pos_ratio = x;
 	pos_ratio = pos_ratio * x >> RATELIMIT_CALC_SHIFT;
 	pos_ratio = pos_ratio * x >> RATELIMIT_CALC_SHIFT;
@@ -2114,17 +2123,32 @@ int __set_page_dirty_nobuffers(struct page *page)
 {
 	if (!TestSetPageDirty(page)) {
 		struct address_space *mapping = page_mapping(page);
+<<<<<<< HEAD
+=======
+		struct address_space *mapping2;
+>>>>>>> p9x
 		unsigned long flags;
 
 		if (!mapping)
 			return 1;
 
 		spin_lock_irqsave(&mapping->tree_lock, flags);
+<<<<<<< HEAD
 		BUG_ON(page_mapping(page) != mapping);
 		WARN_ON_ONCE(!PagePrivate(page) && !PageUptodate(page));
 		account_page_dirtied(page, mapping);
 		radix_tree_tag_set(&mapping->page_tree, page_index(page),
 				   PAGECACHE_TAG_DIRTY);
+=======
+		mapping2 = page_mapping(page);
+		if (mapping2) { /* Race with truncate? */
+			BUG_ON(mapping2 != mapping);
+			WARN_ON_ONCE(!PagePrivate(page) && !PageUptodate(page));
+			account_page_dirtied(page, mapping);
+			radix_tree_tag_set(&mapping->page_tree,
+				page_index(page), PAGECACHE_TAG_DIRTY);
+		}
+>>>>>>> p9x
 		spin_unlock_irqrestore(&mapping->tree_lock, flags);
 		if (mapping->host) {
 			/* !PageAnon && !swapper_space */

@@ -815,6 +815,7 @@ char *devm_kstrdup(struct device *dev, const char *s, gfp_t gfp)
 	return buf;
 }
 EXPORT_SYMBOL_GPL(devm_kstrdup);
+<<<<<<< HEAD
 
 /**
  * devm_kvasprintf - Allocate resource managed space and format a string
@@ -871,6 +872,8 @@ char *devm_kasprintf(struct device *dev, gfp_t gfp, const char *fmt, ...)
 	return p;
 }
 EXPORT_SYMBOL_GPL(devm_kasprintf);
+=======
+>>>>>>> p9x
 
 /**
  * devm_kfree - Resource-managed kfree

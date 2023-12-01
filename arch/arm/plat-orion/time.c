@@ -17,7 +17,10 @@
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/sched_clock.h>
+<<<<<<< HEAD
 #include <plat/time.h>
+=======
+>>>>>>> p9x
 
 /*
  * MBus bridge block registers.

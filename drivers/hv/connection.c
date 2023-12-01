@@ -83,6 +83,9 @@ static int vmbus_negotiate_version(struct vmbus_channel_msginfo *msginfo,
 	if (version == VERSION_WIN8_1)
 		msg->target_vcpu = hv_context.vp_index[smp_processor_id()];
 
+	if (version == VERSION_WIN8_1)
+		msg->target_vcpu = hv_context.vp_index[smp_processor_id()];
+
 	/*
 	 * Add to list before we send the request since we may
 	 * receive the response before returning from this routine

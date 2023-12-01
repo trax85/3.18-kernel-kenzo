@@ -8,7 +8,11 @@ significant performance improvement if reads from the compressed cache are
 faster than reads from a swap device.
 
 NOTE: Zswap is a new feature as of v3.11 and interacts heavily with memory
+<<<<<<< HEAD
 reclaim.  This interaction has not been fully explored on the large set of
+=======
+reclaim.  This interaction has not be fully explored on the large set of
+>>>>>>> p9x
 potential configurations and workloads that exist.  For this reason, zswap
 is a work in progress and should be considered experimental.
 
@@ -23,11 +27,33 @@ Some potential benefits:
     drastically reducing life-shortening writes.
 
 Zswap evicts pages from compressed cache on an LRU basis to the backing swap
+<<<<<<< HEAD
 device when the compressed pool reaches its size limit.  This requirement had
 been identified in prior community discussions.
 
 To enabled zswap, the "enabled" attribute must be set to 1 at boot time.  e.g.
 zswap.enabled=1
+=======
+device when the compressed pool reaches it size limit.  This requirement had
+been identified in prior community discussions.
+
+Zswap is disabled by default but can be enabled at boot time by setting
+the "enabled" attribute to 1 at boot time. ie: zswap.enabled=1.  Zswap
+can also be enabled and disabled at runtime using the sysfs interface.
+An example command to enable zswap at runtime, assuming sysfs is mounted
+at /sys, is:
+
+echo 1 > /sys/modules/zswap/parameters/enabled
+
+When zswap is disabled at runtime it will stop storing pages that are
+being swapped out.  However, it will _not_ immediately write out or fault
+back into memory all of the pages stored in the compressed pool.  The
+pages stored in zswap will remain in the compressed pool until they are
+either invalidated or faulted back into memory.  In order to force all
+pages out of the compressed pool, a swapoff on the swap device(s) will
+fault back into memory all swapped out pages, including those in the
+compressed pool.
+>>>>>>> p9x
 
 Design:
 
@@ -37,7 +63,11 @@ the backing swap device in the case that the compressed pool is full.
 
 Zswap makes use of zbud for the managing the compressed memory pool.  Each
 allocation in zbud is not directly accessible by address.  Rather, a handle is
+<<<<<<< HEAD
 returned by the allocation routine and that handle must be mapped before being
+=======
+return by the allocation routine and that handle must be mapped before being
+>>>>>>> p9x
 accessed.  The compressed memory pool grows on demand and shrinks as compressed
 pages are freed.  The pool is not preallocated.
 
@@ -56,7 +86,11 @@ in the swap_map goes to 0) the swap code calls the zswap invalidate function,
 via frontswap, to free the compressed entry.
 
 Zswap seeks to be simple in its policies.  Sysfs attributes allow for one user
+<<<<<<< HEAD
 controlled policy:
+=======
+controlled policies:
+>>>>>>> p9x
 * max_pool_percent - The maximum percentage of memory that the compressed
     pool can occupy.
 

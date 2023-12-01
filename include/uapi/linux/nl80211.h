@@ -291,7 +291,11 @@
  * @NL80211_CMD_GET_SCAN: get scan results
  * @NL80211_CMD_TRIGGER_SCAN: trigger a new scan with the given parameters
  *	%NL80211_ATTR_TX_NO_CCK_RATE is used to decide whether to send the
+<<<<<<< HEAD
  *	probe requests at CCK rate or not. %NL80211_ATTR_BSSID can be used to
+=======
+ *	probe requests at CCK rate or not. %NL80211_ATTR_MAC can be used to
+>>>>>>> p9x
  *	specify a BSSID to scan for; if not included, the wildcard BSSID will
  *	be used.
  * @NL80211_CMD_NEW_SCAN_RESULTS: scan notification (as a reply to
@@ -751,6 +755,7 @@
  *	QoS mapping is relevant for IP packets, it is only valid during an
  *	association. This is cleared on disassociation and AP restart.
  *
+<<<<<<< HEAD
  * @NL80211_CMD_ADD_TX_TS: Ask the kernel to add a traffic stream for the given
  *	%NL80211_ATTR_TSID and %NL80211_ATTR_MAC with %NL80211_ATTR_USER_PRIO
  *	and %NL80211_ATTR_ADMITTED_TIME parameters.
@@ -792,10 +797,13 @@
  *	as an event to indicate changes for devices with wiphy-specific regdom
  *	management.
  *
+=======
+>>>>>>> p9x
  * @NL80211_CMD_ABORT_SCAN: Stop an ongoing scan. Returns -ENOENT if a scan is
  *	not running. The driver indicates the status of the scan through
  *	cfg80211_scan_done().
  *
+<<<<<<< HEAD
  * @NL80211_CMD_START_NAN: Start NAN operation, identified by its
  *	%NL80211_ATTR_WDEV interface. This interface must have been previously
  *	created with %NL80211_CMD_NEW_INTERFACE. After it has been started, the
@@ -837,6 +845,8 @@
  *	does not result in a change for the current association. Currently,
  *	only the %NL80211_ATTR_IE data is used and updated with this command.
  *
+=======
+>>>>>>> p9x
  * @NL80211_CMD_MAX: highest used command number
  * @__NL80211_CMD_AFTER_LAST: internal use
  */
@@ -1008,6 +1018,7 @@ enum nl80211_commands {
 
 	NL80211_CMD_SET_QOS_MAP,
 
+<<<<<<< HEAD
 	NL80211_CMD_ADD_TX_TS,
 	NL80211_CMD_DEL_TX_TS,
 
@@ -1036,6 +1047,10 @@ enum nl80211_commands {
 
 	NL80211_CMD_UPDATE_CONNECT_PARAMS,
 
+=======
+	NL80211_CMD_ABORT_SCAN,
+
+>>>>>>> p9x
 	/* add new commands above here */
 
 	/* used to define NL80211_CMD_MAX below */
@@ -1677,10 +1692,17 @@ enum nl80211_commands {
  *	operation).
  * @NL80211_ATTR_CSA_IES: Nested set of attributes containing the IE information
  *	for the time while performing a channel switch.
+<<<<<<< HEAD
  * @NL80211_ATTR_CSA_C_OFF_BEACON: An array of offsets (u16) to the channel
  *	switch counters in the beacons tail (%NL80211_ATTR_BEACON_TAIL).
  * @NL80211_ATTR_CSA_C_OFF_PRESP: An array of offsets (u16) to the channel
  *	switch counters in the probe response (%NL80211_ATTR_PROBE_RESP).
+=======
+ * @NL80211_ATTR_CSA_C_OFF_BEACON: Offset of the channel switch counter
+ *	field in the beacons tail (%NL80211_ATTR_BEACON_TAIL).
+ * @NL80211_ATTR_CSA_C_OFF_PRESP: Offset of the channel switch counter
+ *	field in the probe response (%NL80211_ATTR_PROBE_RESP).
+>>>>>>> p9x
  *
  * @NL80211_ATTR_RXMGMT_FLAGS: flags for nl80211_send_mgmt(), u32.
  *	As specified in the &enum nl80211_rxmgmt_flags.
@@ -1697,6 +1719,7 @@ enum nl80211_commands {
  *	to react to radar events, e.g. initiate a channel switch or leave the
  *	IBSS network.
  *
+<<<<<<< HEAD
  * @NL80211_ATTR_SUPPORT_5_MHZ: A flag indicating that the device supports
  *	5 MHz channel bandwidth.
  * @NL80211_ATTR_SUPPORT_10_MHZ: A flag indicating that the device supports
@@ -1706,6 +1729,8 @@ enum nl80211_commands {
  *	Notification Element based on association request when used with
  *	%NL80211_CMD_NEW_STATION; u8 attribute.
  *
+=======
+>>>>>>> p9x
  * @NL80211_ATTR_VENDOR_ID: The vendor ID, either a 24-bit OUI or, if
  *	%NL80211_VENDOR_ID_IS_LINUX is set, a special Linux ID (not used yet)
  * @NL80211_ATTR_VENDOR_SUBCMD: vendor sub-command
@@ -1728,6 +1753,7 @@ enum nl80211_commands {
  *	advertise values that cannot always be met. In such cases, an attempt
  *	to add a new station entry with @NL80211_CMD_NEW_STATION may fail.
  *
+<<<<<<< HEAD
  * @NL80211_ATTR_CSA_C_OFFSETS_TX: An array of csa counter offsets (u16) which
  *	should be updated when the frame is transmitted.
  * @NL80211_ATTR_MAX_CSA_COUNTERS: U8 attribute used to advertise the maximum
@@ -1914,6 +1940,11 @@ enum nl80211_commands {
  *	better BSSs. The attribute value is a packed structure
  *	value as specified by &struct nl80211_bss_select_rssi_adjust.
  *
+=======
+ * @NL80211_ATTR_TDLS_PEER_CAPABILITY: flags for TDLS peer capabilities, u32.
+ *	As specified in the &enum nl80211_tdls_peer_capability.
+ *
+>>>>>>> p9x
  * @NL80211_ATTR_MAX: highest attribute number currently defined
  * @__NL80211_ATTR_AFTER_LAST: internal use
  */
@@ -2238,6 +2269,10 @@ enum nl80211_attrs {
 	NL80211_ATTR_VENDOR_ID,
 	NL80211_ATTR_VENDOR_SUBCMD,
 	NL80211_ATTR_VENDOR_DATA,
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 	NL80211_ATTR_VENDOR_EVENTS,
 
 	NL80211_ATTR_QOS_MAP,
@@ -2249,6 +2284,7 @@ enum nl80211_attrs {
 
 	NL80211_ATTR_TDLS_PEER_CAPABILITY,
 
+<<<<<<< HEAD
 	NL80211_ATTR_IFACE_SOCKET_OWNER,
 
 	NL80211_ATTR_CSA_C_OFFSETS_TX,
@@ -2322,6 +2358,8 @@ enum nl80211_attrs {
 	NL80211_ATTR_SCHED_SCAN_RELATIVE_RSSI,
 	NL80211_ATTR_SCHED_SCAN_RSSI_ADJUST,
 
+=======
+>>>>>>> p9x
 	/* add attributes here, update the policy in nl80211.c */
 
 	__NL80211_ATTR_AFTER_LAST,
@@ -2773,7 +2811,12 @@ enum nl80211_band_attr {
  *	currently defined
  * @__NL80211_FREQUENCY_ATTR_AFTER_LAST: internal use
  *
+<<<<<<< HEAD
  * See https://apps.fcc.gov/eas/comments/GetPublishedDocument.html?id=327&tn=528122
+=======
+ * See
+ * https://apps.fcc.gov/eas/comments/GetPublishedDocument.html?id=327&tn=528122
+>>>>>>> p9x
  * for more information on the FCC description of the relaxations allowed
  * by NL80211_FREQUENCY_ATTR_INDOOR_ONLY and
  * NL80211_FREQUENCY_ATTR_GO_CONCURRENT.
@@ -2875,6 +2918,34 @@ enum nl80211_reg_type {
 };
 
 /**
+ * enum nl80211_country_ie_pref - country IE processing preferences
+ *
+ * enumerates the different preferences a 802.11 card can advertize
+ * for parsing the country IEs. As per the current implementation
+ * country IEs are only used derive the apha2, the information
+ * for power settings that comes with the country IE is ignored
+ * and we use the power settings from regdb.
+ *
+ * @NL80211_COUNTRY_IE_FOLLOW_CORE - This is the default behaviour.
+ *	It allows the core to update channel flags according to the
+ *	ISO3166-alpha2 in the country IE. The applied power is -
+ *	MIN(power specified by custom domain, power obtained from regdb)
+ * @NL80211_COUNTRY_IE_FOLLOW_POWER - for devices that have a
+ *	preference that even though they may have programmed their own
+ *	custom power setting prior to wiphy registration, they want
+ *	to ensure their channel power settings are updated for this
+ *	connection with the power settings derived from alpha2 of the
+ *	country IE.
+ * @NL80211_COUNTRY_IE_IGNORE_CORE - for devices that have a preference to
+ *	to ignore all country IE information processed by the core.
+ */
+enum nl80211_country_ie_pref {
+	NL80211_COUNTRY_IE_FOLLOW_CORE,
+	NL80211_COUNTRY_IE_FOLLOW_POWER,
+	NL80211_COUNTRY_IE_IGNORE_CORE,
+};
+
+/**
  * enum nl80211_reg_rule_attr - regulatory rule attributes
  * @__NL80211_REG_RULE_ATTR_INVALID: attribute number 0 is reserved
  * @NL80211_ATTR_REG_RULE_FLAGS: a set of flags which specify additional
@@ -2930,6 +3001,7 @@ enum nl80211_reg_rule_attr {
  *	how this API was implemented in the past. Also, due to the same problem,
  *	the only way to create a matchset with only an RSSI filter (with this
  *	attribute) is if there's only a single matchset with the RSSI attribute.
+<<<<<<< HEAD
  * @NL80211_SCHED_SCAN_MATCH_ATTR_RELATIVE_RSSI: Flag indicating whether
  *	%NL80211_SCHED_SCAN_MATCH_ATTR_RSSI to be used as absolute RSSI or
  *	relative to current bss's RSSI.
@@ -2937,6 +3009,8 @@ enum nl80211_reg_rule_attr {
  *	BSS-es in the specified band is to be adjusted before doing
  *	RSSI-based BSS selection. The attribute value is a packed structure
  *	value as specified by &struct nl80211_bss_select_rssi_adjust.
+=======
+>>>>>>> p9x
  * @NL80211_SCHED_SCAN_MATCH_ATTR_MAX: highest scheduled scan filter
  *	attribute number currently defined
  * @__NL80211_SCHED_SCAN_MATCH_ATTR_AFTER_LAST: internal use
@@ -3428,6 +3502,7 @@ enum nl80211_chan_width {
 	NL80211_CHAN_WIDTH_160,
 	NL80211_CHAN_WIDTH_5,
 	NL80211_CHAN_WIDTH_10,
+<<<<<<< HEAD
 };
 
 /**
@@ -3443,6 +3518,8 @@ enum nl80211_bss_scan_width {
 	NL80211_BSS_CHAN_WIDTH_20,
 	NL80211_BSS_CHAN_WIDTH_10,
 	NL80211_BSS_CHAN_WIDTH_5,
+=======
+>>>>>>> p9x
 };
 
 /**
@@ -3481,9 +3558,12 @@ enum nl80211_bss_scan_width {
  *	(not present if no beacon frame has been received yet)
  * @NL80211_BSS_PRESP_DATA: the data in @NL80211_BSS_INFORMATION_ELEMENTS and
  *	@NL80211_BSS_TSF is known to be from a probe response (flag attribute)
+<<<<<<< HEAD
  * @NL80211_BSS_LAST_SEEN_BOOTTIME: CLOCK_BOOTTIME timestamp when this entry
  *	was last updated by a received frame. The value is expected to be
  *	accurate to about 10ms. (u64, nanoseconds)
+=======
+>>>>>>> p9x
  * @__NL80211_BSS_AFTER_LAST: internal
  * @NL80211_BSS_MAX: highest BSS attribute
  */
@@ -3503,7 +3583,10 @@ enum nl80211_bss {
 	NL80211_BSS_CHAN_WIDTH,
 	NL80211_BSS_BEACON_TSF,
 	NL80211_BSS_PRESP_DATA,
+<<<<<<< HEAD
 	NL80211_BSS_LAST_SEEN_BOOTTIME,
+=======
+>>>>>>> p9x
 
 	/* keep last */
 	__NL80211_BSS_AFTER_LAST,
@@ -4366,6 +4449,7 @@ enum nl80211_ap_sme_features {
  *	Peering Management entity which may be implemented by registering for
  *	beacons or NL80211_CMD_NEW_PEER_CANDIDATE events. The mesh beacon is
  *	still generated by the driver.
+<<<<<<< HEAD
  * @NL80211_FEATURE_ACTIVE_MONITOR: This driver supports an active monitor
  *	interface. An active monitor interface behaves like a normal monitor
  *	interface, but gets added to the driver. It ensures that incoming
@@ -4405,6 +4489,11 @@ enum nl80211_ap_sme_features {
  *	random MAC address for every scan iteration during "net detect", i.e.
  *	scan in unassociated WoWLAN, the %NL80211_SCAN_FLAG_RANDOM_ADDR may
  *	be set for scheduled scan and the MAC address mask/value will be used.
+=======
+ * @NL80211_FEATURE_AP_MODE_CHAN_WIDTH_CHANGE: This driver supports dynamic
+ *	channel bandwidth change (e.g., HT 20 <-> 40 MHz channel) during the
+ *	lifetime of a BSS.
+>>>>>>> p9x
  */
 enum nl80211_feature_flags {
 	NL80211_FEATURE_SK_TX_STATUS			= 1 << 0,
@@ -4424,6 +4513,7 @@ enum nl80211_feature_flags {
 	NL80211_FEATURE_ADVERTISE_CHAN_LIMITS		= 1 << 14,
 	NL80211_FEATURE_FULL_AP_CLIENT_STATE		= 1 << 15,
 	NL80211_FEATURE_USERSPACE_MPM			= 1 << 16,
+<<<<<<< HEAD
 	NL80211_FEATURE_ACTIVE_MONITOR			= 1 << 17,
 	NL80211_FEATURE_AP_MODE_CHAN_WIDTH_CHANGE	= 1 << 18,
 	NL80211_FEATURE_DS_PARAM_SET_IE_IN_PROBES	= 1 << 19,
@@ -4499,6 +4589,9 @@ enum nl80211_ext_feature_index {
 	/* add new features before the definition below */
 	NUM_NL80211_EXT_FEATURES,
 	MAX_NL80211_EXT_FEATURES = NUM_NL80211_EXT_FEATURES - 1
+=======
+	NL80211_FEATURE_AP_MODE_CHAN_WIDTH_CHANGE	= 1 << 18,
+>>>>>>> p9x
 };
 
 /**
@@ -4673,6 +4766,7 @@ enum nl80211_crit_proto_id {
 /* maximum duration for critical protocol measures */
 #define NL80211_CRIT_PROTO_MAX_DURATION		5000 /* msec */
 
+<<<<<<< HEAD
 /**
  * enum nl80211_rxmgmt_flags - flags for received management frame.
  *
@@ -4684,6 +4778,8 @@ enum nl80211_rxmgmt_flags {
 	NL80211_RXMGMT_FLAG_ANSWERED = 1 << 0,
 };
 
+=======
+>>>>>>> p9x
 /*
  * If this flag is unset, the lower 24 bits are an OUI, if set
  * a Linux nl80211 vendor ID is used (no such IDs are allocated
@@ -4720,6 +4816,7 @@ enum nl80211_tdls_peer_capability {
 	NL80211_TDLS_PEER_WMM = 1<<2,
 };
 
+<<<<<<< HEAD
 /**
  * enum nl80211_sched_scan_plan - scanning plan for scheduled scan
  * @__NL80211_SCHED_SCAN_PLAN_INVALID: attribute number 0 is reserved
@@ -4788,4 +4885,6 @@ enum nl80211_bss_select_attr {
 	NL80211_BSS_SELECT_ATTR_MAX = __NL80211_BSS_SELECT_ATTR_AFTER_LAST - 1
 };
 
+=======
+>>>>>>> p9x
 #endif /* __LINUX_NL80211_H */

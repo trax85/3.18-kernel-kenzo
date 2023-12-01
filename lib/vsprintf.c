@@ -26,7 +26,10 @@
 #include <linux/math64.h>
 #include <linux/uaccess.h>
 #include <linux/ioport.h>
+<<<<<<< HEAD
 #include <linux/dcache.h>
+=======
+>>>>>>> p9x
 #include <linux/cred.h>
 #include <net/addrconf.h>
 
@@ -1812,6 +1815,23 @@ int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 			++str;
 			break;
 
+<<<<<<< HEAD
+=======
+		case FORMAT_TYPE_NRCHARS: {
+			/*
+			 * Since %n poses a greater security risk than
+			 * utility, ignore %n and skip its argument.
+			 */
+			void *skip_arg;
+
+			WARN_ONCE(1, "Please remove ignored %%n in '%s'\n",
+					old_fmt);
+
+			skip_arg = va_arg(args, void *);
+			break;
+		}
+
+>>>>>>> p9x
 		default:
 			switch (spec.type) {
 			case FORMAT_TYPE_LONG_LONG:

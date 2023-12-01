@@ -323,7 +323,13 @@ gmbus_xfer_read_chunk(struct drm_i915_private *dev_priv,
 		      unsigned short addr, u8 *buf, unsigned int len,
 		      u32 gmbus1_index)
 {
+<<<<<<< HEAD
 	I915_WRITE(GMBUS1,
+=======
+	int reg_offset = dev_priv->gpio_mmio_base;
+
+	I915_WRITE(GMBUS1 + reg_offset,
+>>>>>>> p9x
 		   gmbus1_index |
 		   GMBUS_CYCLE_WAIT |
 		   (len << GMBUS_BYTE_COUNT_SHIFT) |
@@ -351,6 +357,7 @@ gmbus_xfer_read_chunk(struct drm_i915_private *dev_priv,
 static int
 gmbus_xfer_read(struct drm_i915_private *dev_priv, struct i2c_msg *msg,
 		u32 gmbus1_index)
+<<<<<<< HEAD
 {
 	u8 *buf = msg->buf;
 	unsigned int rx_size = msg->len;
@@ -376,6 +383,34 @@ static int
 gmbus_xfer_write_chunk(struct drm_i915_private *dev_priv,
 		       unsigned short addr, u8 *buf, unsigned int len)
 {
+=======
+{
+	u8 *buf = msg->buf;
+	unsigned int rx_size = msg->len;
+	unsigned int len;
+	int ret;
+
+	do {
+		len = min(rx_size, GMBUS_BYTE_COUNT_MAX);
+
+		ret = gmbus_xfer_read_chunk(dev_priv, msg->addr,
+					    buf, len, gmbus1_index);
+		if (ret)
+			return ret;
+
+		rx_size -= len;
+		buf += len;
+	} while (rx_size != 0);
+
+	return 0;
+}
+
+static int
+gmbus_xfer_write_chunk(struct drm_i915_private *dev_priv,
+		       unsigned short addr, u8 *buf, unsigned int len)
+{
+	int reg_offset = dev_priv->gpio_mmio_base;
+>>>>>>> p9x
 	unsigned int chunk_size = len;
 	u32 val, loop;
 
@@ -482,7 +517,11 @@ gmbus_xfer(struct i2c_adapter *adapter,
 					       struct intel_gmbus,
 					       adapter);
 	struct drm_i915_private *dev_priv = bus->dev_priv;
+<<<<<<< HEAD
 	int i = 0, inc, try = 0;
+=======
+	int i = 0, inc, try = 0, reg_offset;
+>>>>>>> p9x
 	int ret = 0;
 
 	intel_display_power_get(dev_priv, POWER_DOMAIN_GMBUS);
@@ -496,6 +535,12 @@ gmbus_xfer(struct i2c_adapter *adapter,
 retry:
 	I915_WRITE(GMBUS0, bus->reg0);
 
+<<<<<<< HEAD
+=======
+retry:
+	I915_WRITE(GMBUS0 + reg_offset, bus->reg0);
+
+>>>>>>> p9x
 	for (; i < num; i += inc) {
 		inc = 1;
 		if (gmbus_is_index_read(msgs, i, num)) {

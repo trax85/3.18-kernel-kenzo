@@ -39,6 +39,7 @@ do {									\
 	mb();								\
 } while (0)
 
+<<<<<<< HEAD
 /* GPR Registers */
 #define TPDM_GPR_CR(n)		(0x0 + (n * 4))
 
@@ -90,6 +91,8 @@ do {									\
 #define TPDM_DSB_EDCMR(n)	(0x848 + (n * 4))
 #define TPDM_DSB_CA_SELECT(n)	(0x86c + (n * 4))
 
+=======
+>>>>>>> p9x
 /* CMB Subunit Registers */
 #define TPDM_CMB_CR		(0xA00)
 #define TPDM_CMB_TIER		(0xA04)
@@ -100,6 +103,7 @@ do {									\
 
 /* TPDM Specific Registers */
 #define TPDM_ITATBCNTRL		(0xEF0)
+<<<<<<< HEAD
 #define TPDM_CLK_CTRL		(0x220)
 
 #define TPDM_DATASETS		32
@@ -122,6 +126,12 @@ do {									\
 #define NUM_OF_BITS		32
 #define TPDM_GPR_REGS_MAX	160
 
+=======
+
+#define TPDM_DATASETS		32
+#define TPDM_CMB_PATT_CMP	2
+
+>>>>>>> p9x
 enum tpdm_dataset {
 	TPDM_DS_IMPLDEF,
 	TPDM_DS_DSB,
@@ -131,6 +141,7 @@ enum tpdm_dataset {
 	TPDM_DS_GPR,
 };
 
+<<<<<<< HEAD
 enum tpdm_mode {
 	TPDM_MODE_ATB,
 	TPDM_MODE_APB,
@@ -142,6 +153,8 @@ enum tpdm_support_type {
 	TPDM_SUPPORT_TYPE_NO,
 };
 
+=======
+>>>>>>> p9x
 enum tpdm_cmb_mode {
 	TPDM_CMB_MODE_CONTINUOUS,
 	TPDM_CMB_MODE_TRACE_ON_CHANGE,
@@ -162,6 +175,7 @@ module_param_named(
 	boot_enable, boot_enable, int, S_IRUGO
 );
 
+<<<<<<< HEAD
 struct gpr_dataset {
 	DECLARE_BITMAP(gpr_dirty, TPDM_GPR_REGS_MAX);
 	uint32_t		gp_regs[TPDM_GPR_REGS_MAX];
@@ -207,6 +221,8 @@ struct dsb_dataset {
 	uint32_t		select_val[TPDM_DSB_MAX_SELECT];
 };
 
+=======
+>>>>>>> p9x
 struct cmb_dataset {
 	enum tpdm_cmb_mode	mode;
 	uint32_t		patt_val[TPDM_CMB_PATT_CMP];
@@ -223,6 +239,7 @@ struct tpdm_drvdata {
 	struct coresight_device	*csdev;
 	struct clk		*clk;
 	struct mutex		lock;
+<<<<<<< HEAD
 	bool			enable;
 	bool			clk_enable;
 	DECLARE_BITMAP(datasets, TPDM_DATASETS);
@@ -433,6 +450,12 @@ static void __tpdm_enable_dsb(struct tpdm_drvdata *drvdata)
 	tpdm_writel(drvdata, val, TPDM_DSB_CR);
 }
 
+=======
+	DECLARE_BITMAP(datasets, TPDM_DATASETS);
+	struct cmb_dataset	*cmb;
+};
+
+>>>>>>> p9x
 static void __tpdm_enable_cmb(struct tpdm_drvdata *drvdata)
 {
 	uint32_t val;
@@ -483,6 +506,7 @@ static void __tpdm_enable(struct tpdm_drvdata *drvdata)
 {
 	TPDM_UNLOCK(drvdata);
 
+<<<<<<< HEAD
 	if (drvdata->clk_enable)
 		tpdm_writel(drvdata, 0x1, TPDM_CLK_CTRL);
 
@@ -499,6 +523,9 @@ static void __tpdm_enable(struct tpdm_drvdata *drvdata)
 		__tpdm_enable_dsb(drvdata);
 
 	if (test_bit(TPDM_DS_CMB, drvdata->enable_ds))
+=======
+	if (test_bit(TPDM_DS_CMB, drvdata->datasets))
+>>>>>>> p9x
 		__tpdm_enable_cmb(drvdata);
 
 	TPDM_LOCK(drvdata);
@@ -515,13 +542,17 @@ static int tpdm_enable(struct coresight_device *csdev)
 
 	mutex_lock(&drvdata->lock);
 	__tpdm_enable(drvdata);
+<<<<<<< HEAD
 	drvdata->enable = true;
+=======
+>>>>>>> p9x
 	mutex_unlock(&drvdata->lock);
 
 	dev_info(drvdata->dev, "TPDM tracing enabled\n");
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __tpdm_disable_bc(struct tpdm_drvdata *drvdata)
 {
 	uint32_t config;
@@ -549,19 +580,30 @@ static void __tpdm_disable_dsb(struct tpdm_drvdata *drvdata)
 	tpdm_writel(drvdata, config, TPDM_DSB_CR);
 }
 
+=======
+>>>>>>> p9x
 static void __tpdm_disable_cmb(struct tpdm_drvdata *drvdata)
 {
 	uint32_t config;
 
+<<<<<<< HEAD
 	config = tpdm_readl(drvdata, TPDM_CMB_CR);
 	config = config & ~BIT(0);
 	tpdm_writel(drvdata, config, TPDM_CMB_CR);
+=======
+	if (test_bit(TPDM_DS_CMB, drvdata->datasets)) {
+		config = tpdm_readl(drvdata, TPDM_CMB_CR);
+		config = config & ~BIT(0);
+		tpdm_writel(drvdata, config, TPDM_CMB_CR);
+	}
+>>>>>>> p9x
 }
 
 static void __tpdm_disable(struct tpdm_drvdata *drvdata)
 {
 	TPDM_UNLOCK(drvdata);
 
+<<<<<<< HEAD
 	if (test_bit(TPDM_DS_BC, drvdata->enable_ds))
 		__tpdm_disable_bc(drvdata);
 
@@ -577,6 +619,11 @@ static void __tpdm_disable(struct tpdm_drvdata *drvdata)
 	if (drvdata->clk_enable)
 		tpdm_writel(drvdata, 0x0, TPDM_CLK_CTRL);
 
+=======
+	if (test_bit(TPDM_DS_CMB, drvdata->datasets))
+		__tpdm_disable_cmb(drvdata);
+
+>>>>>>> p9x
 	TPDM_LOCK(drvdata);
 }
 
@@ -586,7 +633,10 @@ static void tpdm_disable(struct coresight_device *csdev)
 
 	mutex_lock(&drvdata->lock);
 	__tpdm_disable(drvdata);
+<<<<<<< HEAD
 	drvdata->enable = false;
+=======
+>>>>>>> p9x
 	mutex_unlock(&drvdata->lock);
 
 	clk_disable_unprepare(drvdata->clk);
@@ -635,6 +685,7 @@ static ssize_t tpdm_show_available_datasets(struct device *dev,
 static DEVICE_ATTR(available_datasets, S_IRUGO, tpdm_show_available_datasets,
 		   NULL);
 
+<<<<<<< HEAD
 static ssize_t tpdm_show_enable_datasets(struct device *dev,
 					 struct device_attribute *attr,
 					 char *buf)
@@ -2825,6 +2876,8 @@ static ssize_t tpdm_store_dsb_select_val(struct device *dev,
 static DEVICE_ATTR(dsb_select_val, S_IRUGO | S_IWUSR,
 		   tpdm_show_dsb_select_val, tpdm_store_dsb_select_val);
 
+=======
+>>>>>>> p9x
 static ssize_t tpdm_show_cmb_available_modes(struct device *dev,
 					     struct device_attribute *attr,
 					     char *buf)
@@ -3238,6 +3291,7 @@ static ssize_t tpdm_store_cmb_trig_ts(struct device *dev,
 static DEVICE_ATTR(cmb_trig_ts, S_IRUGO | S_IWUSR,
 		   tpdm_show_cmb_trig_ts, tpdm_store_cmb_trig_ts);
 
+<<<<<<< HEAD
 static struct attribute *tpdm_bc_attrs[] = {
 	&dev_attr_bc_capture_mode.attr,
 	&dev_attr_bc_retrieval_mode.attr,
@@ -3298,6 +3352,8 @@ static struct attribute *tpdm_dsb_attrs[] = {
 	NULL,
 };
 
+=======
+>>>>>>> p9x
 static struct attribute *tpdm_cmb_attrs[] = {
 	&dev_attr_cmb_available_modes.attr,
 	&dev_attr_cmb_mode.attr,
@@ -3314,6 +3370,7 @@ static struct attribute *tpdm_cmb_attrs[] = {
 	NULL,
 };
 
+<<<<<<< HEAD
 static struct attribute_group tpdm_bc_attr_grp = {
 	.attrs = tpdm_bc_attrs,
 };
@@ -3326,14 +3383,19 @@ static struct attribute_group tpdm_dsb_attr_grp = {
 	.attrs = tpdm_dsb_attrs,
 };
 
+=======
+>>>>>>> p9x
 static struct attribute_group tpdm_cmb_attr_grp = {
 	.attrs = tpdm_cmb_attrs,
 };
 
 static struct attribute *tpdm_attrs[] = {
 	&dev_attr_available_datasets.attr,
+<<<<<<< HEAD
 	&dev_attr_enable_datasets.attr,
 	&dev_attr_gp_regs.attr,
+=======
+>>>>>>> p9x
 	NULL,
 };
 
@@ -3342,15 +3404,19 @@ static struct attribute_group tpdm_attr_grp = {
 };
 static const struct attribute_group *tpdm_attr_grps[] = {
 	&tpdm_attr_grp,
+<<<<<<< HEAD
 	&tpdm_bc_attr_grp,
 	&tpdm_tc_attr_grp,
 	&tpdm_dsb_attr_grp,
+=======
+>>>>>>> p9x
 	&tpdm_cmb_attr_grp,
 	NULL,
 };
 
 static int tpdm_datasets_alloc(struct tpdm_drvdata *drvdata)
 {
+<<<<<<< HEAD
 	if (test_bit(TPDM_DS_GPR, drvdata->datasets)) {
 		drvdata->gpr = devm_kzalloc(drvdata->dev, sizeof(*drvdata->gpr),
 					    GFP_KERNEL);
@@ -3375,6 +3441,8 @@ static int tpdm_datasets_alloc(struct tpdm_drvdata *drvdata)
 		if (!drvdata->dsb)
 			return -ENOMEM;
 	}
+=======
+>>>>>>> p9x
 	if (test_bit(TPDM_DS_CMB, drvdata->datasets)) {
 		drvdata->cmb = devm_kzalloc(drvdata->dev, sizeof(*drvdata->cmb),
 					    GFP_KERNEL);
@@ -3386,6 +3454,7 @@ static int tpdm_datasets_alloc(struct tpdm_drvdata *drvdata)
 
 static void tpdm_init_default_data(struct tpdm_drvdata *drvdata)
 {
+<<<<<<< HEAD
 	if (test_bit(TPDM_DS_BC, drvdata->datasets))
 		drvdata->bc->retrieval_mode = TPDM_MODE_ATB;
 
@@ -3395,6 +3464,8 @@ static void tpdm_init_default_data(struct tpdm_drvdata *drvdata)
 	if (test_bit(TPDM_DS_DSB, drvdata->datasets))
 		drvdata->dsb->trig_ts = true;
 
+=======
+>>>>>>> p9x
 	if (test_bit(TPDM_DS_CMB, drvdata->datasets))
 		drvdata->cmb->trig_ts = true;
 }
@@ -3402,7 +3473,11 @@ static void tpdm_init_default_data(struct tpdm_drvdata *drvdata)
 static int tpdm_probe(struct platform_device *pdev)
 {
 	int ret, i;
+<<<<<<< HEAD
 	uint32_t pidr, devid;
+=======
+	uint32_t pidr;
+>>>>>>> p9x
 	struct device *dev = &pdev->dev;
 	struct coresight_platform_data *pdata;
 	struct tpdm_drvdata *drvdata;
@@ -3431,9 +3506,12 @@ static int tpdm_probe(struct platform_device *pdev)
 	if (!drvdata->base)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	drvdata->clk_enable = of_property_read_bool(pdev->dev.of_node,
 						    "qcom,clk-enable");
 
+=======
+>>>>>>> p9x
 	mutex_init(&drvdata->lock);
 
 	drvdata->clk = devm_clk_get(dev, "core_clk");
@@ -3449,6 +3527,7 @@ static int tpdm_probe(struct platform_device *pdev)
 		return ret;
 
 	pidr = tpdm_readl(drvdata, CORESIGHT_PERIPHIDR0);
+<<<<<<< HEAD
 	for (i = 0; i < TPDM_DATASETS; i++) {
 		if (pidr & BIT(i)) {
 			__set_bit(i, drvdata->datasets);
@@ -3471,6 +3550,16 @@ static int tpdm_probe(struct platform_device *pdev)
 
 	clk_disable_unprepare(drvdata->clk);
 
+=======
+
+	clk_disable_unprepare(drvdata->clk);
+
+	for (i = 0; i < TPDM_DATASETS; i++) {
+		if (pidr & BIT(i))
+			__set_bit(i, drvdata->datasets);
+	}
+
+>>>>>>> p9x
 	ret = tpdm_datasets_alloc(drvdata);
 	if (ret)
 		return ret;
@@ -3491,7 +3580,11 @@ static int tpdm_probe(struct platform_device *pdev)
 	if (IS_ERR(drvdata->csdev))
 		return PTR_ERR(drvdata->csdev);
 
+<<<<<<< HEAD
 	dev_dbg(drvdata->dev, "TPDM initialized\n");
+=======
+	dev_info(drvdata->dev, "TPDM initialized\n");
+>>>>>>> p9x
 
 	if (boot_enable)
 		coresight_enable(drvdata->csdev);

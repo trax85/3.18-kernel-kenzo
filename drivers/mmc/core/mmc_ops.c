@@ -465,7 +465,11 @@ static inline void mmc_prepare_switch(struct mmc_command *cmd, u8 index,
 		  (value << 8) |
 		  set;
 	cmd->flags = MMC_CMD_AC;
+<<<<<<< HEAD
 	cmd->busy_timeout = tout_ms;
+=======
+	cmd->cmd_timeout_ms = tout_ms;
+>>>>>>> p9x
 	if (use_busy_signal)
 		cmd->flags |= MMC_RSP_SPI_R1B | MMC_RSP_R1B;
 	else
@@ -490,14 +494,23 @@ EXPORT_SYMBOL(__mmc_switch_cmdq_mode);
  *	@timeout_ms: timeout (ms) for operation performed by register write,
  *                   timeout of zero implies maximum possible timeout
  *	@use_busy_signal: use the busy signal as response type
+<<<<<<< HEAD
  *	@send_status: send status cmd to poll for busy
  *	@ignore_crc: ignore CRC errors when sending status cmd to poll for busy
+=======
+ *	@ignore_timeout: set this flag only for commands which can be HPIed
+>>>>>>> p9x
  *
  *	Modifies the EXT_CSD register for selected card.
  */
 int __mmc_switch(struct mmc_card *card, u8 set, u8 index, u8 value,
+<<<<<<< HEAD
 		unsigned int timeout_ms, bool use_busy_signal, bool send_status,
 		bool ignore_crc)
+=======
+		 unsigned int timeout_ms, bool use_busy_signal,
+		 bool ignore_timeout)
+>>>>>>> p9x
 {
 	struct mmc_host *host = card->host;
 	int err;
@@ -517,6 +530,7 @@ int __mmc_switch(struct mmc_card *card, u8 set, u8 index, u8 value,
 		(timeout_ms > host->max_busy_timeout))
 		use_r1b_resp = false;
 
+<<<<<<< HEAD
 	mmc_prepare_switch(&cmd, index, value, set, timeout_ms,
 			   use_r1b_resp);
 	if (use_r1b_resp) {
@@ -529,13 +543,24 @@ int __mmc_switch(struct mmc_card *card, u8 set, u8 index, u8 value,
 	} else {
 		cmd.flags |= MMC_RSP_SPI_R1 | MMC_RSP_R1;
 	}
+=======
+>>>>>>> p9x
 
 	if (index == EXT_CSD_SANITIZE_START)
 		cmd.sanitize_busy = true;
 	else if (index == EXT_CSD_BKOPS_START)
 		cmd.bkops_busy = true;
 
+<<<<<<< HEAD
 	err = mmc_wait_for_cmd(host, &cmd, MMC_CMD_RETRIES);
+=======
+	mmc_prepare_switch(&cmd, index, value, set, timeout_ms,
+			   use_busy_signal);
+	cmd.cmd_timeout_ms = timeout_ms;
+	cmd.ignore_timeout = ignore_timeout;
+
+	err = mmc_wait_for_cmd(card->host, &cmd, MMC_CMD_RETRIES);
+>>>>>>> p9x
 	if (err)
 		return err;
 
@@ -600,11 +625,51 @@ EXPORT_SYMBOL_GPL(__mmc_switch);
 int mmc_switch(struct mmc_card *card, u8 set, u8 index, u8 value,
 		unsigned int timeout_ms)
 {
+<<<<<<< HEAD
 	return __mmc_switch(card, set, index, value, timeout_ms, true, true,
 				false);
 }
 EXPORT_SYMBOL_GPL(mmc_switch);
 
+=======
+	return __mmc_switch(card, set, index, value, timeout_ms, true, false);
+}
+EXPORT_SYMBOL_GPL(mmc_switch);
+
+int mmc_switch_ignore_timeout(struct mmc_card *card, u8 set, u8 index, u8 value,
+		unsigned int timeout_ms)
+{
+	return __mmc_switch(card, set, index, value, timeout_ms, true, true);
+}
+EXPORT_SYMBOL(mmc_switch_ignore_timeout);
+
+int mmc_send_status(struct mmc_card *card, u32 *status)
+{
+	int err;
+	struct mmc_command cmd = {0};
+
+	BUG_ON(!card);
+	BUG_ON(!card->host);
+
+	cmd.opcode = MMC_SEND_STATUS;
+	if (!mmc_host_is_spi(card->host))
+		cmd.arg = card->rca << 16;
+	cmd.flags = MMC_RSP_SPI_R2 | MMC_RSP_R1 | MMC_CMD_AC;
+
+	err = mmc_wait_for_cmd(card->host, &cmd, MMC_CMD_RETRIES);
+	if (err)
+		return err;
+
+	/* NOTE: callers are required to understand the difference
+	 * between "native" and SPI format status words!
+	 */
+	if (status)
+		*status = cmd.resp[0];
+
+	return 0;
+}
+
+>>>>>>> p9x
 static int
 mmc_send_bus_test(struct mmc_card *card, struct mmc_host *host, u8 opcode,
 		  u8 len)
@@ -663,7 +728,10 @@ mmc_send_bus_test(struct mmc_card *card, struct mmc_host *host, u8 opcode,
 	data.sg_len = 1;
 	data.timeout_ns = 1000000;
 	data.timeout_clks = 0;
+<<<<<<< HEAD
 	mmc_set_data_timeout(&data, card);
+=======
+>>>>>>> p9x
 
 	sg_init_one(&sg, data_buf, len);
 	mmc_wait_for_req(host, &mrq);
@@ -714,8 +782,13 @@ int mmc_send_hpi_cmd(struct mmc_card *card, u32 *status)
 	int err;
 
 	if (!card->ext_csd.hpi_en) {
+<<<<<<< HEAD
 		pr_warn("%s: Card didn't support HPI command\n",
 			mmc_hostname(card->host));
+=======
+		pr_warning("%s: Card didn't support HPI command\n",
+			   mmc_hostname(card->host));
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
@@ -741,11 +814,14 @@ int mmc_send_hpi_cmd(struct mmc_card *card, u32 *status)
 	return 0;
 }
 
+<<<<<<< HEAD
 int mmc_can_ext_csd(struct mmc_card *card)
 {
 	return (card && card->csd.mmca_vsn > CSD_SPEC_VER_3);
 }
 
+=======
+>>>>>>> p9x
 int mmc_discard_queue(struct mmc_host *host, u32 tasks)
 {
 	struct mmc_command cmd = {0};

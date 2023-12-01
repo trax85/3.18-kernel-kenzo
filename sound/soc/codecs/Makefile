@@ -113,6 +113,7 @@ snd-soc-twl4030-objs := twl4030.o
 snd-soc-twl6040-objs := twl6040.o
 snd-soc-uda134x-objs := uda134x.o
 snd-soc-uda1380-objs := uda1380.o
+<<<<<<< HEAD
 snd-soc-wcd9306-objs := wcd9306.o wcd9306-tables.o
 snd-soc-wcd9320-objs := wcd9320.o wcd9320-tables.o
 snd-soc-wcd9330-objs := wcd9330.o wcd9330-tables.o
@@ -129,6 +130,29 @@ snd-soc-msm8952-wcd-objs := msm8x16-wcd.o msm8x16-wcd-tables.o
 snd-soc-msm8909-cdc-objs := msm-digital-cdc.o msm-digital-cdc-regmap.o
 snd-soc-wsa881x-analog-objs := wsa881x-analog.o wsa881x-tables-analog.o
 snd-soc-wsa881x-analog-objs += wsa881x-regmap-analog.o wsa881x-irq.o
+=======
+snd-soc-wcd9310-objs := wcd9310.o wcd9310-tables.o
+snd-soc-wcd9320-objs := wcd9320.o wcd9320-tables.o
+snd-soc-wcd9306-objs := wcd9306.o wcd9306-tables.o wcdcal-hwdep.o
+snd-soc-wcd9330-objs := wcd9330.o wcd9330-tables.o wcdcal-hwdep.o
+snd-soc-wcd9335-objs := wcd9335.o wcd9xxx-common-v2.o wcd9xxx-resmgr-v2.o
+snd-soc-wcd9xxx-objs := wcd9xxx-resmgr.o wcd9xxx-mbhc.o wcd9xxx-common.o
+snd-soc-msm8x10-wcd-objs := msm8x10-wcd.o msm8x10-wcd-tables.o wcd9xxx-common.o
+snd-soc-msm8x16-wcd-objs := msm8x16-wcd.o msm8x16-wcd-tables.o
+snd-soc-msm8x16-wcd-objs += wcd9xxx-common.o wcd9xxx-resmgr.o wcd9xxx-mbhc.o
+snd-soc-msm8x16-wcd-objs += wcd9306.o wcd9306-tables.o
+snd-soc-msm8x16-wcd-objs += wcd9330.o wcd9330-tables.o wcdcal-hwdep.o
+snd-soc-msm8x16-wcd-objs += wcd9335.o wcd9xxx-common-v2.o wcd9xxx-resmgr-v2.o
+audio-ext-clock-objs := audio-ext-clk.o
+snd-soc-wcd-cpe-objs := wcd_cpe_services.o wcd_cpe_core.o
+snd-soc-msm8909-wcd-objs := msm8x16-wcd.o msm8x16-wcd-tables.o
+snd-soc-msm8909-wcd-objs += wcd9xxx-common.o wcd9xxx-resmgr.o wcd9xxx-mbhc.o
+snd-soc-msm8909-wcd-objs += wcd9306.o wcd9306-tables.o wcdcal-hwdep.o
+snd-soc-wsa881x-analog-objs := wsa881x-analog.o wsa881x-tables-analog.o
+snd-soc-wsa881x-analog-objs += wsa881x-regmap-analog.o wsa881x-irq.o
+snd-soc-wsa881x-objs := wsa881x.o wsa881x-tables.o wsa881x-regmap.o wsa881x-temp-sensor.o
+snd-soc-wcd-mbhc-objs := wcd-mbhc-v2.o
+>>>>>>> p9x
 snd-soc-wl1273-objs := wl1273.o
 snd-soc-wm-adsp-objs := wm_adsp.o
 snd-soc-wm0010-objs := wm0010.o
@@ -185,7 +209,10 @@ snd-soc-wm-hubs-objs := wm_hubs.o
 
 snd-soc-msm-stub-objs := msm_stub.o
 obj-$(CONFIG_SND_SOC_MSM_HDMI_CODEC_RX) := msm_hdmi_codec_rx.o
+<<<<<<< HEAD
 obj-$(CONFIG_SND_SOC_MSM_HDMI_DBA_CODEC_RX) := msm_hdmi_dba_codec_rx.o
+=======
+>>>>>>> p9x
 
 # Amp
 snd-soc-max9877-objs := max9877.o
@@ -307,6 +334,7 @@ obj-$(CONFIG_SND_SOC_TWL4030)	+= snd-soc-twl4030.o
 obj-$(CONFIG_SND_SOC_TWL6040)	+= snd-soc-twl6040.o
 obj-$(CONFIG_SND_SOC_UDA134X)	+= snd-soc-uda134x.o
 obj-$(CONFIG_SND_SOC_UDA1380)	+= snd-soc-uda1380.o
+<<<<<<< HEAD
 obj-$(CONFIG_SND_SOC_WCD9306)	+= snd-soc-wcd9306.o
 obj-$(CONFIG_SND_SOC_WCD9320)	+= snd-soc-wcd9320.o
 obj-$(CONFIG_SND_SOC_WCD9330)	+= snd-soc-wcd9330.o
@@ -322,6 +350,23 @@ obj-$(CONFIG_SND_SOC_WCD_MBHC)  += snd-soc-wcd-mbhc.o
 obj-$(CONFIG_SND_SOC_WSA881X)	+= snd-soc-wsa881x.o
 obj-$(CONFIG_SND_SOC_WSA881X_ANALOG)	+= snd-soc-wsa881x-analog.o
 obj-$(CONFIG_SND_SOC_WSA881X_SENSORS) += snd-soc-wsa881x-sensor.o
+=======
+obj-$(CONFIG_SND_SOC_WCD9310)	+= snd-soc-wcd9310.o
+obj-$(CONFIG_SND_SOC_WCD9320)	+= snd-soc-wcd9320.o
+obj-$(CONFIG_SND_SOC_WCD9306)	+= snd-soc-wcd9306.o
+obj-$(CONFIG_SND_SOC_WCD9330)	+= snd-soc-wcd9330.o
+obj-$(CONFIG_SND_SOC_WCD9335)	+= snd-soc-wcd9335.o
+obj-$(CONFIG_SND_SOC_MSM8X10_WCD)	+= snd-soc-msm8x10-wcd.o wcd9xxx-resmgr.o wcd9xxx-mbhc.o
+obj-$(CONFIG_SND_SOC_WCD9335)	+= snd-soc-wcd9335.o
+obj-$(CONFIG_AUDIO_EXT_CLK)	+= audio-ext-clock.o
+obj-$(CONFIG_SND_SOC_WCD9XXX)   += snd-soc-wcd9xxx.o
+obj-$(CONFIG_SND_SOC_MSM8X16_WCD)	+= snd-soc-msm8x16-wcd.o msm8916-wcd-irq.o
+obj-$(CONFIG_SND_SOC_WCD_MBHC)  += snd-soc-wcd-mbhc.o
+obj-$(CONFIG_SND_SOC_WCD_CPE) += snd-soc-wcd-cpe.o
+obj-$(CONFIG_SND_SOC_MSM8909_WCD)	+= snd-soc-msm8909-wcd.o msm8916-wcd-irq.o
+obj-$(CONFIG_SND_SOC_WSA881X)	+= snd-soc-wsa881x-analog.o
+obj-$(CONFIG_SND_SOC_WSA881X)	+= snd-soc-wsa881x.o
+>>>>>>> p9x
 obj-$(CONFIG_SND_SOC_WL1273)	+= snd-soc-wl1273.o
 obj-$(CONFIG_SND_SOC_WM0010)	+= snd-soc-wm0010.o
 obj-$(CONFIG_SND_SOC_WM1250_EV1) += snd-soc-wm1250-ev1.o

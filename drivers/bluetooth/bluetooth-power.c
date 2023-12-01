@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2009-2010, 2013-2017 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2009-2010, 2013-2014 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -36,8 +40,11 @@
 static struct of_device_id bt_power_match_table[] = {
 	{	.compatible = "qca,ar3002" },
 	{	.compatible = "qca,qca6174" },
+<<<<<<< HEAD
 	{	.compatible = "qca,qca9379" },
 	{	.compatible = "qca,wcn3990" },
+=======
+>>>>>>> p9x
 	{}
 };
 
@@ -87,6 +94,7 @@ static int bt_vreg_enable(struct bt_power_vreg_data *vreg)
 			}
 		}
 
+<<<<<<< HEAD
 		if (vreg->load_uA >= 0) {
 			rc = regulator_set_optimum_mode(vreg->reg,
 					vreg->load_uA);
@@ -97,6 +105,8 @@ static int bt_vreg_enable(struct bt_power_vreg_data *vreg)
 			}
 		}
 
+=======
+>>>>>>> p9x
 		rc = regulator_enable(vreg->reg);
 		if (rc < 0) {
 			BT_PWR_ERR("regulator_enable(%s) failed. rc=%d\n",
@@ -129,12 +139,19 @@ static int bt_vreg_disable(struct bt_power_vreg_data *vreg)
 
 		if (vreg->set_voltage_sup) {
 			/* Set the min voltage to 0 */
+<<<<<<< HEAD
 			rc = regulator_set_voltage(vreg->reg, 0,
 					vreg->high_vol_level);
+=======
+			rc = regulator_set_voltage(vreg->reg,
+						0,
+						vreg->high_vol_level);
+>>>>>>> p9x
 			if (rc < 0) {
 				BT_PWR_ERR("vreg_set_vol(%s) failed rc=%d\n",
 						vreg->name, rc);
 				goto out;
+<<<<<<< HEAD
 			}
 		}
 		if (vreg->load_uA >= 0) {
@@ -142,6 +159,9 @@ static int bt_vreg_disable(struct bt_power_vreg_data *vreg)
 			if (rc < 0) {
 				BT_PWR_ERR("vreg_set_mode(%s) failed rc=%d\n",
 						vreg->name, rc);
+=======
+
+>>>>>>> p9x
 			}
 		}
 	}
@@ -171,7 +191,11 @@ static int bt_configure_gpios(int on)
 	int rc = 0;
 	int bt_reset_gpio = bt_power_pdata->bt_gpio_sys_rst;
 
+<<<<<<< HEAD
 	BT_PWR_DBG("bt_gpio= %d on: %d", bt_reset_gpio, on);
+=======
+	BT_PWR_DBG("%s  bt_gpio= %d on: %d", __func__, bt_reset_gpio, on);
+>>>>>>> p9x
 
 	if (on) {
 		rc = gpio_request(bt_reset_gpio, "bt_sys_rst_n");
@@ -221,6 +245,7 @@ static int bluetooth_power(int on)
 				goto vdd_xtal_fail;
 			}
 		}
+<<<<<<< HEAD
 		if (bt_power_pdata->bt_vdd_core) {
 			rc = bt_configure_vreg(bt_power_pdata->bt_vdd_core);
 			if (rc < 0) {
@@ -228,6 +253,8 @@ static int bluetooth_power(int on)
 				goto vdd_core_fail;
 			}
 		}
+=======
+>>>>>>> p9x
 		if (bt_power_pdata->bt_vdd_pa) {
 			rc = bt_configure_vreg(bt_power_pdata->bt_vdd_pa);
 			if (rc < 0) {
@@ -245,7 +272,11 @@ static int bluetooth_power(int on)
 		if (bt_power_pdata->bt_chip_pwd) {
 			rc = bt_configure_vreg(bt_power_pdata->bt_chip_pwd);
 			if (rc < 0) {
+<<<<<<< HEAD
 				BT_PWR_ERR("bt_power chippwd config failed");
+=======
+				BT_PWR_ERR("bt_power vddldo config failed");
+>>>>>>> p9x
 				goto chip_pwd_fail;
 			}
 		}
@@ -267,8 +298,11 @@ chip_pwd_fail:
 vdd_ldo_fail:
 		bt_vreg_disable(bt_power_pdata->bt_vdd_pa);
 vdd_pa_fail:
+<<<<<<< HEAD
 		bt_vreg_disable(bt_power_pdata->bt_vdd_core);
 vdd_core_fail:
+=======
+>>>>>>> p9x
 		bt_vreg_disable(bt_power_pdata->bt_vdd_xtal);
 vdd_xtal_fail:
 		bt_vreg_disable(bt_power_pdata->bt_vdd_io);
@@ -296,7 +330,11 @@ static const struct rfkill_ops bluetooth_power_rfkill_ops = {
 	.set_block = bluetooth_toggle_radio,
 };
 
+<<<<<<< HEAD
 #if defined(CONFIG_CNSS) && defined(CONFIG_CLD_LL_CORE)
+=======
+#ifdef CONFIG_CNSS_PCI
+>>>>>>> p9x
 static ssize_t enable_extldo(struct device *dev, struct device_attribute *attr,
 			char *buf)
 {
@@ -394,7 +432,10 @@ static int bt_dt_parse_vreg_info(struct device *dev,
 
 		vreg->name = vreg_name;
 
+<<<<<<< HEAD
 		/* Parse voltage-level from each node */
+=======
+>>>>>>> p9x
 		snprintf(prop_name, MAX_PROP_SIZE,
 				"%s-voltage-level", vreg_name);
 		prop = of_get_property(np, prop_name, &len);
@@ -406,6 +447,7 @@ static int bt_dt_parse_vreg_info(struct device *dev,
 			vreg->high_vol_level = be32_to_cpup(&prop[1]);
 		}
 
+<<<<<<< HEAD
 		/* Parse current-level from each node */
 		snprintf(prop_name, MAX_PROP_SIZE,
 				"%s-current-level", vreg_name);
@@ -421,6 +463,12 @@ static int bt_dt_parse_vreg_info(struct device *dev,
 			vreg->name, vreg->low_vol_level,
 			vreg->high_vol_level,
 			vreg->load_uA);
+=======
+		*vreg_data = vreg;
+		BT_PWR_DBG("%s: vol=[%d %d]uV\n",
+			vreg->name, vreg->low_vol_level,
+			vreg->high_vol_level);
+>>>>>>> p9x
 	} else
 		BT_PWR_INFO("%s: is not provided in device tree", vreg_name);
 
@@ -445,11 +493,14 @@ static int bt_power_populate_dt_pinfo(struct platform_device *pdev)
 			BT_PWR_ERR("bt-reset-gpio not provided in device tree");
 			return bt_power_pdata->bt_gpio_sys_rst;
 		}
+<<<<<<< HEAD
 		rc = bt_dt_parse_vreg_info(&pdev->dev,
 					&bt_power_pdata->bt_vdd_core,
 					"qca,bt-vdd-core");
 		if (rc < 0)
 			return rc;
+=======
+>>>>>>> p9x
 
 		rc = bt_dt_parse_vreg_info(&pdev->dev,
 					&bt_power_pdata->bt_vdd_io,

@@ -1989,14 +1989,23 @@ static void process_checks(struct r1bio *r1_bio)
 		if (!uptodate)
 			clear_bit(BIO_UPTODATE, &b->bi_flags);
 		b->bi_vcnt = vcnt;
+<<<<<<< HEAD
 		b->bi_iter.bi_size = r1_bio->sectors << 9;
 		b->bi_iter.bi_sector = r1_bio->sector +
+=======
+		b->bi_size = r1_bio->sectors << 9;
+		b->bi_sector = r1_bio->sector +
+>>>>>>> p9x
 			conf->mirrors[i].rdev->data_offset;
 		b->bi_bdev = conf->mirrors[i].rdev->bdev;
 		b->bi_end_io = end_sync_read;
 		b->bi_private = r1_bio;
 
+<<<<<<< HEAD
 		size = b->bi_iter.bi_size;
+=======
+		size = b->bi_size;
+>>>>>>> p9x
 		for (j = 0; j < vcnt ; j++) {
 			struct bio_vec *bi;
 			bi = &b->bi_io_vec[j];

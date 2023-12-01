@@ -923,6 +923,7 @@ cifs_mand_lock(const unsigned int xid, struct cifsFileInfo *cfile, __u64 offset,
 			   (__u8)type, wait, 0);
 }
 
+<<<<<<< HEAD
 static int
 cifs_unix_dfs_readlink(const unsigned int xid, struct cifs_tcon *tcon,
 		       const unsigned char *searchName, char **symlinkinfo,
@@ -1013,6 +1014,8 @@ cifs_wp_retry_size(struct inode *inode)
 	return CIFS_SB(inode->i_sb)->wsize;
 }
 
+=======
+>>>>>>> p9x
 static bool
 cifs_dir_needs_close(struct cifsFileInfo *cfile)
 {
@@ -1096,10 +1099,13 @@ struct smb_version_operations smb1_operations = {
 	.mand_lock = cifs_mand_lock,
 	.mand_unlock_range = cifs_unlock_range,
 	.push_mand_locks = cifs_push_mandatory_locks,
+<<<<<<< HEAD
 	.query_mf_symlink = cifs_query_mf_symlink,
 	.create_mf_symlink = cifs_create_mf_symlink,
 	.is_read_op = cifs_is_read_op,
 	.wp_retry_size = cifs_wp_retry_size,
+=======
+>>>>>>> p9x
 	.dir_needs_close = cifs_dir_needs_close,
 #ifdef CONFIG_CIFS_XATTR
 	.query_all_EAs = CIFSSMBQAllEAs,
@@ -1107,7 +1113,10 @@ struct smb_version_operations smb1_operations = {
 #endif /* CIFS_XATTR */
 #ifdef CONFIG_CIFS_ACL
 	.get_acl = get_cifs_acl,
+<<<<<<< HEAD
 	.get_acl_by_fid = get_cifs_acl_by_fid,
+=======
+>>>>>>> p9x
 	.set_acl = set_cifs_acl,
 #endif /* CIFS_ACL */
 };

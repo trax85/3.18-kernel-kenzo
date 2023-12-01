@@ -42,9 +42,13 @@ static unsigned long hyp_idmap_start;
 static unsigned long hyp_idmap_end;
 static phys_addr_t hyp_idmap_vector;
 
+<<<<<<< HEAD
 #define hyp_pgd_order get_order(PTRS_PER_PGD * sizeof(pgd_t))
 
 #define kvm_pmd_huge(_x)	(pmd_huge(_x) || pmd_trans_huge(_x))
+=======
+#define kvm_pmd_huge(_x)	(pmd_huge(_x))
+>>>>>>> p9x
 
 static void kvm_tlb_flush_vmid_ipa(struct kvm *kvm, phys_addr_t ipa)
 {
@@ -110,6 +114,7 @@ static void *mmu_memory_cache_alloc(struct kvm_mmu_memory_cache *mc)
 	return p;
 }
 
+<<<<<<< HEAD
 static void clear_pgd_entry(struct kvm *kvm, pgd_t *pgd, phys_addr_t addr)
 {
 	pud_t *pud_table __maybe_unused = pud_offset(pgd, 0);
@@ -117,20 +122,39 @@ static void clear_pgd_entry(struct kvm *kvm, pgd_t *pgd, phys_addr_t addr)
 	kvm_tlb_flush_vmid_ipa(kvm, addr);
 	pud_free(NULL, pud_table);
 	put_page(virt_to_page(pgd));
+=======
+static bool page_empty(void *ptr)
+{
+	struct page *ptr_page = virt_to_page(ptr);
+	return page_count(ptr_page) == 1;
+>>>>>>> p9x
 }
 
 static void clear_pud_entry(struct kvm *kvm, pud_t *pud, phys_addr_t addr)
 {
+<<<<<<< HEAD
 	pmd_t *pmd_table = pmd_offset(pud, 0);
 	VM_BUG_ON(pud_huge(*pud));
 	pud_clear(pud);
 	kvm_tlb_flush_vmid_ipa(kvm, addr);
 	pmd_free(NULL, pmd_table);
+=======
+	if (pud_huge(*pud)) {
+		pud_clear(pud);
+		kvm_tlb_flush_vmid_ipa(kvm, addr);
+	} else {
+		pmd_t *pmd_table = pmd_offset(pud, 0);
+		pud_clear(pud);
+		kvm_tlb_flush_vmid_ipa(kvm, addr);
+		pmd_free(NULL, pmd_table);
+	}
+>>>>>>> p9x
 	put_page(virt_to_page(pud));
 }
 
 static void clear_pmd_entry(struct kvm *kvm, pmd_t *pmd, phys_addr_t addr)
 {
+<<<<<<< HEAD
 	pte_t *pte_table = pte_offset_kernel(pmd, 0);
 	VM_BUG_ON(kvm_pmd_huge(*pmd));
 	pmd_clear(pmd);
@@ -178,9 +202,59 @@ static void unmap_ptes(struct kvm *kvm, pmd_t *pmd,
 				kvm_flush_dcache_pte(old_pte);
 
 			put_page(virt_to_page(pte));
+=======
+	if (kvm_pmd_huge(*pmd)) {
+		pmd_clear(pmd);
+		kvm_tlb_flush_vmid_ipa(kvm, addr);
+	} else {
+		pte_t *pte_table = pte_offset_kernel(pmd, 0);
+		pmd_clear(pmd);
+		kvm_tlb_flush_vmid_ipa(kvm, addr);
+		pte_free_kernel(NULL, pte_table);
+	}
+	put_page(virt_to_page(pmd));
+}
+
+static void clear_pte_entry(struct kvm *kvm, pte_t *pte, phys_addr_t addr)
+{
+	if (pte_present(*pte)) {
+		kvm_set_pte(pte, __pte(0));
+		put_page(virt_to_page(pte));
+		kvm_tlb_flush_vmid_ipa(kvm, addr);
+	}
+}
+
+static void unmap_range(struct kvm *kvm, pgd_t *pgdp,
+			unsigned long long start, u64 size)
+{
+	pgd_t *pgd;
+	pud_t *pud;
+	pmd_t *pmd;
+	pte_t *pte;
+	unsigned long long addr = start, end = start + size;
+	u64 next;
+
+	while (addr < end) {
+		pgd = pgdp + pgd_index(addr);
+		pud = pud_offset(pgd, addr);
+		if (pud_none(*pud)) {
+			addr = kvm_pud_addr_end(addr, end);
+			continue;
+		}
+
+		if (pud_huge(*pud)) {
+			/*
+			 * If we are dealing with a huge pud, just clear it and
+			 * move on.
+			 */
+			clear_pud_entry(kvm, pud, addr);
+			addr = kvm_pud_addr_end(addr, end);
+			continue;
+>>>>>>> p9x
 		}
 	} while (pte++, addr += PAGE_SIZE, addr != end);
 
+<<<<<<< HEAD
 	if (kvm_pte_table_empty(kvm, start_pte))
 		clear_pmd_entry(kvm, pmd, start_addr);
 }
@@ -206,10 +280,34 @@ static void unmap_pmds(struct kvm *kvm, pud_t *pud,
 				put_page(virt_to_page(pmd));
 			} else {
 				unmap_ptes(kvm, pmd, addr, next);
+=======
+		pmd = pmd_offset(pud, addr);
+		if (pmd_none(*pmd)) {
+			addr = kvm_pmd_addr_end(addr, end);
+			continue;
+		}
+
+		if (!kvm_pmd_huge(*pmd)) {
+			pte = pte_offset_kernel(pmd, addr);
+			clear_pte_entry(kvm, pte, addr);
+			next = addr + PAGE_SIZE;
+		}
+
+		/*
+		 * If the pmd entry is to be cleared, walk back up the ladder
+		 */
+		if (kvm_pmd_huge(*pmd) || page_empty(pte)) {
+			clear_pmd_entry(kvm, pmd, addr);
+			next = kvm_pmd_addr_end(addr, end);
+			if (page_empty(pmd) && !page_empty(pud)) {
+				clear_pud_entry(kvm, pud, addr);
+				next = kvm_pud_addr_end(addr, end);
+>>>>>>> p9x
 			}
 		}
 	} while (pmd++, addr = next, addr != end);
 
+<<<<<<< HEAD
 	if (kvm_pmd_table_empty(kvm, start_pmd))
 		clear_pud_entry(kvm, pud, start_addr);
 }
@@ -339,6 +437,103 @@ static void stage2_flush_memslot(struct kvm *kvm,
  * backing memory already mapped to the VM.
  */
 static void stage2_flush_vm(struct kvm *kvm)
+{
+	struct kvm_memslots *slots;
+	struct kvm_memory_slot *memslot;
+	int idx;
+
+	idx = srcu_read_lock(&kvm->srcu);
+	spin_lock(&kvm->mmu_lock);
+
+	slots = kvm_memslots(kvm);
+	kvm_for_each_memslot(memslot, slots)
+		stage2_flush_memslot(kvm, memslot);
+
+	spin_unlock(&kvm->mmu_lock);
+	srcu_read_unlock(&kvm->srcu, idx);
+=======
+		addr = next;
+	}
+>>>>>>> p9x
+}
+
+static void stage2_flush_ptes(struct kvm *kvm, pmd_t *pmd,
+			      phys_addr_t addr, phys_addr_t end)
+{
+	pte_t *pte;
+
+	pte = pte_offset_kernel(pmd, addr);
+	do {
+		if (!pte_none(*pte)) {
+			hva_t hva = gfn_to_hva(kvm, addr >> PAGE_SHIFT);
+			kvm_flush_dcache_to_poc((void*)hva, PAGE_SIZE);
+		}
+	} while (pte++, addr += PAGE_SIZE, addr != end);
+}
+
+static void stage2_flush_pmds(struct kvm *kvm, pud_t *pud,
+			      phys_addr_t addr, phys_addr_t end)
+{
+	pmd_t *pmd;
+	phys_addr_t next;
+
+	pmd = pmd_offset(pud, addr);
+	do {
+		next = kvm_pmd_addr_end(addr, end);
+		if (!pmd_none(*pmd)) {
+			if (kvm_pmd_huge(*pmd)) {
+				hva_t hva = gfn_to_hva(kvm, addr >> PAGE_SHIFT);
+				kvm_flush_dcache_to_poc((void*)hva, PMD_SIZE);
+			} else {
+				stage2_flush_ptes(kvm, pmd, addr, next);
+			}
+		}
+	} while (pmd++, addr = next, addr != end);
+}
+
+static void stage2_flush_puds(struct kvm *kvm, pgd_t *pgd,
+			      phys_addr_t addr, phys_addr_t end)
+{
+	pud_t *pud;
+	phys_addr_t next;
+
+	pud = pud_offset(pgd, addr);
+	do {
+		next = kvm_pud_addr_end(addr, end);
+		if (!pud_none(*pud)) {
+			if (pud_huge(*pud)) {
+				hva_t hva = gfn_to_hva(kvm, addr >> PAGE_SHIFT);
+				kvm_flush_dcache_to_poc((void*)hva, PUD_SIZE);
+			} else {
+				stage2_flush_pmds(kvm, pud, addr, next);
+			}
+		}
+	} while (pud++, addr = next, addr != end);
+}
+
+static void stage2_flush_memslot(struct kvm *kvm,
+				 struct kvm_memory_slot *memslot)
+{
+	phys_addr_t addr = memslot->base_gfn << PAGE_SHIFT;
+	phys_addr_t end = addr + PAGE_SIZE * memslot->npages;
+	phys_addr_t next;
+	pgd_t *pgd;
+
+	pgd = kvm->arch.pgd + pgd_index(addr);
+	do {
+		next = kvm_pgd_addr_end(addr, end);
+		stage2_flush_puds(kvm, pgd, addr, next);
+	} while (pgd++, addr = next, addr != end);
+}
+
+/**
+ * stage2_flush_vm - Invalidate cache for pages mapped in stage 2
+ * @kvm: The struct kvm pointer
+ *
+ * Go through the stage 2 page tables and invalidate any cache lines
+ * backing memory already mapped to the VM.
+ */
+void stage2_flush_vm(struct kvm *kvm)
 {
 	struct kvm_memslots *slots;
 	struct kvm_memory_slot *memslot;
@@ -799,11 +994,16 @@ void kvm_free_stage2_pgd(struct kvm *kvm)
 	kvm->arch.pgd = NULL;
 }
 
+<<<<<<< HEAD
 static pud_t *stage2_get_pud(struct kvm *kvm, struct kvm_mmu_memory_cache *cache,
+=======
+static pmd_t *stage2_get_pmd(struct kvm *kvm, struct kvm_mmu_memory_cache *cache,
+>>>>>>> p9x
 			     phys_addr_t addr)
 {
 	pgd_t *pgd;
 	pud_t *pud;
+<<<<<<< HEAD
 
 	pgd = kvm->arch.pgd + kvm_pgd_index(addr);
 	if (WARN_ON(pgd_none(*pgd))) {
@@ -824,6 +1024,12 @@ static pmd_t *stage2_get_pmd(struct kvm *kvm, struct kvm_mmu_memory_cache *cache
 	pmd_t *pmd;
 
 	pud = stage2_get_pud(kvm, cache, addr);
+=======
+	pmd_t *pmd;
+
+	pgd = kvm->arch.pgd + pgd_index(addr);
+	pud = pud_offset(pgd, addr);
+>>>>>>> p9x
 	if (pud_none(*pud)) {
 		if (!cache)
 			return NULL;
@@ -843,6 +1049,7 @@ static int stage2_set_pmd_huge(struct kvm *kvm, struct kvm_mmu_memory_cache
 	pmd = stage2_get_pmd(kvm, cache, addr);
 	VM_BUG_ON(!pmd);
 
+<<<<<<< HEAD
 	old_pmd = *pmd;
 	if (pmd_present(old_pmd)) {
 		/*
@@ -879,6 +1086,25 @@ static int stage2_set_pmd_huge(struct kvm *kvm, struct kvm_mmu_memory_cache
 	}
 
 	kvm_set_pmd(pmd, *new_pmd);
+=======
+	/*
+	 * Mapping in huge pages should only happen through a fault.  If a
+	 * page is merged into a transparent huge page, the individual
+	 * subpages of that huge page should be unmapped through MMU
+	 * notifiers before we get here.
+	 *
+	 * Merging of CompoundPages is not supported; they should become
+	 * splitting first, unmapped, merged, and mapped back in on-demand.
+	 */
+	VM_BUG_ON(pmd_present(*pmd) && pmd_pfn(*pmd) != pmd_pfn(*new_pmd));
+
+	old_pmd = *pmd;
+	kvm_set_pmd(pmd, *new_pmd);
+	if (pmd_present(old_pmd))
+		kvm_tlb_flush_vmid_ipa(kvm, addr);
+	else
+		get_page(virt_to_page(pmd));
+>>>>>>> p9x
 	return 0;
 }
 
@@ -888,7 +1114,11 @@ static int stage2_set_pte(struct kvm *kvm, struct kvm_mmu_memory_cache *cache,
 	pmd_t *pmd;
 	pte_t *pte, old_pte;
 
+<<<<<<< HEAD
 	/* Create stage-2 page table mapping - Levels 0 and 1 */
+=======
+	/* Create stage-2 page table mapping - Level 1 */
+>>>>>>> p9x
 	pmd = stage2_get_pmd(kvm, cache, addr);
 	if (!pmd) {
 		/*
@@ -1034,6 +1264,7 @@ static void coherent_cache_guest_page(struct kvm_vcpu *vcpu, pfn_t pfn,
 }
 
 static int user_mem_abort(struct kvm_vcpu *vcpu, phys_addr_t fault_ipa,
+<<<<<<< HEAD
 			  struct kvm_memory_slot *memslot, unsigned long hva,
 			  unsigned long fault_status)
 {
@@ -1041,12 +1272,25 @@ static int user_mem_abort(struct kvm_vcpu *vcpu, phys_addr_t fault_ipa,
 	bool write_fault, writable, hugetlb = false, force_pte = false;
 	unsigned long mmu_seq;
 	gfn_t gfn = fault_ipa >> PAGE_SHIFT;
+=======
+			  struct kvm_memory_slot *memslot,
+			  unsigned long fault_status)
+{
+	int ret;
+	bool write_fault, writable, hugetlb = false;
+	unsigned long mmu_seq;
+	gfn_t gfn = fault_ipa >> PAGE_SHIFT;
+	unsigned long hva = gfn_to_hva(vcpu->kvm, gfn);
+>>>>>>> p9x
 	struct kvm *kvm = vcpu->kvm;
 	struct kvm_mmu_memory_cache *memcache = &vcpu->arch.mmu_page_cache;
 	struct vm_area_struct *vma;
 	pfn_t pfn;
+<<<<<<< HEAD
 	pgprot_t mem_type = PAGE_S2;
 	bool fault_ipa_uncached;
+=======
+>>>>>>> p9x
 
 	write_fault = kvm_is_write_fault(vcpu);
 	if (fault_status == FSC_PERM && !write_fault) {
@@ -1057,6 +1301,7 @@ static int user_mem_abort(struct kvm_vcpu *vcpu, phys_addr_t fault_ipa,
 	/* Let's check if we will get back a huge page backed by hugetlbfs */
 	down_read(&current->mm->mmap_sem);
 	vma = find_vma_intersection(current->mm, hva, hva + 1);
+<<<<<<< HEAD
 	if (unlikely(!vma)) {
 		kvm_err("Failed to find VMA for hva 0x%lx\n", hva);
 		up_read(&current->mm->mmap_sem);
@@ -1079,6 +1324,11 @@ static int user_mem_abort(struct kvm_vcpu *vcpu, phys_addr_t fault_ipa,
 		if ((memslot->userspace_addr & ~PMD_MASK) !=
 		    ((memslot->base_gfn << PAGE_SHIFT) & ~PMD_MASK))
 			force_pte = true;
+=======
+	if (is_vm_hugetlb_page(vma)) {
+		hugetlb = true;
+		gfn = (fault_ipa & PMD_MASK) >> PAGE_SHIFT;
+>>>>>>> p9x
 	}
 	up_read(&current->mm->mmap_sem);
 
@@ -1104,6 +1354,7 @@ static int user_mem_abort(struct kvm_vcpu *vcpu, phys_addr_t fault_ipa,
 	if (is_error_pfn(pfn))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	if (kvm_is_device_pfn(pfn))
 		mem_type = PAGE_S2_DEVICE;
 
@@ -1117,22 +1368,42 @@ static int user_mem_abort(struct kvm_vcpu *vcpu, phys_addr_t fault_ipa,
 
 	if (hugetlb) {
 		pmd_t new_pmd = pfn_pmd(pfn, mem_type);
+=======
+	spin_lock(&kvm->mmu_lock);
+	if (mmu_notifier_retry(kvm, mmu_seq))
+		goto out_unlock;
+
+	if (hugetlb) {
+		pmd_t new_pmd = pfn_pmd(pfn, PAGE_S2);
+>>>>>>> p9x
 		new_pmd = pmd_mkhuge(new_pmd);
 		if (writable) {
 			kvm_set_s2pmd_writable(&new_pmd);
 			kvm_set_pfn_dirty(pfn);
 		}
+<<<<<<< HEAD
 		coherent_cache_guest_page(vcpu, pfn, PMD_SIZE, fault_ipa_uncached);
 		ret = stage2_set_pmd_huge(kvm, memcache, fault_ipa, &new_pmd);
 	} else {
 		pte_t new_pte = pfn_pte(pfn, mem_type);
+=======
+		coherent_cache_guest_page(vcpu, hva & PMD_MASK, PMD_SIZE);
+		ret = stage2_set_pmd_huge(kvm, memcache, fault_ipa, &new_pmd);
+	} else {
+		pte_t new_pte = pfn_pte(pfn, PAGE_S2);
+>>>>>>> p9x
 		if (writable) {
 			kvm_set_s2pte_writable(&new_pte);
 			kvm_set_pfn_dirty(pfn);
 		}
+<<<<<<< HEAD
 		coherent_cache_guest_page(vcpu, pfn, PAGE_SIZE, fault_ipa_uncached);
 		ret = stage2_set_pte(kvm, memcache, fault_ipa, &new_pte,
 			pgprot_val(mem_type) == pgprot_val(PAGE_S2_DEVICE));
+=======
+		coherent_cache_guest_page(vcpu, hva, PAGE_SIZE);
+		ret = stage2_set_pte(kvm, memcache, fault_ipa, &new_pte, false);
+>>>>>>> p9x
 	}
 
 
@@ -1208,7 +1479,11 @@ int kvm_handle_guest_abort(struct kvm_vcpu *vcpu, struct kvm_run *run)
 	/* Userspace should not be able to register out-of-bounds IPAs */
 	VM_BUG_ON(fault_ipa >= KVM_PHYS_SIZE);
 
+<<<<<<< HEAD
 	ret = user_mem_abort(vcpu, fault_ipa, memslot, hva, fault_status);
+=======
+	ret = user_mem_abort(vcpu, fault_ipa, memslot, fault_status);
+>>>>>>> p9x
 	if (ret == 0)
 		ret = 1;
 out_unlock:

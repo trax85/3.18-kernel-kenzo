@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -25,6 +29,7 @@
 #include <linux/errno.h>
 #include <linux/mutex.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/spinlock.h>
 #include <linux/platform_device.h>
 #include <linux/of.h>
@@ -35,10 +40,21 @@
 
 #define NUM_MBPS_ZONES		10
 struct hwmon_node {
+=======
+#include <linux/platform_device.h>
+#include <linux/of.h>
+#include <linux/devfreq.h>
+#include "governor.h"
+#include "governor_bw_hwmon.h"
+
+struct hwmon_node {
+	unsigned int tolerance_percent;
+>>>>>>> p9x
 	unsigned int guard_band_mbps;
 	unsigned int decay_rate;
 	unsigned int io_percent;
 	unsigned int bw_step;
+<<<<<<< HEAD
 	unsigned int sample_ms;
 	unsigned int up_scale;
 	unsigned int up_thres;
@@ -53,10 +69,13 @@ struct hwmon_node {
 	unsigned int low_power_delay;
 	unsigned int mbps_zones[NUM_MBPS_ZONES];
 
+=======
+>>>>>>> p9x
 	unsigned long prev_ab;
 	unsigned long *dev_ab;
 	unsigned long resume_freq;
 	unsigned long resume_ab;
+<<<<<<< HEAD
 	unsigned long bytes;
 	unsigned long max_mbps;
 	unsigned long hist_max_mbps;
@@ -74,6 +93,9 @@ struct hwmon_node {
 	ktime_t prev_ts;
 	ktime_t hist_max_ts;
 	bool sampled;
+=======
+	ktime_t prev_ts;
+>>>>>>> p9x
 	bool mon_started;
 	struct list_head list;
 	void *orig_data;
@@ -82,10 +104,13 @@ struct hwmon_node {
 	struct attribute_group *attr_grp;
 };
 
+<<<<<<< HEAD
 #define UP_WAKE 1
 #define DOWN_WAKE 2
 static DEFINE_SPINLOCK(irq_lock);
 
+=======
+>>>>>>> p9x
 static LIST_HEAD(hwmon_list);
 static DEFINE_MUTEX(list_lock);
 
@@ -124,6 +149,7 @@ show_attr(__attr)			\
 store_attr(__attr, min, max)		\
 static DEVICE_ATTR(__attr, 0644, show_##__attr, store_##__attr)
 
+<<<<<<< HEAD
 #define show_list_attr(name, n) \
 static ssize_t show_list_##name(struct device *dev,			\
 			struct device_attribute *attr, char *buf)	\
@@ -420,6 +446,53 @@ static unsigned long get_bw_and_set_irq(struct hwmon_node *node,
 		new_bw = adj_mbps;
 	} else {
 		new_bw = adj_mbps * node->decay_rate
+=======
+#define MIN_MS	10U
+#define MAX_MS	500U
+
+static unsigned long measure_bw_and_set_irq(struct hwmon_node *node)
+{
+	ktime_t ts;
+	unsigned int us;
+	unsigned long mbps;
+	struct bw_hwmon *hw = node->hw;
+
+	/*
+	 * Since we are stopping the counters, we don't want this short work
+	 * to be interrupted by other tasks and cause the measurements to be
+	 * wrong. Not blocking interrupts to avoid affecting interrupt
+	 * latency and since they should be short anyway because they run in
+	 * atomic context.
+	 */
+	preempt_disable();
+
+	ts = ktime_get();
+	us = ktime_to_us(ktime_sub(ts, node->prev_ts));
+	if (!us)
+		us = 1;
+
+	mbps = hw->meas_bw_and_set_irq(hw, node->tolerance_percent, us);
+	node->prev_ts = ts;
+
+	preempt_enable();
+
+	dev_dbg(hw->df->dev.parent, "BW MBps = %6lu, period = %u\n", mbps, us);
+
+	return mbps;
+}
+
+static void compute_bw(struct hwmon_node *node, int mbps,
+			unsigned long *freq, unsigned long *ab)
+{
+	int new_bw;
+
+	mbps += node->guard_band_mbps;
+
+	if (mbps > node->prev_ab) {
+		new_bw = mbps;
+	} else {
+		new_bw = mbps * node->decay_rate
+>>>>>>> p9x
 			+ node->prev_ab * (100 - node->decay_rate);
 		new_bw /= 100;
 	}
@@ -427,6 +500,7 @@ static unsigned long get_bw_and_set_irq(struct hwmon_node *node,
 	node->prev_ab = new_bw;
 	if (ab)
 		*ab = roundup(new_bw, node->bw_step);
+<<<<<<< HEAD
 
 	*freq = (new_bw * 100) / io_percent;
 	trace_bw_hwmon_update(dev_name(node->hw->df->dev.parent),
@@ -435,6 +509,9 @@ static unsigned long get_bw_and_set_irq(struct hwmon_node *node,
 				node->up_wake_mbps,
 				node->down_wake_mbps);
 	return req_mbps;
+=======
+	*freq = (new_bw * 100) / node->io_percent;
+>>>>>>> p9x
 }
 
 static struct hwmon_node *find_hwmon_node(struct devfreq *df)
@@ -455,10 +532,19 @@ static struct hwmon_node *find_hwmon_node(struct devfreq *df)
 	return found;
 }
 
+<<<<<<< HEAD
+=======
+#define TOO_SOON_US	(1 * USEC_PER_MSEC)
+>>>>>>> p9x
 int update_bw_hwmon(struct bw_hwmon *hwmon)
 {
 	struct devfreq *df;
 	struct hwmon_node *node;
+<<<<<<< HEAD
+=======
+	ktime_t ts;
+	unsigned int us;
+>>>>>>> p9x
 	int ret;
 
 	if (!hwmon)
@@ -466,7 +552,11 @@ int update_bw_hwmon(struct bw_hwmon *hwmon)
 	df = hwmon->df;
 	if (!df)
 		return -ENODEV;
+<<<<<<< HEAD
 	node = df->data;
+=======
+	node = find_hwmon_node(df);
+>>>>>>> p9x
 	if (!node)
 		return -ENODEV;
 
@@ -476,12 +566,35 @@ int update_bw_hwmon(struct bw_hwmon *hwmon)
 	dev_dbg(df->dev.parent, "Got update request\n");
 	devfreq_monitor_stop(df);
 
+<<<<<<< HEAD
 	mutex_lock(&df->lock);
 	ret = update_devfreq(df);
 	if (ret)
 		dev_err(df->dev.parent,
 			"Unable to update freq on request!\n");
 	mutex_unlock(&df->lock);
+=======
+	/*
+	 * Don't recalc bandwidth if the interrupt comes right after a
+	 * previous bandwidth calculation.  This is done for two reasons:
+	 *
+	 * 1. Sampling the BW during a very short duration can result in a
+	 *    very inaccurate measurement due to very short bursts.
+	 * 2. This can only happen if the limit was hit very close to the end
+	 *    of the previous sample period. Which means the current BW
+	 *    estimate is not very off and doesn't need to be readjusted.
+	 */
+	ts = ktime_get();
+	us = ktime_to_us(ktime_sub(ts, node->prev_ts));
+	if (us > TOO_SOON_US) {
+		mutex_lock(&df->lock);
+		ret = update_devfreq(df);
+		if (ret)
+			dev_err(df->dev.parent,
+				"Unable to update freq on request!\n");
+		mutex_unlock(&df->lock);
+	}
+>>>>>>> p9x
 
 	devfreq_monitor_start(df);
 
@@ -659,6 +772,10 @@ static int devfreq_bw_hwmon_get_freq(struct devfreq *df,
 					unsigned long *freq,
 					u32 *flag)
 {
+<<<<<<< HEAD
+=======
+	unsigned long mbps;
+>>>>>>> p9x
 	struct hwmon_node *node = df->data;
 
 	/* Suspend/resume sequence */
@@ -668,11 +785,17 @@ static int devfreq_bw_hwmon_get_freq(struct devfreq *df,
 		return 0;
 	}
 
+<<<<<<< HEAD
 	get_bw_and_set_irq(node, freq, node->dev_ab);
+=======
+	mbps = measure_bw_and_set_irq(node);
+	compute_bw(node, mbps, freq, node->dev_ab);
+>>>>>>> p9x
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t store_throttle_adj(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count)
 {
@@ -714,10 +837,14 @@ static ssize_t show_throttle_adj(struct device *dev,
 static DEVICE_ATTR(throttle_adj, 0644, show_throttle_adj,
 						store_throttle_adj);
 
+=======
+gov_attr(tolerance_percent, 0U, 30U);
+>>>>>>> p9x
 gov_attr(guard_band_mbps, 0U, 2000U);
 gov_attr(decay_rate, 0U, 100U);
 gov_attr(io_percent, 1U, 100U);
 gov_attr(bw_step, 50U, 1000U);
+<<<<<<< HEAD
 gov_attr(sample_ms, 1U, 50U);
 gov_attr(up_scale, 0U, 500U);
 gov_attr(up_thres, 1U, 100U);
@@ -733,10 +860,16 @@ gov_attr(low_power_delay, 1U, 60U);
 gov_list_attr(mbps_zones, NUM_MBPS_ZONES, 0U, UINT_MAX);
 
 static struct attribute *dev_attr[] = {
+=======
+
+static struct attribute *dev_attr[] = {
+	&dev_attr_tolerance_percent.attr,
+>>>>>>> p9x
 	&dev_attr_guard_band_mbps.attr,
 	&dev_attr_decay_rate.attr,
 	&dev_attr_io_percent.attr,
 	&dev_attr_bw_step.attr,
+<<<<<<< HEAD
 	&dev_attr_sample_ms.attr,
 	&dev_attr_up_scale.attr,
 	&dev_attr_up_thres.attr,
@@ -751,6 +884,8 @@ static struct attribute *dev_attr[] = {
 	&dev_attr_low_power_delay.attr,
 	&dev_attr_mbps_zones.attr,
 	&dev_attr_throttle_adj.attr,
+=======
+>>>>>>> p9x
 	NULL,
 };
 
@@ -764,8 +899,11 @@ static int devfreq_bw_hwmon_ev_handler(struct devfreq *df,
 {
 	int ret;
 	unsigned int sample_ms;
+<<<<<<< HEAD
 	struct hwmon_node *node;
 	struct bw_hwmon *hw;
+=======
+>>>>>>> p9x
 
 	switch (event) {
 	case DEVFREQ_GOV_START:
@@ -792,6 +930,7 @@ static int devfreq_bw_hwmon_ev_handler(struct devfreq *df,
 		sample_ms = *(unsigned int *)data;
 		sample_ms = max(MIN_MS, sample_ms);
 		sample_ms = min(MAX_MS, sample_ms);
+<<<<<<< HEAD
 		/*
 		 * Suspend/resume the HW monitor around the interval update
 		 * to prevent the HW monitor IRQ from trying to change
@@ -808,6 +947,9 @@ static int devfreq_bw_hwmon_ev_handler(struct devfreq *df,
 				"Unable to resume HW monitor (%d)\n", ret);
 			return ret;
 		}
+=======
+		devfreq_interval_update(df, &sample_ms);
+>>>>>>> p9x
 		break;
 
 	case DEVFREQ_GOV_SUSPEND:
@@ -876,6 +1018,7 @@ int register_bw_hwmon(struct device *dev, struct bw_hwmon *hwmon)
 		node->attr_grp = &dev_attr_group;
 	}
 
+<<<<<<< HEAD
 	node->guard_band_mbps = 100;
 	node->decay_rate = 90;
 	node->io_percent = 16;
@@ -893,6 +1036,13 @@ int register_bw_hwmon(struct device *dev, struct bw_hwmon *hwmon)
 	node->hyst_length = 0;
 	node->idle_mbps = 400;
 	node->mbps_zones[0] = 0;
+=======
+	node->tolerance_percent = 10;
+	node->guard_band_mbps = 100;
+	node->decay_rate = 90;
+	node->io_percent = 16;
+	node->bw_step = 190;
+>>>>>>> p9x
 	node->hw = hwmon;
 
 	mutex_lock(&list_lock);

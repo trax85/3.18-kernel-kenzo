@@ -64,6 +64,7 @@ nv50_dac_power(NV50_DISP_MTHD_V1)
 int
 nv50_dac_sense(NV50_DISP_MTHD_V1)
 {
+<<<<<<< HEAD
 	union {
 		struct nv50_disp_dac_load_v0 v0;
 	} *args = data;
@@ -80,6 +81,9 @@ nv50_dac_sense(NV50_DISP_MTHD_V1)
 		loadval = args->v0.data;
 	} else
 		return ret;
+=======
+	const u32 doff = (or * 0x800);
+>>>>>>> p9x
 
 	nv_mask(priv, 0x61a004 + doff, 0x807f0000, 0x80150000);
 	nv_wait(priv, 0x61a004 + doff, 0x80000000, 0x00000000);
@@ -92,10 +96,47 @@ nv50_dac_sense(NV50_DISP_MTHD_V1)
 	nv_mask(priv, 0x61a004 + doff, 0x807f0000, 0x80550000);
 	nv_wait(priv, 0x61a004 + doff, 0x80000000, 0x00000000);
 
+<<<<<<< HEAD
 	nv_debug(priv, "DAC%d sense: 0x%08x\n", outp->or, loadval);
 	if (!(loadval & 0x80000000))
 		return -ETIMEDOUT;
 
 	args->v0.load = (loadval & 0x38000000) >> 27;
 	return 0;
+=======
+	nv_debug(priv, "DAC%d sense: 0x%08x\n", or, loadval);
+	if (!(loadval & 0x80000000))
+		return -ETIMEDOUT;
+
+	return (loadval & 0x38000000) >> 27;
+}
+
+int
+nv50_dac_mthd(struct nouveau_object *object, u32 mthd, void *args, u32 size)
+{
+	struct nv50_disp_priv *priv = (void *)object->engine;
+	const u8 or = (mthd & NV50_DISP_DAC_MTHD_OR);
+	u32 *data = args;
+	int ret;
+
+	if (size < sizeof(u32))
+		return -EINVAL;
+
+	switch (mthd & ~0x3f) {
+	case NV50_DISP_DAC_PWR:
+		ret = priv->dac.power(priv, or, data[0]);
+		break;
+	case NV50_DISP_DAC_LOAD:
+		ret = priv->dac.sense(priv, or, data[0]);
+		if (ret >= 0) {
+			data[0] = ret;
+			ret = 0;
+		}
+		break;
+	default:
+		BUG_ON(1);
+	}
+
+	return ret;
+>>>>>>> p9x
 }

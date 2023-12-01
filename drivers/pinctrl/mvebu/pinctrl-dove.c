@@ -329,8 +329,16 @@ static int dove_twsi_ctrl_get(unsigned pid, unsigned long *config)
 
 static int dove_twsi_ctrl_set(unsigned pid, unsigned long config)
 {
+<<<<<<< HEAD
 	unsigned int gcfg1 = 0;
 	unsigned int gcfg2 = 0;
+=======
+	unsigned long gcfg1 = readl(DOVE_GLOBAL_CONFIG_1);
+	unsigned long gcfg2 = readl(DOVE_GLOBAL_CONFIG_2);
+
+	gcfg1 &= ~DOVE_TWSI_ENABLE_OPTION1;
+	gcfg2 &= ~(DOVE_TWSI_ENABLE_OPTION2 | DOVE_TWSI_ENABLE_OPTION3);
+>>>>>>> p9x
 
 	switch (config) {
 	case 1:

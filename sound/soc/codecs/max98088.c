@@ -1558,6 +1558,35 @@ static int max98088_dai2_digital_mute(struct snd_soc_dai *codec_dai, int mute)
        return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void max98088_sync_cache(struct snd_soc_codec *codec)
+{
+       u8 *reg_cache = codec->reg_cache;
+       int i;
+
+       if (!codec->cache_sync)
+               return;
+
+       codec->cache_only = 0;
+
+       /* write back cached values if they're writeable and
+        * different from the hardware default.
+        */
+       for (i = 1; i < codec->driver->reg_cache_size; i++) {
+               if (!max98088_access[i].writable)
+                       continue;
+
+               if (reg_cache[i] == max98088_reg[i])
+                       continue;
+
+               snd_soc_write(codec, i, reg_cache[i]);
+       }
+
+       codec->cache_sync = 0;
+}
+
+>>>>>>> p9x
 static int max98088_set_bias_level(struct snd_soc_codec *codec,
                                   enum snd_soc_bias_level level)
 {

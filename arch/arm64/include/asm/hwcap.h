@@ -30,7 +30,10 @@
 #define COMPAT_HWCAP_IDIVA	(1 << 17)
 #define COMPAT_HWCAP_IDIVT	(1 << 18)
 #define COMPAT_HWCAP_IDIV	(COMPAT_HWCAP_IDIVA|COMPAT_HWCAP_IDIVT)
+<<<<<<< HEAD
 #define COMPAT_HWCAP_LPAE	(1 << 20)
+=======
+>>>>>>> p9x
 #define COMPAT_HWCAP_EVTSTRM	(1 << 21)
 
 #define COMPAT_HWCAP2_AES	(1 << 0)
@@ -52,6 +55,7 @@
 extern unsigned int compat_elf_hwcap, compat_elf_hwcap2;
 #endif
 
+<<<<<<< HEAD
 enum {
 	CAP_HWCAP = 1,
 #ifdef CONFIG_COMPAT
@@ -60,6 +64,8 @@ enum {
 #endif
 };
 
+=======
+>>>>>>> p9x
 extern unsigned long elf_hwcap;
 #endif
 #endif

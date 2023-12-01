@@ -716,7 +716,11 @@ static int pci9111_auto_attach(struct comedi_device *dev,
 
 	pci9111_reset(dev);
 
+<<<<<<< HEAD
 	if (pcidev->irq) {
+=======
+	if (pcidev->irq > 0) {
+>>>>>>> p9x
 		ret = request_irq(pcidev->irq, pci9111_interrupt,
 				  IRQF_SHARED, dev->board_name, dev);
 		if (ret == 0)

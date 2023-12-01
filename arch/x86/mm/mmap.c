@@ -68,6 +68,7 @@ static int mmap_is_legacy(void)
 unsigned long arch_mmap_rnd(void)
 {
 	unsigned long rnd;
+<<<<<<< HEAD
 
 	if (current->flags & PF_RANDOMIZE) {
 		if (mmap_is_ia32())
@@ -79,6 +80,18 @@ unsigned long arch_mmap_rnd(void)
 		else
 			rnd = get_random_long() & ((1UL << mmap_rnd_bits) - 1);
 	}
+=======
+
+	if (mmap_is_ia32())
+		#ifdef CONFIG_COMPAT
+			rnd = get_random_long() & ((1UL << mmap_rnd_compat_bits) - 1);
+		#else
+			rnd = get_random_long() & ((1UL << mmap_rnd_bits) - 1);
+		#endif
+	else
+		rnd = get_random_long() & ((1UL << mmap_rnd_bits) - 1);
+
+>>>>>>> p9x
 	return rnd << PAGE_SHIFT;
 }
 
@@ -92,6 +105,7 @@ static unsigned long mmap_base(unsigned long rnd)
 		gap = MAX_GAP;
 
 	return PAGE_ALIGN(TASK_SIZE - gap - rnd);
+<<<<<<< HEAD
 }
 
 /*
@@ -104,6 +118,8 @@ static unsigned long mmap_legacy_base(unsigned long rnd)
 		return TASK_UNMAPPED_BASE;
 	else
 		return TASK_UNMAPPED_BASE + rnd;
+=======
+>>>>>>> p9x
 }
 
 /*
@@ -115,9 +131,15 @@ void arch_pick_mmap_layout(struct mm_struct *mm)
 	unsigned long random_factor = 0UL;
 
 	if (current->flags & PF_RANDOMIZE)
+<<<<<<< HEAD
 		random_factor = arch_mmap_rnd();
 
 	mm->mmap_legacy_base = mmap_legacy_base(random_factor);
+=======
+		random_factor = mmap_rnd();
+
+	mm->mmap_legacy_base = TASK_UNMAPPED_BASE + random_factor;
+>>>>>>> p9x
 
 	if (mmap_is_legacy()) {
 		mm->mmap_base = mm->mmap_legacy_base;

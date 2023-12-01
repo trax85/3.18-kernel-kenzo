@@ -10,12 +10,15 @@ Required properties:
 -interrupts : the receiving interrupt line
 -label : the name of the subsystem this link connects to
 
+<<<<<<< HEAD
 Optional properties:
 -qcom,qos-config: Reference to the qos configuration elements.It depends on
 		ramp-time.
 -qcom,ramp-time: Worst case time in microseconds to transition to this power
 		state. Power states are numbered by array index position.
 
+=======
+>>>>>>> p9x
 Example:
 
 	qcom,glink-smem-native-xprt-modem@fa00000 {
@@ -27,6 +30,7 @@ Example:
 		interrupts = <0 25 1>;
 		label = "mpss";
 	};
+<<<<<<< HEAD
 
 	qcom,glink-smem-native-xprt-adsp@fa00000 {
 		compatible = "qcom,glink-smem-native-xprt";
@@ -52,3 +56,5 @@ Example:
 		qcom,mtu-size = <0x800>;
 		qcom,tput-stats-cycle = <0xa>;
 	};
+=======
+>>>>>>> p9x

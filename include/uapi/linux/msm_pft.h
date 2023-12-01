@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -123,7 +127,11 @@ struct pft_command {
 		} set_state;
 		struct {
 			__u32 items_count; /* number of items */
+<<<<<<< HEAD
 			uid_t table[0]; /* array of UIDs */
+=======
+			__u32 table[0]; /* array of UIDs */
+>>>>>>> p9x
 		} update_app_list;
 		struct {
 			__u32 file_descriptor;

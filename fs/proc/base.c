@@ -76,6 +76,7 @@
 #include <linux/printk.h>
 #include <linux/cgroup.h>
 #include <linux/cpuset.h>
+#include <linux/cpufreq.h>
 #include <linux/audit.h>
 #include <linux/poll.h>
 #include <linux/nsproxy.h>
@@ -214,6 +215,10 @@ static int proc_pid_auxv(struct seq_file *m, struct pid_namespace *ns,
 			 struct pid *pid, struct task_struct *task)
 {
 	struct mm_struct *mm = mm_access(task, PTRACE_MODE_READ_FSCREDS);
+<<<<<<< HEAD
+=======
+	int res = PTR_ERR(mm);
+>>>>>>> p9x
 	if (mm && !IS_ERR(mm)) {
 		unsigned int nwords = 0;
 		do {
@@ -640,7 +645,18 @@ struct mm_struct *proc_mem_open(struct inode *inode, unsigned int mode)
 
 static int __mem_open(struct inode *inode, struct file *file, unsigned int mode)
 {
+<<<<<<< HEAD
 	struct mm_struct *mm = proc_mem_open(inode, mode);
+=======
+	struct task_struct *task = get_proc_task(file_inode(file));
+	struct mm_struct *mm;
+
+	if (!task)
+		return -ESRCH;
+
+	mm = mm_access(task, mode | PTRACE_MODE_FSCREDS);
+	put_task_struct(task);
+>>>>>>> p9x
 
 	if (IS_ERR(mm))
 		return PTR_ERR(mm);
@@ -1371,7 +1387,10 @@ static const struct file_operations proc_pid_sched_init_task_load_operations = {
 	.release	= single_release,
 };
 
+<<<<<<< HEAD
 #ifndef CONFIG_SCHED_QHMP
+=======
+>>>>>>> p9x
 static int sched_group_id_show(struct seq_file *m, void *v)
 {
 	struct inode *inode = m->private;
@@ -1433,7 +1452,11 @@ static const struct file_operations proc_pid_sched_group_id_operations = {
 	.llseek		= seq_lseek,
 	.release	= single_release,
 };
+<<<<<<< HEAD
 #endif  /* !CONFIG_SCHED_QHMP */
+=======
+
+>>>>>>> p9x
 #endif	/* CONFIG_SCHED_HMP */
 
 #ifdef CONFIG_SCHED_AUTOGROUP
@@ -2047,7 +2070,11 @@ static struct dentry *proc_map_files_lookup(struct inode *dir,
 	if (!task)
 		goto out;
 
+<<<<<<< HEAD
 	result = -EACCES;
+=======
+	result = ERR_PTR(-EACCES);
+>>>>>>> p9x
 	if (!ptrace_may_access(task, PTRACE_MODE_READ_FSCREDS))
 		goto out_put_task;
 
@@ -2794,17 +2821,27 @@ static const struct pid_entry tgid_base_stuff[] = {
 	REG("environ",    S_IRUSR, proc_environ_operations),
 	ONE("auxv",       S_IRUSR, proc_pid_auxv),
 	ONE("status",     S_IRUGO, proc_pid_status),
+<<<<<<< HEAD
 	ONE("personality", S_IRUSR, proc_pid_personality),
 	ONE("limits",	  S_IRUGO, proc_pid_limits),
+=======
+	ONE("personality", S_IRUGO, proc_pid_personality),
+	INF("limits",	  S_IRUGO, proc_pid_limits),
+>>>>>>> p9x
 #ifdef CONFIG_SMP
 	REG("sched_wake_up_idle",      S_IRUGO|S_IWUSR, proc_pid_sched_wake_up_idle_operations),
 #endif
 #ifdef CONFIG_SCHED_HMP
 	REG("sched_init_task_load",      S_IRUGO|S_IWUSR, proc_pid_sched_init_task_load_operations),
+<<<<<<< HEAD
 #ifndef CONFIG_SCHED_QHMP
 	REG("sched_group_id",      S_IRUGO|S_IWUGO, proc_pid_sched_group_id_operations),
 #endif
 #endif
+=======
+	REG("sched_group_id",      S_IRUGO|S_IWUGO, proc_pid_sched_group_id_operations),
+#endif
+>>>>>>> p9x
 #ifdef CONFIG_SCHED_DEBUG
 	REG("sched",      S_IRUGO|S_IWUSR, proc_pid_sched_operations),
 #endif
@@ -2858,9 +2895,15 @@ static const struct pid_entry tgid_base_stuff[] = {
 #ifdef CONFIG_CGROUPS
 	ONE("cgroup",  S_IRUGO, proc_cgroup_show),
 #endif
+<<<<<<< HEAD
 	ONE("oom_score",  S_IRUGO, proc_oom_score),
 	REG("oom_adj",    S_IRUGO|S_IWUSR, proc_oom_adj_operations),
 	REG("oom_score_adj", S_IRUGO|S_IWUSR, proc_oom_score_adj_operations),
+=======
+	INF("oom_score",  S_IRUGO, proc_oom_score),
+	REG("oom_adj",    S_IRUSR, proc_oom_adj_operations),
+	REG("oom_score_adj", S_IRUSR, proc_oom_score_adj_operations),
+>>>>>>> p9x
 #ifdef CONFIG_AUDITSYSCALL
 	REG("loginuid",   S_IWUSR|S_IRUGO, proc_loginuid_operations),
 	REG("sessionid",  S_IRUGO, proc_sessionid_operations),
@@ -2885,6 +2928,9 @@ static const struct pid_entry tgid_base_stuff[] = {
 #endif
 #ifdef CONFIG_CHECKPOINT_RESTORE
 	REG("timers",	  S_IRUGO, proc_timers_operations),
+#endif
+#ifdef CONFIG_CPU_FREQ_STAT
+	ONE("time_in_state", 0444, proc_time_in_state_show),
 #endif
 };
 
@@ -3243,9 +3289,15 @@ static const struct pid_entry tid_base_stuff[] = {
 #ifdef CONFIG_CGROUPS
 	ONE("cgroup",  S_IRUGO, proc_cgroup_show),
 #endif
+<<<<<<< HEAD
 	ONE("oom_score", S_IRUGO, proc_oom_score),
 	REG("oom_adj",   S_IRUGO|S_IWUSR, proc_oom_adj_operations),
 	REG("oom_score_adj", S_IRUGO|S_IWUSR, proc_oom_score_adj_operations),
+=======
+	INF("oom_score", S_IRUGO, proc_oom_score),
+	REG("oom_adj",   S_IRUSR, proc_oom_adj_operations),
+	REG("oom_score_adj", S_IRUSR, proc_oom_score_adj_operations),
+>>>>>>> p9x
 #ifdef CONFIG_AUDITSYSCALL
 	REG("loginuid",  S_IWUSR|S_IRUGO, proc_loginuid_operations),
 	REG("sessionid",  S_IRUGO, proc_sessionid_operations),
@@ -3264,6 +3316,12 @@ static const struct pid_entry tid_base_stuff[] = {
 	REG("gid_map",    S_IRUGO|S_IWUSR, proc_gid_map_operations),
 	REG("projid_map", S_IRUGO|S_IWUSR, proc_projid_map_operations),
 	REG("setgroups",  S_IRUGO|S_IWUSR, proc_setgroups_operations),
+<<<<<<< HEAD
+=======
+#endif
+#ifdef CONFIG_CPU_FREQ_STAT
+	ONE("time_in_state", 0444, proc_time_in_state_show),
+>>>>>>> p9x
 #endif
 };
 

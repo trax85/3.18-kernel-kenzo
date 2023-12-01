@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -88,8 +92,12 @@ int ipa_rm_dep_graph_get_resource(
 		goto bail;
 	}
 	resource_index = ipa_rm_dep_get_index(resource_name);
+<<<<<<< HEAD
 	if (resource_index == IPA_RM_INDEX_INVALID ||
 		resource_index >= IPA_RM_RESOURCE_MAX) {
+=======
+	if (resource_index == IPA_RM_INDEX_INVALID) {
+>>>>>>> p9x
 		result = -EINVAL;
 		goto bail;
 	}
@@ -121,8 +129,12 @@ int ipa_rm_dep_graph_add(struct ipa_rm_dep_graph *graph,
 		goto bail;
 	}
 	resource_index = ipa_rm_dep_get_index(resource->name);
+<<<<<<< HEAD
 	if (resource_index == IPA_RM_INDEX_INVALID ||
 		resource_index >= IPA_RM_RESOURCE_MAX) {
+=======
+	if (resource_index == IPA_RM_INDEX_INVALID) {
+>>>>>>> p9x
 		result = -EINVAL;
 		goto bail;
 	}
@@ -154,16 +166,25 @@ int ipa_rm_dep_graph_remove(struct ipa_rm_dep_graph *graph,
  * @graph: [in] dependency graph
  * @resource_name: [in] resource to add
  * @depends_on_name: [in] resource to add
+<<<<<<< HEAD
  * @userspace_dep: [in] operation requested by userspace ?
+=======
+>>>>>>> p9x
  *
  * Returns: 0 on success, negative on failure
  */
 int ipa_rm_dep_graph_add_dependency(struct ipa_rm_dep_graph *graph,
 				    enum ipa_rm_resource_name resource_name,
+<<<<<<< HEAD
 				    enum ipa_rm_resource_name depends_on_name,
 				    bool userspace_dep)
 {
 	struct ipa_rm_resource *dependent = NULL;
+=======
+				    enum ipa_rm_resource_name depends_on_name)
+{
+	struct ipa_rm_resource *dependant = NULL;
+>>>>>>> p9x
 	struct ipa_rm_resource *dependency = NULL;
 	int result;
 
@@ -176,7 +197,11 @@ int ipa_rm_dep_graph_add_dependency(struct ipa_rm_dep_graph *graph,
 	}
 	if (ipa_rm_dep_graph_get_resource(graph,
 					  resource_name,
+<<<<<<< HEAD
 					  &dependent)) {
+=======
+					  &dependant)) {
+>>>>>>> p9x
 		IPA_RM_ERR("%s does not exist\n",
 					ipa_rm_resource_str(resource_name));
 		result = -EINVAL;
@@ -190,8 +215,12 @@ int ipa_rm_dep_graph_add_dependency(struct ipa_rm_dep_graph *graph,
 		result = -EINVAL;
 		goto bail;
 	}
+<<<<<<< HEAD
 	result = ipa_rm_resource_add_dependency(dependent, dependency,
 		userspace_dep);
+=======
+	result = ipa_rm_resource_add_dependency(dependant, dependency);
+>>>>>>> p9x
 bail:
 	IPA_RM_DBG("EXIT with %d\n", result);
 
@@ -204,17 +233,26 @@ bail:
  * @graph: [in] dependency graph
  * @resource_name: [in] resource to delete
  * @depends_on_name: [in] resource to delete
+<<<<<<< HEAD
  * @userspace_dep: [in] operation requested by userspace ?
+=======
+>>>>>>> p9x
  *
  * Returns: 0 on success, negative on failure
  *
  */
 int ipa_rm_dep_graph_delete_dependency(struct ipa_rm_dep_graph *graph,
 				enum ipa_rm_resource_name resource_name,
+<<<<<<< HEAD
 				enum ipa_rm_resource_name depends_on_name,
 				bool userspace_dep)
 {
 	struct ipa_rm_resource *dependent = NULL;
+=======
+				enum ipa_rm_resource_name depends_on_name)
+{
+	struct ipa_rm_resource *dependant = NULL;
+>>>>>>> p9x
 	struct ipa_rm_resource *dependency = NULL;
 	int result;
 
@@ -228,8 +266,13 @@ int ipa_rm_dep_graph_delete_dependency(struct ipa_rm_dep_graph *graph,
 
 	if (ipa_rm_dep_graph_get_resource(graph,
 					  resource_name,
+<<<<<<< HEAD
 					  &dependent)) {
 		IPA_RM_DBG("%s does not exist\n",
+=======
+					  &dependant)) {
+		IPA_RM_ERR("%s does not exist\n",
+>>>>>>> p9x
 					ipa_rm_resource_str(resource_name));
 		result = -EINVAL;
 		goto bail;
@@ -238,14 +281,22 @@ int ipa_rm_dep_graph_delete_dependency(struct ipa_rm_dep_graph *graph,
 	if (ipa_rm_dep_graph_get_resource(graph,
 					  depends_on_name,
 					  &dependency)) {
+<<<<<<< HEAD
 		IPA_RM_DBG("%s does not exist\n",
+=======
+		IPA_RM_ERR("%s does not exist\n",
+>>>>>>> p9x
 					ipa_rm_resource_str(depends_on_name));
 		result = -EINVAL;
 		goto bail;
 	}
 
+<<<<<<< HEAD
 	result = ipa_rm_resource_delete_dependency(dependent, dependency,
 		userspace_dep);
+=======
+	result = ipa_rm_resource_delete_dependency(dependant, dependency);
+>>>>>>> p9x
 bail:
 	IPA_RM_DBG("EXIT with %d\n", result);
 

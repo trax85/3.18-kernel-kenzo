@@ -151,7 +151,11 @@ static int ipv4_ping_group_range(struct ctl_table *table, int write,
 }
 
 /* Validate changes from /proc interface. */
+<<<<<<< HEAD
 static int proc_tcp_default_init_rwnd(struct ctl_table *ctl, int write,
+=======
+static int proc_tcp_default_init_rwnd(ctl_table *ctl, int write,
+>>>>>>> p9x
 				      void __user *buffer,
 				      size_t *lenp, loff_t *ppos)
 {
@@ -165,7 +169,11 @@ static int proc_tcp_default_init_rwnd(struct ctl_table *ctl, int write,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int proc_tcp_congestion_control(struct ctl_table *ctl, int write,
+=======
+static int proc_tcp_congestion_control(ctl_table *ctl, int write,
+>>>>>>> p9x
 				       void __user *buffer, size_t *lenp, loff_t *ppos)
 {
 	char val[TCP_CA_NAME_MAX];
@@ -458,6 +466,30 @@ static struct ctl_table ipv4_table[] = {
 		.proc_handler	= proc_dointvec
 	},
 	{
+<<<<<<< HEAD
+=======
+		.procname	= "ip_local_port_range",
+		.data		= &sysctl_local_ports.range,
+		.maxlen		= sizeof(sysctl_local_ports.range),
+		.mode		= 0644,
+		.proc_handler	= ipv4_local_port_range,
+	},
+	{
+		.procname	= "ip_local_reserved_ports",
+		.data		= NULL, /* initialized in sysctl_ipv4_init */
+		.maxlen		= 65536,
+		.mode		= 0644,
+		.proc_handler	= proc_do_large_bitmap,
+	},
+	{
+		.procname	= "reserved_port_bind",
+		.data		= &sysctl_reserved_port_bind,
+		.maxlen		= sizeof(int),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec
+	},
+	{
+>>>>>>> p9x
 		.procname	= "igmp_max_memberships",
 		.data		= &sysctl_igmp_max_memberships,
 		.maxlen		= sizeof(int),
@@ -741,6 +773,7 @@ static struct ctl_table ipv4_table[] = {
 		.extra2		= &gso_max_segs,
 	},
 	{
+<<<<<<< HEAD
 		.procname	= "tcp_autocorking",
 		.data		= &sysctl_tcp_autocorking,
 		.maxlen		= sizeof(int),
@@ -750,6 +783,8 @@ static struct ctl_table ipv4_table[] = {
 		.extra2		= &one,
 	},
 	{
+=======
+>>>>>>> p9x
 		.procname       = "tcp_default_init_rwnd",
 		.data           = &sysctl_tcp_default_init_rwnd,
 		.maxlen         = sizeof(int),
@@ -757,6 +792,7 @@ static struct ctl_table ipv4_table[] = {
 		.proc_handler   = proc_tcp_default_init_rwnd
 	},
 	{
+<<<<<<< HEAD
 		.procname	= "icmp_msgs_per_sec",
 		.data		= &sysctl_icmp_msgs_per_sec,
 		.maxlen		= sizeof(int),
@@ -773,6 +809,8 @@ static struct ctl_table ipv4_table[] = {
 		.extra1		= &zero,
 	},
 	{
+=======
+>>>>>>> p9x
 		.procname	= "udp_mem",
 		.data		= &sysctl_udp_mem,
 		.maxlen		= sizeof(sysctl_udp_mem),
@@ -915,6 +953,20 @@ static struct ctl_table ipv4_net_table[] = {
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec
+	},
+	{
+		.procname	= "fwmark_reflect",
+		.data		= &init_net.ipv4.sysctl_fwmark_reflect,
+		.maxlen		= sizeof(int),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec,
+	},
+	{
+		.procname	= "tcp_fwmark_accept",
+		.data		= &init_net.ipv4.sysctl_tcp_fwmark_accept,
+		.maxlen		= sizeof(int),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec,
 	},
 	{
 		.procname	= "fwmark_reflect",

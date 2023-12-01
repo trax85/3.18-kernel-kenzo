@@ -204,7 +204,6 @@ static int snd_usb_create_stream(struct snd_usb_audio *chip, int ctrlif, int int
 	if (! snd_usb_parse_audio_interface(chip, interface)) {
 		usb_set_interface(dev, interface, 0); /* reset the current interface */
 		usb_driver_claim_interface(&usb_audio_driver, iface, (void *)-1L);
-		return -EINVAL;
 	}
 
 	return 0;
@@ -222,6 +221,13 @@ static int snd_usb_create_streams(struct snd_usb_audio *chip, int ctrlif)
 	void *control_header;
 	int i, protocol;
 	int rest_bytes;
+
+	usb_iface = usb_ifnum_to_if(dev, ctrlif);
+	if (!usb_iface) {
+		snd_printk(KERN_ERR "%d:%u : does not exist\n",
+					dev->devnum, ctrlif);
+		return -EINVAL;
+	}
 
 	usb_iface = usb_ifnum_to_if(dev, ctrlif);
 	if (!usb_iface) {
@@ -326,7 +332,6 @@ static int snd_usb_create_streams(struct snd_usb_audio *chip, int ctrlif)
 		break;
 	}
 	}
-
 	return 0;
 }
 
@@ -624,7 +629,10 @@ static void snd_usb_audio_disconnect(struct usb_device *dev,
 {
 	struct snd_card *card;
 	struct list_head *p;
+<<<<<<< HEAD
 	bool was_shutdown;
+=======
+>>>>>>> p9x
 
 	if (chip == (void *)-1L)
 		return;
@@ -636,7 +644,12 @@ static void snd_usb_audio_disconnect(struct usb_device *dev,
 	up_write(&chip->shutdown_rwsem);
 
 	mutex_lock(&register_mutex);
+<<<<<<< HEAD
 	if (!was_shutdown) {
+=======
+	chip->num_interfaces--;
+	if (chip->num_interfaces <= 0) {
+>>>>>>> p9x
 		struct snd_usb_endpoint *ep;
 
 		snd_card_disconnect(card);
@@ -827,4 +840,24 @@ static struct usb_driver usb_audio_driver = {
 	.supports_autosuspend = 1,
 };
 
+<<<<<<< HEAD
 module_usb_driver(usb_audio_driver);
+=======
+static int __init snd_usb_audio_init(void)
+{
+	if (nrpacks < 1 || nrpacks > MAX_PACKS) {
+		printk(KERN_WARNING "invalid nrpacks value.\n");
+		return -EINVAL;
+	}
+
+	return usb_register(&usb_audio_driver);
+}
+
+static void __exit snd_usb_audio_cleanup(void)
+{
+	usb_deregister(&usb_audio_driver);
+}
+
+module_init(snd_usb_audio_init);
+module_exit(snd_usb_audio_cleanup);
+>>>>>>> p9x

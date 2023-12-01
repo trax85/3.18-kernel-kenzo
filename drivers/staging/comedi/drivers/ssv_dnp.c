@@ -74,6 +74,7 @@ static int dnp_dio_insn_bits(struct comedi_device *dev,
 	}
 
 	outb(PADR, CSCIR);
+<<<<<<< HEAD
 	val = inb(CSCDR);
 	outb(PBDR, CSCIR);
 	val |= (inb(CSCDR) << 8);
@@ -81,6 +82,13 @@ static int dnp_dio_insn_bits(struct comedi_device *dev,
 	val |= ((inb(CSCDR) & 0xf0) << 12);
 
 	data[1] = val;
+=======
+	data[1] = inb(CSCDR);
+	outb(PBDR, CSCIR);
+	data[1] += inb(CSCDR) << 8;
+	outb(PCDR, CSCIR);
+	data[1] += ((inb(CSCDR) & 0xF0) << 12);
+>>>>>>> p9x
 
 	return insn->n;
 }

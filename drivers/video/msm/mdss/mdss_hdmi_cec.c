@@ -16,7 +16,10 @@
 #include <linux/stat.h>
 #include <linux/slab.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <linux/input.h>
+=======
+>>>>>>> p9x
 
 #include "mdss_hdmi_cec.h"
 #include "mdss_panel.h"
@@ -29,6 +32,7 @@
 
 /* Reference: HDMI 1.4a Specification section 7.1 */
 
+<<<<<<< HEAD
 #define CEC_OP_SET_STREAM_PATH  0x86
 #define CEC_OP_KEY_PRESS        0x44
 #define CEC_OP_STANDBY          0x36
@@ -37,13 +41,20 @@ struct hdmi_cec_ctrl {
 	bool cec_enabled;
 	bool cec_wakeup_en;
 	bool cec_device_suspend;
+=======
+struct hdmi_cec_ctrl {
+	bool cec_enabled;
+>>>>>>> p9x
 
 	u32 cec_msg_wr_status;
 	spinlock_t lock;
 	struct work_struct cec_read_work;
 	struct completion cec_msg_wr_done;
 	struct hdmi_cec_init_data init_data;
+<<<<<<< HEAD
 	struct input_dev *input;
+=======
+>>>>>>> p9x
 };
 
 static int hdmi_cec_msg_send(void *data, struct cec_msg *msg)
@@ -62,7 +73,11 @@ static int hdmi_cec_msg_send(void *data, struct cec_msg *msg)
 
 	io = cec_ctrl->init_data.io;
 
+<<<<<<< HEAD
 	reinit_completion(&cec_ctrl->cec_msg_wr_done);
+=======
+	INIT_COMPLETION(cec_ctrl->cec_msg_wr_done);
+>>>>>>> p9x
 	cec_ctrl->cec_msg_wr_status = 0;
 	frame_type = (msg->recvr_id == 15 ? BIT(0) : 0);
 	if (msg->retransmit > 0 && msg->retransmit < RETRANSMIT_MAX_NUM)
@@ -124,6 +139,7 @@ static int hdmi_cec_msg_send(void *data, struct cec_msg *msg)
 	return rc;
 } /* hdmi_cec_msg_send */
 
+<<<<<<< HEAD
 static void hdmi_cec_init_input_event(struct hdmi_cec_ctrl *cec_ctrl)
 {
 	int rc = 0;
@@ -164,6 +180,8 @@ static void hdmi_cec_deinit_input_event(struct hdmi_cec_ctrl *cec_ctrl)
 	cec_ctrl->input = NULL;
 }
 
+=======
+>>>>>>> p9x
 static void hdmi_cec_msg_recv(struct work_struct *work)
 {
 	int i;
@@ -219,6 +237,7 @@ static void hdmi_cec_msg_recv(struct work_struct *work)
 	for (; i < MAX_OPERAND_SIZE; i++)
 		msg.operand[i] = 0;
 
+<<<<<<< HEAD
 	DEV_DBG("%s: opcode 0x%x, wakup_en %d, device_suspend %d\n", __func__,
 		msg.opcode, cec_ctrl->cec_wakeup_en,
 		cec_ctrl->cec_device_suspend);
@@ -244,10 +263,13 @@ static void hdmi_cec_msg_recv(struct work_struct *work)
 		input_sync(cec_ctrl->input);
 	}
 
+=======
+>>>>>>> p9x
 	if (cbs && cbs->msg_recv_notify)
 		cbs->msg_recv_notify(cbs->data, &msg);
 }
 
+<<<<<<< HEAD
 /**
  * hdmi_cec_isr() - interrupt handler for cec hw module
  * @cec_ctrl: pointer to cec hw module's data
@@ -257,6 +279,8 @@ static void hdmi_cec_msg_recv(struct work_struct *work)
  * The API can be called by HDMI Tx driver on receiving hw interrupts
  * to let the CEC related interrupts handled by this module.
  */
+=======
+>>>>>>> p9x
 int hdmi_cec_isr(void *input)
 {
 	int rc = 0;
@@ -270,15 +294,26 @@ int hdmi_cec_isr(void *input)
 		return -EPERM;
 	}
 
+<<<<<<< HEAD
 	if (!cec_ctrl->cec_enabled) {
 		DEV_DBG("%s: CEC feature not enabled\n", __func__);
 		return 0;
 	}
 
+=======
+>>>>>>> p9x
 	io = cec_ctrl->init_data.io;
 
 	cec_intr = DSS_REG_R_ND(io, HDMI_CEC_INT);
 
+<<<<<<< HEAD
+=======
+	if (!cec_ctrl->cec_enabled) {
+		DSS_REG_W(io, HDMI_CEC_INT, cec_intr);
+		return 0;
+	}
+
+>>>>>>> p9x
 	cec_status = DSS_REG_R_ND(io, HDMI_CEC_STATUS);
 
 	if ((cec_intr & BIT(0)) && (cec_intr & BIT(1))) {
@@ -315,6 +350,7 @@ int hdmi_cec_isr(void *input)
 	return rc;
 }
 
+<<<<<<< HEAD
 void hdmi_cec_device_suspend(void *input, bool suspend)
 {
 	struct hdmi_cec_ctrl *cec_ctrl = (struct hdmi_cec_ctrl *)input;
@@ -351,6 +387,8 @@ static void hdmi_cec_wakeup_en(void *input, bool enable)
 	cec_ctrl->cec_wakeup_en = enable;
 }
 
+=======
+>>>>>>> p9x
 static void hdmi_cec_write_logical_addr(void *input, u8 addr)
 {
 	struct hdmi_cec_ctrl *cec_ctrl = (struct hdmi_cec_ctrl *)input;
@@ -428,6 +466,7 @@ end:
 	return ret;
 }
 
+<<<<<<< HEAD
 /**
  * hdmi_cec_init() - Initialize the CEC hw module
  * @init_data: data needed to initialize the cec hw module
@@ -438,6 +477,8 @@ end:
  * The API registers CEC HW modules with the client and provides HW
  * specific operations.
  */
+=======
+>>>>>>> p9x
 void *hdmi_cec_init(struct hdmi_cec_init_data *init_data)
 {
 	struct hdmi_cec_ctrl *cec_ctrl;
@@ -451,7 +492,11 @@ void *hdmi_cec_init(struct hdmi_cec_init_data *init_data)
 	}
 
 	ops = init_data->ops;
+<<<<<<< HEAD
 	if (!ops) {
+=======
+	if (ops) {
+>>>>>>> p9x
 		DEV_ERR("%s: no ops provided\n", __func__);
 		ret = -EINVAL;
 		goto error;
@@ -476,29 +521,38 @@ void *hdmi_cec_init(struct hdmi_cec_init_data *init_data)
 	ops->wt_logical_addr = hdmi_cec_write_logical_addr;
 	ops->enable = hdmi_cec_enable;
 	ops->data = cec_ctrl;
+<<<<<<< HEAD
 	ops->wakeup_en = hdmi_cec_wakeup_en;
 	ops->is_wakeup_en = hdmi_cec_is_wakeup_en;
 	ops->device_suspend = hdmi_cec_device_suspend;
 
 	hdmi_cec_init_input_event(cec_ctrl);
+=======
+>>>>>>> p9x
 
 	return cec_ctrl;
 error:
 	return ERR_PTR(ret);
 }
 
+<<<<<<< HEAD
 /**
  * hdmi_cec_deinit() - de-initialize CEC HW module
  * @data: CEC HW module data
  *
  * This API release all resources allocated.
  */
+=======
+>>>>>>> p9x
 void hdmi_cec_deinit(void *data)
 {
 	struct hdmi_cec_ctrl *cec_ctrl = (struct hdmi_cec_ctrl *)data;
 
+<<<<<<< HEAD
 	if (cec_ctrl)
 		hdmi_cec_deinit_input_event(cec_ctrl);
 
+=======
+>>>>>>> p9x
 	kfree(cec_ctrl);
 }

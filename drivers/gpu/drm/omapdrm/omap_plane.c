@@ -140,6 +140,32 @@ static void omap_plane_atomic_update(struct drm_plane *plane,
 		return;
 	}
 
+<<<<<<< HEAD
+=======
+	channel = omap_crtc_channel(crtc);
+
+	/* update scanout: */
+	omap_framebuffer_update_scanout(plane->fb, win, info);
+
+	DBG("%dx%d -> %dx%d (%d)", info->width, info->height,
+			info->out_width, info->out_height,
+			info->screen_width);
+	DBG("%d,%d %pad %pad", info->pos_x, info->pos_y,
+			&info->paddr, &info->p_uv_addr);
+
+	/* TODO: */
+	ilace = false;
+	replication = false;
+
+	/* and finally, update omapdss: */
+	ret = dispc_ovl_setup(omap_plane->id, info,
+			replication, omap_crtc_timings(crtc), false);
+	if (ret) {
+		dev_err(dev->dev, "dispc_ovl_setup failed: %d\n", ret);
+		return;
+	}
+
+>>>>>>> p9x
 	dispc_ovl_enable(omap_plane->id, true);
 }
 

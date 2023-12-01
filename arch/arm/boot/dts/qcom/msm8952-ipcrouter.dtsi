@@ -14,7 +14,10 @@
 	qcom,ipc_router {
 		compatible = "qcom,ipc_router";
 		qcom,node-id = <1>;
+<<<<<<< HEAD
 		qcom,default-peripheral = "modem";
+=======
+>>>>>>> p9x
 	};
 
 	qcom,ipc_router_modem_xprt {
@@ -24,6 +27,10 @@
 		qcom,xprt-linkid = <1>;
 		qcom,xprt-version = <1>;
 		qcom,fragmented-data;
+<<<<<<< HEAD
+=======
+		qcom,disable-pil-loading;
+>>>>>>> p9x
 	};
 
 	qcom,ipc_router_q6_xprt {

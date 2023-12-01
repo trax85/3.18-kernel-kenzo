@@ -22,7 +22,10 @@
 
 #include <linux/ioctl.h>
 #include <linux/miscdevice.h>
+<<<<<<< HEAD
 #include <linux/nfcinfo.h>
+=======
+>>>>>>> p9x
 
 #define NFC_SET_PWR			_IOW(0xE9, 0x01, unsigned int)
 #define ESE_SET_PWR			_IOW(0xE9, 0x02, unsigned int)
@@ -43,6 +46,7 @@ enum nfcc_initial_core_reset_ntf {
 	DEFAULT_INITIAL_CORE_RESET_NTF, /*2*/
 };
 
+<<<<<<< HEAD
 enum nfcc_chip_variant {
 	NFCC_NQ_210		= 0x48,	/**< NFCC NQ210 */
 	NFCC_NQ_220		= 0x58,	/**< NFCC NQ220 */
@@ -51,4 +55,6 @@ enum nfcc_chip_variant {
 	NFCC_PN66T		= 0x18,	/**< NFCC PN66T */
 	NFCC_NOT_SUPPORTED	= 0xFF	/**< NFCC is not supported */
 };
+=======
+>>>>>>> p9x
 #endif

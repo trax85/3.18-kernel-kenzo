@@ -32,7 +32,10 @@
 #include <linux/irqchip/arm-gic.h>
 #include <linux/platform_data/clk-realview.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
 #include <linux/memblock.h>
+=======
+>>>>>>> p9x
 
 #include <mach/hardware.h>
 #include <asm/irq.h>

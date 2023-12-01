@@ -57,7 +57,11 @@ static void neigh_update_notify(struct neighbour *neigh);
 static int pneigh_ifdown(struct neigh_table *tbl, struct net_device *dev);
 
 static struct neigh_table *neigh_tables;
+<<<<<<< HEAD
 static unsigned int neigh_probe_enable;
+=======
+static unsigned neigh_probe_enable;
+>>>>>>> p9x
 #ifdef CONFIG_PROC_FS
 static const struct file_operations neigh_stat_seq_fops;
 #endif
@@ -830,7 +834,11 @@ out:
 	 * BASE_REACHABLE_TIME.
 	 */
 	queue_delayed_work(system_power_efficient_wq, &tbl->gc_work,
+<<<<<<< HEAD
 			      NEIGH_VAR(&tbl->parms, BASE_REACHABLE_TIME) >> 1);
+=======
+			      tbl->parms.base_reachable_time >> 1);
+>>>>>>> p9x
 	write_unlock_bh(&tbl->lock);
 }
 
@@ -936,7 +944,11 @@ static void neigh_timer_handler(unsigned long arg)
 			neigh->updated = jiffies;
 			atomic_set(&neigh->probes, 0);
 			notify = 1;
+<<<<<<< HEAD
 			next = now + NEIGH_VAR(neigh->parms, RETRANS_TIME);
+=======
+			next = now + neigh->parms->retrans_time;
+>>>>>>> p9x
 		}
 	} else {
 		/* NUD_PROBE|NUD_INCOMPLETE */
@@ -961,8 +973,13 @@ static void neigh_timer_handler(unsigned long arg)
 	if (neigh_probe_enable) {
 		if (neigh->nud_state & (NUD_INCOMPLETE | NUD_PROBE | NUD_STALE))
 			neigh_probe(neigh);
+<<<<<<< HEAD
 		else
 			write_unlock(&neigh->lock);
+=======
+	} else if (neigh->nud_state & (NUD_INCOMPLETE | NUD_PROBE)) {
+		neigh_probe(neigh);
+>>>>>>> p9x
 	} else {
 		if (neigh->nud_state & (NUD_INCOMPLETE | NUD_PROBE)) {
 			neigh_probe(neigh);
@@ -1297,14 +1314,27 @@ struct neighbour *neigh_event_ns(struct neigh_table *tbl,
 	struct neighbour *neigh = __neigh_lookup(tbl, saddr, dev,
 						 lladdr || !dev->addr_len);
 	if (neigh) {
+<<<<<<< HEAD
 		neigh_update(neigh, lladdr, NUD_STALE,
 			     NEIGH_UPDATE_F_OVERRIDE);
 		if (neigh_probe_enable) {
 			if (!(neigh->nud_state == NUD_REACHABLE)) {
+=======
+		if (neigh_probe_enable) {
+			if (!(neigh->nud_state == NUD_REACHABLE)) {
+				neigh_update(neigh, lladdr, NUD_STALE,
+					NEIGH_UPDATE_F_OVERRIDE);
+>>>>>>> p9x
 				write_lock(&neigh->lock);
 				neigh_probe(neigh);
 				neigh_update_notify(neigh);
 			}
+<<<<<<< HEAD
+=======
+		} else {
+				neigh_update(neigh, lladdr, NUD_STALE,
+				NEIGH_UPDATE_F_OVERRIDE);
+>>>>>>> p9x
 		}
 	}
 	return neigh;
@@ -1510,7 +1540,11 @@ struct neigh_parms *neigh_parms_alloc(struct net_device *dev,
 		p->tbl		  = tbl;
 		atomic_set(&p->refcnt, 1);
 		p->reachable_time =
+<<<<<<< HEAD
 				neigh_rand_reach_time(NEIGH_VAR(p, BASE_REACHABLE_TIME));
+=======
+				neigh_rand_reach_time(p->base_reachable_time);
+>>>>>>> p9x
 		dev_hold(dev);
 		p->dev = dev;
 		write_pnet(&p->net, hold_net(net));
@@ -2882,6 +2916,7 @@ static int proc_unres_qlen(struct ctl_table *ctl, int write,
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct neigh_parms *neigh_get_dev_parms_rcu(struct net_device *dev,
 						   int family)
 {
@@ -3022,6 +3057,31 @@ static int neigh_proc_dointvec_unres_qlen(struct ctl_table *ctl, int write,
 
 #define NEIGH_SYSCTL_UNRES_QLEN_REUSED_ENTRY(attr, data_attr, name) \
 	NEIGH_SYSCTL_ENTRY(attr, data_attr, name, 0644, neigh_proc_dointvec_unres_qlen)
+=======
+enum {
+	NEIGH_VAR_MCAST_PROBE,
+	NEIGH_VAR_UCAST_PROBE,
+	NEIGH_VAR_APP_PROBE,
+	NEIGH_VAR_RETRANS_TIME,
+	NEIGH_VAR_BASE_REACHABLE_TIME,
+	NEIGH_VAR_DELAY_PROBE_TIME,
+	NEIGH_VAR_GC_STALETIME,
+	NEIGH_VAR_QUEUE_LEN,
+	NEIGH_VAR_QUEUE_LEN_BYTES,
+	NEIGH_VAR_PROXY_QLEN,
+	NEIGH_VAR_ANYCAST_DELAY,
+	NEIGH_VAR_PROXY_DELAY,
+	NEIGH_VAR_LOCKTIME,
+	NEIGH_VAR_RETRANS_TIME_MS,
+	NEIGH_VAR_BASE_REACHABLE_TIME_MS,
+	NEIGH_VAR_GC_INTERVAL,
+	NEIGH_VAR_GC_THRESH1,
+	NEIGH_VAR_GC_THRESH2,
+	NEIGH_VAR_GC_THRESH3,
+	NEIGH_VAR_PROBE,
+	NEIGH_VAR_MAX
+};
+>>>>>>> p9x
 
 static struct neigh_sysctl_table {
 	struct ctl_table_header *sysctl_header;
@@ -3079,6 +3139,12 @@ static struct neigh_sysctl_table {
 			.mode		= 0644,
 			.proc_handler	= proc_dointvec,
 		},
+		[NEIGH_VAR_PROBE] = {
+			.procname	= "neigh_probe",
+			.maxlen		= sizeof(int),
+			.mode		= 0644,
+			.proc_handler	= proc_dointvec,
+		},
 		{},
 	},
 };
@@ -3096,11 +3162,30 @@ int neigh_sysctl_register(struct net_device *dev, struct neigh_parms *p,
 	if (!t)
 		goto err;
 
+<<<<<<< HEAD
 	for (i = 0; i < NEIGH_VAR_GC_INTERVAL; i++) {
 		t->neigh_vars[i].data += (long) p;
 		t->neigh_vars[i].extra1 = dev;
 		t->neigh_vars[i].extra2 = p;
 	}
+=======
+	t->neigh_vars[NEIGH_VAR_MCAST_PROBE].data  = &p->mcast_probes;
+	t->neigh_vars[NEIGH_VAR_UCAST_PROBE].data  = &p->ucast_probes;
+	t->neigh_vars[NEIGH_VAR_APP_PROBE].data  = &p->app_probes;
+	t->neigh_vars[NEIGH_VAR_RETRANS_TIME].data  = &p->retrans_time;
+	t->neigh_vars[NEIGH_VAR_BASE_REACHABLE_TIME].data  = &p->base_reachable_time;
+	t->neigh_vars[NEIGH_VAR_DELAY_PROBE_TIME].data  = &p->delay_probe_time;
+	t->neigh_vars[NEIGH_VAR_GC_STALETIME].data  = &p->gc_staletime;
+	t->neigh_vars[NEIGH_VAR_QUEUE_LEN].data  = &p->queue_len_bytes;
+	t->neigh_vars[NEIGH_VAR_QUEUE_LEN_BYTES].data  = &p->queue_len_bytes;
+	t->neigh_vars[NEIGH_VAR_PROXY_QLEN].data  = &p->proxy_qlen;
+	t->neigh_vars[NEIGH_VAR_ANYCAST_DELAY].data  = &p->anycast_delay;
+	t->neigh_vars[NEIGH_VAR_PROXY_DELAY].data = &p->proxy_delay;
+	t->neigh_vars[NEIGH_VAR_LOCKTIME].data = &p->locktime;
+	t->neigh_vars[NEIGH_VAR_RETRANS_TIME_MS].data  = &p->retrans_time;
+	t->neigh_vars[NEIGH_VAR_BASE_REACHABLE_TIME_MS].data  = &p->base_reachable_time;
+	t->neigh_vars[NEIGH_VAR_PROBE].data  = &neigh_probe_enable;
+>>>>>>> p9x
 
 	if (dev) {
 		dev_name_source = dev->name;

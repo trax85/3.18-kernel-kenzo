@@ -168,7 +168,10 @@ typedef void (*regmap_unlock)(void *);
  * @can_multi_write: If set, the device supports the multi write mode of bulk
  *                   write operations, if clear multi write requests will be
  *                   split into individual write operations
+<<<<<<< HEAD
  *
+=======
+>>>>>>> p9x
  * @cache_type: The actual cache type.
  * @reg_defaults_raw: Power on reset values for registers (for use with
  *                    register cache support).
@@ -220,7 +223,10 @@ struct regmap_config {
 
 	bool use_single_rw;
 	bool can_multi_write;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	enum regmap_endian reg_format_endian;
 	enum regmap_endian val_format_endian;
 

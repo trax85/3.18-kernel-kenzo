@@ -28,7 +28,11 @@
 void clmul_ghash_mul(char *dst, const u128 *shash);
 
 void clmul_ghash_update(char *dst, const char *src, unsigned int srclen,
+<<<<<<< HEAD
 			const u128 *shash);
+=======
+			const be128 *shash);
+>>>>>>> p9x
 
 struct ghash_async_ctx {
 	struct cryptd_ahash *cryptd_tfm;
@@ -68,11 +72,19 @@ static int ghash_setkey(struct crypto_shash *tfm,
 	a = be64_to_cpu(x->a);
 	b = be64_to_cpu(x->b);
 
+<<<<<<< HEAD
 	ctx->shash.a = (b << 1) | (a >> 63);
 	ctx->shash.b = (a << 1) | (b >> 63);
 
 	if (a >> 63)
 		ctx->shash.b ^= ((u64)0xc2) << 56;
+=======
+	ctx->shash.a = (__be64)((b << 1) | (a >> 63));
+	ctx->shash.b = (__be64)((a << 1) | (b >> 63));
+
+	if (a >> 63)
+		ctx->shash.b ^= cpu_to_be64(0xc2);
+>>>>>>> p9x
 
 	return 0;
 }

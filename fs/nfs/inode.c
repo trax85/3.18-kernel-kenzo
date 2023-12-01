@@ -1596,6 +1596,7 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 				nfs_force_lookup_revalidate(inode);
 			inode->i_version = fattr->change_attr;
 		}
+<<<<<<< HEAD
 	} else {
 		nfsi->cache_validity |= save_cache_validity;
 		cache_revalidated = false;
@@ -1604,6 +1605,14 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 	if (fattr->valid & NFS_ATTR_FATTR_MTIME) {
 		memcpy(&inode->i_mtime, &fattr->mtime, sizeof(inode->i_mtime));
 	} else if (server->caps & NFS_CAP_MTIME) {
+=======
+	} else if (server->caps & NFS_CAP_CHANGE_ATTR)
+		nfsi->cache_validity |= save_cache_validity;
+
+	if (fattr->valid & NFS_ATTR_FATTR_MTIME) {
+		memcpy(&inode->i_mtime, &fattr->mtime, sizeof(inode->i_mtime));
+	} else if (server->caps & NFS_CAP_MTIME)
+>>>>>>> p9x
 		nfsi->cache_validity |= save_cache_validity &
 				(NFS_INO_INVALID_ATTR
 				| NFS_INO_REVAL_FORCED);
@@ -1612,7 +1621,11 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 
 	if (fattr->valid & NFS_ATTR_FATTR_CTIME) {
 		memcpy(&inode->i_ctime, &fattr->ctime, sizeof(inode->i_ctime));
+<<<<<<< HEAD
 	} else if (server->caps & NFS_CAP_CTIME) {
+=======
+	} else if (server->caps & NFS_CAP_CTIME)
+>>>>>>> p9x
 		nfsi->cache_validity |= save_cache_validity &
 				(NFS_INO_INVALID_ATTR
 				| NFS_INO_REVAL_FORCED);
@@ -1638,7 +1651,11 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 					(long long)cur_isize,
 					(long long)new_isize);
 		}
+<<<<<<< HEAD
 	} else {
+=======
+	} else
+>>>>>>> p9x
 		nfsi->cache_validity |= save_cache_validity &
 				(NFS_INO_INVALID_ATTR
 				| NFS_INO_REVAL_PAGECACHE
@@ -1649,7 +1666,11 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 
 	if (fattr->valid & NFS_ATTR_FATTR_ATIME)
 		memcpy(&inode->i_atime, &fattr->atime, sizeof(inode->i_atime));
+<<<<<<< HEAD
 	else if (server->caps & NFS_CAP_ATIME) {
+=======
+	else if (server->caps & NFS_CAP_ATIME)
+>>>>>>> p9x
 		nfsi->cache_validity |= save_cache_validity &
 				(NFS_INO_INVALID_ATIME
 				| NFS_INO_REVAL_FORCED);
@@ -1663,7 +1684,11 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 			inode->i_mode = newmode;
 			invalid |= NFS_INO_INVALID_ATTR|NFS_INO_INVALID_ACCESS|NFS_INO_INVALID_ACL;
 		}
+<<<<<<< HEAD
 	} else if (server->caps & NFS_CAP_MODE) {
+=======
+	} else if (server->caps & NFS_CAP_MODE)
+>>>>>>> p9x
 		nfsi->cache_validity |= save_cache_validity &
 				(NFS_INO_INVALID_ATTR
 				| NFS_INO_INVALID_ACCESS
@@ -1677,7 +1702,11 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 			invalid |= NFS_INO_INVALID_ATTR|NFS_INO_INVALID_ACCESS|NFS_INO_INVALID_ACL;
 			inode->i_uid = fattr->uid;
 		}
+<<<<<<< HEAD
 	} else if (server->caps & NFS_CAP_OWNER) {
+=======
+	} else if (server->caps & NFS_CAP_OWNER)
+>>>>>>> p9x
 		nfsi->cache_validity |= save_cache_validity &
 				(NFS_INO_INVALID_ATTR
 				| NFS_INO_INVALID_ACCESS
@@ -1691,7 +1720,11 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 			invalid |= NFS_INO_INVALID_ATTR|NFS_INO_INVALID_ACCESS|NFS_INO_INVALID_ACL;
 			inode->i_gid = fattr->gid;
 		}
+<<<<<<< HEAD
 	} else if (server->caps & NFS_CAP_OWNER_GROUP) {
+=======
+	} else if (server->caps & NFS_CAP_OWNER_GROUP)
+>>>>>>> p9x
 		nfsi->cache_validity |= save_cache_validity &
 				(NFS_INO_INVALID_ATTR
 				| NFS_INO_INVALID_ACCESS
@@ -1707,7 +1740,11 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 				invalid |= NFS_INO_INVALID_DATA;
 			set_nlink(inode, fattr->nlink);
 		}
+<<<<<<< HEAD
 	} else if (server->caps & NFS_CAP_NLINK) {
+=======
+	} else if (server->caps & NFS_CAP_NLINK)
+>>>>>>> p9x
 		nfsi->cache_validity |= save_cache_validity &
 				(NFS_INO_INVALID_ATTR
 				| NFS_INO_REVAL_FORCED);
@@ -1743,7 +1780,11 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 	}
 
 	/* Don't declare attrcache up to date if there were no attrs! */
+<<<<<<< HEAD
 	if (cache_revalidated)
+=======
+	if (fattr->valid != 0)
+>>>>>>> p9x
 		invalid &= ~NFS_INO_INVALID_ATTR;
 
 	/* Don't invalidate the data if we were to blame */

@@ -3126,10 +3126,17 @@ static bool prepare_for_handlers(struct ieee80211_rx_data *rx,
 		break;
 	case NL80211_IFTYPE_ADHOC:
 		if (!bssid)
+<<<<<<< HEAD
 			return false;
 		if (ether_addr_equal(sdata->vif.addr, hdr->addr2) ||
 		    ether_addr_equal(sdata->u.ibss.bssid, hdr->addr2))
 			return false;
+=======
+			return 0;
+		if (ether_addr_equal(sdata->vif.addr, hdr->addr2) ||
+		    ether_addr_equal(sdata->u.ibss.bssid, hdr->addr2))
+			return 0;
+>>>>>>> p9x
 		if (ieee80211_is_beacon(hdr->frame_control)) {
 			return true;
 		} else if (!ieee80211_bssid_match(bssid, sdata->u.ibss.bssid)) {

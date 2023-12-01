@@ -10,9 +10,12 @@ Required properties:
     - "qcom,csiphy-v3.1"
     - "qcom,csiphy-v3.1.1"
     - "qcom,csiphy-v3.2"
+<<<<<<< HEAD
     - "qcom,csiphy-v3.4.2"
     - "qcom,csiphy-v3.4.2.1"
     - "qcom,csiphy-v3.5"
+=======
+>>>>>>> p9x
 - reg : offset and length of the register set for the device
     for the csiphy operating in compatible mode.
 - reg-names : should specify relevant names to each reg property defined.

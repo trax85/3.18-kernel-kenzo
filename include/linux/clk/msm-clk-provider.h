@@ -1,6 +1,10 @@
 /*
  * Copyright (C) 2007 Google, Inc.
+<<<<<<< HEAD
  * Copyright (c) 2007-2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2007-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -146,7 +150,10 @@ struct clk_ops {
 	void (*post_set_rate)(struct clk *clk, unsigned long old_rate);
 	int (*set_max_rate)(struct clk *clk, unsigned long rate);
 	int (*set_flags)(struct clk *clk, unsigned flags);
+<<<<<<< HEAD
 	int (*set_duty_cycle)(struct clk *clk, u32 numerator, u32 denominator);
+=======
+>>>>>>> p9x
 	unsigned long (*get_rate)(struct clk *clk);
 	long (*list_rate)(struct clk *clk, unsigned n);
 	int (*is_enabled)(struct clk *clk);
@@ -168,7 +175,10 @@ struct clk_ops {
  * @vdd_class: voltage scaling requirement class
  * @fmax: maximum frequency in Hz supported at each voltage level
  * @parent: the current source of this clock
+<<<<<<< HEAD
  * @opp_table_populated: tracks if the OPP table of this clock has been filled
+=======
+>>>>>>> p9x
  */
 struct clk {
 	uint32_t flags;
@@ -195,7 +205,10 @@ struct clk {
 
 	unsigned long init_rate;
 	bool always_on;
+<<<<<<< HEAD
 	bool opp_table_populated;
+=======
+>>>>>>> p9x
 
 	struct dentry *clk_dir;
 };

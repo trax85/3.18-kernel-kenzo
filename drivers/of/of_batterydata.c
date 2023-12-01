@@ -316,6 +316,12 @@ struct device_node *of_batterydata_get_best_profile(
 {
 	struct batt_ids batt_ids;
 	struct device_node *node, *best_node = NULL;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MACH_XIAOMI_HYDROGEN
+	struct device_node *generic_node = NULL;
+#endif
+>>>>>>> p9x
 	struct power_supply *psy;
 	const char *battery_type = NULL;
 	union power_supply_propval ret = {0, };
@@ -385,10 +391,30 @@ struct device_node *of_batterydata_get_best_profile(
 				}
 			}
 		}
+<<<<<<< HEAD
 	}
 
 	if (best_node == NULL) {
 		pr_err("No battery data found\n");
+=======
+#ifdef CONFIG_MACH_XIAOMI_HYDROGEN
+		rc = of_property_read_string(node, "qcom,battery-type",
+							&battery_type);
+		if (!rc && strcmp(battery_type, "itech_3020mah") == 0)
+				generic_node = node;
+#endif
+	}
+
+	if (best_node == NULL) {
+#ifdef CONFIG_MACH_XIAOMI_HYDROGEN
+		/* now that best_node is null and device is hydrogen,
+		 * there is no need to check whether generic node is null. */
+		best_node = generic_node;
+		pr_err("No battery data found,use generic one\n");
+#else
+		pr_err("No battery data found\n");
+#endif
+>>>>>>> p9x
 		return best_node;
 	}
 

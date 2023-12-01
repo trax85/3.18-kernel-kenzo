@@ -29,8 +29,13 @@ do {									\
 	asm volatile(							\
 "1:	ldxr	%w1, %2\n"						\
 	insn "\n"							\
+<<<<<<< HEAD
 "2:	stlxr	%w0, %w3, %2\n"						\
 "	cbnz	%w0, 1b\n"						\
+=======
+"2:	stlxr	%w3, %w0, %2\n"						\
+"	cbnz	%w3, 1b\n"						\
+>>>>>>> p9x
 "	dmb	ish\n"							\
 "3:\n"									\
 "	.pushsection .fixup,\"ax\"\n"					\
@@ -44,9 +49,13 @@ do {									\
 "	.popsection\n"							\
 	: "=&r" (ret), "=&r" (oldval), "+Q" (*uaddr), "=&r" (tmp)	\
 	: "r" (oparg), "Ir" (-EFAULT)					\
+<<<<<<< HEAD
 	: "memory");							\
 	uaccess_disable();						\
 } while (0)
+=======
+	: "memory")
+>>>>>>> p9x
 
 static inline int
 futex_atomic_op_inuser(unsigned int encoded_op, u32 __user *uaddr)
@@ -136,7 +145,10 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 	: "+r" (ret), "=&r" (val), "+Q" (*uaddr), "=&r" (tmp)
 	: "r" (oldval), "r" (newval), "Ir" (-EFAULT)
 	: "memory");
+<<<<<<< HEAD
 	uaccess_disable();
+=======
+>>>>>>> p9x
 
 	*uval = val;
 	return ret;

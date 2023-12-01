@@ -3577,13 +3577,18 @@ static void ar9003_hw_ant_ctrl_apply(struct ath_hw *ah, bool is2ghz)
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath9k_hw_capabilities *pCap = &ah->caps;
 	int chain;
+<<<<<<< HEAD
 	u32 regval, value, gpio;
+=======
+	u32 regval, value;
+>>>>>>> p9x
 	static const u32 switch_chain_reg[AR9300_MAX_CHAINS] = {
 			AR_PHY_SWITCH_CHAIN_0,
 			AR_PHY_SWITCH_CHAIN_1,
 			AR_PHY_SWITCH_CHAIN_2,
 	};
 
+<<<<<<< HEAD
 	if (AR_SREV_9485(ah) && (ar9003_hw_get_rx_gain_idx(ah) == 0)) {
 		if (ah->config.xlna_gpio)
 			gpio = ah->config.xlna_gpio;
@@ -3593,6 +3598,11 @@ static void ar9003_hw_ant_ctrl_apply(struct ath_hw *ah, bool is2ghz)
 		ath9k_hw_cfg_output(ah, gpio,
 				    AR_GPIO_OUTPUT_MUX_AS_PCIE_ATTENTION_LED);
 	}
+=======
+	if (AR_SREV_9485(ah) && (ar9003_hw_get_rx_gain_idx(ah) == 0))
+		ath9k_hw_cfg_output(ah, AR9300_EXT_LNA_CTL_GPIO_AR9485,
+				    AR_GPIO_OUTPUT_MUX_AS_PCIE_ATTENTION_LED);
+>>>>>>> p9x
 
 	value = ar9003_hw_ant_ctrl_common_get(ah, is2ghz);
 

@@ -20,6 +20,10 @@
 #include <linux/shrinker.h>
 #include <linux/resource.h>
 
+#ifdef CONFIG_STRICT_MEMORY_RWX
+extern char __init_data_begin[];
+#endif
+
 struct mempolicy;
 struct anon_vma;
 struct anon_vma_chain;
@@ -40,6 +44,9 @@ static inline void set_max_mapnr(unsigned long limit) { }
 #endif
 
 extern unsigned long totalram_pages;
+#ifdef CONFIG_FIX_MOVABLE_ZONE
+extern unsigned long total_unmovable_pages;
+#endif
 extern void * high_memory;
 extern int page_cluster;
 
@@ -50,8 +57,13 @@ extern int sysctl_legacy_va_layout;
 #endif
 
 #ifdef CONFIG_HAVE_ARCH_MMAP_RND_BITS
+<<<<<<< HEAD
 extern int mmap_rnd_bits_min;
 extern int mmap_rnd_bits_max;
+=======
+extern const int mmap_rnd_bits_min;
+extern const int mmap_rnd_bits_max;
+>>>>>>> p9x
 extern int mmap_rnd_bits __read_mostly;
 #endif
 #ifdef CONFIG_HAVE_ARCH_MMAP_RND_COMPAT_BITS
@@ -449,8 +461,23 @@ static inline struct page *compound_head_by_tail(struct page *tail)
 
 static inline struct page *compound_head(struct page *page)
 {
+<<<<<<< HEAD
 	if (unlikely(PageTail(page)))
 		return compound_head_by_tail(page);
+=======
+	if (unlikely(PageTail(page))) {
+		struct page *head = page->first_page;
+
+		/*
+		 * page->first_page may be a dangling pointer to an old
+		 * compound page, so recheck that it is still a tail
+		 * page before returning.
+		 */
+		smp_rmb();
+		if (likely(PageTail(page)))
+			return head;
+	}
+>>>>>>> p9x
 	return page;
 }
 
@@ -1081,8 +1108,12 @@ static inline int page_mapped(struct page *page)
 #define VM_FAULT_HWPOISON_LARGE_MASK 0xf000 /* encodes hpage index for large hwpoison */
 
 #define VM_FAULT_ERROR	(VM_FAULT_OOM | VM_FAULT_SIGBUS | VM_FAULT_SIGSEGV | \
+<<<<<<< HEAD
 			 VM_FAULT_HWPOISON | VM_FAULT_HWPOISON_LARGE | \
 			 VM_FAULT_FALLBACK)
+=======
+			 VM_FAULT_HWPOISON | VM_FAULT_HWPOISON_LARGE)
+>>>>>>> p9x
 
 /* Encode hstate index for a hwpoisoned large page */
 #define VM_FAULT_SET_HINDEX(x) ((x) << 12)
@@ -1260,7 +1291,12 @@ int set_page_dirty_lock(struct page *page);
 int clear_page_dirty_for_io(struct page *page);
 int get_cmdline(struct task_struct *task, char *buffer, int buflen);
 
+<<<<<<< HEAD
 int vma_is_stack_for_task(struct vm_area_struct *vma, struct task_struct *t);
+=======
+extern pid_t
+vm_is_stack(struct task_struct *task, struct vm_area_struct *vma, int in_group);
+>>>>>>> p9x
 
 extern unsigned long move_page_tables(struct vm_area_struct *vma,
 		unsigned long old_addr, struct vm_area_struct *new_vma,
@@ -1480,6 +1516,7 @@ static inline void pte_lock_deinit(struct page *page)
 /*
  * We use mm->page_table_lock to guard all pagetable pages of the mm.
  */
+<<<<<<< HEAD
 static inline spinlock_t *pte_lockptr(struct mm_struct *mm, pmd_t *pmd)
 {
 	return &mm->page_table_lock;
@@ -1494,11 +1531,21 @@ static inline void pgtable_init(void)
 	ptlock_cache_init();
 	pgtable_cache_init();
 }
+=======
+#define pte_lock_init(page)	do {} while (0)
+#define pte_lock_deinit(page)	do {} while (0)
+#define pte_lockptr(mm, pmd)	({(void)(pmd); &(mm)->page_table_lock;})
+#endif /* USE_SPLIT_PTLOCKS */
+>>>>>>> p9x
 
 static inline bool pgtable_page_ctor(struct page *page)
 {
 	inc_zone_page_state(page, NR_PAGETABLE);
+<<<<<<< HEAD
 	return ptlock_init(page);
+=======
+	return true;
+>>>>>>> p9x
 }
 
 static inline void pgtable_page_dtor(struct page *page)
@@ -1906,7 +1953,11 @@ int write_one_page(struct page *page, int wait);
 void task_dirty_inc(struct task_struct *tsk);
 
 /* readahead.c */
+<<<<<<< HEAD
 #define VM_MAX_READAHEAD	512	/* kbytes */
+=======
+#define VM_MAX_READAHEAD	CONFIG_VM_MAX_READAHEAD	/* kbytes */
+>>>>>>> p9x
 #define VM_MIN_READAHEAD	16	/* kbytes (includes current page) */
 
 int force_page_cache_readahead(struct address_space *mapping, struct file *filp,
@@ -2050,7 +2101,10 @@ static inline struct page *follow_page(struct vm_area_struct *vma,
 #define FOLL_HWPOISON	0x100	/* check page is hwpoisoned */
 #define FOLL_NUMA	0x200	/* force NUMA hinting page fault */
 #define FOLL_MIGRATION	0x400	/* wait for page to replace migration entry */
+<<<<<<< HEAD
 #define FOLL_TRIED	0x800	/* a retry, previous pass started an IO */
+=======
+>>>>>>> p9x
 #define FOLL_COW	0x4000	/* internal GUP flag */
 
 typedef int (*pte_fn_t)(pte_t *pte, pgtable_t token, unsigned long addr,
@@ -2096,6 +2150,32 @@ static inline int in_gate_area(struct mm_struct *mm, unsigned long addr)
 	return 0;
 }
 #endif	/* __HAVE_ARCH_GATE_AREA */
+
+#ifdef CONFIG_USE_USER_ACCESSIBLE_TIMERS
+static inline int use_user_accessible_timers(void) { return 1; }
+extern int in_user_timers_area(struct mm_struct *mm, unsigned long addr);
+extern struct vm_area_struct *get_user_timers_vma(struct mm_struct *mm);
+extern int get_user_timer_page(struct vm_area_struct *vma,
+	struct mm_struct *mm, unsigned long start, unsigned int gup_flags,
+	struct page **pages, int idx, int *goto_next_page);
+#else
+static inline int use_user_accessible_timers(void) { return 0; }
+static inline int in_user_timers_area(struct mm_struct *mm, unsigned long addr)
+{
+	return 0;
+}
+static inline struct vm_area_struct *get_user_timers_vma(struct mm_struct *mm)
+{
+	return NULL;
+}
+static inline int get_user_timer_page(struct vm_area_struct *vma,
+	struct mm_struct *mm, unsigned long start, unsigned int gup_flags,
+	struct page **pages, int idx, int *goto_next_page)
+{
+	*goto_next_page = 0;
+	return 0;
+}
+#endif
 
 #ifdef CONFIG_SYSCTL
 extern int sysctl_drop_caches;

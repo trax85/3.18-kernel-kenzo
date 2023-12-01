@@ -224,11 +224,14 @@ void mlx4_en_deactivate_tx_ring(struct mlx4_en_priv *priv,
 		       MLX4_QP_STATE_RST, NULL, 0, 0, &ring->qp);
 }
 
+<<<<<<< HEAD
 static inline bool mlx4_en_is_tx_ring_full(struct mlx4_en_tx_ring *ring)
 {
 	return ring->prod - ring->cons > ring->full_size;
 }
 
+=======
+>>>>>>> p9x
 static void mlx4_en_stamp_wqe(struct mlx4_en_priv *priv,
 			      struct mlx4_en_tx_ring *ring, int index,
 			      u8 owner)
@@ -274,6 +277,10 @@ static u32 mlx4_en_free_tx_desc(struct mlx4_en_priv *priv,
 	struct sk_buff *skb = tx_info->skb;
 	int nr_maps = tx_info->nr_maps;
 	int i;
+<<<<<<< HEAD
+=======
+	struct skb_shared_hwtstamps hwts;
+>>>>>>> p9x
 
 	/* We do not touch skb here, so prefetch skb->users location
 	 * to speedup consume_skb()
@@ -402,10 +409,15 @@ static bool mlx4_en_process_tx_cq(struct net_device *dev,
 	netdev_txq_bql_complete_prefetchw(ring->tx_queue);
 
 	index = cons_index & size_mask;
+<<<<<<< HEAD
 	cqe = mlx4_en_get_cqe(buf, index, priv->cqe_size) + factor;
 	last_nr_txbb = ACCESS_ONCE(ring->last_nr_txbb);
 	ring_cons = ACCESS_ONCE(ring->cons);
 	ring_index = ring_cons & size_mask;
+=======
+	cqe = &buf[(index << factor) + factor];
+	ring_index = ring->cons & size_mask;
+>>>>>>> p9x
 	stamp_index = ring_index;
 
 	/* Process all completed CQEs */
@@ -445,7 +457,11 @@ static bool mlx4_en_process_tx_cq(struct net_device *dev,
 					ring->size), timestamp);
 
 			mlx4_en_stamp_wqe(priv, ring, stamp_index,
+<<<<<<< HEAD
 					  !!((ring_cons + txbbs_stamp) &
+=======
+					  !!((ring->cons + txbbs_stamp) &
+>>>>>>> p9x
 						ring->size));
 			stamp_index = ring_index;
 			txbbs_stamp = txbbs_skipped;

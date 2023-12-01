@@ -1,6 +1,11 @@
 #ifndef __ASM_TOPOLOGY_H
 #define __ASM_TOPOLOGY_H
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SMP
+
+>>>>>>> p9x
 #include <linux/cpumask.h>
 
 struct cpu_topology {
@@ -22,6 +27,7 @@ void init_cpu_topology(void);
 void store_cpu_topology(unsigned int cpuid);
 const struct cpumask *cpu_coregroup_mask(int cpu);
 
+<<<<<<< HEAD
 struct sched_domain;
 #ifdef CONFIG_CPU_FREQ
 #define arch_scale_freq_capacity cpufreq_scale_freq_capacity
@@ -30,6 +36,14 @@ extern unsigned long cpufreq_scale_max_freq_capacity(int cpu);
 #endif
 #define arch_scale_cpu_capacity scale_cpu_capacity
 extern unsigned long scale_cpu_capacity(struct sched_domain *sd, int cpu);
+=======
+#else
+
+static inline void init_cpu_topology(void) { }
+static inline void store_cpu_topology(unsigned int cpuid) { }
+
+#endif
+>>>>>>> p9x
 
 #include <asm-generic/topology.h>
 

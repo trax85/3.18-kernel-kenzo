@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -28,7 +32,10 @@ enum buf_type {
 
 enum xprt_ids {
 	SMEM_XPRT_ID = 100,
+<<<<<<< HEAD
 	SPIV2_XPRT_ID = SMEM_XPRT_ID,
+=======
+>>>>>>> p9x
 	SMD_TRANS_XPRT_ID = 200,
 	LLOOP_XPRT_ID = 300,
 	MOCK_XPRT_HIGH_ID = 390,
@@ -36,6 +43,7 @@ enum xprt_ids {
 	MOCK_XPRT_LOW_ID = 410,
 };
 
+<<<<<<< HEAD
 #define GCAP_SIGNALS		BIT(0)
 #define GCAP_INTENTLESS		BIT(1)
 #define GCAP_TRACER_PKT		BIT(2)
@@ -59,6 +67,14 @@ enum xprt_ids {
  * @pprovider:		Packet-specific physical buffer provider function.
  * @cookie:		Transport-specific cookie
  * @pkt_ref:		Active references to the packet.
+=======
+#define GCAP_SIGNALS	BIT(0)
+#define GCAP_INTENTLESS	BIT(1)
+#define GCAP_TRACER_PKT	BIT(2)
+
+/**
+ * TX PKT info.
+>>>>>>> p9x
  */
 struct glink_core_tx_pkt {
 	struct list_head list_node;
@@ -66,17 +82,24 @@ struct glink_core_tx_pkt {
 	const void *pkt_priv;
 	const void *data;
 	uint32_t riid;
+<<<<<<< HEAD
 	uint32_t rcid;
 	uint32_t size;
 	uint32_t tx_len;
+=======
+	uint32_t size;
+>>>>>>> p9x
 	uint32_t size_remaining;
 	size_t intent_size;
 	bool tracer_pkt;
 	void *iovec;
 	void * (*vprovider)(void *iovec, size_t offset, size_t *size);
 	void * (*pprovider)(void *iovec, size_t offset, size_t *size);
+<<<<<<< HEAD
 	void *cookie;
 	struct rwref_lock pkt_ref;
+=======
+>>>>>>> p9x
 };
 
 /**
@@ -137,10 +160,14 @@ struct glink_transport_if {
 	int (*wait_link_down)(struct glink_transport_if *if_ptr);
 	int (*tx_cmd_tracer_pkt)(struct glink_transport_if *if_ptr,
 			uint32_t lcid, struct glink_core_tx_pkt *pctx);
+<<<<<<< HEAD
 	unsigned long (*get_power_vote_ramp_time)(
 			struct glink_transport_if *if_ptr, uint32_t state);
 	int (*power_vote)(struct glink_transport_if *if_ptr, uint32_t state);
 	int (*power_unvote)(struct glink_transport_if *if_ptr);
+=======
+
+>>>>>>> p9x
 	/*
 	 * Keep data pointers at the end of the structure after all function
 	 * pointer to allow for in-place initialization.

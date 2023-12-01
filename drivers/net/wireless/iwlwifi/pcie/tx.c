@@ -1140,6 +1140,7 @@ void iwl_trans_pcie_txq_enable(struct iwl_trans *trans, int txq_id, u16 ssn,
 			((frame_limit << SCD_QUEUE_CTX_REG2_FRAME_LIMIT_POS) &
 					SCD_QUEUE_CTX_REG2_FRAME_LIMIT_MSK));
 
+<<<<<<< HEAD
 		/* Set up status area in SRAM, map to Tx DMA/FIFO, activate */
 		iwl_write_prph(trans, SCD_QUEUE_STATUS_BITS(txq_id),
 			       (1 << SCD_QUEUE_STTS_REG_POS_ACTIVE) |
@@ -1153,6 +1154,14 @@ void iwl_trans_pcie_txq_enable(struct iwl_trans *trans, int txq_id, u16 ssn,
 			iwl_scd_enable_set_active(trans, BIT(txq_id));
 	}
 
+=======
+	/* Set up Status area in SRAM, map to Tx DMA/FIFO, activate the queue */
+	iwl_write_prph(trans, SCD_QUEUE_STATUS_BITS(txq_id),
+		       (1 << SCD_QUEUE_STTS_REG_POS_ACTIVE) |
+		       (fifo << SCD_QUEUE_STTS_REG_POS_TXF) |
+		       (1 << SCD_QUEUE_STTS_REG_POS_WSL) |
+		       SCD_QUEUE_STTS_REG_MSK);
+>>>>>>> p9x
 	trans_pcie->txq[txq_id].active = true;
 	IWL_DEBUG_TX_QUEUES(trans, "Activate queue %d on FIFO %d WrPtr: %d\n",
 			    txq_id, fifo, ssn & 0xff);
@@ -1367,10 +1376,15 @@ static int iwl_pcie_enqueue_hcmd(struct iwl_trans *trans,
 
 	/* start the TFD with the scratchbuf */
 	scratch_size = min_t(int, copy_size, IWL_HCMD_SCRATCHBUF_SIZE);
-	memcpy(&txq->scratchbufs[q->write_ptr], &out_cmd->hdr, scratch_size);
+	memcpy(&txq->scratchbufs[idx], &out_cmd->hdr, scratch_size);
 	iwl_pcie_txq_build_tfd(trans, txq,
+<<<<<<< HEAD
 			       iwl_pcie_get_scratchbuf_dma(txq, q->write_ptr),
 			       scratch_size, true);
+=======
+			       iwl_pcie_get_scratchbuf_dma(txq, idx),
+			       scratch_size, 1);
+>>>>>>> p9x
 
 	/* map first command fragment, if any remains */
 	if (copy_size > scratch_size) {

@@ -349,6 +349,7 @@ int ttm_bo_move_memcpy(struct ttm_buffer_object *bo,
 	 */
 	if (old_iomap == NULL && new_iomap == NULL)
 		goto out2;
+<<<<<<< HEAD
 
 	/*
 	 * Don't move nonexistent data. Clear destination instead.
@@ -361,6 +362,16 @@ int ttm_bo_move_memcpy(struct ttm_buffer_object *bo,
 	}
 
 	/*
+=======
+
+	/*
+	 * Move nonexistent data. NOP.
+	 */
+	if (old_iomap == NULL && ttm == NULL)
+		goto out2;
+
+	/*
+>>>>>>> p9x
 	 * TTM might be null for moves within the same region.
 	 */
 	if (ttm && ttm->state == tt_unpopulated) {

@@ -91,4 +91,9 @@ struct sip_list {
 	struct list_head list;
 };
 
+struct sip_list {
+	struct nf_queue_entry *entry;
+	struct list_head list;
+};
+
 #endif /* _NF_CONNTRACK_CORE_H */

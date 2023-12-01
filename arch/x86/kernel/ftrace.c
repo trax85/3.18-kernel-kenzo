@@ -614,11 +614,18 @@ ftrace_modify_code(unsigned long ip, unsigned const char *old_code,
 	run_sync();
 
 	ret = ftrace_write(ip, new_code, 1);
+<<<<<<< HEAD
 	/*
 	 * The breakpoint is handled only when this function is in progress.
 	 * The system could not work if we could not remove it.
 	 */
 	BUG_ON(ret);
+=======
+	if (ret) {
+		ret = -EPERM;
+		goto out;
+	}
+>>>>>>> p9x
  out:
 	run_sync();
 	return ret;
@@ -715,9 +722,12 @@ void prepare_ftrace_return(unsigned long *parent, unsigned long self_addr,
 	if (unlikely((long)__builtin_frame_address(0) >= 0))
 		return;
 
+<<<<<<< HEAD
 	if (unlikely(ftrace_graph_is_dead()))
 		return;
 
+=======
+>>>>>>> p9x
 	if (unlikely(atomic_read(&current->tracing_graph_pause)))
 		return;
 

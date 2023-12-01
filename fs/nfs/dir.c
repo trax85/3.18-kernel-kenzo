@@ -2086,7 +2086,11 @@ MODULE_PARM_DESC(nfs_access_max_cachesize, "NFS access maximum total cache lengt
 static void nfs_access_free_entry(struct nfs_access_entry *entry)
 {
 	put_rpccred(entry->cred);
+<<<<<<< HEAD
 	kfree_rcu(entry, rcu_head);
+=======
+	kfree(entry);
+>>>>>>> p9x
 	smp_mb__before_atomic();
 	atomic_long_dec(&nfs_access_nr_entries);
 	smp_mb__after_atomic();

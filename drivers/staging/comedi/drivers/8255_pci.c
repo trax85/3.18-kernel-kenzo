@@ -56,6 +56,7 @@ Configuration Options: not applicable, uses PCI auto config
 #include "../comedidev.h"
 
 #include "8255.h"
+#include "mite.h"
 
 enum pci_8255_boardid {
 	BOARD_ADLINK_PCI7224,
@@ -172,6 +173,28 @@ static const struct pci_8255_boardinfo pci_8255_boards[] = {
 #define WENAB		(1 << 7) /* window enable */
 
 static int pci_8255_mite_init(struct pci_dev *pcidev)
+<<<<<<< HEAD
+=======
+{
+	void __iomem *mite_base;
+	u32 main_phys_addr;
+
+	/* ioremap the MITE registers (BAR 0) temporarily */
+	mite_base = pci_ioremap_bar(pcidev, 0);
+	if (!mite_base)
+		return -ENOMEM;
+
+	/* set data window to main registers (BAR 1) */
+	main_phys_addr = pci_resource_start(pcidev, 1);
+	writel(main_phys_addr | WENAB, mite_base + MITE_IODWBSR);
+
+	/* finished with MITE registers */
+	iounmap(mite_base);
+	return 0;
+}
+
+static int pci_8255_mmio(int dir, int port, int data, unsigned long iobase)
+>>>>>>> p9x
 {
 	void __iomem *mite_base;
 	u32 main_phys_addr;
@@ -216,9 +239,17 @@ static int pci_8255_auto_attach(struct comedi_device *dev,
 			return ret;
 	}
 
+<<<<<<< HEAD
 	if ((pci_resource_flags(pcidev, board->dio_badr) & IORESOURCE_MEM)) {
 		dev->mmio = pci_ioremap_bar(pcidev, board->dio_badr);
 		if (!dev->mmio)
+=======
+	is_mmio = (pci_resource_flags(pcidev, board->dio_badr) &
+		   IORESOURCE_MEM) != 0;
+	if (is_mmio) {
+		devpriv->mmio_base = pci_ioremap_bar(pcidev, board->dio_badr);
+		if (!devpriv->mmio_base)
+>>>>>>> p9x
 			return -ENOMEM;
 	} else {
 		dev->iobase = pci_resource_start(pcidev, board->dio_badr);

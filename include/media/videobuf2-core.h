@@ -380,9 +380,12 @@ struct v4l2_fh;
  * @done_wq:	waitqueue for processes waiting for buffers ready to be dequeued
  * @alloc_ctx:	memory type/allocator-specific contexts for each plane
  * @streaming:	current streaming state
+<<<<<<< HEAD
  * @start_streaming_called: start_streaming() was called successfully and we
  *		started streaming.
  * @error:	a fatal error occurred on the queue
+=======
+>>>>>>> p9x
  * @waiting_for_buffers: used in poll() to check if vb2 is still waiting for
  *		buffers. Only set for capture queues if qbuf has not yet been
  *		called since poll() needs to return POLLERR in that situation.
@@ -423,8 +426,11 @@ struct vb2_queue {
 	unsigned int			plane_sizes[VIDEO_MAX_PLANES];
 
 	unsigned int			streaming:1;
+<<<<<<< HEAD
 	unsigned int			start_streaming_called:1;
 	unsigned int			error:1;
+=======
+>>>>>>> p9x
 	unsigned int			waiting_for_buffers:1;
 
 	struct vb2_fileio_data		*fileio;

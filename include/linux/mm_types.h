@@ -207,6 +207,12 @@ struct page {
 	struct stack_trace trace;
 	unsigned long trace_entries[8];
 #endif
+#ifdef CONFIG_PAGE_OWNER
+	int order;
+	gfp_t gfp_mask;
+	struct stack_trace trace;
+	unsigned long trace_entries[8];
+#endif
 }
 /*
  * The struct page can be forced to be double word aligned so that atomic ops
@@ -469,6 +475,14 @@ struct mm_struct {
 	 */
 	bool tlb_flush_pending;
 #endif
+#if defined(CONFIG_NUMA_BALANCING) || defined(CONFIG_COMPACTION)
+	/*
+	 * An operation with batched TLB flushing is going on. Anything that
+	 * can move process memory needs to flush the TLB when moving a
+	 * PROT_NONE or PROT_NUMA mapped page.
+	 */
+	atomic_t tlb_flush_pending;
+#endif
 	struct uprobes_state uprobes_state;
 #ifdef CONFIG_MSM_APP_SETTINGS
 	int app_setting;
@@ -501,6 +515,7 @@ static inline cpumask_t *mm_cpumask(struct mm_struct *mm)
 static inline bool mm_tlb_flush_pending(struct mm_struct *mm)
 {
 	barrier();
+<<<<<<< HEAD
 	return mm->tlb_flush_pending;
 }
 static inline void set_tlb_flush_pending(struct mm_struct *mm)
@@ -509,29 +524,68 @@ static inline void set_tlb_flush_pending(struct mm_struct *mm)
 
 	/*
 	 * Guarantee that the tlb_flush_pending store does not leak into the
+=======
+	return atomic_read(&mm->tlb_flush_pending) > 0;
+}
+
+static inline void init_tlb_flush_pending(struct mm_struct *mm)
+{
+	atomic_set(&mm->tlb_flush_pending, 0);
+}
+
+static inline void inc_tlb_flush_pending(struct mm_struct *mm)
+{
+	atomic_inc(&mm->tlb_flush_pending);
+
+	/*
+	 * Guarantee that the tlb_flush_pending increase does not leak into the
+>>>>>>> p9x
 	 * critical section updating the page tables
 	 */
 	smp_mb__before_spinlock();
 }
+<<<<<<< HEAD
 /* Clearing is done after a TLB flush, which also provides a barrier. */
 static inline void clear_tlb_flush_pending(struct mm_struct *mm)
 {
 	barrier();
 	mm->tlb_flush_pending = false;
+=======
+
+/* Clearing is done after a TLB flush, which also provides a barrier. */
+static inline void dec_tlb_flush_pending(struct mm_struct *mm)
+{
+	barrier();
+	atomic_dec(&mm->tlb_flush_pending);
+>>>>>>> p9x
 }
 #else
 static inline bool mm_tlb_flush_pending(struct mm_struct *mm)
 {
 	return false;
 }
+<<<<<<< HEAD
 static inline void set_tlb_flush_pending(struct mm_struct *mm)
 {
 }
 static inline void clear_tlb_flush_pending(struct mm_struct *mm)
+=======
+
+static inline void init_tlb_flush_pending(struct mm_struct *mm)
+{
+}
+
+static inline void inc_tlb_flush_pending(struct mm_struct *mm)
+{
+}
+
+static inline void dec_tlb_flush_pending(struct mm_struct *mm)
+>>>>>>> p9x
 {
 }
 #endif
 
+<<<<<<< HEAD
 struct vm_special_mapping
 {
 	const char *name;
@@ -546,6 +600,8 @@ enum tlb_flush_reason {
 	NR_TLB_FLUSH_REASONS,
 };
 
+=======
+>>>>>>> p9x
 /* Return the name for an anonymous mapping or NULL for a file-backed mapping */
 static inline const char __user *vma_get_anon_name(struct vm_area_struct *vma)
 {

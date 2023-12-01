@@ -7,7 +7,11 @@ enum msm_ion_heap_types {
 	ION_HEAP_TYPE_MSM_START = ION_HEAP_TYPE_CUSTOM + 1,
 	ION_HEAP_TYPE_SECURE_DMA = ION_HEAP_TYPE_MSM_START,
 	ION_HEAP_TYPE_SYSTEM_SECURE,
+<<<<<<< HEAD
 	ION_HEAP_TYPE_HYP_CMA,
+=======
+	ION_HEAP_TYPE_REMOVED,
+>>>>>>> p9x
 	/*
 	 * if you add a heap type here you should also add it to
 	 * heap_types_info[] in msm_ion.c
@@ -27,7 +31,10 @@ enum ion_heap_ids {
 	INVALID_HEAP_ID = -1,
 	ION_CP_MM_HEAP_ID = 8,
 	ION_SECURE_HEAP_ID = 9,
+<<<<<<< HEAD
 	ION_SECURE_DISPLAY_HEAP_ID = 10,
+=======
+>>>>>>> p9x
 	ION_CP_MFC_HEAP_ID = 12,
 	ION_CP_WB_HEAP_ID = 16, /* 8660 only */
 	ION_CAMERA_HEAP_ID = 20, /* 8660 only */
@@ -80,8 +87,11 @@ enum cp_mem_usage {
 #define ION_FLAG_CP_CAMERA (1 << 21)
 #define ION_FLAG_CP_HLOS (1 << 22)
 #define ION_FLAG_CP_HLOS_FREE (1 << 23)
+<<<<<<< HEAD
 #define ION_FLAG_CP_SEC_DISPLAY (1 << 25)
 #define ION_FLAG_CP_APP (1 << 26)
+=======
+>>>>>>> p9x
 
 /**
  * Flag to allow non continguous allocation of memory from secure
@@ -107,9 +117,12 @@ enum cp_mem_usage {
  */
 #define ION_FLAG_POOL_FORCE_ALLOC (1 << 16)
 
+<<<<<<< HEAD
 
 #define ION_FLAG_POOL_PREFETCH (1 << 27)
 
+=======
+>>>>>>> p9x
 /**
 * Deprecated! Please use the corresponding ION_FLAG_*
 */
@@ -137,7 +150,10 @@ enum cp_mem_usage {
 #define ION_PIL2_HEAP_NAME  "pil_2"
 #define ION_QSECOM_HEAP_NAME	"qsecom"
 #define ION_SECURE_HEAP_NAME	"secure_heap"
+<<<<<<< HEAD
 #define ION_SECURE_DISPLAY_HEAP_NAME "secure_display"
+=======
+>>>>>>> p9x
 
 #define ION_SET_CACHED(__cache)		(__cache | ION_FLAG_CACHED)
 #define ION_SET_UNCACHED(__cache)	(__cache & ~ION_FLAG_CACHED)
@@ -164,18 +180,24 @@ struct ion_flush_data {
 	unsigned int length;
 };
 
+<<<<<<< HEAD
 struct ion_prefetch_regions {
 	unsigned int vmid;
 	size_t __user *sizes;
 	unsigned int nr_sizes;
 };
+=======
+>>>>>>> p9x
 
 struct ion_prefetch_data {
 	int heap_id;
 	unsigned long len;
+<<<<<<< HEAD
 	/* Is unsigned long bad? 32bit compiler vs 64 bit compiler*/
 	struct ion_prefetch_regions __user *regions;
 	unsigned int nr_regions;
+=======
+>>>>>>> p9x
 };
 
 #define ION_IOC_MSM_MAGIC 'M'

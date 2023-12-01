@@ -590,6 +590,7 @@ const char *of_clk_get_parent_name(struct device_node *np, int index);
 
 void of_clk_init(const struct of_device_id *matches);
 
+<<<<<<< HEAD
 #else /* !CONFIG_OF */
 
 static inline int of_clk_add_provider(struct device_node *np,
@@ -656,6 +657,14 @@ struct dentry *clk_debugfs_add_file(struct clk *clk, char *name, umode_t mode,
 				void *data, const struct file_operations *fops);
 #endif
 #else
+=======
+#define CLK_OF_DECLARE(name, compat, fn)			\
+	static const struct of_device_id __clk_of_table_##name	\
+		__used __section(__clk_of_table)		\
+		= { .compatible = compat, .data = fn };
+#else
+
+>>>>>>> p9x
 struct of_device_id;
 
 static inline void __init of_clk_init(const struct of_device_id *matches)

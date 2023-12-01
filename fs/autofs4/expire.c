@@ -499,6 +499,16 @@ found:
 	ino->flags |= AUTOFS_INF_EXPIRING;
 	init_completion(&ino->expire_complete);
 	spin_unlock(&sbi->fs_lock);
+<<<<<<< HEAD
+=======
+	spin_lock(&sbi->lookup_lock);
+	spin_lock(&expired->d_parent->d_lock);
+	spin_lock_nested(&expired->d_lock, DENTRY_D_LOCK_NESTED);
+	list_move(&expired->d_parent->d_subdirs, &expired->d_child);
+	spin_unlock(&expired->d_lock);
+	spin_unlock(&expired->d_parent->d_lock);
+	spin_unlock(&sbi->lookup_lock);
+>>>>>>> p9x
 	return expired;
 }
 

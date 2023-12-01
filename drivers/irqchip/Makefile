@@ -33,6 +33,7 @@ obj-$(CONFIG_RENESAS_IRQC)		+= irq-renesas-irqc.o
 obj-$(CONFIG_VERSATILE_FPGA_IRQ)	+= irq-versatile-fpga.o
 obj-$(CONFIG_ARCH_NSPIRE)		+= irq-zevio.o
 obj-$(CONFIG_ARCH_VT8500)		+= irq-vt8500.o
+<<<<<<< HEAD
 obj-$(CONFIG_TB10X_IRQC)		+= irq-tb10x.o
 obj-$(CONFIG_XTENSA)			+= irq-xtensa-pic.o
 obj-$(CONFIG_XTENSA_MX)			+= irq-xtensa-mx.o
@@ -43,3 +44,7 @@ obj-$(CONFIG_KEYSTONE_IRQ)		+= irq-keystone.o
 obj-$(CONFIG_MSM_IRQ)                   += irq-msm.o
 obj-$(CONFIG_MSM_SHOW_RESUME_IRQ)       += msm_show_resume_irq.o
 obj-$(CONFIG_ARCH_MEDIATEK)		+= irq-mtk-sysirq.o
+=======
+obj-$(CONFIG_MSM_IRQ)			+= irq-msm.o
+obj-$(CONFIG_MSM_SHOW_RESUME_IRQ)       += msm_show_resume_irq.o
+>>>>>>> p9x

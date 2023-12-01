@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 Qualcomm Technologies, Inc. mdss-qpic-panel
+=======
+Qualcomm mdss-qpic-panel
+>>>>>>> p9x
 
 mdss-qpic-panel is a panel device which can be driven by qpic.
 

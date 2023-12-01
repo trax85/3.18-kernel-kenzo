@@ -24,6 +24,7 @@
 			     DUMP_PREFIX_OFFSET, 16, 1, buf, len, true)
 #define wil_dbg_ioctl(wil, fmt, arg...) wil_dbg(wil, "DBG[IOC ]" fmt, ##arg)
 
+<<<<<<< HEAD
 #define WIL_PRIV_DATA_MAX_LEN	8192
 #define CMD_SET_AP_WPS_P2P_IE	"SET_AP_WPS_P2P_IE"
 
@@ -32,6 +33,8 @@ struct wil_android_priv_data {
 	int used_len;
 	int total_len;
 };
+=======
+>>>>>>> p9x
 static void __iomem *wil_ioc_addr(struct wil6210_priv *wil, uint32_t addr,
 				  uint32_t size, enum wil_memio_op op)
 {
@@ -84,12 +87,20 @@ static int wil_ioc_memio_dword(struct wil6210_priv *wil, void __user *data)
 	/* operation */
 	switch (io.op & wil_mmio_op_mask) {
 	case wil_mmio_read:
+<<<<<<< HEAD
 		io.val = readl(a);
+=======
+		io.val = ioread32(a);
+>>>>>>> p9x
 		need_copy = true;
 		break;
 #if defined(CONFIG_WIL6210_WRITE_IOCTL)
 	case wil_mmio_write:
+<<<<<<< HEAD
 		writel(io.val, a);
+=======
+		iowrite32(io.val, a);
+>>>>>>> p9x
 		wmb(); /* make sure write propagated to HW */
 		break;
 #endif
@@ -171,6 +182,7 @@ out_free:
 	return rc;
 }
 
+<<<<<<< HEAD
 static int wil_ioc_android(struct wil6210_priv *wil, void __user *data)
 {
 	int rc = 0;
@@ -231,11 +243,23 @@ int wil_ioctl(struct wil6210_priv *wil, void __user *data, int cmd)
 	case (SIOCDEVPRIVATE + 1):
 		ret = wil_ioc_android(wil, data);
 		break;
+=======
+int wil_ioctl(struct wil6210_priv *wil, void __user *data, int cmd)
+{
+	switch (cmd) {
+	case WIL_IOCTL_MEMIO:
+		return wil_ioc_memio_dword(wil, data);
+	case WIL_IOCTL_MEMIO_BLOCK:
+		return wil_ioc_memio_block(wil, data);
+>>>>>>> p9x
 	default:
 		wil_dbg_ioctl(wil, "Unsupported IOCTL 0x%04x\n", cmd);
 		return -ENOIOCTLCMD;
 	}
+<<<<<<< HEAD
 
 	wil_dbg_ioctl(wil, "ioctl(0x%04x) -> %d\n", cmd, ret);
 	return ret;
+=======
+>>>>>>> p9x
 }

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -10,8 +14,11 @@
  * GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
 #include <dt-bindings/msm/power-on.h>
 
+=======
+>>>>>>> p9x
 &spmi_bus {
 	#address-cells = <1>;
 	#size-cells = <0>;
@@ -33,6 +40,7 @@
 			compatible = "qcom,qpnp-power-on";
 			reg = <0x800 0x100>;
 			qcom,secondary-pon-reset;
+<<<<<<< HEAD
 			qcom,hard-reset-poweroff-type =
 				<PON_POWER_OFF_SHUTDOWN>;
 			pon_perph_reg: qcom,pon_perph_reg {
@@ -40,6 +48,10 @@
 				qcom,pon-spare-reg-addr = <0x8c>;
 				qcom,pon-spare-reg-bit = <1>;
 			};
+=======
+			qcom,s3-debounce = <32>;
+			qcom,s3-src = "kpdpwr-and-resin";
+>>>>>>> p9x
 		};
 
 		pmi8994_gpios: gpios {
@@ -215,9 +227,14 @@
 			qcom,parallel-usb-min-current-ma = <1400>;
 			qcom,parallel-usb-9v-min-current-ma = <900>;
 			qcom,parallel-allowed-lowering-ma = <500>;
+<<<<<<< HEAD
 			qcom,pmic-revid = <&pmi8994_revid>;
 			qcom,force-aicl-rerun;
 			qcom,aicl-rerun-period-s = <180>;
+=======
+			qcom,autoadjust-vfloat;
+			qcom,pmic-revid = <&pmi8994_revid>;
+>>>>>>> p9x
 
 			qcom,chgr@1000 {
 				reg = <0x1000 0x100>;
@@ -320,13 +337,20 @@
 			status = "okay";
 			qcom,bcl-lm-threshold-ma = <127>;
 			qcom,bcl-mh-threshold-ma = <405>;
+<<<<<<< HEAD
 			qcom,fg-iterm-ma = <125>;
+=======
+			qcom,fg-iterm-ma = <100>;
+>>>>>>> p9x
 			qcom,fg-chg-iterm-ma = <100>;
 			qcom,cycle-counter-en;
 			qcom,capacity-learning-on;
 			qcom,fg-cc-cv-threshold-mv = <4340>;
 			qcom,pmic-revid = <&pmi8994_revid>;
+<<<<<<< HEAD
 			qcom,capacity-learning-feedback;
+=======
+>>>>>>> p9x
 
 			qcom,fg-soc@4000 {
 				status = "okay";
@@ -347,7 +371,12 @@
 							"delta-soc",
 							"first-est-done",
 							"sw-fallbk-ocv",
+<<<<<<< HEAD
 							"sw-fallbk-new-batt";
+=======
+							"sw-fallbk-new-battrt-sts",
+							"fg-soc-irq-count";
+>>>>>>> p9x
 			};
 
 			qcom,fg-batt@4100 {
@@ -453,6 +482,7 @@
 			#size-cells = <1>;
 			qcom,pmic-revid = <&pmi8994_revid>;
 
+<<<<<<< HEAD
 			ibb_regulator: qcom,ibb@dc00 {
 				reg = <0xdc00 0x100>;
 				reg-names = "ibb_reg";
@@ -485,6 +515,8 @@
 				qcom,qpnp-ibb-ps-enable;
 			};
 
+=======
+>>>>>>> p9x
 			lab_regulator: qcom,lab@de00 {
 				reg = <0xde00 0x100>;
 				reg-names = "lab";
@@ -505,19 +537,64 @@
 
 				qcom,qpnp-lab-full-pull-down;
 				qcom,qpnp-lab-pull-down-enable;
+<<<<<<< HEAD
 				qcom,qpnp-lab-switching-clock-frequency =
 									<1600>;
+=======
+				qcom,qpnp-lab-switching-clock-frequency = <1600>;
+>>>>>>> p9x
 				qcom,qpnp-lab-limit-maximum-current = <800>;
 				qcom,qpnp-lab-limit-max-current-enable;
 				qcom,qpnp-lab-ps-threshold = <20>;
 				qcom,qpnp-lab-ps-enable;
 				qcom,qpnp-lab-nfet-size = <100>;
 				qcom,qpnp-lab-pfet-size = <100>;
+<<<<<<< HEAD
 				qcom,qpnp-lab-max-precharge-time = <500>;
 			};
 		};
 
 		pmi8994_wled: qcom,leds@d800 {
+=======
+				qcom,qpnp-lab-max-precharge-time = <200>;
+			};
+
+			ibb_regulator: qcom,ibb@dc00 {
+				reg = <0xdc00 0x100>;
+				reg-names = "ibb_reg";
+				regulator-name = "ibb_reg";
+
+				regulator-min-microvolt = <4600000>;
+				regulator-max-microvolt = <6000000>;
+
+				qcom,qpnp-ibb-min-voltage = <1400000>;
+				qcom,qpnp-ibb-step-size = <100000>;
+				qcom,qpnp-ibb-slew-rate = <2000000>;
+				qcom,qpnp-ibb-use-default-voltage;
+				qcom,qpnp-ibb-init-voltage = <5500000>;
+				qcom,qpnp-ibb-init-amoled-voltage = <4000000>;
+				qcom,qpnp-ibb-init-lcd-voltage = <5500000>;
+
+				qcom,qpnp-ibb-soft-start = <1000>;
+
+				qcom,qpnp-ibb-discharge-resistor = <300>;
+				qcom,qpnp-ibb-lab-pwrup-delay = <4000>;
+				qcom,qpnp-ibb-lab-pwrdn-delay = <4000>;
+				qcom,qpnp-ibb-en-discharge;
+
+				qcom,qpnp-ibb-full-pull-down;
+				qcom,qpnp-ibb-pull-down-enable;
+				qcom,qpnp-ibb-switching-clock-frequency = <1480>;
+				qcom,qpnp-ibb-limit-maximum-current = <1550>;
+				qcom,qpnp-ibb-debounce-cycle = <16>;
+				qcom,qpnp-ibb-limit-max-current-enable;
+				qcom,qpnp-ibb-ps-enable;
+			};
+
+		};
+
+		qcom,leds@d800 {
+>>>>>>> p9x
 			compatible = "qcom,qpnp-wled";
 			reg = <0xd800 0x100>,
 				<0xd900 0x100>,
@@ -540,10 +617,19 @@
 			qcom,boost-duty-ns = <26>;
 			qcom,mod-freq-khz = <9600>;
 			qcom,dim-mode = "hybrid";
+<<<<<<< HEAD
 			qcom,hyb-thres = <625>;
 			qcom,sync-dly-us = <800>;
 			qcom,fs-curr-ua = <25000>;
 			qcom,cons-sync-write-delay-us = <1000>;
+=======
+			qcom,dim-method = "linear";
+			qcom,hyb-thres = <625>;
+			qcom,sync-dly-us = <800>;
+			qcom,fs-curr-ua = <16000>;
+			qcom,en-phase-stag;
+			qcom,ibb-pwrup-dly = <8>;
+>>>>>>> p9x
 			qcom,led-strings-list = [00 01 02 03];
 			qcom,en-ext-pfet-sc-pro;
 		};
@@ -555,8 +641,11 @@
 			interrupts = <0x3 0xc0 0x0>,
 				     <0x3 0xc0 0x1>;
 			interrupt-names = "sc-irq", "play-irq";
+<<<<<<< HEAD
 			qcom,pmic-revid = <&pmi8994_revid>;
 			vcc_pon-supply = <&pon_perph_reg>;
+=======
+>>>>>>> p9x
 			qcom,play-mode = "direct";
 			qcom,wave-play-rate-us = <5263>;
 			qcom,actuator-type = "lra";
@@ -572,9 +661,12 @@
 			qcom,wave-samples = [3e 3e 3e 3e 3e 3e 3e 3e];
 			qcom,wave-rep-cnt = <1>;
 			qcom,wave-samp-rep-cnt = <1>;
+<<<<<<< HEAD
 			qcom,lra-high-z = "opt1";
 			qcom,lra-auto-res-mode = "qwd";
 			qcom,lra-res-cal-period = <4>;
+=======
+>>>>>>> p9x
 		};
 
 		qcom,leds@d000 {
@@ -583,7 +675,11 @@
 			label = "rgb";
 			status = "okay";
 
+<<<<<<< HEAD
 			red_led: qcom,rgb_0 {
+=======
+			qcom,rgb_0 {
+>>>>>>> p9x
 				label = "rgb";
 				qcom,id = <3>;
 				qcom,mode = "pwm";
@@ -596,7 +692,11 @@
 					"battery-charging";
 			};
 
+<<<<<<< HEAD
 			green_led: qcom,rgb_1 {
+=======
+			qcom,rgb_1 {
+>>>>>>> p9x
 				label = "rgb";
 				qcom,id = <4>;
 				qcom,mode = "pwm";
@@ -608,7 +708,11 @@
 				linux,default-trigger = "battery-full";
 			};
 
+<<<<<<< HEAD
 			blue_led: qcom,rgb_2 {
+=======
+			qcom,rgb_2 {
+>>>>>>> p9x
 				label = "rgb";
 				qcom,id = <5>;
 				qcom,mode = "pwm";
@@ -621,7 +725,11 @@
 			};
 		};
 
+<<<<<<< HEAD
 		flash_led: qcom,leds@d300 {
+=======
+		qcom,leds@d300 {
+>>>>>>> p9x
 			compatible = "qcom,qpnp-flash-led";
 			status = "okay";
 			reg = <0xd300 0x100>;
@@ -643,7 +751,10 @@
 			qcom,headroom-sense-ch0-enabled;
 			qcom,headroom-sense-ch1-enabled;
 			qcom,power-detect-enabled;
+<<<<<<< HEAD
 			qcom,pmic-revid = <&pmi8994_revid>;
+=======
+>>>>>>> p9x
 
 			pmi8994_flash0: qcom,flash_0 {
 				label = "flash";
@@ -675,6 +786,11 @@
 				qcom,id = <0>;
 				qcom,current = <120>;
 				qcom,max-current = <200>;
+<<<<<<< HEAD
+=======
+				boost-supply = <&pmi8994_boostbypass>;
+				boost-voltage-max = <3600000>;
+>>>>>>> p9x
 			};
 
 			pmi8994_torch1: qcom,torch_1 {
@@ -685,6 +801,7 @@
 				qcom,id = <1>;
 				qcom,current = <120>;
 				qcom,max-current = <200>;
+<<<<<<< HEAD
 			};
 
 			pmi8994_switch: qcom,switch {
@@ -705,6 +822,24 @@
 					regulator-name = "pon_spare_reg";
 				};
 			};
+=======
+				boost-supply = <&pmi8994_boostbypass>;
+				boost-voltage-max = <3600000>;
+			};
+
+			pmi8994_switch: qcom,switch {
+                                label = "switch";
+                                qcom,led-name = "led:switch";
+                                qcom,default-led-trigger =
+                                                "switch_trigger";
+                                qcom,id = <2>;
+				qcom,current = <625>;
+				qcom,max-current = <1000>;
+				qcom,duration = <1280>;
+				boost-supply = <&pmi8994_boostbypass>;
+				boost-voltage-max = <3600000>;
+                        };
+>>>>>>> p9x
 		};
 	};
 };

@@ -280,8 +280,13 @@ config SENSORS_K10TEMP
 	  If you say yes here you get support for the temperature
 	  sensor(s) inside your CPU. Supported are later revisions of
 	  the AMD Family 10h and all revisions of the AMD Family 11h,
+<<<<<<< HEAD
 	  12h (Llano), 14h (Brazos), 15h (Bulldozer/Trinity/Kaveri/Carrizo)
 	  and 16h (Kabini/Mullins) microarchitectures.
+=======
+	  12h (Llano), 14h (Brazos), 15h (Bulldozer/Trinity) and
+	  16h (Kabini) microarchitectures.
+>>>>>>> p9x
 
 	  This driver can also be built as a module.  If so, the module
 	  will be called k10temp.
@@ -345,6 +350,17 @@ config SENSORS_ATXP1
 
 	  This driver can also be built as a module.  If so, the module
 	  will be called atxp1.
+
+config SENSORS_BOOST_DYNAMIC_CONTROLLER
+	tristate "Support for Dynamically Mode Change for Boost Regulator"
+	depends on OF
+	default n
+	help
+	  Provides support for changing boost regulator status between
+	  force-bypass and force boost mode dynamically
+
+	  This driver can also be built as a module.  If so, the module
+	  will be called boost-dynamic-controller.
 
 config SENSORS_DS620
 	tristate "Dallas Semiconductor DS620"
@@ -1056,6 +1072,181 @@ config SENSORS_LM95245
 	  This driver can also be built as a module.  If so, the module
 	  will be called lm95245.
 
+<<<<<<< HEAD
+=======
+config SENSORS_MAX1111
+	tristate "Maxim MAX1111 Serial 8-bit ADC chip and compatibles"
+	depends on SPI_MASTER
+	help
+	  Say y here to support Maxim's MAX1110, MAX1111, MAX1112, and MAX1113
+	  ADC chips.
+
+	  This driver can also be built as a module.  If so, the module
+	  will be called max1111.
+
+config SENSORS_MAX16065
+	tristate "Maxim MAX16065 System Manager and compatibles"
+	depends on I2C
+	help
+	  If you say yes here you get support for hardware monitoring
+	  capabilities of the following Maxim System Manager chips.
+	    MAX16065
+	    MAX16066
+	    MAX16067
+	    MAX16068
+	    MAX16070
+	    MAX16071
+
+	  This driver can also be built as a module.  If so, the module
+	  will be called max16065.
+
+config SENSORS_MAX1619
+	tristate "Maxim MAX1619 sensor chip"
+	depends on I2C
+	help
+	  If you say yes here you get support for MAX1619 sensor chip.
+
+	  This driver can also be built as a module.  If so, the module
+	  will be called max1619.
+
+config SENSORS_MAX1668
+	tristate "Maxim MAX1668 and compatibles"
+	depends on I2C
+	help
+	  If you say yes here you get support for MAX1668, MAX1989 and
+	  MAX1805 chips.
+
+	  This driver can also be built as a module.  If so, the module
+	  will be called max1668.
+
+config SENSORS_MAX197
+	tristate "Maxim MAX197 and compatibles"
+	help
+	  Support for the Maxim MAX197 A/D converter.
+	  Support will include, but not be limited to, MAX197, and MAX199.
+
+	  This driver can also be built as a module. If so, the module
+	  will be called max197.
+
+config SENSORS_MAX6639
+	tristate "Maxim MAX6639 sensor chip"
+	depends on I2C
+	help
+	  If you say yes here you get support for the MAX6639
+	  sensor chips.
+
+	  This driver can also be built as a module.  If so, the module
+	  will be called max6639.
+
+config SENSORS_MAX6642
+	tristate "Maxim MAX6642 sensor chip"
+	depends on I2C
+	help
+	  If you say yes here you get support for MAX6642 sensor chip.
+	  MAX6642 is a SMBus-Compatible Remote/Local Temperature Sensor
+	  with Overtemperature Alarm from Maxim.
+
+	  This driver can also be built as a module.  If so, the module
+	  will be called max6642.
+
+config SENSORS_MAX6650
+	tristate "Maxim MAX6650 sensor chip"
+	depends on I2C
+	help
+	  If you say yes here you get support for the MAX6650 / MAX6651
+	  sensor chips.
+
+	  This driver can also be built as a module.  If so, the module
+	  will be called max6650.
+
+config SENSORS_MAX6697
+	tristate "Maxim MAX6697 and compatibles"
+	depends on I2C
+	help
+	  If you say yes here you get support for MAX6581, MAX6602, MAX6622,
+	  MAX6636, MAX6689, MAX6693, MAX6694, MAX6697, MAX6698, and MAX6699
+	  temperature sensor chips.
+
+	  This driver can also be built as a module.  If so, the module
+	  will be called max6697.
+
+config SENSORS_MCP3021
+	tristate "Microchip MCP3021 and compatibles"
+	depends on I2C
+	help
+	  If you say yes here you get support for MCP3021 and MCP3221.
+	  The MCP3021 is a A/D converter (ADC) with 10-bit and the MCP3221
+	  with 12-bit resolution.
+
+	  This driver can also be built as a module.  If so, the module
+	  will be called mcp3021.
+
+config SENSORS_NCT6775
+	tristate "Nuvoton NCT6775F and compatibles"
+	depends on !PPC
+	select HWMON_VID
+	help
+	  If you say yes here you get support for the hardware monitoring
+	  functionality of the Nuvoton NCT6775F, NCT6776F, NCT6779D
+	  and compatible Super-I/O chips. This driver replaces the
+	  w83627ehf driver for NCT6775F and NCT6776F.
+
+	  This driver can also be built as a module.  If so, the module
+	  will be called nct6775.
+
+config SENSORS_NTC_THERMISTOR
+	tristate "NTC thermistor support"
+	depends on !OF || IIO=n || IIO
+	help
+	  This driver supports NTC thermistors sensor reading and its
+	  interpretation. The driver can also monitor the temperature and
+	  send notifications about the temperature.
+
+	  Currently, this driver supports
+	  NCP15WB473, NCP18WB473, NCP21WB473, NCP03WB473, and NCP15WL333.
+
+	  This driver can also be built as a module.  If so, the module
+	  will be called ntc-thermistor.
+
+config SENSORS_EPM_ADC
+	tristate "EPM ADC Driver for power measurement"
+	depends on I2C && SPI_MASTER
+	default n
+	help
+	  Provides interface for measuring the current on specific power rails
+	  through the channels on ADC1158 ADC
+
+config SENSORS_QPNP_ADC_VOLTAGE
+	tristate "Support for Qualcomm QPNP Voltage ADC"
+	depends on SPMI && THERMAL
+	help
+	  This is the VADC arbiter driver for Qualcomm QPNP ADC Chip.
+
+	  The driver supports reading the HKADC, XOADC through the ADC AMUX arbiter.
+	  The VADC includes support for the conversion sequencer. The driver supports
+	  reading the ADC through the AMUX channels for external pull-ups simultaneously.
+
+config SENSORS_QPNP_ADC_CURRENT
+	tristate "Support for Qualcomm QPNP current ADC"
+	depends on SPMI
+	help
+	  This is the IADC driver for Qualcomm QPNP ADC Chip.
+
+	  The driver supports single mode operation to read from upto seven channel
+	  configuration that include reading the external/internal Rsense, CSP_EX,
+	  CSN_EX pair along with the gain and offset calibration.
+
+config SENSORS_QPNP_CURRENT_MONITOR
+	tristate "Support for QPNP SMPS current monitor"
+	depends on SPMI
+	help
+	  This is the current monitor driver for QPNP ULT HF SMPS.
+
+	  The driver provides sysfs interface to configure the current
+	  thresholds and gives notification to user-space via sysfs if
+	  buck's load current crosses the threshold.
+
+>>>>>>> p9x
 config SENSORS_PC87360
 	tristate "National Semiconductor PC87360 family"
 	depends on !PPC

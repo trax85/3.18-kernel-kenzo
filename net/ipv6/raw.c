@@ -506,7 +506,11 @@ static int rawv6_recvmsg(struct kiocb *iocb, struct sock *sk,
 		sin6->sin6_addr = ipv6_hdr(skb)->saddr;
 		sin6->sin6_flowinfo = 0;
 		sin6->sin6_scope_id = ipv6_iface_scope_id(&sin6->sin6_addr,
+<<<<<<< HEAD
 							  inet6_iif(skb));
+=======
+							  IP6CB(skb)->iif);
+>>>>>>> p9x
 		*addr_len = sizeof(*sin6);
 	}
 
@@ -588,7 +592,15 @@ static int rawv6_push_pending_frames(struct sock *sk, struct flowi6 *fl6,
 	}
 
 	offset += skb_transport_offset(skb);
+<<<<<<< HEAD
 	BUG_ON(skb_copy_bits(skb, offset, &csum, 2));
+=======
+	err = skb_copy_bits(skb, offset, &csum, 2);
+	if (err < 0) {
+		ip6_flush_pending_frames(sk);
+		goto out;
+	}
+>>>>>>> p9x
 
 	/* in case cksum was not initialized */
 	if (unlikely(csum))
@@ -1139,8 +1151,12 @@ static int rawv6_ioctl(struct sock *sk, int cmd, unsigned long arg)
 		spin_lock_bh(&sk->sk_receive_queue.lock);
 		skb = skb_peek(&sk->sk_receive_queue);
 		if (skb != NULL)
+<<<<<<< HEAD
 			amount = skb_tail_pointer(skb) -
 				skb_transport_header(skb);
+=======
+			amount = skb->len;
+>>>>>>> p9x
 		spin_unlock_bh(&sk->sk_receive_queue.lock);
 		return put_user(amount, (int __user *)arg);
 	}

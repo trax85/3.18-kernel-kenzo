@@ -6,6 +6,7 @@ if TTY
 
 menu "Serial drivers"
 	depends on HAS_IOMEM
+<<<<<<< HEAD
 
 config SERIAL_EARLYCON
 	bool
@@ -13,6 +14,8 @@ config SERIAL_EARLYCON
 	  Support for early consoles with the earlycon parameter. This enables
 	  the console before standard serial driver is probed. The console is
 	  enabled when early_param is processed.
+=======
+>>>>>>> p9x
 
 source "drivers/tty/serial/8250/Kconfig"
 
@@ -1063,7 +1066,11 @@ config SERIAL_SGI_IOC3
 
 config SERIAL_MSM
 	bool "MSM on-chip serial port support"
+<<<<<<< HEAD
 	depends on ARCH_QCOM
+=======
+	depends on ARM && ARCH_MSM
+>>>>>>> p9x
 	select SERIAL_CORE
 
 config SERIAL_MSM_CONSOLE
@@ -1084,6 +1091,17 @@ config SERIAL_MSM_HS
 	  Choose M here to compile it as a module. The module will be
 	  called msm_serial_hs.
 
+<<<<<<< HEAD
+=======
+config SERIAL_MSM_RX_WAKEUP
+	bool "Wakeup the msm uart clock on GPIO activity."
+	depends on SERIAL_MSM_CLOCK_CONTROL
+	default n
+	help
+	 Requires SERIAL_MSM_CLOCK_CONTROL. Wake up the uart while the uart
+	 clock is off, using a wakeup GPIO.
+
+>>>>>>> p9x
 config SERIAL_MSM_HSL
 	tristate "MSM UART High Speed : Legacy mode Serial Driver"
 	depends on (ARM || ARM64) && ARCH_MSM
@@ -1096,9 +1114,22 @@ config SERIAL_MSM_HSL_CONSOLE
 	bool "MSM High speed serial legacy mode console support"
 	depends on SERIAL_MSM_HSL=y
 	select SERIAL_CORE_CONSOLE
+<<<<<<< HEAD
 	select SERIAL_EARLYCON
 	default n
 
+=======
+	default n
+
+config SERIAL_BCM_BT_LPM
+	tristate "Broadcom Bluetooth Low Power Mode"
+	depends on ARM && ARCH_MSM
+	select SERIAL_CORE
+	default n
+	help
+	  Select this module for Broadcom Bluetooth low power management.
+
+>>>>>>> p9x
 config SERIAL_VT8500
 	bool "VIA VT8500 on-chip serial port support"
 	depends on ARCH_VT8500

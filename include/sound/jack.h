@@ -42,6 +42,10 @@ enum snd_jack_types {
 	SND_JACK_MECHANICAL	= 0x0000008, /* If detected separately */
 	SND_JACK_VIDEOOUT	= 0x0000010,
 	SND_JACK_AVOUT		= SND_JACK_LINEOUT | SND_JACK_VIDEOOUT,
+<<<<<<< HEAD
+=======
+	/* */
+>>>>>>> p9x
 	SND_JACK_LINEIN		= 0x0000020,
 	SND_JACK_OC_HPHL	= 0x0000040,
 	SND_JACK_OC_HPHR	= 0x0000080,

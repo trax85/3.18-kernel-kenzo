@@ -22,6 +22,7 @@ struct map_desc {
 };
 
 /* types 0-3 are defined in asm/io.h */
+<<<<<<< HEAD
 enum {
 	MT_UNCACHED = 4,
 	MT_CACHECLEAN,
@@ -37,6 +38,24 @@ enum {
 	MT_MEMORY_RW_SO,
 	MT_MEMORY_DMA_READY,
 };
+=======
+#define MT_UNCACHED		4
+#define MT_CACHECLEAN		5
+#define MT_MINICLEAN		6
+#define MT_LOW_VECTORS		7
+#define MT_HIGH_VECTORS		8
+#define MT_MEMORY		9
+#define MT_ROM			10
+#define MT_MEMORY_NONCACHED	11
+#define MT_MEMORY_DTCM		12
+#define MT_MEMORY_ITCM		13
+#define MT_MEMORY_SO		14
+#define MT_MEMORY_DMA_READY	15
+#define MT_MEMORY_R		16
+#define MT_MEMORY_RW		17
+#define MT_MEMORY_RX		18
+#define MT_DEVICE_USER_ACCESSIBLE	19
+>>>>>>> p9x
 
 #ifdef CONFIG_MMU
 extern void create_mapping(struct map_desc *);
@@ -58,6 +77,9 @@ extern const struct mem_type *get_mem_type(unsigned int type);
  */
 extern int ioremap_page(unsigned long virt, unsigned long phys,
 			const struct mem_type *mtype);
+
+extern int ioremap_pages(unsigned long virt, unsigned long phys,
+			unsigned long size, const struct mem_type *mtype);
 #else
 #define iotable_init(map,num)	do { } while (0)
 #define vm_reserve_area_early(a,s,c)	do { } while (0)

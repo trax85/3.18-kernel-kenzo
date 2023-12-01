@@ -12,6 +12,30 @@
 #include <linux/export.h>
 
 /**
+<<<<<<< HEAD
+=======
+ * It maps 'enum phy_interface_t' found in include/linux/phy.h
+ * into the device tree binding of 'phy-mode', so that Ethernet
+ * device driver can get phy interface from device tree.
+ */
+static const char *phy_modes[] = {
+	[PHY_INTERFACE_MODE_NA]		= "",
+	[PHY_INTERFACE_MODE_MII]	= "mii",
+	[PHY_INTERFACE_MODE_GMII]	= "gmii",
+	[PHY_INTERFACE_MODE_SGMII]	= "sgmii",
+	[PHY_INTERFACE_MODE_TBI]	= "tbi",
+	[PHY_INTERFACE_MODE_RMII]	= "rmii",
+	[PHY_INTERFACE_MODE_RGMII]	= "rgmii",
+	[PHY_INTERFACE_MODE_RGMII_ID]	= "rgmii-id",
+	[PHY_INTERFACE_MODE_RGMII_RXID]	= "rgmii-rxid",
+	[PHY_INTERFACE_MODE_RGMII_TXID] = "rgmii-txid",
+	[PHY_INTERFACE_MODE_RTBI]	= "rtbi",
+	[PHY_INTERFACE_MODE_SMII]	= "smii",
+	[PHY_INTERFACE_MODE_QSGMII]	= "qsgmii",
+};
+
+/**
+>>>>>>> p9x
  * of_get_phy_mode - Get phy mode for given device_node
  * @np:	Pointer to the given device_node
  *

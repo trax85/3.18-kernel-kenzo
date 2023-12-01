@@ -432,6 +432,7 @@ static int squashfs_readpage_fragment(struct page *page)
 		squashfs_i(inode)->fragment_block,
 		squashfs_i(inode)->fragment_size);
 	int res = buffer->error;
+<<<<<<< HEAD
 
 	if (res)
 		ERROR("Unable to read page, block %llx, size %x\n",
@@ -533,9 +534,69 @@ static int __squashfs_readpages(struct file *file, struct page *page,
 			return 0;
 		page = NULL;
 	} while (readahead_pages && !list_empty(readahead_pages));
+=======
+>>>>>>> p9x
 
+	if (res)
+		ERROR("Unable to read page, block %llx, size %x\n",
+			squashfs_i(inode)->fragment_block,
+			squashfs_i(inode)->fragment_size);
+	else
+		squashfs_copy_cache(page, buffer, i_size_read(inode) &
+			(msblk->block_size - 1),
+			squashfs_i(inode)->fragment_offset);
+
+	squashfs_cache_put(buffer);
+	return res;
+}
+
+static int squashfs_readpage_sparse(struct page *page, int index, int file_end)
+{
+	struct inode *inode = page->mapping->host;
+	struct squashfs_sb_info *msblk = inode->i_sb->s_fs_info;
+	int bytes = index == file_end ?
+			(i_size_read(inode) & (msblk->block_size - 1)) :
+			 msblk->block_size;
+
+	squashfs_copy_cache(page, NULL, bytes, 0);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+static int squashfs_readpage(struct file *file, struct page *page)
+{
+	struct inode *inode = page->mapping->host;
+	struct squashfs_sb_info *msblk = inode->i_sb->s_fs_info;
+	int index = page->index >> (msblk->block_log - PAGE_CACHE_SHIFT);
+	int file_end = i_size_read(inode) >> msblk->block_log;
+	int res;
+	void *pageaddr;
+
+	TRACE("Entered squashfs_readpage, page index %lx, start block %llx\n",
+				page->index, squashfs_i(inode)->start);
+
+	if (page->index >= ((i_size_read(inode) + PAGE_CACHE_SIZE - 1) >>
+					PAGE_CACHE_SHIFT))
+		goto out;
+
+	if (index < file_end || squashfs_i(inode)->fragment_block ==
+					SQUASHFS_INVALID_BLK) {
+		u64 block = 0;
+		int bsize = read_blocklist(inode, index, &block);
+		if (bsize < 0)
+			goto error_out;
+
+		if (bsize == 0)
+			res = squashfs_readpage_sparse(page, index, file_end);
+		else
+			res = squashfs_readpage_block(page, block, bsize);
+	} else
+		res = squashfs_readpage_fragment(page);
+
+	if (!res)
+		return 0;
+>>>>>>> p9x
 
 static int squashfs_readpage(struct file *file, struct page *page)
 {

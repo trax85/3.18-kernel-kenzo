@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2017, 2018-2019 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -16,12 +20,18 @@
 #include <linux/miscdevice.h>
 #include <linux/uaccess.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 #include <sound/audio_cal_utils.h>
 
 static DEFINE_MUTEX(destroy_cal_lock);
 
 static int unmap_memory(struct cal_type_data *cal_type,
 			struct cal_block_data *cal_block);
+=======
+#include <linux/ratelimit.h>
+#include <sound/audio_cal_utils.h>
+
+>>>>>>> p9x
 
 size_t get_cal_info_size(int32_t cal_type)
 {
@@ -59,14 +69,20 @@ size_t get_cal_info_size(int32_t cal_type)
 		size = sizeof(struct audio_cal_info_adm_top);
 		break;
 	case ADM_CUST_TOPOLOGY_CAL_TYPE:
+<<<<<<< HEAD
 	case CORE_CUSTOM_TOPOLOGIES_CAL_TYPE:
+=======
+>>>>>>> p9x
 		size = 0;
 		break;
 	case ADM_AUDPROC_CAL_TYPE:
 		size = sizeof(struct audio_cal_info_audproc);
 		break;
 	case ADM_AUDVOL_CAL_TYPE:
+<<<<<<< HEAD
 	case ADM_RTAC_AUDVOL_CAL_TYPE:
+=======
+>>>>>>> p9x
 		size = sizeof(struct audio_cal_info_audvol);
 		break;
 	case ASM_TOPOLOGY_CAL_TYPE:
@@ -93,6 +109,7 @@ size_t get_cal_info_size(int32_t cal_type)
 	case AFE_FB_SPKR_PROT_CAL_TYPE:
 		size = sizeof(struct audio_cal_info_spk_prot_cfg);
 		break;
+<<<<<<< HEAD
 	case AFE_FB_SPKR_PROT_TH_VI_CAL_TYPE:
 		/*
 		 * Since get and set parameter structures are different in size
@@ -109,6 +126,8 @@ size_t get_cal_info_size(int32_t cal_type)
 		size = max(sizeof(struct audio_cal_info_sp_ex_vi_ftm_cfg),
 			   sizeof(struct audio_cal_info_sp_ex_vi_param));
 		break;
+=======
+>>>>>>> p9x
 	case AFE_ANC_CAL_TYPE:
 		size = 0;
 		break;
@@ -202,14 +221,20 @@ size_t get_user_cal_type_size(int32_t cal_type)
 		size = sizeof(struct audio_cal_type_adm_top);
 		break;
 	case ADM_CUST_TOPOLOGY_CAL_TYPE:
+<<<<<<< HEAD
 	case CORE_CUSTOM_TOPOLOGIES_CAL_TYPE:
+=======
+>>>>>>> p9x
 		size = sizeof(struct audio_cal_type_basic);
 		break;
 	case ADM_AUDPROC_CAL_TYPE:
 		size = sizeof(struct audio_cal_type_audproc);
 		break;
 	case ADM_AUDVOL_CAL_TYPE:
+<<<<<<< HEAD
 	case ADM_RTAC_AUDVOL_CAL_TYPE:
+=======
+>>>>>>> p9x
 		size = sizeof(struct audio_cal_type_audvol);
 		break;
 	case ASM_TOPOLOGY_CAL_TYPE:
@@ -236,6 +261,7 @@ size_t get_user_cal_type_size(int32_t cal_type)
 	case AFE_FB_SPKR_PROT_CAL_TYPE:
 		size = sizeof(struct audio_cal_type_fb_spk_prot_cfg);
 		break;
+<<<<<<< HEAD
 	case AFE_FB_SPKR_PROT_TH_VI_CAL_TYPE:
 		/*
 		 * Since get and set parameter structures are different in size
@@ -252,6 +278,8 @@ size_t get_user_cal_type_size(int32_t cal_type)
 		size = max(sizeof(struct audio_cal_type_sp_ex_vi_ftm_cfg),
 			   sizeof(struct audio_cal_type_sp_ex_vi_param));
 		break;
+=======
+>>>>>>> p9x
 	case AFE_ANC_CAL_TYPE:
 		size = 0;
 		break;
@@ -437,24 +465,43 @@ static void destroy_all_cal_blocks(struct cal_type_data *cal_type)
 	struct list_head		*ptr, *next;
 	struct cal_block_data		*cal_block;
 
+<<<<<<< HEAD
 	mutex_lock(&destroy_cal_lock);
+=======
+>>>>>>> p9x
 	list_for_each_safe(ptr, next,
 		&cal_type->cal_blocks) {
 
 		cal_block = list_entry(ptr,
 			struct cal_block_data, list);
 
+<<<<<<< HEAD
 		ret = unmap_memory(cal_type, cal_block);
 		if (ret < 0) {
 			pr_err("%s: unmap_memory failed, cal type %d, ret = %d!\n",
 				__func__,
 			       cal_type->info.reg.cal_type,
 				ret);
+=======
+		if (cal_type->info.cal_util_callbacks.unmap_cal != NULL) {
+			ret = cal_type->info.cal_util_callbacks.
+				unmap_cal(cal_type->info.reg.cal_type,
+					cal_block);
+			if (ret < 0) {
+				pr_err("%s: unmap_cal failed, cal type %d, ret = %d!\n",
+					__func__,
+				       cal_type->info.reg.cal_type,
+					ret);
+			}
+>>>>>>> p9x
 		}
 		delete_cal_block(cal_block);
 		cal_block = NULL;
 	}
+<<<<<<< HEAD
 	mutex_unlock(&destroy_cal_lock);
+=======
+>>>>>>> p9x
 
 	return;
 }
@@ -487,13 +534,19 @@ void cal_utils_destroy_cal_types(int num_cal_types,
 		goto done;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&destroy_cal_lock);
+=======
+>>>>>>> p9x
 	for (i = 0; i < num_cal_types; i++) {
 		audio_cal_deregister(1, &cal_type[i]->info.reg);
 		destroy_cal_type_data(cal_type[i]);
 		cal_type[i] = NULL;
 	}
+<<<<<<< HEAD
 	mutex_unlock(&destroy_cal_lock);
+=======
+>>>>>>> p9x
 done:
 	return;
 }
@@ -593,13 +646,21 @@ static struct cal_block_data *create_cal_block(struct cal_type_data *cal_type,
 		goto done;
 	}
 
+<<<<<<< HEAD
 	cal_block = kzalloc(sizeof(*cal_block),
+=======
+	cal_block = kmalloc(sizeof(*cal_type),
+>>>>>>> p9x
 		GFP_KERNEL);
 	if (cal_block == NULL) {
 		pr_err("%s: could not allocate cal_block!\n", __func__);
 		goto done;
 	}
 
+<<<<<<< HEAD
+=======
+	memset(cal_block, 0, sizeof(*cal_block));
+>>>>>>> p9x
 	INIT_LIST_HEAD(&cal_block->list);
 
 	cal_block->map_data.ion_map_handle = basic_cal->cal_data.mem_handle;
@@ -623,7 +684,11 @@ static struct cal_block_data *create_cal_block(struct cal_type_data *cal_type,
 				client_info_size);
 	}
 
+<<<<<<< HEAD
 	cal_block->cal_info = kzalloc(
+=======
+	cal_block->cal_info = kmalloc(
+>>>>>>> p9x
 		get_cal_info_size(cal_type->info.reg.cal_type),
 		GFP_KERNEL);
 	if (cal_block->cal_info == NULL) {
@@ -669,22 +734,36 @@ void cal_utils_clear_cal_block_q6maps(int num_cal_types,
 		goto done;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&destroy_cal_lock);
+=======
+>>>>>>> p9x
 	for (; i < num_cal_types; i++) {
 		if (cal_type[i] == NULL)
 			continue;
 
+<<<<<<< HEAD
+=======
+		mutex_lock(&cal_type[i]->lock);
+>>>>>>> p9x
 		list_for_each_safe(ptr, next,
 			&cal_type[i]->cal_blocks) {
 
 			cal_block = list_entry(ptr,
 				struct cal_block_data, list);
 
+<<<<<<< HEAD
 			if (cal_block != NULL)
 				cal_block->map_data.q6map_handle = 0;
 		}
 	}
 	mutex_unlock(&destroy_cal_lock);
+=======
+			cal_block->map_data.q6map_handle = 0;
+		}
+		mutex_unlock(&cal_type[i]->lock);
+	}
+>>>>>>> p9x
 done:
 	return;
 }
@@ -699,7 +778,10 @@ static int realloc_memory(struct cal_block_data *cal_block)
 		cal_block->map_data.ion_handle);
 	cal_block->map_data.ion_client = NULL;
 	cal_block->map_data.ion_handle = NULL;
+<<<<<<< HEAD
 	cal_block->cal_data.size = 0;
+=======
+>>>>>>> p9x
 
 	ret = cal_block_ion_alloc(cal_block);
 	if (ret < 0)
@@ -712,6 +794,10 @@ static int map_memory(struct cal_type_data *cal_type,
 			struct cal_block_data *cal_block)
 {
 	int ret = 0;
+<<<<<<< HEAD
+=======
+	static DEFINE_RATELIMIT_STATE(rl, HZ/2, 1);
+>>>>>>> p9x
 
 
 	if (cal_type->info.cal_util_callbacks.map_cal != NULL) {
@@ -726,7 +812,12 @@ static int map_memory(struct cal_type_data *cal_type,
 		ret = cal_type->info.cal_util_callbacks.
 			map_cal(cal_type->info.reg.cal_type, cal_block);
 		if (ret < 0) {
+<<<<<<< HEAD
 			pr_err("%s: map_cal failed, cal type %d, ret = %d!\n",
+=======
+			if (__ratelimit(&rl))
+				pr_err("%s: map_cal failed, cal type %d, ret = %d!\n",
+>>>>>>> p9x
 				__func__, cal_type->info.reg.cal_type,
 				ret);
 			goto done;

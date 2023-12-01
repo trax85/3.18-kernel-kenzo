@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, 2017 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -29,17 +33,27 @@
 #include <asm/ioctls.h>
 #include <linux/mm.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/vmalloc.h>
+=======
+>>>>>>> p9x
 #include <linux/ipc_logging.h>
 #include <linux/termios.h>
 
 #include <soc/qcom/glink.h>
+<<<<<<< HEAD
 /* This Limit ensures that auto queue will not exhaust memory on remote side */
 #define MAX_PENDING_GLINK_PKT 5
 #define MODULE_NAME "msm_glinkpkt"
 #define DEVICE_NAME "glinkpkt"
 #define WAKEUPSOURCE_TIMEOUT (2000) /* two seconds */
 #define CLOSE_WAIT_TIMEOUT 1000 /* one seconds */
+=======
+
+#define MODULE_NAME "msm_glinkpkt"
+#define DEVICE_NAME "glinkpkt"
+#define WAKEUPSOURCE_TIMEOUT (2000) /* two seconds */
+>>>>>>> p9x
 
 #define GLINK_PKT_IOCTL_MAGIC (0xC3)
 
@@ -67,9 +81,15 @@
 #define map_from_smd_trans_signal(sigs) \
 	do { \
 		if (sigs & SMD_DTR_SIG) \
+<<<<<<< HEAD
 			sigs |= TIOCM_DSR; \
 		if (sigs & SMD_CTS_SIG) \
 			sigs |= TIOCM_CTS; \
+=======
+			sigs |= TIOCM_DTR; \
+		if (sigs & SMD_CTS_SIG) \
+			sigs |= TIOCM_RTS; \
+>>>>>>> p9x
 		if (sigs & SMD_CD_SIG) \
 			sigs |= TIOCM_CD; \
 		if (sigs & SMD_RI_SIG) \
@@ -92,7 +112,10 @@
  * poll_mode:	flag to check polling mode.
  * ch_read_wait_queue:	reader thread wait queue.
  * ch_opened_wait_queue: open thread wait queue.
+<<<<<<< HEAD
  * ch_closed_wait_queue: close thread wait queue.
+=======
+>>>>>>> p9x
  * pkt_list:	The pending Rx packets list.
  * pkt_list_lock: Lock to protect @pkt_list.
  * pa_ws:	Packet arrival Wakeup source.
@@ -102,9 +125,12 @@
  * sigs_updated: flag to check signal update.
  * open_time_wait: wait time for channel to fully open.
  * in_reset:	flag to check SSR state.
+<<<<<<< HEAD
  * link_info:	structure to hold link information.
  * link_state_handle: handle to get link state events.
  * link_up:	flag to check link is up or not.
+=======
+>>>>>>> p9x
  */
 struct glink_pkt_dev {
 	struct list_head dev_list;
@@ -123,7 +149,10 @@ struct glink_pkt_dev {
 
 	wait_queue_head_t ch_read_wait_queue;
 	wait_queue_head_t ch_opened_wait_queue;
+<<<<<<< HEAD
 	wait_queue_head_t ch_closed_wait_queue;
+=======
+>>>>>>> p9x
 	struct list_head pkt_list;
 	spinlock_t pkt_list_lock;
 
@@ -134,11 +163,14 @@ struct glink_pkt_dev {
 	int sigs_updated;
 	int open_time_wait;
 	int in_reset;
+<<<<<<< HEAD
 
 	struct glink_link_info link_info;
 	void *link_state_handle;
 	bool link_up;
 	bool auto_intent_enabled;
+=======
+>>>>>>> p9x
 };
 
 /**
@@ -167,6 +199,7 @@ struct queue_rx_intent_work {
 	struct work_struct work;
 };
 
+<<<<<<< HEAD
 /**
  * notify_state_work - Work item to notify channel state.
  * state:	Channel new state.
@@ -180,6 +213,8 @@ struct notify_state_work {
 	struct work_struct work;
 };
 
+=======
+>>>>>>> p9x
 static DEFINE_MUTEX(glink_pkt_dev_lock_lha1);
 static LIST_HEAD(glink_pkt_dev_list);
 static DEFINE_MUTEX(glink_pkt_driver_lock_lha1);
@@ -203,7 +238,10 @@ module_param_named(debug_mask, msm_glink_pkt_debug_mask,
 		int, S_IRUGO | S_IWUSR | S_IWGRP);
 
 static void glink_pkt_queue_rx_intent_worker(struct work_struct *work);
+<<<<<<< HEAD
 static void glink_pkt_notify_state_worker(struct work_struct *work);
+=======
+>>>>>>> p9x
 static bool glink_pkt_read_avail(struct glink_pkt_dev *devp);
 
 #define DEBUG
@@ -225,7 +263,11 @@ do { \
 
 #define GLINK_PKT_ERR(x...) \
 do { \
+<<<<<<< HEAD
 	pr_err_ratelimited("<GLINK_PKT> err: "x); \
+=======
+	pr_err("<GLINK_PKT> err: "x); \
+>>>>>>> p9x
 	GLINK_PKT_LOG_STRING(x); \
 } while (0)
 
@@ -314,6 +356,7 @@ static void packet_arrival_worker(struct work_struct *work)
 }
 
 /**
+<<<<<<< HEAD
  * glink_pkt_link_state_cb() - Callback to receive link state updates
  * @cb_info: Information containing link & its state.
  * @priv: Private data passed during the link state registration.
@@ -341,6 +384,8 @@ static void glink_pkt_link_state_cb(struct glink_link_state_cb_info *cb_info,
 }
 
 /**
+=======
+>>>>>>> p9x
  * glink_pkt_notify_rx() - Rx data Callback from G-Link core layer
  * handle:	Opaque Channel handle returned by GLink.
  * priv:	private pointer to the channel.
@@ -399,8 +444,13 @@ void glink_pkt_notify_tx_done(void *handle, const void *priv,
 {
 	GLINK_PKT_INFO("%s(): priv[%p] pkt_priv[%p] ptr[%p]\n",
 					__func__, priv, pkt_priv, ptr);
+<<<<<<< HEAD
 	/* Free Tx buffer allocated in glink_pkt_write */
 	kvfree(ptr);
+=======
+/* Free Tx buffer allocated in glink_pkt_write */
+	kfree(ptr);
+>>>>>>> p9x
 }
 
 /**
@@ -415,6 +465,7 @@ void glink_pkt_notify_tx_done(void *handle, const void *priv,
 void glink_pkt_notify_state(void *handle, const void *priv, unsigned event)
 {
 	struct glink_pkt_dev *devp = (struct glink_pkt_dev *)priv;
+<<<<<<< HEAD
 	struct notify_state_work *work_item;
 
 	if ((devp->handle != NULL) && (devp->handle != handle)) {
@@ -436,6 +487,19 @@ void glink_pkt_notify_state(void *handle, const void *priv, unsigned event)
 	work_item->handle = handle;
 	INIT_WORK(&work_item->work, glink_pkt_notify_state_worker);
 	queue_work(glink_pkt_wq, &work_item->work);
+=======
+	GLINK_PKT_INFO("%s(): event[%d] on [%s]\n", __func__, event,
+						devp->open_cfg.name);
+	devp->ch_state = event;
+	if (event == GLINK_CONNECTED) {
+		devp->in_reset = 0;
+		wake_up_interruptible(&devp->ch_opened_wait_queue);
+	} else if (event == GLINK_REMOTE_DISCONNECTED) {
+		devp->in_reset = 1;
+		wake_up(&devp->ch_read_wait_queue);
+		wake_up_interruptible(&devp->ch_opened_wait_queue);
+	}
+>>>>>>> p9x
 }
 
 /**
@@ -450,6 +514,7 @@ void glink_pkt_notify_state(void *handle, const void *priv, unsigned event)
 bool glink_pkt_rmt_rx_intent_req_cb(void *handle, const void *priv, size_t sz)
 {
 	struct queue_rx_intent_work *work_item;
+<<<<<<< HEAD
 	int pending_pkt_count = 0;
 	struct glink_rx_pkt *pkt = NULL;
 	unsigned long flags;
@@ -472,13 +537,23 @@ bool glink_pkt_rmt_rx_intent_req_cb(void *handle, const void *priv, size_t sz)
 	}
 
 	work_item = kzalloc(sizeof(*work_item), GFP_ATOMIC);
+=======
+	GLINK_PKT_INFO("%s(): QUEUE RX INTENT to receive size[%zu]\n",
+		   __func__, sz);
+
+	work_item = kmalloc(sizeof(struct queue_rx_intent_work), GFP_ATOMIC);
+>>>>>>> p9x
 	if (!work_item) {
 		GLINK_PKT_ERR("%s failed allocate work_item\n", __func__);
 		return false;
 	}
 
 	work_item->intent_size = sz;
+<<<<<<< HEAD
 	work_item->devp = devp;
+=======
+	work_item->devp = (struct glink_pkt_dev *)priv;
+>>>>>>> p9x
 	INIT_WORK(&work_item->work, glink_pkt_queue_rx_intent_worker);
 	queue_work(glink_pkt_wq, &work_item->work);
 
@@ -523,6 +598,7 @@ static void glink_pkt_queue_rx_intent_worker(struct work_struct *work)
 				struct queue_rx_intent_work, work);
 	struct glink_pkt_dev *devp = work_item->devp;
 
+<<<<<<< HEAD
 	if (!devp) {
 		GLINK_PKT_ERR("%s: Invalid device\n", __func__);
 		kfree(work_item);
@@ -532,17 +608,25 @@ static void glink_pkt_queue_rx_intent_worker(struct work_struct *work)
 	if (!devp->handle) {
 		GLINK_PKT_ERR("%s: Invalid device Handle\n", __func__);
 		mutex_unlock(&devp->ch_lock);
+=======
+	if (!devp || !devp->handle) {
+		GLINK_PKT_ERR("%s: Invalid device Handle\n", __func__);
+>>>>>>> p9x
 		kfree(work_item);
 		return;
 	}
 
 	ret = glink_queue_rx_intent(devp->handle, devp, work_item->intent_size);
+<<<<<<< HEAD
 	mutex_unlock(&devp->ch_lock);
+=======
+>>>>>>> p9x
 	GLINK_PKT_INFO("%s: Triggered with size[%zu] ret[%d]\n",
 				__func__, work_item->intent_size, ret);
 	if (ret)
 		GLINK_PKT_ERR("%s queue_rx_intent failed\n", __func__);
 	kfree(work_item);
+<<<<<<< HEAD
 }
 
 /**
@@ -588,6 +672,9 @@ static void glink_pkt_notify_state_worker(struct work_struct *work)
 	}
 	mutex_unlock(&devp->ch_lock);
 	kfree(work_item);
+=======
+	return;
+>>>>>>> p9x
 }
 
 /**
@@ -646,6 +733,7 @@ ssize_t glink_pkt_read(struct file *file,
 		return -ENETRESET;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&devp->ch_lock);
 	if (!glink_pkt_read_avail(devp) &&
 				!glink_rx_intent_exists(devp->handle, count)) {
@@ -658,6 +746,16 @@ ssize_t glink_pkt_read(struct file *file,
 		}
 	}
 	mutex_unlock(&devp->ch_lock);
+=======
+	if (!glink_rx_intent_exists(devp->handle, count)) {
+		ret  = glink_queue_rx_intent(devp->handle, devp, count);
+		if (ret) {
+			GLINK_PKT_ERR("%s: failed to queue_rx_intent ret[%d]\n",
+					__func__, ret);
+			return ret;
+		}
+	}
+>>>>>>> p9x
 
 	GLINK_PKT_INFO("Begin %s on glink_pkt_dev id:%d buffer_size %zu\n",
 		__func__, devp->i, count);
@@ -697,6 +795,7 @@ ssize_t glink_pkt_read(struct file *file,
 	spin_unlock_irqrestore(&devp->pkt_list_lock, flags);
 
 	ret = copy_to_user(buf, pkt->data, pkt->size);
+<<<<<<< HEAD
 	 if (ret) {
 		GLINK_PKT_ERR(
 		"%s copy_to_user failed ret[%d] on dev id:%d size %zu\n",
@@ -707,6 +806,9 @@ ssize_t glink_pkt_read(struct file *file,
 		return -EFAULT;
 	}
 
+=======
+	BUG_ON(ret != 0);
+>>>>>>> p9x
 
 	ret = pkt->size;
 	glink_rx_done(devp->handle, pkt->data, false);
@@ -751,11 +853,14 @@ ssize_t glink_pkt_write(struct file *file,
 
 	devp = file->private_data;
 
+<<<<<<< HEAD
 	if (!count) {
 		GLINK_PKT_ERR("%s: data count is zero\n", __func__);
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> p9x
 	if (!devp) {
 		GLINK_PKT_ERR("%s on NULL glink_pkt_dev\n", __func__);
 		return -EINVAL;
@@ -775,6 +880,7 @@ ssize_t glink_pkt_write(struct file *file,
 		__func__, devp->i, count);
 	data = kzalloc(count, GFP_KERNEL);
 	if (!data) {
+<<<<<<< HEAD
 		if (!strcmp(devp->open_cfg.edge, "bg"))
 			data = vzalloc(count);
 		if (!data)
@@ -789,11 +895,23 @@ ssize_t glink_pkt_write(struct file *file,
 		kvfree(data);
 		return -EFAULT;
 	}
+=======
+		GLINK_PKT_ERR("%s buffer allocation failed\n", __func__);
+		return -ENOMEM;
+	}
+
+	ret = copy_from_user(data, buf, count);
+	BUG_ON(ret != 0);
+>>>>>>> p9x
 
 	ret = glink_tx(devp->handle, data, data, count, GLINK_TX_REQ_INTENT);
 	if (ret) {
 		GLINK_PKT_ERR("%s glink_tx failed ret[%d]\n", __func__, ret);
+<<<<<<< HEAD
 		kvfree(data);
+=======
+		kfree(data);
+>>>>>>> p9x
 		return ret;
 	}
 
@@ -822,8 +940,15 @@ static unsigned int glink_pkt_poll(struct file *file, poll_table *wait)
 		GLINK_PKT_ERR("%s: Invalid device handle\n", __func__);
 		return POLLERR;
 	}
+<<<<<<< HEAD
 	if (devp->in_reset)
 		return POLLHUP;
+=======
+	if (devp->in_reset) {
+		mutex_unlock(&devp->ch_lock);
+		return POLLHUP;
+	}
+>>>>>>> p9x
 
 	devp->poll_mode = 1;
 	poll_wait(file, &devp->ch_read_wait_queue, wait);
@@ -939,7 +1064,10 @@ static long glink_pkt_ioctl(struct file *file, unsigned int cmd,
 	case GLINK_PKT_IOCTL_QUEUE_RX_INTENT:
 		ret = get_user(size, (uint32_t *)arg);
 		GLINK_PKT_INFO("%s: intent size[%d]\n", __func__, size);
+<<<<<<< HEAD
 		devp->auto_intent_enabled = false;
+=======
+>>>>>>> p9x
 		ret  = glink_queue_rx_intent(devp->handle, devp, size);
 		if (ret) {
 			GLINK_PKT_ERR("%s: failed to QUEUE_RX_INTENT ret[%d]\n",
@@ -970,13 +1098,17 @@ int glink_pkt_open(struct inode *inode, struct file *file)
 {
 	int ret = 0;
 	struct glink_pkt_dev *devp = NULL;
+<<<<<<< HEAD
 	int wait_time_msecs;
+=======
+>>>>>>> p9x
 
 	devp = container_of(inode->i_cdev, struct glink_pkt_dev, cdev);
 	if (!devp) {
 		GLINK_PKT_ERR("%s on NULL device\n", __func__);
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	GLINK_PKT_INFO("Begin %s() on dev id:%d open_time_wait[%d] by [%s]\n",
 		__func__, devp->i, devp->open_time_wait, current->comm);
 	file->private_data = devp;
@@ -1039,6 +1171,14 @@ int glink_pkt_open(struct inode *inode, struct file *file)
 			goto error;
 		}
 
+=======
+	GLINK_PKT_INFO("Begin %s() on dev id:%d open_wait_time[%d] by [%s]\n",
+		__func__, devp->i, devp->open_time_wait, current->comm);
+	file->private_data = devp;
+
+	mutex_lock(&devp->ch_lock);
+	if (!devp->handle) {
+>>>>>>> p9x
 		devp->handle = glink_open(&devp->open_cfg);
 		if (IS_ERR_OR_NULL(devp->handle)) {
 			GLINK_PKT_ERR(
@@ -1050,12 +1190,23 @@ int glink_pkt_open(struct inode *inode, struct file *file)
 			goto error;
 		}
 
+<<<<<<< HEAD
 		mutex_unlock(&devp->ch_lock);
 		/*
 		 * Wait for the channel to be complete open state so we know
 		 * the remote client is ready enough.
 		 */
 		if (wait_time_msecs < 0) {
+=======
+		/*
+		 * Wait for the channel to be complete open state so we know
+		 * the remote is ready enough.
+		 * Defualt timeout 1sec.
+		 */
+		if (!devp->open_time_wait)
+			devp->open_time_wait = 1;
+		if (devp->open_time_wait < 0) {
+>>>>>>> p9x
 			ret = wait_event_interruptible(
 				devp->ch_opened_wait_queue,
 				devp->ch_state == GLINK_CONNECTED);
@@ -1063,11 +1214,18 @@ int glink_pkt_open(struct inode *inode, struct file *file)
 			ret = wait_event_interruptible_timeout(
 				devp->ch_opened_wait_queue,
 				devp->ch_state == GLINK_CONNECTED,
+<<<<<<< HEAD
 				msecs_to_jiffies(wait_time_msecs));
 			if (ret == 0)
 				ret = -ETIMEDOUT;
 		}
 		mutex_lock(&devp->ch_lock);
+=======
+				msecs_to_jiffies(devp->open_time_wait * 1000));
+			if (ret == 0)
+				ret = -ETIMEDOUT;
+		}
+>>>>>>> p9x
 		if (ret < 0) {
 			GLINK_PKT_ERR("%s: open failed on dev id:%d rc:%d\n",
 					__func__, devp->i, ret);
@@ -1087,6 +1245,7 @@ error:
 }
 
 /**
+<<<<<<< HEAD
  * pop_rx_pkt() - return first pkt from rx pkt_list
  * devp:	pointer to G-Link packet device.
  *
@@ -1108,6 +1267,8 @@ static struct glink_rx_pkt *pop_rx_pkt(struct glink_pkt_dev *devp)
 }
 
 /**
+=======
+>>>>>>> p9x
  * glink_pkt_release() - release operation on glink_pkt device
  * inode:	Pointer to the inode structure.
  * file:	Pointer to the file structure.
@@ -1120,8 +1281,11 @@ int glink_pkt_release(struct inode *inode, struct file *file)
 {
 	int ret = 0;
 	struct glink_pkt_dev *devp = file->private_data;
+<<<<<<< HEAD
 	unsigned long flags;
 	struct glink_rx_pkt *pkt;
+=======
+>>>>>>> p9x
 	GLINK_PKT_INFO("%s() on dev id:%d by [%s] ref_cnt[%d]\n",
 			__func__, devp->i, current->comm, devp->ref_cnt);
 
@@ -1130,6 +1294,7 @@ int glink_pkt_release(struct inode *inode, struct file *file)
 		devp->ref_cnt--;
 
 	if (devp->handle && devp->ref_cnt == 0) {
+<<<<<<< HEAD
 		while ((pkt = pop_rx_pkt(devp))) {
 			glink_rx_done(devp->handle, pkt->data, false);
 			kfree(pkt);
@@ -1160,6 +1325,18 @@ int glink_pkt_release(struct inode *inode, struct file *file)
 			devp->ws_locked = 0;
 		}
 		spin_unlock_irqrestore(&devp->pa_spinlock, flags);
+=======
+		devp->ch_state = GLINK_LOCAL_DISCONNECTED;
+		wake_up(&devp->ch_read_wait_queue);
+		wake_up_interruptible(&devp->ch_opened_wait_queue);
+		ret = glink_close(devp->handle);
+		if (ret)
+			GLINK_PKT_ERR("%s: close failed ret[%d]\n",
+						__func__, ret);
+		devp->handle = NULL;
+		devp->poll_mode = 0;
+		devp->ws_locked = 0;
+>>>>>>> p9x
 		devp->sigs_updated = false;
 		devp->in_reset = 0;
 	}
@@ -1198,6 +1375,7 @@ static int glink_pkt_init_add_device(struct glink_pkt_dev *devp, int i)
 	devp->open_cfg.notify_state = glink_pkt_notify_state;
 	devp->open_cfg.notify_rx_intent_req = glink_pkt_rmt_rx_intent_req_cb;
 	devp->open_cfg.notify_rx_sigs = glink_pkt_notify_rx_sigs;
+<<<<<<< HEAD
 	devp->open_cfg.options |= GLINK_OPT_INITIAL_XPORT;
 	devp->open_cfg.priv = devp;
 
@@ -1216,12 +1394,24 @@ static int glink_pkt_init_add_device(struct glink_pkt_dev *devp, int i)
 	init_waitqueue_head(&devp->ch_read_wait_queue);
 	init_waitqueue_head(&devp->ch_opened_wait_queue);
 	init_waitqueue_head(&devp->ch_closed_wait_queue);
+=======
+	devp->open_cfg.priv = devp;
+
+	devp->i = i;
+	devp->poll_mode = 0;
+	devp->ws_locked = 0;
+	devp->ch_state = GLINK_LOCAL_DISCONNECTED;
+	mutex_init(&devp->ch_lock);
+	init_waitqueue_head(&devp->ch_read_wait_queue);
+	init_waitqueue_head(&devp->ch_opened_wait_queue);
+>>>>>>> p9x
 	spin_lock_init(&devp->pa_spinlock);
 	INIT_LIST_HEAD(&devp->pkt_list);
 	spin_lock_init(&devp->pkt_list_lock);
 	wakeup_source_init(&devp->pa_ws, devp->dev_name);
 	INIT_WORK(&devp->packet_arrival_work, packet_arrival_worker);
 
+<<<<<<< HEAD
 	devp->link_state_handle =
 		glink_register_link_state_cb(&devp->link_info, devp);
 	if (IS_ERR_OR_NULL(devp->link_state_handle)) {
@@ -1231,6 +1421,8 @@ static int glink_pkt_init_add_device(struct glink_pkt_dev *devp, int i)
 		ret = PTR_ERR(devp->link_state_handle);
 		return ret;
 	}
+=======
+>>>>>>> p9x
 	cdev_init(&devp->cdev, &glink_pkt_fops);
 	devp->cdev.owner = THIS_MODULE;
 
@@ -1282,9 +1474,12 @@ static void glink_pkt_core_deinit(void)
 	mutex_lock(&glink_pkt_dev_lock_lha1);
 	list_for_each_entry_safe(glink_pkt_devp, index, &glink_pkt_dev_list,
 							dev_list) {
+<<<<<<< HEAD
 		if (glink_pkt_devp->link_state_handle)
 			glink_unregister_link_state_cb(
 				glink_pkt_devp->link_state_handle);
+=======
+>>>>>>> p9x
 		cdev_del(&glink_pkt_devp->cdev);
 		list_del(&glink_pkt_devp->dev_list);
 		device_destroy(glink_pkt_classp,
@@ -1412,7 +1607,11 @@ static int glink_pkt_devicetree_init(struct platform_device *pdev)
 	}
 
 	for_each_child_of_node(pdev->dev.of_node, node) {
+<<<<<<< HEAD
 		glink_pkt_devp = kzalloc(sizeof(*glink_pkt_devp),
+=======
+		glink_pkt_devp = kzalloc(sizeof(struct glink_pkt_dev),
+>>>>>>> p9x
 						GFP_KERNEL);
 		if (IS_ERR_OR_NULL(glink_pkt_devp)) {
 			GLINK_PKT_ERR("%s: allocation failed id:%d\n",

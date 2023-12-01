@@ -104,6 +104,7 @@ void mei_hbm_idle(struct mei_device *dev)
 	dev->hbm_state = MEI_HBM_IDLE;
 }
 
+<<<<<<< HEAD
 /**
  * mei_me_cl_remove_all - remove all me clients
  *
@@ -116,6 +117,32 @@ static void mei_me_cl_remove_all(struct mei_device *dev)
 	list_for_each_entry_safe(me_cl, next, &dev->me_clients, list) {
 			list_del(&me_cl->list);
 			kfree(me_cl);
+=======
+	dev->me_clients_num = 0;
+	dev->me_client_presentation_num = 0;
+	dev->me_client_index = 0;
+
+	/* count how many ME clients we have */
+	for_each_set_bit(b, dev->me_clients_map, MEI_CLIENTS_MAX)
+		dev->me_clients_num++;
+
+	if (dev->me_clients_num == 0)
+		return;
+
+	kfree(dev->me_clients);
+	dev->me_clients = NULL;
+
+	dev_dbg(&dev->pdev->dev, "memory allocation for ME clients size=%zd.\n",
+		dev->me_clients_num * sizeof(struct mei_me_client));
+	/* allocate storage for ME clients representation */
+	clients = kcalloc(dev->me_clients_num,
+			sizeof(struct mei_me_client), GFP_KERNEL);
+	if (!clients) {
+		dev_err(&dev->pdev->dev, "memory allocation for ME clients failed.\n");
+		dev->dev_state = MEI_DEV_RESETTING;
+		mei_reset(dev, 1);
+		return;
+>>>>>>> p9x
 	}
 }
 
@@ -367,7 +394,14 @@ static int mei_hbm_prop_req(struct mei_device *dev)
 	struct hbm_props_request *prop_req;
 	const size_t len = sizeof(struct hbm_props_request);
 	unsigned long next_client_index;
+<<<<<<< HEAD
 	int ret;
+=======
+	unsigned long client_num;
+
+
+	client_num = dev->me_client_presentation_num;
+>>>>>>> p9x
 
 	next_client_index = find_next_bit(dev->me_clients_map, MEI_CLIENTS_MAX,
 					  dev->me_client_index);
@@ -891,7 +925,17 @@ int mei_hbm_dispatch(struct mei_device *dev, struct mei_msg_hdr *hdr)
 		break;
 
 	case HOST_ENUM_RES_CMD:
+<<<<<<< HEAD
 		dev_dbg(dev->dev, "hbm: enumeration response: message received\n");
+=======
+		enum_res = (struct hbm_host_enum_response *) mei_msg;
+		memcpy(dev->me_clients_map, enum_res->valid_addresses, 32);
+		if (dev->dev_state == MEI_DEV_INIT_CLIENTS &&
+		    dev->hbm_state == MEI_HBM_ENUM_CLIENTS) {
+				dev->init_clients_timer = 0;
+				mei_hbm_me_cl_allocate(dev);
+				dev->hbm_state = MEI_HBM_CLIENT_PROPERTIES;
+>>>>>>> p9x
 
 		dev->init_clients_timer = 0;
 

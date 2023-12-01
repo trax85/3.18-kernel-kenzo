@@ -797,9 +797,75 @@ fec_enet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	entries_free = fec_enet_get_free_txdesc_num(fep, txq);
 	if (entries_free <= txq->tx_stop_threshold)
 		netif_tx_stop_queue(nq);
+=======
+	if (((unsigned long) bufaddr) & FEC_ALIGNMENT) {
+		memcpy(fep->tx_bounce[index], skb->data, skb->len);
+		bufaddr = fep->tx_bounce[index];
+	}
+
+	/*
+	 * Some design made an incorrect assumption on endian mode of
+	 * the system that it's running on. As the result, driver has to
+	 * swap every frame going to and coming from the controller.
+	 */
+	if (id_entry->driver_data & FEC_QUIRK_SWAP_FRAME)
+		swap_buffer(bufaddr, skb->len);
+
+	/* Save skb pointer */
+	fep->tx_skbuff[index] = skb;
+
+	/* Push the data cache so the CPM does not get stale memory
+	 * data.
+	 */
+	bdp->cbd_bufaddr = dma_map_single(&fep->pdev->dev, bufaddr,
+			FEC_ENET_TX_FRSIZE, DMA_TO_DEVICE);
+
+	/* Send it on its way.  Tell FEC it's ready, interrupt when done,
+	 * it's the last BD of the frame, and to put the CRC on the end.
+	 */
+	status |= (BD_ENET_TX_READY | BD_ENET_TX_INTR
+			| BD_ENET_TX_LAST | BD_ENET_TX_TC);
+	bdp->cbd_sc = status;
+
+	if (fep->bufdesc_ex) {
+
+		struct bufdesc_ex *ebdp = (struct bufdesc_ex *)bdp;
+		ebdp->cbd_bdu = 0;
+		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP &&
+			fep->hwts_tx_en)) {
+			ebdp->cbd_esc = (BD_ENET_TX_TS | BD_ENET_TX_INT);
+			skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
+		} else {
+			ebdp->cbd_esc = BD_ENET_TX_INT;
+
+			/* Enable protocol checksum flags
+			 * We do not bother with the IP Checksum bits as they
+			 * are done by the kernel
+			 */
+			if (skb->ip_summed == CHECKSUM_PARTIAL)
+				ebdp->cbd_esc |= BD_ENET_TX_PINS;
+		}
+	}
+	/* If this was the last BD in the ring, start at the beginning again. */
+	if (status & BD_ENET_TX_WRAP)
+		bdp = fep->tx_bd_base;
+	else
+		bdp = fec_enet_get_nextdesc(bdp, fep->bufdesc_ex);
+
+	skb_tx_timestamp(skb);
+
+	fep->cur_tx = bdp;
+
+	if (fep->cur_tx == fep->dirty_tx)
+		netif_stop_queue(ndev);
+
+	/* Trigger transmission start */
+	writel(0, fep->hwp + FEC_X_DES_ACTIVE);
+>>>>>>> p9x
 
 	return NETDEV_TX_OK;
 }

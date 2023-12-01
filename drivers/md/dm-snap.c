@@ -1573,7 +1573,10 @@ static void copy_callback(int read_err, unsigned long write_err, void *context)
 		}
 		list_add(&pe->out_of_order_entry, lh);
 	}
+<<<<<<< HEAD
 	up(&s->cow_count);
+=======
+>>>>>>> p9x
 }
 
 /*
@@ -2390,7 +2393,11 @@ static struct target_type origin_target = {
 
 static struct target_type snapshot_target = {
 	.name    = "snapshot",
+<<<<<<< HEAD
 	.version = {1, 13, 0},
+=======
+	.version = {1, 12, 0},
+>>>>>>> p9x
 	.module  = THIS_MODULE,
 	.ctr     = snapshot_ctr,
 	.dtr     = snapshot_dtr,

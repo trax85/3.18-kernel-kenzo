@@ -76,6 +76,16 @@ static int modeset_init(struct drm_device *dev)
 		mod->funcs->modeset_init(mod, dev);
 	}
 
+<<<<<<< HEAD
+=======
+	if ((priv->num_encoders == 0) || (priv->num_connectors == 0)) {
+		/* oh nos! */
+		dev_err(dev->dev, "no encoders/connectors found\n");
+		drm_mode_config_cleanup(dev);
+		return -ENXIO;
+	}
+
+>>>>>>> p9x
 	dev->mode_config.min_width = 0;
 	dev->mode_config.min_height = 0;
 	dev->mode_config.max_width = tilcdc_crtc_max_width(priv->crtc);
@@ -110,8 +120,11 @@ static int tilcdc_unload(struct drm_device *dev)
 {
 	struct tilcdc_drm_private *priv = dev->dev_private;
 
+<<<<<<< HEAD
 	tilcdc_remove_external_encoders(dev);
 
+=======
+>>>>>>> p9x
 	drm_fbdev_cma_fini(priv->fbdev);
 	drm_kms_helper_poll_fini(dev);
 	drm_mode_config_cleanup(dev);
@@ -253,6 +266,7 @@ static int tilcdc_load(struct drm_device *dev, unsigned long flags)
 	if (ret < 0) {
 		dev_err(dev->dev, "failed to initialize mode setting\n");
 		goto fail_cpufreq_unregister;
+<<<<<<< HEAD
 	}
 
 	platform_set_drvdata(pdev, dev);
@@ -271,12 +285,18 @@ static int tilcdc_load(struct drm_device *dev, unsigned long flags)
 		dev_err(dev->dev, "no encoders/connectors found\n");
 		ret = -ENXIO;
 		goto fail_external_cleanup;
+=======
+>>>>>>> p9x
 	}
 
 	ret = drm_vblank_init(dev, 1);
 	if (ret < 0) {
 		dev_err(dev->dev, "failed to initialize vblank\n");
+<<<<<<< HEAD
 		goto fail_external_cleanup;
+=======
+		goto fail_mode_config_cleanup;
+>>>>>>> p9x
 	}
 
 	pm_runtime_get_sync(dev->dev);
@@ -317,6 +337,7 @@ fail_vblank_cleanup:
 fail_mode_config_cleanup:
 	drm_mode_config_cleanup(dev);
 
+<<<<<<< HEAD
 fail_component_cleanup:
 	if (priv->is_componentized)
 		component_unbind_all(dev->dev, dev);
@@ -324,6 +345,8 @@ fail_component_cleanup:
 fail_external_cleanup:
 	tilcdc_remove_external_encoders(dev);
 
+=======
+>>>>>>> p9x
 fail_cpufreq_unregister:
 	pm_runtime_disable(dev->dev);
 #ifdef CONFIG_CPU_FREQ
@@ -712,6 +735,10 @@ static void __exit tilcdc_drm_fini(void)
 	DBG("fini");
 	platform_driver_unregister(&tilcdc_platform_driver);
 	tilcdc_panel_fini();
+<<<<<<< HEAD
+=======
+	tilcdc_slave_fini();
+>>>>>>> p9x
 	tilcdc_tfp410_fini();
 }
 

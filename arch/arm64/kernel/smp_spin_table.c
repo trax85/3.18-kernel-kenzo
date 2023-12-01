@@ -25,7 +25,10 @@
 #include <asm/cacheflush.h>
 #include <asm/cpu_ops.h>
 #include <asm/cputype.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+>>>>>>> p9x
 #include <asm/smp_plat.h>
 
 static phys_addr_t cpu_release_addr[NR_CPUS];
@@ -69,6 +72,7 @@ static int smp_spin_table_cpu_prepare(unsigned int cpu)
 	if (!cpu_release_addr[cpu])
 		return -ENODEV;
 
+<<<<<<< HEAD
 	/*
 	 * The cpu-release-addr may or may not be inside the linear mapping.
 	 * As ioremap_cache will either give us a new mapping or reuse the
@@ -79,6 +83,9 @@ static int smp_spin_table_cpu_prepare(unsigned int cpu)
 				     sizeof(*release_addr));
 	if (!release_addr)
 		return -ENOMEM;
+=======
+	release_addr = __va(cpu_release_addr[cpu]);
+>>>>>>> p9x
 
 	/*
 	 * We write the release address as LE regardless of the native
@@ -87,9 +94,15 @@ static int smp_spin_table_cpu_prepare(unsigned int cpu)
 	 * boot-loader's endianess before jumping. This is mandated by
 	 * the boot protocol.
 	 */
+<<<<<<< HEAD
 	writeq_relaxed(__pa(secondary_holding_pen), release_addr);
 	__flush_dcache_area((__force void *)release_addr,
 			    sizeof(*release_addr));
+=======
+	release_addr[0] = (void *) cpu_to_le64(__pa(secondary_holding_pen));
+
+	__flush_dcache_area(release_addr, sizeof(release_addr[0]));
+>>>>>>> p9x
 
 	/*
 	 * Send an event to wake up the secondary CPU.
@@ -116,11 +129,19 @@ static int smp_spin_table_cpu_boot(unsigned int cpu)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct cpu_operations smp_spin_table_ops = {
+=======
+static const struct cpu_operations smp_spin_table_ops = {
+>>>>>>> p9x
 	.name		= "spin-table",
 	.cpu_init	= smp_spin_table_cpu_init,
 	.cpu_prepare	= smp_spin_table_cpu_prepare,
 	.cpu_boot	= smp_spin_table_cpu_boot,
 };
+<<<<<<< HEAD
 CPU_METHOD_OF_DECLARE(spin_table,
 		"spin-table", &smp_spin_table_ops);
+=======
+CPU_METHOD_OF_DECLARE(spin_table, &smp_spin_table_ops);
+>>>>>>> p9x

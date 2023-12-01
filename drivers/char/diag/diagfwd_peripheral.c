@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -219,8 +223,12 @@ static void diagfwd_data_read_done(struct diagfwd_info *fwd_info,
 	int write_len = 0;
 	unsigned char *write_buf = NULL;
 	struct diagfwd_buf_t *temp_buf = NULL;
+<<<<<<< HEAD
 	struct diag_md_session_t *session_info = NULL;
 	uint8_t hdlc_disabled = 0;
+=======
+
+>>>>>>> p9x
 	if (!fwd_info || !buf || len <= 0) {
 		diag_ws_release();
 		return;
@@ -240,6 +248,7 @@ static void diagfwd_data_read_done(struct diagfwd_info *fwd_info,
 
 	mutex_lock(&driver->hdlc_disable_mutex);
 	mutex_lock(&fwd_info->data_mutex);
+<<<<<<< HEAD
 	mutex_lock(&driver->md_session_lock);
 	session_info = diag_md_session_get_peripheral(fwd_info->peripheral);
 	if (session_info)
@@ -247,6 +256,8 @@ static void diagfwd_data_read_done(struct diagfwd_info *fwd_info,
 	else
 		hdlc_disabled = driver->hdlc_disabled;
 	mutex_unlock(&driver->md_session_lock);
+=======
+>>>>>>> p9x
 	if (!driver->feature[fwd_info->peripheral].encode_hdlc) {
 		if (fwd_info->buf_1 && fwd_info->buf_1->data == buf) {
 			temp_buf = fwd_info->buf_1;
@@ -261,7 +272,11 @@ static void diagfwd_data_read_done(struct diagfwd_info *fwd_info,
 			goto end;
 		}
 		write_len = len;
+<<<<<<< HEAD
 	} else if (hdlc_disabled) {
+=======
+	} else if (driver->hdlc_disabled) {
+>>>>>>> p9x
 		/* The data is raw and and on APPS side HDLC is disabled */
 		if (fwd_info->buf_1 && fwd_info->buf_1->data_raw == buf) {
 			temp_buf = fwd_info->buf_1;
@@ -290,8 +305,13 @@ static void diagfwd_data_read_done(struct diagfwd_info *fwd_info,
 			temp_buf = fwd_info->buf_2;
 		} else {
 			pr_err("diag: In %s, no match for non encode buffer %pK, peripheral %d, type: %d\n",
+<<<<<<< HEAD
 				__func__, buf, fwd_info->peripheral,
 				fwd_info->type);
+=======
+			       __func__, buf, fwd_info->peripheral,
+			       fwd_info->type);
+>>>>>>> p9x
 			goto end;
 		}
 		write_len = check_bufsize_for_encoding(temp_buf, len);
@@ -307,26 +327,43 @@ static void diagfwd_data_read_done(struct diagfwd_info *fwd_info,
 		}
 	}
 
+<<<<<<< HEAD
 	mutex_unlock(&fwd_info->data_mutex);
 	mutex_unlock(&driver->hdlc_disable_mutex);
 
+=======
+>>>>>>> p9x
 	if (write_len > 0) {
 		err = diag_mux_write(DIAG_LOCAL_PROC, write_buf, write_len,
 				     temp_buf->ctxt);
 		if (err) {
 			pr_err_ratelimited("diag: In %s, unable to write to mux error: %d\n",
 					   __func__, err);
+<<<<<<< HEAD
 			goto end_write;
 		}
 	}
+=======
+			goto end;
+		}
+	}
+	mutex_unlock(&fwd_info->data_mutex);
+	mutex_unlock(&driver->hdlc_disable_mutex);
+>>>>>>> p9x
 	diagfwd_queue_read(fwd_info);
 	return;
 
 end:
+<<<<<<< HEAD
 	mutex_unlock(&fwd_info->data_mutex);
 	mutex_unlock(&driver->hdlc_disable_mutex);
 end_write:
 	diag_ws_release();
+=======
+	diag_ws_release();
+	mutex_unlock(&fwd_info->data_mutex);
+	mutex_unlock(&driver->hdlc_disable_mutex);
+>>>>>>> p9x
 	if (temp_buf) {
 		diagfwd_write_done(fwd_info->peripheral, fwd_info->type,
 				   GET_BUF_NUM(temp_buf->ctxt));
@@ -647,9 +684,16 @@ void diagfwd_close_transport(uint8_t transport, uint8_t peripheral)
 		break;
 	default:
 		return;
+<<<<<<< HEAD
 	}
 
 	mutex_lock(&driver->diagfwd_channel_mutex[peripheral]);
+=======
+
+	}
+
+	mutex_lock(&driver->diagfwd_channel_mutex);
+>>>>>>> p9x
 	fwd_info = &early_init_info[transport][peripheral];
 	if (fwd_info->p_ops && fwd_info->p_ops->close)
 		fwd_info->p_ops->close(fwd_info->ctxt);
@@ -671,7 +715,11 @@ void diagfwd_close_transport(uint8_t transport, uint8_t peripheral)
 		diagfwd_late_open(dest_info);
 	diagfwd_cntl_open(dest_info);
 	init_fn(peripheral);
+<<<<<<< HEAD
 	mutex_unlock(&driver->diagfwd_channel_mutex[peripheral]);
+=======
+	mutex_unlock(&driver->diagfwd_channel_mutex);
+>>>>>>> p9x
 	diagfwd_queue_read(&peripheral_info[TYPE_DATA][peripheral]);
 	diagfwd_queue_read(&peripheral_info[TYPE_CMD][peripheral]);
 }
@@ -730,12 +778,19 @@ static void __diag_fwd_open(struct diagfwd_info *fwd_info)
 	if (!fwd_info->inited)
 		return;
 
+<<<<<<< HEAD
 	if (driver->logging_mode != DIAG_USB_MODE) {
 		if (fwd_info->buf_1)
 			atomic_set(&fwd_info->buf_1->in_busy, 0);
 		if (fwd_info->buf_2)
 			atomic_set(&fwd_info->buf_2->in_busy, 0);
 	}
+=======
+	if (fwd_info->buf_1)
+		atomic_set(&fwd_info->buf_1->in_busy, 0);
+	if (fwd_info->buf_2)
+		atomic_set(&fwd_info->buf_2->in_busy, 0);
+>>>>>>> p9x
 
 	if (fwd_info->p_ops && fwd_info->p_ops->open)
 		fwd_info->p_ops->open(fwd_info->ctxt);
@@ -917,6 +972,11 @@ void diagfwd_channel_read(struct diagfwd_info *fwd_info)
 	}
 
 	if (fwd_info->buf_1 && !atomic_read(&fwd_info->buf_1->in_busy)) {
+<<<<<<< HEAD
+=======
+		temp_buf = fwd_info->buf_1;
+		atomic_set(&temp_buf->in_busy, 1);
+>>>>>>> p9x
 		if (driver->feature[fwd_info->peripheral].encode_hdlc &&
 		    (fwd_info->type == TYPE_DATA ||
 		     fwd_info->type == TYPE_CMD)) {
@@ -926,11 +986,17 @@ void diagfwd_channel_read(struct diagfwd_info *fwd_info)
 			read_buf = fwd_info->buf_1->data;
 			read_len = fwd_info->buf_1->len;
 		}
+<<<<<<< HEAD
 		if (read_buf) {
 			temp_buf = fwd_info->buf_1;
 			atomic_set(&temp_buf->in_busy, 1);
 		}
 	} else if (fwd_info->buf_2 && !atomic_read(&fwd_info->buf_2->in_busy)) {
+=======
+	} else if (fwd_info->buf_2 && !atomic_read(&fwd_info->buf_2->in_busy)) {
+		temp_buf = fwd_info->buf_2;
+		atomic_set(&temp_buf->in_busy, 1);
+>>>>>>> p9x
 		if (driver->feature[fwd_info->peripheral].encode_hdlc &&
 		    (fwd_info->type == TYPE_DATA ||
 		     fwd_info->type == TYPE_CMD)) {
@@ -940,10 +1006,13 @@ void diagfwd_channel_read(struct diagfwd_info *fwd_info)
 			read_buf = fwd_info->buf_2->data;
 			read_len = fwd_info->buf_2->len;
 		}
+<<<<<<< HEAD
 		if (read_buf) {
 			temp_buf = fwd_info->buf_2;
 			atomic_set(&temp_buf->in_busy, 1);
 		}
+=======
+>>>>>>> p9x
 	} else {
 		pr_debug("diag: In %s, both buffers are empty for p: %d, t: %d\n",
 			 __func__, fwd_info->peripheral, fwd_info->type);

@@ -30,7 +30,10 @@
 #define PCI_DEVICE_ID_SYNOPSYS_HAPSUSB3	0xabcd
 #define PCI_DEVICE_ID_INTEL_BYT		0x0f37
 #define PCI_DEVICE_ID_INTEL_MRFLD	0x119e
+<<<<<<< HEAD
 #define PCI_DEVICE_ID_INTEL_BSW		0x22B7
+=======
+>>>>>>> p9x
 
 struct dwc3_pci {
 	struct device		*dev;
@@ -182,7 +185,10 @@ static const struct pci_device_id dwc3_pci_id_table[] = {
 		PCI_DEVICE(PCI_VENDOR_ID_SYNOPSYS,
 				PCI_DEVICE_ID_SYNOPSYS_HAPSUSB3),
 	},
+<<<<<<< HEAD
 	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_BSW), },
+=======
+>>>>>>> p9x
 	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_BYT), },
 	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_MRFLD), },
 	{  }	/* Terminating Entry */

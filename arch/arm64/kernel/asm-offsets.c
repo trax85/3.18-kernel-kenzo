@@ -22,9 +22,15 @@
 #include <linux/mm.h>
 #include <linux/dma-mapping.h>
 #include <linux/kvm_host.h>
+<<<<<<< HEAD
 #include <asm/fixmap.h>
 #include <asm/thread_info.h>
 #include <asm/memory.h>
+=======
+#include <asm/thread_info.h>
+#include <asm/memory.h>
+#include <asm/cputable.h>
+>>>>>>> p9x
 #include <asm/smp_plat.h>
 #include <asm/suspend.h>
 #include <asm/vdso_datapage.h>
@@ -117,12 +123,25 @@ int main(void)
   BLANK();
   DEFINE(TZ_MINWEST,		offsetof(struct timezone, tz_minuteswest));
   DEFINE(TZ_DSTTIME,		offsetof(struct timezone, tz_dsttime));
+<<<<<<< HEAD
   BLANK();
 #ifdef CONFIG_THREAD_INFO_IN_TASK
   DEFINE(CPU_BOOT_STACK,	offsetof(struct secondary_data, stack));
   DEFINE(CPU_BOOT_TASK,		offsetof(struct secondary_data, task));
   BLANK();
 #endif
+=======
+#ifdef CONFIG_ARM64_CPU_SUSPEND
+  DEFINE(CPU_SUSPEND_SZ,	sizeof(struct cpu_suspend_ctx));
+  DEFINE(CPU_CTX_SP,		offsetof(struct cpu_suspend_ctx, sp));
+  DEFINE(MPIDR_HASH_MASK,	offsetof(struct mpidr_hash, mask));
+  DEFINE(MPIDR_HASH_SHIFTS,	offsetof(struct mpidr_hash, shift_aff));
+  DEFINE(SLEEP_SAVE_SP_SZ,	sizeof(struct sleep_save_sp));
+  DEFINE(SLEEP_SAVE_SP_PHYS,	offsetof(struct sleep_save_sp, save_ptr_stash_phys));
+  DEFINE(SLEEP_SAVE_SP_VIRT,	offsetof(struct sleep_save_sp, save_ptr_stash));
+#endif
+  BLANK();
+>>>>>>> p9x
 #ifdef CONFIG_KVM_ARM_HOST
   DEFINE(VCPU_CONTEXT,		offsetof(struct kvm_vcpu, arch.ctxt));
   DEFINE(CPU_GP_REGS,		offsetof(struct kvm_cpu_context, gp_regs));
@@ -135,7 +154,10 @@ int main(void)
   DEFINE(VCPU_ESR_EL2,		offsetof(struct kvm_vcpu, arch.fault.esr_el2));
   DEFINE(VCPU_FAR_EL2,		offsetof(struct kvm_vcpu, arch.fault.far_el2));
   DEFINE(VCPU_HPFAR_EL2,	offsetof(struct kvm_vcpu, arch.fault.hpfar_el2));
+<<<<<<< HEAD
   DEFINE(VCPU_DEBUG_FLAGS,	offsetof(struct kvm_vcpu, arch.debug_flags));
+=======
+>>>>>>> p9x
   DEFINE(VCPU_HCR_EL2,		offsetof(struct kvm_vcpu, arch.hcr_el2));
   DEFINE(VCPU_IRQ_LINES,	offsetof(struct kvm_vcpu, arch.irq_lines));
   DEFINE(VCPU_HOST_CONTEXT,	offsetof(struct kvm_vcpu, arch.host_cpu_context));
@@ -145,6 +167,7 @@ int main(void)
   DEFINE(KVM_TIMER_ENABLED,	offsetof(struct kvm, arch.timer.enabled));
   DEFINE(VCPU_KVM,		offsetof(struct kvm_vcpu, kvm));
   DEFINE(VCPU_VGIC_CPU,		offsetof(struct kvm_vcpu, arch.vgic_cpu));
+<<<<<<< HEAD
   DEFINE(VGIC_SAVE_FN,		offsetof(struct vgic_sr_vectors, save_vgic));
   DEFINE(VGIC_RESTORE_FN,	offsetof(struct vgic_sr_vectors, restore_vgic));
   DEFINE(VGIC_SR_VECTOR_SZ,	sizeof(struct vgic_sr_vectors));
@@ -163,6 +186,15 @@ int main(void)
   DEFINE(VGIC_V3_CPU_AP0R,	offsetof(struct vgic_cpu, vgic_v3.vgic_ap0r));
   DEFINE(VGIC_V3_CPU_AP1R,	offsetof(struct vgic_cpu, vgic_v3.vgic_ap1r));
   DEFINE(VGIC_V3_CPU_LR,	offsetof(struct vgic_cpu, vgic_v3.vgic_lr));
+=======
+  DEFINE(VGIC_CPU_HCR,		offsetof(struct vgic_cpu, vgic_hcr));
+  DEFINE(VGIC_CPU_VMCR,		offsetof(struct vgic_cpu, vgic_vmcr));
+  DEFINE(VGIC_CPU_MISR,		offsetof(struct vgic_cpu, vgic_misr));
+  DEFINE(VGIC_CPU_EISR,		offsetof(struct vgic_cpu, vgic_eisr));
+  DEFINE(VGIC_CPU_ELRSR,	offsetof(struct vgic_cpu, vgic_elrsr));
+  DEFINE(VGIC_CPU_APR,		offsetof(struct vgic_cpu, vgic_apr));
+  DEFINE(VGIC_CPU_LR,		offsetof(struct vgic_cpu, vgic_lr));
+>>>>>>> p9x
   DEFINE(VGIC_CPU_NR_LR,	offsetof(struct vgic_cpu, nr_lr));
   DEFINE(KVM_VTTBR,		offsetof(struct kvm, arch.vttbr));
   DEFINE(KVM_VGIC_VCTRL,	offsetof(struct kvm, arch.vgic.vctrl_base));
@@ -176,9 +208,12 @@ int main(void)
   DEFINE(SLEEP_SAVE_SP_PHYS,	offsetof(struct sleep_save_sp, save_ptr_stash_phys));
   DEFINE(SLEEP_SAVE_SP_VIRT,	offsetof(struct sleep_save_sp, save_ptr_stash));
 #endif
+<<<<<<< HEAD
   BLANK();
 #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
   DEFINE(TRAMP_VALIAS,		TRAMP_VALIAS);
 #endif
+=======
+>>>>>>> p9x
   return 0;
 }

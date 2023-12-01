@@ -30,11 +30,14 @@
 #include <linux/sched.h>
 #include <linux/shrinker.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/device.h>
 #ifdef CONFIG_ION_POOL_CACHE_POLICY
 #include <asm/cacheflush.h>
 #endif
 #include <linux/miscdevice.h>
+=======
+>>>>>>> p9x
 
 #include "ion.h"
 
@@ -99,6 +102,7 @@ struct ion_buffer {
 void ion_buffer_destroy(struct ion_buffer *buffer);
 
 /**
+<<<<<<< HEAD
  * struct ion_device - the metadata of the ion device node
  * @dev:		the actual misc device
  * @buffers:		an rb tree of all the existing buffers
@@ -174,6 +178,8 @@ struct ion_handle {
 };
 
 /**
+=======
+>>>>>>> p9x
  * struct ion_heap_ops - ops to operate on a given heap
  * @allocate:		allocate memory
  * @free:		free memory. Will be called with
@@ -198,6 +204,7 @@ struct ion_handle {
  * system, not put in a page pool or otherwise cached.
  */
 struct ion_heap_ops {
+<<<<<<< HEAD
 	int (*allocate)(struct ion_heap *heap,
 			struct ion_buffer *buffer, unsigned long len,
 			unsigned long align, unsigned long flags);
@@ -213,6 +220,23 @@ struct ion_heap_ops {
 			struct vm_area_struct *vma);
 	int (*shrink)(struct ion_heap *heap, gfp_t gfp_mask, int nr_to_scan);
 	void (*unmap_user) (struct ion_heap *mapper, struct ion_buffer *buffer);
+=======
+	int (*allocate) (struct ion_heap *heap,
+			 struct ion_buffer *buffer, unsigned long len,
+			 unsigned long align, unsigned long flags);
+	void (*free) (struct ion_buffer *buffer);
+	int (*phys) (struct ion_heap *heap, struct ion_buffer *buffer,
+		     ion_phys_addr_t *addr, size_t *len);
+	struct sg_table *(*map_dma) (struct ion_heap *heap,
+					struct ion_buffer *buffer);
+	void (*unmap_dma) (struct ion_heap *heap, struct ion_buffer *buffer);
+	void * (*map_kernel) (struct ion_heap *heap, struct ion_buffer *buffer);
+	void (*unmap_kernel) (struct ion_heap *heap, struct ion_buffer *buffer);
+	int (*map_user) (struct ion_heap *mapper, struct ion_buffer *buffer,
+			 struct vm_area_struct *vma);
+	void (*unmap_user) (struct ion_heap *mapper, struct ion_buffer *buffer);
+	int (*shrink)(struct ion_heap *heap, gfp_t gfp_mask, int nr_to_scan);
+>>>>>>> p9x
 	int (*print_debug)(struct ion_heap *heap, struct seq_file *s,
 			   const struct list_head *mem_map);
 };
@@ -233,6 +257,10 @@ struct ion_heap_ops {
  */
 #define ION_PRIV_FLAG_SHRINKER_FREE (1 << 0)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 /**
  * struct ion_heap - represents a heap in the system
  * @node:		rb node to put the heap on the device's tree of heaps
@@ -276,8 +304,13 @@ struct ion_heap {
 	struct task_struct *task;
 
 	int (*debug_show)(struct ion_heap *heap, struct seq_file *, void *);
+<<<<<<< HEAD
 	atomic_long_t total_allocated;
 	atomic_long_t total_handles;
+=======
+	atomic_t total_allocated;
+	atomic_t total_handles;
+>>>>>>> p9x
 };
 
 /**
@@ -336,16 +369,24 @@ void ion_heap_unmap_kernel(struct ion_heap *, struct ion_buffer *);
 int ion_heap_map_user(struct ion_heap *, struct ion_buffer *,
 			struct vm_area_struct *);
 int ion_heap_buffer_zero(struct ion_buffer *buffer);
+<<<<<<< HEAD
 int ion_heap_pages_zero(struct page *page, size_t size, pgprot_t pgprot);
 
 int msm_ion_heap_high_order_page_zero(struct page *page, int order);
 struct ion_heap *get_ion_heap(int heap_id);
 int msm_ion_heap_sg_table_zero(struct sg_table *, size_t size);
+=======
+
+int msm_ion_heap_high_order_page_zero(struct page *page, int order);
+struct ion_heap *get_ion_heap(int heap_id);
+int msm_ion_heap_buffer_zero(struct ion_buffer *buffer);
+>>>>>>> p9x
 int msm_ion_heap_pages_zero(struct page **pages, int num_pages);
 int msm_ion_heap_alloc_pages_mem(struct pages_mem *pages_mem);
 void msm_ion_heap_free_pages_mem(struct pages_mem *pages_mem);
 
 /**
+<<<<<<< HEAD
  * Functions to help assign/unassign sg_table for System Secure Heap
  */
 
@@ -363,6 +404,8 @@ int ion_system_secure_heap_assign_sg(struct sg_table *sgt, int dest_vmid);
 void ion_heap_init_shrinker(struct ion_heap *heap);
 
 /**
+=======
+>>>>>>> p9x
  * ion_heap_init_shrinker
  * @heap:		the heap
  *
@@ -481,15 +524,22 @@ void ion_carveout_free(struct ion_heap *heap, ion_phys_addr_t addr,
  * functions for creating and destroying a heap pool -- allows you
  * to keep a pool of pre allocated memory to use from your heap.  Keeping
  * a pool of memory that is ready for dma, ie any cached mapping have been
+<<<<<<< HEAD
  * invalidated from the cache, provides a significant performance benefit on
+=======
+ * invalidated from the cache, provides a significant peformance benefit on
+>>>>>>> p9x
  * many systems */
 
 /**
  * struct ion_page_pool - pagepool struct
  * @high_count:		number of highmem items in the pool
  * @low_count:		number of lowmem items in the pool
+<<<<<<< HEAD
  * @nr_unreserved:	number of items in the pool which have not been reserved
  *			by a prefetch allocation
+=======
+>>>>>>> p9x
  * @high_items:		list of highmem items
  * @low_items:		list of lowmem items
  * @mutex:		lock protecting this struct and especially the count
@@ -500,13 +550,20 @@ void ion_carveout_free(struct ion_heap *heap, ion_phys_addr_t addr,
  *
  * Allows you to keep a pool of pre allocated pages to use from your heap.
  * Keeping a pool of pages that is ready for dma, ie any cached mapping have
+<<<<<<< HEAD
  * been invalidated from the cache, provides a significant performance benefit
+=======
+ * been invalidated from the cache, provides a significant peformance benefit
+>>>>>>> p9x
  * on many systems
  */
 struct ion_page_pool {
 	int high_count;
 	int low_count;
+<<<<<<< HEAD
 	int nr_unreserved;
+=======
+>>>>>>> p9x
 	struct list_head high_items;
 	struct list_head low_items;
 	struct mutex mutex;
@@ -518,6 +575,7 @@ struct ion_page_pool {
 struct ion_page_pool *ion_page_pool_create(gfp_t gfp_mask, unsigned int order);
 void ion_page_pool_destroy(struct ion_page_pool *);
 void *ion_page_pool_alloc(struct ion_page_pool *, bool *from_pool);
+<<<<<<< HEAD
 void *ion_page_pool_alloc_pool_only(struct ion_page_pool *);
 void ion_page_pool_free(struct ion_page_pool *, struct page *, bool prefetch);
 void ion_page_pool_free_immediate(struct ion_page_pool *, struct page *);
@@ -553,6 +611,9 @@ static inline void ion_page_pool_free_set_cache_policy
 				struct page *page){ }
 #endif
 
+=======
+void ion_page_pool_free(struct ion_page_pool *, struct page *);
+>>>>>>> p9x
 
 /** ion_page_pool_shrink - shrinks the size of the memory cached in the pool
  * @pool:		the pool
@@ -579,8 +640,13 @@ int ion_walk_heaps(struct ion_client *client, int heap_id,
 			enum ion_heap_type type, void *data,
 			int (*f)(struct ion_heap *heap, void *data));
 
+<<<<<<< HEAD
 struct ion_handle *ion_handle_get_by_id_nolock(struct ion_client *client,
 					       int id);
+=======
+struct ion_handle *ion_handle_get_by_id(struct ion_client *client,
+					int id);
+>>>>>>> p9x
 
 int ion_handle_put(struct ion_handle *handle);
 

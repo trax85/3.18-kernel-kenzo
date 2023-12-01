@@ -1273,7 +1273,7 @@ static int arizona_hw_params(struct snd_pcm_substream *substream,
 	bool reconfig;
 	unsigned int aif_tx_state, aif_rx_state;
 
-	if (params_rate(params) % 8000)
+	if (params_rate(params) % 4000)
 		rates = &arizona_44k1_bclk_rates[0];
 	else
 		rates = &arizona_48k_bclk_rates[0];
@@ -1884,6 +1884,7 @@ static int arizona_enable_fll(struct arizona_fll *fll)
 	/* Clear any pending completions */
 	try_wait_for_completion(&fll->ok);
 
+<<<<<<< HEAD
 	regmap_update_bits_async(arizona->regmap, fll->base + 1,
 				 ARIZONA_FLL1_ENA, ARIZONA_FLL1_ENA);
 	if (use_sync)
@@ -1894,6 +1895,17 @@ static int arizona_enable_fll(struct arizona_fll *fll)
 	if (already_enabled)
 		regmap_update_bits_async(arizona->regmap, fll->base + 1,
 					 ARIZONA_FLL1_FREERUN, 0);
+=======
+	regmap_update_bits(arizona->regmap, fll->base + 1,
+			   ARIZONA_FLL1_FREERUN, 0);
+	regmap_update_bits(arizona->regmap, fll->base + 1,
+			   ARIZONA_FLL1_ENA, ARIZONA_FLL1_ENA);
+	if (fll->ref_src >= 0 && fll->sync_src >= 0 &&
+	    fll->ref_src != fll->sync_src)
+		regmap_update_bits(arizona->regmap, fll->base + 0x11,
+				   ARIZONA_FLL1_SYNC_ENA,
+				   ARIZONA_FLL1_SYNC_ENA);
+>>>>>>> p9x
 
 	ret = wait_for_completion_timeout(&fll->ok,
 					  msecs_to_jiffies(250));
@@ -1908,8 +1920,13 @@ static void arizona_disable_fll(struct arizona_fll *fll)
 	struct arizona *arizona = fll->arizona;
 	bool change;
 
+<<<<<<< HEAD
 	regmap_update_bits_async(arizona->regmap, fll->base + 1,
 				 ARIZONA_FLL1_FREERUN, ARIZONA_FLL1_FREERUN);
+=======
+	regmap_update_bits(arizona->regmap, fll->base + 1,
+			   ARIZONA_FLL1_FREERUN, ARIZONA_FLL1_FREERUN);
+>>>>>>> p9x
 	regmap_update_bits_check(arizona->regmap, fll->base + 1,
 				 ARIZONA_FLL1_ENA, 0, &change);
 	regmap_update_bits(arizona->regmap, fll->base + 0x11,

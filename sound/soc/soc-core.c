@@ -1567,6 +1567,22 @@ static int soc_bind_aux_dev(struct snd_soc_card *card, int num)
 	return 0;
 }
 
+int soc_check_aux_dev_byname(struct snd_soc_card *card, const char *codec_name)
+{
+	struct snd_soc_codec *codec;
+
+	/* find CODEC from registered CODECs*/
+	list_for_each_entry(codec, &codec_list, list) {
+		if (!strcmp(codec->name, codec_name))
+			return 0;
+	}
+
+	dev_err(card->dev, "ASoC: %s not registered\n", codec_name);
+
+	return -EPROBE_DEFER;
+}
+EXPORT_SYMBOL(soc_check_aux_dev_byname);
+
 static int soc_probe_aux_dev(struct snd_soc_card *card, int num)
 {
 	struct snd_soc_pcm_runtime *rtd = &card->rtd_aux[num];
@@ -2255,6 +2271,160 @@ void snd_soc_free_ac97_codec(struct snd_soc_codec *codec)
 }
 EXPORT_SYMBOL_GPL(snd_soc_free_ac97_codec);
 
+<<<<<<< HEAD
+=======
+unsigned int snd_soc_read(struct snd_soc_codec *codec, unsigned int reg)
+{
+	unsigned int ret;
+
+	if (codec->read) {
+		ret = codec->read(codec, reg);
+		dev_dbg(codec->dev, "read %x => %x\n", reg, ret);
+		trace_snd_soc_reg_read(codec, reg, ret);
+	} else {
+		ret = -EIO;
+	}
+	return ret;
+}
+EXPORT_SYMBOL_GPL(snd_soc_read);
+
+unsigned int snd_soc_write(struct snd_soc_codec *codec,
+			   unsigned int reg, unsigned int val)
+{
+	if (codec->write) {
+		dev_dbg(codec->dev, "write %x = %x\n", reg, val);
+		trace_snd_soc_reg_write(codec, reg, val);
+		return codec->write(codec, reg, val);
+	} else {
+		return -EIO;
+	}
+}
+EXPORT_SYMBOL_GPL(snd_soc_write);
+
+unsigned int snd_soc_bulk_write_raw(struct snd_soc_codec *codec,
+				    unsigned int reg, const void *data, size_t len)
+{
+	return codec->bulk_write_raw(codec, reg, data, len);
+}
+EXPORT_SYMBOL_GPL(snd_soc_bulk_write_raw);
+
+/**
+ * snd_soc_update_bits - update codec register bits
+ * @codec: audio codec
+ * @reg: codec register
+ * @mask: register mask
+ * @value: new value
+ *
+ * Writes new register value.
+ *
+ * Returns 1 for change, 0 for no change, or negative error code.
+ */
+int snd_soc_update_bits(struct snd_soc_codec *codec, unsigned short reg,
+				unsigned int mask, unsigned int value)
+{
+	bool change;
+	unsigned int old, new;
+	int ret;
+
+	if (codec->using_regmap) {
+		ret = regmap_update_bits_check(codec->control_data, reg,
+					       mask, value, &change);
+	} else {
+		ret = snd_soc_read(codec, reg);
+		if (ret < 0)
+			return ret;
+
+		old = ret;
+		new = (old & ~mask) | (value & mask);
+		change = old != new;
+		if (change)
+			ret = snd_soc_write(codec, reg, new);
+	}
+
+	if (ret < 0)
+		return ret;
+
+	return change;
+}
+EXPORT_SYMBOL_GPL(snd_soc_update_bits);
+
+/**
+ * snd_soc_update_bits_locked - update codec register bits
+ * @codec: audio codec
+ * @reg: codec register
+ * @mask: register mask
+ * @value: new value
+ *
+ * Writes new register value, and takes the codec mutex.
+ *
+ * Returns 1 for change else 0.
+ */
+int snd_soc_update_bits_locked(struct snd_soc_codec *codec,
+			       unsigned short reg, unsigned int mask,
+			       unsigned int value)
+{
+	int change;
+
+	mutex_lock(&codec->mutex);
+	change = snd_soc_update_bits(codec, reg, mask, value);
+	mutex_unlock(&codec->mutex);
+
+	return change;
+}
+EXPORT_SYMBOL_GPL(snd_soc_update_bits_locked);
+
+/**
+ * snd_soc_test_bits - test register for change
+ * @codec: audio codec
+ * @reg: codec register
+ * @mask: register mask
+ * @value: new value
+ *
+ * Tests a register with a new value and checks if the new value is
+ * different from the old value.
+ *
+ * Returns 1 for change else 0.
+ */
+int snd_soc_test_bits(struct snd_soc_codec *codec, unsigned short reg,
+				unsigned int mask, unsigned int value)
+{
+	int change;
+	unsigned int old, new;
+
+	old = snd_soc_read(codec, reg);
+	new = (old & ~mask) | value;
+	change = old != new;
+
+	return change;
+}
+EXPORT_SYMBOL_GPL(snd_soc_test_bits);
+
+/**
+ * snd_soc_set_runtime_hwparams - set the runtime hardware parameters
+ * @substream: the pcm substream
+ * @hw: the hardware parameters
+ *
+ * Sets the substream runtime hardware parameters.
+ */
+int snd_soc_set_runtime_hwparams(struct snd_pcm_substream *substream,
+	const struct snd_pcm_hardware *hw)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	if (!runtime)
+		return 0;
+	runtime->hw.info = hw->info;
+	runtime->hw.formats = hw->formats;
+	runtime->hw.period_bytes_min = hw->period_bytes_min;
+	runtime->hw.period_bytes_max = hw->period_bytes_max;
+	runtime->hw.periods_min = hw->periods_min;
+	runtime->hw.periods_max = hw->periods_max;
+	runtime->hw.buffer_bytes_max = hw->buffer_bytes_max;
+	runtime->hw.fifo_size = hw->fifo_size;
+	return 0;
+}
+EXPORT_SYMBOL_GPL(snd_soc_set_runtime_hwparams);
+
+>>>>>>> p9x
 /**
  * snd_soc_cnew - create new control
  * @_template: control template
@@ -3843,7 +4013,10 @@ int snd_soc_register_card(struct snd_soc_card *card)
 	mutex_init(&card->mutex);
 	mutex_init(&card->dapm_mutex);
 	mutex_init(&card->dapm_power_mutex);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	ret = snd_soc_instantiate_card(card);
 	if (ret != 0)
 		soc_cleanup_card_debugfs(card);
@@ -4415,6 +4588,17 @@ void snd_soc_card_change_online_state(struct snd_soc_card *soc_card, int online)
 EXPORT_SYMBOL(snd_soc_card_change_online_state);
 
 /**
+ * snd_soc_card_change_online_state - Mark if soc card is online/offline
+ *
+ * @soc_card : soc_card to mark
+ */
+void snd_soc_card_change_online_state(struct snd_soc_card *soc_card, int online)
+{
+	snd_card_change_online_state(soc_card->snd_card, online);
+}
+EXPORT_SYMBOL(snd_soc_card_change_online_state);
+
+/**
  * snd_soc_register_codec - Register a codec with the ASoC core
  *
  * @codec: codec to register
@@ -4896,7 +5080,10 @@ int snd_soc_info_multi_ext(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 EXPORT_SYMBOL_GPL(snd_soc_info_multi_ext);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 /**
  * snd_soc_dai_get_channel_map - configure DAI audio channel map
  * @dai: DAI
@@ -4920,6 +5107,7 @@ int snd_soc_dai_get_channel_map(struct snd_soc_dai *dai,
 		return -EINVAL;
 }
 EXPORT_SYMBOL_GPL(snd_soc_dai_get_channel_map);
+<<<<<<< HEAD
 
 int snd_soc_of_get_dai_name(struct device_node *of_node,
 			    const char **dai_name)
@@ -4979,6 +5167,8 @@ int snd_soc_of_get_dai_name(struct device_node *of_node,
 }
 EXPORT_SYMBOL_GPL(snd_soc_of_get_dai_name);
 
+=======
+>>>>>>> p9x
 static int __init snd_soc_init(void)
 {
 #ifdef CONFIG_DEBUG_FS

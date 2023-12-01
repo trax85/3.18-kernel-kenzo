@@ -211,6 +211,10 @@ static u16 bnx2x_free_tx_pkt(struct bnx2x *bp, struct bnx2x_fp_txdata *txdata,
 	   txdata->txq_index, idx, tx_buf, skb);
 
 	tx_start_bd = &txdata->tx_desc_ring[bd_idx].start_bd;
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 
 	nbd = le16_to_cpu(tx_start_bd->nbd) - 1;
 #ifdef BNX2X_STOP_ON_ERROR

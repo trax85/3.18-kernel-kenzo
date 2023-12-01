@@ -1,6 +1,10 @@
 /*
 
+<<<<<<< HEAD
  * drivers/staging/android/ion/compat_ion.h
+=======
+ * drivers/gpu/ion/compat_ion.h
+>>>>>>> p9x
  *
  * Copyright (C) 2013 Google, Inc.
  *

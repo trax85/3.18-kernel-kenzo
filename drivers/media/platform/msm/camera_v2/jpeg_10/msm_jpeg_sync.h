@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -24,13 +28,19 @@
 #include "msm_camera_io_util.h"
 #include "msm_jpeg_hw.h"
 #include "cam_smmu_api.h"
+<<<<<<< HEAD
 #include "cam_soc_api.h"
+=======
+>>>>>>> p9x
 
 #define JPEG_8974_V1 0x10000000
 #define JPEG_8974_V2 0x10010000
 #define JPEG_8994 0x10020000
 #define JPEG_CLK_MAX 16
+<<<<<<< HEAD
 #define JPEG_REGULATOR_MAX 3
+=======
+>>>>>>> p9x
 
 enum msm_jpeg_state {
 	MSM_JPEG_INIT,
@@ -60,6 +70,7 @@ struct msm_jpeg_q_entry {
 
 struct msm_jpeg_device {
 	struct platform_device *pdev;
+<<<<<<< HEAD
 	struct resource        *jpeg_irq_res;
 	void                   *base;
 	void                   *vbif_base;
@@ -68,6 +79,15 @@ struct msm_jpeg_device {
 	size_t num_clk;
 	int num_reg;
 	struct msm_cam_regulator *jpeg_vdd;
+=======
+	struct resource        *mem;
+	int                     irq;
+	void                   *base;
+	struct clk *jpeg_clk[JPEG_CLK_MAX];
+	struct msm_cam_clk_info jpeg_clk_info[JPEG_CLK_MAX];
+
+	struct regulator *jpeg_fs;
+>>>>>>> p9x
 	uint32_t hw_version;
 
 	struct device *device;
@@ -110,6 +130,10 @@ struct msm_jpeg_device {
 	int idx;
 	int iommu_hdl;
 	int decode_flag;
+<<<<<<< HEAD
+=======
+	struct ion_client *jpeg_client;
+>>>>>>> p9x
 	void *jpeg_vbif;
 	int release_buf;
 	struct msm_jpeg_hw_pingpong fe_pingpong_buf;
@@ -119,9 +143,16 @@ struct msm_jpeg_device {
 	spinlock_t reset_lock;
 	wait_queue_head_t reset_wait;
 	uint32_t res_size;
+<<<<<<< HEAD
 	enum msm_jpeg_state state;
 	enum msm_jpeg_core_type core_type;
 	enum cam_bus_client bus_client;
+=======
+	uint32_t jpeg_bus_client;
+	uint32_t num_clk;
+	enum msm_jpeg_state state;
+	enum msm_jpeg_core_type core_type;
+>>>>>>> p9x
 };
 
 int __msm_jpeg_open(struct msm_jpeg_device *pgmn_dev);

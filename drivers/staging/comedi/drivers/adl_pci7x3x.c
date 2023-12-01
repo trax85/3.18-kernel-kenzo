@@ -113,9 +113,18 @@ static int adl_pci7x3x_do_insn_bits(struct comedi_device *dev,
 {
 	unsigned long reg = (unsigned long)s->private;
 
+<<<<<<< HEAD
 	if (comedi_dio_update_state(s, data)) {
 		unsigned int val = s->state;
 
+=======
+	if (mask) {
+		unsigned int val;
+
+		s->state &= ~mask;
+		s->state |= (bits & mask);
+		val = s->state;
+>>>>>>> p9x
 		if (s->n_chan == 16) {
 			/*
 			 * It seems the PCI-7230 needs the 16-bit DO state

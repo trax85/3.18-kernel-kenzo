@@ -356,10 +356,17 @@ xfs_compat_attrlist_by_handle(
 		return -EPERM;
 	if (copy_from_user(&al_hreq, arg,
 			   sizeof(compat_xfs_fsop_attrlist_handlereq_t)))
+<<<<<<< HEAD
 		return -EFAULT;
 	if (al_hreq.buflen < sizeof(struct attrlist) ||
 	    al_hreq.buflen > XATTR_LIST_MAX)
 		return -EINVAL;
+=======
+		return -XFS_ERROR(EFAULT);
+	if (al_hreq.buflen < sizeof(struct attrlist) ||
+	    al_hreq.buflen > XATTR_LIST_MAX)
+		return -XFS_ERROR(EINVAL);
+>>>>>>> p9x
 
 	/*
 	 * Reject flags, only allow namespaces.

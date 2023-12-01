@@ -277,7 +277,8 @@ struct l2tp_session *l2tp_session_find(struct net *net, struct l2tp_tunnel *tunn
 }
 EXPORT_SYMBOL_GPL(l2tp_session_find);
 
-struct l2tp_session *l2tp_session_find_nth(struct l2tp_tunnel *tunnel, int nth)
+struct l2tp_session *l2tp_session_get_nth(struct l2tp_tunnel *tunnel, int nth,
+					  bool do_ref)
 {
 	int hash;
 	struct l2tp_session *session;
@@ -287,6 +288,9 @@ struct l2tp_session *l2tp_session_find_nth(struct l2tp_tunnel *tunnel, int nth)
 	for (hash = 0; hash < L2TP_HASH_SIZE; hash++) {
 		hlist_for_each_entry(session, &tunnel->session_hlist[hash], hlist) {
 			if (++count > nth) {
+				l2tp_session_inc_refcount(session);
+				if (do_ref && session->ref)
+					session->ref(session);
 				read_unlock_bh(&tunnel->hlist_lock);
 				return session;
 			}
@@ -297,7 +301,7 @@ struct l2tp_session *l2tp_session_find_nth(struct l2tp_tunnel *tunnel, int nth)
 
 	return NULL;
 }
-EXPORT_SYMBOL_GPL(l2tp_session_find_nth);
+EXPORT_SYMBOL_GPL(l2tp_session_get_nth);
 
 /* Lookup a session by interface name.
  * This is very inefficient but is only used by management interfaces.
@@ -504,8 +508,37 @@ static int l2tp_seq_check_rx_window(struct l2tp_session *session, u32 nr)
 	else
 		nws = (session->nr_max + 1) - (session->nr - nr);
 
+<<<<<<< HEAD
 	return nws < session->nr_window_size;
 }
+=======
+#if IS_ENABLED(CONFIG_IPV6)
+	if (sk->sk_family == PF_INET6 && !l2tp_tunnel(sk)->v4mapped) {
+		if (!uh->check) {
+			LIMIT_NETDEBUG(KERN_INFO "L2TP: IPv6: checksum is 0\n");
+			return 1;
+		}
+		if ((skb->ip_summed == CHECKSUM_COMPLETE) &&
+		    !csum_ipv6_magic(&ipv6_hdr(skb)->saddr,
+				     &ipv6_hdr(skb)->daddr, ulen,
+				     IPPROTO_UDP, skb->csum)) {
+			skb->ip_summed = CHECKSUM_UNNECESSARY;
+			return 0;
+		}
+		skb->csum = ~csum_unfold(csum_ipv6_magic(&ipv6_hdr(skb)->saddr,
+							 &ipv6_hdr(skb)->daddr,
+							 skb->len, IPPROTO_UDP,
+							 0));
+	} else
+#endif
+	{
+		struct inet_sock *inet;
+		if (!uh->check)
+			return 0;
+		inet = inet_sk(sk);
+		psum = csum_tcpudp_nofold(inet->inet_saddr, inet->inet_daddr,
+					  ulen, IPPROTO_UDP, 0);
+>>>>>>> p9x
 
 /* If packet has sequence numbers, queue it if acceptable. Returns 0 if
  * acceptable, else non-zero.
@@ -1076,8 +1109,13 @@ static int l2tp_xmit_core(struct l2tp_session *session, struct sk_buff *skb,
 	/* Queue the packet to IP for output */
 	skb->ignore_df = 1;
 #if IS_ENABLED(CONFIG_IPV6)
+<<<<<<< HEAD
 	if (tunnel->sock->sk_family == PF_INET6 && !tunnel->v4mapped)
 		error = inet6_csk_xmit(tunnel->sock, skb, NULL);
+=======
+	if (skb->sk->sk_family == PF_INET6 && !tunnel->v4mapped)
+		error = inet6_csk_xmit(skb, NULL);
+>>>>>>> p9x
 	else
 #endif
 		error = ip_queue_xmit(tunnel->sock, skb, fl);
@@ -1159,9 +1197,13 @@ int l2tp_xmit_skb(struct l2tp_session *session, struct sk_buff *skb, int hdr_len
 		/* Calculate UDP checksum if configured to do so */
 #if IS_ENABLED(CONFIG_IPV6)
 		if (sk->sk_family == PF_INET6 && !tunnel->v4mapped)
+<<<<<<< HEAD
 			udp6_set_csum(udp_get_no_check6_tx(sk),
 				      skb, &inet6_sk(sk)->saddr,
 				      &sk->sk_v6_daddr, udp_len);
+=======
+			l2tp_xmit_ipv6_csum(sk, skb, udp_len);
+>>>>>>> p9x
 		else
 #endif
 		udp_set_csum(sk->sk_no_check_tx, skb, inet->inet_saddr,
@@ -1575,13 +1617,22 @@ int l2tp_tunnel_create(struct net *net, int fd, int version, u32 tunnel_id, u32 
 		struct ipv6_pinfo *np = inet6_sk(sk);
 
 		if (ipv6_addr_v4mapped(&np->saddr) &&
+<<<<<<< HEAD
 		    ipv6_addr_v4mapped(&sk->sk_v6_daddr)) {
+=======
+		    ipv6_addr_v4mapped(&np->daddr)) {
+>>>>>>> p9x
 			struct inet_sock *inet = inet_sk(sk);
 
 			tunnel->v4mapped = true;
 			inet->inet_saddr = np->saddr.s6_addr32[3];
+<<<<<<< HEAD
 			inet->inet_rcv_saddr = sk->sk_v6_rcv_saddr.s6_addr32[3];
 			inet->inet_daddr = sk->sk_v6_daddr.s6_addr32[3];
+=======
+			inet->inet_rcv_saddr = np->rcv_saddr.s6_addr32[3];
+			inet->inet_daddr = np->daddr.s6_addr32[3];
+>>>>>>> p9x
 		} else {
 			tunnel->v4mapped = false;
 		}
@@ -1591,7 +1642,21 @@ int l2tp_tunnel_create(struct net *net, int fd, int version, u32 tunnel_id, u32 
 	/* Mark socket as an encapsulation socket. See net/ipv4/udp.c */
 	tunnel->encap = encap;
 	if (encap == L2TP_ENCAPTYPE_UDP) {
+<<<<<<< HEAD
 		struct udp_tunnel_sock_cfg udp_cfg;
+=======
+		/* Mark socket as an encapsulation socket. See net/ipv4/udp.c */
+		udp_sk(sk)->encap_type = UDP_ENCAP_L2TPINUDP;
+		udp_sk(sk)->encap_rcv = l2tp_udp_encap_recv;
+		udp_sk(sk)->encap_destroy = l2tp_udp_encap_destroy;
+#if IS_ENABLED(CONFIG_IPV6)
+		if (sk->sk_family == PF_INET6 && !tunnel->v4mapped)
+			udpv6_encap_enable();
+		else
+#endif
+		udp_encap_enable();
+	}
+>>>>>>> p9x
 
 		udp_cfg.sk_user_data = tunnel;
 		udp_cfg.encap_type = UDP_ENCAP_L2TPINUDP;
@@ -1648,10 +1713,20 @@ EXPORT_SYMBOL_GPL(l2tp_tunnel_create);
  */
 void l2tp_tunnel_delete(struct l2tp_tunnel *tunnel)
 {
+<<<<<<< HEAD
 	if (!test_and_set_bit(0, &tunnel->dead)) {
 		l2tp_tunnel_inc_refcount(tunnel);
 		queue_work(l2tp_wq, &tunnel->del_work);
 	}
+=======
+	l2tp_tunnel_inc_refcount(tunnel);
+	l2tp_tunnel_closeall(tunnel);
+	if (false == queue_work(l2tp_wq, &tunnel->del_work)) {
+		l2tp_tunnel_dec_refcount(tunnel);
+		return 1;
+	}
+	return 0;
+>>>>>>> p9x
 }
 EXPORT_SYMBOL_GPL(l2tp_tunnel_delete);
 

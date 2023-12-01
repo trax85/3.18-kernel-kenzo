@@ -380,7 +380,11 @@ static void get_cs_base_and_mask(struct amd64_pvt *pvt, int csrow, u8 dct,
 		csmask		= pvt->csels[dct].csmasks[csrow >> 1];
 		addr_shift	= 8;
 
+<<<<<<< HEAD
 		if (pvt->fam == 0x15)
+=======
+		if (boot_cpu_data.x86 == 0x15)
+>>>>>>> p9x
 			base_bits = mask_bits =
 				GENMASK_ULL(30,19) | GENMASK_ULL(13,5);
 		else

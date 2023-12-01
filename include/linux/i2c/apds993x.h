@@ -16,7 +16,14 @@
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program.
+=======
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA
+ *
+>>>>>>> p9x
  */
 
 #ifndef __APDS993X_H__

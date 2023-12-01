@@ -3,7 +3,12 @@
 # subsystems should select the appropriate symbols.
 
 config REGMAP
+<<<<<<< HEAD
 	default y if (REGMAP_I2C || REGMAP_SPI || REGMAP_SPMI || REGMAP_MMIO || REGMAP_IRQ || REGMAP_SWR)
+=======
+	default y if (REGMAP_I2C || REGMAP_SPI || REGMAP_SPMI)
+	default y if (REGMAP_MMIO || REGMAP_IRQ || REGMAP_SWR)
+>>>>>>> p9x
 	select LZO_COMPRESS
 	select LZO_DECOMPRESS
 	select IRQ_DOMAIN if REGMAP_IRQ

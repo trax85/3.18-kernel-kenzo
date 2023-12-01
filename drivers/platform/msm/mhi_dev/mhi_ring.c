@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -30,8 +34,23 @@ static uint32_t mhi_dev_ring_addr2ofst(struct mhi_dev_ring *ring, uint64_t p)
 {
 	uint64_t rbase;
 
+<<<<<<< HEAD
 	rbase = ring->ring_ctx->generic.rbase;
 
+=======
+	struct mhi_dev *mhi_ctx;
+
+	mhi_ctx = ring->mhi_dev;
+	rbase = ring->ring_ctx->generic.rbase;
+
+	if (p > (rbase + (ring->ring_size *
+				sizeof(union mhi_dev_ring_element_type)))) {
+		pr_err("error!!! rbase: 0x%llx, offset:0x%llx\n", rbase, p);
+		mhi_dev_dump_mmio(mhi_ctx);
+		BUG();
+	}
+
+>>>>>>> p9x
 	return (p - rbase)/sizeof(union mhi_dev_ring_element_type);
 }
 
@@ -42,11 +61,16 @@ static uint32_t mhi_dev_ring_num_elems(struct mhi_dev_ring *ring)
 }
 
 /* fetch ring elements from stat->end, take care of wrap-around case */
+<<<<<<< HEAD
 int mhi_dev_fetch_ring_elements(struct mhi_dev_ring *ring,
+=======
+static int mhi_dev_fetch_ring_elements(struct mhi_dev_ring *ring,
+>>>>>>> p9x
 					uint32_t start, uint32_t end)
 {
 	struct mhi_addr host_addr;
 
+<<<<<<< HEAD
 	if (ring->mhi_dev->use_ipa) {
 		host_addr.host_pa = ring->ring_shadow.host_pa
 			+ sizeof(union mhi_dev_ring_element_type) * start;
@@ -65,10 +89,25 @@ int mhi_dev_fetch_ring_elements(struct mhi_dev_ring *ring,
 		host_addr.size = (ring->ring_size-start) *
 					sizeof(union mhi_dev_ring_element_type);
 		mhi_dev_read_from_host(ring->mhi_dev, &host_addr);
+=======
+	host_addr.device_pa = ring->ring_shadow.device_pa
+			+ sizeof(union mhi_dev_ring_element_type) * start;
+	host_addr.device_va = ring->ring_shadow.device_va
+			+ sizeof(union mhi_dev_ring_element_type) * start;
+	if (start < end) {
+		mhi_dev_read_from_host(&host_addr, &ring->ring_cache[start],
+			(end-start) * sizeof(union mhi_dev_ring_element_type));
+	} else if (start > end) {
+		/* copy from 'start' to ring end, then ring start to 'end'*/
+		mhi_dev_read_from_host(&host_addr, &ring->ring_cache[start],
+			(ring->ring_size-start) *
+			sizeof(union mhi_dev_ring_element_type));
+>>>>>>> p9x
 		if (end) {
 			/* wrapped around */
 			host_addr.device_pa = ring->ring_shadow.device_pa;
 			host_addr.device_va = ring->ring_shadow.device_va;
+<<<<<<< HEAD
 			host_addr.host_pa = ring->ring_shadow.host_pa;
 			host_addr.virt_addr = &ring->ring_cache[0];
 			host_addr.phy_addr = ring->ring_cache_dma_handle;
@@ -77,6 +116,13 @@ int mhi_dev_fetch_ring_elements(struct mhi_dev_ring *ring,
 			mhi_dev_read_from_host(ring->mhi_dev, &host_addr);
 		}
 	}
+=======
+			mhi_dev_read_from_host(&host_addr, &ring->ring_cache[0],
+				end * sizeof(union mhi_dev_ring_element_type));
+		}
+	}
+
+>>>>>>> p9x
 	return 0;
 }
 
@@ -93,10 +139,17 @@ int mhi_dev_cache_ring(struct mhi_dev_ring *ring, uint32_t wr_offset)
 	mhi_ctx = ring->mhi_dev;
 
 	if (ring->wr_offset == wr_offset) {
+<<<<<<< HEAD
 		mhi_log(MHI_MSG_VERBOSE,
 			"nothing to cache for ring %d, local wr_ofst %d\n",
 			ring->id, ring->wr_offset);
 		mhi_log(MHI_MSG_VERBOSE,
+=======
+		mhi_log(MHI_MSG_INFO,
+			"nothing to cache for ring %d, local wr_ofst %d\n",
+			ring->id, ring->wr_offset);
+		mhi_log(MHI_MSG_INFO,
+>>>>>>> p9x
 			"new wr_offset %d\n", wr_offset);
 		return 0;
 	}
@@ -105,7 +158,11 @@ int mhi_dev_cache_ring(struct mhi_dev_ring *ring, uint32_t wr_offset)
 
 	mhi_log(MHI_MSG_VERBOSE,
 			"caching - rng size :%d local ofst:%d new ofst: %d\n",
+<<<<<<< HEAD
 			(uint32_t) ring->ring_size, old_offset,
+=======
+			ring->ring_size, old_offset,
+>>>>>>> p9x
 			ring->wr_offset);
 
 	/*
@@ -125,7 +182,11 @@ int mhi_dev_cache_ring(struct mhi_dev_ring *ring, uint32_t wr_offset)
 			ring->id, old_offset, wr_offset);
 
 	if (mhi_dev_fetch_ring_elements(ring, old_offset, wr_offset)) {
+<<<<<<< HEAD
 		mhi_log(MHI_MSG_ERROR,
+=======
+		mhi_log(MHI_MSG_VERBOSE,
+>>>>>>> p9x
 		"failed to fetch elements for ring %d, start %d, end %d\n",
 		ring->id, old_offset, wr_offset);
 		return -EINVAL;
@@ -204,7 +265,11 @@ int mhi_dev_process_ring_element(struct mhi_dev_ring *ring, uint32_t offset)
 	if (ring->ring_cb)
 		ring->ring_cb(ring->mhi_dev, el, (void *)ring);
 	else
+<<<<<<< HEAD
 		mhi_log(MHI_MSG_ERROR, "No callback registered for ring %d\n",
+=======
+		mhi_log(MHI_MSG_INFO, "No callback registered for ring %d\n",
+>>>>>>> p9x
 				ring->id);
 
 	return 0;
@@ -222,7 +287,11 @@ int mhi_dev_process_ring(struct mhi_dev_ring *ring)
 
 	rc = mhi_dev_update_wr_offset(ring);
 	if (rc) {
+<<<<<<< HEAD
 		mhi_log(MHI_MSG_ERROR,
+=======
+		mhi_log(MHI_MSG_VERBOSE,
+>>>>>>> p9x
 				"Error updating write-offset for ring %d\n",
 				ring->id);
 		return rc;
@@ -239,7 +308,11 @@ int mhi_dev_process_ring(struct mhi_dev_ring *ring)
 	while (ring->rd_offset != ring->wr_offset) {
 		rc = mhi_dev_process_ring_element(ring, ring->rd_offset);
 		if (rc) {
+<<<<<<< HEAD
 			mhi_log(MHI_MSG_ERROR,
+=======
+			mhi_log(MHI_MSG_VERBOSE,
+>>>>>>> p9x
 				"Error processing ring (%d) element (%d)\n",
 				ring->id, ring->rd_offset);
 			return rc;
@@ -252,8 +325,15 @@ int mhi_dev_process_ring(struct mhi_dev_ring *ring)
 		mhi_dev_ring_inc_index(ring, ring->rd_offset);
 	}
 
+<<<<<<< HEAD
 	if (!(ring->rd_offset == ring->wr_offset)) {
 		mhi_log(MHI_MSG_ERROR,
+=======
+	if (ring->rd_offset == ring->wr_offset) {
+		return 0;
+	} else {
+		mhi_log(MHI_MSG_VERBOSE,
+>>>>>>> p9x
 				"Error with the rd offset/wr offset\n");
 		return -EINVAL;
 	}
@@ -263,6 +343,7 @@ int mhi_dev_process_ring(struct mhi_dev_ring *ring)
 EXPORT_SYMBOL(mhi_dev_process_ring);
 
 int mhi_dev_add_element(struct mhi_dev_ring *ring,
+<<<<<<< HEAD
 				union mhi_dev_ring_element_type *element,
 				struct event_req *ereq, int size)
 {
@@ -270,6 +351,12 @@ int mhi_dev_add_element(struct mhi_dev_ring *ring,
 	struct mhi_addr host_addr;
 	uint32_t num_elem = 1;
 	uint32_t num_free_elem;
+=======
+				union mhi_dev_ring_element_type *element)
+{
+	uint32_t old_offset = 0;
+	struct mhi_addr host_addr;
+>>>>>>> p9x
 
 	if (!ring || !element) {
 		pr_err("%s: Invalid context\n", __func__);
@@ -278,6 +365,7 @@ int mhi_dev_add_element(struct mhi_dev_ring *ring,
 
 	mhi_dev_update_wr_offset(ring);
 
+<<<<<<< HEAD
 	if (ereq)
 		num_elem = size / (sizeof(union mhi_dev_ring_element_type));
 
@@ -290,11 +378,16 @@ int mhi_dev_add_element(struct mhi_dev_ring *ring,
 	if (num_free_elem < num_elem) {
 		mhi_log(MHI_MSG_ERROR, "No space to add %d elem in ring (%d)\n",
 			num_elem, ring->id);
+=======
+	if ((ring->rd_offset + 1) % ring->ring_size == ring->wr_offset) {
+		mhi_log(MHI_MSG_INFO, "ring full to insert element\n");
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
 	old_offset = ring->rd_offset;
 
+<<<<<<< HEAD
 	if (ereq) {
 		ring->rd_offset += num_elem;
 		if (ring->rd_offset >= ring->ring_size)
@@ -305,10 +398,18 @@ int mhi_dev_add_element(struct mhi_dev_ring *ring,
 	ring->ring_ctx->generic.rp = (ring->rd_offset *
 		sizeof(union mhi_dev_ring_element_type)) +
 		ring->ring_ctx->generic.rbase;
+=======
+	mhi_dev_ring_inc_index(ring, ring->rd_offset);
+
+	ring->ring_ctx->generic.rp = (ring->rd_offset *
+				sizeof(union mhi_dev_ring_element_type)) +
+				ring->ring_ctx->generic.rbase;
+>>>>>>> p9x
 	/*
 	 * Write the element, ring_base has to be the
 	 * iomap of the ring_base for memcpy
 	 */
+<<<<<<< HEAD
 
 	if (ring->mhi_dev->use_ipa)
 		host_addr.host_pa = ring->ring_shadow.host_pa +
@@ -358,6 +459,22 @@ int mhi_dev_add_element(struct mhi_dev_ring *ring,
 		mhi_dev_write_to_host(ring->mhi_dev, &host_addr,
 			ereq, MHI_DEV_DMA_ASYNC);
 	}
+=======
+	host_addr.device_pa = ring->ring_shadow.device_pa +
+			sizeof(union mhi_dev_ring_element_type) * old_offset;
+	host_addr.device_va = ring->ring_shadow.device_va +
+			sizeof(union mhi_dev_ring_element_type) * old_offset;
+
+	mhi_log(MHI_MSG_VERBOSE, "adding element to ring (%d)\n", ring->id);
+	mhi_log(MHI_MSG_VERBOSE, "rd_ofset %d\n", ring->rd_offset);
+	mhi_log(MHI_MSG_VERBOSE, "type %d\n", element->generic.type);
+	mhi_log(MHI_MSG_VERBOSE, "completion ptr of the rp 0x%lld\n",
+						element->generic.ptr);
+
+	mhi_dev_write_to_host(&host_addr, element,
+			sizeof(union mhi_dev_ring_element_type));
+
+>>>>>>> p9x
 	return 0;
 }
 EXPORT_SYMBOL(mhi_dev_add_element);
@@ -387,6 +504,7 @@ int mhi_ring_start(struct mhi_dev_ring *ring, union mhi_dev_ring_ctx *ctx,
 	wr_offset = mhi_dev_ring_addr2ofst(ring,
 					ring->ring_ctx->generic.wp);
 
+<<<<<<< HEAD
 	ring->ring_cache = dma_alloc_coherent(mhi->dev,
 			ring->ring_size *
 			sizeof(union mhi_dev_ring_element_type),
@@ -394,13 +512,21 @@ int mhi_ring_start(struct mhi_dev_ring *ring, union mhi_dev_ring_ctx *ctx,
 			GFP_KERNEL);
 	if (!ring->ring_cache)
 		return -ENOMEM;
+=======
+	ring->ring_cache = devm_kzalloc(mhi->dev,
+			ring->ring_size *
+			sizeof(union mhi_dev_ring_element_type), GFP_KERNEL);
+>>>>>>> p9x
 
 	offset = (uint32_t)(ring->ring_ctx->generic.rbase -
 					mhi->ctrl_base.host_pa);
 
 	ring->ring_shadow.device_pa = mhi->ctrl_base.device_pa + offset;
 	ring->ring_shadow.device_va = mhi->ctrl_base.device_va + offset;
+<<<<<<< HEAD
 	ring->ring_shadow.host_pa = mhi->ctrl_base.host_pa + offset;
+=======
+>>>>>>> p9x
 
 	if (ring->type == RING_TYPE_ER)
 		ring->ring_ctx_shadow =
@@ -415,18 +541,29 @@ int mhi_ring_start(struct mhi_dev_ring *ring, union mhi_dev_ring_ctx *ctx,
 		(union mhi_dev_ring_ctx *) (mhi->ch_ctx_shadow.device_va +
 		(ring->id - mhi->ch_ring_start)*sizeof(union mhi_dev_ring_ctx));
 
+<<<<<<< HEAD
 	ring->ring_ctx_shadow = ring->ring_ctx;
 
 	if (ring->type != RING_TYPE_ER || ring->type != RING_TYPE_CH) {
+=======
+	if (ring->type != RING_TYPE_ER) {
+>>>>>>> p9x
 		rc = mhi_dev_cache_ring(ring, wr_offset);
 		if (rc)
 			return rc;
 	}
 
+<<<<<<< HEAD
 	mhi_log(MHI_MSG_VERBOSE, "ctx ring_base:0x%x, rp:0x%x, wp:0x%x\n",
 			(uint32_t)ring->ring_ctx->generic.rbase,
 			(uint32_t)ring->ring_ctx->generic.rp,
 			(uint32_t)ring->ring_ctx->generic.wp);
+=======
+	mhi_log(MHI_MSG_VERBOSE, "ctx ring_base:0x%lld, rp:0x%lld, wp:0x%lld\n",
+			ring->ring_ctx->generic.rbase,
+			ring->ring_ctx->generic.rp,
+			ring->ring_ctx->generic.wp);
+>>>>>>> p9x
 	ring->wr_offset = wr_offset;
 
 	return rc;

@@ -111,8 +111,13 @@ static void tk_set_wall_to_mono(struct timekeeper *tk, struct timespec64 wtm)
 					-tk->wall_to_monotonic.tv_nsec);
 	WARN_ON_ONCE(tk->offs_real.tv64 != timespec64_to_ktime(tmp).tv64);
 	tk->wall_to_monotonic = wtm;
+<<<<<<< HEAD
 	set_normalized_timespec64(&tmp, -wtm.tv_sec, -wtm.tv_nsec);
 	tk->offs_real = timespec64_to_ktime(tmp);
+=======
+	set_normalized_timespec(&tmp, -wtm.tv_sec, -wtm.tv_nsec);
+	tk->offs_real = timespec_to_ktime(tmp);
+>>>>>>> p9x
 	tk->offs_tai = ktime_add(tk->offs_real, ktime_set(tk->tai_offset, 0));
 }
 
@@ -723,6 +728,7 @@ int do_settimeofday(const struct timespec *tv)
 	ts_delta.tv_sec = tv->tv_sec - xt.tv_sec;
 	ts_delta.tv_nsec = tv->tv_nsec - xt.tv_nsec;
 
+<<<<<<< HEAD
 	if (timespec64_compare(&tk->wall_to_monotonic, &ts_delta) > 0) {
 		ret = -EINVAL;
 		goto out;
@@ -734,6 +740,18 @@ int do_settimeofday(const struct timespec *tv)
 	tk_set_xtime(tk, &tmp);
 out:
 	timekeeping_update(tk, TK_CLEAR_NTP | TK_MIRROR | TK_CLOCK_WAS_SET);
+=======
+	if (timespec_compare(&tk->wall_to_monotonic, &ts_delta) > 0) {
+		ret = -EINVAL;
+		goto out;
+	}
+
+	tk_set_wall_to_mono(tk, timespec_sub(tk->wall_to_monotonic, ts_delta));
+
+	tk_set_xtime(tk, tv);
+out:
+	timekeeping_update(tk, true, true);
+>>>>>>> p9x
 
 	write_seqcount_end(&tk_core.seq);
 	raw_spin_unlock_irqrestore(&timekeeper_lock, flags);
@@ -769,9 +787,15 @@ int timekeeping_inject_offset(struct timespec *ts)
 	timekeeping_forward_now(tk);
 
 	/* Make sure the proposed value is valid */
+<<<<<<< HEAD
 	tmp = timespec64_add(tk_xtime(tk),  ts64);
 	if (timespec64_compare(&tk->wall_to_monotonic, &ts64) > 0 ||
 		!timespec64_valid_strict(&tmp)) {
+=======
+	tmp = timespec_add(tk_xtime(tk),  *ts);
+	if (timespec_compare(&tk->wall_to_monotonic, ts) > 0 ||
+	    !timespec_valid_strict(&tmp)) {
+>>>>>>> p9x
 		ret = -EINVAL;
 		goto error;
 	}
@@ -833,8 +857,13 @@ void timekeeping_set_tai_offset(s32 tai_offset)
 	raw_spin_lock_irqsave(&timekeeper_lock, flags);
 	write_seqcount_begin(&tk_core.seq);
 	__timekeeping_set_tai_offset(tk, tai_offset);
+<<<<<<< HEAD
 	timekeeping_update(tk, TK_MIRROR | TK_CLOCK_WAS_SET);
 	write_seqcount_end(&tk_core.seq);
+=======
+	timekeeping_update(tk, false, true);
+	write_seqcount_end(&timekeeper_seq);
+>>>>>>> p9x
 	raw_spin_unlock_irqrestore(&timekeeper_lock, flags);
 	clock_was_set();
 }
@@ -1280,8 +1309,13 @@ static int timekeeping_suspend(void)
 		}
 	}
 
+<<<<<<< HEAD
 	timekeeping_update(tk, TK_MIRROR);
 	write_seqcount_end(&tk_core.seq);
+=======
+	timekeeping_update(tk, false, true);
+	write_seqcount_end(&timekeeper_seq);
+>>>>>>> p9x
 	raw_spin_unlock_irqrestore(&timekeeper_lock, flags);
 
 	clockevents_notify(CLOCK_EVT_NOTIFY_SUSPEND, NULL);
@@ -1477,7 +1511,11 @@ static void timekeeping_adjust(struct timekeeper *tk, s64 offset)
  */
 static inline unsigned int accumulate_nsecs_to_secs(struct timekeeper *tk)
 {
+<<<<<<< HEAD
 	u64 nsecps = (u64)NSEC_PER_SEC << tk->tkr_mono.shift;
+=======
+	u64 nsecps = (u64)NSEC_PER_SEC << tk->shift;
+>>>>>>> p9x
 	unsigned int clock_set = 0;
 
 	while (tk->tkr_mono.xtime_nsec >= nsecps) {
@@ -1500,7 +1538,11 @@ static inline unsigned int accumulate_nsecs_to_secs(struct timekeeper *tk)
 
 			__timekeeping_set_tai_offset(tk, tk->tai_offset - leap);
 
+<<<<<<< HEAD
 			clock_set = TK_CLOCK_WAS_SET;
+=======
+			clock_set = 1;
+>>>>>>> p9x
 		}
 	}
 	return clock_set;
@@ -1531,7 +1573,11 @@ static cycle_t logarithmic_accumulation(struct timekeeper *tk, cycle_t offset,
 	tk->tkr_mono.cycle_last += interval;
 	tk->tkr_raw.cycle_last  += interval;
 
+<<<<<<< HEAD
 	tk->tkr_mono.xtime_nsec += tk->xtime_interval << shift;
+=======
+	tk->xtime_nsec += tk->xtime_interval << shift;
+>>>>>>> p9x
 	*clock_set |= accumulate_nsecs_to_secs(tk);
 
 	/* Accumulate raw time */
@@ -1550,6 +1596,36 @@ static cycle_t logarithmic_accumulation(struct timekeeper *tk, cycle_t offset,
 	return offset;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_GENERIC_TIME_VSYSCALL_OLD
+static inline void old_vsyscall_fixup(struct timekeeper *tk)
+{
+	s64 remainder;
+
+	/*
+	* Store only full nanoseconds into xtime_nsec after rounding
+	* it up and add the remainder to the error difference.
+	* XXX - This is necessary to avoid small 1ns inconsistnecies caused
+	* by truncating the remainder in vsyscalls. However, it causes
+	* additional work to be done in timekeeping_adjust(). Once
+	* the vsyscall implementations are converted to use xtime_nsec
+	* (shifted nanoseconds), and CONFIG_GENERIC_TIME_VSYSCALL_OLD
+	* users are removed, this can be killed.
+	*/
+	remainder = tk->xtime_nsec & ((1ULL << tk->shift) - 1);
+	tk->xtime_nsec -= remainder;
+	tk->xtime_nsec += 1ULL << tk->shift;
+	tk->ntp_error += remainder << tk->ntp_error_shift;
+	tk->ntp_error -= (1ULL << tk->shift) << tk->ntp_error_shift;
+}
+#else
+#define old_vsyscall_fixup(tk)
+#endif
+
+
+
+>>>>>>> p9x
 /**
  * update_wall_time - Uses the current clocksource to increment the wall time
  *
@@ -1632,8 +1708,14 @@ void update_wall_time(void)
 out:
 	raw_spin_unlock_irqrestore(&timekeeper_lock, flags);
 	if (clock_set)
+<<<<<<< HEAD
 		/* Have to call _delayed version, since in irq context*/
 		clock_was_set_delayed();
+=======
+		/* have to call outside the timekeeper_seq */
+		clock_was_set_delayed();
+
+>>>>>>> p9x
 }
 
 /**
@@ -1815,7 +1897,11 @@ int do_adjtimex(struct timex *txc)
 
 	if (tai != orig_tai) {
 		__timekeeping_set_tai_offset(tk, tai);
+<<<<<<< HEAD
 		timekeeping_update(tk, TK_MIRROR | TK_CLOCK_WAS_SET);
+=======
+		timekeeping_update(tk, false, true);
+>>>>>>> p9x
 	}
 	write_seqcount_end(&tk_core.seq);
 	raw_spin_unlock_irqrestore(&timekeeper_lock, flags);

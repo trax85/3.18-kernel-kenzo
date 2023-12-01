@@ -47,6 +47,9 @@ struct net_device_context {
 	struct work_struct work;
 };
 
+/* Restrict GSO size to account for NVGRE */
+#define NETVSC_GSO_MAX_SIZE	62768
+
 #define RING_SIZE_MIN 64
 static int ring_size = 128;
 module_param(ring_size, int, S_IRUGO);
@@ -370,6 +373,7 @@ static int netvsc_start_xmit(struct sk_buff *skb, struct net_device *net)
 	struct net_device_context *net_device_ctx = netdev_priv(net);
 	struct hv_netvsc_packet *packet;
 	int ret;
+<<<<<<< HEAD
 	unsigned int num_data_pgs;
 	struct rndis_message *rndis_msg;
 	struct rndis_packet *rndis_pkt;
@@ -381,6 +385,9 @@ static int netvsc_start_xmit(struct sk_buff *skb, struct net_device *net)
 	int  hdr_offset;
 	u32 net_trans_info;
 	u32 hash;
+=======
+	unsigned int i, num_pages, npg_data;
+>>>>>>> p9x
 	u32 skb_length = skb->len;
 
 
@@ -844,13 +851,20 @@ static int netvsc_probe(struct hv_device *dev,
 
 	net->netdev_ops = &device_ops;
 
+<<<<<<< HEAD
 	net->hw_features = NETIF_F_RXCSUM | NETIF_F_SG | NETIF_F_IP_CSUM |
 				NETIF_F_TSO;
 	net->features = NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_SG | NETIF_F_RXCSUM |
 			NETIF_F_IP_CSUM | NETIF_F_TSO;
+=======
+	/* TODO: Add GSO and Checksum offload */
+	net->hw_features = 0;
+	net->features = NETIF_F_HW_VLAN_CTAG_TX;
+>>>>>>> p9x
 
 	net->ethtool_ops = &ethtool_ops;
 	SET_NETDEV_DEV(net, &dev->device);
+	netif_set_gso_max_size(net, NETVSC_GSO_MAX_SIZE);
 
 	/* Notify the netvsc driver of the new device */
 	device_info.ring_size = ring_size;

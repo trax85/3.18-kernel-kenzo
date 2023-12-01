@@ -234,7 +234,11 @@ int dev_pm_qos_update_user_latency_tolerance(struct device *dev, s32 val);
 
 static inline s32 dev_pm_qos_requested_resume_latency(struct device *dev)
 {
+<<<<<<< HEAD
 	return dev->power.qos->resume_latency_req->data.lat.node.prio;
+=======
+	return dev->power.qos->latency_req->data.lat.node.prio;
+>>>>>>> p9x
 }
 
 static inline s32 dev_pm_qos_requested_flags(struct device *dev)

@@ -685,7 +685,10 @@ void rtl_lps_change_work_callback(struct work_struct *work)
 	else
 		rtl_lps_leave(hw);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(rtl_lps_change_work_callback);
+=======
+>>>>>>> p9x
 
 void rtl_swlps_wq_callback(void *data)
 {

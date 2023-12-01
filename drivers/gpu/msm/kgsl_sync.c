@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -180,7 +184,11 @@ int kgsl_add_fence_event(struct kgsl_device *device,
 		goto out;
 	}
 	snprintf(fence_name, sizeof(fence_name),
+<<<<<<< HEAD
 		"%s-pid-%d-ctx-%d-ts-%u",
+=======
+		"%s-pid-%d-ctx-%d-ts-%d",
+>>>>>>> p9x
 		device->name, current->group_leader->pid,
 		context_id, timestamp);
 
@@ -241,12 +249,17 @@ static unsigned int kgsl_sync_get_timestamp(
 	struct kgsl_sync_timeline *ktimeline, enum kgsl_timestamp_type type)
 {
 	unsigned int ret = 0;
+<<<<<<< HEAD
 	struct kgsl_context *context;
 
 	if (ktimeline->device == NULL)
 		return 0;
 
 	context = kgsl_context_get(ktimeline->device,
+=======
+
+	struct kgsl_context *context = kgsl_context_get(ktimeline->device,
+>>>>>>> p9x
 			ktimeline->context_id);
 
 	if (context)
@@ -261,6 +274,7 @@ static void kgsl_sync_timeline_value_str(struct sync_timeline *sync_timeline,
 {
 	struct kgsl_sync_timeline *ktimeline =
 		(struct kgsl_sync_timeline *) sync_timeline;
+<<<<<<< HEAD
 
 	/*
 	 * This callback can be called before the device and spinlock are
@@ -269,14 +283,24 @@ static void kgsl_sync_timeline_value_str(struct sync_timeline *sync_timeline,
 	 * timestamp of the context will be reported as 0, which is correct
 	 * because the context and timeline are just getting initialized.
 	 */
+=======
+>>>>>>> p9x
 	unsigned int timestamp_retired = kgsl_sync_get_timestamp(ktimeline,
 		KGSL_TIMESTAMP_RETIRED);
 	unsigned int timestamp_queued = kgsl_sync_get_timestamp(ktimeline,
 		KGSL_TIMESTAMP_QUEUED);
 
+<<<<<<< HEAD
 	snprintf(str, size, "%u queued:%u retired:%u",
 		ktimeline->last_timestamp,
 		timestamp_queued, timestamp_retired);
+=======
+	spin_lock(&ktimeline->lock);
+	snprintf(str, size, "%u queued:%u retired:%u",
+		ktimeline->last_timestamp,
+		timestamp_queued, timestamp_retired);
+	spin_unlock(&ktimeline->lock);
+>>>>>>> p9x
 }
 
 static void kgsl_sync_pt_value_str(struct sync_pt *sync_pt,

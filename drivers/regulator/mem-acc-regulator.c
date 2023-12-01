@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -32,6 +36,7 @@
 #define BYTES_PER_FUSE_ROW		8
 
 /* mem-acc config flags */
+<<<<<<< HEAD
 
 enum {
 	MEM_ACC_USE_CORNER_ACC_MAP	= BIT(0),
@@ -41,6 +46,11 @@ enum {
 #define FUSE_MAP_NO_MATCH		(-1)
 #define FUSE_PARAM_MATCH_ANY		(-1)
 #define PARAM_MATCH_ANY			(-1)
+=======
+#define MEM_ACC_SKIP_L1_CONFIG		BIT(0)
+#define FUSE_MAP_NO_MATCH		(-1)
+#define FUSE_PARAM_MATCH_ANY		(-1)
+>>>>>>> p9x
 
 enum {
 	MEMORY_L1,
@@ -50,6 +60,7 @@ enum {
 
 #define MEM_ACC_TYPE_MAX		6
 
+<<<<<<< HEAD
 /**
  * struct acc_reg_value - Acc register configuration structure
  * @addr_index:	An index in to phys_reg_addr_list and remap_reg_addr_list
@@ -66,6 +77,8 @@ struct corner_acc_reg_config {
 	int			max_reg_config_len;
 };
 
+=======
+>>>>>>> p9x
 struct mem_acc_regulator {
 	struct device		*dev;
 	struct regulator_desc	rdesc;
@@ -103,6 +116,7 @@ struct mem_acc_regulator {
 	/* eFuse parameters */
 	phys_addr_t		efuse_addr;
 	void __iomem		*efuse_base;
+<<<<<<< HEAD
 
 	u32			num_acc_reg;
 	u32			*phys_reg_addr_list;
@@ -110,6 +124,8 @@ struct mem_acc_regulator {
 	struct corner_acc_reg_config	*corner_acc_reg_config;
 	u32			*override_acc_range_fuse_list;
 	int			override_acc_range_fuse_num;
+=======
+>>>>>>> p9x
 };
 
 static DEFINE_MUTEX(mem_acc_memory_mutex);
@@ -163,6 +179,31 @@ static u64 mem_acc_read_efuse_row(struct mem_acc_regulator *mem_acc_vreg,
 	return efuse_bits;
 }
 
+<<<<<<< HEAD
+=======
+static int mem_acc_fuse_is_setting_expected(
+		struct mem_acc_regulator *mem_acc_vreg, u32 sel_array[5])
+{
+	u64 fuse_bits;
+	u32 ret;
+
+	fuse_bits = mem_acc_read_efuse_row(mem_acc_vreg, sel_array[0],
+							sel_array[4]);
+	ret = (fuse_bits >> sel_array[1]) & ((1 << sel_array[2]) - 1);
+	if (ret == sel_array[3])
+		ret = 1;
+	else
+		ret = 0;
+
+	pr_info("[row:%d] = 0x%llx @%d:%d == %d ?: %s\n",
+			sel_array[0], fuse_bits,
+			sel_array[1], sel_array[2],
+			sel_array[3],
+			(ret == 1) ? "yes" : "no");
+	return ret;
+}
+
+>>>>>>> p9x
 static inline u32 apc_to_acc_corner(struct mem_acc_regulator *mem_acc_vreg,
 								int corner)
 {
@@ -178,6 +219,17 @@ static void __update_acc_sel(struct mem_acc_regulator *mem_acc_vreg,
 {
 	u32 acc_data, acc_data_old, i, bit, acc_corner;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Do not configure the L1 ACC corner if the the corresponding flag is
+	 * set.
+	 */
+	if ((mem_type == MEMORY_L1)
+			&& (mem_acc_vreg->flags & MEM_ACC_SKIP_L1_CONFIG))
+		return;
+
+>>>>>>> p9x
 	acc_data = readl_relaxed(mem_acc_vreg->acc_sel_base[mem_type]);
 	acc_data_old = acc_data;
 	for (i = 0; i < mem_acc_vreg->num_acc_sel[mem_type]; i++) {
@@ -235,6 +287,7 @@ static void update_acc_sel(struct mem_acc_regulator *mem_acc_vreg, int corner)
 		__update_acc_type(mem_acc_vreg, corner);
 }
 
+<<<<<<< HEAD
 static void update_acc_reg(struct mem_acc_regulator *mem_acc_vreg, int corner)
 {
 	struct corner_acc_reg_config *corner_acc_reg_config;
@@ -270,6 +323,8 @@ static void update_acc_reg(struct mem_acc_regulator *mem_acc_vreg, int corner)
 	}
 }
 
+=======
+>>>>>>> p9x
 static int mem_acc_regulator_set_voltage(struct regulator_dev *rdev,
 		int corner, int corner_max, unsigned *selector)
 {
@@ -289,6 +344,7 @@ static int mem_acc_regulator_set_voltage(struct regulator_dev *rdev,
 
 	/* go up or down one level at a time */
 	mutex_lock(&mem_acc_memory_mutex);
+<<<<<<< HEAD
 
 	if (mem_acc_vreg->flags & MEM_ACC_USE_ADDR_VAL_MAP) {
 		update_acc_reg(mem_acc_vreg, corner);
@@ -306,6 +362,19 @@ static int mem_acc_regulator_set_voltage(struct regulator_dev *rdev,
 		}
 	}
 
+=======
+	if (corner > mem_acc_vreg->corner) {
+		for (i = mem_acc_vreg->corner + 1; i <= corner; i++) {
+			pr_debug("UP: to corner %d\n", i);
+			update_acc_sel(mem_acc_vreg, i);
+		}
+	} else {
+		for (i = mem_acc_vreg->corner - 1; i >= corner; i--) {
+			pr_debug("DOWN: to corner %d\n", i);
+			update_acc_sel(mem_acc_vreg, i);
+		}
+	}
+>>>>>>> p9x
 	mutex_unlock(&mem_acc_memory_mutex);
 
 	pr_debug("new voltage corner set %d\n", corner);
@@ -467,7 +536,12 @@ static int mem_acc_efuse_init(struct platform_device *pdev,
 				 struct mem_acc_regulator *mem_acc_vreg)
 {
 	struct resource *res;
+<<<<<<< HEAD
 	int len;
+=======
+	int len, rc = 0;
+	u32 l1_config_skip_fuse_sel[5];
+>>>>>>> p9x
 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "efuse_addr");
 	if (!res || !res->start) {
@@ -489,6 +563,27 @@ static int mem_acc_efuse_init(struct platform_device *pdev,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	if (of_find_property(mem_acc_vreg->dev->of_node,
+				"qcom,l1-config-skip-fuse-sel", NULL)) {
+		rc = of_property_read_u32_array(mem_acc_vreg->dev->of_node,
+					"qcom,l1-config-skip-fuse-sel",
+					l1_config_skip_fuse_sel, 5);
+		if (rc < 0) {
+			pr_err("Read failed - qcom,l1-config-skip-fuse-sel rc=%d\n",
+					rc);
+			return rc;
+		}
+
+		if (mem_acc_fuse_is_setting_expected(mem_acc_vreg,
+						l1_config_skip_fuse_sel)) {
+			mem_acc_vreg->flags |= MEM_ACC_SKIP_L1_CONFIG;
+			pr_debug("Skip L1 configuration enabled\n");
+		}
+	}
+
+>>>>>>> p9x
 	return 0;
 }
 
@@ -553,8 +648,14 @@ static int mem_acc_custom_data_init(struct platform_device *pdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int override_mem_acc_custom_data(struct mem_acc_regulator *mem_acc_vreg,
 		 int mem_type)
+=======
+static int override_mem_acc_custom_data(struct platform_device *pdev,
+				 struct mem_acc_regulator *mem_acc_vreg,
+				 int mem_type)
+>>>>>>> p9x
 {
 	char *custom_apc_data_str;
 	int len, rc = 0, i;
@@ -650,6 +751,7 @@ static int mem_acc_override_corner_map(struct mem_acc_regulator *mem_acc_vreg)
 
 }
 
+<<<<<<< HEAD
 static void mem_acc_read_efuse_param(struct mem_acc_regulator *mem_acc_vreg,
 		u32 *fuse_sel, int *val)
 {
@@ -692,6 +794,29 @@ static int mem_acc_parse_override_fuse_version_map(
 
 	tuple_size = 1;
 	mem_acc_vreg->override_map_count = len / (sizeof(u32) * tuple_size);
+=======
+static int mem_acc_find_override_map_match(struct platform_device *pdev,
+				 struct mem_acc_regulator *mem_acc_vreg)
+{
+	struct device_node *of_node = pdev->dev.of_node;
+	int i, rc, tuple_size;
+	int len = 0;
+	u32 *tmp;
+	char *prop_str = "qcom,override-fuse-version-map";
+
+	/* Specify default no match case. */
+	mem_acc_vreg->override_map_match = FUSE_MAP_NO_MATCH;
+	mem_acc_vreg->override_map_count = 0;
+
+	if (!of_find_property(of_node, prop_str, &len)) {
+		/* No mapping present. */
+		return 0;
+	}
+
+	tuple_size = 1;
+	mem_acc_vreg->override_map_count = len / (sizeof(u32) * tuple_size);
+
+>>>>>>> p9x
 	if (len == 0 || len % (sizeof(u32) * tuple_size)) {
 		pr_err("%s length=%d is invalid\n", prop_str, len);
 		return -EINVAL;
@@ -719,9 +844,14 @@ static int mem_acc_parse_override_fuse_version_map(
 	}
 
 	if (mem_acc_vreg->override_map_match != FUSE_MAP_NO_MATCH)
+<<<<<<< HEAD
 		pr_info("override_fuse_val=%d, %s tuple match found: %d\n",
 			mem_acc_vreg->override_fuse_value, prop_str,
 			mem_acc_vreg->override_map_match);
+=======
+		pr_debug("%s tuple match found: %d\n", prop_str,
+				mem_acc_vreg->override_map_match);
+>>>>>>> p9x
 	else
 		pr_err("%s tuple match not found\n", prop_str);
 
@@ -730,6 +860,7 @@ done:
 	return rc;
 }
 
+<<<<<<< HEAD
 static int mem_acc_parse_override_fuse_version_range(
 			 struct mem_acc_regulator *mem_acc_vreg)
 {
@@ -1249,13 +1380,22 @@ static int mem_acc_reg_config_init(struct mem_acc_regulator *mem_acc_vreg)
 	return rc;
 }
 
+=======
+>>>>>>> p9x
 #define MEM_TYPE_STRING_LEN	20
 static int mem_acc_init(struct platform_device *pdev,
 		struct mem_acc_regulator *mem_acc_vreg)
 {
+<<<<<<< HEAD
 	struct device_node *of_node = pdev->dev.of_node;
 	struct resource *res;
 	int len, rc, i, j;
+=======
+	struct resource *res;
+	int len, rc, i, j;
+	u32 fuse_sel[4];
+	u64 fuse_bits;
+>>>>>>> p9x
 	bool acc_type_present = false;
 	char tmps[MEM_TYPE_STRING_LEN];
 
@@ -1329,6 +1469,7 @@ static int mem_acc_init(struct platform_device *pdev,
 		}
 	}
 
+<<<<<<< HEAD
 	rc = mem_acc_get_reg_addr(mem_acc_vreg);
 	if (rc) {
 		pr_err("Unable to get acc register addresses: rc=%d\n", rc);
@@ -1366,10 +1507,19 @@ static int mem_acc_init(struct platform_device *pdev,
 		(mem_acc_vreg->flags & MEM_ACC_USE_ADDR_VAL_MAP)) {
 		pr_err("Invalid configuration, both qcom,corner-acc-map and qcom,cornerX-addr-val-map specified\n");
 		return -EINVAL;
+=======
+	rc = populate_acc_data(mem_acc_vreg, "qcom,corner-acc-map",
+			&mem_acc_vreg->corner_acc_map,
+			&mem_acc_vreg->num_corners);
+	if (rc) {
+		pr_err("Unable to find 'qcom,corner-acc-map' rc=%d\n", rc);
+		return rc;
+>>>>>>> p9x
 	}
 
 	pr_debug("num_corners = %d\n", mem_acc_vreg->num_corners);
 
+<<<<<<< HEAD
 	if (mem_acc_vreg->num_acc_en)
 		mem_acc_en_init(mem_acc_vreg);
 
@@ -1382,6 +1532,21 @@ static int mem_acc_init(struct platform_device *pdev,
 		}
 	}
 
+=======
+	/* Check if at least one valid mem-acc config. is specified */
+	for (i = 0; i < MEMORY_MAX; i++) {
+		if (mem_acc_vreg->mem_acc_supported[i])
+			break;
+	}
+	if (i == MEMORY_MAX && !acc_type_present) {
+		pr_err("No mem-acc configuration specified\n");
+		return -EINVAL;
+	}
+
+	if (mem_acc_vreg->num_acc_en)
+		mem_acc_en_init(mem_acc_vreg);
+
+>>>>>>> p9x
 	rc = mem_acc_sel_init(mem_acc_vreg);
 	if (rc) {
 		pr_err("Unable to intialize mem_acc_sel reg rc=%d\n", rc);
@@ -1397,12 +1562,61 @@ static int mem_acc_init(struct platform_device *pdev,
 		}
 	}
 
+<<<<<<< HEAD
 	rc = mem_acc_parse_override_config(mem_acc_vreg);
 	if (rc) {
 		pr_err("Unable to parse mem acc override configuration, rc=%d\n",
 			rc);
 		return rc;
 	}
+=======
+	if (of_find_property(mem_acc_vreg->dev->of_node,
+				"qcom,override-acc-fuse-sel", NULL)) {
+		rc = of_property_read_u32_array(mem_acc_vreg->dev->of_node,
+			"qcom,override-acc-fuse-sel", fuse_sel, 4);
+		if (rc < 0) {
+			pr_err("Read failed - qcom,override-acc-fuse-sel rc=%d\n",
+					rc);
+			return rc;
+		}
+
+		fuse_bits = mem_acc_read_efuse_row(mem_acc_vreg, fuse_sel[0],
+								fuse_sel[3]);
+		/*
+		 * fuse_sel[1] = LSB position in row (shift)
+		 * fuse_sel[2] = num of bits (mask)
+		 */
+		mem_acc_vreg->override_fuse_value = (fuse_bits >> fuse_sel[1]) &
+						((1 << fuse_sel[2]) - 1);
+
+		rc = mem_acc_find_override_map_match(pdev, mem_acc_vreg);
+		if (rc) {
+			pr_err("Unable to find fuse map match rc=%d\n", rc);
+			return rc;
+		}
+
+		pr_debug("override_fuse_val=%d override_map_match=%d\n",
+					mem_acc_vreg->override_fuse_value,
+					mem_acc_vreg->override_map_match);
+
+		rc = mem_acc_override_corner_map(mem_acc_vreg);
+		if (rc) {
+			pr_err("Unable to override corner map rc=%d\n", rc);
+			return rc;
+		}
+
+		for (i = 0; i < MEMORY_MAX; i++) {
+			rc = override_mem_acc_custom_data(pdev,
+							mem_acc_vreg, i);
+			if (rc) {
+				pr_err("Unable to override custom data for mem_type=%d rc=%d\n",
+					i, rc);
+				return rc;
+			}
+		}
+	}
+
+>>>>>>> p9x
 	if (acc_type_present) {
 		mem_acc_vreg->mem_acc_type_data = devm_kzalloc(
 			mem_acc_vreg->dev, mem_acc_vreg->num_corners *

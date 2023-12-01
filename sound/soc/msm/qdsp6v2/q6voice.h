@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -40,6 +44,7 @@
 #define CVD_VERSION_STRING_MAX_SIZE          31
 #define CVD_VERSION_DEFAULT                  ""
 #define CVD_VERSION_0_0                      "0.0"
+<<<<<<< HEAD
 #define CVD_VERSION_2_1                      "2.1"
 #define CVD_VERSION_2_2                      "2.2"
 
@@ -54,6 +59,8 @@ struct cvd_version_table {
 	char cvd_ver[CVD_VERSION_STRING_MAX_SIZE];
 	int cvd_ver_int;
 };
+=======
+>>>>>>> p9x
 
 int voc_get_cvd_version(char *);
 
@@ -104,7 +111,10 @@ struct device_data {
 	uint32_t volume_step_value;
 	uint32_t volume_ramp_duration_ms;
 	uint32_t dev_mute_ramp_duration_ms;
+<<<<<<< HEAD
 	uint32_t no_of_channels;
+=======
+>>>>>>> p9x
 };
 
 struct voice_dev_route_state {
@@ -969,12 +979,15 @@ struct vss_istream_cmd_set_packet_exchange_mode_t {
 
 #define VSS_IVOCPROC_CMD_SET_DEVICE_V2			0x000112C6
 
+<<<<<<< HEAD
 #define VSS_IVOCPROC_CMD_SET_DEVICE_V3			0x0001316A
 
 #define VSS_IVOCPROC_CMD_TOPOLOGY_SET_DEV_CHANNELS	0x00013199
 
 #define VSS_IVOCPROC_CMD_TOPOLOGY_COMMIT		0x00013198
 
+=======
+>>>>>>> p9x
 #define VSS_IVOCPROC_CMD_SET_VP3_DATA			0x000110EB
 
 #define VSS_IVOLUME_CMD_SET_STEP			0x000112C2
@@ -1026,12 +1039,21 @@ struct vss_istream_cmd_set_packet_exchange_mode_t {
 #define VSS_IVOCPROC_VOCPROC_MODE_EC_EXT_MIXING	0x00010F7D
 
 /* Default AFE port ID. Applicable to Tx and Rx. */
+<<<<<<< HEAD
 #define VSS_IVOCPROC_PORT_ID_NONE		0xFFFF
 
 #define VSS_NETWORK_ID_DEFAULT		0x00010037
 
 /* Voice over Internet Protocol (VoIP) network ID. Common for all bands.*/
 #define VSS_NETWORK_ID_VOIP		0x00011362
+=======
+#define VSS_IVOCPROC_PORT_ID_NONE			0xFFFF
+
+#define VSS_NETWORK_ID_DEFAULT				0x00010037
+#define VSS_NETWORK_ID_VOIP_NB				0x00011240
+#define VSS_NETWORK_ID_VOIP_WB				0x00011241
+#define VSS_NETWORK_ID_VOIP_WV				0x00011242
+>>>>>>> p9x
 
 /* Media types */
 #define VSS_MEDIA_ID_EVRC_MODEM		0x00010FC2
@@ -1040,12 +1062,17 @@ struct vss_istream_cmd_set_packet_exchange_mode_t {
 /* 80-VF690-47 UMTS AMR-NB vocoder modem format. */
 #define VSS_MEDIA_ID_AMR_WB_MODEM	0x00010FC7
 /* 80-VF690-47 UMTS AMR-WB vocoder modem format. */
+<<<<<<< HEAD
 
 #define VSS_MEDIA_ID_PCM_8_KHZ		0x00010FCB
 #define VSS_MEDIA_ID_PCM_16_KHZ		0x00010FCC
 #define VSS_MEDIA_ID_PCM_32_KHZ		0x00010FD9
 #define VSS_MEDIA_ID_PCM_48_KHZ		0x00010FD6
 
+=======
+#define VSS_MEDIA_ID_PCM_NB		0x00010FCB
+#define VSS_MEDIA_ID_PCM_WB		0x00010FCC
+>>>>>>> p9x
 /* Linear PCM (16-bit, little-endian). */
 #define VSS_MEDIA_ID_G711_ALAW		0x00010FCD
 /* G.711 a-law (contains two 10ms vocoder frames). */
@@ -1061,12 +1088,15 @@ struct vss_istream_cmd_set_packet_exchange_mode_t {
 /*CDMA EVRC-NW vocoder modem format */
 
 #define VSS_IVOCPROC_CMD_CREATE_FULL_CONTROL_SESSION_V2	0x000112BF
+<<<<<<< HEAD
 #define VSS_IVOCPROC_CMD_CREATE_FULL_CONTROL_SESSION_V3	0x00013169
 
 #define VSS_NUM_DEV_CHANNELS_1 1
 #define VSS_NUM_DEV_CHANNELS_2 2
 #define VSS_NUM_DEV_CHANNELS_3 3
 #define VSS_NUM_DEV_CHANNELS_4 4
+=======
+>>>>>>> p9x
 
 struct vss_ivocproc_cmd_create_full_control_session_v2_t {
 	uint16_t direction;
@@ -1235,6 +1265,7 @@ struct vss_ivocproc_cmd_register_volume_cal_data_t {
 	 */
 } __packed;
 
+<<<<<<< HEAD
 struct vss_ivocproc_cmd_topology_set_dev_channels_t {
 	uint16_t tx_num_channels;
 	/*
@@ -1253,6 +1284,8 @@ struct vss_ivocproc_cmd_topology_set_dev_channels_t {
 	 */
 } __packed;
 
+=======
+>>>>>>> p9x
 /* Starts a vocoder PCM session */
 #define VSS_IVPCM_CMD_START_V2	0x00011339
 
@@ -1281,7 +1314,11 @@ struct vss_ivocproc_cmd_topology_set_dev_channels_t {
 #define VSS_IVPCM_SAMPLING_RATE_16K	16000
 
 /* RX and TX */
+<<<<<<< HEAD
 #define MAX_TAP_POINTS_SUPPORTED	2
+=======
+#define MAX_TAP_POINTS_SUPPORTED	1
+>>>>>>> p9x
 
 struct vss_ivpcm_tap_point {
 	uint32_t tap_point;
@@ -1372,11 +1409,14 @@ struct cvp_set_device_cmd {
 	struct vss_ivocproc_cmd_set_device_v2_t cvp_set_device_v2;
 } __packed;
 
+<<<<<<< HEAD
 struct cvp_set_dev_channels_cmd {
 	struct apr_hdr hdr;
 	struct vss_ivocproc_cmd_topology_set_dev_channels_t cvp_set_channels;
 } __packed;
 
+=======
+>>>>>>> p9x
 struct cvp_set_vp3_data_cmd {
 	struct apr_hdr hdr;
 } __packed;
@@ -1561,8 +1601,11 @@ struct voice_data {
 	u32 cvs_state;
 	u32 cvp_state;
 
+<<<<<<< HEAD
 	u32 async_err;
 
+=======
+>>>>>>> p9x
 	/* Handle to MVM in the Q6 */
 	u16 mvm_handle;
 	/* Handle to CVS in the Q6 */
@@ -1734,6 +1777,12 @@ int voc_end_voice_call(uint32_t session_id);
 int voc_standby_voice_call(uint32_t session_id);
 int voc_resume_voice_call(uint32_t session_id);
 int voc_set_lch(uint32_t session_id, enum voice_lch_mode lch_mode);
+<<<<<<< HEAD
+=======
+int voc_set_rxtx_port(uint32_t session_id,
+		      uint32_t dev_port_id,
+		      uint32_t dev_type);
+>>>>>>> p9x
 int voc_set_rx_vol_step(uint32_t session_id, uint32_t dir, uint32_t vol_step,
 			uint32_t ramp_duration);
 int voc_set_tx_mute(uint32_t session_id, uint32_t dir, uint32_t mute,
@@ -1779,8 +1828,12 @@ int voc_enable_device(uint32_t session_id);
 void voc_set_destroy_cvd_flag(bool is_destroy_cvd);
 void voc_set_vote_bms_flag(bool is_vote_bms);
 int voc_disable_topology(uint32_t session_id, uint32_t disable);
+<<<<<<< HEAD
 int voc_set_device_config(uint32_t session_id, uint8_t path_dir,
 			  uint8_t no_of_channels, uint32_t dev_port_id);
+=======
+
+>>>>>>> p9x
 uint32_t voice_get_topology(uint32_t topology_idx);
 int voc_set_sound_focus(struct sound_focus_param sound_focus_param);
 int voc_get_sound_focus(struct sound_focus_param *soundFocusData);

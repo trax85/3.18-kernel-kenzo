@@ -318,6 +318,7 @@ mtype_del_cidr(struct htype *h, u8 cidr, u8 nets_length, u8 n)
 	u8 i, j, net_end = nets_length - 1;
 
 	for (i = 0; i < nets_length; i++) {
+<<<<<<< HEAD
 	        if (h->nets[i].cidr[n] != cidr)
 	                continue;
                 if (h->nets[i].nets[n] > 1 || i == net_end ||
@@ -330,6 +331,20 @@ mtype_del_cidr(struct htype *h, u8 cidr, u8 nets_length, u8 n)
 		        h->nets[j].nets[n] = h->nets[j + 1].nets[n];
                 }
                 h->nets[j].nets[n] = 0;
+=======
+	        if (h->nets[i].cidr != cidr)
+	                continue;
+                if (h->nets[i].nets > 1 || i == net_end ||
+                    h->nets[i + 1].nets == 0) {
+                        h->nets[i].nets--;
+                        return;
+                }
+                for (j = i; j < net_end && h->nets[j].nets; j++) {
+		        h->nets[j].cidr = h->nets[j + 1].cidr;
+		        h->nets[j].nets = h->nets[j + 1].nets;
+                }
+                h->nets[j].nets = 0;
+>>>>>>> p9x
                 return;
 	}
 }

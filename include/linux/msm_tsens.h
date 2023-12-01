@@ -18,17 +18,39 @@
 #ifndef __MSM_TSENS_H
 #define __MSM_TSENS_H
 
+<<<<<<< HEAD
+=======
+enum platform_type {
+	MSM_8660 = 0,
+	MSM_8960,
+	MDM_9615,
+	APQ_8064,
+	MSM_TYPE
+};
+
+>>>>>>> p9x
 #define TSENS_MAX_SENSORS		11
 #define TSENS_MTC_ZONE_LOG_SIZE		6
 #define TSENS_NUM_MTC_ZONES_SUPPORT	3
 #define TSENS_ZONEMASK_PARAMS		3
 #define TSENS_ZONELOG_PARAMS		1
+<<<<<<< HEAD
 #define TSENS_MTC_ZONE_HISTORY_SIZE	3
+=======
+
+struct tsens_platform_data {
+	int				slope[TSENS_MAX_SENSORS];
+	int				tsens_factor;
+	uint32_t			tsens_num_sensor;
+	enum platform_type		hw_type;
+};
+>>>>>>> p9x
 
 struct tsens_device {
 	uint32_t			sensor_num;
 };
 
+<<<<<<< HEAD
 #if defined(CONFIG_THERMAL_TSENS8974)
 /**
  * tsens_is_ready() - Clients can use this API to check if the TSENS device
@@ -111,22 +133,46 @@ int tsens_get_mtc_zone_history(unsigned int zone , void *zone_hist);
  *		0 on success else error code on error.
  */
 int tsens_get_temp(struct tsens_device *dev, unsigned long *temp);
+=======
+int32_t tsens_get_temp(struct tsens_device *dev, unsigned long *temp);
+int msm_tsens_early_init(struct tsens_platform_data *pdata);
+
+#if defined(CONFIG_THERMAL_TSENS8974)
+int tsens_is_ready(void);
+int __init tsens_tm_init_driver(void);
+int tsens_get_sw_id_mapping(int sensor_num, int *sensor_sw_idx);
+int tsens_get_hw_id_mapping(int sensor_sw_id, int *sensor_hw_num);
+int tsens_set_mtc_zone_sw_mask(unsigned int zone , unsigned int th1_enable,
+				unsigned int th2_enable);
+int tsens_get_mtc_zone_log(unsigned int zone , void *zone_log);
+
+>>>>>>> p9x
 #else
 static inline int tsens_is_ready(void)
 { return -ENXIO; }
 static inline int __init tsens_tm_init_driver(void)
 { return -ENXIO; }
+<<<<<<< HEAD
 static inline int tsens_get_hw_id_mapping(
 				int sensor_sw_id, int *sensor_hw_num)
 { return -ENXIO; }
 static inline int tsens_get_max_sensor_num(uint32_t *tsens_num_sensors)
 { return -ENXIO; }
+=======
+static inline int tsens_get_sw_id_mapping(
+				int sensor_num, int *sensor_sw_idx)
+{ return -ENXIO; }
+static inline int tsens_get_hw_id_mapping(
+				int sensor_sw_id, int *sensor_hw_num)
+{ return -ENXIO; }
+>>>>>>> p9x
 static inline int tsens_set_mtc_zone_sw_mask(unsigned int zone ,
 				unsigned int th1_enable ,
 				unsigned int th2_enable)
 { return -ENXIO; }
 static inline int tsens_get_mtc_zone_log(unsigned int zone , void *zone_log)
 { return -ENXIO; }
+<<<<<<< HEAD
 static inline int tsens_mtc_reset_history_counter(unsigned int zone)
 { return -ENXIO; }
 static inline int tsens_get_temp(struct tsens_device *dev,
@@ -136,4 +182,14 @@ static inline int tsens_get_mtc_zone_history(unsigned int zone, void *zone_hist)
 { return -ENXIO; }
 #endif
 
+=======
+#endif
+
+#if defined(CONFIG_THERMAL_TSENS8974)
+int tsens_get_max_sensor_num(uint32_t *tsens_num_sensors);
+#else
+static inline int tsens_get_max_sensor_num(uint32_t *tsens_num_sensors)
+{ return -ENXIO; }
+#endif
+>>>>>>> p9x
 #endif /*MSM_TSENS_H */

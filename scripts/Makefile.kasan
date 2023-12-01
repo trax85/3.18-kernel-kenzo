@@ -5,16 +5,24 @@ else
 	call_threshold := 0
 endif
 
+<<<<<<< HEAD
 KASAN_SHADOW_OFFSET ?= $(CONFIG_KASAN_SHADOW_OFFSET)
 
 CFLAGS_KASAN_MINIMAL := -fsanitize=kernel-address
 
 CFLAGS_KASAN := $(call cc-option, -fsanitize=kernel-address \
 		-fasan-shadow-offset=$(KASAN_SHADOW_OFFSET) \
+=======
+CFLAGS_KASAN_MINIMAL := -fsanitize=kernel-address
+
+CFLAGS_KASAN := $(call cc-option, -fsanitize=kernel-address \
+		-fasan-shadow-offset=$(CONFIG_KASAN_SHADOW_OFFSET) \
+>>>>>>> p9x
 		--param asan-stack=1 --param asan-globals=1 \
 		--param asan-instrumentation-with-call-threshold=$(call_threshold))
 
 ifeq ($(call cc-option, $(CFLAGS_KASAN_MINIMAL) -Werror),)
+<<<<<<< HEAD
    ifneq ($(CONFIG_COMPILE_TEST),y)
         $(warning Cannot use CONFIG_KASAN: \
             -fsanitize=kernel-address is not supported by compiler)
@@ -25,6 +33,14 @@ else
             $(warning CONFIG_KASAN: compiler does not support all options.\
                 Trying minimal configuration)
         endif
+=======
+        $(warning Cannot use CONFIG_KASAN: \
+            -fsanitize=kernel-address is not supported by compiler)
+else
+    ifeq ($(CFLAGS_KASAN),)
+        $(warning CONFIG_KASAN: compiler does not support all options.\
+            Trying minimal configuration)
+>>>>>>> p9x
         CFLAGS_KASAN := $(CFLAGS_KASAN_MINIMAL)
     endif
 endif

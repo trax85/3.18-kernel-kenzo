@@ -243,7 +243,11 @@ static int highbank_mc_probe(struct platform_device *pdev)
 		goto err2;
 	}
 
+<<<<<<< HEAD
 	device_create_file(&mci->dev, &dev_attr_inject_ctrl);
+=======
+	highbank_mc_create_debugfs_nodes(mci);
+>>>>>>> p9x
 
 	devres_close_group(&pdev->dev, NULL);
 	return 0;

@@ -667,6 +667,7 @@ void do_coredump(const siginfo_t *siginfo)
 		 * what matters is that at least one of the two processes
 		 * writes its coredump successfully, not which one.
 		 */
+<<<<<<< HEAD
 		if (need_suid_safe) {
 			/*
 			 * Using user namespaces, normal user tasks can change
@@ -688,6 +689,12 @@ void do_coredump(const siginfo_t *siginfo)
 		} else {
 			cprm.file = filp_open(cn.corename, open_flags, 0600);
 		}
+=======
+		cprm.file = filp_open(cn.corename,
+				 O_CREAT | 2 | O_NOFOLLOW |
+				 O_LARGEFILE | O_EXCL,
+				 0600);
+>>>>>>> p9x
 		if (IS_ERR(cprm.file))
 			goto fail_unlock;
 

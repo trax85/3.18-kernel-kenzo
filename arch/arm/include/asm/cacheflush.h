@@ -233,7 +233,11 @@ extern void copy_to_user_page(struct vm_area_struct *, struct page *,
 static inline void __flush_icache_all(void)
 {
 	__flush_icache_preferred();
+<<<<<<< HEAD
 	dsb(ishst);
+=======
+	dsb();
+>>>>>>> p9x
 }
 
 /*
@@ -457,6 +461,7 @@ static inline void __sync_cache_range_r(volatile void *p, size_t size)
 #define sync_cache_w(ptr) __sync_cache_range_w(ptr, sizeof *(ptr))
 #define sync_cache_r(ptr) __sync_cache_range_r(ptr, sizeof *(ptr))
 
+<<<<<<< HEAD
 /*
  * Disabling cache access for one CPU in an ARMv7 SMP system is tricky.
  * To do so we must:
@@ -503,11 +508,14 @@ static inline void __sync_cache_range_r(volatile void *p, size_t size)
 	: : : "r0","r1","r2","r3","r4","r5","r6","r7", \
 	      "r9","r10","lr","memory" )
 
+=======
+>>>>>>> p9x
 int set_memory_ro(unsigned long addr, int numpages);
 int set_memory_rw(unsigned long addr, int numpages);
 int set_memory_x(unsigned long addr, int numpages);
 int set_memory_nx(unsigned long addr, int numpages);
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_RODATA
 void set_kernel_text_rw(void);
 void set_kernel_text_ro(void);
@@ -522,6 +530,17 @@ void flush_uprobe_xol_access(struct page *page, unsigned long uaddr,
 #ifdef CONFIG_FREE_PAGES_RDONLY
 #define mark_addr_rdonly(a)	set_memory_ro((unsigned long)a, 1)
 #define mark_addr_rdwrite(a)	set_memory_rw((unsigned long)a, 1)
+=======
+#ifdef CONFIG_KERNEL_TEXT_RDONLY
+void set_kernel_text_ro(void);
+#else
+static inline void set_kernel_text_ro(void) { }
+#endif
+
+#ifdef CONFIG_FREE_PAGES_RDONLY
+#define mark_addr_rdonly(a)	set_memory_ro((unsigned long)a, 1);
+#define mark_addr_rdwrite(a)	set_memory_rw((unsigned long)a, 1);
+>>>>>>> p9x
 #else
 #define mark_addr_rdonly(a)
 #define mark_addr_rdwrite(a)

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -19,6 +23,7 @@
 #include <media/v4l2-subdev.h>
 #include <media/msm_cam_sensor.h>
 #include "msm_sd.h"
+<<<<<<< HEAD
 #include "cam_soc_api.h"
 
 #define CSID_SOF_DEBUG_COUNT                      3
@@ -31,6 +36,10 @@ enum csiphy_lane_assign {
 	PHY_LANE_D3,
 	PHY_LANE_MAX,
 };
+=======
+
+#define CSID_NUM_CLK_MAX  16
+>>>>>>> p9x
 
 struct csid_reg_parms_t {
 /* MIPI	CSID registers */
@@ -68,6 +77,7 @@ struct csid_reg_parms_t {
 	uint32_t csid_dl_input_sel_shift;
 	uint32_t csid_phy_sel_shift;
 	uint32_t csid_version;
+<<<<<<< HEAD
 	uint32_t csid_3p_ctrl_0_addr;
 	uint32_t csid_3p_pkt_hdr_addr;
 	uint32_t csid_test_bus_ctrl;
@@ -75,11 +85,16 @@ struct csid_reg_parms_t {
 	uint32_t csid_err_lane_overflow_offset_2p;
 	uint32_t csid_err_lane_overflow_offset_3p;
 	uint32_t csid_phy_sel_shift_3p;
+=======
+>>>>>>> p9x
 };
 
 struct csid_ctrl_t {
 	struct csid_reg_parms_t csid_reg;
+<<<<<<< HEAD
 	uint8_t *csid_lane_assign;
+=======
+>>>>>>> p9x
 };
 
 enum msm_csid_state_t {
@@ -90,7 +105,13 @@ enum msm_csid_state_t {
 struct csid_device {
 	struct platform_device *pdev;
 	struct msm_sd_subdev msm_sd;
+<<<<<<< HEAD
 	struct resource *irq;
+=======
+	struct resource *mem;
+	struct resource *irq;
+	struct resource *io;
+>>>>>>> p9x
 	struct regulator *csi_vdd;
 	void __iomem *base;
 	struct mutex mutex;
@@ -99,6 +120,7 @@ struct csid_device {
 	uint32_t hw_dts_version;
 	enum msm_csid_state_t csid_state;
 	struct csid_ctrl_t *ctrl_reg;
+<<<<<<< HEAD
 	struct regulator *reg_ptr;
 	size_t num_clk;
 	struct clk **csid_clk;
@@ -115,6 +137,18 @@ struct csid_device {
 	uint32_t csid_sof_debug;
 	uint32_t csid_lane_cnt;
 	uint32_t csid_sof_debug_count;
+=======
+	uint32_t num_clk;
+	uint32_t num_clk_src_info;
+	struct regulator *reg_ptr;
+	struct clk *csid_clk[CSID_NUM_CLK_MAX];
+	uint32_t csid_clk_index;
+	uint32_t csid_max_clk;
+	uint8_t is_testmode;
+	struct msm_camera_csid_testmode_parms testmode_params;
+	uint32_t csid_sof_debug;
+	uint32_t csid_lane_cnt;
+>>>>>>> p9x
 };
 
 #define VIDIOC_MSM_CSID_RELEASE \

@@ -61,6 +61,26 @@ extern int ath9k_use_chanctx;
 		       sizeof(struct ath_buf_state));		\
 	} while (0)
 
+<<<<<<< HEAD
+=======
+/**
+ * enum buffer_type - Buffer type flags
+ *
+ * @BUF_AMPDU: This buffer is an ampdu, as part of an aggregate (during TX)
+ * @BUF_AGGR: Indicates whether the buffer can be aggregated
+ *	(used in aggregation scheduling)
+ */
+enum buffer_type {
+	BUF_AMPDU		= BIT(0),
+	BUF_AGGR		= BIT(1),
+};
+
+#define bf_isampdu(bf)		(bf->bf_state.bf_type & BUF_AMPDU)
+#define bf_isaggr(bf)		(bf->bf_state.bf_type & BUF_AGGR)
+
+#define ATH_TXSTATUS_RING_SIZE 512
+
+>>>>>>> p9x
 #define	DS2PHYS(_dd, _ds)						\
 	((_dd)->dd_desc_paddr + ((caddr_t)(_ds) - (caddr_t)(_dd)->dd_desc))
 #define ATH_DESC_4KB_BOUND_CHECK(_daddr) ((((_daddr) & 0xFFF) > 0xF7F) ? 1 : 0)
@@ -320,7 +340,11 @@ struct ath_rx {
 	struct ath_descdma rxdma;
 	struct ath_rx_edma rx_edma[ATH9K_RX_QUEUE_MAX];
 
+<<<<<<< HEAD
 	struct ath_rxbuf *buf_hold;
+=======
+	struct ath_buf *buf_hold;
+>>>>>>> p9x
 	struct sk_buff *frag;
 
 	u32 ampdu_ref;

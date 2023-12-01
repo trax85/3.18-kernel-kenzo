@@ -694,6 +694,7 @@ void target_complete_cmd(struct se_cmd *cmd, u8 scsi_status)
 	if (cmd->transport_state & CMD_T_ABORTED ||
 	    cmd->transport_state & CMD_T_STOP) {
 		spin_unlock_irqrestore(&cmd->t_state_lock, flags);
+<<<<<<< HEAD
 		/*
 		 * If COMPARE_AND_WRITE was stopped by __transport_wait_for_tasks(),
 		 * release se_device->caw_sem obtained by sbc_compare_and_write()
@@ -703,6 +704,8 @@ void target_complete_cmd(struct se_cmd *cmd, u8 scsi_status)
 		if (cmd->se_cmd_flags & SCF_COMPARE_AND_WRITE) {
 			up(&dev->caw_sem);
 		}
+=======
+>>>>>>> p9x
 		complete_all(&cmd->t_transport_stop_comp);
 		return;
 	} else if (!success) {
@@ -768,7 +771,12 @@ void target_qf_do_work(struct work_struct *work)
 
 	list_for_each_entry_safe(cmd, cmd_tmp, &qf_cmd_list, se_qf_node) {
 		list_del(&cmd->se_qf_node);
+<<<<<<< HEAD
 		atomic_dec_mb(&dev->dev_qf_count);
+=======
+		atomic_dec(&dev->dev_qf_count);
+		smp_mb__after_atomic();
+>>>>>>> p9x
 
 		pr_debug("Processing %s cmd: %p QUEUE_FULL in work queue"
 			" context: %s\n", cmd->se_tfo->get_fabric_name(), cmd,
@@ -1181,6 +1189,10 @@ transport_check_alloc_task_attr(struct se_cmd *cmd)
 	 * Dormant to Active status.
 	 */
 	cmd->se_ordered_id = atomic_inc_return(&dev->dev_ordered_id);
+<<<<<<< HEAD
+=======
+	smp_mb__after_atomic();
+>>>>>>> p9x
 	pr_debug("Allocated se_ordered_id: %u for Task Attr: 0x%02x on %s\n",
 			cmd->se_ordered_id, cmd->sam_task_attr,
 			dev->transport->name);
@@ -1736,7 +1748,12 @@ static bool target_handle_task_attr(struct se_cmd *cmd)
 			 cmd->t_task_cdb[0], cmd->se_ordered_id);
 		return false;
 	case MSG_ORDERED_TAG:
+<<<<<<< HEAD
 		atomic_inc_mb(&dev->dev_ordered_sync);
+=======
+		atomic_inc(&dev->dev_ordered_sync);
+		smp_mb__after_atomic();
+>>>>>>> p9x
 
 		pr_debug("Added ORDERED for CDB: 0x%02x to ordered list, "
 			 " se_ordered_id: %u\n",
@@ -1753,7 +1770,12 @@ static bool target_handle_task_attr(struct se_cmd *cmd)
 		/*
 		 * For SIMPLE and UNTAGGED Task Attribute commands
 		 */
+<<<<<<< HEAD
 		atomic_inc_mb(&dev->simple_cmds);
+=======
+		atomic_inc(&dev->simple_cmds);
+		smp_mb__after_atomic();
+>>>>>>> p9x
 		break;
 	}
 
@@ -1860,7 +1882,12 @@ static void transport_complete_task_attr(struct se_cmd *cmd)
 		return;
 
 	if (cmd->sam_task_attr == MSG_SIMPLE_TAG) {
+<<<<<<< HEAD
 		atomic_dec_mb(&dev->simple_cmds);
+=======
+		atomic_dec(&dev->simple_cmds);
+		smp_mb__after_atomic();
+>>>>>>> p9x
 		dev->dev_cur_ordered_id++;
 		pr_debug("Incremented dev->dev_cur_ordered_id: %u for"
 			" SIMPLE: %u\n", dev->dev_cur_ordered_id,
@@ -1871,7 +1898,12 @@ static void transport_complete_task_attr(struct se_cmd *cmd)
 			" HEAD_OF_QUEUE: %u\n", dev->dev_cur_ordered_id,
 			cmd->se_ordered_id);
 	} else if (cmd->sam_task_attr == MSG_ORDERED_TAG) {
+<<<<<<< HEAD
 		atomic_dec_mb(&dev->dev_ordered_sync);
+=======
+		atomic_dec(&dev->dev_ordered_sync);
+		smp_mb__after_atomic();
+>>>>>>> p9x
 
 		dev->dev_cur_ordered_id++;
 		pr_debug("Incremented dev_cur_ordered_id: %u for ORDERED:"
@@ -1928,7 +1960,12 @@ static void transport_handle_queue_full(
 {
 	spin_lock_irq(&dev->qf_cmd_lock);
 	list_add_tail(&cmd->se_qf_node, &cmd->se_dev->qf_cmd_list);
+<<<<<<< HEAD
 	atomic_inc_mb(&dev->dev_qf_count);
+=======
+	atomic_inc(&dev->dev_qf_count);
+	smp_mb__after_atomic();
+>>>>>>> p9x
 	spin_unlock_irq(&cmd->se_dev->qf_cmd_lock);
 
 	schedule_work(&cmd->se_dev->qf_work_queue);
@@ -2444,7 +2481,11 @@ out:
 	spin_unlock_irqrestore(&se_sess->sess_cmd_lock, flags);
 
 	if (ret && ack_kref)
+<<<<<<< HEAD
 		target_put_sess_cmd(se_cmd);
+=======
+		target_put_sess_cmd(se_sess, se_cmd);
+>>>>>>> p9x
 
 	return ret;
 }
@@ -3023,6 +3064,7 @@ void transport_send_task_abort(struct se_cmd *cmd)
 	 */
 	if (cmd->data_direction == DMA_TO_DEVICE) {
 		if (cmd->se_tfo->write_pending_status(cmd) != 0) {
+<<<<<<< HEAD
 			spin_lock_irqsave(&cmd->t_state_lock, flags);
 			if (cmd->se_cmd_flags & SCF_SEND_DELAYED_TAS) {
 				spin_unlock_irqrestore(&cmd->t_state_lock, flags);
@@ -3031,6 +3073,10 @@ void transport_send_task_abort(struct se_cmd *cmd)
 			cmd->se_cmd_flags |= SCF_SEND_DELAYED_TAS;
 			spin_unlock_irqrestore(&cmd->t_state_lock, flags);
 			return;
+=======
+			cmd->transport_state |= CMD_T_ABORTED;
+			smp_mb__after_atomic();
+>>>>>>> p9x
 		}
 	}
 send_abort:

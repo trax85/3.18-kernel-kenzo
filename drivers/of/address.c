@@ -450,6 +450,7 @@ static struct of_bus *of_match_bus(struct device_node *np)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int of_empty_ranges_quirk(struct device_node *np)
 {
 	if (IS_ENABLED(CONFIG_PPC)) {
@@ -461,6 +462,14 @@ static int of_empty_ranges_quirk(struct device_node *np)
 			return true;
 
 		/* Make quirk cached */
+=======
+static int of_empty_ranges_quirk(void)
+{
+	if (IS_ENABLED(CONFIG_PPC)) {
+		/* To save cycles, we cache the result */
+		static int quirk_state = -1;
+
+>>>>>>> p9x
 		if (quirk_state < 0)
 			quirk_state =
 				of_machine_is_compatible("Power Macintosh") ||
@@ -495,7 +504,11 @@ static int of_translate_one(struct device_node *parent, struct of_bus *bus,
 	 * This code is only enabled on powerpc. --gcl
 	 */
 	ranges = of_get_property(parent, rprop, &rlen);
+<<<<<<< HEAD
 	if (ranges == NULL && !of_empty_ranges_quirk(parent)) {
+=======
+	if (ranges == NULL && !of_empty_ranges_quirk()) {
+>>>>>>> p9x
 		pr_err("OF: no ranges; cannot translate\n");
 		return 1;
 	}
@@ -666,6 +679,7 @@ const __be32 *of_get_address(struct device_node *dev, int index, u64 *size,
 }
 EXPORT_SYMBOL(of_get_address);
 
+<<<<<<< HEAD
 #ifdef PCI_IOBASE
 struct io_range {
 	struct list_head list;
@@ -781,6 +795,8 @@ unsigned long __weak pci_address_to_pio(phys_addr_t address)
 #endif
 }
 
+=======
+>>>>>>> p9x
 const __be32 *of_get_address_by_name(struct device_node *dev, const char *name,
 		u64 *size, unsigned int *flags)
 {
@@ -890,6 +906,7 @@ void __iomem *of_iomap(struct device_node *np, int index)
 }
 EXPORT_SYMBOL(of_iomap);
 
+<<<<<<< HEAD
 /*
  * of_io_request_and_map - Requests a resource and maps the memory mapped IO
  *			   for a given device_node
@@ -1036,6 +1053,8 @@ bool of_dma_is_coherent(struct device_node *np)
 }
 EXPORT_SYMBOL_GPL(of_dma_is_coherent);
 
+=======
+>>>>>>> p9x
 void __iomem *of_iomap_by_name(struct device_node *np, const char *name)
 {
 	int index;

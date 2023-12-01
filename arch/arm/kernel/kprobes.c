@@ -72,19 +72,29 @@ int __kprobes arch_prepare_kprobe(struct kprobe *p)
 	if (is_wide_instruction(insn)) {
 		u16 inst2 = __mem_to_opcode_thumb16(((u16 *)addr)[1]);
 		insn = __opcode_thumb32_compose(insn, inst2);
+<<<<<<< HEAD
 		decode_insn = thumb32_probes_decode_insn;
 		actions = kprobes_t32_actions;
 	} else {
 		decode_insn = thumb16_probes_decode_insn;
 		actions = kprobes_t16_actions;
 	}
+=======
+		decode_insn = thumb32_kprobe_decode_insn;
+	} else
+		decode_insn = thumb16_kprobe_decode_insn;
+>>>>>>> p9x
 #else /* !CONFIG_THUMB2_KERNEL */
 	thumb = false;
 	if (addr & 0x3)
 		return -EINVAL;
 	insn = __mem_to_opcode_arm(*p->addr);
+<<<<<<< HEAD
 	decode_insn = arm_probes_decode_insn;
 	actions = kprobes_arm_actions;
+=======
+	decode_insn = arm_kprobe_decode_insn;
+>>>>>>> p9x
 #endif
 
 	p->opcode = insn;

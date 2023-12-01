@@ -85,9 +85,18 @@ static inline int arch_spin_trylock(arch_spinlock_t *lock)
 static inline void arch_spin_unlock(arch_spinlock_t *lock)
 {
 	asm volatile(
+<<<<<<< HEAD
 "	stlrh	%w1, %0\n"
 #ifdef CONFIG_ARM64_SEV_IN_LOCK_UNLOCK
 "	dsb ishst\n"
+=======
+#ifdef CONFIG_ARM64_STLR_NEEDS_BARRIER
+"	dmb nsh\n"
+#endif
+"	stlrh	%w1, %0\n"
+#ifdef CONFIG_ARM64_SEV_IN_LOCK_UNLOCK
+"	dsb sy\n"
+>>>>>>> p9x
 "	sev\n"
 #endif
 	: "=Q" (lock->owner)
@@ -143,9 +152,10 @@ static inline int arch_write_trylock(arch_rwlock_t *rw)
 	unsigned int tmp;
 
 	asm volatile(
-	"	ldaxr	%w0, %1\n"
+	"2:	ldaxr	%w0, %1\n"
 	"	cbnz	%w0, 1f\n"
 	"	stxr	%w0, %w2, %1\n"
+	"	cbnz	%w0, 2b\n"
 	"1:\n"
 	: "=&r" (tmp), "+Q" (rw->lock)
 	: "r" (0x80000000)
@@ -157,9 +167,16 @@ static inline int arch_write_trylock(arch_rwlock_t *rw)
 static inline void arch_write_unlock(arch_rwlock_t *rw)
 {
 	asm volatile(
+#ifdef CONFIG_ARM64_STLR_NEEDS_BARRIER
+"	dmb nsh\n"
+#endif
 	"	stlr	%w1, %0\n"
 #ifdef CONFIG_ARM64_SEV_IN_LOCK_UNLOCK
+<<<<<<< HEAD
 	"	dsb ishst\n"
+=======
+	"	dsb sy\n"
+>>>>>>> p9x
 	"	sev\n"
 #endif
 	: "=Q" (rw->lock) : "r" (0) : "memory");
@@ -210,6 +227,10 @@ static inline void arch_read_unlock(arch_rwlock_t *rw)
 	"	sev\n"
 #endif
 	"	cbnz	%w1, 1b\n"
+#ifdef CONFIG_ARM64_SEV_IN_LOCK_UNLOCK
+	"	dsb sy\n"
+	"	sev\n"
+#endif
 	: "=&r" (tmp), "=&r" (tmp2), "+Q" (rw->lock)
 	:
 	: "memory");
@@ -220,10 +241,11 @@ static inline int arch_read_trylock(arch_rwlock_t *rw)
 	unsigned int tmp, tmp2 = 1;
 
 	asm volatile(
-	"	ldaxr	%w0, %2\n"
+	"2:	ldaxr	%w0, %2\n"
 	"	add	%w0, %w0, #1\n"
 	"	tbnz	%w0, #31, 1f\n"
 	"	stxr	%w1, %w0, %2\n"
+	"	cbnz	%w1, 2b\n"
 	"1:\n"
 	: "=&r" (tmp), "+r" (tmp2), "+Q" (rw->lock)
 	:

@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -15,7 +19,11 @@
 #define __LMH_INTERFACE_H
 
 #define LMH_NAME_MAX			20
+<<<<<<< HEAD
 #define LMH_READ_LINE_LENGTH		10
+=======
+#define LMH_POLLING_MSEC		30
+>>>>>>> p9x
 
 enum lmh_trip_type {
 	LMH_LOW_TRIP,
@@ -31,6 +39,7 @@ enum lmh_monitor_state {
 };
 
 struct lmh_sensor_ops {
+<<<<<<< HEAD
 	int (*read)(struct lmh_sensor_ops *, long *);
 	int (*enable_hw_log)(uint32_t, uint32_t);
 	int (*disable_hw_log)(void);
@@ -50,6 +59,22 @@ struct lmh_debug_ops {
 	int (*debug_get_types)(struct lmh_debug_ops *, bool, uint32_t **);
 };
 
+=======
+	int (*read) (struct lmh_sensor_ops *, long *);
+	int (*reset_interrupt) (struct lmh_sensor_ops *);
+	int (*enable_hw_log) (uint32_t, uint32_t);
+	int (*disable_hw_log) (void);
+	void (*interrupt_notify) (struct lmh_sensor_ops *, long);
+};
+
+struct lmh_device_ops {
+	int (*get_available_levels) (struct lmh_device_ops *, int *);
+	int (*get_curr_level) (struct lmh_device_ops *, int *);
+	int (*set_level) (struct lmh_device_ops *, int);
+};
+
+static int lmh_poll_interval = LMH_POLLING_MSEC;
+>>>>>>> p9x
 #ifdef CONFIG_LIMITS_MONITOR
 int lmh_get_all_dev_levels(char *, int *);
 int lmh_set_dev_level(char *, int);
@@ -58,9 +83,12 @@ int lmh_sensor_register(char *, struct lmh_sensor_ops *);
 void lmh_sensor_deregister(struct lmh_sensor_ops *);
 int lmh_device_register(char *, struct lmh_device_ops *);
 void lmh_device_deregister(struct lmh_device_ops *);
+<<<<<<< HEAD
 int lmh_debug_register(struct lmh_debug_ops *);
 void lmh_debug_deregister(struct lmh_debug_ops *ops);
 int lmh_get_poll_interval(void);
+=======
+>>>>>>> p9x
 #else
 static inline int lmh_get_all_dev_levels(char *device_name, int *level)
 {
@@ -98,6 +126,7 @@ static inline void lmh_device_deregister(struct lmh_device_ops *ops)
 {
 	return;
 }
+<<<<<<< HEAD
 
 static inline int lmh_debug_register(struct lmh_debug_ops *)
 {
@@ -111,6 +140,8 @@ static inline int lmh_get_poll_interval(void)
 {
 	return -ENOSYS;
 }
+=======
+>>>>>>> p9x
 #endif
 
 #endif /*__LMH_INTERFACE_H*/

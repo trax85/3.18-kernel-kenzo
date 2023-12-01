@@ -24,9 +24,33 @@
 #include <linux/of_fdt.h>
 
 #include <asm/page.h>
+<<<<<<< HEAD
+=======
+#include <asm/processor.h>
+#include <asm/irq.h>
+#include <linux/io.h>
+#include <asm/mmu.h>
+#include <asm/pgtable.h>
+#include <asm/sections.h>
+#include <asm/setup.h>
+
+extern char cmd_line[COMMAND_LINE_SIZE];
+>>>>>>> p9x
 
 void __init early_init_devtree(void *params)
 {
 	early_init_dt_scan(params);
 	memblock_allow_resize();
 }
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_BLK_DEV_INITRD
+void __init early_init_dt_setup_initrd_arch(u64 start, u64 end)
+{
+	initrd_start = (unsigned long)__va(start);
+	initrd_end = (unsigned long)__va(end);
+	initrd_below_start_ok = 1;
+}
+#endif
+>>>>>>> p9x

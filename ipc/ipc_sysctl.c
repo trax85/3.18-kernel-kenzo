@@ -62,7 +62,11 @@ static int proc_ipc_dointvec_minmax_orphans(struct ctl_table *table, int write,
 	return err;
 }
 
+<<<<<<< HEAD
 static int proc_ipc_callback_dointvec_minmax(struct ctl_table *table, int write,
+=======
+static int proc_ipc_callback_dointvec_minmax(ctl_table *table, int write,
+>>>>>>> p9x
 	void __user *buffer, size_t *lenp, loff_t *ppos)
 {
 	struct ctl_table ipc_table;

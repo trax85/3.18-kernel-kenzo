@@ -117,6 +117,8 @@ unsigned int sysctl_net_busy_poll __read_mostly;
 
 static BLOCKING_NOTIFIER_HEAD(sockev_notifier_list);
 
+static BLOCKING_NOTIFIER_HEAD(sockev_notifier_list);
+
 static int sock_no_open(struct inode *irrelevant, struct file *dontcare);
 static ssize_t sock_aio_read(struct kiocb *iocb, const struct iovec *iov,
 			 unsigned long nr_segs, loff_t pos);
@@ -536,11 +538,19 @@ static ssize_t sockfs_listxattr(struct dentry *dentry, char *buffer,
 	return used;
 }
 
+<<<<<<< HEAD
 static int sockfs_setattr(struct dentry *dentry, struct iattr *iattr)
 {
 	int err = simple_setattr(dentry, iattr);
 
 	if (!err && (iattr->ia_valid & ATTR_UID)) {
+=======
+int sockfs_setattr(struct dentry *dentry, struct iattr *iattr)
+{
+	int err = simple_setattr(dentry, iattr);
+
+	if (!err) {
+>>>>>>> p9x
 		struct socket *sock = SOCKET_I(dentry->d_inode);
 
 		sock->sk->sk_uid = iattr->ia_uid;
@@ -2044,9 +2054,12 @@ static int copy_msghdr_from_user(struct msghdr *kmsg,
 	if (copy_from_user(kmsg, umsg, sizeof(struct msghdr)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	if (kmsg->msg_name == NULL)
 		kmsg->msg_namelen = 0;
 
+=======
+>>>>>>> p9x
 	if (kmsg->msg_namelen < 0)
 		return -EINVAL;
 
@@ -2473,6 +2486,7 @@ int __sys_recvmmsg(int fd, struct mmsghdr __user *mmsg, unsigned int vlen,
 		goto out_put;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * We may return less entries than requested (vlen) if the
 	 * sock is non block and there aren't enough datagrams...
@@ -2490,6 +2504,26 @@ out_put:
 	fput_light(sock->file, fput_needed);
 
 	return datagrams;
+=======
+		/*
+		 * We may return less entries than requested (vlen) if the
+		 * sock is non block and there aren't enough datagrams...
+		 */
+		if (err != -EAGAIN) {
+			/*
+			 * ... or  if recvmsg returns an error after we
+			 * received some datagrams, where we record the
+			 * error to return on the next call or if the
+			 * app asks about it using getsockopt(SO_ERROR).
+			 */
+			sock->sk->sk_err = -err;
+		}
+
+out_put:
+		fput_light(sock->file, fput_needed);
+
+		return datagrams;
+>>>>>>> p9x
 }
 
 SYSCALL_DEFINE5(recvmmsg, int, fd, struct mmsghdr __user *, mmsg,

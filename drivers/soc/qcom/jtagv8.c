@@ -46,9 +46,13 @@
 #define BMVAL(val, lsb, msb)	((val & BM(lsb, msb)) >> lsb)
 #define BVAL(val, n)		((val & BIT(n)) >> n)
 
+<<<<<<< HEAD
 #ifdef CONFIG_ARM64
 #define ARM_DEBUG_ARCH_V8	(0x6)
 #endif
+=======
+#define ARM_DEBUG_ARCH_V8	(0x6)
+>>>>>>> p9x
 
 #define MAX_DBG_REGS		(66)
 #define MAX_DBG_STATE_SIZE	(MAX_DBG_REGS * num_possible_cpus())
@@ -878,7 +882,11 @@ void msm_jtag_save_state(void)
 	/* ensure counter is updated before moving forward */
 	mb();
 
+<<<<<<< HEAD
 	msm_jtag_etm_save_state();
+=======
+	msm_jtag_mm_save_state();
+>>>>>>> p9x
 	if (dbg.save_restore_enabled)
 		dbg_save_state(cpu);
 }
@@ -910,7 +918,11 @@ void msm_jtag_restore_state(void)
 
 	if (dbg.save_restore_enabled)
 		dbg_restore_state(cpu);
+<<<<<<< HEAD
 	msm_jtag_etm_restore_state();
+=======
+	msm_jtag_mm_restore_state();
+>>>>>>> p9x
 }
 EXPORT_SYMBOL(msm_jtag_restore_state);
 

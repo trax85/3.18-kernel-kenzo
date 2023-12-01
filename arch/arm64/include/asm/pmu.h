@@ -71,7 +71,10 @@ struct arm_pmu {
 	int			(*map_event)(struct perf_event *event);
 	int			num_events;
 	int			pmu_state;
+<<<<<<< HEAD
 	int			percpu_irq;
+=======
+>>>>>>> p9x
 	atomic_t		active_events;
 	struct mutex		reserve_mutex;
 	u64			max_period;
@@ -79,9 +82,12 @@ struct arm_pmu {
 	struct pmu_hw_events	*(*get_hw_events)(void);
 	void			(*save_pm_registers)(void *hcpu);
 	void			(*restore_pm_registers)(void *hcpu);
+<<<<<<< HEAD
 	int			(*check_event)(
 					 struct arm_pmu *armpmu,
 					 struct hw_perf_event *hwc);
+=======
+>>>>>>> p9x
 };
 
 #define to_arm_pmu(p) (container_of(p, struct arm_pmu, pmu))

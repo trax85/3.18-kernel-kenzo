@@ -418,6 +418,7 @@ cifs_echo_request(struct work_struct *work)
 	 * If we need to renegotiate, set echo interval to zero to
 	 * immediately call echo service where we can renegotiate.
 	 */
+<<<<<<< HEAD
 	if (server->tcpStatus == CifsNeedNegotiate)
 		echo_interval = 0;
 	else
@@ -431,6 +432,11 @@ cifs_echo_request(struct work_struct *work)
 	if (server->tcpStatus == CifsNeedReconnect ||
 	    server->tcpStatus == CifsExiting ||
 	    server->tcpStatus == CifsNew ||
+=======
+
+	if (server->tcpStatus == CifsNeedReconnect ||
+	    server->tcpStatus == CifsExiting || server->tcpStatus == CifsNew ||
+>>>>>>> p9x
 	    (server->ops->can_echo && !server->ops->can_echo(server)) ||
 	    time_before(jiffies, server->lstrp + echo_interval - HZ))
 		goto requeue_echo;
@@ -1732,7 +1738,12 @@ cifs_parse_mount_options(const char *mountdata, const char *devname,
 
 			if (strnlen(string, CIFS_MAX_DOMAINNAME_LEN)
 					== CIFS_MAX_DOMAINNAME_LEN) {
+<<<<<<< HEAD
 				pr_warn("CIFS: domain name too long\n");
+=======
+				printk(KERN_WARNING "CIFS: domain name too"
+						    " long\n");
+>>>>>>> p9x
 				goto cifs_parse_mount_err;
 			}
 
@@ -2779,6 +2790,24 @@ compare_mount_options(struct super_block *sb, struct cifs_mnt_data *mnt_data)
 	return 1;
 }
 
+static int
+match_prepath(struct super_block *sb, struct cifs_mnt_data *mnt_data)
+{
+	struct cifs_sb_info *old = CIFS_SB(sb);
+	struct cifs_sb_info *new = mnt_data->cifs_sb;
+
+	if (old->mnt_cifs_flags & CIFS_MOUNT_USE_PREFIX_PATH) {
+		if (!(new->mnt_cifs_flags & CIFS_MOUNT_USE_PREFIX_PATH))
+			return 0;
+		/* The prepath should be null terminated strings */
+		if (strcmp(new->prepath, old->prepath))
+			return 0;
+
+		return 1;
+	}
+	return 0;
+}
+
 int
 cifs_match_super(struct super_block *sb, void *data)
 {
@@ -2806,7 +2835,8 @@ cifs_match_super(struct super_block *sb, void *data)
 
 	if (!match_server(tcp_srv, volume_info) ||
 	    !match_session(ses, volume_info) ||
-	    !match_tcon(tcon, volume_info->UNC)) {
+	    !match_tcon(tcon, volume_info->UNC) ||
+	    !match_prepath(sb, mnt_data)) {
 		rc = 0;
 		goto out;
 	}
@@ -3222,7 +3252,7 @@ void reset_cifs_unix_caps(unsigned int xid, struct cifs_tcon *tcon,
 	}
 }
 
-void cifs_setup_cifs_sb(struct smb_vol *pvolume_info,
+int cifs_setup_cifs_sb(struct smb_vol *pvolume_info,
 			struct cifs_sb_info *cifs_sb)
 {
 	INIT_DELAYED_WORK(&cifs_sb->prune_tlinks, cifs_prune_tlinks);
@@ -3316,6 +3346,15 @@ void cifs_setup_cifs_sb(struct smb_vol *pvolume_info,
 
 	if ((pvolume_info->cifs_acl) && (pvolume_info->dynperm))
 		cifs_dbg(VFS, "mount option dynperm ignored if cifsacl mount option supported\n");
+
+
+	if (pvolume_info->prepath) {
+		cifs_sb->prepath = kstrdup(pvolume_info->prepath, GFP_KERNEL);
+		if (cifs_sb->prepath == NULL)
+			return -ENOMEM;
+	}
+
+	return 0;
 }
 
 static void
@@ -3649,6 +3688,7 @@ remote_path_check:
 			kfree(full_path);
 			goto mount_fail_check;
 		}
+<<<<<<< HEAD
 
 		rc = cifs_are_all_path_components_accessible(server,
 							     xid, tcon, cifs_sb,
@@ -3658,6 +3698,18 @@ remote_path_check:
 				 "enabling CIFS_MOUNT_USE_PREFIX_PATH\n");
 			cifs_sb->mnt_cifs_flags |= CIFS_MOUNT_USE_PREFIX_PATH;
 			rc = 0;
+=======
+		if (rc != -EREMOTE) {
+			rc = cifs_are_all_path_components_accessible(server,
+								     xid, tcon, cifs_sb,
+								     full_path);
+			if (rc != 0) {
+				cifs_dbg(VFS, "cannot query dirs between root and final path, "
+					 "enabling CIFS_MOUNT_USE_PREFIX_PATH\n");
+				cifs_sb->mnt_cifs_flags |= CIFS_MOUNT_USE_PREFIX_PATH;
+				rc = 0;
+			}
+>>>>>>> p9x
 		}
 		kfree(full_path);
 	}
@@ -3923,7 +3975,12 @@ cifs_umount(struct cifs_sb_info *cifs_sb)
 	bdi_destroy(&cifs_sb->bdi);
 	kfree(cifs_sb->mountdata);
 	kfree(cifs_sb->prepath);
+<<<<<<< HEAD
 	call_rcu(&cifs_sb->rcu, delayed_free);
+=======
+	unload_nls(cifs_sb->local_nls);
+	kfree(cifs_sb);
+>>>>>>> p9x
 }
 
 int

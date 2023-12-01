@@ -55,7 +55,28 @@ masquerade_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	range.min_proto = mr->range[0].min;
 	range.max_proto = mr->range[0].max;
 
+<<<<<<< HEAD
 	return nf_nat_masquerade_ipv4(skb, par->hooknum, &range, par->out);
+=======
+	nat->masq_index = par->out->ifindex;
+
+	/* Transfer from original range. */
+	memset(&newrange.min_addr, 0, sizeof(newrange.min_addr));
+	memset(&newrange.max_addr, 0, sizeof(newrange.max_addr));
+	newrange.flags       = mr->range[0].flags | NF_NAT_RANGE_MAP_IPS;
+	newrange.min_addr.ip = newsrc;
+	newrange.max_addr.ip = newsrc;
+	newrange.min_proto   = mr->range[0].min;
+	newrange.max_proto   = mr->range[0].max;
+
+	/* Hand modified range to generic setup. */
+#if defined(CONFIG_IP_NF_TARGET_NATTYPE_MODULE)
+	nf_nat_setup_info(ct, &newrange, NF_NAT_MANIP_SRC);
+	return XT_CONTINUE;
+#else
+	return nf_nat_setup_info(ct, &newrange, NF_NAT_MANIP_SRC);
+#endif
+>>>>>>> p9x
 }
 
 static struct xt_target masquerade_tg_reg __read_mostly = {

@@ -794,7 +794,11 @@ static int au0828_i2s_init(struct au0828_dev *dev)
 static int au0828_analog_stream_enable(struct au0828_dev *d)
 {
 	struct usb_interface *iface;
+<<<<<<< HEAD
 	int ret, h, w;
+=======
+	int ret;
+>>>>>>> p9x
 
 	dprintk(1, "au0828_analog_stream_enable called\n");
 
@@ -804,13 +808,21 @@ static int au0828_analog_stream_enable(struct au0828_dev *d)
 		/* set au0828 interface0 to AS5 here again */
 		ret = usb_set_interface(d->usbdev, 0, 5);
 		if (ret < 0) {
+<<<<<<< HEAD
 			pr_info("Au0828 can't set alt setting to 5!\n");
+=======
+			printk(KERN_INFO "Au0828 can't set alt setting to 5!\n");
+>>>>>>> p9x
 			return -EBUSY;
 		}
 	}
 
+<<<<<<< HEAD
 	h = d->height / 2 + 2;
 	w = d->width * 2;
+=======
+	/* FIXME: size should be calculated using d->width, d->height */
+>>>>>>> p9x
 
 	au0828_writereg(d, AU0828_SENSORCTRL_VBI_103, 0x00);
 	au0828_writereg(d, 0x106, 0x00);

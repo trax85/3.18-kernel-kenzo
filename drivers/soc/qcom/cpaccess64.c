@@ -30,8 +30,13 @@
 #include <linux/types.h>
 #include <asm/cacheflush.h>
 #include <asm/smp_plat.h>
+<<<<<<< HEAD
 #include <asm/insn.h>
 #include <soc/qcom/kryo-l2-accessors.h>
+=======
+#include <asm/mmu.h>
+#include <soc/qcom/scm-mpu.h>
+>>>>>>> p9x
 
 #define TYPE_MAX_CHARACTERS 20
 
@@ -39,7 +44,10 @@
  * CP parameters
  */
 struct cp_params {
+<<<<<<< HEAD
 	unsigned long il2index;
+=======
+>>>>>>> p9x
 	unsigned long op0;
 	unsigned long op1;
 	unsigned long op2;
@@ -50,17 +58,25 @@ struct cp_params {
 };
 
 static struct semaphore cp_sem;
+<<<<<<< HEAD
 static unsigned long il2_output;
+=======
+>>>>>>> p9x
 static int cpu;
 char type[TYPE_MAX_CHARACTERS] = "S";
 
 static DEFINE_PER_CPU(struct cp_params, cp_param)
+<<<<<<< HEAD
 	 = { 0, 3, 0, 0, 0, 0, 0, 'r' };
+=======
+	 = { 3, 0, 0, 0, 0, 0, 'r' };
+>>>>>>> p9x
 
 static void get_asm_value(void *ret);
 void cpaccess_dummy_inst(void);
 
 /*
+<<<<<<< HEAD
  * do_read_il2 - Read indirect L2 registers
  * @ret:Pointerto return value
  */
@@ -120,6 +136,8 @@ static int do_il2_rw(char *str_tmp)
 }
 
 /*
+=======
+>>>>>>> p9x
  * get_asm_value - Dummy function
  * @write_val:	Write value incase of a CP register write operation.
  *
@@ -175,8 +193,14 @@ static u64 do_cpregister_rw(int write)
 	 * Grab address of the Dummy function, write the MRS/MSR
 	 * instruction, ensuring cache coherency.
 	 */
+<<<<<<< HEAD
 	p_opcode = (u32 *)&cpaccess_dummy_inst;
 	aarch64_insn_write(p_opcode, opcode);
+=======
+	scm_mpu_unlock_kernel_text();
+	p_opcode = (u32 *)&cpaccess_dummy_inst;
+	mem_text_write_kernel_word(p_opcode, opcode);
+>>>>>>> p9x
 
 	/*
 	 * Use smp_call_function_single to do CPU core specific
@@ -193,6 +217,7 @@ static int get_register_params(char *str_tmp)
 	unsigned long op1, op2, crn, crm, op0, write_value;
 	char rw;
 	int cnt = 0;
+<<<<<<< HEAD
 	char *p;
 
 	p = strsep(&str_tmp, ":");
@@ -200,6 +225,10 @@ static int get_register_params(char *str_tmp)
 		return -EINVAL;
 
 	strlcpy(type, p, TYPE_MAX_CHARACTERS);
+=======
+
+	strlcpy(type, strsep(&str_tmp, ":"), TYPE_MAX_CHARACTERS);
+>>>>>>> p9x
 	if (strncasecmp(type, "S", TYPE_MAX_CHARACTERS) == 0) {
 
 		sscanf(str_tmp, "%lu:%lu:%lu:%lu:%lu:%c:%lx:%d",
@@ -220,9 +249,13 @@ static int get_register_params(char *str_tmp)
 
 		if (per_cpu(cp_param.rw, cpu) == 'w')
 			do_cpregister_rw(1);
+<<<<<<< HEAD
 	} else if (strncasecmp(type, "IL2", TYPE_MAX_CHARACTERS) == 0)
 		do_il2_rw(str_tmp);
 	else {
+=======
+	} else {
+>>>>>>> p9x
 		pr_err("cpaccess: Not a valid type. Entered: %s\n", type);
 		return -EINVAL;
 	}
@@ -276,9 +309,12 @@ static ssize_t cp_register_read_sysfs(
 	if (strncasecmp(type, "S", TYPE_MAX_CHARACTERS) == 0)
 		ret = snprintf(buf, TYPE_MAX_CHARACTERS, "%llx\n",
 					do_cpregister_rw(0));
+<<<<<<< HEAD
 	else if (strncasecmp(type, "IL2", TYPE_MAX_CHARACTERS) == 0)
 		ret = snprintf(buf, TYPE_MAX_CHARACTERS, "%lx\n",
 					    il2_output);
+=======
+>>>>>>> p9x
 	else
 		ret = -EINVAL;
 

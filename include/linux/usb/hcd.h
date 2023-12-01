@@ -383,10 +383,21 @@ struct hc_driver {
 	int	(*disable_usb3_lpm_timeout)(struct usb_hcd *,
 			struct usb_device *, enum usb3_link_state state);
 	int	(*find_raw_port_number)(struct usb_hcd *, int);
+<<<<<<< HEAD
+=======
+	/* if hcd needs to finish ep cleanup asap after HC halt failiure */
+	void (*halt_failed_cleanup)(struct usb_hcd *);
+
+	/* to log submission/completion events*/
+>>>>>>> p9x
 	void	(*log_urb)(struct urb *urb, char *event, unsigned extra);
 	void	(*dump_regs)(struct usb_hcd *);
 	void	(*set_autosuspend_delay)(struct usb_device *);
 	void	(*reset_sof_bug_handler)(struct usb_hcd *hcd, u32 val);
+<<<<<<< HEAD
+=======
+	void	(*udev_enum_done)(struct usb_hcd *hcd);
+>>>>>>> p9x
 };
 
 static inline int hcd_giveback_urb_in_bh(struct usb_hcd *hcd)
@@ -434,7 +445,22 @@ extern struct usb_hcd *usb_create_shared_hcd(const struct hc_driver *driver,
 extern struct usb_hcd *usb_get_hcd(struct usb_hcd *hcd);
 extern void usb_put_hcd(struct usb_hcd *hcd);
 extern int usb_hcd_is_primary_hcd(struct usb_hcd *hcd);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_USB
+extern int usb_add_hcd(struct usb_hcd *hcd,
+		unsigned int irqnum, unsigned long irqflags);
+extern void usb_remove_hcd(struct usb_hcd *hcd);
+>>>>>>> p9x
 extern int usb_hcd_find_raw_port_number(struct usb_hcd *hcd, int port1);
+#else
+static inline int
+usb_add_hcd(struct usb_hcd *hcd, unsigned int irqnum, unsigned long irqflags)
+{
+	return 0;
+}
+static inline void usb_remove_hcd(struct usb_hcd *hcd) {}
+#endif
 
 struct platform_device;
 extern void usb_hcd_platform_shutdown(struct platform_device *dev);
@@ -447,8 +473,11 @@ extern int usb_hcd_pci_probe(struct pci_dev *dev,
 extern void usb_hcd_pci_remove(struct pci_dev *dev);
 extern void usb_hcd_pci_shutdown(struct pci_dev *dev);
 
+<<<<<<< HEAD
 extern int usb_hcd_amd_remote_wakeup_quirk(struct pci_dev *dev);
 
+=======
+>>>>>>> p9x
 #ifdef CONFIG_PM
 extern const struct dev_pm_ops usb_hcd_pci_pm_ops;
 #endif

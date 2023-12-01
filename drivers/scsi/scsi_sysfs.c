@@ -421,8 +421,11 @@ static void scsi_device_dev_release_usercontext(struct work_struct *work)
 	/* NULL queue means the device can't be used */
 	sdev->request_queue = NULL;
 
+<<<<<<< HEAD
 	kfree(sdev->vpd_pg83);
 	kfree(sdev->vpd_pg80);
+=======
+>>>>>>> p9x
 	kfree(sdev->inquiry);
 	kfree(sdev);
 
@@ -932,7 +935,7 @@ sdev_store_queue_ramp_up_period(struct device *dev,
 		return -EINVAL;
 
 	sdev->queue_ramp_up_period = msecs_to_jiffies(period);
-	return period;
+	return count;
 }
 
 static DEVICE_ATTR(queue_ramp_up_period, S_IRUGO | S_IWUSR,
@@ -1094,7 +1097,17 @@ int scsi_sysfs_add_sdev(struct scsi_device *sdev)
 		}
 	}
 
+<<<<<<< HEAD
 	scsi_autopm_put_device(sdev);
+=======
+	/*
+	 * put runtime pm reference for well-known logical units,
+	 * drivers are expected to _get_* again during probe.
+	 */
+	if (scsi_is_wlun(sdev->lun))
+		scsi_autopm_put_device(sdev);
+
+>>>>>>> p9x
 	return error;
 }
 
@@ -1183,31 +1196,30 @@ static void __scsi_remove_target(struct scsi_target *starget)
 void scsi_remove_target(struct device *dev)
 {
 	struct Scsi_Host *shost = dev_to_shost(dev->parent);
-	struct scsi_target *starget, *last = NULL;
+	struct scsi_target *starget, *last_target = NULL;
 	unsigned long flags;
 
-	/* remove targets being careful to lookup next entry before
-	 * deleting the last
-	 */
+restart:
 	spin_lock_irqsave(shost->host_lock, flags);
 	list_for_each_entry(starget, &shost->__targets, siblings) {
-		if (starget->state == STARGET_DEL)
+		if (starget->state == STARGET_DEL ||
+		    starget == last_target)
 			continue;
 		if (starget->dev.parent == dev || &starget->dev == dev) {
+<<<<<<< HEAD
 			/* assuming new targets arrive at the end */
 			kref_get(&starget->reap_ref);
+=======
+			kref_get(&starget->reap_ref);
+			last_target = starget;
+>>>>>>> p9x
 			spin_unlock_irqrestore(shost->host_lock, flags);
-			if (last)
-				scsi_target_reap(last);
-			last = starget;
 			__scsi_remove_target(starget);
-			spin_lock_irqsave(shost->host_lock, flags);
+			scsi_target_reap(starget);
+			goto restart;
 		}
 	}
 	spin_unlock_irqrestore(shost->host_lock, flags);
-
-	if (last)
-		scsi_target_reap(last);
 }
 EXPORT_SYMBOL(scsi_remove_target);
 

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is Mree software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -549,15 +553,22 @@ static uint64_t aggregate_bus_req(struct msm_bus_node_device_type *bus_dev,
 	struct msm_bus_node_device_type *fab_dev = NULL;
 	uint32_t agg_scheme;
 	uint64_t max_ib = 0;
+<<<<<<< HEAD
 	uint64_t max_ab = 0;
 	uint64_t sum_ab = 0;
 
 	if (!bus_dev || !bus_dev->node_info->bus_device ||
 			!to_msm_bus_node(bus_dev->node_info->bus_device)) {
+=======
+	uint64_t sum_ab = 0;
+
+	if (!bus_dev || !to_msm_bus_node(bus_dev->node_info->bus_device)) {
+>>>>>>> p9x
 		MSM_BUS_ERR("Bus node pointer is Invalid");
 		goto exit_agg_bus_req;
 	}
 
+<<<<<<< HEAD
 	bus_dev->node_bw[ctx].max_ib_cl_name = NULL;
 	bus_dev->node_bw[ctx].max_ab_cl_name = NULL;
 
@@ -574,12 +585,20 @@ static uint64_t aggregate_bus_req(struct msm_bus_node_device_type *bus_dev,
 					bus_dev->lnode_list[i].cl_name;
 		}
 
+=======
+	fab_dev = to_msm_bus_node(bus_dev->node_info->bus_device);
+	for (i = 0; i < bus_dev->num_lnodes; i++) {
+		max_ib = max(max_ib, bus_dev->lnode_list[i].lnode_ib[ctx]);
+>>>>>>> p9x
 		sum_ab += bus_dev->lnode_list[i].lnode_ab[ctx];
 	}
 
 	bus_dev->node_bw[ctx].sum_ab = sum_ab;
 	bus_dev->node_bw[ctx].max_ib = max_ib;
+<<<<<<< HEAD
 	bus_dev->node_bw[ctx].max_ab = max_ab;
+=======
+>>>>>>> p9x
 
 	if (bus_dev->node_info->agg_params.agg_scheme != AGG_SCHEME_NONE)
 		agg_scheme = bus_dev->node_info->agg_params.agg_scheme;
@@ -722,6 +741,10 @@ static int update_path(struct device *src_dev, int dest, uint64_t act_req_ib,
 
 	while (next_dev) {
 		int i;
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 		dev_info = to_msm_bus_node(next_dev);
 
 		if (curr_idx >= dev_info->num_lnodes) {
@@ -887,7 +910,11 @@ static void unregister_client_adhoc(uint32_t cl)
 	}
 
 	curr = client->curr;
+<<<<<<< HEAD
 	if ((curr < 0) || (curr >= pdata->num_usecases)) {
+=======
+	if (curr >= pdata->num_usecases) {
+>>>>>>> p9x
 		MSM_BUS_ERR("Invalid index Defaulting curr to 0");
 		curr = 0;
 	}
@@ -908,7 +935,10 @@ static void unregister_client_adhoc(uint32_t cl)
 	commit_data();
 	msm_bus_dbg_client_data(client->pdata, MSM_BUS_DBG_UNREGISTER, cl);
 	kfree(client->src_pnode);
+<<<<<<< HEAD
 	kfree(client->src_devs);
+=======
+>>>>>>> p9x
 	kfree(client);
 	handle_list.cl_list[cl] = NULL;
 exit_unregister_client:
@@ -935,7 +965,11 @@ static int alloc_handle_lst(int size)
 	} else {
 		t_cl_list = krealloc(handle_list.cl_list,
 				sizeof(struct msm_bus_client *) *
+<<<<<<< HEAD
 				(handle_list.num_entries + NUM_CL_HANDLES),
+=======
+				handle_list.num_entries + NUM_CL_HANDLES,
+>>>>>>> p9x
 				GFP_KERNEL);
 		if (ZERO_OR_NULL_PTR(t_cl_list)) {
 			ret = -ENOMEM;
@@ -944,10 +978,17 @@ static int alloc_handle_lst(int size)
 			goto exit_alloc_handle_lst;
 		}
 
+<<<<<<< HEAD
 		handle_list.cl_list = t_cl_list;
 		memset(&handle_list.cl_list[handle_list.num_entries], 0,
 			NUM_CL_HANDLES * sizeof(struct msm_bus_client *));
 		handle_list.num_entries += NUM_CL_HANDLES;
+=======
+		memset(&handle_list.cl_list[handle_list.num_entries], 0,
+			NUM_CL_HANDLES * sizeof(struct msm_bus_client *));
+		handle_list.num_entries += NUM_CL_HANDLES;
+		handle_list.cl_list = t_cl_list;
+>>>>>>> p9x
 	}
 exit_alloc_handle_lst:
 	return ret;
@@ -1017,7 +1058,11 @@ static uint32_t register_client_adhoc(struct msm_bus_scale_pdata *pdata)
 		src = pdata->usecase->vectors[i].src;
 		dest = pdata->usecase->vectors[i].dst;
 
+<<<<<<< HEAD
 		if ((src < 0) || (dest < 0) || (src == dest)) {
+=======
+		if ((src < 0) || (dest < 0)) {
+>>>>>>> p9x
 			MSM_BUS_ERR("%s:Invalid src/dst.src %d dest %d",
 				__func__, src, dest);
 			goto exit_invalid_data;

@@ -61,9 +61,14 @@ struct pll_config_masks {
 struct pll_config_vals {
 	u32 post_div_masked;
 	u32 pre_div_masked;
+<<<<<<< HEAD
 	u32 config_ctl_val;
 	u32 vco_mode_masked;
 	u32 config_ctl_hi_val;
+=======
+	u32 vco_mode_masked;
+	u32 config_ctl_val;
+>>>>>>> p9x
 	u32 test_ctl_lo_val;
 	u32 test_ctl_hi_val;
 	u32 alpha_val;
@@ -71,11 +76,19 @@ struct pll_config_vals {
 };
 
 struct pll_vco_data {
+<<<<<<< HEAD
 		unsigned long min_freq;
 		unsigned long max_freq;
 		u32 vco_val;
 		u32 config_ctl_val;
 	};
+=======
+	unsigned long min_freq;
+	unsigned long max_freq;
+	u32 vco_val;
+	u32 config_ctl_val;
+};
+>>>>>>> p9x
 
 struct pll_spm_ctrl {
 	u32 offset;
@@ -110,7 +123,10 @@ struct pll_vote_clk {
 
 extern struct clk_ops clk_ops_pll_vote;
 extern struct clk_ops clk_ops_pll_acpu_vote;
+<<<<<<< HEAD
 extern struct clk_ops clk_ops_pll_sleep_vote;
+=======
+>>>>>>> p9x
 
 /* Soft voting values */
 #define PLL_SOFT_VOTE_PRIMARY   BIT(0)
@@ -131,16 +147,27 @@ static inline struct pll_vote_clk *to_pll_vote_clk(struct clk *c)
  * @config_reg: configuration register, contains mn divider enable, pre divider,
  *   post divider and vco configuration. register name can be configure register
  *   or user_ctl register depending on targets
+<<<<<<< HEAD
  * @config_ctl_reg: "expert" configuration register
  * @config_ctl_hi_reg: upper 32 bits of the "expert" configuration register
  * @status_reg: status register, contains the lock detection bit
  * @init_test_ctl: initialize the test control register
  * @pgm_test_ctl_enable: program the test_ctl register in the enable sequence
  * @test_ctl_dbg: if false will configure the test control registers.
+=======
+ * @status_reg: status register, contains the lock detection bit
+ * @init_test_ctl: initialize the test control register
+ * @pgm_test_ctl_enable: program the test_ctl register in the enable sequence
+>>>>>>> p9x
  * @masks: masks used for settings in config_reg
  * @vals: configuration values to be written to PLL registers
  * @freq_tbl: pll freq table
  * @no_prepared_reconfig: Fail round_rate if pll is prepared
+<<<<<<< HEAD
+=======
+ * @pll_vco_data: If any VCO setting is required at runtime when frequencies
+ *		 are modified.
+>>>>>>> p9x
  * @c: clk
  * @base: pointer to base address of ioremapped registers.
  */
@@ -152,7 +179,10 @@ struct pll_clk {
 	void __iomem *const alpha_reg;
 	void __iomem *const config_reg;
 	void __iomem *const config_ctl_reg;
+<<<<<<< HEAD
 	void __iomem *const config_ctl_hi_reg;
+=======
+>>>>>>> p9x
 	void __iomem *const status_reg;
 	void __iomem *const alt_status_reg;
 	void __iomem *const test_ctl_lo_reg;
@@ -160,7 +190,10 @@ struct pll_clk {
 
 	bool init_test_ctl;
 	bool pgm_test_ctl_enable;
+<<<<<<< HEAD
 	bool test_ctl_dbg;
+=======
+>>>>>>> p9x
 
 	struct pll_config_masks masks;
 	struct pll_config_vals vals;
@@ -183,12 +216,18 @@ struct pll_clk {
 extern struct clk_ops clk_ops_local_pll;
 extern struct clk_ops clk_ops_sr2_pll;
 extern struct clk_ops clk_ops_variable_rate_pll;
+<<<<<<< HEAD
 extern struct clk_ops clk_ops_variable_rate_pll_hwfsm;
 extern struct clk_ops clk_ops_hf_pll;
 extern struct clk_ops clk_ops_sr_pll;
 
 void __variable_rate_pll_init(struct clk *c);
 
+=======
+extern struct clk_ops clk_ops_hf_pll;
+extern struct clk_ops clk_ops_sr_pll;
+
+>>>>>>> p9x
 static inline struct pll_clk *to_pll_clk(struct clk *c)
 {
 	return container_of(c, struct pll_clk, c);

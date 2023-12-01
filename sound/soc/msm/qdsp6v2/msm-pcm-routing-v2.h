@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -17,11 +21,17 @@
 #define LPASS_BE_PRI_I2S_TX "PRIMARY_I2S_TX"
 #define LPASS_BE_SLIMBUS_0_RX "SLIMBUS_0_RX"
 #define LPASS_BE_SLIMBUS_0_TX "SLIMBUS_0_TX"
+<<<<<<< HEAD
 #define LPASS_BE_SLIMBUS_2_TX "SLIMBUS_2_TX"
 #define LPASS_BE_HDMI "HDMI"
 #define LPASS_BE_INT_BT_SCO_RX "INT_BT_SCO_RX"
 #define LPASS_BE_INT_BT_SCO_TX "INT_BT_SCO_TX"
 #define LPASS_BE_INT_BT_A2DP_RX "INT_BT_A2DP_RX"
+=======
+#define LPASS_BE_HDMI "HDMI"
+#define LPASS_BE_INT_BT_SCO_RX "INT_BT_SCO_RX"
+#define LPASS_BE_INT_BT_SCO_TX "INT_BT_SCO_TX"
+>>>>>>> p9x
 #define LPASS_BE_INT_FM_RX "INT_FM_RX"
 #define LPASS_BE_INT_FM_TX "INT_FM_TX"
 #define LPASS_BE_AFE_PCM_RX "RT_PROXY_DAI_001_RX"
@@ -32,15 +42,28 @@
 #define LPASS_BE_SEC_AUXPCM_TX "SEC_AUX_PCM_TX"
 #define LPASS_BE_VOICE_PLAYBACK_TX "VOICE_PLAYBACK_TX"
 #define LPASS_BE_VOICE2_PLAYBACK_TX "VOICE2_PLAYBACK_TX"
+<<<<<<< HEAD
 #define LPASS_BE_INCALL_RECORD_RX "INCALL_RECORD_RX"
 #define LPASS_BE_INCALL_RECORD_TX "INCALL_RECORD_TX"
 #define LPASS_BE_SEC_I2S_RX "SECONDARY_I2S_RX"
 #define LPASS_BE_SPDIF_RX "SPDIF_RX"
+=======
+#define LPASS_BE_INCALL_RECORD_RX "INCALL_RECORD_TX"
+#define LPASS_BE_INCALL_RECORD_TX "INCALL_RECORD_RX"
+#define LPASS_BE_SEC_I2S_RX "SECONDARY_I2S_RX"
+#define LPASS_BE_SPDIF_RX "SPDIF_RX"
+#define LPASS_BE_MI2S_HDMI_RX "MI2S_HDMI_RX"
+>>>>>>> p9x
 
 #define LPASS_BE_MI2S_RX "MI2S_RX"
 #define LPASS_BE_MI2S_TX "MI2S_TX"
 #define LPASS_BE_QUAT_MI2S_RX "QUAT_MI2S_RX"
 #define LPASS_BE_QUAT_MI2S_TX "QUAT_MI2S_TX"
+<<<<<<< HEAD
+=======
+#define LPASS_BE_QUIN_MI2S_RX "QUIN_MI2S_RX"
+#define LPASS_BE_QUIN_MI2S_TX "QUIN_MI2S_TX"
+>>>>>>> p9x
 #define LPASS_BE_SEC_MI2S_RX "SEC_MI2S_RX"
 #define LPASS_BE_SEC_MI2S_RX_SD1 "SEC_MI2S_RX_SD1"
 #define LPASS_BE_SEC_MI2S_TX "SEC_MI2S_TX"
@@ -48,6 +71,10 @@
 #define LPASS_BE_PRI_MI2S_TX "PRI_MI2S_TX"
 #define LPASS_BE_TERT_MI2S_RX "TERTIARY_MI2S_RX"
 #define LPASS_BE_TERT_MI2S_TX "TERTIARY_MI2S_TX"
+<<<<<<< HEAD
+=======
+#define LPASS_BE_SENARY_MI2S_TX "SENARY_MI2S_TX"
+>>>>>>> p9x
 #define LPASS_BE_AUDIO_I2S_RX "AUDIO_I2S_RX"
 #define LPASS_BE_STUB_RX "STUB_RX"
 #define LPASS_BE_STUB_TX "STUB_TX"
@@ -62,6 +89,7 @@
 #define LPASS_BE_SLIMBUS_6_RX "SLIMBUS_6_RX"
 #define LPASS_BE_SLIMBUS_6_TX "SLIMBUS_6_TX"
 #define LPASS_BE_SLIMBUS_5_RX "SLIMBUS_5_RX"
+<<<<<<< HEAD
 #define LPASS_BE_QUIN_MI2S_RX "QUIN_MI2S_RX"
 #define LPASS_BE_QUIN_MI2S_TX "QUIN_MI2S_TX"
 #define LPASS_BE_SENARY_MI2S_TX "SENARY_MI2S_TX"
@@ -131,6 +159,8 @@
 #define LPASS_BE_QUAT_TDM_RX_7 "QUAT_TDM_RX_7"
 #define LPASS_BE_QUAT_TDM_TX_7 "QUAT_TDM_TX_7"
 #define LPASS_BE_AFE_LOOPBACK_TX "AFE_LOOPBACK_TX"
+=======
+>>>>>>> p9x
 
 /* For multimedia front-ends, asm session is allocated dynamically.
  * Hence, asm session/multimedia front-end mapping has to be maintained.
@@ -155,6 +185,7 @@ enum {
 	MSM_FRONTEND_DAI_MULTIMEDIA14,
 	MSM_FRONTEND_DAI_MULTIMEDIA15,
 	MSM_FRONTEND_DAI_MULTIMEDIA16,
+<<<<<<< HEAD
 	MSM_FRONTEND_DAI_MULTIMEDIA17,
 	MSM_FRONTEND_DAI_MULTIMEDIA18,
 	MSM_FRONTEND_DAI_MULTIMEDIA19,
@@ -162,6 +193,8 @@ enum {
 	MSM_FRONTEND_DAI_MULTIMEDIA21,
 	MSM_FRONTEND_DAI_MULTIMEDIA28,
 	MSM_FRONTEND_DAI_MULTIMEDIA29,
+=======
+>>>>>>> p9x
 	MSM_FRONTEND_DAI_CS_VOICE,
 	MSM_FRONTEND_DAI_VOIP,
 	MSM_FRONTEND_DAI_AFE_RX,
@@ -187,8 +220,13 @@ enum {
 	MSM_FRONTEND_DAI_MAX,
 };
 
+<<<<<<< HEAD
 #define MSM_FRONTEND_DAI_MM_SIZE (MSM_FRONTEND_DAI_MULTIMEDIA29 + 1)
 #define MSM_FRONTEND_DAI_MM_MAX_ID MSM_FRONTEND_DAI_MULTIMEDIA29
+=======
+#define MSM_FRONTEND_DAI_MM_SIZE (MSM_FRONTEND_DAI_MULTIMEDIA16 + 1)
+#define MSM_FRONTEND_DAI_MM_MAX_ID MSM_FRONTEND_DAI_MULTIMEDIA16
+>>>>>>> p9x
 
 enum {
 	MSM_BACKEND_DAI_PRI_I2S_RX = 0,
@@ -240,6 +278,7 @@ enum {
 	MSM_BACKEND_DAI_QUINARY_MI2S_RX,
 	MSM_BACKEND_DAI_QUINARY_MI2S_TX,
 	MSM_BACKEND_DAI_SENARY_MI2S_TX,
+<<<<<<< HEAD
 	MSM_BACKEND_DAI_PRI_TDM_RX_0,
 	MSM_BACKEND_DAI_PRI_TDM_TX_0,
 	MSM_BACKEND_DAI_PRI_TDM_RX_1,
@@ -310,12 +349,21 @@ enum {
 	MSM_BACKEND_DAI_MAX,
 };
 
+=======
+	MSM_BACKEND_DAI_MI2S_HDMI_RX,
+	MSM_BACKEND_DAI_MAX,
+};
+
+#define MSM_SNDCARD_GENERIC_HW_DEP 999
+
+>>>>>>> p9x
 enum msm_pcm_routing_event {
 	MSM_PCM_RT_EVT_BUF_RECFG,
 	MSM_PCM_RT_EVT_DEVSWITCH,
 	MSM_PCM_RT_EVT_MAX,
 };
 
+<<<<<<< HEAD
 enum {
 	EXT_EC_REF_NONE = 0,
 	EXT_EC_REF_PRI_MI2S_TX,
@@ -326,6 +374,8 @@ enum {
 	EXT_EC_REF_SLIM_1_TX,
 };
 
+=======
+>>>>>>> p9x
 #define INVALID_SESSION -1
 #define SESSION_TYPE_RX 0
 #define SESSION_TYPE_TX 1
@@ -358,7 +408,11 @@ struct msm_pcm_routing_bdai_data {
 	unsigned int  sample_rate;
 	unsigned int  channel;
 	unsigned int  format;
+<<<<<<< HEAD
 	u32 passthr_mode[MSM_FRONTEND_DAI_MAX];
+=======
+	u32 compr_passthr_mode;
+>>>>>>> p9x
 	char *name;
 };
 
@@ -411,6 +465,7 @@ void msm_pcm_routing_acquire_lock(void);
 void msm_pcm_routing_release_lock(void);
 
 void msm_pcm_routing_reg_stream_app_type_cfg(int fedai_id, int app_type,
+<<<<<<< HEAD
 			int acdb_dev_id, int sample_rate, int session_type);
 int msm_pcm_routing_get_stream_app_type_cfg(int fedai_id, int session_type,
 			int *app_type, int *acdb_dev_id, int *sample_rate);
@@ -418,4 +473,7 @@ int msm_pcm_routing_send_chmix_cfg(int fe_id, int ip_channel_cnt,
 				int op_channel_cnt, int *ch_wght_coeff,
 				int session_type, bool use_default_chmap,
 				char *channel_map);
+=======
+					int acdb_dev_id, int sample_rate);
+>>>>>>> p9x
 #endif /*_MSM_PCM_H*/

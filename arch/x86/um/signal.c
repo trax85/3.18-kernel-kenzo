@@ -504,7 +504,11 @@ int setup_signal_stack_si(unsigned long stack_top, struct ksignal *ksig,
 			  struct pt_regs *regs, sigset_t *set)
 {
 	struct rt_sigframe __user *frame;
+<<<<<<< HEAD
 	int err = 0, sig = ksig->sig;
+=======
+	int err = 0;
+>>>>>>> p9x
 
 	frame = (struct rt_sigframe __user *)
 		round_down(stack_top - sizeof(struct rt_sigframe), 16);

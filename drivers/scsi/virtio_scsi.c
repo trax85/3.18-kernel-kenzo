@@ -399,8 +399,12 @@ static void virtscsi_complete_event(struct virtio_scsi *vscsi, void *buf)
 {
 	struct virtio_scsi_event_node *event_node = buf;
 
+<<<<<<< HEAD
 	if (!vscsi->stop_events)
 		queue_work(system_freezable_wq, &event_node->work);
+=======
+	schedule_work(&event_node->work);
+>>>>>>> p9x
 }
 
 static void virtscsi_event_done(struct virtqueue *vq)
@@ -1073,6 +1077,7 @@ static int virtscsi_restore(struct virtio_device *vdev)
 		return err;
 
 	err = register_hotcpu_notifier(&vscsi->nb);
+<<<<<<< HEAD
 	if (err) {
 		vdev->config->del_vqs(vdev);
 		return err;
@@ -1082,6 +1087,10 @@ static int virtscsi_restore(struct virtio_device *vdev)
 
 	if (virtio_has_feature(vdev, VIRTIO_SCSI_F_HOTPLUG))
 		virtscsi_kick_event_all(vscsi);
+=======
+	if (err)
+		vdev->config->del_vqs(vdev);
+>>>>>>> p9x
 
 	return err;
 }

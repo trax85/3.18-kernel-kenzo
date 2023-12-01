@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2008-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2008-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -16,7 +20,11 @@
 
 #include <linux/msm_ion.h>
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <linux/msm_mdp_ext.h>
+=======
+#include <linux/msm_mdp.h>
+>>>>>>> p9x
 #include <linux/types.h>
 #include <linux/notifier.h>
 #include <linux/leds.h>
@@ -31,6 +39,14 @@
 #define MFD_KEY  0x11161126
 #define MSM_FB_MAX_DEV_LIST 32
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MACH_XIAOMI_KENZO
+#define FIRST_SET_BL 1
+#define SET_PARAMETER 3
+#endif
+
+>>>>>>> p9x
 #define MSM_FB_ENABLE_DBGFS
 #define WAIT_FENCE_FIRST_TIMEOUT (3 * MSEC_PER_SEC)
 #define WAIT_FENCE_FINAL_TIMEOUT (7 * MSEC_PER_SEC)
@@ -113,6 +129,24 @@ enum mdp_split_mode {
 	MDP_PINGPONG_SPLIT,
 };
 
+<<<<<<< HEAD
+=======
+/**
+ * enum dyn_mode_switch_state - Lists next stage for dynamic mode switch work
+ *
+ * @MDSS_MDP_NO_UPDATE_REQUESTED: incoming frame is processed normally
+ * @MDSS_MDP_WAIT_FOR_PREP: Waiting for OVERLAY_PREPARE to be called
+ * @MDSS_MDP_WAIT_FOR_SYNC: Waiting for BUFFER_SYNC to be called
+ * @MDSS_MDP_WAIT_FOR_COMMIT: Waiting for COMMIT to be called
+ */
+enum dyn_mode_switch_state {
+	MDSS_MDP_NO_UPDATE_REQUESTED,
+	MDSS_MDP_WAIT_FOR_PREP,
+	MDSS_MDP_WAIT_FOR_SYNC,
+	MDSS_MDP_WAIT_FOR_COMMIT,
+};
+
+>>>>>>> p9x
 /* enum mdp_mmap_type - Lists the possible mmap type in the device
  *
  * @MDP_FB_MMAP_NONE: Unknown type.
@@ -125,6 +159,7 @@ enum mdp_mmap_type {
 	MDP_FB_MMAP_PHYSICAL_ALLOC,
 };
 
+<<<<<<< HEAD
 /**
  * enum dyn_mode_switch_state - Lists next stage for dynamic mode switch work
  *
@@ -150,6 +185,20 @@ enum mdss_fb_idle_state {
 	MDSS_FB_NOT_IDLE,
 	MDSS_FB_IDLE_TIMER_RUNNING,
 	MDSS_FB_IDLE
+=======
+/* enum mdp_fb_state - Holds current state of fb device.
+ *
+ * @MDP_FB_STATE_NONE: Unknown type.
+ * @MDP_FB_STATE_IDLE:   fb device in idle state
+ * @MDP_FB_STATE_TOUCH_AWAKE:  fb device received a touch event
+ * @MDP_FB_STATE_AWAKE:  fb device in awake state
+ */
+enum mdp_fb_state {
+	MDP_FB_STATE_NONE,
+	MDP_FB_STATE_IDLE,
+	MDP_FB_STATE_TOUCH_AWAKE,
+	MDP_FB_STATE_AWAKE
+>>>>>>> p9x
 };
 
 struct disp_info_type_suspend {
@@ -157,6 +206,7 @@ struct disp_info_type_suspend {
 	int panel_power_state;
 };
 
+<<<<<<< HEAD
 struct disp_info_notify {
 	int type;
 	struct timer_list timer;
@@ -168,6 +218,8 @@ struct disp_info_notify {
 	bool init_done;
 };
 
+=======
+>>>>>>> p9x
 struct msm_sync_pt_data {
 	char *fence_name;
 	u32 acq_fen_cnt;
@@ -199,57 +251,90 @@ struct msm_mdp_interface {
 	int (*on_fnc)(struct msm_fb_data_type *mfd);
 	int (*off_fnc)(struct msm_fb_data_type *mfd);
 	/* called to release resources associated to the process */
+<<<<<<< HEAD
 	int (*release_fnc)(struct msm_fb_data_type *mfd, struct file *file);
+=======
+	int (*release_fnc)(struct msm_fb_data_type *mfd, bool release_all,
+				uint32_t pid);
+	void (*pend_mode_switch)(struct msm_fb_data_type *mfd,
+					bool pend_switch);
+>>>>>>> p9x
 	int (*mode_switch)(struct msm_fb_data_type *mfd,
 					u32 mode);
 	int (*mode_switch_post)(struct msm_fb_data_type *mfd,
 					u32 mode);
 	int (*kickoff_fnc)(struct msm_fb_data_type *mfd,
 					struct mdp_display_commit *data);
+<<<<<<< HEAD
 	int (*atomic_validate)(struct msm_fb_data_type *mfd, struct file *file,
 				struct mdp_layer_commit_v1 *commit);
 	bool (*is_config_same)(struct msm_fb_data_type *mfd,
 				struct mdp_output_layer *layer);
 	int (*pre_commit)(struct msm_fb_data_type *mfd, struct file *file,
 				struct mdp_layer_commit_v1 *commit);
+=======
+>>>>>>> p9x
 	int (*pre_commit_fnc)(struct msm_fb_data_type *mfd);
 	int (*ioctl_handler)(struct msm_fb_data_type *mfd, u32 cmd, void *arg);
 	void (*dma_fnc)(struct msm_fb_data_type *mfd);
 	int (*cursor_update)(struct msm_fb_data_type *mfd,
 				struct fb_cursor *cursor);
+<<<<<<< HEAD
 	int (*async_position_update)(struct msm_fb_data_type *mfd,
 				struct mdp_position_update *update_pos);
+=======
+>>>>>>> p9x
 	int (*lut_update)(struct msm_fb_data_type *mfd, struct fb_cmap *cmap);
 	int (*do_histogram)(struct msm_fb_data_type *mfd,
 				struct mdp_histogram *hist);
 	int (*ad_calc_bl)(struct msm_fb_data_type *mfd, int bl_in,
 		int *bl_out, bool *bl_out_notify);
+<<<<<<< HEAD
 	int (*panel_register_done)(struct mdss_panel_data *pdata);
 	u32 (*fb_stride)(u32 fb_index, u32 xres, int bpp);
 	struct mdss_mdp_format_params *(*get_format_params)(u32 format);
 	int (*splash_init_fnc)(struct msm_fb_data_type *mfd);
+=======
+	int (*ad_work_setup)(struct msm_fb_data_type *mfd);
+	int (*ad_shutdown_cleanup)(struct msm_fb_data_type *mfd);
+	int (*panel_register_done)(struct mdss_panel_data *pdata);
+	u32 (*fb_stride)(u32 fb_index, u32 xres, int bpp);
+	int (*splash_init_fnc)(struct msm_fb_data_type *mfd);
+	struct msm_sync_pt_data *(*get_sync_fnc)(struct msm_fb_data_type *mfd,
+				const struct mdp_buf_sync *buf_sync);
+>>>>>>> p9x
 	void (*check_dsi_status)(struct work_struct *work, uint32_t interval);
 	int (*configure_panel)(struct msm_fb_data_type *mfd, int mode,
 				int dest_ctrl);
 	int (*input_event_handler)(struct msm_fb_data_type *mfd);
+<<<<<<< HEAD
 	int (*pp_release_fnc)(struct msm_fb_data_type *mfd);
 	void (*signal_retire_fence)(struct msm_fb_data_type *mfd,
 					int retire_cnt);
 	bool (*is_twm_en)(void);
+=======
+>>>>>>> p9x
 	void *private1;
 };
 
 #define IS_CALIB_MODE_BL(mfd) (((mfd)->calib_mode) & MDSS_CALIB_MODE_BL)
 #define MDSS_BRIGHT_TO_BL(out, v, bl_max, max_bright) do {\
+<<<<<<< HEAD
 				out = (2 * (v) * (bl_max) + max_bright);\
 				do_div(out, 2 * max_bright);\
 				} while (0)
+=======
+					out = (2 * (v) * (bl_max) + max_bright)\
+					/ (2 * max_bright);\
+					} while (0)
+>>>>>>> p9x
 
 struct mdss_fb_file_info {
 	struct file *file;
 	struct list_head list;
 };
 
+<<<<<<< HEAD
 struct msm_fb_backup_type {
 	struct fb_info info;
 	struct mdp_display_commit disp_commit;
@@ -260,6 +345,18 @@ struct msm_fb_fps_info {
 	u32 frame_count;
 	ktime_t last_sampled_time_us;
 	u32 measured_fps;
+=======
+struct mdss_fb_proc_info {
+	int pid;
+	u32 ref_cnt;
+	struct list_head file_list;
+	struct list_head list;
+};
+
+struct msm_fb_backup_type {
+	struct fb_info info;
+	struct mdp_display_commit disp_commit;
+>>>>>>> p9x
 };
 
 struct msm_fb_data_type {
@@ -279,12 +376,17 @@ struct msm_fb_data_type {
 	struct fb_info *fbi;
 
 	int idle_time;
+<<<<<<< HEAD
 	u32 idle_state;
 	struct msm_fb_fps_info fps_info;
 	struct delayed_work idle_notify_work;
 
 	bool atomic_commit_pending;
 
+=======
+	struct delayed_work idle_notify_work;
+
+>>>>>>> p9x
 	int op_enable;
 	u32 fb_imgType;
 	int panel_reconfig;
@@ -294,13 +396,21 @@ struct msm_fb_data_type {
 	int panel_power_state;
 	struct disp_info_type_suspend suspend;
 
+<<<<<<< HEAD
 	struct dma_buf *dbuf;
 	struct dma_buf_attachment *attachment;
 	struct sg_table *table;
+=======
+	struct ion_handle *ihdl;
+>>>>>>> p9x
 	dma_addr_t iova;
 	void *cursor_buf;
 	phys_addr_t cursor_buf_phys;
 	dma_addr_t cursor_buf_iova;
+<<<<<<< HEAD
+=======
+	size_t cursor_buf_size;
+>>>>>>> p9x
 
 	int ext_ad_ctrl;
 	u32 ext_bl_ctrl;
@@ -314,17 +424,23 @@ struct msm_fb_data_type {
 	bool allow_bl_update;
 	u32 bl_level_scaled;
 	struct mutex bl_lock;
+<<<<<<< HEAD
 	struct mutex mdss_sysfs_lock;
 	bool ipc_resume;
+=======
+>>>>>>> p9x
 
 	struct platform_device *pdev;
 
 	u32 mdp_fb_page_protection;
 
+<<<<<<< HEAD
 	struct disp_info_notify update;
 	struct disp_info_notify no_update;
 	struct completion power_off_comp;
 
+=======
+>>>>>>> p9x
 	struct msm_mdp_interface mdp;
 
 	struct msm_sync_pt_data mdp_sync_pt_data;
@@ -348,24 +464,38 @@ struct msm_fb_data_type {
 	u32 is_power_setting;
 
 	u32 dcm_state;
+<<<<<<< HEAD
 	struct list_head file_list;
 	struct ion_client *fb_ion_client;
 	struct ion_handle *fb_ion_handle;
 	struct dma_buf *fbmem_buf;
 	struct dma_buf_attachment *fb_attachment;
 	struct sg_table *fb_table;
+=======
+	struct list_head proc_list;
+	struct ion_client *fb_ion_client;
+	struct ion_handle *fb_ion_handle;
+	struct dma_buf *fbmem_buf;
+>>>>>>> p9x
 
 	bool mdss_fb_split_stored;
 
 	u32 wait_for_kickoff;
 	u32 thermal_level;
+<<<<<<< HEAD
 
 	int fb_mmap_type;
 	struct led_trigger *boot_notification_led;
+=======
+	struct led_trigger *boot_notification_led;
+
+	int fb_mmap_type;
+>>>>>>> p9x
 
 	/* Following is used for dynamic mode switch */
 	enum dyn_mode_switch_state switch_state;
 	u32 switch_new_mode;
+<<<<<<< HEAD
 	bool pending_switch;
 	struct mutex switch_lock;
 	struct input_handler *input_handler;
@@ -394,6 +524,20 @@ static inline void mdss_fb_update_notify_update(struct msm_fb_data_type *mfd)
 static inline bool is_panel_split(struct msm_fb_data_type *mfd)
 {
 	return mfd && mfd->panel_info && mfd->panel_info->is_split_display;
+=======
+	struct mutex switch_lock;
+	struct work_struct mdss_fb_input_work;
+	enum mdp_fb_state fb_state;
+	struct input_handler *input_handler;
+};
+
+/* Function returns true for either any kind of dual display */
+static inline bool is_panel_split(struct msm_fb_data_type *mfd)
+{
+	return mfd &&
+	       (mfd->split_mode == MDP_DUAL_LM_DUAL_DISPLAY ||
+		mfd->split_mode == MDP_PINGPONG_SPLIT);
+>>>>>>> p9x
 }
 /* Function returns true, if Layer Mixer split is Set */
 static inline bool is_split_lm(struct msm_fb_data_type *mfd)
@@ -407,10 +551,14 @@ static inline bool is_pingpong_split(struct msm_fb_data_type *mfd)
 {
 	return mfd && (mfd->split_mode == MDP_PINGPONG_SPLIT);
 }
+<<<<<<< HEAD
 static inline bool is_dual_lm_single_display(struct msm_fb_data_type *mfd)
 {
 	return mfd && (mfd->split_mode == MDP_DUAL_LM_SINGLE_DISPLAY);
 }
+=======
+
+>>>>>>> p9x
 static inline bool mdss_fb_is_power_off(struct msm_fb_data_type *mfd)
 {
 	return mdss_panel_is_power_off(mfd->panel_power_state);
@@ -432,21 +580,39 @@ static inline bool mdss_fb_is_power_on_lp(struct msm_fb_data_type *mfd)
 	return mdss_panel_is_power_on_lp(mfd->panel_power_state);
 }
 
+<<<<<<< HEAD
 static inline bool mdss_fb_is_power_on_ulp(struct msm_fb_data_type *mfd)
 {
 	return mdss_panel_is_power_on_ulp(mfd->panel_power_state);
 }
 
+=======
+>>>>>>> p9x
 static inline bool mdss_fb_is_hdmi_primary(struct msm_fb_data_type *mfd)
 {
 	return (mfd && (mfd->index == 0) &&
 		(mfd->panel_info->type == DTV_PANEL));
 }
 
+<<<<<<< HEAD
 static inline void mdss_fb_init_fps_info(struct msm_fb_data_type *mfd)
 {
 	memset(&mfd->fps_info, 0, sizeof(mfd->fps_info));
 }
+=======
+static inline bool is_fb_awake(struct msm_fb_data_type *mfd)
+{
+	return mfd &&
+		((mfd->fb_state == MDP_FB_STATE_TOUCH_AWAKE) ||
+		(mfd->fb_state == MDP_FB_STATE_AWAKE));
+}
+
+static inline bool is_fb_idle(struct msm_fb_data_type *mfd)
+{
+	return mfd && (mfd->fb_state == MDP_FB_STATE_IDLE);
+}
+
+>>>>>>> p9x
 int mdss_fb_get_phys_info(dma_addr_t *start, unsigned long *len, int fb_num);
 void mdss_fb_set_backlight(struct msm_fb_data_type *mfd, u32 bkl_lvl);
 void mdss_fb_update_backlight(struct msm_fb_data_type *mfd);
@@ -458,6 +624,7 @@ int mdss_fb_register_mdp_instance(struct msm_mdp_interface *mdp);
 int mdss_fb_dcm(struct msm_fb_data_type *mfd, int req_state);
 int mdss_fb_suspres_panel(struct device *dev, void *data);
 int mdss_fb_do_ioctl(struct fb_info *info, unsigned int cmd,
+<<<<<<< HEAD
 		     unsigned long arg, struct file *file);
 int mdss_fb_compat_ioctl(struct fb_info *info, unsigned int cmd,
 			 unsigned long arg, struct file *file);
@@ -471,4 +638,10 @@ void mdss_fb_report_panel_dead(struct msm_fb_data_type *mfd);
 void mdss_panelinfo_to_fb_var(struct mdss_panel_info *pinfo,
 						struct fb_var_screeninfo *var);
 void mdss_fb_calc_fps(struct msm_fb_data_type *mfd);
+=======
+		     unsigned long arg);
+int mdss_fb_compat_ioctl(struct fb_info *info, unsigned int cmd,
+			 unsigned long arg);
+void mdss_fb_report_panel_dead(struct msm_fb_data_type *mfd);
+>>>>>>> p9x
 #endif /* MDSS_FB_H */

@@ -19,7 +19,6 @@
 #include <linux/ktime.h>
 #include <linux/hrtimer.h>
 #include <linux/module.h>
-#include <trace/events/power.h>
 
 #include "cpuidle.h"
 
@@ -116,6 +115,7 @@ int cpuidle_enter_state(struct cpuidle_device *dev, struct cpuidle_driver *drv,
 	int entered_state;
 
 	struct cpuidle_state *target_state = &drv->states[index];
+<<<<<<< HEAD
 	ktime_t time_start, time_end;
 	s64 diff;
 
@@ -129,12 +129,12 @@ int cpuidle_enter_state(struct cpuidle_device *dev, struct cpuidle_driver *drv,
 
 	if (!cpuidle_state_is_coupled(dev, drv, entered_state))
 		local_irq_enable();
+=======
 
-	diff = ktime_to_us(ktime_sub(time_end, time_start));
-	if (diff > INT_MAX)
-		diff = INT_MAX;
+	entered_state = target_state->enter(dev, drv, index);
 
-	dev->last_residency = (int) diff;
+	local_irq_enable();
+>>>>>>> p9x
 
 	if (entered_state >= 0) {
 		/* Update cpuidle counters */
@@ -169,6 +169,7 @@ int cpuidle_select(struct cpuidle_driver *drv, struct cpuidle_device *dev)
 	if (unlikely(use_deepest_state))
 		return cpuidle_find_deepest_state(drv, dev);
 
+<<<<<<< HEAD
 	return cpuidle_curr_governor->select(drv, dev);
 }
 
@@ -202,6 +203,41 @@ void cpuidle_reflect(struct cpuidle_device *dev, int index)
 {
 	if (cpuidle_curr_governor->reflect && !unlikely(use_deepest_state))
 		cpuidle_curr_governor->reflect(dev, index);
+=======
+	/* ask the governor for the next state */
+	next_state = cpuidle_curr_governor->select(drv, dev);
+	if (next_state < 0)
+		return -EBUSY;
+
+	if (need_resched()) {
+		dev->last_residency = 0;
+		/* give the governor an opportunity to reflect on the outcome */
+		if (cpuidle_curr_governor->reflect)
+			cpuidle_curr_governor->reflect(dev, next_state);
+		local_irq_enable();
+		return 0;
+	}
+
+	if (drv->states[next_state].flags & CPUIDLE_FLAG_TIMER_STOP)
+		clockevents_notify(CLOCK_EVT_NOTIFY_BROADCAST_ENTER,
+				   &dev->cpu);
+
+	if (cpuidle_state_is_coupled(dev, drv, next_state))
+		entered_state = cpuidle_enter_state_coupled(dev, drv,
+							    next_state);
+	else
+		entered_state = cpuidle_enter_state(dev, drv, next_state);
+
+	if (drv->states[next_state].flags & CPUIDLE_FLAG_TIMER_STOP)
+		clockevents_notify(CLOCK_EVT_NOTIFY_BROADCAST_EXIT,
+				   &dev->cpu);
+
+	/* give the governor an opportunity to reflect on the outcome */
+	if (cpuidle_curr_governor->reflect)
+		cpuidle_curr_governor->reflect(dev, entered_state);
+
+	return 0;
+>>>>>>> p9x
 }
 
 /**

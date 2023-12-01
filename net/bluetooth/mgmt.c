@@ -3140,6 +3140,7 @@ static int pair_device(struct sock *sk, struct hci_dev *hdev, void *data,
 	sec_level = BT_SECURITY_MEDIUM;
 	auth_type = HCI_AT_DEDICATED_BONDING;
 
+<<<<<<< HEAD
 	if (cp->addr.type == BDADDR_BREDR) {
 		conn = hci_connect_acl(hdev, &cp->addr.bdaddr, sec_level,
 				       auth_type);
@@ -3168,6 +3169,14 @@ static int pair_device(struct sock *sk, struct hci_dev *hdev, void *data,
 				      sec_level, HCI_LE_CONN_TIMEOUT,
 				      HCI_ROLE_MASTER);
 	}
+=======
+	if (cp->addr.type == BDADDR_BREDR)
+		conn = hci_connect(hdev, ACL_LINK, 0, &cp->addr.bdaddr,
+				   cp->addr.type, sec_level, auth_type);
+	else
+		conn = hci_connect(hdev, LE_LINK, 0, &cp->addr.bdaddr,
+				   cp->addr.type, sec_level, auth_type);
+>>>>>>> p9x
 
 	if (IS_ERR(conn)) {
 		int status;
@@ -3294,7 +3303,18 @@ static int user_pairing_resp(struct sock *sk, struct hci_dev *hdev,
 	}
 
 	if (addr->type == BDADDR_LE_PUBLIC || addr->type == BDADDR_LE_RANDOM) {
+<<<<<<< HEAD
 		err = smp_user_confirm_reply(conn, mgmt_op, passkey);
+=======
+		/* Continue with pairing via SMP. The hdev lock must be
+		 * released as SMP may try to recquire it for crypto
+		 * purposes.
+		 */
+		hci_dev_unlock(hdev);
+		err = smp_user_confirm_reply(conn, mgmt_op, passkey);
+		hci_dev_lock(hdev);
+
+>>>>>>> p9x
 		if (!err)
 			err = cmd_complete(sk, hdev->id, mgmt_op,
 					   MGMT_STATUS_SUCCESS, addr,

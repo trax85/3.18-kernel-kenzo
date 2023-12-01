@@ -6,7 +6,10 @@
 
 #include <linux/reboot.h>
 
+<<<<<<< HEAD
 struct device;
+=======
+>>>>>>> p9x
 struct i2c_gpio_platform_data;
 struct i2c_board_info;
 struct spi_board_info;

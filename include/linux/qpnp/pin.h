@@ -59,12 +59,15 @@
 #define QPNP_PIN_OUT_STRENGTH_MED		2
 #define QPNP_PIN_OUT_STRENGTH_HIGH		3
 
+<<<<<<< HEAD
 /* Digital-in CTL (GPIO/MPP) */
 #define QPNP_PIN_DIG_IN_CTL_DTEST1		1
 #define QPNP_PIN_DIG_IN_CTL_DTEST2		2
 #define QPNP_PIN_DIG_IN_CTL_DTEST3		3
 #define QPNP_PIN_DIG_IN_CTL_DTEST4		4
 
+=======
+>>>>>>> p9x
 /* Source Select (GPIO) / Enable Select (MPP) */
 #define QPNP_PIN_SEL_FUNC_CONSTANT		0
 #define QPNP_PIN_SEL_FUNC_PAIRED		1
@@ -181,10 +184,13 @@
  *			routed to. The parameter should be of type
  *			QPNP_PIN_APASS_SEL_*. This
  *			parameter only applies to GPIO LV/MV pins.
+<<<<<<< HEAD
  * @dtest_sel:		Select the DTEST line to which the signal needs
  *			is routed to. The parameter should be of type
  *			QPNP_PIN_DIG_IN_CTL_*. The parameter applies
  *			to both gpio and mpp pins.
+=======
+>>>>>>> p9x
  */
 struct qpnp_pin_cfg {
 	int mode;
@@ -199,7 +205,10 @@ struct qpnp_pin_cfg {
 	int ain_route;
 	int cs_out;
 	int apass_sel;
+<<<<<<< HEAD
 	int dtest_sel;
+=======
+>>>>>>> p9x
 };
 
 /**

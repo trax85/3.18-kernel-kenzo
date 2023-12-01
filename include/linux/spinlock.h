@@ -128,6 +128,7 @@ do {								\
  */
 #ifndef smp_mb__before_spinlock
 #define smp_mb__before_spinlock()	smp_wmb()
+<<<<<<< HEAD
 #endif
 
 /*
@@ -138,6 +139,8 @@ do {								\
  */
 #ifndef smp_mb__after_unlock_lock
 #define smp_mb__after_unlock_lock()	do { } while (0)
+=======
+>>>>>>> p9x
 #endif
 
 /**

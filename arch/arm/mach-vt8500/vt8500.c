@@ -44,7 +44,11 @@
 
 static void __iomem *pmc_base;
 
+<<<<<<< HEAD
 static void vt8500_restart(enum reboot_mode mode, const char *cmd)
+=======
+void vt8500_restart(enum reboot_mode mode, const char *cmd)
+>>>>>>> p9x
 {
 	if (pmc_base)
 		writel(1, pmc_base + VT8500_PMSR_REG);

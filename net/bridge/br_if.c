@@ -280,7 +280,10 @@ void br_dev_delete(struct net_device *dev, struct list_head *head)
 
 	br_fdb_delete_by_port(br, NULL, 1);
 
+<<<<<<< HEAD
 	br_vlan_flush(br);
+=======
+>>>>>>> p9x
 	del_timer_sync(&br->gc_timer);
 
 	br_sysfs_delbr(br->dev);
@@ -499,12 +502,15 @@ int br_add_if(struct net_bridge *br, struct net_device *dev)
 	if (br->dev->needed_headroom < dev->needed_headroom)
 		br->dev->needed_headroom = dev->needed_headroom;
 
+<<<<<<< HEAD
 	if (br_fdb_insert(br, p, dev->dev_addr, 0))
 		netdev_err(dev, "failed insert local address bridge forwarding table\n");
 
 	if (nbp_vlan_init(p))
 		netdev_err(dev, "failed to initialize vlan filtering on this port\n");
 
+=======
+>>>>>>> p9x
 	spin_lock_bh(&br->lock);
 	changed_addr = br_stp_recalculate_bridge_id(br);
 

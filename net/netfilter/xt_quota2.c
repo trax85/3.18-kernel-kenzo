@@ -16,12 +16,16 @@
 #include <linux/proc_fs.h>
 #include <linux/skbuff.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 #include <linux/workqueue.h>
+=======
+>>>>>>> p9x
 #include <asm/atomic.h>
 #include <net/netlink.h>
 
 #include <linux/netfilter/x_tables.h>
 #include <linux/netfilter/xt_quota2.h>
+<<<<<<< HEAD
 
 #define QUOTA2_SYSFS_WORK_MAX_SIZE 64
 #define QUOTA2_SYSFS_NUM_ENVP 3
@@ -46,6 +50,10 @@ typedef struct ulog_packet_msg {
 	unsigned char mac[ULOG_MAC_LEN];
 	unsigned char payload[0];
 } ulog_packet_msg_t;
+=======
+#ifdef CONFIG_NETFILTER_XT_MATCH_QUOTA2_LOG
+#include <linux/netfilter_ipv4/ipt_ULOG.h>
+>>>>>>> p9x
 #endif
 
 /**
@@ -58,6 +66,7 @@ struct xt_quota_counter {
 	atomic_t ref;
 	char name[sizeof(((struct xt_quota_mtinfo2 *)NULL)->name)];
 	struct proc_dir_entry *procfs_entry;
+<<<<<<< HEAD
 	char last_iface[QUOTA2_SYSFS_WORK_MAX_SIZE];
 	char last_prefix[QUOTA2_SYSFS_WORK_MAX_SIZE];
 	struct work_struct work;
@@ -68,12 +77,26 @@ struct xt_quota_counter {
 static struct class *quota_class;
 static struct device *quota_device;
 static struct kobject *quota_kobj;
+=======
+};
+
+#ifdef CONFIG_NETFILTER_XT_MATCH_QUOTA2_LOG
+/* Harald's favorite number +1 :D From ipt_ULOG.C */
+static int qlog_nl_event = 112;
+module_param_named(event_num, qlog_nl_event, uint, S_IRUGO | S_IWUSR);
+MODULE_PARM_DESC(event_num,
+		 "Event number for NETLINK_NFLOG message. 0 disables log."
+		 "111 is what ipt_ULOG uses.");
+static struct sock *nflognl;
+#endif
+>>>>>>> p9x
 
 static LIST_HEAD(counter_list);
 static DEFINE_SPINLOCK(counter_list_lock);
 
 static struct proc_dir_entry *proc_xt_quota;
 static unsigned int quota_list_perms = S_IRUGO | S_IWUSR;
+<<<<<<< HEAD
 static kuid_t quota_list_uid = KUIDT_INIT(0);
 static kgid_t quota_list_gid = KGIDT_INIT(0);
 module_param_named(perms, quota_list_perms, uint, S_IRUGO | S_IWUSR);
@@ -114,6 +137,80 @@ static void quota2_log(const struct net_device *in,
 
 static ssize_t quota_proc_read(struct file *file, char __user *buf,
 			   size_t size, loff_t *ppos)
+=======
+static unsigned int quota_list_uid   = 0;
+static unsigned int quota_list_gid   = 0;
+module_param_named(perms, quota_list_perms, uint, S_IRUGO | S_IWUSR);
+module_param_named(uid, quota_list_uid, uint, S_IRUGO | S_IWUSR);
+module_param_named(gid, quota_list_gid, uint, S_IRUGO | S_IWUSR);
+
+
+#ifdef CONFIG_NETFILTER_XT_MATCH_QUOTA2_LOG
+static void quota2_log(unsigned int hooknum,
+		       const struct sk_buff *skb,
+		       const struct net_device *in,
+		       const struct net_device *out,
+		       const char *prefix)
+{
+	ulog_packet_msg_t *pm;
+	struct sk_buff *log_skb;
+	size_t size;
+	struct nlmsghdr *nlh;
+
+	if (!qlog_nl_event)
+		return;
+
+	size = NLMSG_SPACE(sizeof(*pm));
+	size = max(size, (size_t)NLMSG_GOODSIZE);
+	log_skb = alloc_skb(size, GFP_ATOMIC);
+	if (!log_skb) {
+		pr_err("xt_quota2: cannot alloc skb for logging\n");
+		return;
+	}
+
+	nlh = nlmsg_put(log_skb, /*pid*/0, /*seq*/0, qlog_nl_event,
+			sizeof(*pm), 0);
+	if (!nlh) {
+		pr_err("xt_quota2: nlmsg_put failed\n");
+		kfree_skb(log_skb);
+		return;
+	}
+	pm = nlmsg_data(nlh);
+	if (skb->tstamp.tv64 == 0)
+		__net_timestamp((struct sk_buff *)skb);
+	pm->data_len = 0;
+	pm->hook = hooknum;
+	if (prefix != NULL)
+		strlcpy(pm->prefix, prefix, sizeof(pm->prefix));
+	else
+		*(pm->prefix) = '\0';
+	if (in)
+		strlcpy(pm->indev_name, in->name, sizeof(pm->indev_name));
+	else
+		pm->indev_name[0] = '\0';
+
+	if (out)
+		strlcpy(pm->outdev_name, out->name, sizeof(pm->outdev_name));
+	else
+		pm->outdev_name[0] = '\0';
+
+	NETLINK_CB(log_skb).dst_group = 1;
+	pr_debug("throwing 1 packets to netlink group 1\n");
+	netlink_broadcast(nflognl, log_skb, 0, 1, GFP_ATOMIC);
+}
+#else
+static void quota2_log(unsigned int hooknum,
+		       const struct sk_buff *skb,
+		       const struct net_device *in,
+		       const struct net_device *out,
+		       const char *prefix)
+{
+}
+#endif  /* if+else CONFIG_NETFILTER_XT_MATCH_QUOTA2_LOG */
+
+static ssize_t quota_proc_read(struct file *file, char __user *buf,
+			       size_t size, loff_t *ppos)
+>>>>>>> p9x
 {
 	struct xt_quota_counter *e = PDE_DATA(file_inode(file));
 	char tmp[24];
@@ -126,7 +223,11 @@ static ssize_t quota_proc_read(struct file *file, char __user *buf,
 }
 
 static ssize_t quota_proc_write(struct file *file, const char __user *input,
+<<<<<<< HEAD
                             size_t size, loff_t *ppos)
+=======
+				size_t size, loff_t *ppos)
+>>>>>>> p9x
 {
 	struct xt_quota_counter *e = PDE_DATA(file_inode(file));
 	char buf[sizeof("18446744073709551616")];
@@ -167,9 +268,12 @@ q2_new_counter(const struct xt_quota_mtinfo2 *q, bool anon)
 		INIT_LIST_HEAD(&e->list);
 		atomic_set(&e->ref, 1);
 		strlcpy(e->name, q->name, sizeof(e->name));
+<<<<<<< HEAD
 		strlcpy(e->last_prefix, "UNSET", sizeof(e->last_prefix));
 		strlcpy(e->last_iface, "UNSET", sizeof(e->last_iface));
 		INIT_WORK(&e->work, quota2_work);
+=======
+>>>>>>> p9x
 	}
 	return e;
 }
@@ -303,7 +407,15 @@ quota_mt2(const struct sk_buff *skb, struct xt_action_param *par)
 		} else {
 			/* We are transitioning, log that fact. */
 			if (e->quota) {
+<<<<<<< HEAD
 				quota2_log(par->in, par->out, e, q->name);
+=======
+				quota2_log(par->hooknum,
+					   skb,
+					   par->in,
+					   par->out,
+					   q->name);
+>>>>>>> p9x
 			}
 			/* we do not allow even small packets from now on */
 			e->quota = 0;
@@ -341,6 +453,7 @@ static int __init quota_mt2_init(void)
 	int ret;
 	pr_debug("xt_quota2: init()");
 
+<<<<<<< HEAD
 	quota_class = class_create(THIS_MODULE, "xt_quota2");
 	ret = PTR_ERR(quota_class);
 	if (IS_ERR(quota_class)) {
@@ -360,6 +473,13 @@ static int __init quota_mt2_init(void)
 	}
 
 	quota_kobj = &quota_device->kobj;
+=======
+#ifdef CONFIG_NETFILTER_XT_MATCH_QUOTA2_LOG
+	nflognl = netlink_kernel_create(&init_net, NETLINK_NFLOG, NULL);
+	if (!nflognl)
+		return -ENOMEM;
+#endif
+>>>>>>> p9x
 
 	proc_xt_quota = proc_mkdir("xt_quota", init_net.proc_net);
 	if (proc_xt_quota == NULL)
@@ -376,8 +496,11 @@ static void __exit quota_mt2_exit(void)
 {
 	xt_unregister_matches(quota_mt2_reg, ARRAY_SIZE(quota_mt2_reg));
 	remove_proc_entry("xt_quota", init_net.proc_net);
+<<<<<<< HEAD
 	device_destroy(quota_class, MKDEV(0, 0));
 	class_destroy(quota_class);
+=======
+>>>>>>> p9x
 }
 
 module_init(quota_mt2_init);

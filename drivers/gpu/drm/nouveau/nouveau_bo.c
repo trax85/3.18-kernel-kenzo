@@ -888,12 +888,20 @@ static int
 nv50_bo_move_m2mf(struct nouveau_channel *chan, struct ttm_buffer_object *bo,
 		  struct ttm_mem_reg *old_mem, struct ttm_mem_reg *new_mem)
 {
+<<<<<<< HEAD
 	struct nvkm_mem *node = old_mem->mm_node;
+=======
+	struct nouveau_mem *node = old_mem->mm_node;
+>>>>>>> p9x
 	u64 length = (new_mem->num_pages << PAGE_SHIFT);
 	u64 src_offset = node->vma[0].offset;
 	u64 dst_offset = node->vma[1].offset;
 	int src_tiled = !!node->memtype;
+<<<<<<< HEAD
 	int dst_tiled = !!((struct nvkm_mem *)new_mem->mm_node)->memtype;
+=======
+	int dst_tiled = !!((struct nouveau_mem *)new_mem->mm_node)->memtype;
+>>>>>>> p9x
 	int ret;
 
 	while (length) {

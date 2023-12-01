@@ -38,6 +38,7 @@ void kvm_inject_undefined(struct kvm_vcpu *vcpu);
 void kvm_inject_dabt(struct kvm_vcpu *vcpu, unsigned long addr);
 void kvm_inject_pabt(struct kvm_vcpu *vcpu, unsigned long addr);
 
+<<<<<<< HEAD
 static inline bool vcpu_el1_is_32bit(struct kvm_vcpu *vcpu)
 {
 	return !(vcpu->arch.hcr_el2 & HCR_RW);
@@ -60,6 +61,8 @@ static inline void vcpu_set_hcr(struct kvm_vcpu *vcpu, unsigned long hcr)
 	vcpu->arch.hcr_el2 = hcr;
 }
 
+=======
+>>>>>>> p9x
 static inline unsigned long *vcpu_pc(const struct kvm_vcpu *vcpu)
 {
 	return (unsigned long *)&vcpu_gp_regs(vcpu)->regs.pc;
@@ -196,11 +199,14 @@ static inline bool kvm_vcpu_trap_is_iabt(const struct kvm_vcpu *vcpu)
 
 static inline u8 kvm_vcpu_trap_get_fault(const struct kvm_vcpu *vcpu)
 {
+<<<<<<< HEAD
 	return kvm_vcpu_get_hsr(vcpu) & ESR_EL2_FSC;
 }
 
 static inline u8 kvm_vcpu_trap_get_fault_type(const struct kvm_vcpu *vcpu)
 {
+=======
+>>>>>>> p9x
 	return kvm_vcpu_get_hsr(vcpu) & ESR_EL2_FSC_TYPE;
 }
 
@@ -240,6 +246,7 @@ static inline unsigned long vcpu_data_guest_to_host(struct kvm_vcpu *vcpu,
 		default:
 			return be64_to_cpu(data);
 		}
+<<<<<<< HEAD
 	} else {
 		switch (len) {
 		case 1:
@@ -251,6 +258,8 @@ static inline unsigned long vcpu_data_guest_to_host(struct kvm_vcpu *vcpu,
 		default:
 			return le64_to_cpu(data);
 		}
+=======
+>>>>>>> p9x
 	}
 
 	return data;		/* Leave LE untouched */
@@ -271,6 +280,7 @@ static inline unsigned long vcpu_data_host_to_guest(struct kvm_vcpu *vcpu,
 		default:
 			return cpu_to_be64(data);
 		}
+<<<<<<< HEAD
 	} else {
 		switch (len) {
 		case 1:
@@ -282,6 +292,8 @@ static inline unsigned long vcpu_data_host_to_guest(struct kvm_vcpu *vcpu,
 		default:
 			return cpu_to_le64(data);
 		}
+=======
+>>>>>>> p9x
 	}
 
 	return data;		/* Leave LE untouched */

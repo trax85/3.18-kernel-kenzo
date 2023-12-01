@@ -51,7 +51,11 @@ struct pt_regs {
 				      ecr_vec:8, state:8;
 #endif
 		};
+<<<<<<< HEAD
 		unsigned long event;
+=======
+		long orig_r8_word;
+>>>>>>> p9x
 	};
 
 	long user_r25;
@@ -63,7 +67,7 @@ struct callee_regs {
 	long r25, r24, r23, r22, r21, r20, r19, r18, r17, r16, r15, r14, r13;
 };
 
-#define instruction_pointer(regs)	((regs)->ret)
+#define instruction_pointer(regs)	(unsigned long)((regs)->ret)
 #define profile_pc(regs)		instruction_pointer(regs)
 
 /* return 1 if user mode or 0 if kernel mode */

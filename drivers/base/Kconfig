@@ -85,6 +85,11 @@ config FW_LOADER
 	  require userspace firmware loading support, but a module built
 	  out-of-tree does.
 
+config FW_CACHE
+       bool "Enable firmware caching during suspend"
+       depends on PM_SLEEP
+       default n
+
 config FIRMWARE_IN_KERNEL
 	bool "Include in-kernel firmware blobs in kernel binary"
 	depends on FW_LOADER
@@ -220,8 +225,18 @@ config GENERIC_CPU_DEVICES
 	bool
 	default n
 
+<<<<<<< HEAD
 config GENERIC_CPU_AUTOPROBE
 	bool
+=======
+config HAVE_CPU_AUTOPROBE
+	def_bool ARCH_HAS_CPU_AUTOPROBE
+
+config GENERIC_CPU_AUTOPROBE
+	bool
+	depends on !ARCH_HAS_CPU_AUTOPROBE
+	select HAVE_CPU_AUTOPROBE
+>>>>>>> p9x
 
 config SOC_BUS
 	bool
@@ -316,6 +331,32 @@ config CMA_ALIGNMENT
 
 	  If unsure, leave the default value "8".
 
+<<<<<<< HEAD
+=======
+config CMA_AREAS
+	int "Maximum count of the CMA device-private areas"
+	default 15
+	help
+	  CMA allows to create CMA areas for particular devices. This parameter
+	  sets the maximum number of such device private CMA areas in the
+	  system.
+
+	  If unsure, leave the default value "15".
+
+config CMA_RESERVE_DEFAULT_AREA
+	bool "Permanently reserve the default area"
+	help
+	  By default, contiguous regions are given back to the page allocator so
+	  the memory may be used when not in contiguous forms. This has better
+	  utilization but the allocation time may be slower. Say Y here to
+	  never have the default region be returned to the page allocator.
+	  This means the memory will always be available for contiguous
+	  allocations but the pages will never be available for anything else
+	  except contiguous allocations.
+
+	  If unsure, say n.
+
+>>>>>>> p9x
 endif
 
 endmenu

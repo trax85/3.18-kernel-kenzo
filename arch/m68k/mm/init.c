@@ -151,6 +151,33 @@ static inline void init_pointer_tables(void)
 #if defined(CONFIG_MMU) && !defined(CONFIG_SUN3) && !defined(CONFIG_COLDFIRE)
 	int i;
 
+<<<<<<< HEAD
+=======
+	/* this will put all memory onto the freelists */
+	num_physpages = 0;
+	for_each_online_pgdat(pgdat) {
+		num_physpages += pgdat->node_present_pages;
+
+		free_all_bootmem_node(pgdat);
+		for (i = 0; i < pgdat->node_spanned_pages; i++) {
+			struct page *page = pgdat->node_mem_map + i;
+			char *addr = page_to_virt(page);
+
+			if (!PageReserved(page))
+				continue;
+			if (addr >= _text &&
+			    addr < _etext)
+				codepages++;
+			else if (addr >= __init_begin &&
+				 addr < __init_end)
+				initpages++;
+			else
+				datapages++;
+		}
+	}
+
+#if defined(CONFIG_MMU) && !defined(CONFIG_SUN3) && !defined(CONFIG_COLDFIRE)
+>>>>>>> p9x
 	/* insert pointer tables allocated so far into the tablelist */
 	init_pointer_table((unsigned long)kernel_pg_dir);
 	for (i = 0; i < PTRS_PER_PGD; i++) {

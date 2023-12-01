@@ -17,6 +17,7 @@
 #ifndef	__LINUX_USB_ANDROID_H
 #define	__LINUX_USB_ANDROID_H
 
+<<<<<<< HEAD
 #define FUNC_NAME_LEN 15
 
 enum android_function_index {
@@ -116,6 +117,12 @@ static enum android_function_index name_to_func_idx(const char *name)
 
 	return ANDROID_INVALID_FUNC;
 }
+=======
+#include <linux/usb/composite.h>
+
+#define MAX_STREAMING_FUNCS 3
+#define FUNC_NAME_LEN 10
+>>>>>>> p9x
 
 enum android_pm_qos_state {
 	WFI,
@@ -129,13 +136,43 @@ struct android_usb_platform_data {
 	int (*update_pid_and_serial_num)(uint32_t, const char *);
 	u32 pm_qos_latency[MAX_VOTES];
 	u8 usb_core_id;
+<<<<<<< HEAD
 };
 
+=======
+	char streaming_func[MAX_STREAMING_FUNCS][FUNC_NAME_LEN];
+	int  streaming_func_count;
+	u8 uicc_nluns;
+	bool cdrom;
+};
+
+#ifndef CONFIG_TARGET_CORE
+static inline int f_tcm_init(int (*connect_cb)(bool connect))
+{
+	/*
+	 * Fail bind() not init(). If a function init() returns error
+	 * android composite registration would fail.
+	 */
+	return 0;
+}
+static inline void f_tcm_exit(void)
+{
+}
+static inline int tcm_bind_config(struct usb_configuration *c)
+{
+	return -ENODEV;
+}
+#endif
+
+>>>>>>> p9x
 extern int gport_setup(struct usb_configuration *c);
 extern void gport_cleanup(void);
 extern int gserial_init_port(int port_num, const char *name,
 					const char *port_name);
+<<<<<<< HEAD
 extern void gserial_deinit_port(void);
+=======
+>>>>>>> p9x
 extern bool gserial_is_connected(void);
 extern bool gserial_is_dun_w_softap_enabled(void);
 extern void gserial_dun_w_softap_enable(bool enable);

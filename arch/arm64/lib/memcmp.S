@@ -255,4 +255,8 @@ CPU_LE( rev	data2, data2 )
 .Lret0:
 	mov	result, #0
 	ret
+<<<<<<< HEAD
 ENDPIPROC(memcmp)
+=======
+ENDPROC(memcmp)
+>>>>>>> p9x

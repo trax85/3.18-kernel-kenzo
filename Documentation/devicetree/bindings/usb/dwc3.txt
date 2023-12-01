@@ -18,6 +18,7 @@ Optional properties:
  - phys: from the *Generic PHY* bindings
  - phy-names: from the *Generic PHY* bindings
  - tx-fifo-resize: determines if the FIFO *has* to be reallocated.
+<<<<<<< HEAD
  - snps,nominal-elastic-buffer: When set, the nominal elastic buffer setting
 	is used. By default, the half-full setting is used.
  - snps,usb3-u1u2-disable: If present, disable u1u2 low power modes for DWC3 core controller in SS mode.
@@ -33,16 +34,37 @@ Optional properties:
  - snps,num-gsi-evt-buffs: If present, specifies number of GSI based hardware accelerated event buffers.
 	1 event buffer is needed per h/w accelerated endpoint.
  - xhci-imod-value: Interrupt moderation interval for host mode (in increments of 250nsec).
+=======
+ - snps,host-only-mode: if present then dwc3 should be run in HOST only mode.
+ - snps,nominal-elastic-buffer: When set, the nominal elastic buffer setting
+	is used. By default, the half-full setting is used.
+ - snps,ssphy-clear-auto-suspend-on-disconnect: If present, clear auto suspend feaure with ssusb phy
+   during cable disconnect.
+ - snps,usb3-u1u2-disable: If present, disable u1u2 low power modes for DWC3 core controller in SS mode.
+ - snps,hird_thresh: If present, will determine the value of DCTL[HIRD_Thresh] which, in turn,
+	controls the UTMI sleep mechanism vs. the PHY. Default value is 12.
+ - snps,bus-suspend-enable: If present then controller supports low power mode
+	during bus suspend.
+ - snps,lpm-nyet-thresh: If present, will determine the value of DCTL[LPM_NYET_Thres].
+        If BESL value received from the host in the LPM token is less than this value we send LPM ACK to the host.
+        Otherwise the device returns LPM NYET.
+>>>>>>> p9x
 
 This is usually a subnode to DWC3 glue to which it is connected.
 
 dwc3@4a030000 {
+<<<<<<< HEAD
 	compatible = "snps,dwc3";
 	reg = <0x07600000 0xfc000>,
 		<0x7416000 0x400>;
 	reg-names = "core_base",
 		    "ahb2phy_base";
 	interrupts = <0 92 4>
+=======
+	compatible = "synopsys,dwc3";
+	reg = <0x4a030000 0xcfff>;
+	interrupts = <0 92 4>;
+>>>>>>> p9x
 	usb-phy = <&usb2_phy>, <&usb3,phy>;
 	tx-fifo-resize;
 	snps,usb3-u1u2-disable;

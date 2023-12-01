@@ -50,8 +50,11 @@ static struct usb_driver btusb_driver;
 #define BTUSB_ATH3012		0x80
 #define BTUSB_INTEL		0x100
 #define BTUSB_INTEL_BOOT	0x200
+<<<<<<< HEAD
 #define BTUSB_BCM_PATCHRAM	0x400
 #define BTUSB_MARVELL		0x800
+=======
+>>>>>>> p9x
 
 static const struct usb_device_id btusb_table[] = {
 	/* Generic Bluetooth USB device */
@@ -104,6 +107,12 @@ static const struct usb_device_id btusb_table[] = {
 	{ USB_DEVICE(0x0c10, 0x0000) },
 
 	/* Broadcom BCM20702A0 */
+<<<<<<< HEAD
+=======
+	{ USB_DEVICE(0x0b05, 0x17b5) },
+	{ USB_DEVICE(0x0b05, 0x17cb) },
+	{ USB_DEVICE(0x04ca, 0x2003) },
+>>>>>>> p9x
 	{ USB_DEVICE(0x0489, 0xe042) },
 	{ USB_DEVICE(0x04ca, 0x2003) },
 	{ USB_DEVICE(0x0b05, 0x17b5) },
@@ -140,6 +149,13 @@ static const struct usb_device_id btusb_table[] = {
 	/* Toshiba Corp - Broadcom based */
 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0930, 0xff, 0x01, 0x01),
 	  .driver_info = BTUSB_BCM_PATCHRAM },
+
+	/* Intel Bluetooth USB Bootloader (RAM module) */
+	{ USB_DEVICE(0x8087, 0x0a5a),
+	  .driver_info = BTUSB_INTEL_BOOT | BTUSB_BROKEN_ISOC },
+
+	/* IMC Networks - Broadcom based */
+	{ USB_VENDOR_AND_INTERFACE_INFO(0x13d3, 0xff, 0x01, 0x01) },
 
 	/* Intel Bluetooth USB Bootloader (RAM module) */
 	{ USB_DEVICE(0x8087, 0x0a5a),
@@ -200,6 +216,7 @@ static const struct usb_device_id blacklist_table[] = {
 	{ USB_DEVICE(0x0cf3, 0x311d), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0cf3, 0x311e), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0cf3, 0x311f), .driver_info = BTUSB_ATH3012 },
+<<<<<<< HEAD
 	{ USB_DEVICE(0x0cf3, 0x3121), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0cf3, 0x817a), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0cf3, 0xe003), .driver_info = BTUSB_ATH3012 },
@@ -219,6 +236,29 @@ static const struct usb_device_id blacklist_table[] = {
 	{ USB_DEVICE(0x13d3, 0x3474), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x13d3, 0x3487), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x13d3, 0x3490), .driver_info = BTUSB_ATH3012 },
+=======
+	{ USB_DEVICE(0x0cf3, 0x817a), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x0cf3, 0xe500), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x13d3, 0x3375), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x04ca, 0x3004), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x04ca, 0x3005), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x04ca, 0x3006), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x04ca, 0x3007), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x04ca, 0x3008), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x13d3, 0x3362), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x0cf3, 0xe004), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x0cf3, 0xe005), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x0930, 0x0219), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x0489, 0xe057), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x13d3, 0x3393), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x0489, 0xe04e), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x0489, 0xe056), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x0489, 0xe04d), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x04c5, 0x1330), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x13d3, 0x3402), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x0cf3, 0x3121), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x0cf3, 0xe003), .driver_info = BTUSB_ATH3012 },
+>>>>>>> p9x
 
 	/* Atheros AR5BBU12 with sflash firmware */
 	{ USB_DEVICE(0x0489, 0xe02c), .driver_info = BTUSB_IGNORE },
@@ -2098,6 +2138,9 @@ static int btusb_probe(struct usb_interface *intf,
 	if (id->driver_info & BTUSB_INTEL_BOOT)
 		set_bit(HCI_QUIRK_RAW_DEVICE, &hdev->quirks);
 
+	if (id->driver_info & BTUSB_INTEL_BOOT)
+		set_bit(HCI_QUIRK_RAW_DEVICE, &hdev->quirks);
+
 	/* Interface numbers are hardcoded in the specification */
 	data->isoc = usb_ifnum_to_if(data->udev, 1);
 
@@ -2348,6 +2391,30 @@ static struct usb_driver btusb_driver = {
 static int __init btusb_driver_init(void)
 {
 	int ret = 0;
+<<<<<<< HEAD
+=======
+	ret = usb_register(&btusb_driver);
+	/* ignore return value */
+	register_pm_notifier(&btusb_pm_notifier);
+	return ret;
+}
+module_init(btusb_driver_init);
+
+static void __exit btusb_driver_exit(void)
+{
+	unregister_pm_notifier(&btusb_pm_notifier);
+	/*
+	 * If unregister gets called before resume notification, we need to
+	 * release the semaphore to avoid deadlock.
+	 */
+	if (test_bit(BTUSB_PM_SUSPEND, &btusb_pm_flags)) {
+		up_write(&btusb_pm_sem);
+		clear_bit(BTUSB_PM_SUSPEND, &btusb_pm_flags);
+	}
+	usb_deregister(&btusb_driver);
+}
+module_exit(btusb_driver_exit);
+>>>>>>> p9x
 
 	ret = usb_register(&btusb_driver);
 	/* ignore return value */

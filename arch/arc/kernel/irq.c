@@ -23,12 +23,22 @@
  * -Called very early (start_kernel -> setup_arch -> setup_processor)
  *
  * what it does ?
+<<<<<<< HEAD
+=======
+ * -Disable all IRQs (on CPU side)
+>>>>>>> p9x
  * -Optionally, setup the High priority Interrupts as Level 2 IRQs
  */
 void arc_init_IRQ(void)
 {
 	int level_mask = 0;
 
+<<<<<<< HEAD
+=======
+	/* Disable all IRQs: enable them as devices request */
+	write_aux_reg(AUX_IENABLE, 0);
+
+>>>>>>> p9x
        /* setup any high priority Interrupts (Level2 in ARCompact jargon) */
 	level_mask |= IS_ENABLED(CONFIG_ARC_IRQ3_LV2) << 3;
 	level_mask |= IS_ENABLED(CONFIG_ARC_IRQ5_LV2) << 5;

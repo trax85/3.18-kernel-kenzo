@@ -10,5 +10,8 @@ extern void footbridge_init_irq(void);
 
 extern void isa_init_irq(unsigned int irq);
 extern void footbridge_restart(enum reboot_mode, const char *);
+<<<<<<< HEAD
 
 extern void footbridge_sched_clock(void);
+=======
+>>>>>>> p9x

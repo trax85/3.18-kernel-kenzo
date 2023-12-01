@@ -1268,7 +1268,13 @@ static int mwifiex_pcie_process_recv_data(struct mwifiex_adapter *adapter)
 		if (!skb_data)
 			return -ENOMEM;
 
+<<<<<<< HEAD
 		mwifiex_unmap_pci_memory(adapter, skb_data, PCI_DMA_FROMDEVICE);
+=======
+		MWIFIEX_SKB_PACB(skb_data, &buf_pa);
+		pci_unmap_single(card->dev, buf_pa, MWIFIEX_RX_DATA_BUF_SIZE,
+				 PCI_DMA_FROMDEVICE);
+>>>>>>> p9x
 		card->rx_buf_list[rd_index] = NULL;
 
 		/* Get data length from interface header -
@@ -1608,8 +1614,11 @@ static int mwifiex_pcie_process_cmd_complete(struct mwifiex_adapter *adapter)
 					 "Write register failed\n");
 				return -1;
 			}
+<<<<<<< HEAD
 			mwifiex_delay_for_sleep_cookie(adapter,
 						       MWIFIEX_MAX_DELAY_COUNT);
+=======
+>>>>>>> p9x
 			while (reg->sleep_cookie && (count++ < 10) &&
 			       mwifiex_pcie_ok_to_access_hw(adapter))
 				usleep_range(50, 60);

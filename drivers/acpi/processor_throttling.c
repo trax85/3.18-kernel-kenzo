@@ -1071,6 +1071,7 @@ static long acpi_processor_throttling_fn(void *data)
 			arg->target_state, arg->force);
 }
 
+<<<<<<< HEAD
 static int call_on_cpu(int cpu, long (*fn)(void *), void *arg, bool direct)
 {
 	if (direct)
@@ -1080,6 +1081,10 @@ static int call_on_cpu(int cpu, long (*fn)(void *), void *arg, bool direct)
 
 static int __acpi_processor_set_throttling(struct acpi_processor *pr,
 					   int state, bool force, bool direct)
+=======
+int acpi_processor_set_throttling(struct acpi_processor *pr,
+						int state, bool force)
+>>>>>>> p9x
 {
 	int ret = 0;
 	unsigned int i;
@@ -1128,8 +1133,12 @@ static int __acpi_processor_set_throttling(struct acpi_processor *pr,
 		arg.pr = pr;
 		arg.target_state = state;
 		arg.force = force;
+<<<<<<< HEAD
 		ret = call_on_cpu(pr->id, acpi_processor_throttling_fn, &arg,
 				  direct);
+=======
+		ret = work_on_cpu(pr->id, acpi_processor_throttling_fn, &arg);
+>>>>>>> p9x
 	} else {
 		/*
 		 * When the T-state coordination is SW_ALL or HW_ALL,
@@ -1162,8 +1171,13 @@ static int __acpi_processor_set_throttling(struct acpi_processor *pr,
 			arg.pr = match_pr;
 			arg.target_state = state;
 			arg.force = force;
+<<<<<<< HEAD
 			ret = call_on_cpu(pr->id, acpi_processor_throttling_fn,
 					  &arg, direct);
+=======
+			ret = work_on_cpu(pr->id, acpi_processor_throttling_fn,
+				&arg);
+>>>>>>> p9x
 		}
 	}
 	/*

@@ -234,6 +234,9 @@ struct cache {
 	atomic_t quiescing;
 	atomic_t quiescing_ack;
 
+	wait_queue_head_t quiescing_wait;
+	atomic_t quiescing_ack;
+
 	/*
 	 * cache_size entries, dirty if set
 	 */
@@ -875,8 +878,13 @@ static void cell_defer(struct cache *cache, struct dm_bio_prison_cell *cell,
 
 static void free_io_migration(struct dm_cache_migration *mg)
 {
+<<<<<<< HEAD
 	dec_io_migrations(mg->cache);
+=======
+	struct cache *cache = mg->cache;
+>>>>>>> p9x
 	free_migration(mg);
+	dec_nr_migrations(cache);
 }
 
 static void migration_failure(struct dm_cache_migration *mg)
@@ -1655,6 +1663,7 @@ static void process_invalidation_requests(struct cache *cache)
  *--------------------------------------------------------------*/
 static bool is_quiescing(struct cache *cache)
 {
+<<<<<<< HEAD
 	return atomic_read(&cache->quiescing);
 }
 
@@ -1680,6 +1689,51 @@ static void start_quiescing(struct cache *cache)
 static void stop_quiescing(struct cache *cache)
 {
 	atomic_set(&cache->quiescing, 0);
+	atomic_set(&cache->quiescing_ack, 0);
+=======
+	int r;
+	unsigned long flags;
+
+	spin_lock_irqsave(&cache->lock, flags);
+	r = cache->quiescing;
+	spin_unlock_irqrestore(&cache->lock, flags);
+
+	return r;
+>>>>>>> p9x
+}
+
+static void ack_quiescing(struct cache *cache)
+{
+	if (is_quiescing(cache)) {
+		atomic_inc(&cache->quiescing_ack);
+		wake_up(&cache->quiescing_wait);
+	}
+}
+
+static void wait_for_quiescing_ack(struct cache *cache)
+{
+	wait_event(cache->quiescing_wait, atomic_read(&cache->quiescing_ack));
+}
+
+static void start_quiescing(struct cache *cache)
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&cache->lock, flags);
+	cache->quiescing = true;
+	spin_unlock_irqrestore(&cache->lock, flags);
+
+	wait_for_quiescing_ack(cache);
+}
+
+static void stop_quiescing(struct cache *cache)
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&cache->lock, flags);
+	cache->quiescing = false;
+	spin_unlock_irqrestore(&cache->lock, flags);
+
 	atomic_set(&cache->quiescing_ack, 0);
 }
 
@@ -1732,7 +1786,10 @@ static void do_worker(struct work_struct *ws)
 			writeback_some_dirty_blocks(cache);
 			process_deferred_writethrough_bios(cache);
 			process_deferred_bios(cache);
+<<<<<<< HEAD
 			process_invalidation_requests(cache);
+=======
+>>>>>>> p9x
 		}
 
 		process_migrations(cache, &cache->quiesced_migrations, issue_copy);
@@ -2309,7 +2366,10 @@ static int cache_create(struct cache_args *ca, struct cache **result)
 	init_waitqueue_head(&cache->migration_wait);
 
 	init_waitqueue_head(&cache->quiescing_wait);
+<<<<<<< HEAD
 	atomic_set(&cache->quiescing, 0);
+=======
+>>>>>>> p9x
 	atomic_set(&cache->quiescing_ack, 0);
 
 	r = -ENOMEM;

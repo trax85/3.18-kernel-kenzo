@@ -9,4 +9,10 @@
 #define QRNG_IOCTL_RESET_BUS_BANDWIDTH\
 	_IO(QRNG_IOC_MAGIC, 1)
 
+<<<<<<< HEAD
+=======
+#define QRNG_IOCTL_UPDATE_FIPS_STATUS\
+	_IO(QRNG_IOC_MAGIC, 2)
+
+>>>>>>> p9x
 #endif /* _UAPI_QRNG_H_ */

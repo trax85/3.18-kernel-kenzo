@@ -48,7 +48,11 @@ uao_user_alternative 9f, strh, sttrh, wzr, x0, 2
 	sub	x1, x1, #2
 4:	adds	x1, x1, #1
 	b.mi	5f
+<<<<<<< HEAD
 uao_user_alternative 9f, strb, sttrb, wzr, x0, 0
+=======
+USER(9f, strb	wzr, [x0]	)
+>>>>>>> p9x
 5:	mov	x0, #0
 	uaccess_disable_not_uao x2, x3
 	ret

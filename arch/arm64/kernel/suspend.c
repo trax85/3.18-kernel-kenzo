@@ -119,7 +119,11 @@ int __cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
 		else
 			cpu_switch_mm(mm->pgd, mm);
 
+<<<<<<< HEAD
 		local_flush_tlb_all();
+=======
+		flush_tlb_all();
+>>>>>>> p9x
 
 		/*
 		 * Restore per-cpu offset before any kernel
@@ -148,8 +152,13 @@ int __cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
 	return ret;
 }
 
+<<<<<<< HEAD
 struct sleep_save_sp sleep_save_sp;
 phys_addr_t sleep_idmap_phys;
+=======
+extern struct sleep_save_sp sleep_save_sp;
+extern phys_addr_t sleep_idmap_phys;
+>>>>>>> p9x
 
 static int __init cpu_suspend_init(void)
 {

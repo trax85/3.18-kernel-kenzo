@@ -884,6 +884,7 @@ void sctp_ulpevent_read_sndrcvinfo(const struct sctp_ulpevent *event,
 
 	put_cmsg(msghdr, IPPROTO_SCTP, SCTP_SNDRCV,
 		 sizeof(sinfo), &sinfo);
+<<<<<<< HEAD
 }
 
 /* RFC6458, Section 5.3.5 SCTP Receive Information Structure
@@ -947,6 +948,8 @@ void sctp_ulpevent_read_nxtinfo(const struct sctp_ulpevent *event,
 		/* Just release refcount here. */
 		kfree_skb(skb);
 	}
+=======
+>>>>>>> p9x
 }
 
 /* Do accounting for bytes received and hold a reference to the association

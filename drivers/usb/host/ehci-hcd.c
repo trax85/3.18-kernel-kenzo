@@ -784,7 +784,11 @@ static irqreturn_t ehci_irq (struct usb_hcd *hcd)
 			if (ehci_is_TDI(ehci) && !(cmd & CMD_RUN) &&
 					(pstatus & PORT_SUSPEND))
 				ehci_writel(ehci, cmd | CMD_RUN,
+<<<<<<< HEAD
 					&ehci->regs->command);
+=======
+						&ehci->regs->command);
+>>>>>>> p9x
 
 			if (pstatus & PORT_OWNER)
 				continue;
@@ -1318,7 +1322,11 @@ MODULE_LICENSE ("GPL");
 
 #ifdef CONFIG_USB_EHCI_MSM_HSIC
 #include "ehci-msm-hsic.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER         ehci_msm_hsic_driver
+=======
+#define	PLATFORM_DRIVER		ehci_msm_hsic_driver
+>>>>>>> p9x
 #endif
 
 static int __init ehci_hcd_init(void)

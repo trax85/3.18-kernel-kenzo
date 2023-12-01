@@ -1419,9 +1419,17 @@ static void hci_cs_create_conn(struct hci_dev *hdev, __u8 status)
 		}
 	} else {
 		if (!conn) {
+<<<<<<< HEAD
 			conn = hci_conn_add(hdev, ACL_LINK, &cp->bdaddr,
 					    HCI_ROLE_MASTER);
 			if (!conn)
+=======
+			conn = hci_conn_add(hdev, ACL_LINK, 0, &cp->bdaddr);
+			if (conn) {
+				conn->out = true;
+				conn->link_mode |= HCI_LM_MASTER;
+			} else
+>>>>>>> p9x
 				BT_ERR("No memory for new connection");
 		}
 	}
@@ -1826,6 +1834,36 @@ static void hci_cs_disconnect(struct hci_dev *hdev, u8 status)
 	hci_dev_unlock(hdev);
 }
 
+<<<<<<< HEAD
+=======
+static void hci_cs_le_create_conn(struct hci_dev *hdev, __u8 status)
+{
+	struct hci_conn *conn;
+
+	BT_DBG("%s status 0x%2.2x", hdev->name, status);
+
+	if (status) {
+		hci_dev_lock(hdev);
+
+		conn = hci_conn_hash_lookup_state(hdev, LE_LINK, BT_CONNECT);
+		if (!conn) {
+			hci_dev_unlock(hdev);
+			return;
+		}
+
+		BT_DBG("%s bdaddr %pMR conn %pK", hdev->name, &conn->dst, conn);
+
+		conn->state = BT_CLOSED;
+		mgmt_connect_failed(hdev, &conn->dst, conn->type,
+				    conn->dst_type, status);
+		hci_proto_connect_cfm(conn, status);
+		hci_conn_del(conn);
+
+		hci_dev_unlock(hdev);
+	}
+}
+
+>>>>>>> p9x
 static void hci_cs_create_phylink(struct hci_dev *hdev, u8 status)
 {
 	struct hci_cp_create_phy_link *cp;
@@ -2113,6 +2151,7 @@ unlock:
 	hci_conn_check_pending(hdev);
 }
 
+<<<<<<< HEAD
 static void hci_reject_conn(struct hci_dev *hdev, bdaddr_t *bdaddr)
 {
 	struct hci_cp_reject_conn_req cp;
@@ -2120,6 +2159,15 @@ static void hci_reject_conn(struct hci_dev *hdev, bdaddr_t *bdaddr)
 	bacpy(&cp.bdaddr, bdaddr);
 	cp.reason = HCI_ERROR_REJ_BAD_ADDR;
 	hci_send_cmd(hdev, HCI_OP_REJECT_CONN_REQ, sizeof(cp), &cp);
+=======
+static inline bool is_sco_active(struct hci_dev *hdev)
+{
+	if (hci_conn_hash_lookup_state(hdev, SCO_LINK, BT_CONNECTED) ||
+			(hci_conn_hash_lookup_state(hdev, ESCO_LINK,
+						    BT_CONNECTED)))
+		return true;
+	return false;
+>>>>>>> p9x
 }
 
 static void hci_conn_request_evt(struct hci_dev *hdev, struct sk_buff *skb)
@@ -2173,9 +2221,19 @@ static void hci_conn_request_evt(struct hci_dev *hdev, struct sk_buff *skb)
 		conn = hci_conn_add(hdev, ev->link_type, &ev->bdaddr,
 				    HCI_ROLE_SLAVE);
 		if (!conn) {
+<<<<<<< HEAD
 			BT_ERR("No memory for new connection");
 			hci_dev_unlock(hdev);
 			return;
+=======
+			/* pkt_type not yet used for incoming connections */
+			conn = hci_conn_add(hdev, ev->link_type, 0, &ev->bdaddr);
+			if (!conn) {
+				BT_ERR("No memory for new connection");
+				hci_dev_unlock(hdev);
+				return;
+			}
+>>>>>>> p9x
 		}
 	}
 
@@ -2183,10 +2241,50 @@ static void hci_conn_request_evt(struct hci_dev *hdev, struct sk_buff *skb)
 
 	hci_dev_unlock(hdev);
 
+<<<<<<< HEAD
 	if (ev->link_type == ACL_LINK ||
 	    (!(flags & HCI_PROTO_DEFER) && !lmp_esco_capable(hdev))) {
 		struct hci_cp_accept_conn_req cp;
 		conn->state = BT_CONNECT;
+=======
+		if (ev->link_type == ACL_LINK ||
+		    (!(flags & HCI_PROTO_DEFER) && !lmp_esco_capable(hdev))) {
+			struct hci_cp_accept_conn_req cp;
+			conn->state = BT_CONNECT;
+
+			bacpy(&cp.bdaddr, &ev->bdaddr);
+
+			if (lmp_rswitch_capable(hdev) && ((mask & HCI_LM_MASTER)
+						|| is_sco_active(hdev)))
+				cp.role = 0x00; /* Become master */
+			else
+				cp.role = 0x01; /* Remain slave */
+
+			hci_send_cmd(hdev, HCI_OP_ACCEPT_CONN_REQ, sizeof(cp),
+				     &cp);
+		} else if (!(flags & HCI_PROTO_DEFER)) {
+			struct hci_cp_accept_sync_conn_req cp;
+			conn->state = BT_CONNECT;
+
+			bacpy(&cp.bdaddr, &ev->bdaddr);
+			cp.pkt_type = cpu_to_le16(conn->pkt_type);
+
+			cp.tx_bandwidth   = __constant_cpu_to_le32(0x00001f40);
+			cp.rx_bandwidth   = __constant_cpu_to_le32(0x00001f40);
+			cp.max_latency    = __constant_cpu_to_le16(0xffff);
+			cp.content_format = cpu_to_le16(hdev->voice_setting);
+			cp.retrans_effort = 0xff;
+
+			hci_send_cmd(hdev, HCI_OP_ACCEPT_SYNC_CONN_REQ,
+				     sizeof(cp), &cp);
+		} else {
+			conn->state = BT_CONNECT2;
+			hci_proto_connect_cfm(conn, 0);
+		}
+	} else {
+		/* Connection rejected */
+		struct hci_cp_reject_conn_req cp;
+>>>>>>> p9x
 
 		bacpy(&cp.bdaddr, &ev->bdaddr);
 
@@ -2572,6 +2670,9 @@ static void hci_cmd_complete_evt(struct hci_dev *hdev, struct sk_buff *skb)
 	skb_pull(skb, sizeof(*ev));
 
 	opcode = __le16_to_cpu(ev->opcode);
+
+	if (test_bit(HCI_RESET, &hdev->flags) && (opcode != HCI_OP_RESET))
+		return;
 
 	switch (opcode) {
 	case HCI_OP_INQUIRY_CANCEL:
@@ -3495,7 +3596,10 @@ static void hci_sync_conn_complete_evt(struct hci_dev *hdev,
 		break;
 
 	case 0x10:	/* Connection Accept Timeout */
+<<<<<<< HEAD
 	case 0x0d:	/* Connection Rejected due to Limited Resources */
+=======
+>>>>>>> p9x
 	case 0x11:	/* Unsupported Feature or Parameter Value */
 	case 0x1c:	/* SCO interval rejected */
 	case 0x1a:	/* Unsupported Remote Feature */
@@ -3794,11 +3898,17 @@ static void hci_user_confirm_request_evt(struct hci_dev *hdev,
 		/* If we're not the initiators request authorization to
 		 * proceed from user space (mgmt_user_confirm with
 		 * confirm_hint set to 1). The exception is if neither
+<<<<<<< HEAD
 		 * side had MITM or if the local IO capability is
 		 * NoInputNoOutput, in which case we do auto-accept
 		 */
 		if (!test_bit(HCI_CONN_AUTH_PEND, &conn->flags) &&
 		    conn->io_capability != HCI_IO_NO_INPUT_OUTPUT &&
+=======
+		 * side had MITM in which case we do auto-accept.
+		 */
+		if (!test_bit(HCI_CONN_AUTH_PEND, &conn->flags) &&
+>>>>>>> p9x
 		    (loc_mitm || rem_mitm)) {
 			BT_DBG("Confirming auto-accept as acceptor");
 			confirm_hint = 1;
@@ -4153,7 +4263,11 @@ static void hci_le_conn_complete_evt(struct hci_dev *hdev, struct sk_buff *skb)
 
 	conn = hci_conn_hash_lookup_state(hdev, LE_LINK, BT_CONNECT);
 	if (!conn) {
+<<<<<<< HEAD
 		conn = hci_conn_add(hdev, LE_LINK, &ev->bdaddr, ev->role);
+=======
+		conn = hci_conn_add(hdev, LE_LINK, 0, &ev->bdaddr);
+>>>>>>> p9x
 		if (!conn) {
 			BT_ERR("No memory for new connection");
 			goto unlock;
@@ -4537,7 +4651,14 @@ static void hci_le_ltk_request_evt(struct hci_dev *hdev, struct sk_buff *skb)
 	memcpy(cp.ltk, ltk->val, sizeof(ltk->val));
 	cp.handle = cpu_to_le16(conn->handle);
 
+<<<<<<< HEAD
 	conn->pending_sec_level = smp_ltk_sec_level(ltk);
+=======
+	if (ltk->authenticated)
+		conn->pending_sec_level = BT_SECURITY_HIGH;
+	else
+		conn->pending_sec_level = BT_SECURITY_MEDIUM;
+>>>>>>> p9x
 
 	conn->enc_key_size = ltk->enc_size;
 
@@ -4549,8 +4670,12 @@ static void hci_le_ltk_request_evt(struct hci_dev *hdev, struct sk_buff *skb)
 	 * distribute the keys. Later, security can be re-established
 	 * using a distributed LTK.
 	 */
+<<<<<<< HEAD
 	if (ltk->type == SMP_STK) {
 		set_bit(HCI_CONN_STK_ENCRYPT, &conn->flags);
+=======
+	if (ltk->type == HCI_SMP_STK_SLAVE) {
+>>>>>>> p9x
 		list_del(&ltk->list);
 		kfree(ltk);
 	} else {

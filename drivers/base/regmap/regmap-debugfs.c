@@ -472,6 +472,7 @@ void regmap_debugfs_init(struct regmap *map, const char *name)
 	struct rb_node *next;
 	struct regmap_range_node *range_node;
 	const char *devname = "dummy";
+<<<<<<< HEAD
 
 	/* If we don't have the debugfs root yet, postpone init */
 	if (!regmap_debugfs_root) {
@@ -486,6 +487,8 @@ void regmap_debugfs_init(struct regmap *map, const char *name)
 		mutex_unlock(&regmap_debugfs_early_lock);
 		return;
 	}
+=======
+>>>>>>> p9x
 
 	INIT_LIST_HEAD(&map->debugfs_off_cache);
 	mutex_init(&map->cache_lock);
@@ -513,7 +516,11 @@ void regmap_debugfs_init(struct regmap *map, const char *name)
 	debugfs_create_file("range", 0400, map->debugfs,
 			    map, &regmap_reg_ranges_fops);
 
+<<<<<<< HEAD
 	if (map->max_register || regmap_readable(map, 0)) {
+=======
+	if (map->max_register) {
+>>>>>>> p9x
 		umode_t registers_mode;
 
 		if (IS_ENABLED(CONFIG_REGMAP_ALLOW_WRITE_DEBUGFS))

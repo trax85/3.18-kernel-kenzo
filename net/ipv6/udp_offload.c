@@ -64,7 +64,14 @@ static struct sk_buff *udp6_ufo_fragment(struct sk_buff *skb,
 		const struct ipv6hdr *ipv6h;
 		struct udphdr *uh;
 
+<<<<<<< HEAD
 		if (!pskb_may_pull(skb, sizeof(struct udphdr)))
+=======
+	/* Check if there is enough headroom to insert fragment header. */
+	tnl_hlen = skb_tnl_header_len(skb);
+	if (skb_mac_header(skb) < skb->head + tnl_hlen + frag_hdr_sz) {
+		if (gso_pskb_expand_head(skb, tnl_hlen + frag_hdr_sz))
+>>>>>>> p9x
 			goto out;
 
 		/* Do software UFO. Complete and fill in the UDP checksum as HW cannot
@@ -120,6 +127,34 @@ static struct sk_buff *udp6_ufo_fragment(struct sk_buff *skb,
 		segs = skb_segment(skb, features);
 	}
 
+<<<<<<< HEAD
+=======
+	/* Find the unfragmentable header and shift it left by frag_hdr_sz
+	 * bytes to insert fragment header.
+	 */
+	unfrag_ip6hlen = ip6_find_1stfragopt(skb, &prevhdr);
+	nexthdr = *prevhdr;
+	*prevhdr = NEXTHDR_FRAGMENT;
+	unfrag_len = (skb_network_header(skb) - skb_mac_header(skb)) +
+		     unfrag_ip6hlen + tnl_hlen;
+	packet_start = (u8 *) skb->head + SKB_GSO_CB(skb)->mac_offset;
+	memmove(packet_start-frag_hdr_sz, packet_start, unfrag_len);
+
+	SKB_GSO_CB(skb)->mac_offset -= frag_hdr_sz;
+	skb->mac_header -= frag_hdr_sz;
+	skb->network_header -= frag_hdr_sz;
+
+	fptr = (struct frag_hdr *)(skb_network_header(skb) + unfrag_ip6hlen);
+	fptr->nexthdr = nexthdr;
+	fptr->reserved = 0;
+	fptr->identification = skb_shinfo(skb)->ip6_frag_id;
+
+	/* Fragment the skb. ipv6 header and the remaining fields of the
+	 * fragment header are updated in ipv6_gso_segment()
+	 */
+	segs = skb_segment(skb, features);
+
+>>>>>>> p9x
 out:
 	return segs;
 }

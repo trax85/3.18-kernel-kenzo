@@ -18,7 +18,11 @@
 	Intel PIIX4, 440MX
 	Serverworks OSB4, CSB5, CSB6, HT-1000, HT-1100
 	ATI IXP200, IXP300, IXP400, SB600, SB700/SP5100, SB800
+<<<<<<< HEAD
 	AMD Hudson-2, ML, CZ
+=======
+	AMD Hudson-2, CZ
+>>>>>>> p9x
 	SMSC Victory66
 
    Note: we assume there can only be one device, with one or more

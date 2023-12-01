@@ -566,7 +566,43 @@ void acpi_device_hotplug(struct acpi_device *adev, u32 src)
 		ost_code = ACPI_OST_SC_SUCCESS;
 
  err_out:
+<<<<<<< HEAD
 	acpi_evaluate_ost(adev->handle, src, ost_code, NULL);
+=======
+	acpi_evaluate_hotplug_ost(handle, ACPI_NOTIFY_EJECT_REQUEST, ost_code,
+				  NULL);
+	goto out;
+}
+
+static void acpi_scan_bus_device_check(acpi_handle handle, u32 ost_source)
+{
+	struct acpi_device *device = NULL;
+	u32 ost_code = ACPI_OST_SC_NON_SPECIFIC_FAILURE;
+	int error;
+
+	mutex_lock(&acpi_scan_lock);
+
+	if (ost_source != ACPI_NOTIFY_BUS_CHECK) {
+		acpi_bus_get_device(handle, &device);
+		if (device) {
+			dev_warn(&device->dev, "Attempt to re-insert\n");
+			goto out;
+		}
+	}
+	error = acpi_bus_scan(handle);
+	if (error) {
+		acpi_handle_warn(handle, "Namespace scan failure\n");
+		goto out;
+	}
+	error = acpi_bus_get_device(handle, &device);
+	if (error) {
+		acpi_handle_warn(handle, "Missing device node object\n");
+		goto out;
+	}
+	ost_code = ACPI_OST_SC_SUCCESS;
+	if (device->handler && device->handler->hotplug.mode == AHM_CONTAINER)
+		kobject_uevent(&device->dev.kobj, KOBJ_ONLINE);
+>>>>>>> p9x
 
  out:
 	acpi_bus_put_acpi_device(adev);
@@ -2083,8 +2119,14 @@ static void acpi_scan_init_hotplug(struct acpi_device *adev)
 		struct acpi_scan_handler *handler;
 
 		handler = acpi_scan_match_handler(hwid->id, NULL);
+<<<<<<< HEAD
 		if (handler) {
 			adev->flags.hotplug_notify = true;
+=======
+		if (handler && !handler->hotplug.ignore) {
+			acpi_install_notify_handler(handle, ACPI_SYSTEM_NOTIFY,
+					acpi_hotplug_notify_cb, handler);
+>>>>>>> p9x
 			break;
 		}
 	}
@@ -2212,6 +2254,7 @@ static void acpi_bus_attach(struct acpi_device *device)
 	if (device->handler)
 		goto ok;
 
+<<<<<<< HEAD
 	if (!device->flags.initialized) {
 		device->flags.power_manageable =
 			device->power.states[ACPI_STATE_D0].flags.valid;
@@ -2221,6 +2264,11 @@ static void acpi_bus_attach(struct acpi_device *device)
 		device->flags.initialized = true;
 	}
 	device->flags.visited = false;
+=======
+	if (device->handler)
+		return AE_OK;
+
+>>>>>>> p9x
 	ret = acpi_scan_attach_handler(device);
 	if (ret < 0)
 		return;

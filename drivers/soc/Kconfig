@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 menu "SOC (System On Chip) specific Drivers"
 
 source "drivers/soc/qcom/Kconfig"
@@ -5,3 +6,6 @@ source "drivers/soc/ti/Kconfig"
 source "drivers/soc/versatile/Kconfig"
 
 endmenu
+=======
+source "drivers/soc/qcom/Kconfig"
+>>>>>>> p9x

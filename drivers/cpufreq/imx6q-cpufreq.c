@@ -200,11 +200,15 @@ static int imx6q_cpufreq_probe(struct platform_device *pdev)
 		goto put_reg;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * We expect an OPP table supplied by platform.
 	 * Just, incase the platform did not supply the OPP
 	 * table, it will try to get it.
 	 */
+=======
+	/* We expect an OPP table supplied by platform */
+>>>>>>> p9x
 	num = dev_pm_opp_get_opp_count(cpu_dev);
 	if (num < 0) {
 		ret = dev_pm_opp_of_add_table(cpu_dev);
@@ -315,6 +319,7 @@ soc_opp_out:
 
 free_freq_table:
 	dev_pm_opp_free_cpufreq_table(cpu_dev, &freq_table);
+<<<<<<< HEAD
 out_free_opp:
 	if (free_opp)
 		dev_pm_opp_of_remove_table(cpu_dev);
@@ -336,6 +341,9 @@ put_clk:
 		clk_put(step_clk);
 	if (!IS_ERR(pll2_pfd2_396m_clk))
 		clk_put(pll2_pfd2_396m_clk);
+=======
+put_node:
+>>>>>>> p9x
 	of_node_put(np);
 	return ret;
 }
@@ -344,6 +352,7 @@ static int imx6q_cpufreq_remove(struct platform_device *pdev)
 {
 	cpufreq_unregister_driver(&imx6q_cpufreq_driver);
 	dev_pm_opp_free_cpufreq_table(cpu_dev, &freq_table);
+<<<<<<< HEAD
 	if (free_opp)
 		dev_pm_opp_of_remove_table(cpu_dev);
 	regulator_put(arm_reg);
@@ -355,6 +364,8 @@ static int imx6q_cpufreq_remove(struct platform_device *pdev)
 	clk_put(pll1_sw_clk);
 	clk_put(step_clk);
 	clk_put(pll2_pfd2_396m_clk);
+=======
+>>>>>>> p9x
 
 	return 0;
 }

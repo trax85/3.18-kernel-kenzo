@@ -1020,6 +1020,7 @@ struct drm_radeon_cs {
 #define RADEON_INFO_SI_TILE_MODE_ARRAY	0x16
 /* query if CP DMA is supported on the compute ring */
 #define RADEON_INFO_SI_CP_DMA_COMPUTE	0x17
+<<<<<<< HEAD
 /* CIK macrotile mode array */
 #define RADEON_INFO_CIK_MACROTILE_MODE_ARRAY	0x18
 /* query the number of render backends */
@@ -1040,6 +1041,9 @@ struct drm_radeon_cs {
 #define RADEON_INFO_READ_REG		0x24
 #define RADEON_INFO_VA_UNMAP_WORKING	0x25
 #define RADEON_INFO_GPU_RESET_COUNTER	0x26
+=======
+
+>>>>>>> p9x
 
 struct drm_radeon_info {
 	uint32_t		request;

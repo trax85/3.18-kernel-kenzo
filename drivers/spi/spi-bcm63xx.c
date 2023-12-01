@@ -165,7 +165,11 @@ static int bcm63xx_txrx_bufs(struct spi_device *spi, struct spi_transfer *first,
 			       transfer_list);
 	}
 
+<<<<<<< HEAD
 	reinit_completion(&bs->done);
+=======
+	init_completion(&bs->done);
+>>>>>>> p9x
 
 	/* Fill in the Message control register */
 	msg_ctl = (len << SPI_BYTE_CNT_SHIFT);

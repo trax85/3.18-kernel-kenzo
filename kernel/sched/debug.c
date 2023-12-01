@@ -224,7 +224,10 @@ void print_cfs_rq(struct seq_file *m, int cpu, struct cfs_rq *cfs_rq)
 	SEQ_printf(m, "  .%-30s: %d\n", "tg->runnable_avg",
 			atomic_read(&cfs_rq->tg->runnable_avg));
 #endif
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> p9x
 #ifdef CONFIG_CFS_BANDWIDTH
 	SEQ_printf(m, "  .%-30s: %d\n", "tg->cfs_bandwidth.timer_active",
 			cfs_rq->tg->cfs_bandwidth.timer_active);
@@ -237,10 +240,15 @@ void print_cfs_rq(struct seq_file *m, int cpu, struct cfs_rq *cfs_rq)
 #ifdef CONFIG_SCHED_HMP
 	SEQ_printf(m, "  .%-30s: %d\n", "nr_big_tasks",
 			cfs_rq->hmp_stats.nr_big_tasks);
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_QHMP
 	SEQ_printf(m, "  .%-30s: %d\n", "nr_small_tasks",
 			cfs_rq->hmp_stats.nr_small_tasks);
 #endif
+=======
+	SEQ_printf(m, "  .%-30s: %d\n", "nr_small_tasks",
+			cfs_rq->hmp_stats.nr_small_tasks);
+>>>>>>> p9x
 	SEQ_printf(m, "  .%-30s: %llu\n", "cumulative_runnable_avg",
 			cfs_rq->hmp_stats.cumulative_runnable_avg);
 #endif
@@ -317,6 +325,7 @@ do {									\
 	P(cpu_load[3]);
 	P(cpu_load[4]);
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 	P(cpu_capacity);
 #endif
 #ifdef CONFIG_SCHED_HMP
@@ -326,12 +335,20 @@ do {									\
 	P(mostly_idle_nr_run);
 #else
 	P(cluster->static_cluster_pwr_cost);
+=======
+	P(cpu_power);
+#endif
+#ifdef CONFIG_SCHED_HMP
+	P(mostly_idle_load);
+	P(mostly_idle_nr_run);
+>>>>>>> p9x
 	P(cluster->load_scale_factor);
 	P(cluster->capacity);
 	P(cluster->max_possible_capacity);
 	P(cluster->efficiency);
 	P(cluster->cur_freq);
 	P(cluster->max_freq);
+<<<<<<< HEAD
 	P(cluster->exec_scale_factor);
 #endif
 #endif
@@ -340,6 +357,12 @@ do {									\
 #ifdef CONFIG_SCHED_QHMP
 	P(hmp_stats.nr_small_tasks);
 #endif
+=======
+#endif
+#ifdef CONFIG_SCHED_HMP
+	P(hmp_stats.nr_big_tasks);
+	P(hmp_stats.nr_small_tasks);
+>>>>>>> p9x
 	SEQ_printf(m, "  .%-30s: %llu\n", "hmp_stats.cumulative_runnable_avg",
 			rq->hmp_stats.cumulative_runnable_avg);
 #endif
@@ -423,9 +446,13 @@ static void sched_debug_header(struct seq_file *m)
 	P(sysctl_sched_child_runs_first);
 	P(sysctl_sched_features);
 #ifdef CONFIG_SCHED_HMP
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_QHMP
 	P(sched_small_task);
 #endif
+=======
+	P(sched_small_task);
+>>>>>>> p9x
 	P(sched_upmigrate);
 	P(sched_downmigrate);
 	P(sched_init_task_load_windows);
@@ -603,6 +630,11 @@ void proc_sched_show_task(struct task_struct *p, struct seq_file *m)
 {
 	unsigned long nr_switches;
 	unsigned int load_avg;
+<<<<<<< HEAD
+=======
+
+	load_avg = pct_task_load(p);
+>>>>>>> p9x
 
 	load_avg = pct_task_load(p);
 

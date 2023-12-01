@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -17,18 +21,22 @@
 #include <media/v4l2-subdev.h>
 #include <media/msm_cam_sensor.h>
 
+<<<<<<< HEAD
 #define I2C_POLL_TIME_MS 5
 #define MAX_POLL_DELAY_MS 100
 
 #define I2C_COMPARE_MATCH 0
 #define I2C_COMPARE_MISMATCH 1
 
+=======
+>>>>>>> p9x
 struct msm_camera_i2c_client {
 	struct msm_camera_i2c_fn_t *i2c_func_tbl;
 	struct i2c_client *client;
 	struct msm_camera_cci_client *cci_client;
 	struct msm_camera_spi_client *spi_client;
 	enum msm_camera_i2c_reg_addr_type addr_type;
+<<<<<<< HEAD
 };
 
 struct msm_camera_i2c_fn_t {
@@ -39,6 +47,19 @@ struct msm_camera_i2c_fn_t {
 	int (*i2c_write)(struct msm_camera_i2c_client *, uint32_t, uint16_t,
 		enum msm_camera_i2c_data_type);
 	int (*i2c_write_seq)(struct msm_camera_i2c_client *, uint32_t ,
+=======
+	enum msm_camera_qup_i2c_write_batch_size_t  batch_size;
+};
+
+struct msm_camera_i2c_fn_t {
+	int (*i2c_read) (struct msm_camera_i2c_client *, uint32_t, uint16_t *,
+		enum msm_camera_i2c_data_type);
+	int32_t (*i2c_read_seq)(struct msm_camera_i2c_client *, uint32_t,
+		uint8_t *, uint32_t);
+	int (*i2c_write) (struct msm_camera_i2c_client *, uint32_t, uint16_t,
+		enum msm_camera_i2c_data_type);
+	int (*i2c_write_seq) (struct msm_camera_i2c_client *, uint32_t ,
+>>>>>>> p9x
 		uint8_t *, uint32_t);
 	int32_t (*i2c_write_table)(struct msm_camera_i2c_client *,
 		struct msm_camera_i2c_reg_setting *);
@@ -53,7 +74,11 @@ struct msm_camera_i2c_fn_t {
 		enum msm_camera_i2c_data_type data_type);
 	int32_t (*i2c_poll)(struct msm_camera_i2c_client *client,
 		uint32_t addr, uint16_t data,
+<<<<<<< HEAD
 		enum msm_camera_i2c_data_type data_type, uint32_t delay_ms);
+=======
+		enum msm_camera_i2c_data_type data_type);
+>>>>>>> p9x
 	int32_t (*i2c_read_burst)(struct msm_camera_i2c_client *client,
 		uint32_t read_byte, uint8_t *buffer, uint32_t addr,
 		enum msm_camera_i2c_data_type data_type);
@@ -117,7 +142,11 @@ int32_t msm_sensor_cci_i2c_util(struct msm_camera_i2c_client *client,
 
 int32_t msm_camera_cci_i2c_poll(struct msm_camera_i2c_client *client,
 	uint32_t addr, uint16_t data,
+<<<<<<< HEAD
 	enum msm_camera_i2c_data_type data_type, uint32_t delay_ms);
+=======
+	enum msm_camera_i2c_data_type data_type);
+>>>>>>> p9x
 
 int32_t msm_camera_qup_i2c_read(struct msm_camera_i2c_client *client,
 	uint32_t addr, uint16_t *data,
@@ -150,6 +179,7 @@ int32_t msm_camera_qup_i2c_write_conf_tbl(
 
 int32_t msm_camera_qup_i2c_poll(struct msm_camera_i2c_client *client,
 	uint32_t addr, uint16_t data,
+<<<<<<< HEAD
 	enum msm_camera_i2c_data_type data_type, uint32_t delay_ms);
 
 int32_t msm_camera_tz_i2c_register_sensor(void *s_ctrl_p);
@@ -206,6 +236,8 @@ int32_t msm_sensor_tz_i2c_util(struct msm_camera_i2c_client *client,
 
 int32_t msm_camera_tz_i2c_poll(struct msm_camera_i2c_client *client,
 	uint32_t addr, uint16_t data,
+=======
+>>>>>>> p9x
 	enum msm_camera_i2c_data_type data_type);
 
 #endif

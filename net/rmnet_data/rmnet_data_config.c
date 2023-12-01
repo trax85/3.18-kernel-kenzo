@@ -830,7 +830,12 @@ int rmnet_associate_network_device(struct net_device *dev)
 		return RMNET_CONFIG_INVALID_REQUEST;
 	}
 
+<<<<<<< HEAD
 	config = kmalloc(sizeof(*config), GFP_ATOMIC);
+=======
+	config = (struct rmnet_phys_ep_conf_s *)
+		 kmalloc(sizeof(struct rmnet_phys_ep_conf_s), GFP_ATOMIC);
+>>>>>>> p9x
 
 	if (!config)
 		return RMNET_CONFIG_NOMEM;
@@ -1131,6 +1136,10 @@ static void _rmnet_free_vnd_later(struct work_struct *work)
 	int i;
 	struct rmnet_free_vnd_work *fwork;
 	fwork = container_of(work, struct rmnet_free_vnd_work, work);
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 	for (i = 0; i < fwork->count; i++)
 		rmnet_free_vnd(fwork->vnd_id[i]);
 	kfree(fwork);
@@ -1147,7 +1156,10 @@ static void rmnet_force_unassociate_device(struct net_device *dev)
 {
 	int i, j;
 	struct net_device *vndev;
+<<<<<<< HEAD
 	struct rmnet_phys_ep_conf_s *config;
+=======
+>>>>>>> p9x
 	struct rmnet_logical_ep_conf_s *cfg;
 	struct rmnet_free_vnd_work *vnd_work;
 	ASSERT_RTNL();
@@ -1161,7 +1173,12 @@ static void rmnet_force_unassociate_device(struct net_device *dev)
 	}
 
 	trace_rmnet_unregister_cb_clear_vnds(dev);
+<<<<<<< HEAD
 	vnd_work = kmalloc(sizeof(*vnd_work), GFP_KERNEL);
+=======
+	vnd_work = (struct rmnet_free_vnd_work *)
+		kmalloc(sizeof(struct rmnet_free_vnd_work), GFP_KERNEL);
+>>>>>>> p9x
 	if (!vnd_work) {
 		LOGH("%s", "Out of Memory");
 		return;
@@ -1170,8 +1187,13 @@ static void rmnet_force_unassociate_device(struct net_device *dev)
 	vnd_work->count = 0;
 
 	/* Check the VNDs for offending mappings */
+<<<<<<< HEAD
 	for (i = 0, j = 0; i < RMNET_DATA_MAX_VND
 			   && j < RMNET_DATA_MAX_VND; i++) {
+=======
+	for (i = 0, j = 0; i < RMNET_DATA_MAX_VND &&
+				j < RMNET_DATA_MAX_VND; i++) {
+>>>>>>> p9x
 		vndev = rmnet_vnd_get_by_id(i);
 		if (!vndev) {
 			LOGL("VND %d not in use; skipping", i);
@@ -1203,6 +1225,7 @@ static void rmnet_force_unassociate_device(struct net_device *dev)
 		kfree(vnd_work);
 	}
 
+<<<<<<< HEAD
 	config = _rmnet_get_phys_ep_config(dev);
 
 	if (config) {
@@ -1212,6 +1235,8 @@ static void rmnet_force_unassociate_device(struct net_device *dev)
 			rmnet_unset_logical_endpoint_config
 			(cfg->egress_dev, RMNET_LOCAL_LOGICAL_ENDPOINT);
 	}
+=======
+>>>>>>> p9x
 
 	/* Clear the mappings on the phys ep */
 	trace_rmnet_unregister_cb_clear_lepcs(dev);
@@ -1233,7 +1258,11 @@ static void rmnet_force_unassociate_device(struct net_device *dev)
 int rmnet_config_notify_cb(struct notifier_block *nb,
 				  unsigned long event, void *data)
 {
+<<<<<<< HEAD
 	struct net_device *dev = netdev_notifier_info_to_dev(data);
+=======
+	struct net_device *dev = (struct net_device *)data;
+>>>>>>> p9x
 
 	if (!dev)
 		BUG();
@@ -1244,8 +1273,15 @@ int rmnet_config_notify_cb(struct notifier_block *nb,
 	case NETDEV_UNREGISTER_FINAL:
 	case NETDEV_UNREGISTER:
 		trace_rmnet_unregister_cb_entry(dev);
+<<<<<<< HEAD
 		LOGH("Kernel is trying to unregister %s", dev->name);
 		rmnet_force_unassociate_device(dev);
+=======
+		if (_rmnet_is_physical_endpoint_associated(dev)) {
+			LOGH("Kernel is trying to unregister %s", dev->name);
+			rmnet_force_unassociate_device(dev);
+		}
+>>>>>>> p9x
 		trace_rmnet_unregister_cb_exit(dev);
 		break;
 

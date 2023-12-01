@@ -74,6 +74,10 @@ int ipv6_sock_ac_join(struct sock *sk, int ifindex, const struct in6_addr *addr)
 	pac->acl_addr = *addr;
 
 	rtnl_lock();
+<<<<<<< HEAD
+=======
+	rcu_read_lock();
+>>>>>>> p9x
 	if (ifindex == 0) {
 		struct rt6_info *rt;
 
@@ -130,6 +134,10 @@ int ipv6_sock_ac_join(struct sock *sk, int ifindex, const struct in6_addr *addr)
 	}
 
 error:
+<<<<<<< HEAD
+=======
+	rcu_read_unlock();
+>>>>>>> p9x
 	rtnl_unlock();
 	if (pac)
 		sock_kfree_s(sk, pac, sizeof(*pac));
@@ -163,12 +171,25 @@ int ipv6_sock_ac_drop(struct sock *sk, int ifindex, const struct in6_addr *addr)
 	else
 		np->ipv6_ac_list = pac->acl_next;
 
+<<<<<<< HEAD
 	dev = __dev_get_by_index(net, pac->acl_ifindex);
 	if (dev)
 		ipv6_dev_ac_dec(dev, &pac->acl_addr);
+=======
+	spin_unlock_bh(&ipv6_sk_ac_lock);
+
+	rtnl_lock();
+	rcu_read_lock();
+	dev = dev_get_by_index_rcu(net, pac->acl_ifindex);
+	if (dev)
+		ipv6_dev_ac_dec(dev, &pac->acl_addr);
+	rcu_read_unlock();
+>>>>>>> p9x
 	rtnl_unlock();
 
 	sock_kfree_s(sk, pac, sizeof(*pac));
+	if (!dev)
+		return -ENODEV;
 	return 0;
 }
 
@@ -188,6 +209,11 @@ void ipv6_sock_ac_close(struct sock *sk)
 	np->ipv6_ac_list = NULL;
 
 	prev_index = 0;
+<<<<<<< HEAD
+=======
+	rtnl_lock();
+	rcu_read_lock();
+>>>>>>> p9x
 	while (pac) {
 		struct ipv6_ac_socklist *next = pac->acl_next;
 
@@ -200,12 +226,17 @@ void ipv6_sock_ac_close(struct sock *sk)
 		sock_kfree_s(sk, pac, sizeof(*pac));
 		pac = next;
 	}
+<<<<<<< HEAD
 	rtnl_unlock();
 }
 
 static void aca_get(struct ifacaddr6 *aca)
 {
 	atomic_inc(&aca->aca_refcnt);
+=======
+	rcu_read_unlock();
+	rtnl_unlock();
+>>>>>>> p9x
 }
 
 static void aca_put(struct ifacaddr6 *ac)
@@ -249,6 +280,14 @@ int __ipv6_dev_ac_inc(struct inet6_dev *idev, const struct in6_addr *addr)
 	int err;
 
 	ASSERT_RTNL();
+<<<<<<< HEAD
+=======
+
+	idev = in6_dev_get(dev);
+
+	if (idev == NULL)
+		return -EINVAL;
+>>>>>>> p9x
 
 	write_lock_bh(&idev->lock);
 	if (idev->dead) {

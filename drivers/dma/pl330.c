@@ -2142,8 +2142,13 @@ static void pl330_free_chan_resources(struct dma_chan *chan)
 
 	spin_lock_irqsave(&pch->lock, flags);
 
+<<<<<<< HEAD
 	pl330_release_channel(pch->thread);
 	pch->thread = NULL;
+=======
+	pl330_release_channel(pch->pl330_chid);
+	pch->pl330_chid = NULL;
+>>>>>>> p9x
 
 	if (pch->cyclic)
 		list_splice_tail_init(&pch->work_list, &pch->dmac->desc_pool);
@@ -2361,7 +2366,11 @@ static struct dma_async_tx_descriptor *pl330_prep_dma_cyclic(
 {
 	struct dma_pl330_desc *desc = NULL, *first = NULL;
 	struct dma_pl330_chan *pch = to_pchan(chan);
+<<<<<<< HEAD
 	struct pl330_dmac *pl330 = pch->dmac;
+=======
+	struct dma_pl330_dmac *pdmac = pch->dmac;
+>>>>>>> p9x
 	unsigned int i;
 	dma_addr_t dst;
 	dma_addr_t src;
@@ -2370,7 +2379,11 @@ static struct dma_async_tx_descriptor *pl330_prep_dma_cyclic(
 		return NULL;
 
 	if (!is_slave_direction(direction)) {
+<<<<<<< HEAD
 		dev_err(pch->dmac->ddma.dev, "%s:%d Invalid dma direction\n",
+=======
+		dev_err(pch->dmac->pif.dev, "%s:%d Invalid dma direction\n",
+>>>>>>> p9x
 		__func__, __LINE__);
 		return NULL;
 	}
@@ -2378,23 +2391,40 @@ static struct dma_async_tx_descriptor *pl330_prep_dma_cyclic(
 	for (i = 0; i < len / period_len; i++) {
 		desc = pl330_get_desc(pch);
 		if (!desc) {
+<<<<<<< HEAD
 			dev_err(pch->dmac->ddma.dev, "%s:%d Unable to fetch desc\n",
+=======
+			dev_err(pch->dmac->pif.dev, "%s:%d Unable to fetch desc\n",
+>>>>>>> p9x
 				__func__, __LINE__);
 
 			if (!first)
 				return NULL;
 
+<<<<<<< HEAD
 			spin_lock_irqsave(&pl330->pool_lock, flags);
+=======
+			spin_lock_irqsave(&pdmac->pool_lock, flags);
+>>>>>>> p9x
 
 			while (!list_empty(&first->node)) {
 				desc = list_entry(first->node.next,
 						struct dma_pl330_desc, node);
+<<<<<<< HEAD
 				list_move_tail(&desc->node, &pl330->desc_pool);
 			}
 
 			list_move_tail(&first->node, &pl330->desc_pool);
 
 			spin_unlock_irqrestore(&pl330->pool_lock, flags);
+=======
+				list_move_tail(&desc->node, &pdmac->desc_pool);
+			}
+
+			list_move_tail(&first->node, &pdmac->desc_pool);
+
+			spin_unlock_irqrestore(&pdmac->pool_lock, flags);
+>>>>>>> p9x
 
 			return NULL;
 		}
@@ -2403,12 +2433,20 @@ static struct dma_async_tx_descriptor *pl330_prep_dma_cyclic(
 		case DMA_MEM_TO_DEV:
 			desc->rqcfg.src_inc = 1;
 			desc->rqcfg.dst_inc = 0;
+<<<<<<< HEAD
+=======
+			desc->req.rqtype = MEMTODEV;
+>>>>>>> p9x
 			src = dma_addr;
 			dst = pch->fifo_addr;
 			break;
 		case DMA_DEV_TO_MEM:
 			desc->rqcfg.src_inc = 0;
 			desc->rqcfg.dst_inc = 1;
+<<<<<<< HEAD
+=======
+			desc->req.rqtype = DEVTOMEM;
+>>>>>>> p9x
 			src = pch->fifo_addr;
 			dst = dma_addr;
 			break;
@@ -2416,7 +2454,10 @@ static struct dma_async_tx_descriptor *pl330_prep_dma_cyclic(
 			break;
 		}
 
+<<<<<<< HEAD
 		desc->rqtype = direction;
+=======
+>>>>>>> p9x
 		desc->rqcfg.brst_size = pch->burst_sz;
 		desc->rqcfg.brst_len = 1;
 		fill_px(&desc->px, dst, src, period_len);

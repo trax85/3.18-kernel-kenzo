@@ -269,6 +269,40 @@ static void shm_close(struct vm_area_struct *vma)
 }
 
 /* Called with ns->shm_ids(ns).rwsem locked */
+<<<<<<< HEAD
+=======
+static int shm_try_destroy_current(int id, void *p, void *data)
+{
+	struct ipc_namespace *ns = data;
+	struct kern_ipc_perm *ipcp = p;
+	struct shmid_kernel *shp = container_of(ipcp, struct shmid_kernel, shm_perm);
+
+	if (shp->shm_creator != current)
+		return 0;
+
+	/*
+	 * Mark it as orphaned to destroy the segment when
+	 * kernel.shm_rmid_forced is changed.
+	 * It is noop if the following shm_may_destroy() returns true.
+	 */
+	shp->shm_creator = NULL;
+
+	/*
+	 * Don't even try to destroy it.  If shm_rmid_forced=0 and IPC_RMID
+	 * is not set, it shouldn't be deleted here.
+	 */
+	if (!ns->shm_rmid_forced)
+		return 0;
+
+	if (shm_may_destroy(ns, shp)) {
+		shm_lock_by_ptr(shp);
+		shm_destroy(ns, shp);
+	}
+	return 0;
+}
+
+/* Called with ns->shm_ids(ns).rwsem locked */
+>>>>>>> p9x
 static int shm_try_destroy_orphaned(int id, void *p, void *data)
 {
 	struct ipc_namespace *ns = data;
@@ -308,6 +342,7 @@ void exit_shm(struct task_struct *task)
 	if (list_empty(&task->sysvshm.shm_clist))
 		return;
 
+<<<<<<< HEAD
 	/*
 	 * If kernel.shm_rmid_forced is not set then only keep track of
 	 * which shmids are orphaned, so that a later set of the sysctl
@@ -343,6 +378,12 @@ void exit_shm(struct task_struct *task)
 
 	/* Remove the list head from any segments still attached. */
 	list_del(&task->sysvshm.shm_clist);
+=======
+	/* Destroy all already created segments, but not mapped yet */
+	down_write(&shm_ids(ns).rwsem);
+	if (shm_ids(ns).in_use)
+		idr_for_each(&shm_ids(ns).ipcs_idr, &shm_try_destroy_current, ns);
+>>>>>>> p9x
 	up_write(&shm_ids(ns).rwsem);
 }
 
@@ -564,8 +605,11 @@ static int newseg(struct ipc_namespace *ns, struct ipc_params *params)
 		goto no_id;
 	}
 
+<<<<<<< HEAD
 	list_add(&shp->shm_clist, &current->sysvshm.shm_clist);
 
+=======
+>>>>>>> p9x
 	/*
 	 * shmid gets reported as "inode#" in /proc/pid/maps.
 	 * proc-ps tools use this. Changing this will break them.
@@ -982,6 +1026,7 @@ SYSCALL_DEFINE3(shmctl, int, shmid, int, cmd, struct shmid_ds __user *, buf)
 			goto out_unlock1;
 
 		ipc_lock_object(&shp->shm_perm);
+<<<<<<< HEAD
 
 		/* check if shm_destroy() is tearing down shp */
 		if (!ipc_valid_object(&shp->shm_perm)) {
@@ -989,6 +1034,8 @@ SYSCALL_DEFINE3(shmctl, int, shmid, int, cmd, struct shmid_ds __user *, buf)
 			goto out_unlock0;
 		}
 
+=======
+>>>>>>> p9x
 		if (!ns_capable(ns->user_ns, CAP_IPC_LOCK)) {
 			kuid_t euid = current_euid();
 			if (!uid_eq(euid, shp->shm_perm.uid) &&
@@ -1003,6 +1050,13 @@ SYSCALL_DEFINE3(shmctl, int, shmid, int, cmd, struct shmid_ds __user *, buf)
 		}
 
 		shm_file = shp->shm_file;
+
+		/* check if shm_destroy() is tearing down shp */
+		if (shm_file == NULL) {
+			err = -EIDRM;
+			goto out_unlock0;
+		}
+
 		if (is_file_hugepages(shm_file))
 			goto out_unlock0;
 
@@ -1048,8 +1102,8 @@ out_unlock1:
  * "raddr" thing points to kernel space, and there has to be a wrapper around
  * this.
  */
-long do_shmat(int shmid, char __user *shmaddr, int shmflg, ulong *raddr,
-	      unsigned long shmlba)
+long do_shmat(int shmid, char __user *shmaddr, int shmflg,
+	      ulong *raddr, unsigned long shmlba)
 {
 	struct shmid_kernel *shp;
 	unsigned long addr;
@@ -1070,8 +1124,13 @@ long do_shmat(int shmid, char __user *shmaddr, int shmflg, ulong *raddr,
 		goto out;
 	else if ((addr = (ulong)shmaddr)) {
 		if (addr & (shmlba - 1)) {
-			if (shmflg & SHM_RND)
-				addr &= ~(shmlba - 1);	   /* round down */
+			/*
+			 * Round down to the nearest multiple of shmlba.
+			 * For sane do_mmap_pgoff() parameters, avoid
+			 * round downs that trigger nil-page and MAP_FIXED.
+			 */
+			if ((shmflg & SHM_RND) && addr >= shmlba)
+				addr &= ~(shmlba - 1);
 			else
 #ifndef __ARCH_FORCE_SHMLBA
 				if (addr & ~PAGE_MASK)
@@ -1123,7 +1182,11 @@ long do_shmat(int shmid, char __user *shmaddr, int shmflg, ulong *raddr,
 	ipc_lock_object(&shp->shm_perm);
 
 	/* check if shm_destroy() is tearing down shp */
+<<<<<<< HEAD
 	if (!ipc_valid_object(&shp->shm_perm)) {
+=======
+	if (shp->shm_file == NULL) {
+>>>>>>> p9x
 		ipc_unlock_object(&shp->shm_perm);
 		err = -EIDRM;
 		goto out_unlock;

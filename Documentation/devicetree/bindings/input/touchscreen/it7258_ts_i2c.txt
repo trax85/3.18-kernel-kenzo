@@ -17,7 +17,10 @@ Required properties:
 			  same as "interrupts" node. It will also
 			  contain active low or active high information.
  - ite,reset-gpio	: reset gpio to control the reset of chip
+<<<<<<< HEAD
  - ite,reset-delay	: reset delay for controller (ms), default 20
+=======
+>>>>>>> p9x
 
 Optional properties:
  - avdd-supply		: Analog power supply needed to power device
@@ -32,6 +35,7 @@ Optional properties:
  - ite,display-coords	: display min x, min y, max x and
 			  max y resolution
  - ite,num-fingers	: number of fingers supported by the touch controller
+<<<<<<< HEAD
  - pinctrl-names		: This should be defined if a target uses pinctrl framework.
 			See "pinctrl" in Documentation/devicetree/bindings/pinctrl/msm-pinctrl.txt.
 			It should specify the names of the configs that pinctrl can install in driver.
@@ -50,6 +54,12 @@ Optional properties:
 Required properties palm-detect-en feature:
  - ite,palm-detect-keycode	: The keycode that is required to be sent when
 			  palm is detected by the ITE tech driver.
+=======
+
+Required properties palm-detect-en feature:
+ - ite,palm-detect-keycode	: The keycode need to be sent when palm is
+			  detected by the ITE tech driver.
+>>>>>>> p9x
 
 Example:
 	i2c@f9927000 {
@@ -57,11 +67,14 @@ Example:
 			compatible = "ite,it7260_ts";
 			reg = <0x46>;
 			interrupt-parent = <&msmgpio>;
+<<<<<<< HEAD
 			/* pins used by touchscreen */
 			pinctrl-names = "pmx_ts_active","pmx_ts_suspend","pmx_ts_release";
 			pinctrl-0 = <&ts_int_active &ts_reset_active>;
 			pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;
 			pinctrl-2 = <&ts_release>
+=======
+>>>>>>> p9x
 			interrupts = <17 0x2>;
 			avdd-supply = <&pm8226_l19>;
 			vdd-supply = <&pm8226_lvs1>;
@@ -75,8 +88,11 @@ Example:
 			ite,panel-coords = <0 0 320 320>;
 			ite,display-coords = <0 0 320 320>;
 			ite,num-fingers = <2>;
+<<<<<<< HEAD
 			ite,reset-delay = <20>;
 			ite,low-reset;
 			ite,vdd-lpm-cur = <3000>;
+=======
+>>>>>>> p9x
 		};
 	};

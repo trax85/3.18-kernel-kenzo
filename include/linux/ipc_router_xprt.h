@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2015, 2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -20,7 +24,10 @@
 #include <linux/platform_device.h>
 #include <linux/msm_ipc.h>
 #include <linux/ipc_router.h>
+<<<<<<< HEAD
 #include <linux/kref.h>
+=======
+>>>>>>> p9x
 
 #define IPC_ROUTER_XPRT_EVENT_DATA  1
 #define IPC_ROUTER_XPRT_EVENT_OPEN  2
@@ -99,8 +106,11 @@ struct rr_opt_hdr {
  * @opt_hdr: Optinal header information.
  * @pkt_fragment_q: Queue of SKBs containing payload.
  * @length: Length of data in the chain of SKBs
+<<<<<<< HEAD
  * @ref: Reference count for the packet.
  * @ws_need: Flag to check wakeup soruce need
+=======
+>>>>>>> p9x
  */
 struct rr_packet {
 	struct list_head list;
@@ -108,8 +118,11 @@ struct rr_packet {
 	struct rr_opt_hdr opt_hdr;
 	struct sk_buff_head *pkt_fragment_q;
 	uint32_t length;
+<<<<<<< HEAD
 	struct kref ref;
 	bool ws_need;
+=======
+>>>>>>> p9x
 };
 
 /**
@@ -118,7 +131,10 @@ struct rr_packet {
  * @link_id: Network cluster ID to which the XPRT belongs to.
  * @priv: XPRT's private data.
  * @get_version: Method to get header version supported by the XPRT.
+<<<<<<< HEAD
  * @set_version: Method to set header version in XPRT.
+=======
+>>>>>>> p9x
  * @get_option: Method to get XPRT specific options.
  * @read_avail: Method to get data size available to be read from the XPRT.
  * @read: Method to read data from the XPRT.
@@ -135,8 +151,11 @@ struct msm_ipc_router_xprt {
 
 	int (*get_version)(struct msm_ipc_router_xprt *xprt);
 	int (*get_option)(struct msm_ipc_router_xprt *xprt);
+<<<<<<< HEAD
 	void (*set_version)(struct msm_ipc_router_xprt *xprt,
 			    unsigned version);
+=======
+>>>>>>> p9x
 	int (*read_avail)(struct msm_ipc_router_xprt *xprt);
 	int (*read)(void *data, uint32_t len,
 		    struct msm_ipc_router_xprt *xprt);
@@ -173,4 +192,18 @@ void release_pkt(struct rr_packet *pkt);
  */
 int ipc_router_peek_pkt_size(char *data);
 
+<<<<<<< HEAD
+=======
+#if defined CONFIG_MSM_IPC_ROUTER_SMD_XPRT || CONFIG_MSM_IPC_ROUTER_GLINK_XPRT
+extern void *msm_ipc_load_default_node(void);
+
+extern void msm_ipc_unload_default_node(void *pil);
+#else
+static inline void *msm_ipc_load_default_node(void)
+{ return NULL; }
+
+static inline void msm_ipc_unload_default_node(void *pil) { }
+#endif
+
+>>>>>>> p9x
 #endif

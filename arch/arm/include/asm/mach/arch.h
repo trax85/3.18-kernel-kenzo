@@ -44,6 +44,7 @@ struct machine_desc {
 	unsigned char		reserve_lp1 :1;	/* never has lp1	*/
 	unsigned char		reserve_lp2 :1;	/* never has lp2	*/
 	enum reboot_mode	reboot_mode;	/* default restart mode	*/
+<<<<<<< HEAD
 	unsigned		l2c_aux_val;	/* L2 cache aux value	*/
 	unsigned		l2c_aux_mask;	/* L2 cache aux mask	*/
 	void			(*l2c_write_sec)(unsigned long, unsigned);
@@ -52,6 +53,10 @@ struct machine_desc {
 	void			(*fixup)(struct tag *, char **);
 	void			(*dt_fixup)(void);
 	long long		(*init_meminfo)(void);
+=======
+	struct smp_operations	*smp;		/* SMP operations	*/
+	void			(*fixup)(struct tag *, char **);
+>>>>>>> p9x
 	void			(*reserve)(void);/* reserve mem blocks	*/
 	void			(*map_io)(void);/* IO mapping function	*/
 	void			(*init_early)(void);

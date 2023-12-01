@@ -15,6 +15,7 @@
 #include <linux/slab.h>
 #include <linux/debugfs.h>
 #include <linux/atomic.h>
+<<<<<<< HEAD
 #include <linux/uaccess.h>
 #include "diagchar.h"
 #include "diagfwd.h"
@@ -28,6 +29,14 @@
 #ifdef CONFIG_MSM_MHI
 #include "diagfwd_mhi.h"
 #endif
+=======
+#include "diagchar.h"
+#include "diagfwd.h"
+#include "diagfwd_bridge.h"
+#include "diagfwd_hsic.h"
+#include "diagfwd_smux.h"
+#include "diagfwd_mhi.h"
+>>>>>>> p9x
 #include "diagmem.h"
 #include "diag_dci.h"
 #include "diag_usb.h"
@@ -35,7 +44,10 @@
 #include "diagfwd_smd.h"
 #include "diagfwd_socket.h"
 #include "diag_debugfs.h"
+<<<<<<< HEAD
 #include "diag_ipc_logging.h"
+=======
+>>>>>>> p9x
 
 #define DEBUG_BUF_SIZE	4096
 static struct dentry *diag_dbgfs_dent;
@@ -75,8 +87,11 @@ static ssize_t diag_dbgfs_read_status(struct file *file, char __user *ubuf,
 		"RSP Buffer is Busy: %d\n"
 		"HDLC Disabled: %d\n"
 		"Time Sync Enabled: %d\n"
+<<<<<<< HEAD
 		"MD session mode: %d\n"
 		"MD session mask: %d\n"
+=======
+>>>>>>> p9x
 		"Uses Time API: %d\n",
 		chk_config_get_id(),
 		chk_polling_response(),
@@ -89,8 +104,11 @@ static ssize_t diag_dbgfs_read_status(struct file *file, char __user *ubuf,
 		driver->rsp_buf_busy,
 		driver->hdlc_disabled,
 		driver->time_sync_enabled,
+<<<<<<< HEAD
 		driver->md_session_mode,
 		driver->md_session_mask,
+=======
+>>>>>>> p9x
 		driver->uses_time_api);
 
 	for (i = 0; i < NUM_PERIPHERALS; i++) {
@@ -689,6 +707,7 @@ static ssize_t diag_dbgfs_read_socketinfo(struct file *file, char __user *ubuf,
 	return ret;
 }
 
+<<<<<<< HEAD
 static ssize_t diag_dbgfs_write_debug(struct file *fp, const char __user *buf,
 				      size_t count, loff_t *ppos)
 {
@@ -722,6 +741,9 @@ static ssize_t diag_dbgfs_write_debug(struct file *fp, const char __user *buf,
 
 #ifdef CONFIG_DIAGFWD_BRIDGE_CODE
 #ifdef CONFIG_USB_QCOM_DIAG_BRIDGE
+=======
+#ifdef CONFIG_DIAGFWD_BRIDGE_CODE
+>>>>>>> p9x
 static ssize_t diag_dbgfs_read_hsicinfo(struct file *file, char __user *ubuf,
 					size_t count, loff_t *ppos)
 {
@@ -789,11 +811,14 @@ static ssize_t diag_dbgfs_read_hsicinfo(struct file *file, char __user *ubuf,
 	return ret;
 }
 
+<<<<<<< HEAD
 const struct file_operations diag_dbgfs_hsicinfo_ops = {
 	.read = diag_dbgfs_read_hsicinfo,
 };
 #endif
 #ifdef CONFIG_MSM_MHI
+=======
+>>>>>>> p9x
 static ssize_t diag_dbgfs_read_mhiinfo(struct file *file, char __user *ubuf,
 				       size_t count, loff_t *ppos)
 {
@@ -839,9 +864,15 @@ static ssize_t diag_dbgfs_read_mhiinfo(struct file *file, char __user *ubuf,
 			mhi_info->name,
 			DIAG_BRIDGE_GET_NAME(mhi_info->dev_id),
 			DIAG_MEMPOOL_GET_NAME(mhi_info->mempool),
+<<<<<<< HEAD
 			atomic_read(&mhi_info->read_ch.opened),
 			mhi_info->read_ch.hdl,
 			atomic_read(&mhi_info->write_ch.opened),
+=======
+			mhi_info->read_ch.opened,
+			mhi_info->read_ch.hdl,
+			mhi_info->write_ch.opened,
+>>>>>>> p9x
 			mhi_info->write_ch.hdl,
 			work_pending(&mhi_info->read_work),
 			work_pending(&mhi_info->read_done_work),
@@ -863,12 +894,15 @@ static ssize_t diag_dbgfs_read_mhiinfo(struct file *file, char __user *ubuf,
 	return ret;
 }
 
+<<<<<<< HEAD
 
 const struct file_operations diag_dbgfs_mhiinfo_ops = {
 	.read = diag_dbgfs_read_mhiinfo,
 };
 
 #endif
+=======
+>>>>>>> p9x
 static ssize_t diag_dbgfs_read_bridge(struct file *file, char __user *ubuf,
 				      size_t count, loff_t *ppos)
 {
@@ -934,6 +968,17 @@ static ssize_t diag_dbgfs_read_bridge(struct file *file, char __user *ubuf,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+const struct file_operations diag_dbgfs_mhiinfo_ops = {
+	.read = diag_dbgfs_read_mhiinfo,
+};
+
+const struct file_operations diag_dbgfs_hsicinfo_ops = {
+	.read = diag_dbgfs_read_hsicinfo,
+};
+
+>>>>>>> p9x
 const struct file_operations diag_dbgfs_bridge_ops = {
 	.read = diag_dbgfs_read_bridge,
 };
@@ -972,10 +1017,13 @@ const struct file_operations diag_dbgfs_power_ops = {
 	.read = diag_dbgfs_read_power,
 };
 
+<<<<<<< HEAD
 const struct file_operations diag_dbgfs_debug_ops = {
 	.write = diag_dbgfs_write_debug
 };
 
+=======
+>>>>>>> p9x
 int diag_debugfs_init(void)
 {
 	struct dentry *entry = NULL;
@@ -1024,29 +1072,44 @@ int diag_debugfs_init(void)
 	if (!entry)
 		goto err;
 
+<<<<<<< HEAD
 	entry = debugfs_create_file("debug", 0444, diag_dbgfs_dent, 0,
 				    &diag_dbgfs_debug_ops);
 	if (!entry)
 		goto err;
 
+=======
+>>>>>>> p9x
 #ifdef CONFIG_DIAGFWD_BRIDGE_CODE
 	entry = debugfs_create_file("bridge", 0444, diag_dbgfs_dent, 0,
 				    &diag_dbgfs_bridge_ops);
 	if (!entry)
 		goto err;
+<<<<<<< HEAD
 #ifdef CONFIG_USB_QCOM_DIAG_BRIDGE
+=======
+
+>>>>>>> p9x
 	entry = debugfs_create_file("hsicinfo", 0444, diag_dbgfs_dent, 0,
 				    &diag_dbgfs_hsicinfo_ops);
 	if (!entry)
 		goto err;
+<<<<<<< HEAD
 #endif
 #ifdef CONFIG_MSM_MHI
+=======
+
+>>>>>>> p9x
 	entry = debugfs_create_file("mhiinfo", 0444, diag_dbgfs_dent, 0,
 				    &diag_dbgfs_mhiinfo_ops);
 	if (!entry)
 		goto err;
 #endif
+<<<<<<< HEAD
 #endif
+=======
+
+>>>>>>> p9x
 	diag_dbgfs_table_index = 0;
 	diag_dbgfs_mempool_index = 0;
 	diag_dbgfs_usbinfo_index = 0;

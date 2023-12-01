@@ -10,7 +10,10 @@
 #include <linux/stat.h>
 #include <linux/cache.h>
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <linux/list_lru.h>
+=======
+>>>>>>> p9x
 #include <linux/llist.h>
 #include <linux/radix-tree.h>
 #include <linux/rbtree.h>
@@ -47,8 +50,11 @@ struct vfsmount;
 struct cred;
 struct swap_info_struct;
 struct seq_file;
+<<<<<<< HEAD
 struct workqueue_struct;
 struct iov_iter;
+=======
+>>>>>>> p9x
 struct fscrypt_info;
 struct fscrypt_operations;
 
@@ -126,6 +132,7 @@ typedef void (dio_iodone_t)(struct kiocb *iocb, loff_t offset,
 /* File is opened with O_PATH; almost nothing can be done with it */
 #define FMODE_PATH		((__force fmode_t)0x4000)
 
+<<<<<<< HEAD
 /* File needs atomic accesses to f_pos */
 #define FMODE_ATOMIC_POS	((__force fmode_t)0x8000)
 /* Write access to underlying fs */
@@ -134,6 +141,10 @@ typedef void (dio_iodone_t)(struct kiocb *iocb, loff_t offset,
 #define FMODE_CAN_READ          ((__force fmode_t)0x20000)
 /* Has write method(s) */
 #define FMODE_CAN_WRITE         ((__force fmode_t)0x40000)
+=======
+/* File hasn't page cache and can't be mmaped, for stackable filesystem */
+#define FMODE_NONMAPPABLE       ((__force fmode_t)0x400000)
+>>>>>>> p9x
 
 /* File was opened by fanotify and shouldn't generate fanotify events */
 #define FMODE_NONOTIFY		((__force fmode_t)0x1000000)
@@ -636,6 +647,13 @@ struct inode {
 	struct fscrypt_info	*i_crypt_info;
 #endif
 
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_FS_ENCRYPTION)
+	struct fscrypt_info	*i_crypt_info;
+#endif
+
+>>>>>>> p9x
 	void			*i_private; /* fs or device private pointer */
 };
 
@@ -666,6 +684,10 @@ enum inode_i_mutex_lock_class
 	I_MUTEX_PARENT,
 	I_MUTEX_CHILD,
 	I_MUTEX_XATTR,
+<<<<<<< HEAD
+=======
+	I_MUTEX_QUOTA,
+>>>>>>> p9x
 	I_MUTEX_NONDIR2,
 	I_MUTEX_PARENT2,
 };
@@ -1289,6 +1311,15 @@ struct super_block {
 
 	/* Being remounted read-only */
 	int s_readonly_remount;
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Indicates how deep in a filesystem stack this SB is
+	 */
+	int s_stack_depth;
+};
+>>>>>>> p9x
 
 	/* AIO completions deferred from interrupt context */
 	struct workqueue_struct *s_dio_done_wq;
@@ -1437,6 +1468,7 @@ extern int vfs_mkdir2(struct vfsmount *, struct inode *, struct dentry *, umode_
 extern int vfs_mknod(struct inode *, struct dentry *, umode_t, dev_t);
 extern int vfs_mknod2(struct vfsmount *, struct inode *, struct dentry *, umode_t, dev_t);
 extern int vfs_symlink(struct inode *, struct dentry *, const char *);
+<<<<<<< HEAD
 extern int vfs_symlink2(struct vfsmount *, struct inode *, struct dentry *, const char *);
 extern int vfs_link(struct dentry *, struct inode *, struct dentry *, struct inode **);
 extern int vfs_link2(struct vfsmount *, struct dentry *, struct inode *, struct dentry *, struct inode **);
@@ -1447,6 +1479,16 @@ extern int vfs_unlink2(struct vfsmount *, struct inode *, struct dentry *, struc
 extern int vfs_rename(struct inode *, struct dentry *, struct inode *, struct dentry *, struct inode **, unsigned int);
 extern int vfs_rename2(struct vfsmount *, struct inode *, struct dentry *, struct inode *, struct dentry *, struct inode **, unsigned int);
 extern int vfs_whiteout(struct inode *, struct dentry *);
+=======
+extern int vfs_link(struct dentry *, struct inode *, struct dentry *);
+extern int vfs_link2(struct vfsmount *, struct dentry *, struct inode *, struct dentry *);
+extern int vfs_rmdir(struct inode *, struct dentry *);
+extern int vfs_rmdir2(struct vfsmount *, struct inode *, struct dentry *);
+extern int vfs_unlink(struct inode *, struct dentry *);
+extern int vfs_unlink2(struct vfsmount *, struct inode *, struct dentry *);
+extern int vfs_rename(struct inode *, struct dentry *, struct inode *, struct dentry *);
+extern int vfs_rename2(struct vfsmount *, struct inode *, struct dentry *, struct inode *, struct dentry *);
+>>>>>>> p9x
 
 /*
  * VFS dentry helper functions.
@@ -1498,8 +1540,20 @@ typedef int (*filldir_t)(void *, const char *, int, loff_t, u64, unsigned);
 struct dir_context {
 	const filldir_t actor;
 	loff_t pos;
+<<<<<<< HEAD
 };
 
+=======
+	bool romnt;
+};
+
+static inline bool dir_emit(struct dir_context *ctx,
+			    const char *name, int namelen,
+			    u64 ino, unsigned type)
+{
+	return ctx->actor(ctx, name, namelen, ctx->pos, ino, type) == 0;
+}
+>>>>>>> p9x
 struct block_device_operations;
 
 /* These macros are for out of kernel modules to test that
@@ -1517,8 +1571,12 @@ struct file_operations {
 	ssize_t (*write) (struct file *, const char __user *, size_t, loff_t *);
 	ssize_t (*aio_read) (struct kiocb *, const struct iovec *, unsigned long, loff_t);
 	ssize_t (*aio_write) (struct kiocb *, const struct iovec *, unsigned long, loff_t);
+<<<<<<< HEAD
 	ssize_t (*read_iter) (struct kiocb *, struct iov_iter *);
 	ssize_t (*write_iter) (struct kiocb *, struct iov_iter *);
+=======
+	int (*readdir) (struct file *, void *, filldir_t);
+>>>>>>> p9x
 	int (*iterate) (struct file *, struct dir_context *);
 	unsigned int (*poll) (struct file *, struct poll_table_struct *);
 	long (*unlocked_ioctl) (struct file *, unsigned int, unsigned long);
@@ -1541,6 +1599,7 @@ struct file_operations {
 	long (*fallocate)(struct file *file, int mode, loff_t offset,
 			  loff_t len);
 	int (*show_fdinfo)(struct seq_file *m, struct file *f);
+	struct file* (*get_lower_file)(struct file *f);
 };
 
 struct inode_operations {
@@ -1578,9 +1637,12 @@ struct inode_operations {
 			   struct file *, unsigned open_flag,
 			   umode_t create_mode, int *opened);
 	int (*tmpfile) (struct inode *, struct dentry *, umode_t);
+<<<<<<< HEAD
 	int (*set_acl)(struct inode *, struct posix_acl *, int);
 
 	/* WARNING: probably going away soon, do not use! */
+=======
+>>>>>>> p9x
 } ____cacheline_aligned;
 
 ssize_t rw_copy_check_uvector(int type, const struct iovec __user * uvector,
@@ -1754,9 +1816,12 @@ struct super_operations {
 #define __I_DIO_WAKEUP		9
 #define I_DIO_WAKEUP		(1 << I_DIO_WAKEUP)
 #define I_LINKABLE		(1 << 10)
+<<<<<<< HEAD
 #define I_DIRTY_TIME		(1 << 11)
 #define __I_DIRTY_TIME_EXPIRED	12
 #define I_DIRTY_TIME_EXPIRED	(1 << __I_DIRTY_TIME_EXPIRED)
+=======
+>>>>>>> p9x
 
 #define I_DIRTY (I_DIRTY_SYNC | I_DIRTY_DATASYNC | I_DIRTY_PAGES)
 #define I_DIRTY_ALL (I_DIRTY | I_DIRTY_TIME)
@@ -2300,6 +2365,7 @@ extern int write_inode_now(struct inode *, int);
 extern int filemap_fdatawrite(struct address_space *);
 extern int filemap_flush(struct address_space *);
 extern int filemap_fdatawait(struct address_space *);
+extern void filemap_fdatawait_keep_errors(struct address_space *);
 extern int filemap_fdatawait_range(struct address_space *, loff_t lstart,
 				   loff_t lend);
 extern int filemap_write_and_wait(struct address_space *mapping);
@@ -2325,12 +2391,19 @@ extern void emergency_remount(void);
 #ifdef CONFIG_BLOCK
 extern sector_t bmap(struct inode *, sector_t);
 #endif
+<<<<<<< HEAD
 extern int notify_change(struct dentry *, struct iattr *, struct inode **);
 extern int notify_change2(struct vfsmount *, struct dentry *, struct iattr *, struct inode **);
 extern int inode_permission(struct inode *, int);
 extern int inode_permission2(struct vfsmount *, struct inode *, int);
 extern int __inode_permission(struct inode *, int);
 extern int __inode_permission2(struct vfsmount *, struct inode *, int);
+=======
+extern int notify_change(struct dentry *, struct iattr *);
+extern int notify_change2(struct vfsmount *, struct dentry *, struct iattr *);
+extern int inode_permission(struct inode *, int);
+extern int inode_permission2(struct vfsmount *, struct inode *, int);
+>>>>>>> p9x
 extern int generic_permission(struct inode *, int);
 extern int __check_sticky(struct inode *dir, struct inode *inode);
 
@@ -2580,6 +2653,7 @@ enum {
 
 void dio_end_io(struct bio *bio, int error);
 
+
 ssize_t __blockdev_direct_IO(int rw, struct kiocb *iocb, struct inode *inode,
 	struct block_device *bdev, struct iov_iter *iter, loff_t offset,
 	get_block_t get_block, dio_iodone_t end_io,
@@ -2598,9 +2672,12 @@ static inline ssize_t blockdev_direct_IO(int rw, struct kiocb *iocb,
 void inode_dio_wait(struct inode *inode);
 void inode_dio_done(struct inode *inode);
 struct inode *dio_bio_get_inode(struct bio *bio);
+<<<<<<< HEAD
 
 extern void inode_set_flags(struct inode *inode, unsigned int flags,
 			    unsigned int mask);
+=======
+>>>>>>> p9x
 
 extern const struct file_operations generic_ro_fops;
 

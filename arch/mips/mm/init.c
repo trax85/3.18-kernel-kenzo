@@ -370,7 +370,10 @@ void __init mem_init(void)
 #endif
 	high_memory = (void *) __va(max_low_pfn << PAGE_SHIFT);
 
+<<<<<<< HEAD
 	maar_init();
+=======
+>>>>>>> p9x
 	free_all_bootmem();
 	setup_zero_pages();	/* Setup zeroed pages.  */
 	mem_init_free_highmem();

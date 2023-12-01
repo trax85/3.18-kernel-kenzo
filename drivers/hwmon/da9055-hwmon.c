@@ -199,6 +199,16 @@ static ssize_t da9055_read_tjunc(struct device *dev,
 							+ 3076332, 10000));
 }
 
+<<<<<<< HEAD
+=======
+static ssize_t da9055_hwmon_show_name(struct device *dev,
+				      struct device_attribute *devattr,
+				      char *buf)
+{
+	return sprintf(buf, "da9055\n");
+}
+
+>>>>>>> p9x
 static ssize_t show_label(struct device *dev,
 			  struct device_attribute *devattr, char *buf)
 {

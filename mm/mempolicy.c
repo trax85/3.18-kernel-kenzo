@@ -655,7 +655,11 @@ static unsigned long change_prot_numa(struct vm_area_struct *vma,
  * passed via @private.)
  */
 static int
+<<<<<<< HEAD
 queue_pages_range(struct mm_struct *mm, unsigned long start, unsigned long end,
+=======
+check_range(struct mm_struct *mm, unsigned long start, unsigned long end,
+>>>>>>> p9x
 		const nodemask_t *nodes, unsigned long flags, void *private)
 {
 	int err = 0;
@@ -1250,7 +1254,11 @@ static long do_mbind(unsigned long start, unsigned long len,
 	if (err)
 		goto mpol_out;
 
+<<<<<<< HEAD
 	err = queue_pages_range(mm, start, end, nmask,
+=======
+	err = check_range(mm, start, end, nmask,
+>>>>>>> p9x
 			  flags | MPOL_MF_INVERT, &pagelist);
 	if (!err)
 		err = mbind_range(mm, start, end, new);
@@ -1260,7 +1268,11 @@ static long do_mbind(unsigned long start, unsigned long len,
 
 		if (!list_empty(&pagelist)) {
 			WARN_ON_ONCE(flags & MPOL_MF_LAZY);
+<<<<<<< HEAD
 			nr_failed = migrate_pages(&pagelist, new_page, NULL,
+=======
+			nr_failed = migrate_pages(&pagelist, new_page,
+>>>>>>> p9x
 				start, MIGRATE_SYNC, MR_MEMPOLICY_MBIND);
 			if (nr_failed)
 				putback_movable_pages(&pagelist);
@@ -1570,10 +1582,17 @@ COMPAT_SYSCALL_DEFINE3(set_mempolicy, int, mode, compat_ulong_t __user *, nmask,
 	alloc_size = ALIGN(nr_bits, BITS_PER_LONG) / 8;
 
 	if (nmask) {
+<<<<<<< HEAD
 		if (compat_get_bitmap(bm, nmask, nr_bits))
 			return -EFAULT;
 		nm = compat_alloc_user_space(alloc_size);
 		if (copy_to_user(nm, bm, alloc_size))
+=======
+		if(compat_get_bitmap(bm, nmask, nr_bits))
+			return -EFAULT;
+		nm = compat_alloc_user_space(alloc_size);
+		if(copy_to_user(nm, bm, alloc_size))
+>>>>>>> p9x
 			return -EFAULT;
 	}
 
@@ -1592,10 +1611,17 @@ COMPAT_SYSCALL_DEFINE6(mbind, compat_ulong_t, start, compat_ulong_t, len,
 	alloc_size = ALIGN(nr_bits, BITS_PER_LONG) / 8;
 
 	if (nmask) {
+<<<<<<< HEAD
 		if (compat_get_bitmap(nodes_addr(bm), nmask, nr_bits))
 			return -EFAULT;
 		nm = compat_alloc_user_space(alloc_size);
 		if (copy_to_user(nm, nodes_addr(bm), alloc_size))
+=======
+		if(compat_get_bitmap(nodes_addr(bm), nmask, nr_bits))
+			return -EFAULT;
+		nm = compat_alloc_user_space(alloc_size);
+		if(copy_to_user(nm, nodes_addr(bm), alloc_size))
+>>>>>>> p9x
 			return -EFAULT;
 	}
 
@@ -2184,12 +2210,14 @@ bool __mpol_equal(struct mempolicy *a, struct mempolicy *b)
  *
  * Remember policies even when nobody has shared memory mapped.
  * The policies are kept in Red-Black tree linked from the inode.
- * They are protected by the sp->lock spinlock, which should be held
+ * They are protected by the sp->lock rwlock, which should be held
  * for any accesses to the tree.
  */
 
-/* lookup first element intersecting start-end */
-/* Caller holds sp->lock */
+/*
+ * lookup first element intersecting start-end.  Caller holds sp->lock for
+ * reading or for writing
+ */
 static struct sp_node *
 sp_lookup(struct shared_policy *sp, unsigned long start, unsigned long end)
 {
@@ -2220,8 +2248,10 @@ sp_lookup(struct shared_policy *sp, unsigned long start, unsigned long end)
 	return rb_entry(n, struct sp_node, nd);
 }
 
-/* Insert a new shared policy into the list. */
-/* Caller holds sp->lock */
+/*
+ * Insert a new shared policy into the list.  Caller holds sp->lock for
+ * writing.
+ */
 static void sp_insert(struct shared_policy *sp, struct sp_node *new)
 {
 	struct rb_node **p = &sp->root.rb_node;
@@ -2253,13 +2283,13 @@ mpol_shared_policy_lookup(struct shared_policy *sp, unsigned long idx)
 
 	if (!sp->root.rb_node)
 		return NULL;
-	spin_lock(&sp->lock);
+	read_lock(&sp->lock);
 	sn = sp_lookup(sp, idx, idx+1);
 	if (sn) {
 		mpol_get(sn->policy);
 		pol = sn->policy;
 	}
-	spin_unlock(&sp->lock);
+	read_unlock(&sp->lock);
 	return pol;
 }
 
@@ -2402,7 +2432,7 @@ static int shared_policy_replace(struct shared_policy *sp, unsigned long start,
 	int ret = 0;
 
 restart:
-	spin_lock(&sp->lock);
+	write_lock(&sp->lock);
 	n = sp_lookup(sp, start, end);
 	/* Take care of old policies in the same range. */
 	while (n && n->start < end) {
@@ -2435,7 +2465,7 @@ restart:
 	}
 	if (new)
 		sp_insert(sp, new);
-	spin_unlock(&sp->lock);
+	write_unlock(&sp->lock);
 	ret = 0;
 
 err_out:
@@ -2447,7 +2477,7 @@ err_out:
 	return ret;
 
 alloc_new:
-	spin_unlock(&sp->lock);
+	write_unlock(&sp->lock);
 	ret = -ENOMEM;
 	n_new = kmem_cache_alloc(sn_cache, GFP_KERNEL);
 	if (!n_new)
@@ -2473,7 +2503,7 @@ void mpol_shared_policy_init(struct shared_policy *sp, struct mempolicy *mpol)
 	int ret;
 
 	sp->root = RB_ROOT;		/* empty tree == default mempolicy */
-	spin_lock_init(&sp->lock);
+	rwlock_init(&sp->lock);
 
 	if (mpol) {
 		struct vm_area_struct pvma;
@@ -2539,14 +2569,14 @@ void mpol_free_shared_policy(struct shared_policy *p)
 
 	if (!p->root.rb_node)
 		return;
-	spin_lock(&p->lock);
+	write_lock(&p->lock);
 	next = rb_first(&p->root);
 	while (next) {
 		n = rb_entry(next, struct sp_node, nd);
 		next = rb_next(&n->nd);
 		sp_delete(p, n);
 	}
-	spin_unlock(&p->lock);
+	write_unlock(&p->lock);
 }
 
 #ifdef CONFIG_NUMA_BALANCING
@@ -2826,7 +2856,18 @@ void mpol_to_str(char *buffer, int maxlen, struct mempolicy *pol)
 	unsigned short mode = MPOL_DEFAULT;
 	unsigned short flags = 0;
 
+<<<<<<< HEAD
 	if (pol && pol != &default_policy && !(pol->flags & MPOL_F_MORON)) {
+=======
+	/*
+	 * Sanity check:  room for longest mode, flag and some nodes
+	 */
+	VM_BUG_ON(maxlen < strlen("interleave") + strlen("relative") + 16);
+
+	if (!pol || pol == &default_policy || (pol->flags & MPOL_F_MORON))
+		mode = MPOL_DEFAULT;
+	else
+>>>>>>> p9x
 		mode = pol->mode;
 		flags = pol->flags;
 	}

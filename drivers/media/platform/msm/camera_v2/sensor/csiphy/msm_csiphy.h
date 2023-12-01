@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -19,18 +23,24 @@
 #include <media/v4l2-subdev.h>
 #include <media/msm_cam_sensor.h>
 #include "msm_sd.h"
+<<<<<<< HEAD
 #include "msm_camera_io_util.h"
 #include "msm_camera_dt_util.h"
 #include "cam_soc_api.h"
+=======
+>>>>>>> p9x
 
 #define MAX_CSIPHY 3
 #define CSIPHY_NUM_CLK_MAX  16
 
+<<<<<<< HEAD
 struct csiphy_reg_t {
 	uint32_t addr;
 	uint32_t data;
 };
 
+=======
+>>>>>>> p9x
 struct csiphy_reg_parms_t {
 /*MIPI CSI PHY registers*/
 	uint32_t mipi_csiphy_lnn_cfg1_addr;
@@ -41,7 +51,11 @@ struct csiphy_reg_parms_t {
 	uint32_t mipi_csiphy_lnck_cfg1_addr;
 	uint32_t mipi_csiphy_lnck_cfg2_addr;
 	uint32_t mipi_csiphy_lnck_cfg3_addr;
+<<<<<<< HEAD
 	uint32_t mipi_csiphy_lnck_cfg4_addr;
+=======
+	uint32_t mipi_csiphy_glbl_pwg_cfg0_addr;
+>>>>>>> p9x
 	uint32_t mipi_csiphy_lnn_test_imp;
 	uint32_t mipi_csiphy_lnn_misc1_addr;
 	uint32_t mipi_csiphy_glbl_reset_addr;
@@ -58,6 +72,7 @@ struct csiphy_reg_parms_t {
 	uint32_t mipi_csiphy_glbl_t_init_cfg0_addr;
 	uint32_t mipi_csiphy_t_wakeup_cfg0_addr;
 	uint32_t csiphy_version;
+<<<<<<< HEAD
 	uint32_t combo_clk_mask;
 };
 
@@ -127,11 +142,16 @@ struct csiphy_reg_3ph_parms_t {
 	struct csiphy_reg_t mipi_csiphy_2ph_lnn_test_force;
 	struct csiphy_reg_t mipi_csiphy_2ph_lnn_ctrl5;
 	struct csiphy_reg_t mipi_csiphy_3ph_lnck_cfg1;
+=======
+>>>>>>> p9x
 };
 
 struct csiphy_ctrl_t {
 	struct csiphy_reg_parms_t csiphy_reg;
+<<<<<<< HEAD
 	struct csiphy_reg_3ph_parms_t csiphy_3ph_reg;
+=======
+>>>>>>> p9x
 };
 
 enum msm_csiphy_state_t {
@@ -143,7 +163,15 @@ struct csiphy_device {
 	struct platform_device *pdev;
 	struct msm_sd_subdev msm_sd;
 	struct v4l2_subdev subdev;
+<<<<<<< HEAD
 	struct resource *irq;
+=======
+	struct resource *mem;
+	struct resource *clk_mux_mem;
+	struct resource *irq;
+	struct resource *io;
+	struct resource *clk_mux_io;
+>>>>>>> p9x
 	void __iomem *base;
 	void __iomem *clk_mux_base;
 	struct mutex mutex;
@@ -151,6 +179,7 @@ struct csiphy_device {
 	uint32_t hw_dts_version;
 	enum msm_csiphy_state_t csiphy_state;
 	struct csiphy_ctrl_t *ctrl_reg;
+<<<<<<< HEAD
 	size_t num_all_clk;
 	struct clk **csiphy_all_clk;
 	struct msm_cam_clk_info *csiphy_all_clk_info;
@@ -160,11 +189,16 @@ struct csiphy_device {
 	struct clk *csiphy_3p_clk[2];
 	struct msm_cam_clk_info csiphy_3p_clk_info[2];
 	unsigned char csi_3phase;
+=======
+	uint32_t num_clk;
+	struct clk *csiphy_clk[CSIPHY_NUM_CLK_MAX];
+>>>>>>> p9x
 	int32_t ref_count;
 	uint16_t lane_mask[MAX_CSIPHY];
 	uint32_t is_3_1_20nm_hw;
 	uint32_t csiphy_clk_index;
 	uint32_t csiphy_max_clk;
+<<<<<<< HEAD
 	uint8_t csiphy_3phase;
 	uint8_t num_irq_registers;
 	uint32_t csiphy_sof_debug;
@@ -173,6 +207,10 @@ struct csiphy_device {
 	struct camera_vreg_t *csiphy_vreg;
 	struct regulator *csiphy_reg_ptr[MAX_REGULATOR];
 	int32_t regulator_count;
+=======
+	uint32_t csiphy_sof_debug;
+	uint32_t is_combo_mode;
+>>>>>>> p9x
 };
 
 #define VIDIOC_MSM_CSIPHY_RELEASE \

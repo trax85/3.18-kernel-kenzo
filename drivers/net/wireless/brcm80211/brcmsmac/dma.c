@@ -1079,8 +1079,15 @@ bool dma_rxfill(struct dma_pub *pub)
 
 		pa = dma_map_single(di->dmadev, p->data, di->rxbufsize,
 				    DMA_FROM_DEVICE);
+<<<<<<< HEAD
 		if (dma_mapping_error(di->dmadev, pa))
 			return false;
+=======
+		if (dma_mapping_error(di->dmadev, pa)) {
+			brcmu_pkt_buf_free_skb(p);
+			return false;
+		}
+>>>>>>> p9x
 
 		/* save the free packet pointer */
 		di->rxp[rxout] = p;

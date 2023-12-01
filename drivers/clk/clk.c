@@ -22,8 +22,11 @@
 #include <linux/init.h>
 #include <linux/sched.h>
 
+<<<<<<< HEAD
 #include "clk.h"
 
+=======
+>>>>>>> p9x
 #if defined(CONFIG_COMMON_CLK)
 
 static DEFINE_SPINLOCK(enable_lock);
@@ -2727,9 +2730,12 @@ EXPORT_SYMBOL_GPL(of_clk_src_onecell_get);
 
 #endif /* CONFIG_COMMON_CLK */
 
+<<<<<<< HEAD
 /* forward declaration */
 void of_clk_del_provider(struct device_node *np);
 
+=======
+>>>>>>> p9x
 /**
  * of_clk_add_provider() - Register a clock provider for a node
  * @np: Device node pointer associated with clock provider
@@ -2863,6 +2869,7 @@ EXPORT_SYMBOL_GPL(of_clk_get_parent_name);
 
 #if defined(CONFIG_COMMON_CLK)
 
+<<<<<<< HEAD
 struct clock_provider {
 	of_clk_init_cb_t clk_init_cb;
 	struct device_node *np;
@@ -2906,6 +2913,8 @@ static int parent_ready(struct device_node *np)
 	}
 }
 
+=======
+>>>>>>> p9x
 /**
  * of_clk_init() - Scan and init clock providers from the DT
  * @matches: array of compatible values and init functions for providers.

@@ -252,8 +252,15 @@ void w1_netlink_send(struct w1_master *dev, struct w1_netlink_msg *msg)
 
 static void w1_send_slave(struct w1_master *dev, u64 rn)
 {
+<<<<<<< HEAD
 	struct w1_cb_block *block = dev->priv;
 	struct w1_netlink_cmd *cache_cmd = block->cmd;
+=======
+	struct cn_msg *msg = dev->priv;
+	struct w1_netlink_msg *hdr = (struct w1_netlink_msg *)(msg + 1);
+	struct w1_netlink_cmd *cmd = (struct w1_netlink_cmd *)(hdr + 1);
+	int avail;
+>>>>>>> p9x
 	u64 *data;
 
 	w1_reply_make_space(block, sizeof(*data));
@@ -277,7 +284,28 @@ static void w1_found_send_slave(struct w1_master *dev, u64 rn)
 	/* update kernel slave list */
 	w1_slave_found(dev, rn);
 
+<<<<<<< HEAD
 	w1_send_slave(dev, rn);
+=======
+	avail = dev->priv_size - cmd->len;
+
+	if (avail < 8) {
+		msg->ack++;
+		cn_netlink_send(msg, 0, GFP_KERNEL);
+
+		msg->len = sizeof(struct w1_netlink_msg) +
+			sizeof(struct w1_netlink_cmd);
+		hdr->len = sizeof(struct w1_netlink_cmd);
+		cmd->len = 0;
+	}
+
+	data = (void *)(cmd + 1) + cmd->len;
+
+	*data = rn;
+	cmd->len += 8;
+	hdr->len += 8;
+	msg->len += 8;
+>>>>>>> p9x
 }
 
 /* Get the current slave list, or search (with or without alarm) */

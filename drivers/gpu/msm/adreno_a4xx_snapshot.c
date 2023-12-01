@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -17,7 +21,10 @@
 #include "kgsl_snapshot.h"
 #include "a4xx_reg.h"
 #include "adreno_snapshot.h"
+<<<<<<< HEAD
 #include "adreno_a4xx.h"
+=======
+>>>>>>> p9x
 
 /*
  * Set of registers to dump for A4XX on snapshot.
@@ -61,6 +68,11 @@ static const unsigned int a4xx_registers[] = {
 	0x2600, 0x2604, 0x2608, 0x26A9,
 };
 
+<<<<<<< HEAD
+=======
+static const unsigned int a4xx_registers_count = ARRAY_SIZE(a4xx_registers) / 2;
+
+>>>>>>> p9x
 static const unsigned int a4xx_sp_tp_registers[] = {
 	/* SP */
 	0x0EC0, 0x0ECF,
@@ -78,6 +90,12 @@ static const unsigned int a4xx_sp_tp_registers[] = {
 	0x2780, 0x2782, 0x2784, 0x278F, 0x27A0, 0x27A6,
 };
 
+<<<<<<< HEAD
+=======
+static const unsigned int a4xx_sp_tp_registers_count =
+			ARRAY_SIZE(a4xx_sp_tp_registers) / 2;
+
+>>>>>>> p9x
 static const unsigned int a4xx_ppd_registers[] = {
 	/* V2 Thresholds */
 	0x01B2, 0x01B5,
@@ -85,6 +103,12 @@ static const unsigned int a4xx_ppd_registers[] = {
 	0x01B9, 0x01BE,
 };
 
+<<<<<<< HEAD
+=======
+static const unsigned int a4xx_ppd_registers_count =
+			ARRAY_SIZE(a4xx_ppd_registers) / 2;
+
+>>>>>>> p9x
 static const unsigned int a4xx_xpu_registers[] = {
 	/* XPU */
 	0x2C00, 0x2C01, 0x2C10, 0x2C10, 0x2C12, 0x2C16, 0x2C1D, 0x2C20,
@@ -92,6 +116,12 @@ static const unsigned int a4xx_xpu_registers[] = {
 	0x2C50, 0x2C50, 0x2C52, 0x2C56, 0x2C80, 0x2C80, 0x2C94, 0x2C95,
 };
 
+<<<<<<< HEAD
+=======
+static const unsigned int a4xx_xpu_reg_cnt =
+				ARRAY_SIZE(a4xx_xpu_registers)/2;
+
+>>>>>>> p9x
 static const unsigned int a4xx_vbif_ver_20000000_registers[] = {
 	/* VBIF version 0x20000000 & IOMMU V1 */
 	0x3000, 0x3007, 0x300C, 0x3014, 0x3018, 0x301D, 0x3020, 0x3022,
@@ -168,6 +198,7 @@ static const unsigned int a4xx_vbif_ver_20050000_registers[] = {
 
 static const struct adreno_vbif_snapshot_registers
 					a4xx_vbif_snapshot_registers[] = {
+<<<<<<< HEAD
 	{ 0x20000000, 0xFFFF0000, a4xx_vbif_ver_20000000_registers,
 				ARRAY_SIZE(a4xx_vbif_ver_20000000_registers)/2},
 	{ 0x20020000, 0xFFFF0000, a4xx_vbif_ver_20020000_registers,
@@ -180,6 +211,23 @@ static const struct adreno_vbif_snapshot_registers
 				ARRAY_SIZE(a4xx_vbif_ver_20050000_registers)/2},
 };
 
+=======
+	{ 0x20000000, a4xx_vbif_ver_20000000_registers,
+				ARRAY_SIZE(a4xx_vbif_ver_20000000_registers)/2},
+	{ 0x20020000, a4xx_vbif_ver_20020000_registers,
+				ARRAY_SIZE(a4xx_vbif_ver_20020000_registers)/2},
+	{ 0x20050000, a4xx_vbif_ver_20050000_registers,
+				ARRAY_SIZE(a4xx_vbif_ver_20050000_registers)/2},
+	{ 0x20070000, a4xx_vbif_ver_20020000_registers,
+				ARRAY_SIZE(a4xx_vbif_ver_20020000_registers)/2},
+	{ 0x20090000, a4xx_vbif_ver_20050000_registers,
+				ARRAY_SIZE(a4xx_vbif_ver_20050000_registers)/2},
+};
+
+static const unsigned int a4xx_vbif_snapshot_reg_cnt =
+				ARRAY_SIZE(a4xx_vbif_snapshot_registers);
+
+>>>>>>> p9x
 #define A4XX_NUM_SHADER_BANKS 4
 #define A405_NUM_SHADER_BANKS 1
 /* Shader memory size in words */
@@ -505,6 +553,34 @@ static void a4xx_reset_hlsq(struct kgsl_device *device)
 	kgsl_regwrite(device, A4XX_HLSQ_TIMEOUT_THRESHOLD, val);
 }
 
+<<<<<<< HEAD
+=======
+static void a4xx_snapshot_vbif_registers(struct kgsl_device *device,
+				struct kgsl_snapshot_registers *regs,
+				struct kgsl_snapshot_registers_list *list)
+{
+	unsigned int vbif_version = 0;
+	int i;
+	int found = 0;
+
+	kgsl_regread(device, A4XX_VBIF_VERSION, &vbif_version);
+
+	for (i = 0; i < a4xx_vbif_snapshot_reg_cnt; i++) {
+		if (vbif_version ==
+			a4xx_vbif_snapshot_registers[i].vbif_version) {
+			found = 1;
+			break;
+		}
+	}
+	if (found)
+		adreno_snapshot_regs(regs, list,
+				a4xx_vbif_snapshot_registers[i].
+					vbif_snapshot_registers,
+				a4xx_vbif_snapshot_registers[i].
+					vbif_snapshot_registers_count, 1);
+}
+
+>>>>>>> p9x
 /*
  * a4xx_snapshot() - A4XX GPU snapshot function
  * @adreno_dev: Device being snapshotted
@@ -516,10 +592,22 @@ static void a4xx_reset_hlsq(struct kgsl_device *device)
 void a4xx_snapshot(struct adreno_device *adreno_dev,
 		struct kgsl_snapshot *snapshot)
 {
+<<<<<<< HEAD
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
 	struct adreno_gpudev *gpudev = ADRENO_GPU_DEVICE(adreno_dev);
 	struct adreno_snapshot_data *snap_data = gpudev->snapshot_data;
 
+=======
+	struct kgsl_device *device = &adreno_dev->dev;
+	struct adreno_gpudev *gpudev = ADRENO_GPU_DEVICE(adreno_dev);
+	struct kgsl_snapshot_registers_list list;
+	struct kgsl_snapshot_registers regs[5];
+	struct adreno_snapshot_data *snap_data = gpudev->snapshot_data;
+
+	list.registers = regs;
+	list.count = 0;
+
+>>>>>>> p9x
 	/* Disable SP clock gating for the debug bus to work */
 	kgsl_regwrite(device, A4XX_RBBM_CLOCK_CTL_SP0, 0);
 	kgsl_regwrite(device, A4XX_RBBM_CLOCK_CTL_SP1, 0);
@@ -534,6 +622,7 @@ void a4xx_snapshot(struct adreno_device *adreno_dev,
 	kgsl_regwrite(device, A4XX_RBBM_CLOCK_CTL, 0);
 	kgsl_regwrite(device, A4XX_RBBM_CLOCK_CTL2, 0);
 
+<<<<<<< HEAD
 	/* Master set of (non debug) registers */
 
 	SNAPSHOT_REGISTERS(device, snapshot, a4xx_registers);
@@ -550,6 +639,36 @@ void a4xx_snapshot(struct adreno_device *adreno_dev,
 	adreno_snapshot_vbif_registers(device, snapshot,
 		a4xx_vbif_snapshot_registers,
 		ARRAY_SIZE(a4xx_vbif_snapshot_registers));
+=======
+	/* Store relevant registers in list to snapshot */
+	adreno_snapshot_regs(regs, &list, a4xx_registers,
+			a4xx_registers_count, 1);
+
+	adreno_snapshot_regs(regs, &list, a4xx_sp_tp_registers,
+			a4xx_sp_tp_registers_count,
+			(adreno_is_a430(adreno_dev) ? 1 : 0));
+
+	if (adreno_is_a420(adreno_dev)) {
+		adreno_snapshot_regs(regs, &list, a4xx_xpu_registers,
+				a4xx_xpu_reg_cnt, 1);
+	}
+
+	if (adreno_is_a430v2(adreno_dev)) {
+		adreno_snapshot_regs(regs, &list, a4xx_ppd_registers,
+				a4xx_ppd_registers_count, 1);
+	}
+
+	a4xx_snapshot_vbif_registers(device, regs, &list);
+
+	/* Turn on MMU clocks since we read MMU registers */
+	kgsl_mmu_enable_clk(&device->mmu);
+
+	/* Master set of (non debug) registers */
+	kgsl_snapshot_add_section(device, KGSL_SNAPSHOT_SECTION_REGS, snapshot,
+		kgsl_snapshot_dump_regs, &list);
+
+	kgsl_mmu_disable_clk(&device->mmu);
+>>>>>>> p9x
 
 	kgsl_snapshot_indexed_registers(device, snapshot,
 		A4XX_CP_STATE_DEBUG_INDEX, A4XX_CP_STATE_DEBUG_DATA,
@@ -590,9 +709,15 @@ void a4xx_snapshot(struct adreno_device *adreno_dev,
 
 	if (!adreno_is_a430(adreno_dev)) {
 		a4xx_reset_hlsq(device);
+<<<<<<< HEAD
 		SNAPSHOT_REGISTERS(device, snapshot, a4xx_sp_tp_registers);
 	}
 
+=======
+
+		kgsl_snapshot_dump_skipped_regs(device, &list);
+	}
+>>>>>>> p9x
 	/* Shader working/shadow memory */
 	kgsl_snapshot_add_section(device, KGSL_SNAPSHOT_SECTION_DEBUG,
 		snapshot, a4xx_snapshot_shader_memory,

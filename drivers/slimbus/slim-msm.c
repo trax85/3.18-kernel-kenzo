@@ -287,6 +287,10 @@ static void msm_slim_calc_pshpull_parm(struct msm_slim_ctrl *dev,
 	divisor = gcd(round_off * super_freq, chan_freq);
 	parm->num_samples = chan_freq/divisor;
 	parm->rpt_period = (round_off * super_freq)/divisor;
+<<<<<<< HEAD
+=======
+	return;
+>>>>>>> p9x
 }
 
 int msm_slim_connect_pipe_port(struct msm_slim_ctrl *dev, u8 pn)
@@ -392,6 +396,7 @@ void msm_dealloc_port(struct slim_controller *ctrl, u8 pn)
 	if (pn >= dev->port_nums)
 		return;
 	endpoint = &dev->pipes[pn];
+<<<<<<< HEAD
 	if (dev->pipes[pn].connected) {
 		struct sps_connect *config = &endpoint->config;
 		msm_slim_disconn_pipe_port(dev, pn);
@@ -399,6 +404,15 @@ void msm_dealloc_port(struct slim_controller *ctrl, u8 pn)
 	}
 	if (endpoint->sps)
 		msm_slim_free_endpoint(endpoint);
+=======
+	if (dev->pipes[pn].connected)
+		msm_slim_disconn_pipe_port(dev, pn);
+	if (endpoint->sps) {
+		struct sps_connect *config = &endpoint->config;
+		msm_slim_free_endpoint(endpoint);
+		msm_slim_sps_mem_free(dev, &config->desc);
+	}
+>>>>>>> p9x
 }
 
 enum slim_port_err msm_slim_port_xfer_status(struct slim_controller *ctr,

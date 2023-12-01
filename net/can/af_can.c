@@ -445,7 +445,11 @@ static struct hlist_head *find_rcv_list(canid_t *can_id, canid_t *mask,
  * @mask: CAN mask (see description)
  * @func: callback function on filter match
  * @data: returned parameter for callback function
+<<<<<<< HEAD
  * @ident: string for calling module identification
+=======
+ * @ident: string for calling module indentification
+>>>>>>> p9x
  * @sk: socket pointer (might be NULL)
  *
  * Description:

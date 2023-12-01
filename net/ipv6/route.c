@@ -66,9 +66,14 @@
 #endif
 
 enum rt6_nud_state {
+<<<<<<< HEAD
 	RT6_NUD_FAIL_HARD = -3,
 	RT6_NUD_FAIL_PROBE = -2,
 	RT6_NUD_FAIL_DO_RR = -1,
+=======
+	RT6_NUD_FAIL_HARD = -2,
+	RT6_NUD_FAIL_SOFT = -1,
+>>>>>>> p9x
 	RT6_NUD_SUCCEED = 1
 };
 
@@ -84,9 +89,15 @@ static void		ip6_dst_ifdown(struct dst_entry *,
 static int		 ip6_dst_gc(struct dst_ops *ops);
 
 static int		ip6_pkt_discard(struct sk_buff *skb);
+<<<<<<< HEAD
 static int		ip6_pkt_discard_out(struct sock *sk, struct sk_buff *skb);
 static int		ip6_pkt_prohibit(struct sk_buff *skb);
 static int		ip6_pkt_prohibit_out(struct sock *sk, struct sk_buff *skb);
+=======
+static int		ip6_pkt_discard_out(struct sk_buff *skb);
+static int		ip6_pkt_prohibit(struct sk_buff *skb);
+static int		ip6_pkt_prohibit_out(struct sk_buff *skb);
+>>>>>>> p9x
 static void		ip6_link_failure(struct sk_buff *skb);
 static void		ip6_rt_update_pmtu(struct dst_entry *dst, struct sock *sk,
 					   struct sk_buff *skb, u32 mtu);
@@ -526,11 +537,19 @@ static void rt6_probe(struct rt6_info *rt)
 		work = kmalloc(sizeof(*work), GFP_ATOMIC);
 
 		if (neigh && work)
+<<<<<<< HEAD
 			__neigh_set_probe_once(neigh);
 
 		if (neigh)
 			write_unlock(&neigh->lock);
 
+=======
+			neigh->updated = jiffies;
+
+		if (neigh)
+			write_unlock(&neigh->lock);
+
+>>>>>>> p9x
 		if (work) {
 			INIT_WORK(&work->work, rt6_probe_deferred);
 			work->target = rt->rt6i_gateway;
@@ -582,13 +601,20 @@ static inline enum rt6_nud_state rt6_check_neigh(struct rt6_info *rt)
 #ifdef CONFIG_IPV6_ROUTER_PREF
 		else if (!(neigh->nud_state & NUD_FAILED))
 			ret = RT6_NUD_SUCCEED;
+<<<<<<< HEAD
 		else
 			ret = RT6_NUD_FAIL_PROBE;
+=======
+>>>>>>> p9x
 #endif
 		read_unlock(&neigh->lock);
 	} else {
 		ret = IS_ENABLED(CONFIG_IPV6_ROUTER_PREF) ?
+<<<<<<< HEAD
 		      RT6_NUD_SUCCEED : RT6_NUD_FAIL_DO_RR;
+=======
+		      RT6_NUD_SUCCEED : RT6_NUD_FAIL_SOFT;
+>>>>>>> p9x
 	}
 	rcu_read_unlock_bh();
 
@@ -625,17 +651,27 @@ static struct rt6_info *find_match(struct rt6_info *rt, int oif, int strict,
 		goto out;
 
 	m = rt6_score_route(rt, oif, strict);
+<<<<<<< HEAD
 	if (m == RT6_NUD_FAIL_DO_RR) {
 		match_do_rr = true;
 		m = 0; /* lowest valid score */
 	} else if (m == RT6_NUD_FAIL_HARD) {
+=======
+	if (m == RT6_NUD_FAIL_SOFT && !IS_ENABLED(CONFIG_IPV6_ROUTER_PREF)) {
+		match_do_rr = true;
+		m = 0; /* lowest valid score */
+	} else if (m < 0) {
+>>>>>>> p9x
 		goto out;
 	}
 
 	if (strict & RT6_LOOKUP_F_REACHABLE)
 		rt6_probe(rt);
 
+<<<<<<< HEAD
 	/* note that m can be RT6_NUD_FAIL_PROBE at this point */
+=======
+>>>>>>> p9x
 	if (m > *mpri) {
 		*do_rr = match_do_rr;
 		*mpri = m;
@@ -740,7 +776,11 @@ int rt6_route_rcv(struct net_device *dev, u8 *opt, int len,
 	if (rinfo->prefix_len == 0)
 		rt = rt6_get_dflt_router(gwaddr, dev);
 	else
+<<<<<<< HEAD
 		rt = rt6_get_route_info(dev, prefix, rinfo->prefix_len,	gwaddr);
+=======
+		rt = rt6_get_route_info(dev, prefix, rinfo->prefix_len, gwaddr);
+>>>>>>> p9x
 
 	if (rt && !lifetime) {
 		ip6_del_rt(rt);
@@ -878,9 +918,17 @@ static struct rt6_info *rt6_alloc_cow(struct rt6_info *ort,
 	rt = ip6_rt_copy(ort, daddr);
 
 	if (rt) {
+<<<<<<< HEAD
 		if (ort->rt6i_dst.plen != 128 &&
 		    ipv6_addr_equal(&ort->rt6i_dst.addr, daddr))
 			rt->rt6i_flags |= RTF_ANYCAST;
+=======
+		if (!(rt->rt6i_flags & RTF_GATEWAY)) {
+			if (ort->rt6i_dst.plen != 128 &&
+			    ipv6_addr_equal(&ort->rt6i_dst.addr, daddr))
+				rt->rt6i_flags |= RTF_ANYCAST;
+		}
+>>>>>>> p9x
 
 		rt->rt6i_flags |= RTF_CACHE;
 
@@ -1091,9 +1139,18 @@ static struct dst_entry *ip6_dst_check(struct dst_entry *dst, u32 cookie)
 	if (!rt->rt6i_node || (rt->rt6i_node->fn_sernum != cookie))
 		return NULL;
 
+<<<<<<< HEAD
 	if (rt6_check_expired(rt))
 		return NULL;
 
+=======
+	if (!rt->rt6i_node || (rt->rt6i_node->fn_sernum != cookie))
+		return NULL;
+
+	if (rt6_check_expired(rt))
+		return NULL;
+
+>>>>>>> p9x
 	return dst;
 }
 
@@ -1161,6 +1218,10 @@ void ip6_update_pmtu(struct sk_buff *skb, struct net *net, __be32 mtu,
 	memset(&fl6, 0, sizeof(fl6));
 	fl6.flowi6_oif = oif;
 	fl6.flowi6_mark = mark ? mark : IP6_REPLY_MARK(net, skb->mark);
+<<<<<<< HEAD
+=======
+	fl6.flowi6_flags = 0;
+>>>>>>> p9x
 	fl6.daddr = iph->daddr;
 	fl6.saddr = iph->saddr;
 	fl6.flowlabel = ip6_flowinfo(iph);
@@ -1180,6 +1241,7 @@ void ip6_sk_update_pmtu(struct sk_buff *skb, struct sock *sk, __be32 mtu)
 }
 EXPORT_SYMBOL_GPL(ip6_sk_update_pmtu);
 
+<<<<<<< HEAD
 /* Handle redirects */
 struct ip6rd_flowi {
 	struct flowi6 fl6;
@@ -1251,6 +1313,8 @@ static struct dst_entry *ip6_route_redirect(struct net *net,
 				flags, __ip6_route_redirect);
 }
 
+=======
+>>>>>>> p9x
 void ip6_redirect(struct sk_buff *skb, struct net *net, int oif, u32 mark,
 		  kuid_t uid)
 {
@@ -1445,7 +1509,11 @@ static int ip6_dst_gc(struct dst_ops *ops)
 		goto out;
 
 	net->ipv6.ip6_rt_gc_expire++;
+<<<<<<< HEAD
 	fib6_run_gc(net->ipv6.ip6_rt_gc_expire, net, true);
+=======
+	fib6_run_gc(net->ipv6.ip6_rt_gc_expire, net, entries > rt_max_size);
+>>>>>>> p9x
 	entries = dst_entries_get_slow(ops);
 	if (entries < ops->gc_thresh)
 		net->ipv6.ip6_rt_gc_expire = rt_gc_timeout>>1;
@@ -1569,7 +1637,11 @@ int ip6_route_add(struct fib6_config *cfg)
 		switch (cfg->fc_type) {
 		case RTN_BLACKHOLE:
 			rt->dst.error = -EINVAL;
+<<<<<<< HEAD
 			rt->dst.output = dst_discard_sk;
+=======
+			rt->dst.output = dst_discard;
+>>>>>>> p9x
 			rt->dst.input = dst_discard;
 			break;
 		case RTN_PROHIBIT:
@@ -2020,7 +2092,11 @@ int rt6_addrconf_purge(struct rt6_info *rt, void *arg) {
 
 void rt6_purge_dflt_routers(struct net *net)
 {
+<<<<<<< HEAD
 	fib6_clean_all(net, rt6_addrconf_purge, NULL);
+=======
+	fib6_clean_all(net, rt6_addrconf_purge, 0, NULL);
+>>>>>>> p9x
 }
 
 static void rtmsg_to_fib6_config(struct net *net,
@@ -2328,7 +2404,10 @@ static const struct nla_policy rtm_ipv6_policy[RTA_MAX+1] = {
 	[RTA_METRICS]           = { .type = NLA_NESTED },
 	[RTA_MULTIPATH]		= { .len = sizeof(struct rtnexthop) },
 	[RTA_UID]		= { .type = NLA_U32 },
+<<<<<<< HEAD
 	[RTA_TABLE]		= { .type = NLA_U32 },
+=======
+>>>>>>> p9x
 };
 
 static int rtm_to_fib6_config(struct sk_buff *skb, struct nlmsghdr *nlh,

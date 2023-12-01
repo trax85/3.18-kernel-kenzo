@@ -97,13 +97,34 @@ static int highbank_l2_err_probe(struct platform_device *pdev)
 		goto err;
 	}
 
+<<<<<<< HEAD
 	id = of_match_device(hb_l2_err_of_match, &pdev->dev);
 	dci->mod_name = pdev->dev.driver->name;
 	dci->ctl_name = id ? id->compatible : "unknown";
+=======
+	dci->mod_name = dev_name(&pdev->dev);
+>>>>>>> p9x
 	dci->dev_name = dev_name(&pdev->dev);
 
 	if (edac_device_add_device(dci))
 		goto err;
+<<<<<<< HEAD
+
+	drvdata->db_irq = platform_get_irq(pdev, 0);
+	res = devm_request_irq(&pdev->dev, drvdata->db_irq,
+			       highbank_l2_err_handler,
+			       0, dev_name(&pdev->dev), dci);
+	if (res < 0)
+		goto err2;
+
+	drvdata->sb_irq = platform_get_irq(pdev, 1);
+	res = devm_request_irq(&pdev->dev, drvdata->sb_irq,
+			       highbank_l2_err_handler,
+			       0, dev_name(&pdev->dev), dci);
+	if (res < 0)
+		goto err2;
+=======
+>>>>>>> p9x
 
 	drvdata->db_irq = platform_get_irq(pdev, 0);
 	res = devm_request_irq(&pdev->dev, drvdata->db_irq,

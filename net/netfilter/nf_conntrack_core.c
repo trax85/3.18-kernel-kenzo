@@ -302,7 +302,10 @@ destroy_conntrack(struct nf_conntrack *nfct)
 	struct sip_list *sip_node = NULL;
 	struct list_head *sip_node_list;
 	struct list_head *sip_node_save_list;
+<<<<<<< HEAD
 	void (*delete_entry)(struct nf_conn *ct);
+=======
+>>>>>>> p9x
 
 	pr_debug("destroy_conntrack(%pK)\n", ct);
 	NF_CT_ASSERT(atomic_read(&nfct->use) == 0);
@@ -325,7 +328,11 @@ destroy_conntrack(struct nf_conntrack *nfct)
 
 	rcu_read_unlock();
 
+<<<<<<< HEAD
 	local_bh_disable();
+=======
+	spin_lock_bh(&nf_conntrack_lock);
+>>>>>>> p9x
 
 	pr_debug("freeing item in the SIP list\n");
 	if (ct->sip_segment_list.next != NULL)
@@ -336,6 +343,10 @@ destroy_conntrack(struct nf_conntrack *nfct)
 			list_del(&sip_node->list);
 			kfree(sip_node);
 		}
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 	/* Expectations will have been removed in clean_from_lists,
 	 * except TFTP can create an expectation on the first packet,
 	 * before connection is in the list, so we need to clean here,
@@ -413,6 +424,21 @@ EXPORT_SYMBOL_GPL(nf_ct_delete);
 static void death_by_timeout(unsigned long ul_conntrack)
 {
 	nf_ct_delete((struct nf_conn *)ul_conntrack, 0, 0);
+}
+
+static inline bool
+nf_ct_key_equal(struct nf_conntrack_tuple_hash *h,
+			const struct nf_conntrack_tuple *tuple,
+			u16 zone)
+{
+	struct nf_conn *ct = nf_ct_tuplehash_to_ctrack(h);
+
+	/* A conntrack can be recreated with the equal tuple,
+	 * so we need to check that the conntrack is confirmed
+	 */
+	return nf_ct_tuple_equal(tuple, &h->tuple) &&
+		nf_ct_zone(ct) == zone &&
+		nf_ct_is_confirmed(ct);
 }
 
 static inline bool
@@ -641,12 +667,15 @@ __nf_conntrack_confirm(struct sk_buff *skb)
 	 */
 	NF_CT_ASSERT(!nf_ct_is_confirmed(ct));
 	pr_debug("Confirming conntrack %pK\n", ct);
+<<<<<<< HEAD
 	/* We have to check the DYING flag after unlink to prevent
 	 * a race against nf_ct_get_next_corpse() possibly called from
 	 * user context, else we insert an already 'dead' hash, blocking
 	 * further use of that particular connection -JM.
 	 */
 	nf_ct_del_from_dying_or_unconfirmed_list(ct);
+=======
+>>>>>>> p9x
 
 	if (unlikely(nf_ct_is_dying(ct)))
 		goto out;
@@ -987,6 +1016,7 @@ init_conntrack(struct net *net, struct nf_conn *tmpl,
 				 ecache ? ecache->expmask : 0,
 			     GFP_ATOMIC);
 
+<<<<<<< HEAD
 	local_bh_disable();
 	INIT_LIST_HEAD(&ct->sip_segment_list);
 	if (net->ct.expect_count) {
@@ -1005,6 +1035,25 @@ init_conntrack(struct net *net, struct nf_conn *tmpl,
 				if (help)
 					rcu_assign_pointer(help->helper, exp->helper);
 			}
+=======
+	spin_lock_bh(&nf_conntrack_lock);
+
+	INIT_LIST_HEAD(&(ct->sip_segment_list));
+
+	exp = nf_ct_find_expectation(net, zone, tuple);
+	if (exp) {
+		pr_debug("conntrack: expectation arrives ct=%pK exp=%pK\n",
+			 ct, exp);
+		/* Welcome, Mr. Bond.  We've been expecting you... */
+		__set_bit(IPS_EXPECTED_BIT, &ct->status);
+		ct->master = exp->master;
+		if (exp->helper) {
+			help = nf_ct_helper_ext_add(ct, exp->helper,
+						    GFP_ATOMIC);
+			if (help)
+				rcu_assign_pointer(help->helper, exp->helper);
+		}
+>>>>>>> p9x
 
 #ifdef CONFIG_NF_CONNTRACK_MARK
 			ct->mark = exp->master->mark;
@@ -1012,6 +1061,7 @@ init_conntrack(struct net *net, struct nf_conn *tmpl,
 #ifdef CONFIG_NF_CONNTRACK_SECMARK
 			ct->secmark = exp->master->secmark;
 #endif
+<<<<<<< HEAD
 /* Initialize the NAT type entry. */
 #if defined(CONFIG_IP_NF_TARGET_NATTYPE_MODULE)
 		ct->nattype_entry = 0;
@@ -1021,6 +1071,15 @@ init_conntrack(struct net *net, struct nf_conn *tmpl,
 		spin_unlock(&nf_conntrack_expect_lock);
 	}
 	if (!exp) {
+=======
+/* Intialize the NAT type entry. */
+#if defined(CONFIG_IP_NF_TARGET_NATTYPE_MODULE)
+		ct->nattype_entry = 0;
+#endif
+		nf_conntrack_get(&ct->master->ct_general);
+		NF_CT_STAT_INC(net, expect_new);
+	} else {
+>>>>>>> p9x
 		__nf_ct_try_assign_helper(ct, tmpl, GFP_ATOMIC);
 		NF_CT_STAT_INC(net, new);
 	}
@@ -1086,7 +1145,11 @@ resolve_normal_ct(struct net *net, struct nf_conn *tmpl,
 	} else {
 		/* Once we've had two way comms, always ESTABLISHED. */
 		if (test_bit(IPS_SEEN_REPLY_BIT, &ct->status)) {
+<<<<<<< HEAD
 			pr_debug("nf_conntrack_in: normal packet for %pK\n", ct);
+=======
+			pr_debug("nf_conntrack_in:normal packet for %pK\n", ct);
+>>>>>>> p9x
 			*ctinfo = IP_CT_ESTABLISHED;
 		} else if (test_bit(IPS_EXPECTED_BIT, &ct->status)) {
 			pr_debug("nf_conntrack_in: related packet for %pK\n",
@@ -1821,6 +1884,7 @@ int nf_conntrack_init_net(struct net *net)
 		INIT_HLIST_NULLS_HEAD(&pcpu->tmpl, TEMPLATE_NULLS_VAL);
 	}
 
+<<<<<<< HEAD
 	net->ct.stat = alloc_percpu(struct ip_conntrack_stat);
 	if (!net->ct.stat)
 		goto err_pcpu_lists;
@@ -1828,6 +1892,11 @@ int nf_conntrack_init_net(struct net *net)
 	net->ct.slabname = kasprintf(GFP_KERNEL, "nf_conntrack_%llu",
 				(u64)atomic64_inc_return(&unique_id));
 	if (!net->ct.slabname)
+=======
+	net->ct.slabname = kasprintf(GFP_KERNEL, "nf_conntrack_%pK", net);
+	if (!net->ct.slabname) {
+		ret = -ENOMEM;
+>>>>>>> p9x
 		goto err_slabname;
 
 	net->ct.nf_conntrack_cachep = kmem_cache_create(net->ct.slabname,

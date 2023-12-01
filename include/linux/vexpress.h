@@ -15,9 +15,13 @@
 #define _LINUX_VEXPRESS_H
 
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
 #include <linux/reboot.h>
 #include <linux/regmap.h>
+=======
+#include <linux/reboot.h>
+>>>>>>> p9x
 
 #define VEXPRESS_SITE_MB		0
 #define VEXPRESS_SITE_DB1		1

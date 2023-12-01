@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2015-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -26,23 +30,33 @@
 #include <linux/kmemleak.h>
 #include <asm/current.h>
 #include <net/sock.h>
+<<<<<<< HEAD
 #include <linux/ipc_router.h>
 #include <linux/notifier.h>
+=======
+>>>>>>> p9x
 #include "diagchar.h"
 #include "diagfwd.h"
 #include "diagfwd_peripheral.h"
 #include "diagfwd_socket.h"
 #include "diag_ipc_logging.h"
 
+<<<<<<< HEAD
 #include <soc/qcom/subsystem_notif.h>
 #include <soc/qcom/subsystem_restart.h>
 
+=======
+>>>>>>> p9x
 #define DIAG_SVC_ID		0x1001
 
 #define MODEM_INST_BASE		0
 #define LPASS_INST_BASE		64
 #define WCNSS_INST_BASE		128
+<<<<<<< HEAD
 #define SENSORS_INST_BASE	192
+=======
+#define SENSORS_INST_BASE	256
+>>>>>>> p9x
 
 #define INST_ID_CNTL		0
 #define INST_ID_CMD		1
@@ -51,7 +65,10 @@
 #define INST_ID_DCI		4
 
 struct diag_cntl_socket_info *cntl_socket;
+<<<<<<< HEAD
 static uint64_t bootup_req[NUM_SOCKET_SUBSYSTEMS];
+=======
+>>>>>>> p9x
 
 struct diag_socket_info socket_data[NUM_PERIPHERALS] = {
 	{
@@ -174,8 +191,11 @@ static int diag_socket_write(void *ctxt, unsigned char *buf, int len);
 static int diag_socket_read(void *ctxt, unsigned char *buf, int buf_len);
 static void diag_socket_queue_read(void *ctxt);
 static void socket_init_work_fn(struct work_struct *work);
+<<<<<<< HEAD
 static int socket_ready_notify(struct notifier_block *nb,
 			       unsigned long action, void *data);
+=======
+>>>>>>> p9x
 
 static struct diag_peripheral_ops socket_ops = {
 	.open = diag_state_open_socket,
@@ -185,10 +205,13 @@ static struct diag_peripheral_ops socket_ops = {
 	.queue_read = diag_socket_queue_read
 };
 
+<<<<<<< HEAD
 static struct notifier_block socket_notify = {
 	.notifier_call = socket_ready_notify,
 };
 
+=======
+>>>>>>> p9x
 static void diag_state_open_socket(void *ctxt)
 {
 	struct diag_socket_info *info = NULL;
@@ -217,7 +240,11 @@ static void diag_state_close_socket(void *ctxt)
 	flush_workqueue(info->wq);
 }
 
+<<<<<<< HEAD
 static void socket_data_ready(struct sock *sk_ptr)
+=======
+static void socket_data_ready(struct sock *sk_ptr, int bytes)
+>>>>>>> p9x
 {
 	unsigned long flags;
 	struct diag_socket_info *info = NULL;
@@ -243,7 +270,11 @@ static void socket_data_ready(struct sock *sk_ptr)
 	return;
 }
 
+<<<<<<< HEAD
 static void cntl_socket_data_ready(struct sock *sk_ptr)
+=======
+static void cntl_socket_data_ready(struct sock *sk_ptr, int bytes)
+>>>>>>> p9x
 {
 	if (!sk_ptr || !cntl_socket) {
 		pr_err_ratelimited("diag: In %s, invalid ptrs. sk_ptr: %pK cntl_socket: %pK\n",
@@ -367,7 +398,11 @@ static void socket_open_client(struct diag_socket_info *info)
 		return;
 	}
 	__socket_open_channel(info);
+<<<<<<< HEAD
 	DIAG_LOG(DIAG_DEBUG_PERIPHERALS, "%s opened client\n", info->name);
+=======
+	DIAG_LOG(DIAG_DEBUG_PERIPHERALS, "%s exiting\n", info->name);
+>>>>>>> p9x
 }
 
 static void socket_open_server(struct diag_socket_info *info)
@@ -443,6 +478,7 @@ static void __socket_close_channel(struct diag_socket_info *info)
 	if (!atomic_read(&info->opened))
 		return;
 
+<<<<<<< HEAD
 	if (bootup_req[info->peripheral] == PEPIPHERAL_SSR_UP) {
 		DIAG_LOG(DIAG_DEBUG_PERIPHERALS,
 		"Modem is powered up, stopping cleanup: bootup_req[%s] = %d\n",
@@ -450,6 +486,8 @@ static void __socket_close_channel(struct diag_socket_info *info)
 		return;
 	}
 
+=======
+>>>>>>> p9x
 	memset(&info->remote_addr, 0, sizeof(struct sockaddr_msm_ipc));
 	diagfwd_channel_close(info->fwd_ctxt);
 
@@ -487,7 +525,11 @@ static int cntl_socket_process_msg_server(uint32_t cmd, uint32_t svc_id,
 	uint8_t found = 0;
 	struct diag_socket_info *info = NULL;
 
+<<<<<<< HEAD
 	for (peripheral = 0; peripheral < NUM_PERIPHERALS; peripheral++) {
+=======
+	for (peripheral = 0; peripheral <= NUM_PERIPHERALS; peripheral++) {
+>>>>>>> p9x
 		info = &socket_cmd[peripheral];
 		if ((svc_id == info->svc_id) &&
 		    (ins_id == info->ins_id)) {
@@ -535,7 +577,11 @@ static int cntl_socket_process_msg_client(uint32_t cmd, uint32_t node_id,
 	struct diag_socket_info *info = NULL;
 	struct msm_ipc_port_addr remote_port = {0};
 
+<<<<<<< HEAD
 	for (peripheral = 0; peripheral < NUM_PERIPHERALS; peripheral++) {
+=======
+	for (peripheral = 0; peripheral <= NUM_PERIPHERALS; peripheral++) {
+>>>>>>> p9x
 		info = &socket_data[peripheral];
 		remote_port = info->remote_addr.address.addr.port_addr;
 		if ((remote_port.node_id == node_id) &&
@@ -568,9 +614,13 @@ static int cntl_socket_process_msg_client(uint32_t cmd, uint32_t node_id,
 	case CNTL_CMD_REMOVE_CLIENT:
 		DIAG_LOG(DIAG_DEBUG_PERIPHERALS, "%s received remove client\n",
 			 info->name);
+<<<<<<< HEAD
 		mutex_lock(&driver->diag_notifier_mutex);
 		socket_close_channel(info);
 		mutex_unlock(&driver->diag_notifier_mutex);
+=======
+		socket_close_channel(info);
+>>>>>>> p9x
 		break;
 	default:
 		return -EINVAL;
@@ -579,6 +629,7 @@ static int cntl_socket_process_msg_client(uint32_t cmd, uint32_t node_id,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int restart_notifier_cb(struct notifier_block *this,
 				  unsigned long code,
 				  void *data);
@@ -597,6 +648,8 @@ static struct restart_notifier_block restart_notifiers[] = {
 };
 
 
+=======
+>>>>>>> p9x
 static void cntl_socket_read_work_fn(struct work_struct *work)
 {
 	union cntl_port_msg msg;
@@ -604,6 +657,10 @@ static void cntl_socket_read_work_fn(struct work_struct *work)
 	struct kvec iov = { 0 };
 	struct msghdr read_msg = { 0 };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 	if (!cntl_socket)
 		return;
 
@@ -666,6 +723,11 @@ static void diag_socket_queue_read(void *ctxt)
 		return;
 
 	info = (struct diag_socket_info *)ctxt;
+<<<<<<< HEAD
+=======
+	if (info->peripheral != PERIPHERAL_MODEM)
+		return;
+>>>>>>> p9x
 	if (info->hdl && info->wq)
 		queue_work(info->wq, &(info->read_work));
 }
@@ -765,6 +827,7 @@ static void __diag_socket_init(struct diag_socket_info *info)
 	info->svc_id = DIAG_SVC_ID;
 	info->ins_id = ins_base + ins_offset;
 	info->inited = 1;
+<<<<<<< HEAD
 }
 
 static void cntl_socket_init_work_fn(struct work_struct *work)
@@ -773,12 +836,37 @@ static void cntl_socket_init_work_fn(struct work_struct *work)
 
 	if (!cntl_socket)
 		return;
+=======
+
+	if (info->port_type == PORT_TYPE_SERVER)
+		queue_work(info->wq, &(info->init_work));
+}
+
+static int __diag_cntl_socket_init(void)
+{
+	int ret = 0;
+
+	cntl_socket = kzalloc(sizeof(struct diag_cntl_socket_info), GFP_KERNEL);
+	if (!cntl_socket)
+		return -ENOMEM;
+
+	cntl_socket->svc_id = DIAG_SVC_ID;
+	cntl_socket->ins_id = 1;
+	atomic_set(&cntl_socket->data_ready, 0);
+	init_waitqueue_head(&cntl_socket->read_wait_q);
+	cntl_socket->wq = create_singlethread_workqueue("DIAG_CNTL_SOCKET");
+	INIT_WORK(&(cntl_socket->read_work), cntl_socket_read_work_fn);
+>>>>>>> p9x
 
 	ret = sock_create(AF_MSM_IPC, SOCK_DGRAM, 0, &cntl_socket->hdl);
 	if (ret < 0 || !cntl_socket->hdl) {
 		pr_err("diag: In %s, cntl socket is not initialized, ret: %d\n",
 		       __func__, ret);
+<<<<<<< HEAD
 		return;
+=======
+		return -EFAULT;
+>>>>>>> p9x
 	}
 
 	write_lock_bh(&cntl_socket->hdl->sk->sk_callback_lock);
@@ -791,6 +879,7 @@ static void cntl_socket_init_work_fn(struct work_struct *work)
 	if (ret < 0) {
 		pr_err("diag: In %s Could not bind as control port, ret: %d\n",
 		       __func__, ret);
+<<<<<<< HEAD
 	}
 
 	DIAG_LOG(DIAG_DEBUG_PERIPHERALS, "Initialized control sockets");
@@ -810,17 +899,28 @@ static int __diag_cntl_socket_init(void)
 	INIT_WORK(&(cntl_socket->read_work), cntl_socket_read_work_fn);
 	INIT_WORK(&(cntl_socket->init_work), cntl_socket_init_work_fn);
 
+=======
+		return -EFAULT;
+	}
+
+>>>>>>> p9x
 	return 0;
 }
 
 int diag_socket_init(void)
 {
+<<<<<<< HEAD
 	int err = 0;
 	int i;
 	int peripheral = 0;
 	void *handle;
 	struct diag_socket_info *info = NULL;
 	struct restart_notifier_block *nb;
+=======
+	int peripheral = 0;
+	int err = 0;
+	struct diag_socket_info *info = NULL;
+>>>>>>> p9x
 
 	for (peripheral = 0; peripheral < NUM_PERIPHERALS; peripheral++) {
 		info = &socket_cntl[peripheral];
@@ -836,6 +936,7 @@ int diag_socket_init(void)
 	}
 
 	err = __diag_cntl_socket_init();
+<<<<<<< HEAD
 	if (err) {
 		pr_err("diag: Unable to open control sockets, err: %d\n", err);
 		goto fail;
@@ -936,6 +1037,14 @@ static int restart_notifier_cb(struct notifier_block *this, unsigned long code,
 	notifier->name, (int)bootup_req[notifier->processor]);
 
 	return NOTIFY_DONE;
+=======
+	if (err)
+		goto fail;
+
+	return 0;
+fail:
+	return err;
+>>>>>>> p9x
 }
 
 int diag_socket_init_peripheral(uint8_t peripheral)
@@ -1020,9 +1129,15 @@ static int diag_socket_read(void *ctxt, unsigned char *buf, int buf_len)
 				      (info->data_ready > 0) || (!info->hdl) ||
 				      (atomic_read(&info->diag_state) == 0));
 	if (err) {
+<<<<<<< HEAD
 		mutex_lock(&driver->diagfwd_channel_mutex[info->peripheral]);
 		diagfwd_channel_read_done(info->fwd_ctxt, buf, 0);
 		mutex_unlock(&driver->diagfwd_channel_mutex[info->peripheral]);
+=======
+		mutex_lock(&driver->diagfwd_channel_mutex);
+		diagfwd_channel_read_done(info->fwd_ctxt, buf, 0);
+		mutex_unlock(&driver->diagfwd_channel_mutex);
+>>>>>>> p9x
 		return -ERESTARTSYS;
 	}
 
@@ -1034,9 +1149,15 @@ static int diag_socket_read(void *ctxt, unsigned char *buf, int buf_len)
 		DIAG_LOG(DIAG_DEBUG_PERIPHERALS,
 			 "%s closing read thread. diag state is closed\n",
 			 info->name);
+<<<<<<< HEAD
 		mutex_lock(&driver->diagfwd_channel_mutex[info->peripheral]);
 		diagfwd_channel_read_done(info->fwd_ctxt, buf, 0);
 		mutex_unlock(&driver->diagfwd_channel_mutex[info->peripheral]);
+=======
+		mutex_lock(&driver->diagfwd_channel_mutex);
+		diagfwd_channel_read_done(info->fwd_ctxt, buf, 0);
+		mutex_unlock(&driver->diagfwd_channel_mutex);
+>>>>>>> p9x
 		return 0;
 	}
 
@@ -1103,10 +1224,17 @@ static int diag_socket_read(void *ctxt, unsigned char *buf, int buf_len)
 	if (total_recd > 0) {
 		DIAG_LOG(DIAG_DEBUG_PERIPHERALS, "%s read total bytes: %d\n",
 			 info->name, total_recd);
+<<<<<<< HEAD
 		mutex_lock(&driver->diagfwd_channel_mutex[info->peripheral]);
 		err = diagfwd_channel_read_done(info->fwd_ctxt,
 						buf, total_recd);
 		mutex_unlock(&driver->diagfwd_channel_mutex[info->peripheral]);
+=======
+		mutex_lock(&driver->diagfwd_channel_mutex);
+		err = diagfwd_channel_read_done(info->fwd_ctxt,
+						buf, total_recd);
+		mutex_unlock(&driver->diagfwd_channel_mutex);
+>>>>>>> p9x
 		if (err)
 			goto fail;
 	} else {
@@ -1119,9 +1247,15 @@ static int diag_socket_read(void *ctxt, unsigned char *buf, int buf_len)
 	return 0;
 
 fail:
+<<<<<<< HEAD
 	mutex_lock(&driver->diagfwd_channel_mutex[info->peripheral]);
 	diagfwd_channel_read_done(info->fwd_ctxt, buf, 0);
 	mutex_unlock(&driver->diagfwd_channel_mutex[info->peripheral]);
+=======
+	mutex_lock(&driver->diagfwd_channel_mutex);
+	diagfwd_channel_read_done(info->fwd_ctxt, buf, 0);
+	mutex_unlock(&driver->diagfwd_channel_mutex);
+>>>>>>> p9x
 	return -EIO;
 }
 

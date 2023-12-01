@@ -2,10 +2,13 @@
  * Copyright (C) 2012 Red Hat, Inc.
  * Copyright (C) 2015 Google, Inc.
  *
+<<<<<<< HEAD
  * Author: Mikulas Patocka <mpatocka@redhat.com>
  *
  * Based on Chromium dm-verity driver (C) 2011 The Chromium OS Authors
  *
+=======
+>>>>>>> p9x
  * This file is released under the GPLv2.
  */
 
@@ -16,9 +19,16 @@
 #include <linux/device-mapper.h>
 #include <crypto/hash.h>
 
+<<<<<<< HEAD
 #define DM_VERITY_WAIT_DEV_TIMEOUT_MS	(2000)
 #define DM_VERITY_MAX_LEVELS		63
 
+=======
+#define DM_VERITY_IO_VEC_INLINE		16
+#define DM_VERITY_MAX_LEVELS		63
+
+
+>>>>>>> p9x
 enum verity_mode {
 	DM_VERITY_MODE_EIO,
 	DM_VERITY_MODE_LOGGING,
@@ -30,8 +40,11 @@ enum verity_block_type {
 	DM_VERITY_BLOCK_TYPE_METADATA
 };
 
+<<<<<<< HEAD
 struct dm_verity_fec;
 
+=======
+>>>>>>> p9x
 struct dm_verity {
 	struct dm_dev *data_dev;
 	struct dm_dev *hash_dev;
@@ -58,13 +71,21 @@ struct dm_verity {
 	enum verity_mode mode;	/* mode for handling verification errors */
 	unsigned corrupted_errs;/* Number of errors for corrupted blocks */
 
+<<<<<<< HEAD
+=======
+	mempool_t *vec_mempool;	/* mempool of bio vector */
+
+>>>>>>> p9x
 	struct workqueue_struct *verify_wq;
 
 	/* starting blocks for each tree level. 0 is the lowest level. */
 	sector_t hash_level_block[DM_VERITY_MAX_LEVELS];
 
 	struct dm_verity_fec *fec;	/* forward error correction */
+<<<<<<< HEAD
 	unsigned long *validated_blocks; /* bitset blocks validated */
+=======
+>>>>>>> p9x
 };
 
 struct dm_verity_io {
@@ -77,10 +98,22 @@ struct dm_verity_io {
 	sector_t block;
 	unsigned n_blocks;
 
+<<<<<<< HEAD
 	struct bvec_iter iter;
 
 	struct work_struct work;
 
+=======
+	/* saved bio vector */
+	struct bio_vec *io_vec;
+	unsigned io_vec_size;
+
+	struct work_struct work;
+
+	/* A space for short vectors; longer vectors are allocated separately. */
+	struct bio_vec io_vec_inline[DM_VERITY_IO_VEC_INLINE];
+
+>>>>>>> p9x
 	/*
 	 * Three variably-size fields follow this struct:
 	 *
@@ -118,7 +151,11 @@ static inline u8 *verity_io_digest_end(struct dm_verity *v,
 }
 
 extern int verity_for_bv_block(struct dm_verity *v, struct dm_verity_io *io,
+<<<<<<< HEAD
 			       struct bvec_iter *iter,
+=======
+			       unsigned *vector, unsigned *offset,
+>>>>>>> p9x
 			       int (*process)(struct dm_verity *v,
 					      struct dm_verity_io *io,
 					      u8 *data, size_t len));

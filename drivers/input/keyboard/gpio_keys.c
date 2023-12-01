@@ -32,7 +32,10 @@
 #include <linux/of_gpio.h>
 #include <linux/spinlock.h>
 #include <linux/pinctrl/consumer.h>
+<<<<<<< HEAD
 #include <linux/syscore_ops.h>
+=======
+>>>>>>> p9x
 
 struct gpio_button_data {
 	const struct gpio_keys_button *button;
@@ -661,7 +664,10 @@ gpio_keys_get_devtree_pdata(struct device *dev)
 
 	pdata->rep = !!of_get_property(node, "autorepeat", NULL);
 	pdata->name = of_get_property(node, "input-name", NULL);
+<<<<<<< HEAD
 	pdata->use_syscore = of_property_read_bool(node, "use-syscore");
+=======
+>>>>>>> p9x
 
 	i = 0;
 	for_each_child_of_node(node, pp) {
@@ -735,8 +741,12 @@ static int gpio_keys_probe(struct platform_device *pdev)
 	const struct gpio_keys_platform_data *pdata = dev_get_platdata(dev);
 	struct gpio_keys_drvdata *ddata;
 	struct input_dev *input;
+<<<<<<< HEAD
 	size_t size;
 	int i, error;
+=======
+	int i = 0, error;
+>>>>>>> p9x
 	int wakeup = 0;
 	struct pinctrl_state *set_state;
 
@@ -797,7 +807,11 @@ static int gpio_keys_probe(struct platform_device *pdev)
 		error = gpio_keys_pinctrl_configure(ddata, true);
 		if (error) {
 			dev_err(dev, "cannot set ts pinctrl active state\n");
+<<<<<<< HEAD
 			return error;
+=======
+			goto fail2;
+>>>>>>> p9x
 		}
 	}
 
@@ -807,7 +821,11 @@ static int gpio_keys_probe(struct platform_device *pdev)
 
 		error = gpio_keys_setup_key(pdev, input, bdata, button);
 		if (error)
+<<<<<<< HEAD
 			goto err_setup_key;
+=======
+			goto err_pinctrl;
+>>>>>>> p9x
 
 		if (button->wakeup)
 			wakeup = 1;
@@ -838,8 +856,12 @@ static int gpio_keys_probe(struct platform_device *pdev)
 
 err_remove_group:
 	sysfs_remove_group(&pdev->dev.kobj, &gpio_keys_attr_group);
+<<<<<<< HEAD
 err_create_sysfs:
 err_setup_key:
+=======
+ err_pinctrl:
+>>>>>>> p9x
 	if (ddata->key_pinctrl) {
 		set_state =
 		pinctrl_lookup_state(ddata->key_pinctrl,
@@ -849,6 +871,20 @@ err_setup_key:
 		else
 			pinctrl_select_state(ddata->key_pinctrl, set_state);
 	}
+<<<<<<< HEAD
+=======
+ fail2:
+	while (--i >= 0)
+		gpio_remove_key(&ddata->data[i]);
+
+	platform_set_drvdata(pdev, NULL);
+ fail1:
+	input_free_device(input);
+	kfree(ddata);
+	/* If we have no platform data, we allocated pdata dynamically. */
+	if (!dev_get_platdata(&pdev->dev))
+		kfree(pdata);
+>>>>>>> p9x
 
 	return error;
 }
@@ -936,11 +972,14 @@ static int gpio_keys_resume(struct device *dev)
 	int error = 0;
 	int i;
 
+<<<<<<< HEAD
 	if (ddata->pdata->use_syscore == true) {
 		dev_dbg(global_dev, "Using syscore resume, no need of this resume.\n");
 		return 0;
 	}
 
+=======
+>>>>>>> p9x
 	if (ddata->key_pinctrl) {
 		error = gpio_keys_pinctrl_configure(ddata, true);
 		if (error) {

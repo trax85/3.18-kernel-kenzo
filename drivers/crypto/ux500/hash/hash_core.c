@@ -796,8 +796,13 @@ static int hash_process_data(struct hash_device_data *device_data,
 				ret = hash_resume_state(device_data,
 						&device_data->state);
 				memmove(req_ctx->state.buffer,
+<<<<<<< HEAD
 					device_data->state.buffer,
 					HASH_BLOCK_SIZE);
+=======
+						device_data->state.buffer,
+						HASH_BLOCK_SIZE);
+>>>>>>> p9x
 				if (ret) {
 					dev_err(device_data->dev,
 						"%s: hash_resume_state() failed!\n",
@@ -847,8 +852,13 @@ static int hash_process_data(struct hash_device_data *device_data,
 					&device_data->state);
 
 			memmove(device_data->state.buffer,
+<<<<<<< HEAD
 				req_ctx->state.buffer,
 				HASH_BLOCK_SIZE);
+=======
+					req_ctx->state.buffer,
+					HASH_BLOCK_SIZE);
+>>>>>>> p9x
 			if (ret) {
 				dev_err(device_data->dev, "%s: hash_save_state() failed!\n",
 					__func__);

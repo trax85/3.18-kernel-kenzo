@@ -202,6 +202,33 @@ void __init paging_init(void)
 
 /* References to section boundaries */
 
+<<<<<<< HEAD
+=======
+static int __init free_pages_init(void)
+{
+	int reservedpages, pfn;
+
+	/* this will put all low memory onto the freelists */
+	free_all_bootmem();
+
+	reservedpages = 0;
+	for (pfn = 0; pfn < max_low_pfn; pfn++) {
+		/*
+		 * Only count reserved RAM pages
+		 */
+		if (PageReserved(mem_map + pfn))
+			reservedpages++;
+	}
+
+	return reservedpages;
+}
+
+static void __init set_max_mapnr_init(void)
+{
+	max_mapnr = num_physpages = max_low_pfn;
+}
+
+>>>>>>> p9x
 void __init mem_init(void)
 {
 	BUG_ON(!mem_map);

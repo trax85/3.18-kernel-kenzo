@@ -191,6 +191,7 @@ extern struct trace_event_functions exit_syscall_print_funcs;
 	__SYSCALL_DEFINEx(x, sname, __VA_ARGS__)
 
 #define __PROTECT(...) asmlinkage_protect(__VA_ARGS__)
+#if !defined(__i386) && !defined(__amd64__)
 #define __SYSCALL_DEFINEx(x, name, ...)					\
 	asmlinkage long sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))	\
 		__attribute__((alias(__stringify(SyS##name))));		\
@@ -204,6 +205,21 @@ extern struct trace_event_functions exit_syscall_print_funcs;
 		return ret;						\
 	}								\
 	static inline long SYSC##name(__MAP(x,__SC_DECL,__VA_ARGS__))
+#else
+#define __SYSCALL_DEFINEx(x, name, ...)					\
+	asmlinkage long sys##name(__MAP(x,__SC_DECL,__VA_ARGS__));	\
+	static inline long SYSC##name(__MAP(x,__SC_DECL,__VA_ARGS__));	\
+	asmlinkage long SyS##name(__MAP(x,__SC_LONG,__VA_ARGS__))	\
+	{								\
+		long ret;						\
+		ret = SYSC##name(__MAP(x,__SC_CAST,__VA_ARGS__));	\
+		__MAP(x,__SC_TEST,__VA_ARGS__);				\
+		__PROTECT(x, ret,__MAP(x,__SC_ARGS,__VA_ARGS__));	\
+		return ret;						\
+	}								\
+	SYSCALL_ALIAS(sys##name, SyS##name);				\
+	static inline long SYSC##name(__MAP(x,__SC_DECL,__VA_ARGS__))
+#endif
 
 asmlinkage long sys32_quotactl(unsigned int cmd, const char __user *special,
 			       qid_t id, void __user *addr);
@@ -520,7 +536,7 @@ asmlinkage long sys_chown(const char __user *filename,
 asmlinkage long sys_lchown(const char __user *filename,
 				uid_t user, gid_t group);
 asmlinkage long sys_fchown(unsigned int fd, uid_t user, gid_t group);
-#ifdef CONFIG_UID16
+#ifdef CONFIG_HAVE_UID16
 asmlinkage long sys_chown16(const char __user *filename,
 				old_uid_t user, old_gid_t group);
 asmlinkage long sys_lchown16(const char __user *filename,
@@ -874,7 +890,14 @@ asmlinkage long sys_kcmp(pid_t pid1, pid_t pid2, int type,
 asmlinkage long sys_finit_module(int fd, const char __user *uargs, int flags);
 asmlinkage long sys_seccomp(unsigned int op, unsigned int flags,
 			    const char __user *uargs);
+<<<<<<< HEAD
 asmlinkage long sys_getrandom(char __user *buf, size_t count,
 			      unsigned int flags);
 asmlinkage long sys_bpf(int cmd, union bpf_attr *attr, unsigned int size);
+=======
+
+asmlinkage long sys_getrandom(char __user *buf, size_t count,
+			      unsigned int flags);
+
+>>>>>>> p9x
 #endif

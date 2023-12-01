@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2014, 2016, 2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -26,7 +30,10 @@
 #define MDP_HISTOGRAM_CSC_VECTOR_MAX 0x200
 #define MDP_HISTOGRAM_BIN_NUM	32
 #define MDP_LUT_SIZE 256
+<<<<<<< HEAD
 #define VSYNC_EXPIRE_TICK     4
+=======
+>>>>>>> p9x
 
 enum {
 	MDP3_DMA_P,
@@ -49,7 +56,10 @@ enum {
 	MDP3_DMA_OUTPUT_SEL_DSI_CMD,
 	MDP3_DMA_OUTPUT_SEL_LCDC,
 	MDP3_DMA_OUTPUT_SEL_DSI_VIDEO,
+<<<<<<< HEAD
 	MDP3_DMA_OUTPUT_SEL_SPI_CMD,
+=======
+>>>>>>> p9x
 	MDP3_DMA_OUTPUT_SEL_MAX
 };
 
@@ -257,17 +267,25 @@ struct mdp3_dma {
 	u32 capability;
 	int in_use;
 	int available;
+<<<<<<< HEAD
 	int vsync_period;
+=======
+>>>>>>> p9x
 
 	spinlock_t dma_lock;
 	spinlock_t histo_lock;
 	struct completion vsync_comp;
 	struct completion dma_comp;
 	struct completion histo_comp;
+<<<<<<< HEAD
 	struct kernfs_node *hist_event_sd;
 	struct mdp3_notification vsync_client;
 	struct mdp3_notification dma_notifier_client;
 	struct mdp3_notification retire_client;
+=======
+	struct mdp3_notification vsync_client;
+	struct mdp3_notification dma_notifier_client;
+>>>>>>> p9x
 
 	struct mdp3_dma_output_config output_config;
 	struct mdp3_dma_source source_config;
@@ -290,12 +308,18 @@ struct mdp3_dma {
 	struct mdp3_rect roi;
 
 	u32 lut_sts;
+<<<<<<< HEAD
 	u32 hist_events;
 	struct fb_cmap *gc_cmap;
 	struct fb_cmap *hist_cmap;
 
 	struct mdp3_session_data *session;
 
+=======
+	struct fb_cmap *gc_cmap;
+	struct fb_cmap *hist_cmap;
+
+>>>>>>> p9x
 	bool (*busy)(void);
 
 	int (*dma_config)(struct mdp3_dma *dma,
@@ -306,7 +330,11 @@ struct mdp3_dma {
 	int (*dma_sync_config)(struct mdp3_dma *dma, struct mdp3_dma_source
 				*source_config, struct mdp3_tear_check *te);
 
+<<<<<<< HEAD
 	void (*dma_config_source)(struct mdp3_dma *dma, bool enable_secure);
+=======
+	void (*dma_config_source)(struct mdp3_dma *dma);
+>>>>>>> p9x
 
 	int (*start)(struct mdp3_dma *dma, struct mdp3_intf *intf);
 
@@ -323,8 +351,13 @@ struct mdp3_dma {
 			struct mdp3_dma_lut_config *config,
 			struct fb_cmap *cmap);
 
+<<<<<<< HEAD
 	int (*update)(struct mdp3_dma *dma, void *buf, struct mdp3_intf *intf,
 			void *data, bool secure);
+=======
+	int (*update)(struct mdp3_dma *dma,
+			void *buf, struct mdp3_intf *intf, void *data);
+>>>>>>> p9x
 
 	int (*update_cursor)(struct mdp3_dma *dma, int x, int y);
 
@@ -338,6 +371,7 @@ struct mdp3_dma {
 	void (*vsync_enable)(struct mdp3_dma *dma,
 			struct mdp3_notification *vsync_client);
 
+<<<<<<< HEAD
 	void (*retire_enable)(struct mdp3_dma *dma,
 			struct mdp3_notification *retire_client);
 
@@ -347,6 +381,11 @@ struct mdp3_dma {
 	int (*wait_for_dma)(struct mdp3_dma *dma, struct mdp3_intf *intf);
 
 	int (*handle_null_commit)(struct mdp3_dma *dma, struct mdp3_intf *intf);
+=======
+	void (*dma_done_notifier)(struct mdp3_dma *dma,
+			struct mdp3_notification *dma_client);
+
+>>>>>>> p9x
 };
 
 struct mdp3_video_intf_cfg {
@@ -393,6 +432,7 @@ struct mdp3_intf {
 	int (*stop)(struct mdp3_intf *intf);
 };
 
+<<<<<<< HEAD
 static inline unsigned long dma_timeout_value(struct mdp3_dma *dma)
 {
 	if (dma->vsync_period)
@@ -401,6 +441,8 @@ static inline unsigned long dma_timeout_value(struct mdp3_dma *dma)
 		return msecs_to_jiffies(84);
 }
 
+=======
+>>>>>>> p9x
 int mdp3_dma_init(struct mdp3_dma *dma);
 
 int mdp3_intf_init(struct mdp3_intf *intf);
@@ -409,5 +451,8 @@ void mdp3_dma_callback_enable(struct mdp3_dma *dma, int type);
 
 void mdp3_dma_callback_disable(struct mdp3_dma *dma, int type);
 
+<<<<<<< HEAD
 void mdp3_hist_intr_notify(struct mdp3_dma *dma);
+=======
+>>>>>>> p9x
 #endif /* MDP3_DMA_H */

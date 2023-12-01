@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014,2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -67,7 +71,10 @@ struct oneshot_sync_state {
 struct oneshot_sync_pt {
 	struct sync_pt sync_pt;
 	struct oneshot_sync_state *state;
+<<<<<<< HEAD
 	bool dup;
+=======
+>>>>>>> p9x
 };
 #define to_oneshot_pt(_p) container_of((_p), struct oneshot_sync_pt, sync_pt)
 
@@ -92,7 +99,10 @@ static struct oneshot_sync_pt *
 oneshot_pt_create(struct oneshot_sync_timeline *timeline)
 {
 	struct oneshot_sync_pt *pt = NULL;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	pt = (struct oneshot_sync_pt *)sync_pt_create(&timeline->obj,
 						     sizeof(*pt));
 	if (pt == NULL)
@@ -128,15 +138,23 @@ static struct sync_pt *oneshot_pt_dup(struct sync_pt *sync_pt)
 	if (!kref_get_unless_zero(&pt->state->refcount))
 		return NULL;
 
+<<<<<<< HEAD
 	out_pt = (struct oneshot_sync_pt *)
 		sync_pt_create(sync_pt->parent, sizeof(*out_pt));
 
+=======
+	out_pt = (struct oneshot_sync_pt *)sync_pt_create(sync_pt->parent,
+							 sizeof(*out_pt));
+>>>>>>> p9x
 	if (out_pt == NULL) {
 		oneshot_state_put(pt->state);
 		return NULL;
 	}
 	out_pt->state = pt->state;
+<<<<<<< HEAD
 	out_pt->dup = true;
+=======
+>>>>>>> p9x
 
 	return &out_pt->sync_pt;
 }
@@ -164,8 +182,13 @@ static void oneshot_pt_free(struct sync_pt *sync_pt)
 {
 	struct oneshot_sync_pt *pt = to_oneshot_pt(sync_pt);
 
+<<<<<<< HEAD
 	struct oneshot_sync_timeline *timeline = sync_pt->parent ?
 		to_oneshot_timeline(sync_pt->parent) : NULL;
+=======
+	struct oneshot_sync_timeline *timeline =
+		sync_pt->parent ? to_oneshot_timeline(sync_pt->parent) : NULL;
+>>>>>>> p9x
 
 	if (timeline != NULL) {
 		spin_lock(&timeline->lock);
@@ -175,8 +198,13 @@ static void oneshot_pt_free(struct sync_pt *sync_pt)
 		 * safely, so there could be a delay until the pt's
 		 * state change is noticed.
 		 */
+<<<<<<< HEAD
 
 		if (pt->dup == false) {
+=======
+		if (pt->state->orig_fence == sync_pt->fence) {
+
+>>>>>>> p9x
 			/*
 			 * If the original pt goes away, force it signaled to
 			 * avoid deadlock.
@@ -186,6 +214,11 @@ static void oneshot_pt_free(struct sync_pt *sync_pt)
 						pt->state->id);
 				pt->state->signaled = true;
 			}
+<<<<<<< HEAD
+=======
+			/* clear the pointer, since it will be freed soon */
+			pt->state->orig_fence = NULL;
+>>>>>>> p9x
 		}
 		spin_unlock(&timeline->lock);
 	}

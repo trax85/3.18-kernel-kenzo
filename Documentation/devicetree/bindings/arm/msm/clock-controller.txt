@@ -12,12 +12,17 @@ Required properties:
 - compatible:		Must be one of following,
 			"qcom,gcc-8916"
 			"qcom,gcc-8936"
+<<<<<<< HEAD
+=======
+			"qcom,gcc-8936-v3"
+>>>>>>> p9x
 			"qcom,gcc-8909"
 			"qcom,gcc-8992"
 			"qcom,gcc-8994"
 			"qcom,gcc-8994v2"
 			"qcom,gcc-8952"
 			"qcom,gcc-spm-8952"
+<<<<<<< HEAD
 			"qcom,gcc-fsm9010"
 			"qcom,gcc-8996"
 			"qcom,gcc-8996-v2"
@@ -28,18 +33,27 @@ Required properties:
 			"qcom,gcc-8953"
 			"qcom,gcc-8940"
 			"qcom,gcc-8920"
+=======
+			"qcom,gcc-8976"
+			"qcom,gcc-8976-v1"
+			"qcom,gcc-fsm9010"
+>>>>>>> p9x
 			"qcom,rpmcc-8994"
 			"qcom,rpmcc-8992"
 			"qcom,rpmcc-8916"
 			"qcom,rpmcc-8936"
 			"qcom,rpmcc-8909"
+<<<<<<< HEAD
 			"qcom,rpmcc-8909-pm660"
+=======
+>>>>>>> p9x
 			"qcom,cc-debug-8916"
 			"qcom,cc-debug-8936"
 			"qcom,cc-debug-8909"
 			"qcom,cc-debug-8992"
 			"qcom,cc-debug-8994"
 			"qcom,cc-debug-8952"
+<<<<<<< HEAD
 			"qcom,cc-debug-8953"
 			"qcom,cc-debug-fsm9010"
 			"qcom,cc-debug-8996"
@@ -49,10 +63,15 @@ Required properties:
 			"qcom,cc-debug-8917"
 			"qcom,cc-debug-8940"
 			"qcom,cc-debug-8920"
+=======
+			"qcom,cc-debug-8976"
+			"qcom,cc-debug-fsm9010"
+>>>>>>> p9x
 			"qcom,gcc-mdss-8936"
 			"qcom,gcc-mdss-8909"
 			"qcom,gcc-mdss-8916"
 			"qcom,gcc-mdss-8952"
+<<<<<<< HEAD
 			"qcom,gcc-mdss-8937"
 			"qcom,gcc-mdss-8917"
 			"qcom,gcc-mdss-8953"
@@ -81,6 +100,14 @@ Required properties:
 			"qcom,gpucc-cobalt"
 			"qcom,mmsscc-cobalt"
 			"qcom,gcc-sdx20"
+=======
+			"qcom,gcc-mdss-8976"
+			"qcom,gcc-mdss-8976-v1"
+			"qcom,mmsscc-8994v2"
+			"qcom,mmsscc-8994"
+			"qcom,mmsscc-8992"
+			"qcom,gcc-gfx-8976"
+>>>>>>> p9x
 
 - reg:			Pairs of physical base addresses and region sizes of
 			memory mapped registers.
@@ -88,7 +115,11 @@ Required properties:
 			there is one expected base: "cc_base". Optional
 			reg-names are "apcs_base", "meas", "mmss_base",
 			"lpass_base", "apcs_c0_base", "apcs_c1_base",
+<<<<<<< HEAD
 			"apcs_cci_base", "efuse".
+=======
+			"apcs_cci_base".
+>>>>>>> p9x
 
 Optional properties:
 - vdd_dig-supply:	The digital logic rail supply.
@@ -98,11 +129,15 @@ Optional properties:
 - <pll>_analog-supply:	Some PLLs might have separate analog supply on some
 			targets. These properties will be provided on those
 			targets for specific PLLs.
+<<<<<<< HEAD
 - vdd_gpu_mx-supply:	MX rail supply for the GPU core.
+=======
+>>>>>>> p9x
 - #clock_cells:		If this device will also be providing controllable
 			clocks, the clock_cells property needs to be specified.
 			This will allow the common clock device tree framework
 			to recognize _this_ device node as a clock provider.
+<<<<<<< HEAD
 - qcom,<clk>-corner-<vers>: List of frequency voltage pairs that the clock can
 			    operate at. Drivers can use the OPP library API to
 			    operate on the list of OPPs registered using these
@@ -120,6 +155,23 @@ Optional properties:
 - qcom,<clock-name>-opp-store-vcorner: phandle references to the devices for
 			which OPP table is filled with the clock frequency
 			 and voltage corner/level.
+=======
+- qcom,dev-opp-list:	List of device nodes for which the drivers would need
+			the Operating Performance Points(OPP). OPPs are the
+			frequency/voltage pairs that the device can operate at.
+			drivers can use the OPP library API to operate on the
+			list of OPPs registered.
+- qcom,gfxfreq-corner:  List of frequency/voltage pairs that the device can
+			operate at.
+- <gpu>_handle:		Device node for which the OPP mappings would be added.
+
+- qcom,pll-disable-vote-threshold:	The TSENS temperature threshold in
+					degrees Celsius at which GPLLs(SR)
+					will be voted OFF.
+- qcom,pll-enable-vote-threshold:	The TSENS temperature threshold in
+					degrees Celsius at which GPLLs(SR)
+					will be voted ON.
+>>>>>>> p9x
 
 Example:
 	clock_rpm: qcom,rpmcc@fc4000000 {

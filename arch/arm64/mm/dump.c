@@ -15,12 +15,18 @@
  */
 #include <linux/debugfs.h>
 #include <linux/fs.h>
+<<<<<<< HEAD
 #include <linux/io.h>
 #include <linux/mm.h>
 #include <linux/sched.h>
 #include <linux/seq_file.h>
 
 #include <asm/fixmap.h>
+=======
+#include <linux/mm.h>
+#include <linux/seq_file.h>
+
+>>>>>>> p9x
 #include <asm/pgtable.h>
 
 #define LOWEST_ADDR	(UL(0xffffffffffffffff) << VA_BITS)
@@ -30,6 +36,7 @@ struct addr_marker {
 	const char *name;
 };
 
+<<<<<<< HEAD
 enum address_markers_idx {
 	VMALLOC_START_NR = 0,
 	VMALLOC_END_NR,
@@ -59,6 +66,12 @@ static struct addr_marker address_markers[] = {
 	{ FIXADDR_TOP,		"Fixmap end" },
 	{ MODULES_VADDR,	"Modules start" },
 	{ MODULES_END,		"Modules end" },
+=======
+static struct addr_marker address_markers[] = {
+	{ 0,			"vmalloc() Area" },
+	{ VMALLOC_END,		"vmalloc() End" },
+	{ MODULES_VADDR,	"Modules" },
+>>>>>>> p9x
 	{ PAGE_OFFSET,		"Kernel Mapping" },
 	{ -1,			NULL },
 };
@@ -128,7 +141,68 @@ static const struct prot_bits pte_bits[] = {
 	}, {
 		.mask	= PTE_ATTRINDX_MASK,
 		.val	= PTE_ATTRINDX(MT_NORMAL_NC),
+<<<<<<< HEAD
 		.set	= "MEM/NORMAL-NC",
+=======
+		.set	= "MEM/BUFFERABLE",
+	}, {
+		.mask	= PTE_ATTRINDX_MASK,
+		.val	= PTE_ATTRINDX(MT_NORMAL),
+		.set	= "MEM/NORMAL",
+	}
+};
+
+static const struct prot_bits section_bits[] = {
+	{
+		.mask	= PMD_SECT_USER,
+		.val	= PMD_SECT_USER,
+		.set	= "USR",
+	}, {
+		.mask	= PMD_SECT_RDONLY,
+		.val	= PMD_SECT_RDONLY,
+		.set	= "ro",
+		.clear	= "RW",
+	}, {
+		.mask	= PMD_SECT_PXN,
+		.val	= PMD_SECT_PXN,
+		.set	= "NX",
+		.clear	= "x ",
+	}, {
+		.mask	= PMD_SECT_S,
+		.val	= PMD_SECT_S,
+		.set	= "SHD",
+		.clear	= "   ",
+	}, {
+		.mask	= PMD_SECT_AF,
+		.val	= PMD_SECT_AF,
+		.set	= "AF",
+		.clear	= "  ",
+	}, {
+		.mask	= PMD_SECT_NG,
+		.val	= PMD_SECT_NG,
+		.set	= "NG",
+		.clear	= "  ",
+	}, {
+		.mask	= PMD_SECT_UXN,
+		.val	= PMD_SECT_UXN,
+		.set	= "UXN",
+	}, {
+		.mask	= PTE_ATTRINDX_MASK,
+		.val	= PTE_ATTRINDX(MT_DEVICE_nGnRnE),
+		.set	= "DEVICE/nGnRnE",
+	}, {
+		.mask	= PTE_ATTRINDX_MASK,
+		.val	= PTE_ATTRINDX(MT_DEVICE_nGnRE),
+		.set	= "DEVICE/nGnRE",
+	}, {
+		.mask	= PTE_ATTRINDX_MASK,
+		.val	= PTE_ATTRINDX(MT_DEVICE_GRE),
+		.set	= "DEVICE/GRE",
+	}, {
+		.mask	= PTE_ATTRINDX_MASK,
+		.val	= PTE_ATTRINDX(MT_NORMAL_NC),
+		.set	= "MEM/BUFFERABLE",
+>>>>>>> p9x
 	}, {
 		.mask	= PTE_ATTRINDX_MASK,
 		.val	= PTE_ATTRINDX(MT_NORMAL),
@@ -145,6 +219,7 @@ struct pg_level {
 static struct pg_level pg_level[] = {
 	{
 	}, { /* pgd */
+<<<<<<< HEAD
 		.bits	= pte_bits,
 		.num	= ARRAY_SIZE(pte_bits),
 	}, { /* pud */
@@ -153,6 +228,12 @@ static struct pg_level pg_level[] = {
 	}, { /* pmd */
 		.bits	= pte_bits,
 		.num	= ARRAY_SIZE(pte_bits),
+=======
+	}, { /* pud */
+	}, { /* pmd */
+		.bits	= section_bits,
+		.num	= ARRAY_SIZE(section_bits),
+>>>>>>> p9x
 	}, { /* pte */
 		.bits	= pte_bits,
 		.num	= ARRAY_SIZE(pte_bits),
@@ -216,17 +297,23 @@ static void note_page(struct pg_state *st, unsigned long addr, unsigned level,
 			st->marker++;
 			seq_printf(st->seq, "---[ %s ]---\n", st->marker->name);
 		}
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 		st->start_address = addr;
 		st->current_prot = prot;
 		st->level = level;
 	}
+<<<<<<< HEAD
 
 	if (addr >= st->marker[1].start_address) {
 		st->marker++;
 		seq_printf(st->seq, "---[ %s ]---\n", st->marker->name);
 	}
 
+=======
+>>>>>>> p9x
 }
 
 static void walk_pte(struct pg_state *st, pmd_t *pmd, unsigned long start)
@@ -249,7 +336,11 @@ static void walk_pmd(struct pg_state *st, pud_t *pud, unsigned long start)
 
 	for (i = 0; i < PTRS_PER_PMD; i++, pmd++) {
 		addr = start + i * PMD_SIZE;
+<<<<<<< HEAD
 		if (pmd_none(*pmd) || pmd_sect(*pmd) || pmd_bad(*pmd))
+=======
+		if (pmd_none(*pmd) || !pmd_present(*pmd) || pmd_bad(*pmd))
+>>>>>>> p9x
 			note_page(st, addr, 3, pmd_val(*pmd));
 		else
 			walk_pte(st, pmd, addr);
@@ -264,6 +355,7 @@ static void walk_pud(struct pg_state *st, pgd_t *pgd, unsigned long start)
 
 	for (i = 0; i < PTRS_PER_PUD; i++, pud++) {
 		addr = start + i * PUD_SIZE;
+<<<<<<< HEAD
 		if (pud_none(*pud) || pud_sect(*pud) || pud_bad(*pud))
 			note_page(st, addr, 2, pud_val(*pud));
 		else
@@ -284,10 +376,45 @@ static void walk_pgd(struct pg_state *st, struct mm_struct *mm, unsigned long st
 		else
 			walk_pud(st, pgd, addr);
 	}
+=======
+		if (!pud_none(*pud))
+			walk_pmd(st, pud, addr);
+		else
+			note_page(st, addr, 2, pud_val(*pud));
+	}
+}
+
+static unsigned long normalize_addr(unsigned long u)
+{
+	return u | LOWEST_ADDR;
+}
+
+static void walk_pgd(struct seq_file *m)
+{
+	pgd_t *pgd = swapper_pg_dir;
+	struct pg_state st;
+	unsigned long addr;
+	unsigned i, pgdoff = 0;
+
+	memset(&st, 0, sizeof(st));
+	st.seq = m;
+	st.marker = address_markers;
+
+	for (i = pgdoff; i < PTRS_PER_PGD; i++, pgd++) {
+		addr = normalize_addr(i * PGDIR_SIZE);
+		if (!pgd_none(*pgd))
+			walk_pud(&st, pgd, addr);
+		else
+			note_page(&st, addr, 1, pgd_val(*pgd));
+	}
+
+	note_page(&st, 0, 0, 0);
+>>>>>>> p9x
 }
 
 static int ptdump_show(struct seq_file *m, void *v)
 {
+<<<<<<< HEAD
 	struct pg_state st = {
 		.seq = m,
 		.marker = address_markers,
@@ -296,6 +423,9 @@ static int ptdump_show(struct seq_file *m, void *v)
 	walk_pgd(&st, &init_mm, LOWEST_ADDR);
 
 	note_page(&st, 0, 0, 0);
+=======
+	walk_pgd(m);
+>>>>>>> p9x
 	return 0;
 }
 
@@ -321,10 +451,14 @@ static int ptdump_init(void)
 			for (j = 0; j < pg_level[i].num; j++)
 				pg_level[i].mask |= pg_level[i].bits[j].mask;
 
+<<<<<<< HEAD
 	address_markers[VMEMMAP_START_NR].start_address =
 				(unsigned long)virt_to_page(PAGE_OFFSET);
 	address_markers[VMEMMAP_END_NR].start_address =
 				(unsigned long)virt_to_page(high_memory);
+=======
+	address_markers[0].start_address = VMALLOC_START;
+>>>>>>> p9x
 
 	pe = debugfs_create_file("kernel_page_tables", 0400, NULL, NULL,
 				 &ptdump_fops);

@@ -27,6 +27,7 @@ static struct ctl_table ipv6_table_template[] = {
 		.proc_handler	= proc_dointvec
 	},
 	{
+<<<<<<< HEAD
 		.procname	= "anycast_src_echo_reply",
 		.data		= &init_net.ipv6.sysctl.anycast_src_echo_reply,
 		.maxlen		= sizeof(int),
@@ -48,6 +49,8 @@ static struct ctl_table ipv6_table_template[] = {
 		.proc_handler	= proc_dointvec
 	},
 	{
+=======
+>>>>>>> p9x
 		.procname	= "fwmark_reflect",
 		.data		= &init_net.ipv6.sysctl.fwmark_reflect,
 		.maxlen		= sizeof(int),

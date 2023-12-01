@@ -438,7 +438,11 @@ void diag_smd_invalidate(void *ctxt, struct diagfwd_info *fwd_ctxt)
 	smd_info = (struct diag_smd_info *)ctxt;
 	prev = smd_info->fwd_ctxt;
 	smd_info->fwd_ctxt = fwd_ctxt;
+<<<<<<< HEAD
 	DIAG_LOG(DIAG_DEBUG_PERIPHERALS, "%s prev: %pK fwd_ctxt: %pK\n",
+=======
+	DIAG_LOG(DIAG_DEBUG_PERIPHERALS, "%s prev: %p fwd_ctxt: %p\n",
+>>>>>>> p9x
 		 smd_info->name, prev, smd_info->fwd_ctxt);
 }
 
@@ -467,7 +471,11 @@ static void __diag_smd_init(struct diag_smd_info *smd_info)
 	atomic_set(&smd_info->opened, 0);
 	atomic_set(&smd_info->diag_state, 0);
 
+<<<<<<< HEAD
 	DIAG_LOG(DIAG_DEBUG_PERIPHERALS, "%s initialized fwd_ctxt: %pK\n",
+=======
+	DIAG_LOG(DIAG_DEBUG_PERIPHERALS, "%s initialized fwd_ctxt: %p\n",
+>>>>>>> p9x
 		 smd_info->name, smd_info->fwd_ctxt);
 }
 
@@ -599,7 +607,11 @@ static int diag_smd_write_ext(struct diag_smd_info *smd_info,
 	uint8_t avail = 0;
 
 	if (!smd_info || !buf || len <= 0) {
+<<<<<<< HEAD
 		pr_err_ratelimited("diag: In %s, invalid params, smd_info: %pK, buf: %pK, len: %d\n",
+=======
+		pr_err_ratelimited("diag: In %s, invalid params, smd_info: %p, buf: %p, len: %d\n",
+>>>>>>> p9x
 				   __func__, smd_info, buf, len);
 		return -EINVAL;
 	}
@@ -671,7 +683,11 @@ static int diag_smd_write(void *ctxt, unsigned char *buf, int len)
 
 	smd_info = (struct diag_smd_info *)ctxt;
 	if (!smd_info || !buf || len <= 0) {
+<<<<<<< HEAD
 		pr_err_ratelimited("diag: In %s, invalid params, smd_info: %pK, buf: %pK, len: %d\n",
+=======
+		pr_err_ratelimited("diag: In %s, invalid params, smd_info: %p, buf: %p, len: %d\n",
+>>>>>>> p9x
 				   __func__, smd_info, buf, len);
 		return -EINVAL;
 	}
@@ -732,27 +748,45 @@ static int diag_smd_read(void *ctxt, unsigned char *buf, int buf_len)
 	 * In case if packet size is 0 release the wake source hold earlier
 	 */
 	err = wait_event_interruptible(smd_info->read_wait_q,
+<<<<<<< HEAD
 				       (smd_info->hdl != NULL) &&
 				       (atomic_read(&smd_info->opened) == 1));
+=======
+				(smd_info->hdl != NULL) &&
+				(atomic_read(&smd_info->opened) == 1));
+>>>>>>> p9x
 	if (err) {
 		diagfwd_channel_read_done(smd_info->fwd_ctxt, buf, 0);
 		return -ERESTARTSYS;
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Reset the buffers. Also release the wake source hold earlier.
+=======
+	 * In this case don't reset the buffers as there is no need to further
+	 * read over peripherals. Also release the wake source hold earlier.
+>>>>>>> p9x
 	 */
 	if (atomic_read(&smd_info->diag_state) == 0) {
 		DIAG_LOG(DIAG_DEBUG_PERIPHERALS,
 			 "%s closing read thread. diag state is closed\n",
 			 smd_info->name);
+<<<<<<< HEAD
 		diagfwd_channel_read_done(smd_info->fwd_ctxt, buf, 0);
+=======
+		diag_ws_release();
+>>>>>>> p9x
 		return 0;
 	}
 
 	if (!smd_info->hdl || !atomic_read(&smd_info->opened)) {
 		DIAG_LOG(DIAG_DEBUG_PERIPHERALS,
+<<<<<<< HEAD
 			 "%s stopping read, hdl: %pK, opened: %d\n",
+=======
+			 "%s stopping read, hdl: %p, opened: %d\n",
+>>>>>>> p9x
 			 smd_info->name, smd_info->hdl,
 			 atomic_read(&smd_info->opened));
 		goto fail_return;

@@ -681,7 +681,11 @@ void __icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info,
 	ipc.tos = -1;
 
 	rt = icmp_route_lookup(net, &fl4, skb_in, iph, saddr, tos, mark,
+<<<<<<< HEAD
 			       type, code, icmp_param);
+=======
+			       type, code, &icmp_param);
+>>>>>>> p9x
 	if (IS_ERR(rt))
 		goto out_unlock;
 
@@ -789,6 +793,7 @@ static void icmp_unreach(struct sk_buff *skb)
 			default:
 				LIMIT_NETDEBUG(KERN_INFO pr_fmt("%pI4: fragmentation needed and DF set\n"),
 					       &iph->daddr);
+<<<<<<< HEAD
 				break;
 			case 2:
 				goto out;
@@ -797,6 +802,9 @@ static void icmp_unreach(struct sk_buff *skb)
 					goto out;
 				/* fall through */
 			case 0:
+=======
+			} else {
+>>>>>>> p9x
 				info = ntohs(icmph->un.frag.mtu);
 			}
 			break;

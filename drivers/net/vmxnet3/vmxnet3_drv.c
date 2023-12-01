@@ -2880,7 +2880,6 @@ vmxnet3_tx_timeout(struct net_device *netdev)
 
 	netdev_err(adapter->netdev, "tx hang\n");
 	schedule_work(&adapter->work);
-	netif_wake_queue(adapter->netdev);
 }
 
 
@@ -2907,6 +2906,7 @@ vmxnet3_reset_work(struct work_struct *data)
 	}
 	rtnl_unlock();
 
+	netif_wake_queue(adapter->netdev);
 	clear_bit(VMXNET3_STATE_BIT_RESETTING, &adapter->state);
 }
 

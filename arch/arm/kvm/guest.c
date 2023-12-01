@@ -123,6 +123,19 @@ static bool is_timer_reg(u64 index)
 	return false;
 }
 
+<<<<<<< HEAD
+=======
+int kvm_arm_timer_set_reg(struct kvm_vcpu *vcpu, u64 regid, u64 value)
+{
+	return 0;
+}
+
+u64 kvm_arm_timer_get_reg(struct kvm_vcpu *vcpu, u64 regid)
+{
+	return 0;
+}
+
+>>>>>>> p9x
 #else
 
 #define NUM_TIMER_REGS 3
@@ -162,7 +175,11 @@ static int set_timer_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 
 	ret = copy_from_user(&val, uaddr, KVM_REG_SIZE(reg->id));
 	if (ret != 0)
+<<<<<<< HEAD
 		return -EFAULT;
+=======
+		return ret;
+>>>>>>> p9x
 
 	return kvm_arm_timer_set_reg(vcpu, reg->id, val);
 }
@@ -173,7 +190,11 @@ static int get_timer_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 	u64 val;
 
 	val = kvm_arm_timer_get_reg(vcpu, reg->id);
+<<<<<<< HEAD
 	return copy_to_user(uaddr, &val, KVM_REG_SIZE(reg->id)) ? -EFAULT : 0;
+=======
+	return copy_to_user(uaddr, &val, KVM_REG_SIZE(reg->id));
+>>>>>>> p9x
 }
 
 static unsigned long num_core_regs(void)

@@ -149,7 +149,10 @@ static int process_one_ticket(struct ceph_auth_client *ac,
 	struct ceph_crypto_key old_key;
 	void *ticket_buf = NULL;
 	void *tp, *tpend;
+<<<<<<< HEAD
 	void **ptp;
+=======
+>>>>>>> p9x
 	struct ceph_timespec new_validity;
 	struct ceph_crypto_key new_session_key;
 	struct ceph_buffer *new_ticket_blob;
@@ -209,6 +212,7 @@ static int process_one_ticket(struct ceph_auth_client *ac,
 			goto out;
 		}
 		tp = ticket_buf;
+<<<<<<< HEAD
 		ptp = &tp;
 		tpend = *ptp + dlen;
 	} else {
@@ -222,6 +226,27 @@ static int process_one_ticket(struct ceph_auth_client *ac,
 	blob_struct_v = ceph_decode_8(ptp);
 	new_secret_id = ceph_decode_64(ptp);
 	ret = ceph_decode_buffer(&new_ticket_blob, ptp, tpend);
+=======
+		dlen = ceph_decode_32(&tp);
+	} else {
+		/* unencrypted */
+		ceph_decode_32_safe(p, end, dlen, bad);
+		ticket_buf = kmalloc(dlen, GFP_NOFS);
+		if (!ticket_buf) {
+			ret = -ENOMEM;
+			goto out;
+		}
+		tp = ticket_buf;
+		ceph_decode_need(p, end, dlen, bad);
+		ceph_decode_copy(p, ticket_buf, dlen);
+	}
+	tpend = tp + dlen;
+	dout(" ticket blob is %d bytes\n", dlen);
+	ceph_decode_need(&tp, tpend, 1 + sizeof(u64), bad);
+	blob_struct_v = ceph_decode_8(&tp);
+	new_secret_id = ceph_decode_64(&tp);
+	ret = ceph_decode_buffer(&new_ticket_blob, &tp, tpend);
+>>>>>>> p9x
 	if (ret)
 		goto out;
 

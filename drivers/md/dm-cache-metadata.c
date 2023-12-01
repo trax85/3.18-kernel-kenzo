@@ -800,6 +800,7 @@ void dm_cache_metadata_close(struct dm_cache_metadata *cmd)
 		__destroy_persistent_data_objects(cmd);
 		kfree(cmd);
 	}
+<<<<<<< HEAD
 }
 
 /*
@@ -847,6 +848,8 @@ static int blocks_are_unmapped_or_clean(struct dm_cache_metadata *cmd,
 	}
 
 	return 0;
+=======
+>>>>>>> p9x
 }
 
 int dm_cache_resize(struct dm_cache_metadata *cmd, dm_cblock_t new_cache_size)

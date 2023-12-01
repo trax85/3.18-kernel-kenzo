@@ -9,7 +9,11 @@ struct msg_msg {
 	struct list_head m_list;
 	long m_type;
 	size_t m_ts;		/* message text size */
+<<<<<<< HEAD
 	struct msg_msgseg *next;
+=======
+	struct msg_msgseg* next;
+>>>>>>> p9x
 	void *security;
 	/* the actual message follows immediately */
 };

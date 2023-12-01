@@ -9,8 +9,12 @@ obj-$(CONFIG_REGULATOR_FIXED_VOLTAGE) += fixed.o
 obj-$(CONFIG_REGULATOR_VIRTUAL_CONSUMER) += virtual.o
 obj-$(CONFIG_REGULATOR_USERSPACE_CONSUMER) += userspace-consumer.o
 obj-$(CONFIG_REGULATOR_PROXY_CONSUMER) += proxy-consumer.o
+<<<<<<< HEAD
 obj-$(CONFIG_REGULATOR_MEM_ACC) += mem-acc-regulator.o
 obj-$(CONFIG_REGULATOR_88PM800) += 88pm800.o
+=======
+
+>>>>>>> p9x
 obj-$(CONFIG_REGULATOR_88PM8607) += 88pm8607.o
 obj-$(CONFIG_REGULATOR_AAT2870) += aat2870-regulator.o
 obj-$(CONFIG_REGULATOR_AB3100) += ab3100.o
@@ -60,7 +64,11 @@ obj-$(CONFIG_REGULATOR_MAX77802) += max77802.o
 obj-$(CONFIG_REGULATOR_MC13783) += mc13783-regulator.o
 obj-$(CONFIG_REGULATOR_MC13892) += mc13892-regulator.o
 obj-$(CONFIG_REGULATOR_MC13XXX_CORE) +=  mc13xxx-regulator-core.o
+<<<<<<< HEAD
 obj-$(CONFIG_REGULATOR_QCOM_RPM) += qcom_rpm-regulator.o
+=======
+obj-$(CONFIG_REGULATOR_MEM_ACC) += mem-acc-regulator.o
+>>>>>>> p9x
 obj-$(CONFIG_REGULATOR_ONSEMI_NCP6335D) += onsemi-ncp6335d.o
 obj-$(CONFIG_REGULATOR_PALMAS) += palmas-regulator.o
 obj-$(CONFIG_REGULATOR_PFUZE100) += pfuze100-regulator.o
@@ -88,9 +96,11 @@ obj-$(CONFIG_REGULATOR_TPS65218) += tps65218-regulator.o
 obj-$(CONFIG_REGULATOR_TPS6524X) += tps6524x-regulator.o
 obj-$(CONFIG_REGULATOR_TPS6586X) += tps6586x-regulator.o
 obj-$(CONFIG_REGULATOR_TPS65910) += tps65910-regulator.o
+obj-$(CONFIG_REGULATOR_STUB) += stub-regulator.o
 obj-$(CONFIG_REGULATOR_TPS65912) += tps65912-regulator.o
 obj-$(CONFIG_REGULATOR_TPS80031) += tps80031-regulator.o
 obj-$(CONFIG_REGULATOR_TWL4030) += twl-regulator.o
+obj-$(CONFIG_REGULATOR_TPS65132) += tps65132-regulator.o
 obj-$(CONFIG_REGULATOR_VEXPRESS) += vexpress.o
 obj-$(CONFIG_REGULATOR_WM831X) += wm831x-dcdc.o
 obj-$(CONFIG_REGULATOR_WM831X) += wm831x-isink.o
@@ -102,6 +112,7 @@ obj-$(CONFIG_REGULATOR_RPM_SMD) += rpm-smd-regulator.o
 obj-$(CONFIG_REGULATOR_QPNP) += qpnp-regulator.o
 obj-$(CONFIG_REGULATOR_SPM) += spm-regulator.o
 obj-$(CONFIG_REGULATOR_CPR) += cpr-regulator.o
+<<<<<<< HEAD
 obj-$(CONFIG_REGULATOR_CPR3) += cpr3-regulator.o cpr3-util.o
 obj-$(CONFIG_REGULATOR_CPR3_HMSS) += cpr3-hmss-regulator.o
 obj-$(CONFIG_REGULATOR_CPR3_MMSS) += cpr3-mmss-regulator.o
@@ -111,4 +122,9 @@ obj-$(CONFIG_REGULATOR_QPNP_LABIBB) += qpnp-labibb-regulator.o
 obj-$(CONFIG_REGULATOR_STUB) += stub-regulator.o
 obj-$(CONFIG_REGULATOR_KRYO) += kryo-regulator.o
 obj-$(CONFIG_REGULATOR_CPR2_GFX) += cpr2-gfx-regulator.o
+=======
+obj-$(CONFIG_REGULATOR_QPNP_LABIBB) += qpnp-labibb-regulator.o
+obj-$(CONFIG_REGULATOR_CPR2_GFX) += cpr2-gfx-regulator.o
+
+>>>>>>> p9x
 ccflags-$(CONFIG_REGULATOR_DEBUG) += -DDEBUG

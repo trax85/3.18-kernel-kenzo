@@ -289,6 +289,7 @@ int __kprobes do_page_fault(struct pt_regs *regs, unsigned long address,
 
 	perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
 
+<<<<<<< HEAD
 	/*
 	 * We want to do this outside mmap_sem, because reading code around nip
 	 * can result in fault, which will cause a deadlock when called with
@@ -297,6 +298,8 @@ int __kprobes do_page_fault(struct pt_regs *regs, unsigned long address,
 	if (!is_exec && user_mode(regs))
 		store_update_sp = store_updates_sp(regs);
 
+=======
+>>>>>>> p9x
 	if (user_mode(regs))
 		flags |= FAULT_FLAG_USER;
 

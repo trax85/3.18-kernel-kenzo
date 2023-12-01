@@ -662,7 +662,11 @@ static ssize_t fill_periodic_buffer(struct debug_buffer *buf)
 			case Q_TYPE_QH:
 				hw = p.qh->hw;
 				temp = scnprintf (next, size, " qh%d-%04x/%pK",
+<<<<<<< HEAD
 						p.qh->ps.period,
+=======
+						p.qh->period,
+>>>>>>> p9x
 						hc32_to_cpup(ehci,
 							&hw->hw_info2)
 							/* uframe masks */
@@ -737,7 +741,11 @@ static ssize_t fill_periodic_buffer(struct debug_buffer *buf)
 			case Q_TYPE_SITD:
 				temp = scnprintf (next, size,
 					" sitd%d-%04x/%pK",
+<<<<<<< HEAD
 					p.sitd->stream->ps.period,
+=======
+					p.sitd->stream->interval,
+>>>>>>> p9x
 					hc32_to_cpup(ehci, &p.sitd->hw_uframe)
 						& 0x0000ffff,
 					p.sitd);

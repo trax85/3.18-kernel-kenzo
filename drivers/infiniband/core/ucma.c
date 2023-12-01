@@ -43,6 +43,7 @@
 #include <linux/sysctl.h>
 #include <linux/module.h>
 
+#include <rdma/ib.h>
 #include <rdma/rdma_user_cm.h>
 #include <rdma/ib_marshall.h>
 #include <rdma/rdma_cm.h>

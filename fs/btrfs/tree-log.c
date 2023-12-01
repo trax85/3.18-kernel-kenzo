@@ -3616,8 +3616,75 @@ static int wait_ordered_extents(struct btrfs_trans_handle *trans,
 
 	*ordered_io_error = false;
 
+<<<<<<< HEAD
 	if (test_bit(EXTENT_FLAG_PREALLOC, &em->flags) ||
 	    em->block_start == EXTENT_MAP_HOLE)
+=======
+	INIT_LIST_HEAD(&ordered_sums);
+	btrfs_init_map_token(&token);
+	key.objectid = btrfs_ino(inode);
+	key.type = BTRFS_EXTENT_DATA_KEY;
+	key.offset = em->start;
+
+	ret = btrfs_insert_empty_item(trans, log, path, &key, sizeof(*fi));
+	if (ret)
+		return ret;
+	leaf = path->nodes[0];
+	fi = btrfs_item_ptr(leaf, path->slots[0],
+			    struct btrfs_file_extent_item);
+
+	btrfs_set_token_file_extent_generation(leaf, fi, em->generation,
+					       &token);
+	if (test_bit(EXTENT_FLAG_PREALLOC, &em->flags)) {
+		skip_csum = true;
+		btrfs_set_token_file_extent_type(leaf, fi,
+						 BTRFS_FILE_EXTENT_PREALLOC,
+						 &token);
+	} else {
+		btrfs_set_token_file_extent_type(leaf, fi,
+						 BTRFS_FILE_EXTENT_REG,
+						 &token);
+		if (em->block_start == EXTENT_MAP_HOLE)
+			skip_csum = true;
+	}
+
+	block_len = max(em->block_len, em->orig_block_len);
+	if (em->compress_type != BTRFS_COMPRESS_NONE) {
+		btrfs_set_token_file_extent_disk_bytenr(leaf, fi,
+							em->block_start,
+							&token);
+		btrfs_set_token_file_extent_disk_num_bytes(leaf, fi, block_len,
+							   &token);
+	} else if (em->block_start < EXTENT_MAP_LAST_BYTE) {
+		btrfs_set_token_file_extent_disk_bytenr(leaf, fi,
+							em->block_start -
+							extent_offset, &token);
+		btrfs_set_token_file_extent_disk_num_bytes(leaf, fi, block_len,
+							   &token);
+	} else {
+		btrfs_set_token_file_extent_disk_bytenr(leaf, fi, 0, &token);
+		btrfs_set_token_file_extent_disk_num_bytes(leaf, fi, 0,
+							   &token);
+	}
+
+	btrfs_set_token_file_extent_offset(leaf, fi,
+					   em->start - em->orig_start,
+					   &token);
+	btrfs_set_token_file_extent_num_bytes(leaf, fi, em->len, &token);
+	btrfs_set_token_file_extent_ram_bytes(leaf, fi, em->ram_bytes, &token);
+	btrfs_set_token_file_extent_compression(leaf, fi, em->compress_type,
+						&token);
+	btrfs_set_token_file_extent_encryption(leaf, fi, 0, &token);
+	btrfs_set_token_file_extent_other_encoding(leaf, fi, 0, &token);
+	btrfs_mark_buffer_dirty(leaf);
+
+	btrfs_release_path(path);
+	if (ret) {
+		return ret;
+	}
+
+	if (skip_csum)
+>>>>>>> p9x
 		return 0;
 
 	/*
@@ -4494,6 +4561,7 @@ next_slot:
 		ins_nr = 0;
 	}
 
+<<<<<<< HEAD
 	btrfs_release_path(path);
 	btrfs_release_path(dst_path);
 	err = btrfs_log_all_xattrs(trans, root, inode, path, dst_path);
@@ -4517,6 +4585,13 @@ log_extents:
 	if (fast_search) {
 		ret = btrfs_log_changed_extents(trans, root, inode, dst_path,
 						&logged_list, ctx);
+=======
+log_extents:
+	btrfs_release_path(path);
+	btrfs_release_path(dst_path);
+	if (fast_search) {
+		ret = btrfs_log_changed_extents(trans, root, inode, dst_path);
+>>>>>>> p9x
 		if (ret) {
 			err = ret;
 			goto out_unlock;

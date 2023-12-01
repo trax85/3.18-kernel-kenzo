@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -19,11 +23,15 @@
 #include <linux/platform_device.h>
 #include <linux/interrupt.h>
 #include <media/v4l2-subdev.h>
+<<<<<<< HEAD
 #include "msm_generic_buf_mgr.h"
 #include "msm_sd.h"
 #include "cam_soc_api.h"
 #include "cam_hw_ops.h"
 #include <media/msmb_pproc.h>
+=======
+#include "msm_sd.h"
+>>>>>>> p9x
 
 /* hw version info:
   31:28  Major version
@@ -96,6 +104,7 @@
 #define MSM_CPP_TX_FIFO_LEVEL		16
 #define MSM_CPP_RX_FIFO_LEVEL		512
 
+<<<<<<< HEAD
 enum cpp_vbif_error {
 	CPP_VBIF_ERROR_HANG,
 	CPP_VBIF_ERROR_MAX,
@@ -112,6 +121,8 @@ struct msm_cpp_vbif_data {
 	void *dev[VBIF_CLIENT_MAX];
 };
 
+=======
+>>>>>>> p9x
 struct cpp_subscribe_info {
 	struct v4l2_fh *vfh;
 	uint32_t active;
@@ -220,6 +231,7 @@ struct cpp_device {
 	struct platform_device *pdev;
 	struct msm_sd_subdev msm_sd;
 	struct v4l2_subdev subdev;
+<<<<<<< HEAD
 	struct resource *irq;
 	void __iomem *vbif_base;
 	void __iomem *base;
@@ -230,6 +242,19 @@ struct cpp_device {
 	size_t num_clks;
 	struct msm_cam_regulator *cpp_vdd;
 	int num_reg;
+=======
+	struct resource *mem;
+	struct resource *irq;
+	struct resource *io;
+	struct resource	*vbif_mem;
+	struct resource *vbif_io;
+	struct resource	*cpp_hw_mem;
+	void __iomem *vbif_base;
+	void __iomem *base;
+	void __iomem *cpp_hw_base;
+	struct clk **cpp_clk;
+	struct regulator *fs_cpp;
+>>>>>>> p9x
 	struct mutex mutex;
 	enum cpp_state state;
 	enum cpp_iommu_state iommu_state;
@@ -246,6 +271,11 @@ struct cpp_device {
 	int domain_num;
 	struct iommu_domain *domain;
 	struct device *iommu_ctx;
+<<<<<<< HEAD
+=======
+	struct ion_client *client;
+	struct kref refcount;
+>>>>>>> p9x
 	uint32_t num_clk;
 	uint32_t min_clk_rate;
 
@@ -272,12 +302,17 @@ struct cpp_device {
 
 	struct msm_cpp_buff_queue_info_t *buff_queue;
 	uint32_t num_buffq;
+<<<<<<< HEAD
 	struct msm_cam_buf_mgr_req_ops buf_mgr_ops;
+=======
+	struct v4l2_subdev *buf_mgr_subdev;
+>>>>>>> p9x
 
 	uint32_t bus_client;
 	uint32_t bus_idx;
 	uint32_t bus_master_flag;
 	struct msm_cpp_payload_params payload_params;
+<<<<<<< HEAD
 	struct msm_cpp_vbif_data *vbif_data;
 };
 
@@ -291,4 +326,7 @@ void msm_cpp_vbif_register_error_handler(void *dev,
 	enum cpp_vbif_client client,
 	int (*client_vbif_error_handler)(void *, uint32_t));
 
+=======
+};
+>>>>>>> p9x
 #endif /* __MSM_CPP_H__ */

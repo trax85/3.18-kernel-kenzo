@@ -1065,6 +1065,12 @@ void __init mem_init(void)
 
 	/* this will put all memory onto the freelists */
 	free_all_bootmem();
+<<<<<<< HEAD
+=======
+
+	absent_pages = absent_pages_in_range(0, max_pfn);
+	reservedpages = max_pfn - totalram_pages - absent_pages;
+>>>>>>> p9x
 	after_bootmem = 1;
 
 	/* Register memory areas for /proc/kcore */

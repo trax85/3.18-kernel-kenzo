@@ -203,8 +203,14 @@ static struct gpio_leds_priv *gpio_leds_create_of(struct platform_device *pdev)
 				led.default_state = LEDS_GPIO_DEFSTATE_OFF;
 		}
 
+<<<<<<< HEAD
 		if (of_get_property(child, "retain-state-suspended", NULL))
 			led.retain_state_suspended = 1;
+=======
+		led.retain_state_suspended =
+			(unsigned)of_property_read_bool(child,
+				"retain-state-suspended");
+>>>>>>> p9x
 
 		ret = create_gpio_led(&led, &priv->leds[priv->num_leds++],
 				      &pdev->dev, NULL);

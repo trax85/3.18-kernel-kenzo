@@ -15,7 +15,10 @@
 
 #include <linux/devfreq.h>
 #include <linux/cpu.h>
+<<<<<<< HEAD
 #include <linux/cpufreq.h>
+=======
+>>>>>>> p9x
 #include <linux/cpumask.h>
 #include <linux/slab.h>
 #include <linux/platform_device.h>
@@ -668,6 +671,10 @@ static int __init devfreq_cpufreq_init(void)
 				pr_err("Parsing %s failed!\n", of_child->name);
 			else
 				pr_debug("Parsed %s.\n", of_child->name);
+<<<<<<< HEAD
+=======
+			of_node_put(of_child);
+>>>>>>> p9x
 		}
 		of_node_put(of_par);
 	} else {

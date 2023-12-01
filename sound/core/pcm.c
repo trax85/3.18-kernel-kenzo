@@ -708,7 +708,10 @@ int snd_pcm_new_stream(struct snd_pcm *pcm, int stream, int substream_count)
 		substream->group = &substream->self_group;
 		spin_lock_init(&substream->self_group.lock);
 		spin_lock_init(&substream->runtime_lock);
+<<<<<<< HEAD
 		mutex_init(&substream->self_group.mutex);
+=======
+>>>>>>> p9x
 		INIT_LIST_HEAD(&substream->self_group.substreams);
 		list_add_tail(&substream->link_list, &substream->self_group.substreams);
 		atomic_set(&substream->mmap_count, 0);

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 * Qualcomm Connectivity SubSystem Platform Driver
+=======
+* Qualcomm Technologies Inc Connectivity SubSystem Platform Driver
+>>>>>>> p9x
 
 This platform driver adds support for the CNSS subsystem used for SDIO
 based Wi-Fi devices. It also adds support to manage two 1.8V voltage
@@ -16,6 +20,7 @@ Required properties:
   - vdd-wlan-dsrc-supply: phandle to the WLAN dsrc vdd regulator device tree node.
   - vdd-wlan-io-supply: phandle to the WLAN IO regulator device tree node.
   - vdd-wlan-xtal-supply: phandle to the WLAM XTAL regulator device tree node.
+<<<<<<< HEAD
 
 Optional properties:
   - pinctrl-names: Names corresponding to the numbered pinctrl states
@@ -23,14 +28,23 @@ Optional properties:
                 bindings/pinctrl/pinctrl-bindings.txt
   - qcom,is-antenna-shared: Enabled for Platforms with both sdio and pcie QCA
                            Chipsets are attached.
+=======
+  - qcom,wlan-ramdump-dynamic: To enable CNSS RAMDUMP collection
+				by providing the size of CNSS DUMP
+>>>>>>> p9x
   - qcom,cnss-enable-bus-bandwidth: define this property when target support to
 					vote for bus bandwidth.
   - qcom,msm-bus,name: client name for msm bus register.
   - qcom,msm-bus,num-cases: number of cases for bus scaling.
   - qcom,msm-bus,num-paths: number of paths for bus scale vector.
+<<<<<<< HEAD
   - qcom,msm-bus,vectors-KBps: bus scale vector table.
   - qcom,skip-wlan-en-toggle: Boolean property to be enabled for platforms where
                            wlan_en toggling is not supported.
+=======
+  - qcom,msm-bus,vectors-KBps: bus scale vetor table.
+
+>>>>>>> p9x
 Example:
 	qcom,cnss-sdio {
 		compatible = "qcom,cnss_sdio";
@@ -38,6 +52,7 @@ Example:
 		reg-names = "ramdump";
 		subsys-name = "AR6320";
 		vdd-wlan-supply = <&rome_vreg>;
+<<<<<<< HEAD
 		vdd-wlan-dsrc-supply = <&sdcard_ext_vreg>;
 		vdd-wlan-io-supply = <&mdm9607_l11>;
 		vdd-wlan-xtal-supply = <&mdm9607_l2>;
@@ -45,6 +60,12 @@ Example:
 		pinctrl-names = "active", "sleep";
 		pinctrl-0 = <&cnss_sdio_active>;
 		pinctrl-1 = <&cnss_sdio_sleep>;
+=======
+		qcom,wlan-ramdump-dynamic = <0x200000>;
+		vdd-wlan-dsrc-supply = <&sdcard_ext_vreg>;
+		vdd-wlan-io-supply = <&mdm9607_l11>;
+		vdd-wlan-xtal-supply = <&mdm9607_l2>;
+>>>>>>> p9x
 		qcom,cnss-enable-bus-bandwidth;
 		qcom,msm-bus,name = "msm-cnss";
 		qcom,msm-bus,num-cases = <4>;

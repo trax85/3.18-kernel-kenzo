@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -26,9 +30,17 @@
 #include <linux/cpu.h>
 #include <linux/cpu_pm.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <soc/qcom/scm.h>
 #include <soc/qcom/memory_dump.h>
 #include <soc/qcom/watchdog.h>
+=======
+#include <linux/sched/rt.h>
+#include <soc/qcom/scm.h>
+#include <soc/qcom/memory_dump.h>
+#include <soc/qcom/watchdog.h>
+#include <linux/kmemleak.h>
+>>>>>>> p9x
 
 #define MODULE_NAME "msm_watchdog"
 #define WDT0_ACCSCSSNBARK_INT 0
@@ -322,7 +334,11 @@ static __ref int watchdog_kthread(void *arg)
 		while (wait_for_completion_interruptible(
 			&wdog_dd->pet_complete) != 0)
 			;
+<<<<<<< HEAD
 		reinit_completion(&wdog_dd->pet_complete);
+=======
+		INIT_COMPLETION(wdog_dd->pet_complete);
+>>>>>>> p9x
 		if (enable) {
 			delay_time = msecs_to_jiffies(wdog_dd->pet_time);
 			if (wdog_dd->do_ipi_ping)
@@ -393,7 +409,11 @@ void msm_trigger_wdog_bite(void)
 	__raw_writel(1, wdog_data->base + WDT0_RST);
 	mb();
 	/* Delay to make sure bite occurs */
+<<<<<<< HEAD
 	mdelay(10000);
+=======
+	mdelay(1);
+>>>>>>> p9x
 	pr_err("Wdog - STS: 0x%x, CTL: 0x%x, BARK TIME: 0x%x, BITE TIME: 0x%x",
 		__raw_readl(wdog_data->base + WDT0_STS),
 		__raw_readl(wdog_data->base + WDT0_EN),
@@ -480,20 +500,32 @@ static void configure_bark_dump(struct msm_watchdog_data *wdog_dd)
 			 * without saving registers.
 			 */
 		}
+<<<<<<< HEAD
 	} else {
+=======
+	} else if (IS_ENABLED(CONFIG_MSM_MEMORY_DUMP_V2)) {
+>>>>>>> p9x
 		cpu_data = kzalloc(sizeof(struct msm_dump_data) *
 				   num_present_cpus(), GFP_KERNEL);
 		if (!cpu_data) {
 			pr_err("cpu dump data structure allocation failed\n");
 			goto out0;
 		}
+<<<<<<< HEAD
+=======
+		kmemleak_not_leak(cpu_data);
+>>>>>>> p9x
 		cpu_buf = kzalloc(MAX_CPU_CTX_SIZE * num_present_cpus(),
 				  GFP_KERNEL);
 		if (!cpu_buf) {
 			pr_err("cpu reg context space allocation failed\n");
 			goto out1;
 		}
+<<<<<<< HEAD
 
+=======
+		kmemleak_not_leak(cpu_buf);
+>>>>>>> p9x
 		for_each_cpu(cpu, cpu_present_mask) {
 			cpu_data[cpu].addr = virt_to_phys(cpu_buf +
 							cpu * MAX_CPU_CTX_SIZE);
@@ -540,7 +572,11 @@ static void init_watchdog_data(struct msm_watchdog_data *wdog_dd)
 			dev_err(wdog_dd->dev, "fail to allocate cpu data\n");
 			return;
 		}
+<<<<<<< HEAD
 		*raw_cpu_ptr(wdog_dd->wdog_cpu_dd) = wdog_dd;
+=======
+		*__this_cpu_ptr(wdog_dd->wdog_cpu_dd) = wdog_dd;
+>>>>>>> p9x
 		ret = request_percpu_irq(wdog_dd->bark_irq, wdog_ppi_bark,
 					"apps_wdog_bark",
 					wdog_dd->wdog_cpu_dd);

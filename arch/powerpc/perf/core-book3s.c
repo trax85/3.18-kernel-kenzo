@@ -82,10 +82,13 @@ static unsigned int freeze_events_kernel = MMCR0_FCS;
 #define MMCR0_PMCjCE		MMCR0_PMCnCE
 #define MMCR0_FC56		0
 #define MMCR0_PMAO		0
+<<<<<<< HEAD
 #define MMCR0_EBE		0
 #define MMCR0_BHRBA		0
 #define MMCR0_PMCC		0
 #define MMCR0_PMCC_U6		0
+=======
+>>>>>>> p9x
 
 #define SPRN_MMCRA		SPRN_MMCR2
 #define MMCRA_SAMPLE_ENABLE	0
@@ -1162,7 +1165,11 @@ static void write_mmcr0(struct cpu_hw_events *cpuhw, unsigned long mmcr0)
 static void power_pmu_disable(struct pmu *pmu)
 {
 	struct cpu_hw_events *cpuhw;
+<<<<<<< HEAD
 	unsigned long flags, mmcr0, val;
+=======
+	unsigned long flags, val;
+>>>>>>> p9x
 
 	if (!ppmu)
 		return;
@@ -1179,12 +1186,20 @@ static void power_pmu_disable(struct pmu *pmu)
 		}
 
 		/*
+<<<<<<< HEAD
 		 * Set the 'freeze counters' bit, clear EBE/BHRBA/PMCC/PMAO/FC56
 		 */
 		val  = mmcr0 = mfspr(SPRN_MMCR0);
 		val |= MMCR0_FC;
 		val &= ~(MMCR0_EBE | MMCR0_BHRBA | MMCR0_PMCC | MMCR0_PMAO |
 			 MMCR0_FC56);
+=======
+		 * Set the 'freeze counters' bit, clear PMAO/FC56.
+		 */
+		val  = mfspr(SPRN_MMCR0);
+		val |= MMCR0_FC;
+		val &= ~(MMCR0_PMAO | MMCR0_FC56);
+>>>>>>> p9x
 
 		/*
 		 * The barrier is to make sure the mtspr has been
@@ -1193,7 +1208,10 @@ static void power_pmu_disable(struct pmu *pmu)
 		 */
 		write_mmcr0(cpuhw, val);
 		mb();
+<<<<<<< HEAD
 		isync();
+=======
+>>>>>>> p9x
 
 		/*
 		 * Disable instruction sampling if it was enabled
@@ -1207,6 +1225,7 @@ static void power_pmu_disable(struct pmu *pmu)
 
 		cpuhw->disabled = 1;
 		cpuhw->n_added = 0;
+<<<<<<< HEAD
 
 		ebb_switch_out(mmcr0);
 
@@ -1222,6 +1241,8 @@ static void power_pmu_disable(struct pmu *pmu)
 			mtspr(SPRN_SIAR, 0);
 		}
 #endif
+=======
+>>>>>>> p9x
 	}
 
 	local_irq_restore(flags);
@@ -1247,6 +1268,7 @@ static void power_pmu_enable(struct pmu *pmu)
 
 	if (!ppmu)
 		return;
+
 	local_irq_save(flags);
 
 	cpuhw = &__get_cpu_var(cpu_hw_events);
@@ -1682,6 +1704,9 @@ static int can_go_on_limited_pmc(struct perf_event *event, u64 ev,
 
 	if (ppmu->limited_pmc_event(ev))
 		return 1;
+
+	if (ppmu->flags & PPMU_ARCH_207S)
+		mtspr(SPRN_MMCR2, 0);
 
 	/*
 	 * The requested event_id isn't on a limited PMC already;

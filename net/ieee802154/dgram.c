@@ -332,7 +332,11 @@ static int dgram_recvmsg(struct kiocb *iocb, struct sock *sk,
 
 	if (saddr) {
 		saddr->family = AF_IEEE802154;
+<<<<<<< HEAD
 		ieee802154_addr_to_sa(&saddr->addr, &mac_cb(skb)->source);
+=======
+		saddr->addr = mac_cb(skb)->sa;
+>>>>>>> p9x
 		*addr_len = sizeof(*saddr);
 	}
 

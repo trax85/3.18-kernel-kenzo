@@ -23,6 +23,7 @@
 
 #define NUM_INTF 2
 
+<<<<<<< HEAD
 /*
  * rc_buf_thresh = {896, 1792, 2688, 3548, 4480, 5376, 6272, 6720,
  *		7168, 7616, 7744, 7872, 8000, 8064, 8192};
@@ -41,6 +42,8 @@ static char dsc_rc_range_max_qp_1_1_scr1[] = {4, 4, 5, 6, 7, 7, 7, 8, 9, 10, 10,
 static char dsc_rc_range_bpg_offset[] = {2, 0, 0, -2, -4, -6, -8, -8,
 			-8, -10, -10, -12, -12, -12, -12};
 
+=======
+>>>>>>> p9x
 int mdss_panel_debugfs_fbc_setup(struct mdss_panel_debugfs_info *debugfs_info,
 	struct mdss_panel_info *panel_info, struct dentry *parent)
 {
@@ -384,8 +387,11 @@ static int _create_dsi_panel_nodes(struct mdss_panel_debugfs_info *dfs,
 			(char *)&pinfo->mipi.rx_eot_ignore);
 	debugfs_create_u8("tx_eot_append", 0644, mipi_root,
 			(char *)&pinfo->mipi.tx_eot_append);
+<<<<<<< HEAD
 	debugfs_create_u32("adjust_timer_ms", 0644, mipi_root,
 			(u32 *)&pinfo->adjust_timer_delay_ms);
+=======
+>>>>>>> p9x
 
 	/* TE reltaed nodes */
 	debugfs_create_u32("te_tear_check_en", 0644, te_root,
@@ -426,8 +432,13 @@ int mdss_panel_debugfs_panel_setup(struct mdss_panel_debugfs_info *debugfs_info,
 		(u32 *)&debugfs_info->panel_info.min_fps);
 	debugfs_create_u32("max_refresh_rate", 0644, debugfs_info->root,
 		(u32 *)&debugfs_info->panel_info.max_fps);
+<<<<<<< HEAD
 	debugfs_create_u64("clk_rate", 0644, debugfs_info->root,
 		(u64 *)&debugfs_info->panel_info.clk_rate);
+=======
+	debugfs_create_u32("clk_rate", 0644, debugfs_info->root,
+		(u32 *)&debugfs_info->panel_info.clk_rate);
+>>>>>>> p9x
 	debugfs_create_u32("bl_min", 0644, debugfs_info->root,
 		(u32 *)&debugfs_info->panel_info.bl_min);
 	debugfs_create_u32("bl_max", 0644, debugfs_info->root,
@@ -532,6 +543,7 @@ void mdss_panel_debugfs_cleanup(struct mdss_panel_info *panel_info)
 	pr_debug("Cleaned up mdss_panel_debugfs_info\n");
 }
 
+<<<<<<< HEAD
 void mdss_panel_override_te_params(struct mdss_panel_info *pinfo)
 {
 	pinfo->te.sync_cfg_height = mdss_panel_get_vtotal(pinfo);
@@ -544,6 +556,8 @@ void mdss_panel_override_te_params(struct mdss_panel_info *pinfo)
 		pinfo->te.vsync_init_val);
 }
 
+=======
+>>>>>>> p9x
 void mdss_panel_debugfsinfo_to_panelinfo(struct mdss_panel_info *panel_info)
 {
 	struct mdss_panel_data *pdata;
@@ -566,8 +580,11 @@ void mdss_panel_debugfsinfo_to_panelinfo(struct mdss_panel_info *panel_info)
 		pinfo->bl_min = dfs_info->panel_info.bl_min;
 		pinfo->bl_max = dfs_info->panel_info.bl_max;
 		pinfo->brightness_max = dfs_info->panel_info.brightness_max;
+<<<<<<< HEAD
 		pinfo->adjust_timer_delay_ms =
 			dfs_info->panel_info.adjust_timer_delay_ms;
+=======
+>>>>>>> p9x
 
 		if ((pinfo->type == MIPI_CMD_PANEL) ||
 		    (pinfo->type == MIPI_VIDEO_PANEL)) {
@@ -592,6 +609,7 @@ void mdss_panel_debugfsinfo_to_panelinfo(struct mdss_panel_info *panel_info)
 		}
 
 		pinfo->panel_max_vtotal = mdss_panel_get_vtotal(pinfo);
+<<<<<<< HEAD
 
 		/* override te parameters if panel is in sw te mode */
 		if (panel_info->sim_panel_mode == SIM_SW_TE_MODE)
@@ -981,3 +999,8 @@ int mdss_panel_dsc_prepare_pps_buf(struct dsc_desc *dsc, char *buf,
 
 	return DSC_PPS_LEN;	/* 128 */
 }
+=======
+		pdata = pdata->next;
+	} while (pdata);
+}
+>>>>>>> p9x

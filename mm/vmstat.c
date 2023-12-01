@@ -1073,7 +1073,11 @@ static void pagetypeinfo_showmixedcount_print(struct seq_file *m,
 			if (page->order < 0)
 				continue;
 
+<<<<<<< HEAD
 			pagetype = gfpflags_to_migratetype(page->gfp_mask);
+=======
+			pagetype = allocflags_to_migratetype(page->gfp_mask);
+>>>>>>> p9x
 			if (pagetype != mtype) {
 				if (is_migrate_cma(pagetype))
 					count[MIGRATE_MOVABLE]++;
@@ -1321,7 +1325,9 @@ static int vmstat_show(struct seq_file *m, void *arg)
 	unsigned long *l = arg;
 	unsigned long off = l - (unsigned long *)m->private;
 
-	seq_printf(m, "%s %lu\n", vmstat_text[off], *l);
+	seq_puts(m, vmstat_text[off]);
+	seq_put_decimal_ull(m, ' ', *l);
+	seq_putc(m, '\n');
 	return 0;
 }
 
@@ -1358,6 +1364,7 @@ static cpumask_var_t cpu_stat_off;
 
 static void vmstat_update(struct work_struct *w)
 {
+<<<<<<< HEAD
 	if (refresh_cpu_vm_stats(true)) {
 		/*
 		 * Counters were updated so we expect more updates
@@ -1463,6 +1470,11 @@ static void __init start_shepherd_timer(void)
 	cpumask_copy(cpu_stat_off, cpu_online_mask);
 
 	schedule_delayed_work(&shepherd,
+=======
+	refresh_cpu_vm_stats(smp_processor_id());
+	schedule_delayed_work_on(smp_processor_id(),
+		&__get_cpu_var(vmstat_work),
+>>>>>>> p9x
 		round_jiffies_relative(sysctl_stat_interval));
 }
 
@@ -1527,7 +1539,15 @@ static int __init setup_vmstat(void)
 	cpu_notifier_register_begin();
 	__register_cpu_notifier(&vmstat_notifier);
 
+<<<<<<< HEAD
 	start_shepherd_timer();
+=======
+	cpu_notifier_register_begin();
+	__register_cpu_notifier(&vmstat_notifier);
+
+	for_each_online_cpu(cpu)
+		start_cpu_timer(cpu);
+>>>>>>> p9x
 	cpu_notifier_register_done();
 #endif
 #ifdef CONFIG_PROC_FS

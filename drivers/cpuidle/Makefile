@@ -6,6 +6,7 @@ obj-y += cpuidle.o driver.o governor.o sysfs.o governors/
 obj-$(CONFIG_ARCH_NEEDS_CPU_IDLE_COUPLED) += coupled.o
 obj-$(CONFIG_DT_IDLE_STATES)		  += dt_idle_states.o
 
+<<<<<<< HEAD
 ##################################################################################
 # ARM SoC drivers
 obj-$(CONFIG_ARM_MVEBU_V7_CPUIDLE) += cpuidle-mvebu-v7.o
@@ -31,4 +32,8 @@ obj-$(CONFIG_ARM64_CPUIDLE)		+= cpuidle-arm64.o
 obj-$(CONFIG_PSERIES_CPUIDLE)		+= cpuidle-pseries.o
 obj-$(CONFIG_POWERNV_CPUIDLE)		+= cpuidle-powernv.o
 
+=======
+obj-$(CONFIG_CPU_IDLE_CALXEDA) += cpuidle-calxeda.o
+obj-$(CONFIG_ARCH_KIRKWOOD) += cpuidle-kirkwood.o
+>>>>>>> p9x
 obj-$(CONFIG_MSM_PM) += lpm-levels.o  lpm-levels-of.o lpm-workarounds.o

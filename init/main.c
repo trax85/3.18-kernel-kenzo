@@ -75,9 +75,13 @@
 #include <linux/blkdev.h>
 #include <linux/elevator.h>
 #include <linux/sched_clock.h>
+<<<<<<< HEAD
 #include <linux/context_tracking.h>
 #include <linux/random.h>
 #include <linux/list.h>
+=======
+#include <linux/random.h>
+>>>>>>> p9x
 
 #include <asm/io.h>
 #include <asm/bugs.h>
@@ -94,6 +98,10 @@ static int kernel_init(void *);
 extern void init_IRQ(void);
 extern void fork_init(unsigned long);
 extern void radix_tree_init(void);
+
+#ifdef CONFIG_MACH_XIAOMI_KENZO
+int kenzo_boardid = 2;
+#endif
 
 /*
  * Debug helper: via this flag we know that we are in 'early bootup code'
@@ -393,6 +401,7 @@ static __initdata DECLARE_COMPLETION(kthreadd_done);
 static noinline void __init_refok rest_init(void)
 {
 	int pid;
+	const struct sched_param param = { .sched_priority = 1 };
 
 	rcu_scheduler_starting();
 	smpboot_thread_init();
@@ -407,6 +416,7 @@ static noinline void __init_refok rest_init(void)
 	rcu_read_lock();
 	kthreadd_task = find_task_by_pid_ns(pid, &init_pid_ns);
 	rcu_read_unlock();
+	sched_setscheduler_nocheck(kthreadd_task, SCHED_FIFO, &param);
 	complete(&kthreadd_done);
 
 	/*
@@ -502,8 +512,16 @@ static void __init mm_init(void)
 
 asmlinkage __visible void __init start_kernel(void)
 {
+<<<<<<< HEAD
 	char *command_line;
 	char *after_dashes;
+=======
+	char * command_line;
+	extern const struct kernel_param __start___param[], __stop___param[];
+#ifdef CONFIG_MACH_XIAOMI_KENZO
+	char * board_id_ptr;
+#endif
+>>>>>>> p9x
 
 	/*
 	 * Need to run as early as possible, to initialize the
@@ -531,6 +549,10 @@ asmlinkage __visible void __init start_kernel(void)
 	 * Set up the the initial canary ASAP:
 	 */
 	boot_init_stack_canary();
+<<<<<<< HEAD
+=======
+	mm_init_owner(&init_mm, &init_task);
+>>>>>>> p9x
 	mm_init_cpumask(&init_mm);
 	setup_command_line(command_line);
 	setup_nr_cpu_ids();
@@ -541,7 +563,22 @@ asmlinkage __visible void __init start_kernel(void)
 	page_alloc_init();
 
 	pr_notice("Kernel command line: %s\n", boot_command_line);
+<<<<<<< HEAD
 	/* parameters may set static keys */
+=======
+
+#ifdef CONFIG_MACH_XIAOMI_KENZO
+	board_id_ptr = strstr(boot_command_line, "androidboot.boardID=");
+	if (board_id_ptr)
+		kenzo_boardid = simple_strtoul(&board_id_ptr[strlen("androidboot.boardID=")], NULL, 10);
+#endif
+
+	parse_early_param();
+	parse_args("Booting kernel", static_command_line, __start___param,
+		   __stop___param - __start___param,
+		   -1, -1, &unknown_bootoption);
+
+>>>>>>> p9x
 	jump_label_init();
 	parse_early_param();
 	after_dashes = parse_args("Booting kernel",
@@ -596,7 +633,10 @@ asmlinkage __visible void __init start_kernel(void)
 	timekeeping_init();
 	time_init();
 	sched_clock_postinit();
+<<<<<<< HEAD
 	perf_event_init();
+=======
+>>>>>>> p9x
 	profile_init();
 	call_function_init();
 	WARN(!irqs_disabled(), "Interrupts were enabled early\n");

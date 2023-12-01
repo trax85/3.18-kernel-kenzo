@@ -13,9 +13,13 @@
 #include <linux/device.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
 #include <linux/reboot.h>
 #include <linux/reset-controller.h>
+=======
+#include <linux/reboot.h>
+>>>>>>> p9x
 
 #include <asm/system_misc.h>
 
@@ -81,7 +85,11 @@ static struct reset_controller_dev sirfsoc_reset_controller = {
 
 #define SIRFSOC_SYS_RST_BIT  BIT(31)
 
+<<<<<<< HEAD
 static void sirfsoc_restart(enum reboot_mode mode, const char *cmd)
+=======
+void sirfsoc_restart(enum reboot_mode mode, const char *cmd)
+>>>>>>> p9x
 {
 	writel(SIRFSOC_SYS_RST_BIT, sirfsoc_rstc_base);
 }

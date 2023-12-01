@@ -807,6 +807,47 @@ enum emulation_result kvm_mips_emul_tlbr(struct kvm_vcpu *vcpu)
 	return EMULATE_FAIL;
 }
 
+/**
+ * kvm_mips_invalidate_guest_tlb() - Indicates a change in guest MMU map.
+ * @vcpu:	VCPU with changed mappings.
+ * @tlb:	TLB entry being removed.
+ *
+ * This is called to indicate a single change in guest MMU mappings, so that we
+ * can arrange TLB flushes on this and other CPUs.
+ */
+static void kvm_mips_invalidate_guest_tlb(struct kvm_vcpu *vcpu,
+					  struct kvm_mips_tlb *tlb)
+{
+	int cpu, i;
+	bool user;
+
+	/* No need to flush for entries which are already invalid */
+	if (!((tlb->tlb_lo0 | tlb->tlb_lo1) & MIPS3_PG_V))
+		return;
+	/* User address space doesn't need flushing for KSeg2/3 changes */
+	user = tlb->tlb_hi < KVM_GUEST_KSEG0;
+
+	preempt_disable();
+
+	/*
+	 * Probe the shadow host TLB for the entry being overwritten, if one
+	 * matches, invalidate it
+	 */
+	kvm_mips_host_tlb_inv(vcpu, tlb->tlb_hi);
+
+	/* Invalidate the whole ASID on other CPUs */
+	cpu = smp_processor_id();
+	for_each_possible_cpu(i) {
+		if (i == cpu)
+			continue;
+		if (user)
+			vcpu->arch.guest_user_asid[i] = 0;
+		vcpu->arch.guest_kernel_asid[i] = 0;
+	}
+
+	preempt_enable();
+}
+
 /* Write Guest TLB Entry @ Index */
 enum emulation_result kvm_mips_emul_tlbwi(struct kvm_vcpu *vcpu)
 {
@@ -826,11 +867,16 @@ enum emulation_result kvm_mips_emul_tlbwi(struct kvm_vcpu *vcpu)
 	}
 
 	tlb = &vcpu->arch.guest_tlb[index];
+<<<<<<< HEAD:arch/mips/kvm/emulate.c
 	/*
 	 * Probe the shadow host TLB for the entry being overwritten, if one
 	 * matches, invalidate it
 	 */
 	kvm_mips_host_tlb_inv(vcpu, tlb->tlb_hi);
+=======
+
+	kvm_mips_invalidate_guest_tlb(vcpu, tlb);
+>>>>>>> p9x:arch/mips/kvm/kvm_mips_emul.c
 
 	tlb->tlb_mask = kvm_read_c0_guest_pagemask(cop0);
 	tlb->tlb_hi = kvm_read_c0_guest_entryhi(cop0);
@@ -859,11 +905,15 @@ enum emulation_result kvm_mips_emul_tlbwr(struct kvm_vcpu *vcpu)
 
 	tlb = &vcpu->arch.guest_tlb[index];
 
+<<<<<<< HEAD:arch/mips/kvm/emulate.c
 	/*
 	 * Probe the shadow host TLB for the entry being overwritten, if one
 	 * matches, invalidate it
 	 */
 	kvm_mips_host_tlb_inv(vcpu, tlb->tlb_hi);
+=======
+	kvm_mips_invalidate_guest_tlb(vcpu, tlb);
+>>>>>>> p9x:arch/mips/kvm/kvm_mips_emul.c
 
 	tlb->tlb_mask = kvm_read_c0_guest_pagemask(cop0);
 	tlb->tlb_hi = kvm_read_c0_guest_entryhi(cop0);
@@ -904,6 +954,7 @@ enum emulation_result kvm_mips_emulate_CP0(uint32_t inst, uint32_t *opc,
 	int32_t rt, rd, copz, sel, co_bit, op;
 	uint32_t pc = vcpu->arch.pc;
 	unsigned long curr_pc;
+	int cpu, i;
 
 	/*
 	 * Update PC and hold onto current PC in case there is
@@ -1011,8 +1062,16 @@ enum emulation_result kvm_mips_emulate_CP0(uint32_t inst, uint32_t *opc,
 						vcpu->arch.gprs[rt]
 						& ASID_MASK);
 
+					preempt_disable();
 					/* Blow away the shadow host TLBs */
 					kvm_mips_flush_host_tlb(1);
+					cpu = smp_processor_id();
+					for_each_possible_cpu(i)
+						if (i != cpu) {
+							vcpu->arch.guest_user_asid[i] = 0;
+							vcpu->arch.guest_kernel_asid[i] = 0;
+						}
+					preempt_enable();
 				}
 				kvm_write_c0_guest_entryhi(cop0,
 							   vcpu->arch.gprs[rt]);
@@ -1256,6 +1315,7 @@ enum emulation_result kvm_mips_emulate_load(uint32_t inst, uint32_t cause,
 					    struct kvm_vcpu *vcpu)
 {
 	enum emulation_result er = EMULATE_DO_MMIO;
+	unsigned long curr_pc;
 	int32_t op, base, rt, offset;
 	uint32_t bytes;
 
@@ -1264,7 +1324,18 @@ enum emulation_result kvm_mips_emulate_load(uint32_t inst, uint32_t cause,
 	offset = inst & 0xffff;
 	op = (inst >> 26) & 0x3f;
 
-	vcpu->arch.pending_load_cause = cause;
+	/*
+	 * Find the resume PC now while we have safe and easy access to the
+	 * prior branch instruction, and save it for
+	 * kvm_mips_complete_mmio_load() to restore later.
+	 */
+	curr_pc = vcpu->arch.pc;
+	er = update_pc(vcpu, cause);
+	if (er == EMULATE_FAIL)
+		return er;
+	vcpu->arch.io_pc = vcpu->arch.pc;
+	vcpu->arch.pc = curr_pc;
+
 	vcpu->arch.io_gpr = rt;
 
 	switch (op) {
@@ -1418,7 +1489,7 @@ enum emulation_result kvm_mips_emulate_cache(uint32_t inst, uint32_t *opc,
 
 	base = (inst >> 21) & 0x1f;
 	op_inst = (inst >> 16) & 0x1f;
-	offset = inst & 0xffff;
+	offset = (int16_t)inst;
 	cache = (inst >> 16) & 0x3;
 	op = (inst >> 18) & 0x7;
 
@@ -1455,8 +1526,20 @@ enum emulation_result kvm_mips_emulate_cache(uint32_t inst, uint32_t *opc,
 
 	preempt_disable();
 	if (KVM_GUEST_KSEGX(va) == KVM_GUEST_KSEG0) {
+<<<<<<< HEAD:arch/mips/kvm/emulate.c
 		if (kvm_mips_host_tlb_lookup(vcpu, va) < 0)
 			kvm_mips_handle_kseg0_tlb_fault(va, vcpu);
+=======
+
+		if (kvm_mips_host_tlb_lookup(vcpu, va) < 0 &&
+		    kvm_mips_handle_kseg0_tlb_fault(va, vcpu)) {
+			kvm_err("%s: handling mapped kseg0 tlb fault for %lx, vcpu: %p, ASID: %#lx\n",
+				__func__, va, vcpu, read_c0_entryhi());
+			er = EMULATE_FAIL;
+			preempt_enable();
+			goto done;
+		}
+>>>>>>> p9x:arch/mips/kvm/kvm_mips_emul.c
 	} else if ((KVM_GUEST_KSEGX(va) < KVM_GUEST_KSEG0) ||
 		   KVM_GUEST_KSEGX(va) == KVM_GUEST_KSEG23) {
 		int index;
@@ -1491,6 +1574,7 @@ enum emulation_result kvm_mips_emulate_cache(uint32_t inst, uint32_t *opc,
 								run, vcpu);
 				preempt_enable();
 				goto dont_update_pc;
+<<<<<<< HEAD:arch/mips/kvm/emulate.c
 			} else {
 				/*
 				 * We fault an entry from the guest tlb to the
@@ -1499,6 +1583,18 @@ enum emulation_result kvm_mips_emulate_cache(uint32_t inst, uint32_t *opc,
 				kvm_mips_handle_mapped_seg_tlb_fault(vcpu, tlb,
 								     NULL,
 								     NULL);
+=======
+			}
+			/* We fault an entry from the guest tlb to the shadow host TLB */
+			if (kvm_mips_handle_mapped_seg_tlb_fault(vcpu, tlb,
+								 NULL, NULL)) {
+				kvm_err("%s: handling mapped seg tlb fault for %lx, index: %u, vcpu: %p, ASID: %#lx\n",
+					__func__, va, index, vcpu,
+					read_c0_entryhi());
+				er = EMULATE_FAIL;
+				preempt_enable();
+				goto done;
+>>>>>>> p9x:arch/mips/kvm/kvm_mips_emul.c
 			}
 		}
 	} else {
@@ -2059,15 +2155,31 @@ enum emulation_result kvm_mips_handle_ri(unsigned long cause, uint32_t *opc,
 			break;
 		case 29:
 			arch->gprs[rt] = kvm_read_c0_guest_userlocal(cop0);
+<<<<<<< HEAD:arch/mips/kvm/emulate.c
+=======
+#else
+			/* UserLocal not implemented */
+			er = EMULATE_FAIL;
+#endif
+>>>>>>> p9x:arch/mips/kvm/kvm_mips_emul.c
 			break;
 
 		default:
 			kvm_debug("RDHWR %#x not supported @ %p\n", rd, opc);
+<<<<<<< HEAD:arch/mips/kvm/emulate.c
 			goto emulate_ri;
 		}
 	} else {
 		kvm_debug("Emulate RI not supported @ %p: %#x\n", opc, inst);
 		goto emulate_ri;
+=======
+			er = EMULATE_FAIL;
+			break;
+		}
+	} else {
+		kvm_debug("Emulate RI not supported @ %p: %#x\n", opc, inst);
+		er = EMULATE_FAIL;
+>>>>>>> p9x:arch/mips/kvm/kvm_mips_emul.c
 	}
 
 	return EMULATE_DONE;
@@ -2077,8 +2189,16 @@ emulate_ri:
 	 * Rollback PC (if in branch delay slot then the PC already points to
 	 * branch target), and pass the RI exception to the guest OS.
 	 */
+<<<<<<< HEAD:arch/mips/kvm/emulate.c
 	vcpu->arch.pc = curr_pc;
 	return kvm_mips_emulate_ri_exc(cause, opc, run, vcpu);
+=======
+	if (er == EMULATE_FAIL) {
+		vcpu->arch.pc = curr_pc;
+		er = kvm_mips_emulate_ri_exc(cause, opc, run, vcpu);
+	}
+	return er;
+>>>>>>> p9x:arch/mips/kvm/kvm_mips_emul.c
 }
 
 enum emulation_result kvm_mips_complete_mmio_load(struct kvm_vcpu *vcpu,
@@ -2086,7 +2206,6 @@ enum emulation_result kvm_mips_complete_mmio_load(struct kvm_vcpu *vcpu,
 {
 	unsigned long *gpr = &vcpu->arch.gprs[vcpu->arch.io_gpr];
 	enum emulation_result er = EMULATE_DONE;
-	unsigned long curr_pc;
 
 	if (run->mmio.len > sizeof(*gpr)) {
 		kvm_err("Bad MMIO length: %d", run->mmio.len);
@@ -2094,14 +2213,8 @@ enum emulation_result kvm_mips_complete_mmio_load(struct kvm_vcpu *vcpu,
 		goto done;
 	}
 
-	/*
-	 * Update PC and hold onto current PC in case there is
-	 * an error and we want to rollback the PC
-	 */
-	curr_pc = vcpu->arch.pc;
-	er = update_pc(vcpu, vcpu->arch.pending_load_cause);
-	if (er == EMULATE_FAIL)
-		return er;
+	/* Restore saved resume PC */
+	vcpu->arch.pc = vcpu->arch.io_pc;
 
 	switch (run->mmio.len) {
 	case 4:
@@ -2112,7 +2225,7 @@ enum emulation_result kvm_mips_complete_mmio_load(struct kvm_vcpu *vcpu,
 		if (vcpu->mmio_needed == 2)
 			*gpr = *(int16_t *) run->mmio.data;
 		else
-			*gpr = *(int16_t *) run->mmio.data;
+			*gpr = *(uint16_t *)run->mmio.data;
 
 		break;
 	case 1:
@@ -2123,11 +2236,14 @@ enum emulation_result kvm_mips_complete_mmio_load(struct kvm_vcpu *vcpu,
 		break;
 	}
 
+<<<<<<< HEAD:arch/mips/kvm/emulate.c
 	if (vcpu->arch.pending_load_cause & CAUSEF_BD)
 		kvm_debug("[%#lx] Completing %d byte BD Load to gpr %d (0x%08lx) type %d\n",
 			  vcpu->arch.pc, run->mmio.len, vcpu->arch.io_gpr, *gpr,
 			  vcpu->mmio_needed);
 
+=======
+>>>>>>> p9x:arch/mips/kvm/kvm_mips_emul.c
 done:
 	return er;
 }
@@ -2316,6 +2432,7 @@ enum emulation_result kvm_mips_handle_tlbmiss(unsigned long cause,
 				er = EMULATE_FAIL;
 			}
 		} else {
+<<<<<<< HEAD:arch/mips/kvm/emulate.c
 			kvm_debug("Injecting hi: %#lx, lo0: %#lx, lo1: %#lx into shadow host TLB\n",
 				  tlb->tlb_hi, tlb->tlb_lo0, tlb->tlb_lo1);
 			/*
@@ -2324,6 +2441,21 @@ enum emulation_result kvm_mips_handle_tlbmiss(unsigned long cause,
 			 */
 			kvm_mips_handle_mapped_seg_tlb_fault(vcpu, tlb, NULL,
 							     NULL);
+=======
+#ifdef DEBUG
+			kvm_debug
+			    ("Injecting hi: %#lx, lo0: %#lx, lo1: %#lx into shadow host TLB\n",
+			     tlb->tlb_hi, tlb->tlb_lo0, tlb->tlb_lo1);
+#endif
+			/* OK we have a Guest TLB entry, now inject it into the shadow host TLB */
+			if (kvm_mips_handle_mapped_seg_tlb_fault(vcpu, tlb,
+								 NULL, NULL)) {
+				kvm_err("%s: handling mapped seg tlb fault for %lx, index: %u, vcpu: %p, ASID: %#lx\n",
+					__func__, va, index, vcpu,
+					read_c0_entryhi());
+				er = EMULATE_FAIL;
+			}
+>>>>>>> p9x:arch/mips/kvm/kvm_mips_emul.c
 		}
 	}
 

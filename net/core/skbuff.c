@@ -77,8 +77,11 @@
 
 struct kmem_cache *skbuff_head_cache __read_mostly;
 static struct kmem_cache *skbuff_fclone_cache __read_mostly;
+<<<<<<< HEAD
 int sysctl_max_skb_frags __read_mostly = MAX_SKB_FRAGS;
 EXPORT_SYMBOL(sysctl_max_skb_frags);
+=======
+>>>>>>> p9x
 
 /**
  *	skb_panic - private function for out-of-line support
@@ -229,7 +232,7 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
 	size = SKB_DATA_ALIGN(size);
 	size += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
 	data = kmalloc_reserve(size, gfp_mask, node, &pfmemalloc);
-	if (!data)
+	if (unlikely(ZERO_OR_NULL_PTR(data)))
 		goto nodata;
 	/* kmalloc(size) might give us more room than requested.
 	 * Put skb_shared_info exactly at the end of allocated zone,
@@ -619,7 +622,11 @@ static void skb_release_head_state(struct sk_buff *skb)
 #if IS_ENABLED(CONFIG_NF_CONNTRACK)
 	nf_conntrack_put(skb->nfct);
 #endif
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+=======
+#ifdef CONFIG_BRIDGE_NETFILTER
+>>>>>>> p9x
 	nf_bridge_put(skb->nf_bridge);
 #endif
 /* XXX: IS this still necessary? - JHS */
@@ -815,6 +822,10 @@ static struct sk_buff *__skb_clone(struct sk_buff *n, struct sk_buff *skb)
 
 	atomic_inc(&(skb_shinfo(skb)->dataref));
 	skb->cloned = 1;
+
+#ifdef CONFIG_IPV6_NDISC_NODETYPE
+	C(ndisc_nodetype);
+#endif
 
 	return n;
 #undef C
@@ -3036,16 +3047,34 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
 			segs = nskb;
 		tail = nskb;
 
+<<<<<<< HEAD
 		__copy_skb_header(nskb, head_skb);
+=======
+		__copy_skb_header(nskb, skb);
+>>>>>>> p9x
 
 		skb_headers_offset_update(nskb, skb_headroom(nskb) - headroom);
 		skb_reset_mac_len(nskb);
 
+<<<<<<< HEAD
 		skb_copy_from_linear_data_offset(head_skb, -tnl_hlen,
 						 nskb->data - tnl_hlen,
 						 doffset + tnl_hlen);
 
 		if (nskb->len == len + doffset)
+=======
+		skb_reset_mac_header(nskb);
+		skb_set_network_header(nskb, skb->mac_len);
+		nskb->transport_header = (nskb->network_header +
+					  skb_network_header_len(skb));
+		skb_reset_mac_len(nskb);
+
+		skb_copy_from_linear_data_offset(skb, -tnl_hlen,
+						 nskb->data - tnl_hlen,
+						 doffset + tnl_hlen);
+
+		if (fskb != skb_shinfo(skb)->frag_list)
+>>>>>>> p9x
 			goto perform_csum_check;
 
 		if (!sg) {
@@ -3066,6 +3095,7 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
 		skb_shinfo(nskb)->tx_flags = skb_shinfo(head_skb)->tx_flags &
 			SKBTX_SHARED_FRAG;
 
+<<<<<<< HEAD
 		while (pos < offset + len) {
 			if (i >= nfrags) {
 				BUG_ON(skb_headlen(list_skb));
@@ -3094,6 +3124,14 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
 			*nskb_frag = *frag;
 			__skb_frag_ref(nskb_frag);
 			size = skb_frag_size(nskb_frag);
+=======
+		while (pos < offset + len && i < nfrags) {
+			if (unlikely(skb_orphan_frags(skb, GFP_ATOMIC)))
+				goto err;
+			*frag = skb_shinfo(skb)->frags[i];
+			__skb_frag_ref(frag);
+			size = skb_frag_size(frag);
+>>>>>>> p9x
 
 			if (pos < offset) {
 				nskb_frag->page_offset += offset - pos;
@@ -4087,6 +4125,7 @@ bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
 EXPORT_SYMBOL(skb_try_coalesce);
 
 /**
+<<<<<<< HEAD
  * skb_scrub_packet - scrub an skb
  *
  * @skb: buffer to clean
@@ -4120,6 +4159,8 @@ void skb_scrub_packet(struct sk_buff *skb, bool xnet)
 EXPORT_SYMBOL_GPL(skb_scrub_packet);
 
 /**
+=======
+>>>>>>> p9x
  * skb_gso_transport_seglen - Return length of individual segments of a gso packet
  *
  * @skb: GSO skb
@@ -4132,6 +4173,7 @@ EXPORT_SYMBOL_GPL(skb_scrub_packet);
 unsigned int skb_gso_transport_seglen(const struct sk_buff *skb)
 {
 	const struct skb_shared_info *shinfo = skb_shinfo(skb);
+<<<<<<< HEAD
 	unsigned int thlen = 0;
 
 	if (skb->encapsulation) {
@@ -4143,10 +4185,17 @@ unsigned int skb_gso_transport_seglen(const struct sk_buff *skb)
 	} else if (likely(shinfo->gso_type & (SKB_GSO_TCPV4 | SKB_GSO_TCPV6))) {
 		thlen = tcp_hdrlen(skb);
 	}
+=======
+
+	if (likely(shinfo->gso_type & (SKB_GSO_TCPV4 | SKB_GSO_TCPV6)))
+		return tcp_hdrlen(skb) + shinfo->gso_size;
+
+>>>>>>> p9x
 	/* UFO sets gso_size to the size of the fragmentation
 	 * payload, i.e. the size of the L4 (UDP) header is already
 	 * accounted for.
 	 */
+<<<<<<< HEAD
 	return thlen + shinfo->gso_size;
 }
 EXPORT_SYMBOL_GPL(skb_gso_transport_seglen);
@@ -4286,3 +4335,8 @@ failure:
 	return NULL;
 }
 EXPORT_SYMBOL(alloc_skb_with_frags);
+=======
+	return shinfo->gso_size;
+}
+EXPORT_SYMBOL_GPL(skb_gso_transport_seglen);
+>>>>>>> p9x

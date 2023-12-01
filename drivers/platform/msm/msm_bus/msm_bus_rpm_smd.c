@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -83,6 +87,10 @@ static int msm_bus_rpm_req(int ctx, uint32_t rsc_type, uint32_t key,
 {
 	struct msm_rpm_request *rpm_req;
 	int ret = 0, msg_id;
+<<<<<<< HEAD
+=======
+	const int zero = 0;
+>>>>>>> p9x
 
 	if (ctx == ACTIVE_CTX)
 		ctx = MSM_RPM_CTX_ACTIVE_SET;
@@ -108,7 +116,12 @@ static int msm_bus_rpm_req(int ctx, uint32_t rsc_type, uint32_t key,
 			hw_info->bw, sizeof(uint64_t));
 	} else {
 		/* Invalidate RPM requests */
+<<<<<<< HEAD
 		ret = msm_rpm_add_kvp_data(rpm_req, 0, NULL, 0);
+=======
+		ret = msm_rpm_add_kvp_data(rpm_req, 0,
+				(const uint8_t *)&zero, 0);
+>>>>>>> p9x
 		if (ret) {
 			MSM_BUS_WARN("RPM: Add KVP failed for RPM Req:%u\n",
 				rsc_type);

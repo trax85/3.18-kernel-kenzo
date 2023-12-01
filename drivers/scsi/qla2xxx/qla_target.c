@@ -1685,11 +1685,18 @@ static void qlt_unmap_sg(struct scsi_qla_host *vha, struct qla_tgt_cmd *cmd)
 static int qlt_check_reserve_free_req(struct scsi_qla_host *vha,
 	uint32_t req_cnt)
 {
+<<<<<<< HEAD
 	uint32_t cnt, cnt_in;
 
 	if (vha->req->cnt < (req_cnt + 2)) {
 		cnt = (uint16_t)RD_REG_DWORD(vha->req->req_q_out);
 		cnt_in = (uint16_t)RD_REG_DWORD(vha->req->req_q_in);
+=======
+	uint32_t cnt;
+
+	if (vha->req->cnt < (req_cnt + 2)) {
+		cnt = (uint16_t)RD_REG_DWORD(vha->req->req_q_out);
+>>>>>>> p9x
 
 		if  (vha->req->ring_index < cnt)
 			vha->req->cnt = cnt - vha->req->ring_index;

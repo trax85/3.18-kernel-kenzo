@@ -46,7 +46,11 @@ static int restore_sigcontext(struct pt_regs *regs,
 	int err = 0;
 
 	/* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current->restart_block.fn = do_no_restart_syscall;
+=======
+	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+>>>>>>> p9x
 
 	/*
 	 * Restore the regs from &sc->regs.
@@ -159,14 +163,23 @@ static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
 	unsigned long return_ip;
 	int err = 0;
 
+<<<<<<< HEAD
 	frame = get_sigframe(ksig, regs, sizeof(*frame));
 
+=======
+	frame = get_sigframe(ka, regs, sizeof(*frame));
+>>>>>>> p9x
 	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
 		return -EFAULT;
 
 	/* Create siginfo.  */
+<<<<<<< HEAD
 	if (ksig->ka.sa.sa_flags & SA_SIGINFO)
 		err |= copy_siginfo_to_user(&frame->info, &ksig->info);
+=======
+	if (ka->sa.sa_flags & SA_SIGINFO)
+		err |= copy_siginfo_to_user(&frame->info, info);
+>>>>>>> p9x
 
 	/* Create the ucontext.  */
 	err |= __put_user(0, &frame->uc.uc_flags);
@@ -232,7 +245,13 @@ handle_signal(struct ksignal *ksig, struct pt_regs *regs)
 
 int do_signal(struct pt_regs *regs, int syscall)
 {
+<<<<<<< HEAD
 	struct ksignal ksig;
+=======
+	siginfo_t info;
+	int signr;
+	struct k_sigaction ka;
+>>>>>>> p9x
 	unsigned long continue_addr = 0;
 	unsigned long restart_addr = 0;
 	unsigned long retval = 0;
@@ -262,23 +281,45 @@ int do_signal(struct pt_regs *regs, int syscall)
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Get the signal to deliver.  During the call to get_signal the
 	 * debugger may change all our registers so we may need to revert
 	 * the decision to restart the syscall; specifically, if the PC is
 	 * changed, don't restart the syscall.
 	 */
 	if (get_signal(&ksig)) {
+=======
+	 * Get the signal to deliver.  When running under ptrace, at this
+	 * point the debugger may change all our registers ...
+	 */
+	signr = get_signal_to_deliver(&info, &ka, regs, NULL);
+	/*
+	 * Depending on the signal settings we may need to revert the
+	 * decision to restart the system call.  But skip this if a
+	 * debugger has chosen to restart at a different PC.
+	 */
+	if (signr > 0) {
+>>>>>>> p9x
 		if (unlikely(restart) && regs->pc == restart_addr) {
 			if (retval == -ERESTARTNOHAND ||
 			    retval == -ERESTART_RESTARTBLOCK
 			    || (retval == -ERESTARTSYS
+<<<<<<< HEAD
 			        && !(ksig.ka.sa.sa_flags & SA_RESTART))) {
+=======
+			        && !(ka.sa.sa_flags & SA_RESTART))) {
+>>>>>>> p9x
 				/* No automatic restart */
 				regs->gpr[11] = -EINTR;
 				regs->pc = continue_addr;
 			}
 		}
+<<<<<<< HEAD
 		handle_signal(&ksig, regs);
+=======
+
+		handle_signal(signr, &info, &ka, regs);
+>>>>>>> p9x
 	} else {
 		/* no handler */
 		restore_saved_sigmask();

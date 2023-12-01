@@ -115,7 +115,10 @@ struct packet_sock {
 	unsigned int		tp_reserve;
 	unsigned int		tp_tstamp;
 	struct net_device __rcu	*cached_dev;
+<<<<<<< HEAD
 	int			(*xmit)(struct sk_buff *skb);
+=======
+>>>>>>> p9x
 	struct packet_type	prot_hook ____cacheline_aligned_in_smp;
 };
 

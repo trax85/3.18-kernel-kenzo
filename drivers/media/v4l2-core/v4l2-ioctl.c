@@ -964,10 +964,13 @@ static int check_fmt(struct file *file, enum v4l2_buf_type type)
 		if (is_vbi && is_tx && ops->vidioc_g_fmt_sliced_vbi_out)
 			return 0;
 		break;
+<<<<<<< HEAD
 	case V4L2_BUF_TYPE_SDR_CAPTURE:
 		if (is_sdr && is_rx && ops->vidioc_g_fmt_sdr_cap)
 			return 0;
 		break;
+=======
+>>>>>>> p9x
 	case V4L2_BUF_TYPE_PRIVATE:
 		if (ops->vidioc_g_fmt_type_private)
 			return 0;

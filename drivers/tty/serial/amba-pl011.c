@@ -1566,10 +1566,13 @@ static int pl011_startup(struct uart_port *port)
 	 */
 	spin_lock_irq(&uap->port.lock);
 
+<<<<<<< HEAD
 	fbrd = readw(uap->port.membase + UART011_FBRD);
 	ibrd = readw(uap->port.membase + UART011_IBRD);
 	lcr_h = readw(uap->port.membase + uap->lcrh_rx);
 
+=======
+>>>>>>> p9x
 	cr = UART01x_CR_UARTEN | UART011_CR_TXE | UART011_CR_LBE;
 	writew(cr, uap->port.membase + UART011_CR);
 	writew(0, uap->port.membase + UART011_FBRD);

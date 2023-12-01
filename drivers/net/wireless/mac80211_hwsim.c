@@ -2451,10 +2451,17 @@ static int hwsim_tx_info_frame_received_nl(struct sk_buff *skb_2,
 		return -EINVAL;
 
 	if (!info->attrs[HWSIM_ATTR_ADDR_TRANSMITTER] ||
+<<<<<<< HEAD
 	    !info->attrs[HWSIM_ATTR_FLAGS] ||
 	    !info->attrs[HWSIM_ATTR_COOKIE] ||
 	    !info->attrs[HWSIM_ATTR_SIGNAL] ||
 	    !info->attrs[HWSIM_ATTR_TX_INFO])
+=======
+	   !info->attrs[HWSIM_ATTR_FLAGS] ||
+	   !info->attrs[HWSIM_ATTR_COOKIE] ||
+	   !info->attrs[HWSIM_ATTR_SIGNAL] ||
+	   !info->attrs[HWSIM_ATTR_TX_INFO])
+>>>>>>> p9x
 		goto out;
 
 	src = (void *)nla_data(info->attrs[HWSIM_ATTR_ADDR_TRANSMITTER]);

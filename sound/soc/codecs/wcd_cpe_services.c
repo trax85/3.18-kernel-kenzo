@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, 2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -161,7 +165,10 @@ struct cpe_command_node {
 struct cpe_info {
 	struct list_head main_queue;
 	struct completion cmd_complete;
+<<<<<<< HEAD
 	struct completion thread_comp;
+=======
+>>>>>>> p9x
 	void *thread_handler;
 	bool stop_thread;
 	struct mutex msg_lock;
@@ -333,7 +340,11 @@ static int cpe_register_write_repeat(u32 reg, u8 *ptr, u32 to_write)
 	struct wcd9xxx *wcd9xxx = dev_get_drvdata(codec->dev->parent);
 	int ret = 0;
 
+<<<<<<< HEAD
 	ret = wcd9xxx_bus_write_repeat(wcd9xxx, reg, to_write, ptr);
+=======
+	ret = wcd9xxx_slim_write_repeat(wcd9xxx, reg, to_write, ptr);
+>>>>>>> p9x
 	if (ret != 0)
 		pr_err("%s: slim_write_repeat failed\n", __func__);
 
@@ -393,34 +404,56 @@ static int cpe_worker_thread(void *context)
 {
 	struct cpe_info *t_info = (struct cpe_info *)context;
 
+<<<<<<< HEAD
 	/*
 	 * Thread will run until requested to stop explicitly
 	 * by setting the t_info->stop_thread flag
 	 */
 	while (1) {
 		/* Wait for command to be processed */
+=======
+	while (!kthread_should_stop()) {
+>>>>>>> p9x
 		wait_for_completion(&t_info->cmd_complete);
 
 		CPE_SVC_GRAB_LOCK(&t_info->msg_lock, "msg_lock");
 		cpe_cmd_received(t_info);
+<<<<<<< HEAD
 		reinit_completion(&t_info->cmd_complete);
 		/* Check if thread needs to be stopped */
+=======
+		INIT_COMPLETION(t_info->cmd_complete);
+>>>>>>> p9x
 		if (t_info->stop_thread)
 			goto unlock_and_exit;
 		CPE_SVC_REL_LOCK(&t_info->msg_lock, "msg_lock");
 	};
 
+<<<<<<< HEAD
 unlock_and_exit:
 	pr_debug("%s: thread stopped\n", __func__);
 	CPE_SVC_REL_LOCK(&t_info->msg_lock, "msg_lock");
 	complete_and_exit(&t_info->thread_comp, 0);
+=======
+	pr_debug("%s: thread exited\n", __func__);
+	return 0;
+
+unlock_and_exit:
+	pr_debug("%s: thread stopped\n", __func__);
+	CPE_SVC_REL_LOCK(&t_info->msg_lock, "msg_lock");
+
+	return 0;
+>>>>>>> p9x
 }
 
 static void cpe_create_worker_thread(struct cpe_info *t_info)
 {
 	INIT_LIST_HEAD(&t_info->main_queue);
 	init_completion(&t_info->cmd_complete);
+<<<<<<< HEAD
 	init_completion(&t_info->thread_comp);
+=======
+>>>>>>> p9x
 	t_info->stop_thread = false;
 	t_info->thread_handler = kthread_run(cpe_worker_thread,
 		(void *)t_info, "cpe-worker-thread");
@@ -444,12 +477,18 @@ static void cpe_cleanup_worker_thread(struct cpe_info *t_info)
 	complete(&t_info->cmd_complete);
 	CPE_SVC_REL_LOCK(&t_info->msg_lock, "msg_lock");
 
+<<<<<<< HEAD
 	/* Wait for the thread to exit */
 	wait_for_completion(&t_info->thread_comp);
 	t_info->thread_handler = NULL;
 
 	pr_debug("%s: Thread cleaned up successfully\n",
 		 __func__);
+=======
+	kthread_stop(t_info->thread_handler);
+
+	t_info->thread_handler = NULL;
+>>>>>>> p9x
 }
 
 static enum cpe_svc_result
@@ -615,10 +654,15 @@ static enum cpe_svc_result cpe_deregister_generic(struct cpe_info *t_info,
 		return CPE_SVC_INVALID_HANDLE;
 	}
 
+<<<<<<< HEAD
 	CPE_SVC_GRAB_LOCK(&cpe_d.cpe_svc_lock, "cpe_svc");
 	list_del(&(n->list));
 	kfree(reg_handle);
 	CPE_SVC_REL_LOCK(&cpe_d.cpe_svc_lock, "cpe_svc");
+=======
+	list_del(&(n->list));
+	kfree(reg_handle);
+>>>>>>> p9x
 
 	return CPE_SVC_SUCCESS;
 }
@@ -847,7 +891,10 @@ static void cpe_process_irq_int(u32 irq,
 	struct cpe_send_msg *m;
 	u8 size = 0;
 	bool err_irq = false;
+<<<<<<< HEAD
 	struct cmi_hdr *hdr;
+=======
+>>>>>>> p9x
 
 	pr_debug("%s: irq = %u\n", __func__, irq);
 
@@ -914,6 +961,7 @@ static void cpe_process_irq_int(u32 irq,
 		break;
 
 	case CPE_STATE_SENDING_MSG:
+<<<<<<< HEAD
 		hdr = CMI_GET_HEADER(t_info->tgt->outbox);
 		if (CMI_GET_OPCODE(t_info->tgt->outbox) ==
 		    CPE_LSM_SESSION_EVENT_DETECTION_STATUS_V2) {
@@ -926,6 +974,8 @@ static void cpe_process_irq_int(u32 irq,
 			break;
 		}
 
+=======
+>>>>>>> p9x
 		m = (struct cpe_send_msg *)t_info->pending;
 
 		switch (t_info->substate) {
@@ -1046,12 +1096,21 @@ static void cpe_svc_core_cmi_handler(
 {
 	struct cmi_hdr *hdr;
 
+<<<<<<< HEAD
 	if (!parameter)
 		return;
 
 	pr_debug("%s: event = %d\n",
 		 __func__, parameter->event);
 
+=======
+	pr_debug("%s: event = %d\n",
+		 __func__, parameter->event);
+
+	if (!parameter)
+		return;
+
+>>>>>>> p9x
 	if (parameter->event != CMI_API_MSG)
 		return;
 
