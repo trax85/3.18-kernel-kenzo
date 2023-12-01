@@ -149,7 +149,12 @@ int pwm_lut_config(struct pwm_device *pwm, int period_us,
 /*
  * support microsecond level configuration
  */
+<<<<<<< HEAD
 int pwm_config_us(struct pwm_device *pwm, int duty_us, int period_us);
+=======
+int pwm_config_us(struct pwm_device *pwm,
+		int duty_us, int period_us);
+>>>>>>> p9x
 
 /* Standard APIs supported */
 /*

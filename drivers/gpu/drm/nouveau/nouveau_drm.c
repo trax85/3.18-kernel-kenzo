@@ -524,7 +524,16 @@ nouveau_drm_remove(struct pci_dev *pdev)
 {
 	struct drm_device *dev = pci_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	nouveau_drm_device_remove(dev);
+=======
+	dev->irq_enabled = false;
+	device = drm->client.base.device;
+	drm_put_dev(dev);
+
+	nouveau_object_ref(NULL, &device);
+	nouveau_object_debug();
+>>>>>>> p9x
 }
 
 static int

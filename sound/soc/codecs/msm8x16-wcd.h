@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -67,6 +71,7 @@ enum codec_versions {
 	CONGA,
 	CAJON,
 	CAJON_2_0,
+<<<<<<< HEAD
 	DIANGU,
 	UNSUPPORTED,
 };
@@ -83,6 +88,11 @@ enum {
 	COMPANDER_1, /* HPHL/R */
 	COMPANDER_MAX,
 };
+=======
+	UNSUPPORTED,
+};
+
+>>>>>>> p9x
 
 enum wcd_curr_ref {
 	I_h4_UA = 0,
@@ -228,9 +238,17 @@ struct msm8916_asoc_mach_data {
 	int ext_pa;
 	int us_euro_gpio;
 	int spk_ext_pa_gpio;
+<<<<<<< HEAD
 	int mclk_freq;
 	int lb_mode;
 	int afe_clk_ver;
+=======
+	int ext_audio_switch_gpio;
+	u32 ext_audio_switch_active_high;
+	struct regulator *ext_audio_switch_supply;
+	int mclk_freq;
+	int lb_mode;
+>>>>>>> p9x
 	u8 micbias1_cap_mode;
 	u8 micbias2_cap_mode;
 	atomic_t mclk_rsc_ref;
@@ -299,10 +317,13 @@ struct msm8x16_wcd_priv {
 	bool clock_active;
 	bool config_mode_active;
 	u16 boost_option;
+<<<<<<< HEAD
 	/* mode to select hd2 */
 	u32 hph_mode;
 	/* compander used for each rx chain */
 	u32 comp_enabled[MSM8X16_WCD_RX_MAX];
+=======
+>>>>>>> p9x
 	bool spk_boost_set;
 	bool ear_pa_boost_set;
 	bool ext_spk_boost_set;
@@ -315,7 +336,10 @@ struct msm8x16_wcd_priv {
 	struct fw_info *fw_data;
 	struct blocking_notifier_head notifier;
 	int (*codec_spk_ext_pa_cb)(struct snd_soc_codec *codec, int enable);
+<<<<<<< HEAD
 	int (*codec_hph_comp_gpio)(bool enable);
+=======
+>>>>>>> p9x
 	unsigned long status_mask;
 	struct wcd_imped_i_ref imped_i_ref;
 	enum wcd_mbhc_imp_det_pin imped_det_pin;
@@ -329,6 +353,7 @@ extern int msm8x16_wcd_hs_detect(struct snd_soc_codec *codec,
 
 extern void msm8x16_wcd_hs_detect_exit(struct snd_soc_codec *codec);
 
+<<<<<<< HEAD
 extern void msm8x16_update_int_spk_boost(bool enable);
 
 extern void msm8x16_wcd_spk_ext_pa_cb(
@@ -338,5 +363,10 @@ extern void msm8x16_wcd_spk_ext_pa_cb(
 extern void msm8x16_wcd_hph_comp_cb(
 		int (*codec_hph_comp_gpio)(bool enable),
 		struct snd_soc_codec *codec);
+=======
+extern void msm8x16_wcd_spk_ext_pa_cb(
+		int (*codec_spk_ext_pa)(struct snd_soc_codec *codec,
+		int enable), struct snd_soc_codec *codec);
+>>>>>>> p9x
 #endif
 

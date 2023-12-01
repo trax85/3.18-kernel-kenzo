@@ -501,11 +501,14 @@ il3945_pass_packet_to_mac80211(struct il_priv *il, struct il_rx_buf *rxb,
 		return;
 	}
 
+<<<<<<< HEAD
 	if (unlikely(test_bit(IL_STOP_REASON_PASSIVE, &il->stop_reason))) {
 		il_wake_queues_by_reason(il, IL_STOP_REASON_PASSIVE);
 		D_INFO("Woke queues - frame received on passive channel\n");
 	}
 
+=======
+>>>>>>> p9x
 	skb = dev_alloc_skb(SMALL_PACKET_SIZE);
 	if (!skb) {
 		IL_ERR("dev_alloc_skb failed\n");

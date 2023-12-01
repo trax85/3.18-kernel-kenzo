@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2014, 2017, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
 
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License version 2 and
@@ -25,14 +29,21 @@
 #include <sound/control.h>
 #include <sound/tlv.h>
 #include <asm/dma.h>
+<<<<<<< HEAD
 #include <sound/q6audio-v2.h>
+=======
+>>>>>>> p9x
 
 #include "msm-pcm-routing-v2.h"
 
 #define LOOPBACK_VOL_MAX_STEPS 0x2000
+<<<<<<< HEAD
 #define LOOPBACK_SESSION_MAX 4
 
 static DEFINE_MUTEX(loopback_session_lock);
+=======
+
+>>>>>>> p9x
 static const DECLARE_TLV_DB_LINEAR(loopback_rx_vol_gain, 0,
 				LOOPBACK_VOL_MAX_STEPS);
 
@@ -54,6 +65,7 @@ struct msm_pcm_loopback {
 	uint32_t volume;
 };
 
+<<<<<<< HEAD
 struct fe_dai_session_map {
 	char stream_name[32];
 	struct msm_pcm_loopback *loopback_priv;
@@ -75,6 +87,24 @@ static u32 hfp_tx_mute;
 static void stop_pcm(struct msm_pcm_loopback *pcm);
 static int msm_pcm_loopback_get_session(struct snd_soc_pcm_runtime *rtd,
 					struct msm_pcm_loopback **pcm);
+=======
+static void stop_pcm(struct msm_pcm_loopback *pcm);
+
+static const struct snd_pcm_hardware dummy_pcm_hardware = {
+	.formats                = 0xffffffff,
+	.channels_min           = 1,
+	.channels_max           = UINT_MAX,
+
+	/* Random values to keep userspace happy when checking constraints */
+	.info                   = SNDRV_PCM_INFO_INTERLEAVED |
+				  SNDRV_PCM_INFO_BLOCK_TRANSFER,
+	.buffer_bytes_max       = 128*1024,
+	.period_bytes_min       = 1024,
+	.period_bytes_max       = 1024*2,
+	.periods_min            = 2,
+	.periods_max            = 128,
+};
+>>>>>>> p9x
 
 static void msm_pcm_route_event_handler(enum msm_pcm_routing_event event,
 					void *priv_data)
@@ -116,6 +146,7 @@ static void msm_pcm_loopback_event_handler(uint32_t opcode, uint32_t token,
 	}
 }
 
+<<<<<<< HEAD
 static int msm_loopback_session_mute_get(struct snd_kcontrol *kcontrol,
 					 struct snd_ctl_elem_value *ucontrol)
 {
@@ -167,6 +198,10 @@ static int msm_pcm_loopback_probe(struct snd_soc_platform *platform)
 }
 static int pcm_loopback_set_volume(struct msm_pcm_loopback *prtd,
 				   uint32_t volume)
+=======
+static int pcm_loopback_set_volume(struct msm_pcm_loopback *prtd,
+					uint32_t volume)
+>>>>>>> p9x
 {
 	int rc = -EINVAL;
 
@@ -184,6 +219,7 @@ static int pcm_loopback_set_volume(struct msm_pcm_loopback *prtd,
 	return rc;
 }
 
+<<<<<<< HEAD
 static int msm_pcm_loopback_get_session(struct snd_soc_pcm_runtime *rtd,
 					struct msm_pcm_loopback **pcm)
 {
@@ -239,16 +275,23 @@ exit:
 	return ret;
 }
 
+=======
+>>>>>>> p9x
 static int msm_pcm_open(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_soc_pcm_runtime *rtd = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
 	struct msm_pcm_loopback *pcm = NULL;
+=======
+	struct msm_pcm_loopback *pcm;
+>>>>>>> p9x
 	int ret = 0;
 	uint16_t bits_per_sample = 16;
 	struct msm_pcm_routing_evt event;
 	struct asm_session_mtmx_strtr_param_window_v2_t asm_mtmx_strtr_window;
 	uint32_t param_id;
+<<<<<<< HEAD
 	struct msm_pcm_pdata *pdata;
 
 	ret =  msm_pcm_loopback_get_session(rtd, &pcm);
@@ -257,6 +300,13 @@ static int msm_pcm_open(struct snd_pcm_substream *substream)
 
 	mutex_lock(&pcm->lock);
 
+=======
+
+	pcm = dev_get_drvdata(rtd->platform->dev);
+	mutex_lock(&pcm->lock);
+
+	snd_soc_set_runtime_hwparams(substream, &dummy_pcm_hardware);
+>>>>>>> p9x
 	pcm->volume = 0x2000;
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
@@ -275,6 +325,7 @@ static int msm_pcm_open(struct snd_pcm_substream *substream)
 		if (pcm->audio_client != NULL)
 			stop_pcm(pcm);
 
+<<<<<<< HEAD
 		pdata = (struct msm_pcm_pdata *)
 			dev_get_drvdata(rtd->platform->dev);
 		if (!pdata) {
@@ -284,6 +335,8 @@ static int msm_pcm_open(struct snd_pcm_substream *substream)
 			return -EINVAL;
 		}
 
+=======
+>>>>>>> p9x
 		pcm->audio_client = q6asm_audio_client_alloc(
 				(app_cb)msm_pcm_loopback_event_handler, pcm);
 		if (!pcm->audio_client) {
@@ -293,7 +346,11 @@ static int msm_pcm_open(struct snd_pcm_substream *substream)
 			return -ENOMEM;
 		}
 		pcm->session_id = pcm->audio_client->session;
+<<<<<<< HEAD
 		pcm->audio_client->perf_mode = pdata->perf_mode;
+=======
+		pcm->audio_client->perf_mode = false;
+>>>>>>> p9x
 		ret = q6asm_open_loopback_v2(pcm->audio_client,
 					     bits_per_sample);
 		if (ret < 0) {
@@ -371,8 +428,12 @@ static int msm_pcm_close(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct msm_pcm_loopback *pcm = runtime->private_data;
 	struct snd_soc_pcm_runtime *rtd = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
 	int ret = 0, n;
 	bool found = false;
+=======
+	int ret = 0;
+>>>>>>> p9x
 
 	mutex_lock(&pcm->lock);
 
@@ -389,6 +450,7 @@ static int msm_pcm_close(struct snd_pcm_substream *substream)
 		stop_pcm(pcm);
 	}
 
+<<<<<<< HEAD
 	if (!pcm->instance) {
 		mutex_lock(&loopback_session_lock);
 		for (n = 0; n < LOOPBACK_SESSION_MAX; n++) {
@@ -412,6 +474,8 @@ static int msm_pcm_close(struct snd_pcm_substream *substream)
 		}
 		mutex_unlock(&loopback_session_lock);
 	}
+=======
+>>>>>>> p9x
 	mutex_unlock(&pcm->lock);
 	return ret;
 }
@@ -472,8 +536,31 @@ static int msm_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops msm_pcm_ops = {
 	.open           = msm_pcm_open,
+=======
+static int msm_pcm_hw_params(struct snd_pcm_substream *substream,
+			     struct snd_pcm_hw_params *params)
+{
+	struct snd_soc_pcm_runtime *rtd = snd_pcm_substream_chip(substream);
+
+	dev_dbg(rtd->platform->dev, "%s: ASM loopback\n", __func__);
+
+	return snd_pcm_lib_alloc_vmalloc_buffer(substream,
+		params_buffer_bytes(params));
+}
+
+static int msm_pcm_hw_free(struct snd_pcm_substream *substream)
+{
+	return snd_pcm_lib_free_vmalloc_buffer(substream);
+}
+
+static struct snd_pcm_ops msm_pcm_ops = {
+	.open           = msm_pcm_open,
+	.hw_params      = msm_pcm_hw_params,
+	.hw_free        = msm_pcm_hw_free,
+>>>>>>> p9x
 	.close          = msm_pcm_close,
 	.prepare        = msm_pcm_prepare,
 	.trigger        = msm_pcm_trigger,
@@ -531,7 +618,11 @@ exit:
 	return rc;
 }
 
+<<<<<<< HEAD
 static int msm_pcm_add_volume_controls(struct snd_soc_pcm_runtime *rtd)
+=======
+static int msm_pcm_add_controls(struct snd_soc_pcm_runtime *rtd)
+>>>>>>> p9x
 {
 	struct snd_pcm *pcm = rtd->pcm->streams[0].pcm;
 	struct snd_pcm_volume *volume_info;
@@ -552,6 +643,7 @@ static int msm_pcm_add_volume_controls(struct snd_soc_pcm_runtime *rtd)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int msm_pcm_playback_app_type_cfg_ctl_put(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
@@ -738,6 +830,8 @@ static int msm_pcm_add_controls(struct snd_soc_pcm_runtime *rtd)
 	return ret;
 }
 
+=======
+>>>>>>> p9x
 static int msm_asoc_pcm_new(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_card *card = rtd->card->snd_card;
@@ -755,16 +849,25 @@ static int msm_asoc_pcm_new(struct snd_soc_pcm_runtime *rtd)
 static struct snd_soc_platform_driver msm_soc_platform = {
 	.ops            = &msm_pcm_ops,
 	.pcm_new        = msm_asoc_pcm_new,
+<<<<<<< HEAD
 	.probe          = msm_pcm_loopback_probe,
+=======
+>>>>>>> p9x
 };
 
 static int msm_pcm_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct msm_pcm_pdata *pdata;
+=======
+	struct msm_pcm_loopback *pcm;
+
+>>>>>>> p9x
 
 	dev_dbg(&pdev->dev, "%s: dev name %s\n",
 		__func__, dev_name(&pdev->dev));
 
+<<<<<<< HEAD
 	pdata = kzalloc(sizeof(struct msm_pcm_pdata), GFP_KERNEL);
 	if (!pdata)
 		return -ENOMEM;
@@ -777,12 +880,32 @@ static int msm_pcm_probe(struct platform_device *pdev)
 
 	dev_set_drvdata(&pdev->dev, pdata);
 
+=======
+	pcm = kzalloc(sizeof(struct msm_pcm_loopback), GFP_KERNEL);
+	if (!pcm) {
+		dev_err(&pdev->dev, "%s Failed to allocate memory for pcm\n",
+			__func__);
+		return -ENOMEM;
+	} else {
+		mutex_init(&pcm->lock);
+		dev_set_drvdata(&pdev->dev, pcm);
+	}
+>>>>>>> p9x
 	return snd_soc_register_platform(&pdev->dev,
 				   &msm_soc_platform);
 }
 
 static int msm_pcm_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
+=======
+	struct msm_pcm_loopback *pcm;
+
+	pcm = dev_get_drvdata(&pdev->dev);
+	mutex_destroy(&pcm->lock);
+	kfree(pcm);
+
+>>>>>>> p9x
 	snd_soc_unregister_platform(&pdev->dev);
 	return 0;
 }

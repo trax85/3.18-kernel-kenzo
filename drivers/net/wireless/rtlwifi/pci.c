@@ -781,6 +781,8 @@ static void _rtl_pci_rx_interrupt(struct ieee80211_hw *hw)
 		.rate = 0,
 	};
 
+	if (rtlpci->driver_is_goingto_unload)
+		return;
 	/*RX NORMAL PKT */
 	while (count--) {
 		struct ieee80211_hdr *hdr;

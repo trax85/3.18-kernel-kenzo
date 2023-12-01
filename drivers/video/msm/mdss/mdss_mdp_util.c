@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -16,17 +20,27 @@
 #include <linux/errno.h>
 #include <linux/file.h>
 #include <linux/msm_ion.h>
+<<<<<<< HEAD
+=======
+#include <linux/qcom_iommu.h>
+#include <linux/msm_kgsl.h>
+>>>>>>> p9x
 #include <linux/spinlock.h>
 #include <linux/types.h>
 #include <linux/major.h>
 #include <media/msm_media_info.h>
 
+<<<<<<< HEAD
 #include <linux/dma-buf.h>
+=======
+#include <linux/msm_iommu_domains.h>
+>>>>>>> p9x
 
 #include "mdss_fb.h"
 #include "mdss_mdp.h"
 #include "mdss_mdp_formats.h"
 #include "mdss_debug.h"
+<<<<<<< HEAD
 #include "mdss_smmu.h"
 #include "mdss_panel.h"
 
@@ -149,10 +163,218 @@ void mdss_mdp_set_supported_formats(struct mdss_data_type *mdata)
 					mdata->ndma_pipes, fmt);
 		}
 	}
+=======
+#include "mdss_panel.h"
+
+enum {
+	MDP_INTR_VSYNC_INTF_0,
+	MDP_INTR_VSYNC_INTF_1,
+	MDP_INTR_VSYNC_INTF_2,
+	MDP_INTR_VSYNC_INTF_3,
+	MDP_INTR_UNDERRUN_INTF_0,
+	MDP_INTR_UNDERRUN_INTF_1,
+	MDP_INTR_UNDERRUN_INTF_2,
+	MDP_INTR_UNDERRUN_INTF_3,
+	MDP_INTR_PING_PONG_0,
+	MDP_INTR_PING_PONG_1,
+	MDP_INTR_PING_PONG_2,
+	MDP_INTR_PING_PONG_3,
+	MDP_INTR_PING_PONG_0_RD_PTR,
+	MDP_INTR_PING_PONG_1_RD_PTR,
+	MDP_INTR_PING_PONG_2_RD_PTR,
+	MDP_INTR_PING_PONG_3_RD_PTR,
+	MDP_INTR_WB_0,
+	MDP_INTR_WB_1,
+	MDP_INTR_WB_2,
+	MDP_INTR_MAX,
+};
+
+struct intr_callback {
+	void (*func)(void *);
+	void *arg;
+};
+
+struct intr_callback mdp_intr_cb[MDP_INTR_MAX];
+static DEFINE_SPINLOCK(mdss_mdp_intr_lock);
+
+static int mdss_mdp_intr2index(u32 intr_type, u32 intf_num)
+{
+	int index = -1;
+	switch (intr_type) {
+	case MDSS_MDP_IRQ_INTF_UNDER_RUN:
+		index = MDP_INTR_UNDERRUN_INTF_0 + (intf_num - MDSS_MDP_INTF0);
+		break;
+	case MDSS_MDP_IRQ_INTF_VSYNC:
+		index = MDP_INTR_VSYNC_INTF_0 + (intf_num - MDSS_MDP_INTF0);
+		break;
+	case MDSS_MDP_IRQ_PING_PONG_COMP:
+		index = MDP_INTR_PING_PONG_0 + intf_num;
+		break;
+	case MDSS_MDP_IRQ_PING_PONG_RD_PTR:
+		index = MDP_INTR_PING_PONG_0_RD_PTR + intf_num;
+		break;
+	case MDSS_MDP_IRQ_WB_ROT_COMP:
+		index = MDP_INTR_WB_0 + intf_num;
+		break;
+	case MDSS_MDP_IRQ_WB_WFD:
+		index = MDP_INTR_WB_2 + intf_num;
+		break;
+	}
+
+	return index;
+}
+
+int mdss_mdp_set_intr_callback(u32 intr_type, u32 intf_num,
+			       void (*fnc_ptr)(void *), void *arg)
+{
+	unsigned long flags;
+	int index;
+
+	index = mdss_mdp_intr2index(intr_type, intf_num);
+	if (index < 0) {
+		pr_warn("invalid intr type=%u intf_num=%u\n",
+				intr_type, intf_num);
+		return -EINVAL;
+	}
+
+	spin_lock_irqsave(&mdss_mdp_intr_lock, flags);
+	WARN(mdp_intr_cb[index].func && fnc_ptr,
+		"replacing current intr callback for ndx=%d\n", index);
+	mdp_intr_cb[index].func = fnc_ptr;
+	mdp_intr_cb[index].arg = arg;
+	spin_unlock_irqrestore(&mdss_mdp_intr_lock, flags);
+
+	return 0;
+}
+
+static inline void mdss_mdp_intr_done(int index)
+{
+	void (*fnc)(void *);
+	void *arg;
+
+	spin_lock(&mdss_mdp_intr_lock);
+	fnc = mdp_intr_cb[index].func;
+	arg = mdp_intr_cb[index].arg;
+	spin_unlock(&mdss_mdp_intr_lock);
+	if (fnc)
+		fnc(arg);
+}
+
+irqreturn_t mdss_mdp_isr(int irq, void *ptr)
+{
+	struct mdss_data_type *mdata = ptr;
+	u32 isr, mask, hist_isr, hist_mask;
+
+
+	isr = readl_relaxed(mdata->mdp_base + MDSS_MDP_REG_INTR_STATUS);
+
+	if (isr == 0)
+		goto mdp_isr_done;
+
+
+	mask = readl_relaxed(mdata->mdp_base + MDSS_MDP_REG_INTR_EN);
+	writel_relaxed(isr, mdata->mdp_base + MDSS_MDP_REG_INTR_CLEAR);
+
+	pr_debug("%s: isr=%x mask=%x\n", __func__, isr, mask);
+
+	isr &= mask;
+	if (isr == 0)
+		goto mdp_isr_done;
+
+	if (isr & MDSS_MDP_INTR_INTF_0_UNDERRUN)
+		mdss_mdp_intr_done(MDP_INTR_UNDERRUN_INTF_0);
+
+	if (isr & MDSS_MDP_INTR_INTF_1_UNDERRUN)
+		mdss_mdp_intr_done(MDP_INTR_UNDERRUN_INTF_1);
+
+	if (isr & MDSS_MDP_INTR_INTF_2_UNDERRUN)
+		mdss_mdp_intr_done(MDP_INTR_UNDERRUN_INTF_2);
+
+	if (isr & MDSS_MDP_INTR_INTF_3_UNDERRUN)
+		mdss_mdp_intr_done(MDP_INTR_UNDERRUN_INTF_3);
+
+	if (isr & MDSS_MDP_INTR_PING_PONG_0_DONE)
+		mdss_mdp_intr_done(MDP_INTR_PING_PONG_0);
+
+	if (isr & MDSS_MDP_INTR_PING_PONG_1_DONE)
+		mdss_mdp_intr_done(MDP_INTR_PING_PONG_1);
+
+	if (isr & MDSS_MDP_INTR_PING_PONG_2_DONE)
+		mdss_mdp_intr_done(MDP_INTR_PING_PONG_2);
+
+	if (isr & MDSS_MDP_INTR_PING_PONG_3_DONE)
+		mdss_mdp_intr_done(MDP_INTR_PING_PONG_3);
+
+	if (isr & MDSS_MDP_INTR_PING_PONG_0_RD_PTR)
+		mdss_mdp_intr_done(MDP_INTR_PING_PONG_0_RD_PTR);
+
+	if (isr & MDSS_MDP_INTR_PING_PONG_1_RD_PTR)
+		mdss_mdp_intr_done(MDP_INTR_PING_PONG_1_RD_PTR);
+
+	if (isr & MDSS_MDP_INTR_PING_PONG_2_RD_PTR)
+		mdss_mdp_intr_done(MDP_INTR_PING_PONG_2_RD_PTR);
+
+	if (isr & MDSS_MDP_INTR_PING_PONG_3_RD_PTR)
+		mdss_mdp_intr_done(MDP_INTR_PING_PONG_3_RD_PTR);
+
+	if (isr & MDSS_MDP_INTR_INTF_0_VSYNC) {
+		mdss_mdp_intr_done(MDP_INTR_VSYNC_INTF_0);
+		mdss_misr_crc_collect(mdata, DISPLAY_MISR_EDP);
+	}
+
+	if (isr & MDSS_MDP_INTR_INTF_1_VSYNC) {
+		mdss_mdp_intr_done(MDP_INTR_VSYNC_INTF_1);
+		mdss_misr_crc_collect(mdata, DISPLAY_MISR_DSI0);
+	}
+
+	if (isr & MDSS_MDP_INTR_INTF_2_VSYNC) {
+		mdss_mdp_intr_done(MDP_INTR_VSYNC_INTF_2);
+		mdss_misr_crc_collect(mdata, DISPLAY_MISR_DSI1);
+	}
+
+	if (isr & MDSS_MDP_INTR_INTF_3_VSYNC) {
+		mdss_mdp_intr_done(MDP_INTR_VSYNC_INTF_3);
+		mdss_misr_crc_collect(mdata, DISPLAY_MISR_HDMI);
+	}
+
+	if (isr & MDSS_MDP_INTR_WB_0_DONE) {
+		mdss_mdp_intr_done(MDP_INTR_WB_0);
+		mdss_misr_crc_collect(mdata, DISPLAY_MISR_MDP);
+	}
+
+	if (isr & MDSS_MDP_INTR_WB_1_DONE) {
+		mdss_mdp_intr_done(MDP_INTR_WB_1);
+		mdss_misr_crc_collect(mdata, DISPLAY_MISR_MDP);
+	}
+
+	if (isr & (((mdata->mdp_rev == MDSS_MDP_HW_REV_108) ||
+			(mdata->mdp_rev == MDSS_MDP_HW_REV_111)) ?
+		MDSS_MDP_INTR_WB_2_DONE >> 2 : MDSS_MDP_INTR_WB_2_DONE)) {
+		mdss_mdp_intr_done(MDP_INTR_WB_2);
+		mdss_misr_crc_collect(mdata, DISPLAY_MISR_MDP);
+	}
+
+mdp_isr_done:
+	hist_isr = readl_relaxed(mdata->mdp_base +
+			MDSS_MDP_REG_HIST_INTR_STATUS);
+	if (hist_isr == 0)
+		goto hist_isr_done;
+	hist_mask = readl_relaxed(mdata->mdp_base +
+			MDSS_MDP_REG_HIST_INTR_EN);
+	writel_relaxed(hist_isr, mdata->mdp_base +
+		MDSS_MDP_REG_HIST_INTR_CLEAR);
+	hist_isr &= hist_mask;
+	if (hist_isr == 0)
+		goto hist_isr_done;
+	mdss_mdp_hist_intr_done(hist_isr);
+hist_isr_done:
+	return IRQ_HANDLED;
+>>>>>>> p9x
 }
 
 struct mdss_mdp_format_params *mdss_mdp_get_format_params(u32 format)
 {
+<<<<<<< HEAD
 	struct mdss_mdp_format_params *fmt = NULL;
 	struct mdss_data_type *mdata = mdss_mdp_get_mdata();
 	int i;
@@ -221,6 +443,18 @@ void mdss_mdp_get_v_h_subsample_rate(u8 chroma_sample,
 		*h_sample = 1;
 		break;
 	}
+=======
+	if (format < MDP_IMGTYPE_LIMIT) {
+		struct mdss_mdp_format_params *fmt = NULL;
+		int i;
+		for (i = 0; i < ARRAY_SIZE(mdss_mdp_format_map); i++) {
+			fmt = &mdss_mdp_format_map[i];
+			if (format == fmt->format)
+				return fmt;
+		}
+	}
+	return NULL;
+>>>>>>> p9x
 }
 
 void mdss_mdp_intersect_rect(struct mdss_rect *res_rect,
@@ -403,6 +637,7 @@ int mdss_mdp_get_rau_strides(u32 w, u32 h,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mdss_mdp_get_ubwc_plane_size(struct mdss_mdp_format_params *fmt,
 	u32 width, u32 height, struct mdss_mdp_plane_sizes *ps)
 {
@@ -511,10 +746,18 @@ int mdss_mdp_get_plane_sizes(struct mdss_mdp_format_params *fmt, u32 w, u32 h,
 	struct mdss_mdp_plane_sizes *ps, u32 bwc_mode, bool rotation)
 {
 	int i, rc = 0;
+=======
+int mdss_mdp_get_plane_sizes(u32 format, u32 w, u32 h,
+	struct mdss_mdp_plane_sizes *ps, u32 bwc_mode, bool rotation)
+{
+	struct mdss_mdp_format_params *fmt;
+	int i, rc;
+>>>>>>> p9x
 	u32 bpp;
 	if (ps == NULL)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	memset(ps, 0, sizeof(struct mdss_mdp_plane_sizes));
 
 	if ((w > MAX_IMG_WIDTH) || (h > MAX_IMG_HEIGHT))
@@ -525,6 +768,19 @@ int mdss_mdp_get_plane_sizes(struct mdss_mdp_format_params *fmt, u32 w, u32 h,
 	if (mdss_mdp_is_ubwc_format(fmt)) {
 		rc = mdss_mdp_get_ubwc_plane_size(fmt, w, h, ps);
 	} else if (bwc_mode) {
+=======
+	if ((w > MAX_IMG_WIDTH) || (h > MAX_IMG_HEIGHT))
+		return -ERANGE;
+
+	fmt = mdss_mdp_get_format_params(format);
+	if (!fmt)
+		return -EINVAL;
+
+	bpp = fmt->bpp;
+	memset(ps, 0, sizeof(struct mdss_mdp_plane_sizes));
+
+	if (bwc_mode) {
+>>>>>>> p9x
 		u32 height, meta_size;
 
 		rc = mdss_mdp_get_rau_strides(w, h, fmt, ps);
@@ -547,10 +803,17 @@ int mdss_mdp_get_plane_sizes(struct mdss_mdp_format_params *fmt, u32 w, u32 h,
 			ps->num_planes = 1;
 			ps->plane_size[0] = w * h * bpp;
 			ps->ystride[0] = w * bpp;
+<<<<<<< HEAD
 		} else if (fmt->format == MDP_Y_CBCR_H2V2_VENUS ||
 				fmt->format == MDP_Y_CRCB_H2V2_VENUS) {
 
 			int cf = (fmt->format == MDP_Y_CBCR_H2V2_VENUS) ?
+=======
+		} else if (format == MDP_Y_CBCR_H2V2_VENUS ||
+				format == MDP_Y_CRCB_H2V2_VENUS) {
+
+			int cf = (format == MDP_Y_CBCR_H2V2_VENUS) ?
+>>>>>>> p9x
 					COLOR_FMT_NV12 : COLOR_FMT_NV21;
 			ps->num_planes = 2;
 			ps->ystride[0] = VENUS_Y_STRIDE(cf, w);
@@ -560,15 +823,40 @@ int mdss_mdp_get_plane_sizes(struct mdss_mdp_format_params *fmt, u32 w, u32 h,
 			ps->plane_size[1] = VENUS_UV_SCANLINES(cf, h) *
 				ps->ystride[1];
 		} else {
+<<<<<<< HEAD
 			u8 v_subsample, h_subsample, stride_align, height_align;
+=======
+			u8 hmap[] = { 1, 2, 1, 2 };
+			u8 vmap[] = { 1, 1, 2, 2 };
+			u8 horiz, vert, stride_align, height_align;
+>>>>>>> p9x
 			u32 chroma_samp;
 
 			chroma_samp = fmt->chroma_sample;
 
+<<<<<<< HEAD
 			mdss_mdp_get_v_h_subsample_rate(chroma_samp,
 				&v_subsample, &h_subsample);
 
 			switch (fmt->format) {
+=======
+			if (rotation) {
+				if (chroma_samp == MDSS_MDP_CHROMA_H2V1)
+					chroma_samp = MDSS_MDP_CHROMA_H1V2;
+				else if (chroma_samp == MDSS_MDP_CHROMA_H1V2)
+					chroma_samp = MDSS_MDP_CHROMA_H2V1;
+			}
+
+			if (chroma_samp >= ARRAY_SIZE(hmap) ||
+				chroma_samp >= ARRAY_SIZE(vmap)) {
+				pr_err("%s: out of bounds error\n", __func__);
+				return -ERANGE;
+			}
+			horiz = hmap[chroma_samp];
+			vert = vmap[chroma_samp];
+
+			switch (format) {
+>>>>>>> p9x
 			case MDP_Y_CR_CB_GH2V2:
 				stride_align = 16;
 				height_align = 1;
@@ -579,6 +867,7 @@ int mdss_mdp_get_plane_sizes(struct mdss_mdp_format_params *fmt, u32 w, u32 h,
 				break;
 			}
 
+<<<<<<< HEAD
 			w = w << fmt->unpack_dx_format;
 
 			ps->ystride[0] = ALIGN(w, stride_align);
@@ -586,6 +875,13 @@ int mdss_mdp_get_plane_sizes(struct mdss_mdp_format_params *fmt, u32 w, u32 h,
 			ps->plane_size[0] = ps->ystride[0] *
 				ALIGN(h, height_align);
 			ps->plane_size[1] = ps->ystride[1] * (h / v_subsample);
+=======
+			ps->ystride[0] = ALIGN(w, stride_align);
+			ps->ystride[1] = ALIGN(w / horiz, stride_align);
+			ps->plane_size[0] = ps->ystride[0] *
+				ALIGN(h, height_align);
+			ps->plane_size[1] = ps->ystride[1] * (h / vert);
+>>>>>>> p9x
 
 			if (fmt->fetch_planes == MDSS_MDP_PLANE_PSEUDO_PLANAR) {
 				ps->num_planes = 2;
@@ -598,6 +894,7 @@ int mdss_mdp_get_plane_sizes(struct mdss_mdp_format_params *fmt, u32 w, u32 h,
 			}
 		}
 	}
+<<<<<<< HEAD
 
 	/* Safe to use MAX_PLANES as ps is memset at start of function */
 	for (i = 0; i < MAX_PLANES; i++)
@@ -719,12 +1016,21 @@ end:
 		}
 	}
 
+=======
+	for (i = 0; i < ps->num_planes; i++)
+		ps->total_size += ps->plane_size[i];
+
+>>>>>>> p9x
 	return 0;
 }
 
 int mdss_mdp_data_check(struct mdss_mdp_data *data,
+<<<<<<< HEAD
 			struct mdss_mdp_plane_sizes *ps,
 			struct mdss_mdp_format_params *fmt)
+=======
+			struct mdss_mdp_plane_sizes *ps)
+>>>>>>> p9x
 {
 	struct mdss_mdp_img_data *prev, *curr;
 	int i;
@@ -735,9 +1041,12 @@ int mdss_mdp_data_check(struct mdss_mdp_data *data,
 	if (!data || data->num_planes == 0)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	if (mdss_mdp_is_ubwc_format(fmt))
 		return mdss_mdp_ubwc_data_check(data, ps, fmt);
 
+=======
+>>>>>>> p9x
 	pr_debug("srcp0=%pa len=%lu frame_size=%u\n", &data->p[0].addr,
 		data->p[0].len, ps->total_size);
 
@@ -765,6 +1074,7 @@ int mdss_mdp_data_check(struct mdss_mdp_data *data,
 	return 0;
 }
 
+<<<<<<< HEAD
 int mdss_mdp_validate_offset_for_ubwc_format(
 	struct mdss_mdp_format_params *fmt, u16 x, u16 y)
 {
@@ -885,22 +1195,28 @@ done:
 	}
 }
 
+=======
+>>>>>>> p9x
 void mdss_mdp_data_calc_offset(struct mdss_mdp_data *data, u16 x, u16 y,
 	struct mdss_mdp_plane_sizes *ps, struct mdss_mdp_format_params *fmt)
 {
 	if ((x == 0) && (y == 0))
 		return;
 
+<<<<<<< HEAD
 	if (mdss_mdp_is_ubwc_format(fmt)) {
 		mdss_mdp_ubwc_data_calc_offset(data, x, y, ps, fmt);
 		return;
 	}
 
+=======
+>>>>>>> p9x
 	data->p[0].addr += y * ps->ystride[0];
 
 	if (data->num_planes == 1) {
 		data->p[0].addr += x * fmt->bpp;
 	} else {
+<<<<<<< HEAD
 		u16 xoff, yoff;
 		u8 v_subsample, h_subsample;
 		mdss_mdp_get_v_h_subsample_rate(fmt->chroma_sample,
@@ -908,6 +1224,12 @@ void mdss_mdp_data_calc_offset(struct mdss_mdp_data *data, u16 x, u16 y,
 
 		xoff = x / h_subsample;
 		yoff = y / v_subsample;
+=======
+		u8 hmap[] = { 1, 2, 1, 2 };
+		u8 vmap[] = { 1, 1, 2, 2 };
+		u16 xoff = x / hmap[fmt->chroma_sample];
+		u16 yoff = y / vmap[fmt->chroma_sample];
+>>>>>>> p9x
 
 		data->p[0].addr += x;
 		data->p[1].addr += xoff + (yoff * ps->ystride[1]);
@@ -918,6 +1240,7 @@ void mdss_mdp_data_calc_offset(struct mdss_mdp_data *data, u16 x, u16 y,
 	}
 }
 
+<<<<<<< HEAD
 static int mdss_mdp_put_img(struct mdss_mdp_img_data *data, bool rotator,
 		int dir)
 {
@@ -933,12 +1256,27 @@ static int mdss_mdp_put_img(struct mdss_mdp_img_data *data, bool rotator,
 		memset(&data->srcp_f, 0, sizeof(struct fd));
 	} else if (!IS_ERR_OR_NULL(data->srcp_dma_buf)) {
 		pr_debug("ion hdl=%pK buf=0x%pa\n", data->srcp_dma_buf,
+=======
+static int mdss_mdp_put_img(struct mdss_mdp_img_data *data)
+{
+	struct ion_client *iclient = mdss_get_ionclient();
+	if (data->flags & MDP_MEMORY_ID_TYPE_FB) {
+		pr_debug("fb mem buf=0x%pa\n", &data->addr);
+		fput_light(data->srcp_file, data->p_need);
+		data->srcp_file = NULL;
+	} else if (data->srcp_file) {
+		pr_debug("pmem buf=0x%pa\n", &data->addr);
+		data->srcp_file = NULL;
+	} else if (!IS_ERR_OR_NULL(data->srcp_ihdl)) {
+		pr_debug("ion hdl=%pK buf=0x%pa\n", data->srcp_ihdl,
+>>>>>>> p9x
 							&data->addr);
 		if (!iclient) {
 			pr_err("invalid ion client\n");
 			return -ENOMEM;
 		} else {
 			if (data->mapped) {
+<<<<<<< HEAD
 				domain = mdss_smmu_get_domain_type(data->flags,
 					rotator);
 				mdss_smmu_unmap_dma_buf(data->srcp_table,
@@ -966,6 +1304,22 @@ static int mdss_mdp_put_img(struct mdss_mdp_img_data *data, bool rotator,
 		 *
 		 */
 		pr_debug("skip memory unmapping for secure display content\n");
+=======
+				int domain;
+				if (data->flags & MDP_SECURE_OVERLAY_SESSION)
+					domain = MDSS_IOMMU_DOMAIN_SECURE;
+				else
+					domain = MDSS_IOMMU_DOMAIN_UNSECURE;
+				ion_unmap_iommu(iclient, data->srcp_ihdl,
+					mdss_get_iommu_domain(domain), 0);
+
+				data->mapped = false;
+			}
+			ion_free(iclient, data->srcp_ihdl);
+			data->srcp_ihdl = NULL;
+		}
+
+>>>>>>> p9x
 	} else {
 		return -ENOMEM;
 	}
@@ -974,6 +1328,7 @@ static int mdss_mdp_put_img(struct mdss_mdp_img_data *data, bool rotator,
 }
 
 static int mdss_mdp_get_img(struct msmfb_data *img,
+<<<<<<< HEAD
 		struct mdss_mdp_img_data *data, struct device *dev,
 		bool rotator, int dir)
 {
@@ -985,22 +1340,52 @@ static int mdss_mdp_get_img(struct msmfb_data *img,
 	dma_addr_t *start;
 	struct ion_client *iclient = mdss_get_ionclient();
 	struct mdss_data_type *mdata = mdss_mdp_get_mdata();
+=======
+		struct mdss_mdp_img_data *data)
+{
+	struct file *file;
+	int ret = -EINVAL;
+	int fb_num;
+	unsigned long *len;
+	dma_addr_t *start;
+	struct ion_client *iclient = mdss_get_ionclient();
+>>>>>>> p9x
 
 	start = &data->addr;
 	len = &data->len;
 	data->flags |= img->flags;
+<<<<<<< HEAD
 	data->offset = img->offset;
 	if (img->flags & MDP_MEMORY_ID_TYPE_FB) {
 		f = fdget(img->memory_id);
 		if (f.file == NULL) {
+=======
+	data->p_need = 0;
+	data->offset = img->offset;
+
+	if (img->flags & MDP_BLIT_SRC_GEM) {
+		data->srcp_file = NULL;
+		ret = kgsl_gem_obj_addr(img->memory_id, (int) img->priv,
+					start, len);
+	} else if (img->flags & MDP_MEMORY_ID_TYPE_FB) {
+		file = fget_light(img->memory_id, &data->p_need);
+		if (file == NULL) {
+>>>>>>> p9x
 			pr_err("invalid framebuffer file (%d)\n",
 					img->memory_id);
 			return -EINVAL;
 		}
+<<<<<<< HEAD
 		data->srcp_f = f;
 
 		if (MAJOR(f.file->f_dentry->d_inode->i_rdev) == FB_MAJOR) {
 			fb_num = MINOR(f.file->f_dentry->d_inode->i_rdev);
+=======
+		data->srcp_file = file;
+
+		if (MAJOR(file->f_dentry->d_inode->i_rdev) == FB_MAJOR) {
+			fb_num = MINOR(file->f_dentry->d_inode->i_rdev);
+>>>>>>> p9x
 			ret = mdss_fb_get_phys_info(start, len, fb_num);
 			if (ret)
 				pr_err("mdss_fb_get_phys_info() failed\n");
@@ -1009,6 +1394,7 @@ static int mdss_mdp_get_img(struct msmfb_data *img,
 			ret = -1;
 		}
 	} else if (iclient) {
+<<<<<<< HEAD
 		if (mdss_mdp_is_map_needed(mdata, data)) {
 			data->srcp_dma_buf = dma_buf_get(img->memory_id);
 			if (IS_ERR_OR_NULL(data->srcp_dma_buf)) {
@@ -1090,6 +1476,26 @@ static int mdss_mdp_get_img(struct msmfb_data *img,
 	if (start && !*start) {
 		pr_err("start address is zero!\n");
 		mdss_mdp_put_img(data, rotator, dir);
+=======
+		data->srcp_ihdl = ion_import_dma_buf(iclient, img->memory_id);
+		if (IS_ERR_OR_NULL(data->srcp_ihdl)) {
+			pr_err("error on ion_import_fd\n");
+			ret = PTR_ERR(data->srcp_ihdl);
+			data->srcp_ihdl = NULL;
+			return ret;
+		}
+		data->addr = 0;
+		data->len = 0;
+		data->mapped = false;
+		/* return early, mapping will be done later */
+
+		return 0;
+	}
+
+	if (!*start) {
+		pr_err("start address is zero!\n");
+		mdss_mdp_put_img(data);
+>>>>>>> p9x
 		return -ENOMEM;
 	}
 
@@ -1098,14 +1504,22 @@ static int mdss_mdp_get_img(struct msmfb_data *img,
 		data->len -= data->offset;
 
 		pr_debug("mem=%d ihdl=%pK buf=0x%pa len=0x%lx\n",
+<<<<<<< HEAD
 			 img->memory_id, data->srcp_dma_buf, &data->addr,
 			 data->len);
 	} else {
 		mdss_mdp_put_img(data, rotator, dir);
+=======
+			 img->memory_id, data->srcp_ihdl, &data->addr,
+			 data->len);
+	} else {
+		mdss_mdp_put_img(data);
+>>>>>>> p9x
 		return ret ? : -EOVERFLOW;
 	}
 
 	return ret;
+<<<<<<< HEAD
 err_detach:
 	dma_buf_detach(data->srcp_dma_buf, data->srcp_attachment);
 err_put:
@@ -1123,10 +1537,19 @@ static int mdss_mdp_map_buffer(struct mdss_mdp_img_data *data, bool rotator,
 	struct scatterlist *sg;
 	unsigned int i;
 	struct sg_table *table;
+=======
+}
+
+static int mdss_mdp_map_buffer(struct mdss_mdp_img_data *data)
+{
+	int ret = -EINVAL;
+	struct ion_client *iclient = mdss_get_ionclient();
+>>>>>>> p9x
 
 	if (data->addr && data->len)
 		return 0;
 
+<<<<<<< HEAD
 	if (!IS_ERR_OR_NULL(data->srcp_dma_buf)) {
 		if (mdss_res->mdss_util->iommu_attached() &&
 			(mdss_mdp_is_map_needed(mdata, data))) {
@@ -1150,12 +1573,41 @@ static int mdss_mdp_map_buffer(struct mdss_mdp_img_data *data, bool rotator,
 				data->len += sg->length;
 			}
 			ret = 0;
+=======
+	if (!IS_ERR_OR_NULL(data->srcp_ihdl)) {
+		if (mdss_res->mdss_util->iommu_attached()) {
+			int domain;
+			if (data->flags & MDP_SECURE_OVERLAY_SESSION)
+				domain = MDSS_IOMMU_DOMAIN_SECURE;
+			else
+				domain = MDSS_IOMMU_DOMAIN_UNSECURE;
+
+			ret = ion_map_iommu(iclient, data->srcp_ihdl,
+						mdss_get_iommu_domain(domain),
+						0, SZ_4K, 0, &data->addr,
+						&data->len, 0, 0);
+			if (!IS_ERR_VALUE(ret))
+				data->mapped = true;
+		} else {
+			ret = ion_phys(iclient, data->srcp_ihdl,
+					&data->addr, (size_t *) &data->len);
+		}
+
+		if (IS_ERR_VALUE(ret)) {
+			ion_free(iclient, data->srcp_ihdl);
+			pr_err("failed to map ion handle (%d)\n", ret);
+			return ret;
+>>>>>>> p9x
 		}
 	}
 
 	if (!data->addr) {
 		pr_err("start address is zero!\n");
+<<<<<<< HEAD
 		mdss_mdp_put_img(data, rotator, dir);
+=======
+		mdss_mdp_put_img(data);
+>>>>>>> p9x
 		return -ENOMEM;
 	}
 
@@ -1164,13 +1616,20 @@ static int mdss_mdp_map_buffer(struct mdss_mdp_img_data *data, bool rotator,
 		data->len -= data->offset;
 
 		pr_debug("ihdl=%pK buf=0x%pa len=0x%lx\n",
+<<<<<<< HEAD
 			 data->srcp_dma_buf, &data->addr, data->len);
 	} else {
 		mdss_mdp_put_img(data, rotator, dir);
+=======
+			 data->srcp_ihdl, &data->addr, data->len);
+	} else {
+		mdss_mdp_put_img(data);
+>>>>>>> p9x
 		return ret ? : -EOVERFLOW;
 	}
 
 	return ret;
+<<<<<<< HEAD
 
 err_unmap:
 	dma_buf_unmap_attachment(data->srcp_attachment, data->srcp_table,
@@ -1183,6 +1642,12 @@ err_unmap:
 static int mdss_mdp_data_get(struct mdss_mdp_data *data,
 		struct msmfb_data *planes, int num_planes, u32 flags,
 		struct device *dev, bool rotator, int dir)
+=======
+}
+
+int mdss_mdp_data_get(struct mdss_mdp_data *data, struct msmfb_data *planes,
+		int num_planes, u32 flags)
+>>>>>>> p9x
 {
 	int i, rc = 0;
 
@@ -1191,13 +1656,21 @@ static int mdss_mdp_data_get(struct mdss_mdp_data *data,
 
 	for (i = 0; i < num_planes; i++) {
 		data->p[i].flags = flags;
+<<<<<<< HEAD
 		rc = mdss_mdp_get_img(&planes[i], &data->p[i], dev, rotator,
 				dir);
+=======
+		rc = mdss_mdp_get_img(&planes[i], &data->p[i]);
+>>>>>>> p9x
 		if (rc) {
 			pr_err("failed to get buf p=%d flags=%x\n", i, flags);
 			while (i > 0) {
 				i--;
+<<<<<<< HEAD
 				mdss_mdp_put_img(&data->p[i], rotator, dir);
+=======
+				mdss_mdp_put_img(&data->p[i]);
+>>>>>>> p9x
 			}
 			break;
 		}
@@ -1208,6 +1681,7 @@ static int mdss_mdp_data_get(struct mdss_mdp_data *data,
 	return rc;
 }
 
+<<<<<<< HEAD
 int mdss_mdp_data_map(struct mdss_mdp_data *data, bool rotator, int dir)
 {
 	int i, rc = 0;
@@ -1217,11 +1691,26 @@ int mdss_mdp_data_map(struct mdss_mdp_data *data, bool rotator, int dir)
 
 	for (i = 0; i < data->num_planes; i++) {
 		rc = mdss_mdp_map_buffer(&data->p[i], rotator, dir);
+=======
+int mdss_mdp_data_map(struct mdss_mdp_data *data)
+{
+	int i, rc = 0;
+
+	if (!data || !data->num_planes)
+		return -EINVAL;
+
+	for (i = 0; i < data->num_planes; i++) {
+		rc = mdss_mdp_map_buffer(&data->p[i]);
+>>>>>>> p9x
 		if (rc) {
 			pr_err("failed to map buf p=%d\n", i);
 			while (i > 0) {
 				i--;
+<<<<<<< HEAD
 				mdss_mdp_put_img(&data->p[i], rotator, dir);
+=======
+				mdss_mdp_put_img(&data->p[i]);
+>>>>>>> p9x
 			}
 			break;
 		}
@@ -1230,12 +1719,17 @@ int mdss_mdp_data_map(struct mdss_mdp_data *data, bool rotator, int dir)
 	return rc;
 }
 
+<<<<<<< HEAD
 void mdss_mdp_data_free(struct mdss_mdp_data *data, bool rotator, int dir)
+=======
+void mdss_mdp_data_free(struct mdss_mdp_data *data)
+>>>>>>> p9x
 {
 	int i;
 
 	mdss_iommu_ctrl(1);
 	for (i = 0; i < data->num_planes && data->p[i].len; i++)
+<<<<<<< HEAD
 		mdss_mdp_put_img(&data->p[i], rotator, dir);
 	memset(&data->p, 0, sizeof(struct mdss_mdp_img_data) * MAX_PLANES);
 	mdss_iommu_ctrl(0);
@@ -1292,6 +1786,13 @@ buf_too_small:
 	return ret;
 }
 
+=======
+		mdss_mdp_put_img(&data->p[i]);
+	mdss_iommu_ctrl(0);
+	data->num_planes = 0;
+}
+
+>>>>>>> p9x
 int mdss_mdp_calc_phase_step(u32 src, u32 dst, u32 *out_phase)
 {
 	struct mdss_data_type *mdata = mdss_mdp_get_mdata();

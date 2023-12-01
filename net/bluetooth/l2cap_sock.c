@@ -156,11 +156,17 @@ static int l2cap_sock_bind(struct socket *sock, struct sockaddr *addr, int alen)
 		break;
 	}
 
+<<<<<<< HEAD
 	bacpy(&chan->src, &la.l2_bdaddr);
 	chan->src_type = la.l2_bdaddr_type;
 
 	if (chan->psm && bdaddr_type_is_le(chan->src_type))
 		chan->mode = L2CAP_MODE_LE_FLOWCTL;
+=======
+	bacpy(&bt_sk(sk)->src, &la.l2_bdaddr);
+	bacpy(&chan->src, &la.l2_bdaddr);
+	chan->src_type = la.l2_bdaddr_type;
+>>>>>>> p9x
 
 	chan->state = BT_BOUND;
 	sk->sk_state = BT_BOUND;
@@ -358,11 +364,14 @@ static int l2cap_sock_getname(struct socket *sock, struct sockaddr *addr,
 	struct l2cap_chan *chan = l2cap_pi(sk)->chan;
 
 	BT_DBG("sock %pK, sk %pK", sock, sk);
+<<<<<<< HEAD
 
 	if (peer && sk->sk_state != BT_CONNECTED &&
 	    sk->sk_state != BT_CONNECT && sk->sk_state != BT_CONNECT2 &&
 	    sk->sk_state != BT_CONFIG)
 		return -ENOTCONN;
+=======
+>>>>>>> p9x
 
 	memset(la, 0, sizeof(struct sockaddr_l2));
 	addr->sa_family = AF_BLUETOOTH;
@@ -875,7 +884,16 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname,
 		break;
 
 	case BT_CHANNEL_POLICY:
+<<<<<<< HEAD
 		if (get_user(opt, (u32 __user *) optval)) {
+=======
+		if (!enable_hs) {
+			err = -ENOPROTOOPT;
+			break;
+		}
+
+		if (get_user(opt, (u16 __user *) optval)) {
+>>>>>>> p9x
 			err = -EFAULT;
 			break;
 		}

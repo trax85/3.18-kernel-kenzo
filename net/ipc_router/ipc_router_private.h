@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -32,9 +36,12 @@
  * with an existing alternate transport in user-space, if needed.
  */
 #define IPC_ROUTER_V2		3
+<<<<<<< HEAD
 #define IPC_ROUTER_VER_BITMASK ((BIT(IPC_ROUTER_V1)) | (BIT(IPC_ROUTER_V2)))
 #define IPC_ROUTER_HELLO_MAGIC 0xE110
 #define IPC_ROUTER_CHECKSUM_MASK 0xFFFF
+=======
+>>>>>>> p9x
 
 #define IPC_ROUTER_ADDRESS			0x0000FFFF
 
@@ -136,6 +143,7 @@ void msm_ipc_router_free_skb(struct sk_buff_head *skb_head);
  */
 int ipc_router_set_conn(struct msm_ipc_port *port_ptr,
 			struct msm_ipc_addr *addr);
+<<<<<<< HEAD
 
 void *msm_ipc_load_default_node(void);
 
@@ -147,4 +155,6 @@ void msm_ipc_unload_default_node(void *pil);
  */
 void ipc_router_dummy_write_space(struct sock *sk);
 
+=======
+>>>>>>> p9x
 #endif

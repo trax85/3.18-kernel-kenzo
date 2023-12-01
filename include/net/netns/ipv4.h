@@ -74,6 +74,7 @@ struct netns_ipv4 {
 
 	struct local_ports ip_local_ports;
 
+<<<<<<< HEAD
 	int sysctl_tcp_ecn;
 	int sysctl_ip_no_pmtu_disc;
 	int sysctl_ip_fwd_use_pmtu;
@@ -83,6 +84,13 @@ struct netns_ipv4 {
 	int sysctl_tcp_fwmark_accept;
 
 	struct ping_group_range ping_group_range;
+=======
+	int sysctl_fwmark_reflect;
+	int sysctl_tcp_fwmark_accept;
+
+	kgid_t sysctl_ping_group_range[2];
+	long sysctl_tcp_mem[3];
+>>>>>>> p9x
 
 	atomic_t dev_addr_genid;
 

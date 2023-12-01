@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -49,11 +53,14 @@ struct mem_blocks {
 	void *virtual_addr;
 	/* Release memory only when XPU is released*/
 	uint8_t free_memory;
+<<<<<<< HEAD
 	/* Need Hypervisor mapping*/
 	uint8_t hyp_mapping;
 	/* Status flag which checks if ramdump file is created*/
 	int file_created;
 
+=======
+>>>>>>> p9x
 };
 
 int memshare_alloc(struct device *dev,

@@ -559,6 +559,11 @@ struct mei_device {
 	struct list_head me_clients;
 	DECLARE_BITMAP(me_clients_map, MEI_CLIENTS_MAX);
 	DECLARE_BITMAP(host_clients_map, MEI_CLIENTS_MAX);
+<<<<<<< HEAD
+=======
+	unsigned long me_clients_num;
+	unsigned long me_client_presentation_num;
+>>>>>>> p9x
 	unsigned long me_client_index;
 
 	struct mei_cl wd_cl;

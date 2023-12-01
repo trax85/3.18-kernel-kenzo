@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -22,9 +26,13 @@
 #include <linux/slab.h>
 #include <linux/delay.h>
 #include <linux/smp.h>
+<<<<<<< HEAD
 #ifdef CONFIG_WAKELOCK
 #include <linux/wakelock.h>
 #endif
+=======
+#include <linux/wakelock.h>
+>>>>>>> p9x
 #include <linux/sysfs.h>
 #include <linux/stat.h>
 #include <linux/spinlock.h>
@@ -46,12 +54,26 @@
 
 #define etm_writel(drvdata, val, off)					\
 ({									\
+<<<<<<< HEAD
 	etm_writel_mm(drvdata, val, off);				\
+=======
+	if (cpu_is_krait_v3())						\
+		etm_writel_cp14(val, off);				\
+	else								\
+		etm_writel_mm(drvdata, val, off);			\
+>>>>>>> p9x
 })
 #define etm_readl(drvdata, off)						\
 ({									\
 	uint32_t val;							\
+<<<<<<< HEAD
 	val = etm_readl_mm(drvdata, off);				\
+=======
+	if (cpu_is_krait_v3())						\
+		val = etm_readl_cp14(off);				\
+	else								\
+		val = etm_readl_mm(drvdata, off);			\
+>>>>>>> p9x
 	val;								\
 })
 
@@ -299,6 +321,7 @@ static void etm_os_unlock(void *info)
 {
 	struct etm_drvdata *drvdata = (struct etm_drvdata *) info;
 
+<<<<<<< HEAD
 	ETM_UNLOCK(drvdata);
 	if (etm_os_lock_present(drvdata)) {
 		etm_writel(drvdata, 0x0, ETMOSLAR);
@@ -306,6 +329,26 @@ static void etm_os_unlock(void *info)
 		mb();
 	}
 	ETM_LOCK(drvdata);
+=======
+	/*
+	 * Memory mapped writes to clear os lock are not supported on Krait v1,
+	 * v2 and OS lock must be unlocked before any memory mapped access,
+	 * otherwise memory mapped reads/writes will be invalid.
+	 */
+	if (cpu_is_krait()) {
+		etm_writel_cp14(0x0, ETMOSLAR);
+		/* ensure os lock is unlocked before we return */
+		isb();
+	} else {
+		ETM_UNLOCK(drvdata);
+		if (etm_os_lock_present(drvdata)) {
+			etm_writel(drvdata, 0x0, ETMOSLAR);
+			/* ensure os lock is unlocked before we return */
+			mb();
+		}
+		ETM_LOCK(drvdata);
+	}
+>>>>>>> p9x
 }
 
 /*
@@ -350,11 +393,29 @@ static void etm_clr_pwrdwn(struct etm_drvdata *drvdata)
 
 static void etm_set_pwrup(struct etm_drvdata *drvdata)
 {
+<<<<<<< HEAD
 	uint32_t etmpdcr;
 
 	etmpdcr = etm_readl_mm(drvdata, ETMPDCR);
 	etmpdcr |= BIT(3);
 	etm_writel_mm(drvdata, etmpdcr, ETMPDCR);
+=======
+	uint32_t cpmr;
+	uint32_t etmpdcr;
+
+	 /* For Krait, use cp15 CPMR_ETMCLKEN instead of ETMPDCR since ETMPDCR
+	  * is not supported for this purpose on Krait v4.
+	  */
+	if (cpu_is_krait()) {
+		asm volatile("mrc p15, 7, %0, c15, c0, 5" : "=r" (cpmr));
+		cpmr  |= CPMR_ETMCLKEN;
+		asm volatile("mcr p15, 7, %0, c15, c0, 5" : : "r" (cpmr));
+	} else {
+		etmpdcr = etm_readl_mm(drvdata, ETMPDCR);
+		etmpdcr |= BIT(3);
+		etm_writel_mm(drvdata, etmpdcr, ETMPDCR);
+	}
+>>>>>>> p9x
 	/* ensure pwrup completes before subsequent cp14 accesses */
 	mb();
 	isb();
@@ -362,14 +423,33 @@ static void etm_set_pwrup(struct etm_drvdata *drvdata)
 
 static void etm_clr_pwrup(struct etm_drvdata *drvdata)
 {
+<<<<<<< HEAD
+=======
+	uint32_t cpmr;
+>>>>>>> p9x
 	uint32_t etmpdcr;
 
 	/* ensure pending cp14 accesses complete before clearing pwrup */
 	mb();
 	isb();
+<<<<<<< HEAD
 	etmpdcr = etm_readl_mm(drvdata, ETMPDCR);
 	etmpdcr &= ~BIT(3);
 	etm_writel_mm(drvdata, etmpdcr, ETMPDCR);
+=======
+	 /* For Krait, use cp15 CPMR_ETMCLKEN instead of ETMPDCR since ETMPDCR
+	  * is not supported for this purpose on Krait v4.
+	  */
+	if (cpu_is_krait()) {
+		asm volatile("mrc p15, 7, %0, c15, c0, 5" : "=r" (cpmr));
+		cpmr  &= ~CPMR_ETMCLKEN;
+		asm volatile("mcr p15, 7, %0, c15, c0, 5" : : "r" (cpmr));
+	} else {
+		etmpdcr = etm_readl_mm(drvdata, ETMPDCR);
+		etmpdcr &= ~BIT(3);
+		etm_writel_mm(drvdata, etmpdcr, ETMPDCR);
+	}
+>>>>>>> p9x
 }
 
 static void etm_set_prog(struct etm_drvdata *drvdata)
@@ -457,6 +537,13 @@ static void etm_reset_data(struct etm_drvdata *drvdata)
 	drvdata->ctrl = 0x0;
 	if (etm_version_gte(drvdata->arch, ETM_ARCH_V1_0))
 		drvdata->ctrl |= BIT(11);
+<<<<<<< HEAD
+=======
+	if (cpu_is_krait_v1()) {
+		drvdata->mode |= ETM_MODE_CYCACC;
+		drvdata->ctrl |= BIT(12);
+	}
+>>>>>>> p9x
 	drvdata->trigger_event = 0x406F;
 	drvdata->startstop_ctrl = 0x0;
 	if (etm_version_gte(drvdata->arch, ETM_ARCH_V1_2))
@@ -500,7 +587,15 @@ static void etm_reset_data(struct etm_drvdata *drvdata)
 	for (i = 0; i < drvdata->nr_ctxid_cmp; i++)
 		drvdata->ctxid_val[i] = 0x0;
 	drvdata->ctxid_mask = 0x0;
+<<<<<<< HEAD
 	drvdata->sync_freq = 0x80;
+=======
+	/* Bits[7:0] of ETMSYNCFR are reserved on Krait pass3 onwards */
+	if (cpu_is_krait() && !cpu_is_krait_v1() && !cpu_is_krait_v2())
+		drvdata->sync_freq = 0x100;
+	else
+		drvdata->sync_freq = 0x80;
+>>>>>>> p9x
 	drvdata->timestamp_event = 0x406F;
 
 	spin_unlock(&drvdata->spinlock);
@@ -1930,10 +2025,13 @@ static void etm_init_arch_data(void *info)
 	 */
 	etm_set_prog(drvdata);
 
+<<<<<<< HEAD
 	/* check the state of the fuse */
 	if (!coresight_authstatus_enabled(drvdata->base))
 			goto out;
 
+=======
+>>>>>>> p9x
 	/* find all capabilities */
 	etmidr = etm_readl(drvdata, ETMIDR);
 	drvdata->arch = BMVAL(etmidr, 4, 11);
@@ -1988,7 +2086,11 @@ static void etm_init_arch_data(void *info)
 			drvdata->data_trace_support = false;
 	} else
 		drvdata->data_trace_support = false;
+<<<<<<< HEAD
 out:
+=======
+
+>>>>>>> p9x
 	etm_set_pwrdwn(drvdata);
 	ETM_LOCK(drvdata);
 }
@@ -2021,9 +2123,34 @@ static void etm_init_default_data(struct etm_drvdata *drvdata)
 	drvdata->seq_31_event = 0x406F;
 	drvdata->seq_32_event = 0x406F;
 	drvdata->seq_13_event = 0x406F;
+<<<<<<< HEAD
 	drvdata->sync_freq = 0x80;
 	drvdata->timestamp_event = 0x406F;
 
+=======
+	/* Bits[7:0] of ETMSYNCFR are reserved on Krait pass3 onwards */
+	if (cpu_is_krait() && !cpu_is_krait_v1() && !cpu_is_krait_v2())
+		drvdata->sync_freq = 0x100;
+	else
+		drvdata->sync_freq = 0x80;
+	drvdata->timestamp_event = 0x406F;
+
+	/* Overrides for Krait pass1 */
+	if (cpu_is_krait_v1()) {
+		/* Krait pass1 doesn't support include filtering and non-cycle
+		 * accurate tracing
+		 */
+		drvdata->mode = (ETM_MODE_EXCLUDE | ETM_MODE_CYCACC);
+		drvdata->ctrl = 0x1000;
+		drvdata->enable_ctrl1 = 0x1000000;
+		for (i = 0; i < drvdata->nr_addr_cmp; i++) {
+			drvdata->addr_val[i] = 0x0;
+			drvdata->addr_acctype[i] = 0x0;
+			drvdata->addr_type[i] = ETM_ADDR_TYPE_NONE;
+		}
+	}
+
+>>>>>>> p9x
 	if (etm_version_gte(drvdata->arch, ETM_ARCH_V1_0))
 		drvdata->ctrl |= BIT(11);
 	if (etm_version_gte(drvdata->arch, ETM_ARCH_V1_2))
@@ -2253,10 +2380,23 @@ static int etm_probe(struct platform_device *pdev)
 	struct resource *res;
 	struct device_node *cpu_node;
 
+<<<<<<< HEAD
 	pdata = of_get_coresight_platform_data(dev, pdev->dev.of_node);
 	if (IS_ERR(pdata))
 		return PTR_ERR(pdata);
 	pdev->dev.platform_data = pdata;
+=======
+	if (coresight_fuse_access_disabled() ||
+	    coresight_fuse_apps_access_disabled())
+		return -EPERM;
+
+	if (pdev->dev.of_node) {
+		pdata = of_get_coresight_platform_data(dev, pdev->dev.of_node);
+		if (IS_ERR(pdata))
+			return PTR_ERR(pdata);
+		pdev->dev.platform_data = pdata;
+	}
+>>>>>>> p9x
 
 	drvdata = devm_kzalloc(dev, sizeof(*drvdata), GFP_KERNEL);
 	if (!drvdata)
@@ -2277,8 +2417,14 @@ static int etm_probe(struct platform_device *pdev)
 	mutex_init(&drvdata->mutex);
 	wakeup_source_init(&drvdata->ws, "coresight-etm");
 
+<<<<<<< HEAD
 	drvdata->pcsave_impl = of_property_read_bool(pdev->dev.of_node,
 						     "qcom,pc-save");
+=======
+	if (pdev->dev.of_node)
+		drvdata->pcsave_impl = of_property_read_bool(pdev->dev.of_node,
+							     "qcom,pc-save");
+>>>>>>> p9x
 
 	drvdata->cpu = -1;
 	cpu_node = of_parse_phandle(pdev->dev.of_node, "coresight-etm-cpu", 0);
@@ -2299,6 +2445,12 @@ static int etm_probe(struct platform_device *pdev)
 		goto err0;
 	}
 
+<<<<<<< HEAD
+=======
+	if (count++ == 0)
+		register_hotcpu_notifier(&etm_cpu_notifier);
+
+>>>>>>> p9x
 	drvdata->clk = devm_clk_get(dev, "core_clk");
 	if (IS_ERR(drvdata->clk)) {
 		ret = PTR_ERR(drvdata->clk);
@@ -2313,9 +2465,12 @@ static int etm_probe(struct platform_device *pdev)
 	if (ret)
 		goto err0;
 
+<<<<<<< HEAD
 	if (count++ == 0)
 		register_hotcpu_notifier(&etm_cpu_notifier);
 
+=======
+>>>>>>> p9x
 	get_online_cpus();
 
 	/*

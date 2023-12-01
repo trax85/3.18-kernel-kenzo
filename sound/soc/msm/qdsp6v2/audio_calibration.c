@@ -18,6 +18,10 @@
 #include <linux/mutex.h>
 #include <linux/msm_ion.h>
 #include <linux/msm_audio_ion.h>
+<<<<<<< HEAD
+=======
+#include <linux/ratelimit.h>
+>>>>>>> p9x
 #include <sound/audio_calibration.h>
 #include <sound/audio_cal_utils.h>
 
@@ -295,6 +299,11 @@ static int call_set_cals(int32_t cal_type,
 	int				ret2 = 0;
 	struct list_head		*ptr, *next;
 	struct audio_cal_client_info	*client_info_node = NULL;
+<<<<<<< HEAD
+=======
+	static DEFINE_RATELIMIT_STATE(rl, HZ/2, 1);
+
+>>>>>>> p9x
 	pr_debug("%s cal type %d\n", __func__, cal_type);
 
 	list_for_each_safe(ptr, next,
@@ -309,7 +318,12 @@ static int call_set_cals(int32_t cal_type,
 		ret2 = client_info_node->callbacks->
 			set_cal(cal_type, cal_type_size, data);
 		if (ret2 < 0) {
+<<<<<<< HEAD
 			pr_err("%s: set_cal failed!\n", __func__);
+=======
+			if (__ratelimit(&rl))
+				pr_err("%s: set_cal failed!\n", __func__);
+>>>>>>> p9x
 			ret = ret2;
 		}
 	}

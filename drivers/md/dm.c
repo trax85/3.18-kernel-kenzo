@@ -509,14 +509,21 @@ static int dm_blk_ioctl(struct block_device *bdev, fmode_t mode,
 			unsigned int cmd, unsigned long arg)
 {
 	struct mapped_device *md = bdev->bd_disk->private_data;
+<<<<<<< HEAD
 	int srcu_idx;
+=======
+>>>>>>> p9x
 	struct dm_table *map;
 	struct dm_target *tgt;
 	int r = -ENOTTY;
 
 retry:
+<<<<<<< HEAD
 	map = dm_get_live_table(md, &srcu_idx);
 
+=======
+	map = dm_get_live_table(md);
+>>>>>>> p9x
 	if (!map || !dm_table_get_size(map))
 		goto out;
 
@@ -536,6 +543,11 @@ retry:
 
 out:
 	dm_put_live_table(md, srcu_idx);
+
+	if (r == -ENOTCONN) {
+		msleep(10);
+		goto retry;
+	}
 
 	if (r == -ENOTCONN) {
 		msleep(10);
@@ -1261,6 +1273,7 @@ int dm_set_target_max_io_len(struct dm_target *ti, sector_t len)
 EXPORT_SYMBOL_GPL(dm_set_target_max_io_len);
 
 /*
+<<<<<<< HEAD
  * A target may call dm_accept_partial_bio only from the map routine.  It is
  * allowed for all bio types except REQ_FLUSH.
  *
@@ -1301,6 +1314,8 @@ void dm_accept_partial_bio(struct bio *bio, unsigned n_sectors)
 EXPORT_SYMBOL_GPL(dm_accept_partial_bio);
 
 /*
+=======
+>>>>>>> p9x
  * Flush current->bio_list when the target map method blocks.
  * This fixes deadlocks in snapshot and possibly in other targets.
  */
@@ -1367,7 +1382,11 @@ static void __map_bio(struct dm_target_io *tio)
 	 * this io.
 	 */
 	atomic_inc(&tio->io->io_count);
+<<<<<<< HEAD
 	sector = clone->bi_iter.bi_sector;
+=======
+	sector = clone->bi_sector;
+>>>>>>> p9x
 
 	dm_offload_start(&o);
 	r = ti->type->map(ti, clone);
@@ -2589,6 +2608,7 @@ EXPORT_SYMBOL_GPL(dm_device_name);
 
 static void __dm_destroy(struct mapped_device *md, bool wait)
 {
+	struct request_queue *q = md->queue;
 	struct dm_table *map;
 	int srcu_idx;
 
@@ -2599,18 +2619,31 @@ static void __dm_destroy(struct mapped_device *md, bool wait)
 	set_bit(DMF_FREEING, &md->flags);
 	spin_unlock(&_minor_lock);
 
+<<<<<<< HEAD
+=======
+	spin_lock_irq(q->queue_lock);
+	queue_flag_set(QUEUE_FLAG_DYING, q);
+	spin_unlock_irq(q->queue_lock);
+
+>>>>>>> p9x
 	/*
 	 * Take suspend_lock so that presuspend and postsuspend methods
 	 * do not race with internal suspend.
 	 */
 	mutex_lock(&md->suspend_lock);
+<<<<<<< HEAD
 	map = dm_get_live_table(md, &srcu_idx);
+=======
+>>>>>>> p9x
 	if (!dm_suspended_md(md)) {
 		dm_table_presuspend_targets(map);
 		dm_table_postsuspend_targets(map);
 	}
+<<<<<<< HEAD
 	/* dm_put_live_table must be before msleep, otherwise deadlock is possible */
 	dm_put_live_table(md, srcu_idx);
+=======
+>>>>>>> p9x
 	mutex_unlock(&md->suspend_lock);
 
 	/*
@@ -3038,6 +3071,13 @@ struct mapped_device *dm_get_from_kobject(struct kobject *kobj)
 	struct mapped_device *md;
 
 	md = container_of(kobj, struct mapped_device, kobj_holder.kobj);
+<<<<<<< HEAD
+=======
+
+	if (test_bit(DMF_FREEING, &md->flags) ||
+	    dm_deleting_md(md))
+		return NULL;
+>>>>>>> p9x
 
 	spin_lock(&_minor_lock);
 	if (test_bit(DMF_FREEING, &md->flags) || dm_deleting_md(md)) {

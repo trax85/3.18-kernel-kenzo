@@ -275,6 +275,13 @@
 #include <net/tcp.h>
 #include <net/xfrm.h>
 #include <net/ip.h>
+<<<<<<< HEAD
+=======
+#include <net/ip6_route.h>
+#include <net/ipv6.h>
+#include <net/transp_v6.h>
+#include <net/netdma.h>
+>>>>>>> p9x
 #include <net/sock.h>
 
 #include <asm/uaccess.h>
@@ -285,8 +292,11 @@ int sysctl_tcp_fin_timeout __read_mostly = TCP_FIN_TIMEOUT;
 
 int sysctl_tcp_min_tso_segs __read_mostly = 2;
 
+<<<<<<< HEAD
 int sysctl_tcp_autocorking __read_mostly = 1;
 
+=======
+>>>>>>> p9x
 struct percpu_counter tcp_orphan_count;
 EXPORT_SYMBOL_GPL(tcp_orphan_count);
 
@@ -307,6 +317,10 @@ EXPORT_SYMBOL(sysctl_tcp_delack_seg);
 int sysctl_tcp_use_userconfig __read_mostly;
 EXPORT_SYMBOL(sysctl_tcp_use_userconfig);
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 /*
  * Current number of TCP sockets.
  */
@@ -1112,7 +1126,11 @@ int tcp_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 	lock_sock(sk);
 
 	flags = msg->msg_flags;
+<<<<<<< HEAD
 	if ((flags & MSG_FASTOPEN) && !tp->repair) {
+=======
+	if (flags & MSG_FASTOPEN) {
+>>>>>>> p9x
 		err = tcp_sendmsg_fastopen(sk, msg, &copied_syn, size);
 		if (err == -EINPROGRESS && copied_syn > 0)
 			goto out;
@@ -1201,6 +1219,13 @@ new_segment:
 							  sk->sk_allocation);
 				if (!skb)
 					goto wait_for_memory;
+
+				/*
+				 * All packets are restored as if they have
+				 * already been sent.
+				 */
+				if (tp->repair)
+					TCP_SKB_CB(skb)->when = tcp_time_stamp;
 
 				/*
 				 * Check whether we can use HW checksum.
@@ -1311,13 +1336,21 @@ wait_for_memory:
 
 out:
 	if (copied)
+<<<<<<< HEAD
 		tcp_push(sk, flags, mss_now, tp->nonagle, size_goal);
+=======
+		tcp_push(sk, flags, mss_now, tp->nonagle);
+>>>>>>> p9x
 out_nopush:
 	release_sock(sk);
 
 	if (copied + copied_syn)
+<<<<<<< HEAD
 		uid_stat_tcp_snd(from_kuid(&init_user_ns, current_uid()),
 				 copied + copied_syn);
+=======
+		uid_stat_tcp_snd(current_uid(), copied + copied_syn);
+>>>>>>> p9x
 	return copied + copied_syn;
 
 do_fault:
@@ -1592,8 +1625,12 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
 	if (copied > 0) {
 		tcp_recv_skb(sk, seq, &offset);
 		tcp_cleanup_rbuf(sk, copied);
+<<<<<<< HEAD
 		uid_stat_tcp_rcv(from_kuid(&init_user_ns, current_uid()),
 				 copied);
+=======
+		uid_stat_tcp_rcv(current_uid(), copied);
+>>>>>>> p9x
 	}
 	return copied;
 }
@@ -1925,8 +1962,12 @@ skip_copy:
 	release_sock(sk);
 
 	if (copied > 0)
+<<<<<<< HEAD
 		uid_stat_tcp_rcv(from_kuid(&init_user_ns, current_uid()),
 				 copied);
+=======
+		uid_stat_tcp_rcv(current_uid(), copied);
+>>>>>>> p9x
 	return copied;
 
 out:
@@ -1936,8 +1977,12 @@ out:
 recv_urg:
 	err = tcp_recv_urg(sk, msg, len, flags);
 	if (err > 0)
+<<<<<<< HEAD
 		uid_stat_tcp_rcv(from_kuid(&init_user_ns, current_uid()),
 				 err);
+=======
+		uid_stat_tcp_rcv(current_uid(), err);
+>>>>>>> p9x
 	goto out;
 
 recv_sndq:
@@ -2751,6 +2796,7 @@ void tcp_get_info(const struct sock *sk, struct tcp_info *info)
 
 	info->tcpi_total_retrans = tp->total_retrans;
 
+<<<<<<< HEAD
 	rate = READ_ONCE(sk->sk_pacing_rate);
 	info->tcpi_pacing_rate = rate != ~0U ? rate : ~0ULL;
 
@@ -2763,6 +2809,10 @@ void tcp_get_info(const struct sock *sk, struct tcp_info *info)
 	if (NULL != sk->sk_socket) {
 		struct file *filep = sk->sk_socket->file;
 
+=======
+	if (sk->sk_socket) {
+		struct file *filep = sk->sk_socket->file;
+>>>>>>> p9x
 		if (filep)
 			info->tcpi_count = file_count(filep);
 	}
@@ -2930,6 +2980,245 @@ int compat_tcp_getsockopt(struct sock *sk, int level, int optname,
 EXPORT_SYMBOL(compat_tcp_getsockopt);
 #endif
 
+<<<<<<< HEAD
+=======
+struct sk_buff *tcp_tso_segment(struct sk_buff *skb,
+	netdev_features_t features)
+{
+	struct sk_buff *segs = ERR_PTR(-EINVAL);
+	unsigned int sum_truesize = 0;
+	struct tcphdr *th;
+	unsigned int thlen;
+	unsigned int seq;
+	__be32 delta;
+	unsigned int oldlen;
+	unsigned int mss;
+	struct sk_buff *gso_skb = skb;
+	__sum16 newcheck;
+	bool ooo_okay, copy_destructor;
+
+	if (!pskb_may_pull(skb, sizeof(*th)))
+		goto out;
+
+	th = tcp_hdr(skb);
+	thlen = th->doff * 4;
+	if (thlen < sizeof(*th))
+		goto out;
+
+	if (!pskb_may_pull(skb, thlen))
+		goto out;
+
+	oldlen = (u16)~skb->len;
+	__skb_pull(skb, thlen);
+
+	mss = skb_shinfo(skb)->gso_size;
+	if (unlikely(skb->len <= mss))
+		goto out;
+
+	if (skb_gso_ok(skb, features | NETIF_F_GSO_ROBUST)) {
+		/* Packet is from an untrusted source, reset gso_segs. */
+		int type = skb_shinfo(skb)->gso_type;
+
+		if (unlikely(type &
+			     ~(SKB_GSO_TCPV4 |
+			       SKB_GSO_DODGY |
+			       SKB_GSO_TCP_ECN |
+			       SKB_GSO_TCPV6 |
+			       SKB_GSO_GRE |
+			       SKB_GSO_UDP_TUNNEL |
+			       0) ||
+			     !(type & (SKB_GSO_TCPV4 | SKB_GSO_TCPV6))))
+			goto out;
+
+		skb_shinfo(skb)->gso_segs = DIV_ROUND_UP(skb->len, mss);
+
+		segs = NULL;
+		goto out;
+	}
+
+	copy_destructor = gso_skb->destructor == tcp_wfree;
+	ooo_okay = gso_skb->ooo_okay;
+	/* All segments but the first should have ooo_okay cleared */
+	skb->ooo_okay = 0;
+
+	segs = skb_segment(skb, features);
+	if (IS_ERR(segs))
+		goto out;
+
+	/* Only first segment might have ooo_okay set */
+	segs->ooo_okay = ooo_okay;
+
+	delta = htonl(oldlen + (thlen + mss));
+
+	skb = segs;
+	th = tcp_hdr(skb);
+	seq = ntohl(th->seq);
+
+	newcheck = ~csum_fold((__force __wsum)((__force u32)th->check +
+					       (__force u32)delta));
+
+	do {
+		th->fin = th->psh = 0;
+		th->check = newcheck;
+
+		if (skb->ip_summed != CHECKSUM_PARTIAL)
+			th->check =
+			     csum_fold(csum_partial(skb_transport_header(skb),
+						    thlen, skb->csum));
+
+		seq += mss;
+		if (copy_destructor) {
+			skb->destructor = gso_skb->destructor;
+			skb->sk = gso_skb->sk;
+			sum_truesize += skb->truesize;
+		}
+		skb = skb->next;
+		th = tcp_hdr(skb);
+
+		th->seq = htonl(seq);
+		th->cwr = 0;
+	} while (skb->next);
+
+	/* Following permits TCP Small Queues to work well with GSO :
+	 * The callback to TCP stack will be called at the time last frag
+	 * is freed at TX completion, and not right now when gso_skb
+	 * is freed by GSO engine
+	 */
+	if (copy_destructor) {
+		swap(gso_skb->sk, skb->sk);
+		swap(gso_skb->destructor, skb->destructor);
+		sum_truesize += skb->truesize;
+		atomic_add(sum_truesize - gso_skb->truesize,
+			   &skb->sk->sk_wmem_alloc);
+	}
+
+	delta = htonl(oldlen + (skb->tail - skb->transport_header) +
+		      skb->data_len);
+	th->check = ~csum_fold((__force __wsum)((__force u32)th->check +
+				(__force u32)delta));
+	if (skb->ip_summed != CHECKSUM_PARTIAL)
+		th->check = csum_fold(csum_partial(skb_transport_header(skb),
+						   thlen, skb->csum));
+
+out:
+	return segs;
+}
+EXPORT_SYMBOL(tcp_tso_segment);
+
+struct sk_buff **tcp_gro_receive(struct sk_buff **head, struct sk_buff *skb)
+{
+	struct sk_buff **pp = NULL;
+	struct sk_buff *p;
+	struct tcphdr *th;
+	struct tcphdr *th2;
+	unsigned int len;
+	unsigned int thlen;
+	__be32 flags;
+	unsigned int mss = 1;
+	unsigned int hlen;
+	unsigned int off;
+	int flush = 1;
+	int i;
+
+	off = skb_gro_offset(skb);
+	hlen = off + sizeof(*th);
+	th = skb_gro_header_fast(skb, off);
+	if (skb_gro_header_hard(skb, hlen)) {
+		th = skb_gro_header_slow(skb, hlen, off);
+		if (unlikely(!th))
+			goto out;
+	}
+
+	thlen = th->doff * 4;
+	if (thlen < sizeof(*th))
+		goto out;
+
+	hlen = off + thlen;
+	if (skb_gro_header_hard(skb, hlen)) {
+		th = skb_gro_header_slow(skb, hlen, off);
+		if (unlikely(!th))
+			goto out;
+	}
+
+	skb_gro_pull(skb, thlen);
+
+	len = skb_gro_len(skb);
+	flags = tcp_flag_word(th);
+
+	for (; (p = *head); head = &p->next) {
+		if (!NAPI_GRO_CB(p)->same_flow)
+			continue;
+
+		th2 = tcp_hdr(p);
+
+		if (*(u32 *)&th->source ^ *(u32 *)&th2->source) {
+			NAPI_GRO_CB(p)->same_flow = 0;
+			continue;
+		}
+
+		goto found;
+	}
+
+	goto out_check_final;
+
+found:
+	flush = NAPI_GRO_CB(p)->flush;
+	flush |= (__force int)(flags & TCP_FLAG_CWR);
+	flush |= (__force int)((flags ^ tcp_flag_word(th2)) &
+		  ~(TCP_FLAG_CWR | TCP_FLAG_FIN | TCP_FLAG_PSH));
+	flush |= (__force int)(th->ack_seq ^ th2->ack_seq);
+	for (i = sizeof(*th); i < thlen; i += 4)
+		flush |= *(u32 *)((u8 *)th + i) ^
+			 *(u32 *)((u8 *)th2 + i);
+
+	mss = skb_shinfo(p)->gso_size;
+
+	flush |= (len - 1) >= mss;
+	flush |= (ntohl(th2->seq) + skb_gro_len(p)) ^ ntohl(th->seq);
+
+	if (flush || skb_gro_receive(head, skb)) {
+		mss = 1;
+		goto out_check_final;
+	}
+
+	p = *head;
+	th2 = tcp_hdr(p);
+	tcp_flag_word(th2) |= flags & (TCP_FLAG_FIN | TCP_FLAG_PSH);
+
+out_check_final:
+	flush = len < mss;
+	flush |= (__force int)(flags & (TCP_FLAG_URG | TCP_FLAG_PSH |
+					TCP_FLAG_RST | TCP_FLAG_SYN |
+					TCP_FLAG_FIN));
+
+	if (p && (!NAPI_GRO_CB(skb)->same_flow || flush))
+		pp = head;
+
+out:
+	NAPI_GRO_CB(skb)->flush |= flush;
+
+	return pp;
+}
+EXPORT_SYMBOL(tcp_gro_receive);
+
+int tcp_gro_complete(struct sk_buff *skb)
+{
+	struct tcphdr *th = tcp_hdr(skb);
+
+	skb->csum_start = skb_transport_header(skb) - skb->head;
+	skb->csum_offset = offsetof(struct tcphdr, check);
+	skb->ip_summed = CHECKSUM_PARTIAL;
+
+	skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
+
+	if (th->cwr)
+		skb_shinfo(skb)->gso_type |= SKB_GSO_TCP_ECN;
+
+	return 0;
+}
+EXPORT_SYMBOL(tcp_gro_complete);
+
+>>>>>>> p9x
 #ifdef CONFIG_TCP_MD5SIG
 static DEFINE_PER_CPU(struct tcp_md5sig_pool, tcp_md5sig_pool);
 static DEFINE_MUTEX(tcp_md5sig_mutex);
@@ -3081,8 +3370,13 @@ EXPORT_SYMBOL_GPL(tcp_done);
 
 int tcp_abort(struct sock *sk, int err)
 {
+<<<<<<< HEAD
 	if (!sk_fullsock(sk)) {
 		sock_gen_put(sk);
+=======
+	if (sk->sk_state == TCP_TIME_WAIT) {
+		inet_twsk_put((struct inet_timewait_sock *)sk);
+>>>>>>> p9x
 		return -EOPNOTSUPP;
 	}
 
@@ -3222,4 +3516,122 @@ void __init tcp_init(void)
 	tcp_metrics_init();
 	BUG_ON(tcp_register_congestion_control(&tcp_reno) != 0);
 	tcp_tasklet_init();
+}
+
+static int tcp_is_local(struct net *net, __be32 addr) {
+	struct rtable *rt;
+	struct flowi4 fl4 = { .daddr = addr };
+	int is_local;
+	rt = ip_route_output_key(net, &fl4);
+	if (IS_ERR_OR_NULL(rt))
+		return 0;
+
+	is_local = rt->dst.dev && (rt->dst.dev->flags & IFF_LOOPBACK);
+	ip_rt_put(rt);
+	return is_local;
+}
+
+#if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
+static int tcp_is_local6(struct net *net, struct in6_addr *addr) {
+	struct rt6_info *rt6 = rt6_lookup(net, addr, addr, 0, 0);
+	int is_local;
+
+	is_local = rt6 && rt6->dst.dev && (rt6->dst.dev->flags & IFF_LOOPBACK);
+	ip6_rt_put(rt6);
+	return is_local;
+}
+#endif
+
+/*
+ * tcp_nuke_addr - destroy all sockets on the given local address
+ * if local address is the unspecified address (0.0.0.0 or ::), destroy all
+ * sockets with local addresses that are not configured.
+ */
+int tcp_nuke_addr(struct net *net, struct sockaddr *addr)
+{
+	int family = addr->sa_family;
+	unsigned int bucket;
+
+	struct in_addr *in = NULL;
+#if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
+	struct in6_addr *in6 = NULL;
+#endif
+	if (family == AF_INET) {
+		in = &((struct sockaddr_in *)addr)->sin_addr;
+#if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
+	} else if (family == AF_INET6) {
+		in6 = &((struct sockaddr_in6 *)addr)->sin6_addr;
+#endif
+	} else {
+		return -EAFNOSUPPORT;
+	}
+
+	for (bucket = 0; bucket <= tcp_hashinfo.ehash_mask; bucket++) {
+		struct hlist_nulls_node *node;
+		struct sock *sk;
+		spinlock_t *lock = inet_ehash_lockp(&tcp_hashinfo, bucket);
+
+restart:
+		spin_lock_bh(lock);
+		sk_nulls_for_each(sk, node, &tcp_hashinfo.ehash[bucket].chain) {
+			struct inet_sock *inet = inet_sk(sk);
+
+			if (sysctl_ip_dynaddr && sk->sk_state == TCP_SYN_SENT)
+				continue;
+			if (sock_flag(sk, SOCK_DEAD))
+				continue;
+
+			if (family == AF_INET) {
+				__be32 s4 = inet->inet_rcv_saddr;
+				if (s4 == LOOPBACK4_IPV6)
+					continue;
+
+				if (in->s_addr != s4 &&
+				    !(in->s_addr == INADDR_ANY &&
+				      !tcp_is_local(net, s4)))
+					continue;
+			}
+
+#if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
+			if (family == AF_INET6) {
+				struct in6_addr *s6;
+				if (!inet->pinet6)
+					continue;
+
+				s6 = &inet->pinet6->rcv_saddr;
+				if (ipv6_addr_type(s6) == IPV6_ADDR_MAPPED)
+					continue;
+
+				if (!ipv6_addr_equal(in6, s6) &&
+				    !(ipv6_addr_equal(in6, &in6addr_any) &&
+				      !tcp_is_local6(net, s6)))
+				continue;
+			}
+#endif
+
+			sock_hold(sk);
+			spin_unlock_bh(lock);
+
+			lock_sock(sk);
+			local_bh_disable();
+			bh_lock_sock(sk);
+
+			if (!sock_flag(sk, SOCK_DEAD)) {
+				smp_wmb();  /* be consistent with tcp_reset */
+				sk->sk_err = ETIMEDOUT;
+				sk->sk_error_report(sk);
+				tcp_done(sk);
+			}
+
+			bh_unlock_sock(sk);
+			local_bh_enable();
+			release_sock(sk);
+			sock_put(sk);
+
+			goto restart;
+		}
+		spin_unlock_bh(lock);
+	}
+
+	return 0;
 }

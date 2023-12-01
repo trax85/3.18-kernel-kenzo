@@ -640,6 +640,7 @@ static void append_filter_err(struct filter_parse_state *ps,
 	free_page((unsigned long) buf);
 }
 
+<<<<<<< HEAD
 static inline struct event_filter *event_filter(struct ftrace_event_file *file)
 {
 	if (file->event_call->flags & TRACE_EVENT_FL_USE_CALL_FILTER)
@@ -652,11 +653,21 @@ static inline struct event_filter *event_filter(struct ftrace_event_file *file)
 void print_event_filter(struct ftrace_event_file *file, struct trace_seq *s)
 {
 	struct event_filter *filter = event_filter(file);
+=======
+/* caller must hold event_mutex */
+void print_event_filter(struct ftrace_event_call *call, struct trace_seq *s)
+{
+	struct event_filter *filter = call->filter;
+>>>>>>> p9x
 
 	if (filter && filter->filter_string)
 		trace_seq_printf(s, "%s\n", filter->filter_string);
 	else
+<<<<<<< HEAD
 		trace_seq_puts(s, "none\n");
+=======
+		trace_seq_printf(s, "none\n");
+>>>>>>> p9x
 }
 
 void print_subsystem_event_filter(struct event_subsystem *system,
@@ -1964,7 +1975,11 @@ static int create_system_filter(struct ftrace_subsystem_dir *dir,
 }
 
 /* caller must hold event_mutex */
+<<<<<<< HEAD
 int apply_event_filter(struct ftrace_event_file *file, char *filter_string)
+=======
+int apply_event_filter(struct ftrace_event_call *call, char *filter_string)
+>>>>>>> p9x
 {
 	struct ftrace_event_call *call = file->event_call;
 	struct event_filter *filter;
@@ -1976,6 +1991,7 @@ int apply_event_filter(struct ftrace_event_file *file, char *filter_string)
 
 		if (!filter)
 			return 0;
+<<<<<<< HEAD
 
 		event_clear_filter(file);
 
@@ -1983,6 +1999,12 @@ int apply_event_filter(struct ftrace_event_file *file, char *filter_string)
 		synchronize_sched();
 		__free_filter(filter);
 
+=======
+		RCU_INIT_POINTER(call->filter, NULL);
+		/* Make sure the filter is not being used */
+		synchronize_sched();
+		__free_filter(filter);
+>>>>>>> p9x
 		return 0;
 	}
 

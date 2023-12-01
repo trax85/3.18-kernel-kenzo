@@ -35,6 +35,9 @@
 /* Max transfer size done by I2C transfer functions */
 #define MAX_XFER_SIZE  64
 
+/* Max transfer size done by I2C transfer functions */
+#define MAX_XFER_SIZE  64
+
 #ifndef USB_PID_DW2102
 #define USB_PID_DW2102 0x2102
 #endif

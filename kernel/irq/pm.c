@@ -11,7 +11,7 @@
 #include <linux/interrupt.h>
 #include <linux/suspend.h>
 #include <linux/syscore_ops.h>
-
+#include <linux/wakeup_reason.h>
 #include "internals.h"
 
 bool irq_pm_check_wakeup(struct irq_desc *desc)
@@ -151,7 +151,7 @@ static void resume_irqs(bool want_early)
 	struct irq_desc *desc;
 	int irq;
 
-	for_each_irq_desc(irq, desc) {
+	for_each_irq_desc_reverse(irq, desc) {
 		unsigned long flags;
 		bool is_early = desc->action &&
 			desc->action->flags & IRQF_EARLY_RESUME;
@@ -199,3 +199,45 @@ void resume_device_irqs(void)
 	resume_irqs(false);
 }
 EXPORT_SYMBOL_GPL(resume_device_irqs);
+<<<<<<< HEAD
+=======
+
+/**
+ * check_wakeup_irqs - check if any wake-up interrupts are pending
+ */
+int check_wakeup_irqs(void)
+{
+	struct irq_desc *desc;
+	int irq;
+
+	for_each_irq_desc(irq, desc) {
+		if (irqd_is_wakeup_set(&desc->irq_data)) {
+			if (desc->istate & IRQS_PENDING) {
+				log_suspend_abort_reason("Wakeup IRQ %d %s pending",
+					irq,
+					desc->action && desc->action->name ?
+					desc->action->name : "");
+				pr_info("Wakeup IRQ %d %s pending, suspend aborted\n",
+					irq,
+					desc->action && desc->action->name ?
+					desc->action->name : "");
+				return -EBUSY;
+			}
+			continue;
+		}
+		/*
+		 * Check the non wakeup interrupts whether they need
+		 * to be masked before finally going into suspend
+		 * state. That's for hardware which has no wakeup
+		 * source configuration facility. The chip
+		 * implementation indicates that with
+		 * IRQCHIP_MASK_ON_SUSPEND.
+		 */
+		if (desc->istate & IRQS_SUSPENDED &&
+		    irq_desc_get_chip(desc)->flags & IRQCHIP_MASK_ON_SUSPEND)
+			mask_irq(desc);
+	}
+
+	return 0;
+}
+>>>>>>> p9x

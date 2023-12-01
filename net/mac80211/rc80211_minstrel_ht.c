@@ -918,7 +918,11 @@ minstrel_ht_get_rate(void *priv, struct ieee80211_sta *sta, void *priv_sta,
 	}
 
 	rate->idx = sample_idx % MCS_GROUP_RATES +
+<<<<<<< HEAD
 		    (sample_group->streams - 1) * 8;
+=======
+		    (sample_group->streams - 1) * MCS_GROUP_RATES;
+>>>>>>> p9x
 	rate->flags = IEEE80211_TX_RC_MCS | sample_group->flags;
 }
 

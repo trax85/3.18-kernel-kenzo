@@ -254,7 +254,11 @@ acpi_cpufreq_cpu_init (
 	}
 
 	/* alloc freq_table */
+<<<<<<< HEAD
 	data->freq_table = kzalloc(sizeof(*data->freq_table) *
+=======
+	data->freq_table = kmalloc(sizeof(*data->freq_table) *
+>>>>>>> p9x
 	                           (data->acpi_data.state_count + 1),
 	                           GFP_KERNEL);
 	if (!data->freq_table) {
@@ -275,6 +279,10 @@ acpi_cpufreq_cpu_init (
 	/* table init */
 	for (i = 0; i <= data->acpi_data.state_count; i++)
 	{
+<<<<<<< HEAD
+=======
+		data->freq_table[i].driver_data = i;
+>>>>>>> p9x
 		if (i < data->acpi_data.state_count) {
 			data->freq_table[i].frequency =
 			      data->acpi_data.states[i].core_frequency * 1000;
@@ -348,7 +356,11 @@ static struct cpufreq_driver acpi_cpufreq_driver = {
 	.init		= acpi_cpufreq_cpu_init,
 	.exit		= acpi_cpufreq_cpu_exit,
 	.name		= "acpi-cpufreq",
+<<<<<<< HEAD
 	.attr		= cpufreq_generic_attr,
+=======
+	.attr           = acpi_cpufreq_attr,
+>>>>>>> p9x
 };
 
 

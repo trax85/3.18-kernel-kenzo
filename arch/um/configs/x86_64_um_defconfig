@@ -98,7 +98,10 @@ CONFIG_CROSS_MEMORY_ATTACH=y
 # CONFIG_FHANDLE is not set
 CONFIG_USELIB=y
 # CONFIG_AUDIT is not set
+<<<<<<< HEAD:arch/um/configs/x86_64_um_defconfig
 CONFIG_HAVE_ARCH_AUDITSYSCALL=y
+=======
+>>>>>>> p9x:arch/um/defconfig
 
 #
 # IRQ subsystem

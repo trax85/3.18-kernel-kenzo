@@ -17,9 +17,15 @@
 #include <linux/clk.h>
 #include <linux/mutex.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/pm_qos.h>
 #include <linux/spinlock.h>
 #include "vmem/vmem.h"
+=======
+#include <linux/spinlock.h>
+#include <linux/msm_iommu_domains.h>
+#include <soc/qcom/ocmem.h>
+>>>>>>> p9x
 #include "vidc_hfi_api.h"
 #include "vidc_hfi_helper.h"
 #include "vidc_hfi_api.h"
@@ -47,7 +53,11 @@
 #define VIDC_IFACEQ_DFLT_QHDR				0x01010000
 
 #define VIDC_MAX_NAME_LENGTH 64
+<<<<<<< HEAD
 #define VIDC_MAX_PC_SKIP_COUNT 10
+=======
+
+>>>>>>> p9x
 struct hfi_queue_table_header {
 	u32 qtbl_version;
 	u32 qtbl_size;
@@ -102,12 +112,15 @@ struct hfi_mem_map {
 #define QUEUE_SIZE (VIDC_IFACEQ_TABLE_SIZE + \
 	(VIDC_IFACEQ_QUEUE_SIZE * VIDC_IFACEQ_NUMQ))
 
+<<<<<<< HEAD
 #define ALIGNED_QDSS_SIZE ALIGN(QDSS_SIZE, SZ_4K)
 #define ALIGNED_SFR_SIZE ALIGN(SFR_SIZE, SZ_4K)
 #define ALIGNED_QUEUE_SIZE ALIGN(QUEUE_SIZE, SZ_4K)
 #define SHARED_QSIZE ALIGN(ALIGNED_SFR_SIZE + ALIGNED_QUEUE_SIZE + \
 			ALIGNED_QDSS_SIZE, SZ_1M)
 
+=======
+>>>>>>> p9x
 enum vidc_hw_reg {
 	VIDC_HWREG_CTRL_STATUS =  0x1,
 	VIDC_HWREG_QTBL_INFO =  0x2,
@@ -121,6 +134,22 @@ enum vidc_hw_reg {
 	VIDC_HWREG_HVI_SOFTINTEN =  0xA,
 };
 
+<<<<<<< HEAD
+=======
+enum bus_index {
+	BUS_IDX_ENC_OCMEM,
+	BUS_IDX_DEC_OCMEM,
+	BUS_IDX_ENC_DDR,
+	BUS_IDX_DEC_DDR,
+	BUS_IDX_MAX
+};
+
+enum clock_state {
+	DISABLED_UNPREPARED,
+	ENABLED_PREPARED,
+};
+
+>>>>>>> p9x
 struct vidc_mem_addr {
 	ion_phys_addr_t align_device_addr;
 	u8 *align_virtual_addr;
@@ -133,6 +162,7 @@ struct vidc_iface_q_info {
 	struct vidc_mem_addr q_array;
 };
 
+<<<<<<< HEAD
 /*
  * These are helper macros to iterate over various lists within
  * venus_hfi_device->res.  The intention is to cut down on a lot of boiler-plate
@@ -193,6 +223,10 @@ struct vidc_iface_q_info {
 
 
 /* Internal data used in vidc_hal not exposed to msm_vidc*/
+=======
+/* Internal data used in vidc_hal not exposed to msm_vidc*/
+
+>>>>>>> p9x
 struct hal_data {
 	u32 irq;
 	phys_addr_t firmware_base;
@@ -200,16 +234,32 @@ struct hal_data {
 	u32 register_size;
 };
 
+<<<<<<< HEAD
 struct imem {
 	enum imem_type type;
 	union {
 		phys_addr_t vmem;
 	};
+=======
+struct venus_bus_info {
+	u32 ddr_handle[MSM_VIDC_MAX_DEVICES];
+	u32 ocmem_handle[MSM_VIDC_MAX_DEVICES];
+};
+
+struct on_chip_mem {
+	struct ocmem_buf *buf;
+	struct notifier_block vidc_ocmem_nb;
+	void *handle;
+>>>>>>> p9x
 };
 
 struct venus_resources {
 	struct msm_vidc_fw fw;
+<<<<<<< HEAD
 	struct imem imem;
+=======
+	struct on_chip_mem ocmem;
+>>>>>>> p9x
 };
 
 enum venus_hfi_state {
@@ -222,6 +272,7 @@ struct venus_hfi_device {
 	struct list_head sess_head;
 	u32 intr_status;
 	u32 device_id;
+<<<<<<< HEAD
 	u32 clk_freq;
 	u32 last_packet_type;
 	unsigned long clk_bitrate;
@@ -229,6 +280,21 @@ struct venus_hfi_device {
 	struct msm_vidc_gov_data bus_vote;
 	bool power_enabled;
 	struct mutex lock;
+=======
+	unsigned long clk_freq;
+	u32 last_packet_type;
+	struct {
+		struct vidc_bus_vote_data *vote_data;
+		u32 vote_data_count;
+	} bus_load;
+	enum clock_state clk_state;
+	bool power_enabled;
+	struct mutex read_lock;
+	struct mutex write_lock;
+	struct mutex resource_lock;
+	struct mutex session_lock;
+	struct mutex clock_lock;
+>>>>>>> p9x
 	msm_vidc_callback callback;
 	struct vidc_mem_addr iface_q_table;
 	struct vidc_mem_addr qdss;
@@ -246,6 +312,7 @@ struct venus_hfi_device {
 	enum venus_hfi_state state;
 	struct hfi_packetization_ops *pkt_ops;
 	enum hfi_packetization_type packetization_type;
+<<<<<<< HEAD
 	struct msm_vidc_cb_info *response_pkt;
 	struct pm_qos_request qos;
 	unsigned int skip_pc_count;
@@ -260,4 +327,12 @@ int venus_hfi_initialize(struct hfi_device *hdev, u32 device_id,
 bool venus_hfi_is_session_supported(unsigned long sessions_supported,
 		enum vidc_vote_data_session session_type);
 
+=======
+};
+
+void venus_hfi_delete_device(void *device);
+int venus_hfi_initialize(struct hfi_device *hdev, u32 device_id,
+		struct msm_vidc_platform_resources *res,
+		hfi_cmd_response_callback callback);
+>>>>>>> p9x
 #endif

@@ -28,9 +28,12 @@ static inline void rt_mutex_print_deadlock(struct rt_mutex_waiter *w)
 {
 	WARN(1, "rtmutex deadlock detected\n");
 }
+<<<<<<< HEAD
 
 static inline bool debug_rt_mutex_detect_deadlock(struct rt_mutex_waiter *w,
 						  enum rtmutex_chainwalk walk)
 {
 	return walk == RT_MUTEX_FULL_CHAINWALK;
 }
+=======
+>>>>>>> p9x

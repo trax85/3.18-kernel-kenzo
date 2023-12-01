@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -25,7 +29,11 @@ static struct snd_soc_dai_ops msm_fe_dai_ops = {};
 /* Conventional and unconventional sample rate supported */
 static unsigned int supported_sample_rates[] = {
 	8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000,
+<<<<<<< HEAD
 	88200, 96000, 176400, 192000, 352800, 384000
+=======
+	88200, 96000, 176400, 192000
+>>>>>>> p9x
 };
 
 static struct snd_pcm_hw_constraint_list constraints_sample_rates = {
@@ -46,13 +54,19 @@ static int multimedia_startup(struct snd_pcm_substream *substream,
 static int fe_dai_probe(struct snd_soc_dai *dai)
 {
 	struct snd_soc_dapm_route intercon;
+<<<<<<< HEAD
 	struct snd_soc_dapm_context *dapm;
 
+=======
+>>>>>>> p9x
 	if (!dai || !dai->driver) {
 		pr_err("%s invalid params\n", __func__);
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	dapm = snd_soc_component_get_dapm(dai->component);
+=======
+>>>>>>> p9x
 	memset(&intercon, 0 , sizeof(intercon));
 	if (dai->driver->playback.stream_name &&
 		dai->driver->playback.aif_name) {
@@ -62,7 +76,11 @@ static int fe_dai_probe(struct snd_soc_dai *dai)
 		intercon.sink = dai->driver->playback.aif_name;
 		dev_dbg(dai->dev, "%s src %s sink %s\n",
 			   __func__, intercon.source, intercon.sink);
+<<<<<<< HEAD
 		snd_soc_dapm_add_routes(dapm, &intercon, 1);
+=======
+		snd_soc_dapm_add_routes(&dai->dapm, &intercon, 1);
+>>>>>>> p9x
 	}
 	if (dai->driver->capture.stream_name &&
 	   dai->driver->capture.aif_name) {
@@ -72,7 +90,11 @@ static int fe_dai_probe(struct snd_soc_dai *dai)
 		intercon.source = dai->driver->capture.aif_name;
 		dev_dbg(dai->dev, "%s src %s sink %s\n",
 			   __func__, intercon.source, intercon.sink);
+<<<<<<< HEAD
 		snd_soc_dapm_add_routes(dapm, &intercon, 1);
+=======
+		snd_soc_dapm_add_routes(&dai->dapm, &intercon, 1);
+>>>>>>> p9x
 	}
 	return 0;
 }
@@ -90,6 +112,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.playback = {
 			.stream_name = "MultiMedia1 Playback",
 			.aif_name = "MM_DL1",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_8000_384000|
 					SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -100,6 +123,17 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =     384000,
+=======
+			.rates = (SNDRV_PCM_RATE_8000_192000|
+					SNDRV_PCM_RATE_KNOT),
+			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+						SNDRV_PCM_FMTBIT_S24_LE |
+						SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =     8000,
+			.rate_max =	192000,
+>>>>>>> p9x
 		},
 		.capture = {
 			.stream_name = "MultiMedia1 Capture",
@@ -107,6 +141,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.rates = (SNDRV_PCM_RATE_8000_192000|
 					SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+<<<<<<< HEAD
 				    SNDRV_PCM_FMTBIT_S24_LE |
 				    SNDRV_PCM_FMTBIT_S24_3LE |
 				    SNDRV_PCM_FMTBIT_S32_LE),
@@ -114,6 +149,14 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =     48000,
+=======
+				    SNDRV_PCM_FMTBIT_S24_LE|
+				    SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 4,
+			.rate_min =     8000,
+			.rate_max =	48000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_Multimedia_dai_ops,
 		.name = "MultiMedia1",
@@ -123,6 +166,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.playback = {
 			.stream_name = "MultiMedia2 Playback",
 			.aif_name = "MM_DL2",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_8000_384000 |
 					SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -133,6 +177,17 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =     384000,
+=======
+			.rates = (SNDRV_PCM_RATE_8000_192000|
+					SNDRV_PCM_RATE_KNOT),
+			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+						SNDRV_PCM_FMTBIT_S24_LE |
+						SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =     8000,
+			.rate_max =	192000,
+>>>>>>> p9x
 		},
 		.capture = {
 			.stream_name = "MultiMedia2 Capture",
@@ -141,12 +196,20 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 					SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
 				    SNDRV_PCM_FMTBIT_S24_LE |
+<<<<<<< HEAD
 				    SNDRV_PCM_FMTBIT_S24_3LE |
 				    SNDRV_PCM_FMTBIT_S32_LE),
 			.channels_min = 1,
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =     48000,
+=======
+				    SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =     8000,
+			.rate_max =	48000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_Multimedia_dai_ops,
 		.name = "MultiMedia2",
@@ -186,8 +249,13 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 					SNDRV_PCM_FMTBIT_SPECIAL,
 			.channels_min = 1,
 			.channels_max = 2,
+<<<<<<< HEAD
 			.rate_min =     8000,
 			.rate_max =     48000,
+=======
+			.rate_min =	8000,
+			.rate_max = 48000,
+>>>>>>> p9x
 		},
 		.capture = {
 			.stream_name = "VoIP Capture",
@@ -197,8 +265,13 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 					SNDRV_PCM_FMTBIT_SPECIAL,
 			.channels_min = 1,
 			.channels_max = 2,
+<<<<<<< HEAD
 			.rate_min =     8000,
 			.rate_max =     48000,
+=======
+			.rate_min =	8000,
+			.rate_max = 48000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_dai_ops,
 		.name = "VoIP",
@@ -208,6 +281,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.playback = {
 			.stream_name = "MultiMedia3 Playback",
 			.aif_name = "MM_DL3",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_8000_384000 |
 					SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -232,6 +306,17 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =     48000,
+=======
+			.rates = (SNDRV_PCM_RATE_8000_192000 |
+					SNDRV_PCM_RATE_KNOT),
+			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+						SNDRV_PCM_FMTBIT_S24_LE |
+						SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 6,
+			.rate_min =	8000,
+			.rate_max = 192000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_Multimedia_dai_ops,
 		.name = "MultiMedia3",
@@ -241,6 +326,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.playback = {
 			.stream_name = "MultiMedia4 Playback",
 			.aif_name = "MM_DL4",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_8000_384000 |
 					SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -251,6 +337,17 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =     384000,
+=======
+			.rates = (SNDRV_PCM_RATE_8000_192000 |
+					SNDRV_PCM_RATE_KNOT),
+			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+						SNDRV_PCM_FMTBIT_S24_LE |
+						SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =	8000,
+			.rate_max = 192000,
+>>>>>>> p9x
 		},
 		.capture = {
 			.stream_name = "MultiMedia4 Capture",
@@ -258,6 +355,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.rates = (SNDRV_PCM_RATE_8000_192000|
 					SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+<<<<<<< HEAD
 				    SNDRV_PCM_FMTBIT_S24_LE |
 				    SNDRV_PCM_FMTBIT_S24_3LE |
 				    SNDRV_PCM_FMTBIT_S32_LE),
@@ -265,6 +363,14 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =     48000,
+=======
+						SNDRV_PCM_FMTBIT_S24_LE |
+						SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =     8000,
+			.rate_max =	48000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_Multimedia_dai_ops,
 		.compress_dai = 1,
@@ -275,6 +381,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.playback = {
 			.stream_name = "MultiMedia5 Playback",
 			.aif_name = "MM_DL5",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_8000_384000 |
 					SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -285,6 +392,17 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =     384000,
+=======
+			.rates = (SNDRV_PCM_RATE_8000_192000 |
+					SNDRV_PCM_RATE_KNOT),
+			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+						SNDRV_PCM_FMTBIT_S24_LE |
+						SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =	8000,
+			.rate_max = 192000,
+>>>>>>> p9x
 		},
 		.capture = {
 			.stream_name = "MultiMedia5 Capture",
@@ -292,6 +410,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.rates = (SNDRV_PCM_RATE_8000_48000|
 					SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+<<<<<<< HEAD
 				    SNDRV_PCM_FMTBIT_S24_LE |
 				    SNDRV_PCM_FMTBIT_S24_3LE |
 				    SNDRV_PCM_FMTBIT_S32_LE),
@@ -299,6 +418,14 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =     48000,
+=======
+				    SNDRV_PCM_FMTBIT_S24_LE|
+				    SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =     8000,
+			.rate_max =	48000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_Multimedia_dai_ops,
 		.name = "MultiMedia5",
@@ -308,6 +435,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.playback = {
 			.stream_name = "MultiMedia6 Playback",
 			.aif_name = "MM_DL6",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_8000_384000 |
 					SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -318,6 +446,17 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =     384000,
+=======
+			.rates = (SNDRV_PCM_RATE_8000_192000 |
+					SNDRV_PCM_RATE_KNOT),
+			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+						SNDRV_PCM_FMTBIT_S24_LE |
+						SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =	8000,
+			.rate_max = 192000,
+>>>>>>> p9x
 		},
 		.capture = {
 			.stream_name = "MultiMedia6 Capture",
@@ -326,12 +465,20 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 					SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
 				    SNDRV_PCM_FMTBIT_S24_LE |
+<<<<<<< HEAD
 				    SNDRV_PCM_FMTBIT_S24_3LE |
 				    SNDRV_PCM_FMTBIT_S32_LE),
 			.channels_min = 1,
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =     48000,
+=======
+				    SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =     8000,
+			.rate_max =	48000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_Multimedia_dai_ops,
 		.name = "MultiMedia6",
@@ -341,6 +488,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.playback = {
 			.stream_name = "MultiMedia7 Playback",
 			.aif_name = "MM_DL7",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_8000_384000 |
 					SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -351,6 +499,17 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =     384000,
+=======
+			.rates = (SNDRV_PCM_RATE_8000_192000 |
+					SNDRV_PCM_RATE_KNOT),
+			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+						SNDRV_PCM_FMTBIT_S24_LE |
+						SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =	8000,
+			.rate_max = 192000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_Multimedia_dai_ops,
 		.compress_dai = 1,
@@ -361,6 +520,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.playback = {
 			.stream_name = "MultiMedia8 Playback",
 			.aif_name = "MM_DL8",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_8000_384000 |
 					SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -371,6 +531,17 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =     384000,
+=======
+			.rates = (SNDRV_PCM_RATE_8000_192000 |
+					SNDRV_PCM_RATE_KNOT),
+			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+						SNDRV_PCM_FMTBIT_S24_LE |
+						SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =	8000,
+			.rate_max = 192000,
+>>>>>>> p9x
 		},
 		.capture = {
 			.stream_name = "MultiMedia8 Capture",
@@ -379,12 +550,20 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 					SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
 				    SNDRV_PCM_FMTBIT_S24_LE |
+<<<<<<< HEAD
 				    SNDRV_PCM_FMTBIT_S24_3LE |
 				    SNDRV_PCM_FMTBIT_S32_LE),
 			.channels_min = 1,
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =     48000,
+=======
+				    SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =     8000,
+			.rate_max =	48000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_Multimedia_dai_ops,
 		.name = "MultiMedia8",
@@ -448,6 +627,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 	},
 	{
 		.playback = {
+<<<<<<< HEAD
 			.stream_name = "SLIMBUS2_HOSTLESS Playback",
 			.aif_name = "SLIM2_DL_HL",
 			.rates = SNDRV_PCM_RATE_8000_192000,
@@ -475,6 +655,8 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 	},
 	{
 		.playback = {
+=======
+>>>>>>> p9x
 			.stream_name = "SLIMBUS3_HOSTLESS Playback",
 			.aif_name = "SLIM3_DL_HL",
 			.rates = SNDRV_PCM_RATE_8000_192000,
@@ -529,6 +711,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 	},
 	{
 		.playback = {
+<<<<<<< HEAD
 			.stream_name = "SLIMBUS6_HOSTLESS Playback",
 			.aif_name = "SLIM6_DL_HL",
 			.rates = SNDRV_PCM_RATE_8000_192000,
@@ -545,6 +728,8 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 	},
 	{
 		.playback = {
+=======
+>>>>>>> p9x
 			.stream_name = "INT_FM_HOSTLESS Playback",
 			.aif_name = "INTFM_DL_HL",
 			.rates = SNDRV_PCM_RATE_8000_48000,
@@ -665,6 +850,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 	},
 	{
 		.playback = {
+<<<<<<< HEAD
 			.stream_name = "SEC_AUXPCM_HOSTLESS Playback",
 			.aif_name = "SEC_AUXPCM_DL_HL",
 			.rates = SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_16000,
@@ -695,6 +881,8 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 	},
 	{
 		.playback = {
+=======
+>>>>>>> p9x
 			.stream_name = "VOICE_STUB Playback",
 			.aif_name = "VOICE_STUB_DL",
 			.rates = SNDRV_PCM_RATE_8000_48000,
@@ -804,6 +992,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.playback = {
 			.stream_name = "Primary MI2S_RX Hostless Playback",
 			.aif_name = "PRI_MI2S_DL_HL",
+<<<<<<< HEAD
 			.rates = SNDRV_PCM_RATE_8000_192000,
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
 				    SNDRV_PCM_FMTBIT_S24_LE),
@@ -811,6 +1000,14 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 2,
 			.rate_min =     8000,
 			.rate_max =    192000,
+=======
+			.rates = SNDRV_PCM_RATE_8000_48000,
+			.formats = SNDRV_PCM_FMTBIT_S16_LE,
+			.channels_min = 1,
+			.channels_max = 2,
+			.rate_min =     8000,
+			.rate_max =    48000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_dai_ops,
 		.name = "PRI_MI2S_RX_HOSTLESS",
@@ -818,6 +1015,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 	},
 	{
 		.capture = {
+<<<<<<< HEAD
 			.stream_name = "Secondary MI2S_TX Hostless Capture",
 			.aif_name = "SEC_MI2S_UL_HL",
 			.rates = SNDRV_PCM_RATE_8000_48000,
@@ -850,6 +1048,8 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 	},
 	{
 		.capture = {
+=======
+>>>>>>> p9x
 			.stream_name = "Tertiary MI2S_TX Hostless Capture",
 			.aif_name = "TERT_MI2S_UL_HL",
 			.rates = SNDRV_PCM_RATE_8000_48000,
@@ -866,6 +1066,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 	},
 	{
 		.playback = {
+<<<<<<< HEAD
 			.stream_name = "Tertiary MI2S_RX Hostless Playback",
 			.aif_name = "TERT_MI2S_DL_HL",
 			.rates = SNDRV_PCM_RATE_8000_192000,
@@ -878,6 +1079,19 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		},
 		.ops = &msm_fe_dai_ops,
 		.name = "TERT_MI2S_RX_HOSTLESS",
+=======
+			.stream_name = "Secondary MI2S_RX Hostless Playback",
+			.aif_name = "SEC_MI2S_DL_HL",
+			.rates = SNDRV_PCM_RATE_8000_48000,
+			.formats = SNDRV_PCM_FMTBIT_S16_LE,
+			.channels_min = 1,
+			.channels_max = 2,
+			.rate_min =	8000,
+			.rate_max =    48000,
+		},
+		.ops = &msm_fe_dai_ops,
+		.name = "SEC_MI2S_RX_HOSTLESS",
+>>>>>>> p9x
 		.probe = fe_dai_probe,
 	},
 	{
@@ -900,6 +1114,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.playback = {
 			.stream_name = "Quaternary MI2S_RX Hostless Playback",
 			.aif_name = "QUAT_MI2S_DL_HL",
+<<<<<<< HEAD
 			.rates = SNDRV_PCM_RATE_8000_192000,
 			.formats = SNDRV_PCM_FMTBIT_S16_LE |
 				    SNDRV_PCM_FMTBIT_S24_LE,
@@ -907,11 +1122,20 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min = 8000,
 			.rate_max = 192000,
+=======
+			.rates = SNDRV_PCM_RATE_8000_48000,
+			.formats = SNDRV_PCM_FMTBIT_S16_LE,
+			.channels_min = 1,
+			.channels_max = 2,
+			.rate_min = 8000,
+			.rate_max =    48000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_dai_ops,
 		.name = "QUAT_MI2S_RX_HOSTLESS",
 		.probe = fe_dai_probe,
 	},
+<<<<<<< HEAD
 	/* TDM Hostless */
 	{
 		.capture = {
@@ -2001,6 +2225,8 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.name = "QUAT_TDM_RX_7_HOSTLESS",
 		.probe = fe_dai_probe,
 	},
+=======
+>>>>>>> p9x
 	{
 		.playback = {
 			.stream_name = "Voice2 Playback",
@@ -2072,13 +2298,22 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.capture = {
 			.stream_name = "CPE Listen Audio capture",
 			.aif_name = "CPE_LSM_UL_HL",
+<<<<<<< HEAD
 			.rates = SNDRV_PCM_RATE_8000_48000,
+=======
+			.rates = SNDRV_PCM_RATE_16000,
+>>>>>>> p9x
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
 				    SNDRV_PCM_FMTBIT_S24_LE),
 			.channels_min = 1,
 			.channels_max = 1,
+<<<<<<< HEAD
 			.rate_min = 8000,
 			.rate_max = 48000,
+=======
+			.rate_min = 16000,
+			.rate_max = 16000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_dai_ops,
 		.name = "CPE_LSM_NOHOST",
@@ -2137,6 +2372,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.playback = {
 			.stream_name = "MultiMedia9 Playback",
 			.aif_name = "MM_DL9",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_8000_384000|
 				  SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -2147,16 +2383,31 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =	384000,
+=======
+			.rates = (SNDRV_PCM_RATE_8000_192000|
+				  SNDRV_PCM_RATE_KNOT),
+			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+				    SNDRV_PCM_FMTBIT_S24_LE |
+				    SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =     8000,
+			.rate_max =	192000,
+>>>>>>> p9x
 		},
 		.capture = {
 			.stream_name = "MultiMedia9 Capture",
 			.aif_name = "MM_UL9",
 			.rates = (SNDRV_PCM_RATE_8000_48000|
 				  SNDRV_PCM_RATE_KNOT),
+<<<<<<< HEAD
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
 				    SNDRV_PCM_FMTBIT_S24_LE |
 				    SNDRV_PCM_FMTBIT_S24_3LE |
 				    SNDRV_PCM_FMTBIT_S32_LE),
+=======
+			.formats = SNDRV_PCM_FMTBIT_S16_LE,
+>>>>>>> p9x
 			.channels_min = 1,
 			.channels_max = 8,
 			.rate_min =     8000,
@@ -2195,6 +2446,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.capture = {
 			.stream_name = "Listen 1 Audio Service Capture",
 			.aif_name = "LSM1_UL_HL",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_16000 |
 				  SNDRV_PCM_RATE_48000),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -2203,6 +2455,14 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 4,
 			.rate_min = 16000,
 			.rate_max = 48000,
+=======
+			.rates = SNDRV_PCM_RATE_16000,
+			.formats = SNDRV_PCM_FMTBIT_S16_LE,
+			.channels_min = 1,
+			.channels_max = 1,
+			.rate_min = 16000,
+			.rate_max = 16000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_dai_ops,
 		.name = "LSM1",
@@ -2212,6 +2472,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.capture = {
 			.stream_name = "Listen 2 Audio Service Capture",
 			.aif_name = "LSM2_UL_HL",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_16000 |
 				  SNDRV_PCM_RATE_48000),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -2220,6 +2481,14 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 4,
 			.rate_min = 16000,
 			.rate_max = 48000,
+=======
+			.rates = SNDRV_PCM_RATE_16000,
+			.formats = SNDRV_PCM_FMTBIT_S16_LE,
+			.channels_min = 1,
+			.channels_max = 1,
+			.rate_min = 16000,
+			.rate_max = 16000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_dai_ops,
 		.name = "LSM2",
@@ -2229,6 +2498,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.capture = {
 			.stream_name = "Listen 3 Audio Service Capture",
 			.aif_name = "LSM3_UL_HL",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_16000 |
 				  SNDRV_PCM_RATE_48000),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -2237,6 +2507,14 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 4,
 			.rate_min = 16000,
 			.rate_max = 48000,
+=======
+			.rates = SNDRV_PCM_RATE_16000,
+			.formats = SNDRV_PCM_FMTBIT_S16_LE,
+			.channels_min = 1,
+			.channels_max = 1,
+			.rate_min = 16000,
+			.rate_max = 16000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_dai_ops,
 		.name = "LSM3",
@@ -2246,6 +2524,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.capture = {
 			.stream_name = "Listen 4 Audio Service Capture",
 			.aif_name = "LSM4_UL_HL",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_16000 |
 				  SNDRV_PCM_RATE_48000),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -2254,6 +2533,14 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 4,
 			.rate_min = 16000,
 			.rate_max = 48000,
+=======
+			.rates = SNDRV_PCM_RATE_16000,
+			.formats = SNDRV_PCM_FMTBIT_S16_LE,
+			.channels_min = 1,
+			.channels_max = 1,
+			.rate_min = 16000,
+			.rate_max = 16000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_dai_ops,
 		.name = "LSM4",
@@ -2263,6 +2550,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.capture = {
 			.stream_name = "Listen 5 Audio Service Capture",
 			.aif_name = "LSM5_UL_HL",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_16000 |
 				  SNDRV_PCM_RATE_48000),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -2271,6 +2559,14 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 4,
 			.rate_min = 16000,
 			.rate_max = 48000,
+=======
+			.rates = SNDRV_PCM_RATE_16000,
+			.formats = SNDRV_PCM_FMTBIT_S16_LE,
+			.channels_min = 1,
+			.channels_max = 1,
+			.rate_min = 16000,
+			.rate_max = 16000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_dai_ops,
 		.name = "LSM5",
@@ -2280,6 +2576,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.capture = {
 			.stream_name = "Listen 6 Audio Service Capture",
 			.aif_name = "LSM6_UL_HL",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_16000 |
 				  SNDRV_PCM_RATE_48000),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -2288,6 +2585,14 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 4,
 			.rate_min = 16000,
 			.rate_max = 48000,
+=======
+			.rates = SNDRV_PCM_RATE_16000,
+			.formats = SNDRV_PCM_FMTBIT_S16_LE,
+			.channels_min = 1,
+			.channels_max = 1,
+			.rate_min = 16000,
+			.rate_max = 16000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_dai_ops,
 		.name = "LSM6",
@@ -2297,6 +2602,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.capture = {
 			.stream_name = "Listen 7 Audio Service Capture",
 			.aif_name = "LSM7_UL_HL",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_16000 |
 				  SNDRV_PCM_RATE_48000),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -2305,6 +2611,14 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 4,
 			.rate_min = 16000,
 			.rate_max = 48000,
+=======
+			.rates = SNDRV_PCM_RATE_16000,
+			.formats = SNDRV_PCM_FMTBIT_S16_LE,
+			.channels_min = 1,
+			.channels_max = 1,
+			.rate_min = 16000,
+			.rate_max = 16000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_dai_ops,
 		.name = "LSM7",
@@ -2314,6 +2628,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.capture = {
 			.stream_name = "Listen 8 Audio Service Capture",
 			.aif_name = "LSM8_UL_HL",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_16000 |
 				  SNDRV_PCM_RATE_48000),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -2322,6 +2637,14 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 4,
 			.rate_min = 16000,
 			.rate_max = 48000,
+=======
+			.rates = SNDRV_PCM_RATE_16000,
+			.formats = SNDRV_PCM_FMTBIT_S16_LE,
+			.channels_min = 1,
+			.channels_max = 1,
+			.rate_min = 16000,
+			.rate_max = 16000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_dai_ops,
 		.name = "LSM8",
@@ -2357,6 +2680,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.playback = {
 			.stream_name = "MultiMedia10 Playback",
 			.aif_name = "MM_DL10",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_8000_384000|
 				  SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -2367,6 +2691,17 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =	384000,
+=======
+			.rates = (SNDRV_PCM_RATE_8000_192000 |
+				  SNDRV_PCM_RATE_KNOT),
+			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+				    SNDRV_PCM_FMTBIT_S24_LE |
+				    SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =	8000,
+			.rate_max = 192000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_Multimedia_dai_ops,
 		.compress_dai = 1,
@@ -2377,6 +2712,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.playback = {
 			.stream_name = "MultiMedia11 Playback",
 			.aif_name = "MM_DL11",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_8000_384000|
 				  SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -2387,6 +2723,17 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =	384000,
+=======
+			.rates = (SNDRV_PCM_RATE_8000_192000 |
+				  SNDRV_PCM_RATE_KNOT),
+			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+				    SNDRV_PCM_FMTBIT_S24_LE |
+				    SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =	8000,
+			.rate_max = 192000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_Multimedia_dai_ops,
 		.compress_dai = 1,
@@ -2397,6 +2744,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.playback = {
 			.stream_name = "MultiMedia12 Playback",
 			.aif_name = "MM_DL12",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_8000_384000|
 				  SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -2407,6 +2755,17 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =	384000,
+=======
+			.rates = (SNDRV_PCM_RATE_8000_192000 |
+				  SNDRV_PCM_RATE_KNOT),
+			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+				    SNDRV_PCM_FMTBIT_S24_LE |
+				    SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =	8000,
+			.rate_max = 192000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_Multimedia_dai_ops,
 		.compress_dai = 1,
@@ -2417,6 +2776,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.playback = {
 			.stream_name = "MultiMedia13 Playback",
 			.aif_name = "MM_DL13",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_8000_384000|
 				  SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -2427,6 +2787,17 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =	384000,
+=======
+			.rates = (SNDRV_PCM_RATE_8000_192000 |
+				  SNDRV_PCM_RATE_KNOT),
+			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+				    SNDRV_PCM_FMTBIT_S24_LE |
+				    SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =	8000,
+			.rate_max = 192000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_Multimedia_dai_ops,
 		.compress_dai = 1,
@@ -2437,6 +2808,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.playback = {
 			.stream_name = "MultiMedia14 Playback",
 			.aif_name = "MM_DL14",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_8000_384000|
 				  SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -2447,6 +2819,17 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =	384000,
+=======
+			.rates = (SNDRV_PCM_RATE_8000_192000 |
+				  SNDRV_PCM_RATE_KNOT),
+			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+				    SNDRV_PCM_FMTBIT_S24_LE |
+				    SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =	8000,
+			.rate_max = 192000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_Multimedia_dai_ops,
 		.compress_dai = 1,
@@ -2457,6 +2840,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.playback = {
 			.stream_name = "MultiMedia15 Playback",
 			.aif_name = "MM_DL15",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_8000_384000|
 				  SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -2467,6 +2851,17 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =	384000,
+=======
+			.rates = (SNDRV_PCM_RATE_8000_192000 |
+				  SNDRV_PCM_RATE_KNOT),
+			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+				    SNDRV_PCM_FMTBIT_S24_LE |
+				    SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =	8000,
+			.rate_max = 192000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_Multimedia_dai_ops,
 		.compress_dai = 1,
@@ -2477,6 +2872,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.playback = {
 			.stream_name = "MultiMedia16 Playback",
 			.aif_name = "MM_DL16",
+<<<<<<< HEAD
 			.rates = (SNDRV_PCM_RATE_8000_384000|
 				  SNDRV_PCM_RATE_KNOT),
 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
@@ -2487,6 +2883,17 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 			.channels_max = 8,
 			.rate_min =     8000,
 			.rate_max =	384000,
+=======
+			.rates = (SNDRV_PCM_RATE_8000_192000 |
+				  SNDRV_PCM_RATE_KNOT),
+			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+				    SNDRV_PCM_FMTBIT_S24_LE |
+				    SNDRV_PCM_FMTBIT_S24_3LE),
+			.channels_min = 1,
+			.channels_max = 8,
+			.rate_min =	8000,
+			.rate_max = 192000,
+>>>>>>> p9x
 		},
 		.ops = &msm_fe_Multimedia_dai_ops,
 		.compress_dai = 1,
@@ -2543,6 +2950,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.name = "VoiceMMode2",
 		.probe = fe_dai_probe,
 	},
+<<<<<<< HEAD
 	{
 		.capture = {
 			.stream_name = "MultiMedia17 Capture",
@@ -2707,6 +3115,8 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.name = "MultiMedia29",
 		.probe = fe_dai_probe,
 	},
+=======
+>>>>>>> p9x
 };
 
 static int msm_fe_dai_dev_probe(struct platform_device *pdev)

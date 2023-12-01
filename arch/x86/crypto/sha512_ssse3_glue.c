@@ -327,4 +327,7 @@ MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("SHA512 Secure Hash Algorithm, Supplemental SSE3 accelerated");
 
 MODULE_ALIAS_CRYPTO("sha512");
+<<<<<<< HEAD
 MODULE_ALIAS_CRYPTO("sha384");
+=======
+>>>>>>> p9x

@@ -777,6 +777,7 @@ static struct dmi_system_id i8k_dmi_table[] __initdata = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "XPS L421X"),
 		},
 	},
+<<<<<<< HEAD
 	{
 		.ident = "Dell Studio",
 		.matches = {
@@ -809,6 +810,9 @@ static struct dmi_system_id i8k_blacklist_dmi_table[] __initdata = {
 		},
 	},
 	{ }
+=======
+        { }
+>>>>>>> p9x
 };
 
 /*

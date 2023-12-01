@@ -298,9 +298,15 @@ static __always_inline void setup_smap(struct cpuinfo_x86 *c)
 
 	if (cpu_has(c, X86_FEATURE_SMAP)) {
 #ifdef CONFIG_X86_SMAP
+<<<<<<< HEAD
 		cr4_set_bits(X86_CR4_SMAP);
 #else
 		cr4_clear_bits(X86_CR4_SMAP);
+=======
+		set_in_cr4(X86_CR4_SMAP);
+#else
+		clear_in_cr4(X86_CR4_SMAP);
+>>>>>>> p9x
 #endif
 	}
 }
@@ -1116,7 +1122,7 @@ static __init int setup_disablecpuid(char *arg)
 {
 	int bit;
 
-	if (get_option(&arg, &bit) && bit < NCAPINTS*32)
+	if (get_option(&arg, &bit) && bit >= 0 && bit < NCAPINTS * 32)
 		setup_clear_cpu_cap(bit);
 	else
 		return 0;

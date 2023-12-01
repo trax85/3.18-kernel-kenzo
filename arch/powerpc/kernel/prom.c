@@ -154,6 +154,7 @@ static struct ibm_pa_feature {
 	unsigned char	pabit;		/* bit number (big-endian) */
 	unsigned char	invert;		/* if 1, pa bit set => clear feature */
 } ibm_pa_features[] __initdata = {
+<<<<<<< HEAD
 	{0, 0, PPC_FEATURE_HAS_MMU, 0,		0, 0, 0},
 	{0, 0, PPC_FEATURE_HAS_FPU, 0,		0, 1, 0},
 	{CPU_FTR_CTRL, 0, 0, 0,			0, 3, 0},
@@ -167,6 +168,16 @@ static struct ibm_pa_feature {
 	 * which are 0 if the kernel doesn't support TM.
 	 */
 	{CPU_FTR_TM_COMP, 0, 0, PPC_FEATURE2_HTM_COMP, 22, 0, 0},
+=======
+	{0, 0, PPC_FEATURE_HAS_MMU,	0, 0, 0},
+	{0, 0, PPC_FEATURE_HAS_FPU,	0, 1, 0},
+	{0, MMU_FTR_SLB, 0,		0, 2, 0},
+	{CPU_FTR_CTRL, 0, 0,		0, 3, 0},
+	{CPU_FTR_NOEXECUTE, 0, 0,	0, 6, 0},
+	{CPU_FTR_NODSISRALIGN, 0, 0,	1, 1, 1},
+	{0, MMU_FTR_CI_LARGE_PAGE, 0,	1, 2, 0},
+	{CPU_FTR_REAL_LE, 0, PPC_FEATURE_TRUE_LE, 5, 0, 0},
+>>>>>>> p9x
 };
 
 static void __init scan_features(unsigned long node, const unsigned char *ftrs,
@@ -570,6 +581,7 @@ void __init early_init_dt_add_memory_arch(u64 base, u64 size)
 		memblock_add(base, size);
 }
 
+<<<<<<< HEAD
 static void __init early_reserve_mem_dt(void)
 {
 	unsigned long i, dt_root;
@@ -600,6 +612,14 @@ static void __init early_reserve_mem_dt(void)
 			memblock_reserve(base, size);
 		}
 	}
+=======
+#ifdef CONFIG_BLK_DEV_INITRD
+void __init early_init_dt_setup_initrd_arch(u64 start, u64 end)
+{
+	initrd_start = (unsigned long)__va(start);
+	initrd_end = (unsigned long)__va(end);
+	initrd_below_start_ok = 1;
+>>>>>>> p9x
 }
 
 static void __init early_reserve_mem(void)
@@ -810,6 +830,7 @@ int of_get_ibm_chip_id(struct device_node *np)
 	return -1;
 }
 
+<<<<<<< HEAD
 /**
  * cpu_to_chip_id - Return the cpus chip-id
  * @cpu: The logical cpu number.
@@ -831,6 +852,42 @@ int cpu_to_chip_id(int cpu)
 EXPORT_SYMBOL(cpu_to_chip_id);
 
 bool arch_match_cpu_phys_id(int cpu, u64 phys_id)
+=======
+static int prom_reconfig_notifier(struct notifier_block *nb,
+				  unsigned long action, void *node)
+{
+	int err;
+
+	switch (action) {
+	case OF_RECONFIG_ATTACH_NODE:
+		err = of_finish_dynamic_node(node);
+		if (err < 0)
+			printk(KERN_ERR "finish_node returned %d\n", err);
+		break;
+	default:
+		err = 0;
+		break;
+	}
+	return notifier_from_errno(err);
+}
+
+static struct notifier_block prom_reconfig_nb = {
+	.notifier_call = prom_reconfig_notifier,
+	.priority = 10, /* This one needs to run first */
+};
+
+static int __init prom_reconfig_setup(void)
+{
+	return of_reconfig_notifier_register(&prom_reconfig_nb);
+}
+__initcall(prom_reconfig_setup);
+#endif
+
+#if defined(CONFIG_DEBUG_FS) && defined(DEBUG)
+static struct debugfs_blob_wrapper flat_dt_blob;
+
+static int __init export_flat_device_tree(void)
+>>>>>>> p9x
 {
 	return (int)phys_id == get_hard_smp_processor_id(cpu);
 }

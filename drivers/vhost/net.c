@@ -148,8 +148,13 @@ static int vhost_net_ubuf_put(struct vhost_net_ubuf_ref *ubufs)
 
 static void vhost_net_ubuf_put_and_wait(struct vhost_net_ubuf_ref *ubufs)
 {
+<<<<<<< HEAD
 	vhost_net_ubuf_put(ubufs);
 	wait_event(ubufs->wait, !atomic_read(&ubufs->refcount));
+=======
+	kref_put(&ubufs->kref, vhost_net_zerocopy_done_signal);
+	wait_event(ubufs->wait, !atomic_read(&ubufs->kref.refcount));
+>>>>>>> p9x
 }
 
 static void vhost_net_ubuf_put_wait_and_free(struct vhost_net_ubuf_ref *ubufs)
@@ -316,6 +321,11 @@ static void vhost_zerocopy_callback(struct ubuf_info *ubuf, bool success)
 		VHOST_DMA_DONE_LEN : VHOST_DMA_FAILED_LEN;
 	cnt = vhost_net_ubuf_put(ubufs);
 
+	/* set len to mark this desc buffers done DMA */
+	vq->heads[ubuf->desc].len = success ?
+		VHOST_DMA_DONE_LEN : VHOST_DMA_FAILED_LEN;
+	vhost_net_ubuf_put(ubufs);
+
 	/*
 	 * Trigger polling thread if guest stopped submitting new buffers:
 	 * in this case, the refcount after decrement will eventually reach 1.
@@ -325,8 +335,11 @@ static void vhost_zerocopy_callback(struct ubuf_info *ubuf, bool success)
 	 */
 	if (cnt <= 1 || !(cnt % 16))
 		vhost_poll_queue(&vq->poll);
+<<<<<<< HEAD
 
 	rcu_read_unlock_bh();
+=======
+>>>>>>> p9x
 }
 
 /* Expects to be always run from workqueue - which acts as
@@ -506,7 +519,11 @@ static int get_rx_bufs(struct vhost_virtqueue *vq,
 			r = -ENOBUFS;
 			goto err;
 		}
+<<<<<<< HEAD
 		r = vhost_get_vq_desc(vq, vq->iov + seg,
+=======
+		r = vhost_get_vq_desc(vq->dev, vq, vq->iov + seg,
+>>>>>>> p9x
 				      ARRAY_SIZE(vq->iov) - seg, &out,
 				      &in, log, log_num);
 		if (unlikely(r < 0))

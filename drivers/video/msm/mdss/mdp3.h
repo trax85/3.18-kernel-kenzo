@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2014, 2016-2018, The Linux Foundation. All rights reserved.
  *
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  * Copyright (C) 2007 Google Incorporated
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,7 +26,10 @@
 
 #include <linux/msm_iommu_domains.h>
 
+<<<<<<< HEAD
 #include "mdss_dsi_clk.h"
+=======
+>>>>>>> p9x
 #include "mdp3_dma.h"
 #include "mdss_fb.h"
 #include "mdss.h"
@@ -31,14 +38,18 @@
 #define MDP_CORE_CLK_RATE_SVS	160000000
 #define MDP_CORE_CLK_RATE_SUPER_SVS	200000000
 #define MDP_CORE_CLK_RATE_MAX	307200000
+<<<<<<< HEAD
 #define SEC_DEVICE_MDP3         1
 
 #define CLK_FUDGE_NUM		12
 #define CLK_FUDGE_DEN		10
+=======
+>>>>>>> p9x
 
 /* PPP cant work at SVS for panel res above qHD */
 #define SVS_MAX_PIXEL		(540 * 960)
 
+<<<<<<< HEAD
 #define KOFF_TIMEOUT_MS 84
 #define KOFF_TIMEOUT msecs_to_jiffies(KOFF_TIMEOUT_MS)
 #define WAIT_DMA_TIMEOUT msecs_to_jiffies(84)
@@ -53,6 +64,11 @@
 #define MDP_IMGTYPE_LIMIT1 0x100
 #define BITS_TO_BYTES(x) DIV_ROUND_UP(x, BITS_PER_BYTE)
 
+=======
+#define KOFF_TIMEOUT msecs_to_jiffies(84)
+#define WAIT_DMA_TIMEOUT msecs_to_jiffies(84)
+
+>>>>>>> p9x
 enum  {
 	MDP3_CLK_AHB,
 	MDP3_CLK_AXI,
@@ -69,8 +85,13 @@ enum {
 };
 
 enum {
+<<<<<<< HEAD
 	MDP3_IOMMU_DOMAIN_UNSECURE,
 	MDP3_IOMMU_DOMAIN_SECURE,
+=======
+	MDP3_IOMMU_DOMAIN_SECURE,
+	MDP3_IOMMU_DOMAIN_UNSECURE,
+>>>>>>> p9x
 	MDP3_IOMMU_DOMAIN_MAX,
 };
 
@@ -87,7 +108,10 @@ enum {
 	MDP3_CLIENT_DSI = 1,
 	MDP3_CLIENT_PPP,
 	MDP3_CLIENT_IOMMU,
+<<<<<<< HEAD
 	MDP3_CLIENT_SPI,
+=======
+>>>>>>> p9x
 	MDP3_CLIENT_MAX,
 };
 
@@ -97,12 +121,15 @@ enum {
 	DI_MAX,
 };
 
+<<<<<<< HEAD
 enum mdp3_sd_transition {
 	NO_TRANSITION,
 	NONSECURE_TO_SECURE,
 	SECURE_TO_NONSECURE,
 };
 
+=======
+>>>>>>> p9x
 struct mdp3_bus_handle_map {
 	struct msm_bus_vectors *bus_vector;
 	struct msm_bus_paths *usecases;
@@ -180,11 +207,18 @@ struct mdp3_hw_resource {
 	struct ion_client *ion_client;
 	struct mdp3_iommu_domain_map *domains;
 	struct mdp3_iommu_ctx_map *iommu_contexts;
+<<<<<<< HEAD
 	unsigned int iommu_ref_cnt;
 	bool allow_iommu_update;
 	struct ion_handle *ion_handle;
 	struct mutex iommu_lock;
 	struct mutex fs_idle_pc_lock;
+=======
+	unsigned int iommu_ref_cnt[MDP3_CLIENT_MAX];
+	bool allow_iommu_update;
+	struct ion_handle *ion_handle;
+	struct mutex iommu_lock;
+>>>>>>> p9x
 
 	struct mdp3_dma dma[MDP3_DMA_MAX];
 	struct mdp3_intf intf[MDP3_DMA_OUTPUT_SEL_MAX];
@@ -211,6 +245,7 @@ struct mdp3_hw_resource {
 	struct regulator *vdd_cx;
 	struct regulator *fs;
 	bool fs_ena;
+<<<<<<< HEAD
 	int  clk_ena;
 	bool idle_pc_enabled;
 	bool idle_pc;
@@ -226,10 +261,15 @@ struct mdp3_hw_resource {
 
 	u8 ppp_formats[BITS_TO_BYTES(MDP_IMGTYPE_LIMIT1)];
 	u8 dma_formats[BITS_TO_BYTES(MDP_IMGTYPE_LIMIT1)];
+=======
+	u8 smart_blit_en;
+	bool solid_fill_vote_en;
+>>>>>>> p9x
 };
 
 struct mdp3_img_data {
 	dma_addr_t addr;
+<<<<<<< HEAD
 	unsigned long len;
 	u32 offset;
 	u32 flags;
@@ -245,10 +285,19 @@ struct mdp3_img_data {
 	struct dma_buf_attachment *srcp_attachment;
 	struct sg_table *srcp_table;
 	struct sg_table *tab_clone;
+=======
+	u32 len;
+	u32 flags;
+	u32 padding;
+	int p_need;
+	struct file *srcp_file;
+	struct ion_handle *srcp_ihdl;
+>>>>>>> p9x
 };
 
 extern struct mdp3_hw_resource *mdp3_res;
 
+<<<<<<< HEAD
 /*
  * mdp3_is_idle_pc: - checks if a panel is idle
  */
@@ -263,6 +312,8 @@ static inline bool mdp3_is_idle_pc(void)
 	return ret;
 }
 
+=======
+>>>>>>> p9x
 struct mdp3_dma *mdp3_get_dma_pipe(int capability);
 struct mdp3_intf *mdp3_get_display_intf(int type);
 void mdp3_irq_enable(int type);
@@ -276,9 +327,13 @@ int mdp3_clk_enable(int enable, int dsi_clk);
 int mdp3_res_update(int enable, int dsi_clk, int client);
 int mdp3_bus_scale_set_quota(int client, u64 ab_quota, u64 ib_quota);
 int mdp3_put_img(struct mdp3_img_data *data, int client);
+<<<<<<< HEAD
 int mdp3_get_img(struct msmfb_data *img, struct mdp3_img_data *data,
 		int client);
 int mdp3_map_layer(struct mdp3_img_data *data, int client);
+=======
+int mdp3_get_img(struct msmfb_data *img, struct mdp3_img_data *data, int client);
+>>>>>>> p9x
 int mdp3_iommu_enable(int client);
 int mdp3_iommu_disable(int client);
 int mdp3_iommu_is_attached(void);
@@ -295,11 +350,15 @@ int mdp3_misr_get(struct mdp_misr *misr_resp);
 void mdp3_enable_regulator(int enable);
 void mdp3_check_dsi_ctrl_status(struct work_struct *work,
 				uint32_t interval);
+<<<<<<< HEAD
 void mdp3_check_spi_panel_status(struct work_struct *work, uint32_t interval);
+=======
+>>>>>>> p9x
 int mdp3_dynamic_clock_gating_ctrl(int enable);
 int mdp3_footswitch_ctrl(int enable);
 int mdp3_qos_remapper_setup(struct mdss_panel_data *panel);
 int mdp3_splash_done(struct mdss_panel_info *panel_info);
+<<<<<<< HEAD
 int mdp3_autorefresh_disable(struct mdss_panel_info *panel_info);
 u64 mdp3_clk_round_off(u64 clk_rate);
 
@@ -314,6 +373,8 @@ int mdp3_layer_pre_commit(struct msm_fb_data_type *mfd,
 	struct file *file, struct mdp_layer_commit_v1 *commit);
 int mdp3_layer_atomic_validate(struct msm_fb_data_type *mfd,
 	struct file *file, struct mdp_layer_commit_v1 *commit);
+=======
+>>>>>>> p9x
 
 #define MDP3_REG_WRITE(addr, val) writel_relaxed(val, mdp3_res->mdp_base + addr)
 #define MDP3_REG_READ(addr) readl_relaxed(mdp3_res->mdp_base + addr)

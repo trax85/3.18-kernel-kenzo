@@ -53,6 +53,7 @@ EXPORT_SYMBOL(remove_wait_queue);
 
 
 /*
+<<<<<<< HEAD
  * The core wakeup function. Non-exclusive wakeups (nr_exclusive == 0) just
  * wake everything up. If it's an exclusive wakeup (nr_exclusive == small +ve
  * number) then we wake all the non-exclusive tasks and one exclusive task.
@@ -156,6 +157,8 @@ void __wake_up_sync(wait_queue_head_t *q, unsigned int mode, int nr_exclusive)
 EXPORT_SYMBOL_GPL(__wake_up_sync);	/* For internal use only */
 
 /*
+=======
+>>>>>>> p9x
  * Note: we use "set_current_state()" _after_ the wait-queue add,
  * because we need a memory barrier there on SMP, so that any
  * wake-function that tests for the wait-queue being active
@@ -195,6 +198,7 @@ prepare_to_wait_exclusive(wait_queue_head_t *q, wait_queue_t *wait, int state)
 }
 EXPORT_SYMBOL(prepare_to_wait_exclusive);
 
+<<<<<<< HEAD
 long prepare_to_wait_event(wait_queue_head_t *q, wait_queue_t *wait, int state)
 {
 	unsigned long flags;
@@ -219,6 +223,8 @@ long prepare_to_wait_event(wait_queue_head_t *q, wait_queue_t *wait, int state)
 }
 EXPORT_SYMBOL(prepare_to_wait_event);
 
+=======
+>>>>>>> p9x
 /**
  * finish_wait - clean up after waiting in a queue
  * @q: waitqueue waited on
@@ -297,6 +303,7 @@ int autoremove_wake_function(wait_queue_t *wait, unsigned mode, int sync, void *
 }
 EXPORT_SYMBOL(autoremove_wake_function);
 
+<<<<<<< HEAD
 
 /*
  * DEFINE_WAIT_FUNC(wait, woken_wake_func);
@@ -358,6 +365,8 @@ int woken_wake_function(wait_queue_t *wait, unsigned mode, int sync, void *key)
 }
 EXPORT_SYMBOL(woken_wake_function);
 
+=======
+>>>>>>> p9x
 int wake_bit_function(wait_queue_t *wait, unsigned mode, int sync, void *arg)
 {
 	struct wait_bit_key *key = arg;
@@ -380,14 +389,22 @@ EXPORT_SYMBOL(wake_bit_function);
  */
 int __sched
 __wait_on_bit(wait_queue_head_t *wq, struct wait_bit_queue *q,
+<<<<<<< HEAD
 	      wait_bit_action_f *action, unsigned mode)
+=======
+			int (*action)(void *), unsigned mode)
+>>>>>>> p9x
 {
 	int ret = 0;
 
 	do {
 		prepare_to_wait(wq, &q->wait, mode);
 		if (test_bit(q->key.bit_nr, q->key.flags))
+<<<<<<< HEAD
 			ret = (*action)(&q->key);
+=======
+			ret = (*action)(q->key.flags);
+>>>>>>> p9x
 	} while (test_bit(q->key.bit_nr, q->key.flags) && !ret);
 	finish_wait(wq, &q->wait);
 	return ret;
@@ -395,7 +412,11 @@ __wait_on_bit(wait_queue_head_t *wq, struct wait_bit_queue *q,
 EXPORT_SYMBOL(__wait_on_bit);
 
 int __sched out_of_line_wait_on_bit(void *word, int bit,
+<<<<<<< HEAD
 				    wait_bit_action_f *action, unsigned mode)
+=======
+					int (*action)(void *), unsigned mode)
+>>>>>>> p9x
 {
 	wait_queue_head_t *wq = bit_waitqueue(word, bit);
 	DEFINE_WAIT_BIT(wait, word, bit);
@@ -404,6 +425,7 @@ int __sched out_of_line_wait_on_bit(void *word, int bit,
 }
 EXPORT_SYMBOL(out_of_line_wait_on_bit);
 
+<<<<<<< HEAD
 int __sched out_of_line_wait_on_bit_timeout(
 	void *word, int bit, wait_bit_action_f *action,
 	unsigned mode, unsigned long timeout)
@@ -419,6 +441,11 @@ EXPORT_SYMBOL_GPL(out_of_line_wait_on_bit_timeout);
 int __sched
 __wait_on_bit_lock(wait_queue_head_t *wq, struct wait_bit_queue *q,
 			wait_bit_action_f *action, unsigned mode)
+=======
+int __sched
+__wait_on_bit_lock(wait_queue_head_t *wq, struct wait_bit_queue *q,
+			int (*action)(void *), unsigned mode)
+>>>>>>> p9x
 {
 	do {
 		int ret;
@@ -426,7 +453,11 @@ __wait_on_bit_lock(wait_queue_head_t *wq, struct wait_bit_queue *q,
 		prepare_to_wait_exclusive(wq, &q->wait, mode);
 		if (!test_bit(q->key.bit_nr, q->key.flags))
 			continue;
+<<<<<<< HEAD
 		ret = action(&q->key);
+=======
+		ret = action(q->key.flags);
+>>>>>>> p9x
 		if (!ret)
 			continue;
 		abort_exclusive_wait(wq, &q->wait, mode, &q->key);
@@ -438,7 +469,11 @@ __wait_on_bit_lock(wait_queue_head_t *wq, struct wait_bit_queue *q,
 EXPORT_SYMBOL(__wait_on_bit_lock);
 
 int __sched out_of_line_wait_on_bit_lock(void *word, int bit,
+<<<<<<< HEAD
 					 wait_bit_action_f *action, unsigned mode)
+=======
+					int (*action)(void *), unsigned mode)
+>>>>>>> p9x
 {
 	wait_queue_head_t *wq = bit_waitqueue(word, bit);
 	DEFINE_WAIT_BIT(wait, word, bit);
@@ -467,7 +502,11 @@ EXPORT_SYMBOL(__wake_up_bit);
  *
  * In order for this to function properly, as it uses waitqueue_active()
  * internally, some kind of memory barrier must be done prior to calling
+<<<<<<< HEAD
  * this. Typically, this will be smp_mb__after_atomic(), but in some
+=======
+ * this. Typically, this will be smp_mb__after_clear_bit(), but in some
+>>>>>>> p9x
  * cases where bitflags are manipulated non-atomically under a lock, one
  * may need to use a less regular barrier, such fs/inode.c's smp_mb(),
  * because spin_unlock() does not guarantee a memory barrier.
@@ -487,6 +526,7 @@ wait_queue_head_t *bit_waitqueue(void *word, int bit)
 	return &zone->wait_table[hash_long(val, zone->wait_table_bits)];
 }
 EXPORT_SYMBOL(bit_waitqueue);
+<<<<<<< HEAD
 
 /*
  * Manipulate the atomic_t address to produce a better bit waitqueue table hash
@@ -617,3 +657,5 @@ __sched int bit_wait_io_timeout(struct wait_bit_key *word)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(bit_wait_io_timeout);
+=======
+>>>>>>> p9x

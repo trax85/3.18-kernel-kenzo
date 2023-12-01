@@ -68,11 +68,18 @@ static void ath_rx_buf_link(struct ath_softc *sc, struct ath_rxbuf *bf,
 	sc->rx.rxlink = &ds->ds_link;
 }
 
+<<<<<<< HEAD
 static void ath_rx_buf_relink(struct ath_softc *sc, struct ath_rxbuf *bf,
 			      bool flush)
 {
 	if (sc->rx.buf_hold)
 		ath_rx_buf_link(sc, sc->rx.buf_hold, flush);
+=======
+static void ath_rx_buf_relink(struct ath_softc *sc, struct ath_buf *bf)
+{
+	if (sc->rx.buf_hold)
+		ath_rx_buf_link(sc, sc->rx.buf_hold);
+>>>>>>> p9x
 
 	sc->rx.buf_hold = bf;
 }
@@ -707,7 +714,11 @@ static struct ath_rxbuf *ath_get_next_rx_buf(struct ath_softc *sc,
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	bf = list_first_entry(&sc->rx.rxbuf, struct ath_rxbuf, list);
+=======
+	bf = list_first_entry(&sc->rx.rxbuf, struct ath_buf, list);
+>>>>>>> p9x
 	if (bf == sc->rx.buf_hold)
 		return NULL;
 
@@ -1160,6 +1171,12 @@ requeue:
 				ath9k_hw_rxena(ah);
 		} else if (!flush) {
 			ath_rx_edma_buf_link(sc, qtype);
+<<<<<<< HEAD
+=======
+		} else {
+			ath_rx_buf_relink(sc, bf);
+			ath9k_hw_rxena(ah);
+>>>>>>> p9x
 		}
 
 		if (!budget--)

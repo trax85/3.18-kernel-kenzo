@@ -444,8 +444,20 @@ static int regcache_rbtree_write(struct regmap *map, unsigned int reg,
 		rbnode = regcache_rbtree_node_alloc(map, reg);
 		if (!rbnode)
 			return -ENOMEM;
+<<<<<<< HEAD
 		regcache_rbtree_set_register(map, rbnode,
 					     reg - rbnode->base_reg, value);
+=======
+		rbnode->blklen = 1;
+		rbnode->base_reg = reg;
+		rbnode->block = kmalloc(rbnode->blklen * map->cache_word_size,
+					GFP_KERNEL);
+		if (!rbnode->block) {
+			kfree(rbnode);
+			return -ENOMEM;
+		}
+		regcache_rbtree_set_register(map, rbnode, 0, value);
+>>>>>>> p9x
 		regcache_rbtree_insert(map, &rbtree_ctx->root, rbnode);
 		rbtree_ctx->cached_rbnode = rbnode;
 	}

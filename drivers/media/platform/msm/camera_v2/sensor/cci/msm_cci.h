@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -21,7 +25,10 @@
 #include <media/msm_cam_sensor.h>
 #include <soc/qcom/camera2.h>
 #include "msm_sd.h"
+<<<<<<< HEAD
 #include "cam_soc_api.h"
+=======
+>>>>>>> p9x
 
 #define NUM_MASTERS 2
 #define NUM_QUEUES 2
@@ -44,6 +51,10 @@ enum cci_i2c_sync {
 	MSM_SYNC_ENABLE,
 };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 enum cci_i2c_queue_t {
 	QUEUE_0,
 	QUEUE_1,
@@ -90,7 +101,11 @@ struct msm_camera_cci_gpio_cfg {
 };
 
 struct msm_camera_cci_i2c_read_cfg {
+<<<<<<< HEAD
 	uint32_t addr;
+=======
+	uint16_t addr;
+>>>>>>> p9x
 	enum msm_camera_i2c_reg_addr_type addr_type;
 	uint8_t *data;
 	uint16_t num_byte;
@@ -125,7 +140,10 @@ struct msm_camera_cci_master_info {
 	struct mutex mutex_q[NUM_QUEUES];
 	struct completion report_q[NUM_QUEUES];
 	atomic_t done_pending[NUM_QUEUES];
+<<<<<<< HEAD
 	spinlock_t lock_q[NUM_QUEUES];
+=======
+>>>>>>> p9x
 };
 
 struct msm_cci_clk_params_t {
@@ -151,17 +169,31 @@ struct cci_device {
 	struct platform_device *pdev;
 	struct msm_sd_subdev msm_sd;
 	struct v4l2_subdev subdev;
+<<<<<<< HEAD
 	struct resource *irq;
+=======
+	struct resource *mem;
+	struct resource *irq;
+	struct resource *io;
+>>>>>>> p9x
 	void __iomem *base;
 
 	uint32_t hw_version;
 	uint8_t ref_count;
 	enum msm_cci_state_t cci_state;
+<<<<<<< HEAD
 	size_t num_clk;
 	size_t num_clk_cases;
 	struct clk **cci_clk;
 	uint32_t **cci_clk_rates;
 	struct msm_cam_clk_info *cci_clk_info;
+=======
+	uint32_t num_clk;
+	struct mutex mutex;
+	uint32_t num_clk_cases;
+
+	struct clk *cci_clk[CCI_NUM_CLK_MAX];
+>>>>>>> p9x
 	struct msm_camera_cci_i2c_queue_info
 		cci_i2c_queue_info[NUM_MASTERS][NUM_QUEUES];
 	struct msm_camera_cci_master_info cci_master_info[NUM_MASTERS];
@@ -171,11 +203,17 @@ struct cci_device {
 	uint8_t cci_gpio_tbl_size;
 	struct msm_pinctrl_info cci_pinctrl;
 	uint8_t cci_pinctrl_status;
+<<<<<<< HEAD
 	uint32_t cycles_per_us;
 	uint32_t cci_clk_src;
 	struct camera_vreg_t *cci_vreg;
 	struct regulator *cci_reg_ptr[MAX_REGULATOR];
 	int32_t regulator_count;
+=======
+	struct regulator *reg_ptr;
+	uint32_t cycles_per_us;
+	uint32_t cci_clk_src;
+>>>>>>> p9x
 	uint8_t payload_size;
 	uint8_t support_seq_write;
 	struct workqueue_struct *write_wq[MASTER_MAX];

@@ -164,6 +164,8 @@ out:
 
 	rtnl_unlock();
 
+	rtnl_unlock();
+
 	if (result)
 		free_netdev(priv->dev);
 

@@ -1519,7 +1519,10 @@ extern struct mutex qib_mutex;
 	dev_err(&(dd)->pcidev->dev, "%s: IB%u:%u " fmt, \
 		qib_get_unit_name((dd)->unit), (dd)->unit, (port), \
 		##__VA_ARGS__)
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 #define qib_devinfo(pcidev, fmt, ...) \
 	dev_info(&(pcidev)->dev, fmt, ##__VA_ARGS__)
 

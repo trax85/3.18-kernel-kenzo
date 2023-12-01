@@ -123,6 +123,15 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+/* 1 = delete, 0 = cache */
+static int sdcardfs_d_delete(const struct dentry *d)
+{
+	return SDCARDFS_SB(d->d_sb)->options.nocache ? 1 : 0;
+}
+
+>>>>>>> p9x
 static void sdcardfs_d_release(struct dentry *dentry)
 {
 	if (!dentry || !dentry->d_fsdata)
@@ -135,7 +144,11 @@ static void sdcardfs_d_release(struct dentry *dentry)
 }
 
 static int sdcardfs_hash_ci(const struct dentry *dentry,
+<<<<<<< HEAD
 				struct qstr *qstr)
+=======
+				const struct inode *inode, struct qstr *qstr)
+>>>>>>> p9x
 {
 	/*
 	 * This function is copy of vfat_hashi.
@@ -162,7 +175,12 @@ static int sdcardfs_hash_ci(const struct dentry *dentry,
  * Case insensitive compare of two vfat names.
  */
 static int sdcardfs_cmp_ci(const struct dentry *parent,
+<<<<<<< HEAD
 		const struct dentry *dentry,
+=======
+		const struct inode *pinode,
+		const struct dentry *dentry, const struct inode *inode,
+>>>>>>> p9x
 		unsigned int len, const char *str, const struct qstr *name)
 {
 	/* FIXME Should we support national language? */
@@ -182,6 +200,10 @@ static void sdcardfs_canonical_path(const struct path *path,
 
 const struct dentry_operations sdcardfs_ci_dops = {
 	.d_revalidate	= sdcardfs_d_revalidate,
+<<<<<<< HEAD
+=======
+	.d_delete	= sdcardfs_d_delete,
+>>>>>>> p9x
 	.d_release	= sdcardfs_d_release,
 	.d_hash	= sdcardfs_hash_ci,
 	.d_compare	= sdcardfs_cmp_ci,

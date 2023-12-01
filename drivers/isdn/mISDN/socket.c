@@ -135,7 +135,11 @@ mISDN_sock_recvmsg(struct kiocb *iocb, struct socket *sock,
 		return err;
 
 	if (msg->msg_name) {
+<<<<<<< HEAD
 		DECLARE_SOCKADDR(struct sockaddr_mISDN *, maddr, msg->msg_name);
+=======
+		struct sockaddr_mISDN *maddr = msg->msg_name;
+>>>>>>> p9x
 
 		maddr->family = AF_ISDN;
 		maddr->dev = _pms(sk)->dev->id;
@@ -714,6 +718,9 @@ base_sock_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
 	int err = 0;
 
 	if (!maddr || maddr->family != AF_ISDN)
+		return -EINVAL;
+
+	if (addr_len < sizeof(struct sockaddr_mISDN))
 		return -EINVAL;
 
 	lock_sock(sk);

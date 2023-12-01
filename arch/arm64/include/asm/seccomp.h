@@ -2,7 +2,11 @@
  * arch/arm64/include/asm/seccomp.h
  *
  * Copyright (C) 2014 Linaro Limited
+<<<<<<< HEAD
  * Author: AKASHI Takahiro <takahiro.akashi@linaro.org>
+=======
+ * Author: AKASHI Takahiro <takahiro.akashi <at> linaro.org>
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as

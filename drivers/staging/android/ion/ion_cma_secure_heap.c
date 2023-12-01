@@ -1,9 +1,17 @@
 /*
+<<<<<<< HEAD
  * drivers/staging/android/ion/ion_cma_secure_heap.c
  *
  * Copyright (C) Linaro 2012
  * Author: <benjamin.gaignard@linaro.org> for ST-Ericsson.
  * Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+ * drivers/gpu/ion/ion_secure_cma_heap.c
+ *
+ * Copyright (C) Linaro 2012
+ * Author: <benjamin.gaignard@linaro.org> for ST-Ericsson.
+ * Copyright (c) 2013-2014,2016 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -25,7 +33,10 @@
 #include <linux/msm_ion.h>
 #include <trace/events/kmem.h>
 
+<<<<<<< HEAD
 #include <soc/qcom/secure_buffer.h>
+=======
+>>>>>>> p9x
 #include <asm/cacheflush.h>
 
 /* for ion_heap_ops structure */
@@ -382,13 +393,23 @@ int ion_secure_cma_drain_pool(struct ion_heap *heap, void *unused)
 	return 0;
 }
 
+<<<<<<< HEAD
 static unsigned long ion_secure_cma_shrinker(struct shrinker *shrinker,
+=======
+static int ion_secure_cma_shrinker(struct shrinker *shrinker,
+>>>>>>> p9x
 					struct shrink_control *sc)
 {
 	struct ion_cma_secure_heap *sheap = container_of(shrinker,
 					struct ion_cma_secure_heap, shrinker);
 	int nr_to_scan = sc->nr_to_scan;
 
+<<<<<<< HEAD
+=======
+	if (nr_to_scan == 0)
+		return atomic_read(&sheap->total_pool_size);
+
+>>>>>>> p9x
 	/*
 	 * Allocation path may invoke the shrinker. Proceeding any further
 	 * would cause a deadlock in several places so don't shrink if that
@@ -404,6 +425,7 @@ static unsigned long ion_secure_cma_shrinker(struct shrinker *shrinker,
 	return atomic_read(&sheap->total_pool_size);
 }
 
+<<<<<<< HEAD
 static unsigned long ion_secure_cma_shrinker_count(struct shrinker *shrinker,
 					struct shrink_control *sc)
 {
@@ -412,6 +434,8 @@ static unsigned long ion_secure_cma_shrinker_count(struct shrinker *shrinker,
 	return atomic_read(&sheap->total_pool_size);
 }
 
+=======
+>>>>>>> p9x
 static void ion_secure_cma_free_from_pool(struct ion_cma_secure_heap *sheap,
 					dma_addr_t handle,
 					unsigned long len)
@@ -696,7 +720,11 @@ static int ion_secure_cma_allocate(struct ion_heap *heap,
 		} else {
 			trace_ion_cp_secure_buffer_start(heap->name, len, align,
 									flags);
+<<<<<<< HEAD
 			ret = msm_secure_table(buf->table);
+=======
+			ret = msm_ion_secure_table(buf->table);
+>>>>>>> p9x
 			trace_ion_cp_secure_buffer_end(heap->name, len, align,
 									flags);
 		}
@@ -723,7 +751,11 @@ static void ion_secure_cma_free(struct ion_buffer *buffer)
 
 	dev_dbg(sheap->dev, "Release buffer %pK\n", buffer);
 	if (msm_secure_v2_is_supported())
+<<<<<<< HEAD
 		ret = msm_unsecure_table(info->table);
+=======
+		ret = msm_ion_unsecure_table(info->table);
+>>>>>>> p9x
 	atomic_sub(buffer->size, &sheap->total_allocated);
 	BUG_ON(atomic_read(&sheap->total_allocated) < 0);
 
@@ -860,8 +892,12 @@ struct ion_heap *ion_secure_cma_heap_create(struct ion_platform_heap *data)
 	INIT_WORK(&sheap->work, ion_secure_pool_pages);
 	sheap->shrinker.seeks = DEFAULT_SEEKS;
 	sheap->shrinker.batch = 0;
+<<<<<<< HEAD
 	sheap->shrinker.scan_objects = ion_secure_cma_shrinker;
 	sheap->shrinker.count_objects = ion_secure_cma_shrinker_count;
+=======
+	sheap->shrinker.shrink = ion_secure_cma_shrinker;
+>>>>>>> p9x
 	sheap->default_prefetch_size = sheap->heap_size;
 	register_shrinker(&sheap->shrinker);
 

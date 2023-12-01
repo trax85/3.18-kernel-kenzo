@@ -1009,9 +1009,17 @@ void ntb_transport_free(void *transport)
 
 	cancel_delayed_work_sync(&nt->link_work);
 
+<<<<<<< HEAD
 	ntb_unregister_event_callback(ndev);
 
 	for (i = 0; i < ntb_max_mw(ndev); i++)
+=======
+	ntb_unregister_event_callback(nt->ndev);
+
+	pdev = ntb_query_pdev(nt->ndev);
+
+	for (i = 0; i < NTB_NUM_MW; i++)
+>>>>>>> p9x
 		ntb_free_mw(nt, i);
 
 	kfree(nt->qps);

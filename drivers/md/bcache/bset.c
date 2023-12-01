@@ -1114,10 +1114,66 @@ struct bkey *bch_btree_iter_next_filter(struct btree_iter *iter,
 
 /* Mergesort */
 
+<<<<<<< HEAD
 void bch_bset_sort_state_free(struct bset_sort_state *state)
 {
 	if (state->pool)
 		mempool_destroy(state->pool);
+=======
+static void sort_key_next(struct btree_iter *iter,
+			  struct btree_iter_set *i)
+{
+	i->k = bkey_next(i->k);
+
+	if (i->k == i->end)
+		*i = iter->data[--iter->used];
+}
+
+static struct bkey *btree_sort_fixup(struct btree_iter *iter, struct bkey *tmp)
+{
+	while (iter->used > 1) {
+		struct btree_iter_set *top = iter->data, *i = top + 1;
+
+		if (iter->used > 2 &&
+		    btree_iter_cmp(i[0], i[1]))
+			i++;
+
+		if (bkey_cmp(top->k, &START_KEY(i->k)) <= 0)
+			break;
+
+		if (!KEY_SIZE(i->k)) {
+			sort_key_next(iter, i);
+			heap_sift(iter, i - top, btree_iter_cmp);
+			continue;
+		}
+
+		if (top->k > i->k) {
+			if (bkey_cmp(top->k, i->k) >= 0)
+				sort_key_next(iter, i);
+			else
+				bch_cut_front(top->k, i->k);
+
+			heap_sift(iter, i - top, btree_iter_cmp);
+		} else {
+			/* can't happen because of comparison func */
+			BUG_ON(!bkey_cmp(&START_KEY(top->k), &START_KEY(i->k)));
+
+			if (bkey_cmp(i->k, top->k) < 0) {
+				bkey_copy(tmp, top->k);
+
+				bch_cut_back(&START_KEY(i->k), tmp);
+				bch_cut_front(i->k, top->k);
+				heap_sift(iter, 0, btree_iter_cmp);
+
+				return tmp;
+			} else {
+				bch_cut_back(&START_KEY(i->k), top->k);
+			}
+		}
+	}
+
+	return NULL;
+>>>>>>> p9x
 }
 
 int bch_bset_sort_state_init(struct bset_sort_state *state, unsigned page_order)
@@ -1142,6 +1198,7 @@ static void btree_mergesort(struct btree_keys *b, struct bset *out,
 	int i;
 	struct bkey *k, *last = NULL;
 	BKEY_PADDED(k) tmp;
+<<<<<<< HEAD
 	bool (*bad)(struct btree_keys *, const struct bkey *) = remove_stale
 		? bch_ptr_bad
 		: bch_ptr_invalid;
@@ -1153,11 +1210,24 @@ static void btree_mergesort(struct btree_keys *b, struct bset *out,
 	while (!btree_iter_end(iter)) {
 		if (b->ops->sort_fixup && fixup)
 			k = b->ops->sort_fixup(iter, &tmp.k);
+=======
+	bool (*bad)(struct btree *, const struct bkey *) = remove_stale
+		? bch_ptr_bad
+		: bch_ptr_invalid;
+
+	while (!btree_iter_end(iter)) {
+		if (fixup && !b->level)
+			k = btree_sort_fixup(iter, &tmp.k);
+>>>>>>> p9x
 		else
 			k = NULL;
 
 		if (!k)
+<<<<<<< HEAD
 			k = __bch_btree_iter_next(iter, b->ops->sort_cmp);
+=======
+			k = bch_btree_iter_next(iter);
+>>>>>>> p9x
 
 		if (bad(b, k))
 			continue;

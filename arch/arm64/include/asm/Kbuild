@@ -11,6 +11,7 @@ generic-y += dma.h
 generic-y += dma-contiguous.h
 generic-y += early_ioremap.h
 generic-y += emergency-restart.h
+generic-y += early_ioremap.h
 generic-y += errno.h
 generic-y += ftrace.h
 generic-y += hash.h
@@ -30,9 +31,13 @@ generic-y += msgbuf.h
 generic-y += msi.h
 generic-y += mutex.h
 generic-y += pci.h
+<<<<<<< HEAD
 generic-y += pci-bridge.h
 generic-y += poll.h
 generic-y += preempt.h
+=======
+generic-y += poll.h
+>>>>>>> p9x
 generic-y += resource.h
 generic-y += rwsem.h
 generic-y += scatterlist.h

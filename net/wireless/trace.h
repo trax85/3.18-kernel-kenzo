@@ -1186,6 +1186,7 @@ TRACE_EVENT(rdev_connect,
 		  WIPHY_PR_ARG, NETDEV_PR_ARG, MAC_PR_ARG(bssid), __entry->ssid,
 		  __entry->auth_type, BOOL_TO_STR(__entry->privacy),
 		  __entry->wpa_versions, __entry->flags, MAC_PR_ARG(prev_bssid))
+<<<<<<< HEAD
 );
 
 TRACE_EVENT(rdev_update_connect_params,
@@ -1204,6 +1205,8 @@ TRACE_EVENT(rdev_update_connect_params,
 	),
 	TP_printk(WIPHY_PR_FMT ", " NETDEV_PR_FMT ", parameters changed: %u",
 		  WIPHY_PR_ARG, NETDEV_PR_ARG,  __entry->changed)
+=======
+>>>>>>> p9x
 );
 
 TRACE_EVENT(rdev_set_cqm_rssi_config,
@@ -1499,9 +1502,15 @@ TRACE_EVENT(rdev_tdls_mgmt,
 	TP_PROTO(struct wiphy *wiphy, struct net_device *netdev,
 		 u8 *peer, u8 action_code, u8 dialog_token,
 		 u16 status_code, u32 peer_capability,
+<<<<<<< HEAD
 		 bool initiator, const u8 *buf, size_t len),
 	TP_ARGS(wiphy, netdev, peer, action_code, dialog_token, status_code,
 		peer_capability, initiator, buf, len),
+=======
+		 const u8 *buf, size_t len),
+	TP_ARGS(wiphy, netdev, peer, action_code, dialog_token, status_code,
+		peer_capability, buf, len),
+>>>>>>> p9x
 	TP_STRUCT__entry(
 		WIPHY_ENTRY
 		NETDEV_ENTRY
@@ -1510,7 +1519,10 @@ TRACE_EVENT(rdev_tdls_mgmt,
 		__field(u8, dialog_token)
 		__field(u16, status_code)
 		__field(u32, peer_capability)
+<<<<<<< HEAD
 		__field(bool, initiator)
+=======
+>>>>>>> p9x
 		__dynamic_array(u8, buf, len)
 	),
 	TP_fast_assign(
@@ -1521,6 +1533,7 @@ TRACE_EVENT(rdev_tdls_mgmt,
 		__entry->dialog_token = dialog_token;
 		__entry->status_code = status_code;
 		__entry->peer_capability = peer_capability;
+<<<<<<< HEAD
 		__entry->initiator = initiator;
 		memcpy(__get_dynamic_array(buf), buf, len);
 	),
@@ -1531,6 +1544,16 @@ TRACE_EVENT(rdev_tdls_mgmt,
 		  __entry->action_code, __entry->dialog_token,
 		  __entry->status_code, __entry->peer_capability,
 		  BOOL_TO_STR(__entry->initiator),
+=======
+		memcpy(__get_dynamic_array(buf), buf, len);
+	),
+	TP_printk(WIPHY_PR_FMT ", " NETDEV_PR_FMT ", " MAC_PR_FMT
+		  ", action_code: %u, dialog_token: %u, status_code: %u,"
+		  " peer_capability: %u buf: %#.2x ",
+		  WIPHY_PR_ARG, NETDEV_PR_ARG, MAC_PR_ARG(peer),
+		  __entry->action_code, __entry->dialog_token,
+		  __entry->status_code, __entry->peer_capability,
+>>>>>>> p9x
 		  ((u8 *)__get_dynamic_array(buf))[0])
 );
 
@@ -1868,6 +1891,7 @@ TRACE_EVENT(rdev_crit_proto_stop,
 		  WIPHY_PR_ARG, WDEV_PR_ARG)
 );
 
+<<<<<<< HEAD
 TRACE_EVENT(rdev_channel_switch,
 	TP_PROTO(struct wiphy *wiphy, struct net_device *netdev,
 		 struct cfg80211_csa_settings *params),
@@ -1905,6 +1929,8 @@ TRACE_EVENT(rdev_channel_switch,
 		  __entry->block_tx, __entry->count, __entry->radar_required)
 );
 
+=======
+>>>>>>> p9x
 TRACE_EVENT(rdev_set_qos_map,
 	TP_PROTO(struct wiphy *wiphy, struct net_device *netdev,
 		 struct cfg80211_qos_map *qos_map),
@@ -1941,6 +1967,7 @@ TRACE_EVENT(rdev_set_ap_chanwidth,
 		  WIPHY_PR_ARG, NETDEV_PR_ARG, CHAN_DEF_PR_ARG)
 );
 
+<<<<<<< HEAD
 TRACE_EVENT(rdev_add_tx_ts,
 	TP_PROTO(struct wiphy *wiphy, struct net_device *netdev,
 		 u8 tsid, const u8 *peer, u8 user_prio, u16 admitted_time),
@@ -1986,6 +2013,8 @@ TRACE_EVENT(rdev_del_tx_ts,
 		  WIPHY_PR_ARG, NETDEV_PR_ARG, MAC_PR_ARG(peer), __entry->tsid)
 );
 
+=======
+>>>>>>> p9x
 /*************************************************************
  *	     cfg80211 exported functions traces		     *
  *************************************************************/
@@ -2688,6 +2717,7 @@ TRACE_EVENT(cfg80211_ft_event,
 		  WIPHY_PR_ARG, NETDEV_PR_ARG, MAC_PR_ARG(target_ap))
 );
 
+<<<<<<< HEAD
 TRACE_EVENT(cfg80211_stop_iface,
 	TP_PROTO(struct wiphy *wiphy, struct wireless_dev *wdev),
 	TP_ARGS(wiphy, wdev),
@@ -2703,6 +2733,8 @@ TRACE_EVENT(cfg80211_stop_iface,
 		  WIPHY_PR_ARG, WDEV_PR_ARG)
 );
 
+=======
+>>>>>>> p9x
 DEFINE_EVENT(wiphy_wdev_evt, rdev_abort_scan,
 	TP_PROTO(struct wiphy *wiphy, struct wireless_dev *wdev),
 	TP_ARGS(wiphy, wdev)

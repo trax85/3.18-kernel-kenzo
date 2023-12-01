@@ -42,6 +42,11 @@
 #include <linux/irq.h>
 #include <linux/module.h>
 #include <linux/sched_clock.h>
+<<<<<<< HEAD
+=======
+
+#include <asm/localtimer.h>
+>>>>>>> p9x
 #include <linux/percpu.h>
 
 /*

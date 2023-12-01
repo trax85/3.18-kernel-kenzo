@@ -156,11 +156,17 @@ enum {
 	SWP_CONTINUED	= (1 << 5),	/* swap_map has count continuation */
 	SWP_BLKDEV	= (1 << 6),	/* its a block device */
 	SWP_FILE	= (1 << 7),	/* set after swap_activate success */
+<<<<<<< HEAD
 	SWP_AREA_DISCARD = (1 << 8),	/* single-time swap area discards */
 	SWP_PAGE_DISCARD = (1 << 9),	/* freed swap page-cluster discards */
 					/* add others here before... */
 	SWP_FAST	= (1 << 10),	/* blkdev access is fast and cheap */
 	SWP_SCANNING	= (1 << 11),	/* refcount in scan_swap_map */
+=======
+	SWP_FAST	= (1 << 8),	/* blkdev access is fast and cheap */
+					/* add others here before... */
+	SWP_SCANNING	= (1 << 9),	/* refcount in scan_swap_map */
+>>>>>>> p9x
 };
 
 #define SWAP_CLUSTER_MAX 32UL
@@ -413,6 +419,9 @@ extern void free_pages_and_swap_cache(struct page **, int);
 extern struct page *lookup_swap_cache(swp_entry_t);
 extern struct page *read_swap_cache_async(swp_entry_t, gfp_t,
 			struct vm_area_struct *vma, unsigned long addr);
+extern struct page *__read_swap_cache_async(swp_entry_t, gfp_t,
+			struct vm_area_struct *vma, unsigned long addr,
+			bool *new_page_allocated);
 extern struct page *swapin_readahead(swp_entry_t, gfp_t,
 			struct vm_area_struct *vma, unsigned long addr);
 

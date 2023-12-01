@@ -19,6 +19,7 @@
 #include <linux/syscalls.h>
 #include <linux/utime.h>
 #include <linux/initramfs.h>
+<<<<<<< HEAD
 
 static ssize_t __init xwrite(int fd, const char *p, size_t count)
 {
@@ -42,6 +43,8 @@ static ssize_t __init xwrite(int fd, const char *p, size_t count)
 
 	return out;
 }
+=======
+>>>>>>> p9x
 
 static __initdata char *message;
 static void __init error(char *x)
@@ -621,11 +624,16 @@ static int __init populate_rootfs(void)
 {
 	char *err;
 
+<<<<<<< HEAD
 	if (do_skip_initramfs) {
 		if (initrd_start)
 			free_initrd();
 		return default_rootfs();
 	}
+=======
+	if (do_skip_initramfs)
+		return default_rootfs();
+>>>>>>> p9x
 
 	err = unpack_to_rootfs(__initramfs_start, __initramfs_size);
 	if (err)

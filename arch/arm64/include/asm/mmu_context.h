@@ -173,12 +173,25 @@ switch_mm(struct mm_struct *prev, struct mm_struct *next,
 		__switch_mm(next);
 
 	/*
+<<<<<<< HEAD
 	 * Update the saved TTBR0_EL1 of the scheduled-in task as the previous
 	 * value may have not been initialised yet (activate_mm caller) or the
 	 * ASID has changed since the last run (following the context switch
 	 * of another thread of the same process).
 	 */
 	update_saved_ttbr0(tsk, next);
+=======
+	 * init_mm.pgd does not contain any user mappings and it is always
+	 * active for kernel addresses in TTBR1. Just set the reserved TTBR0.
+	 */
+	if (next == &init_mm) {
+		cpu_set_reserved_ttbr0();
+		return;
+	}
+
+	if (!cpumask_test_and_set_cpu(cpu, mm_cpumask(next)) || prev != next)
+		check_and_switch_context(next, tsk);
+>>>>>>> p9x
 }
 
 #define deactivate_mm(tsk,mm)	do { } while (0)

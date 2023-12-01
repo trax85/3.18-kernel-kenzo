@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2013-2018, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  * Copyright (C) 1994 Martin Schaller
  *
  * 2001 - Documented with DocBook
@@ -50,6 +54,7 @@
 #define MSMFB_BUFFER_SYNC32  _IOW(MSMFB_IOCTL_MAGIC, 162, struct mdp_buf_sync32)
 #define MSMFB_OVERLAY_PREPARE32		_IOWR(MSMFB_IOCTL_MAGIC, 169, \
 						struct mdp_overlay_list32)
+<<<<<<< HEAD
 #define MSMFB_ATOMIC_COMMIT32	_IOWR(MDP_IOCTL_MAGIC, 128, compat_caddr_t)
 
 #define MSMFB_ASYNC_POSITION_UPDATE_32 _IOWR(MDP_IOCTL_MAGIC, 129, \
@@ -57,6 +62,8 @@
 
 static int __copy_layer_pp_info_params(struct mdp_input_layer *layer,
 				struct mdp_input_layer32 *layer32);
+=======
+>>>>>>> p9x
 
 static unsigned int __do_compat_ioctl_nr(unsigned int cmd32)
 {
@@ -102,12 +109,15 @@ static unsigned int __do_compat_ioctl_nr(unsigned int cmd32)
 	case MSMFB_OVERLAY_PREPARE32:
 		cmd = MSMFB_OVERLAY_PREPARE;
 		break;
+<<<<<<< HEAD
 	case MSMFB_ATOMIC_COMMIT32:
 		cmd = MSMFB_ATOMIC_COMMIT;
 		break;
 	case MSMFB_ASYNC_POSITION_UPDATE_32:
 		cmd = MSMFB_ASYNC_POSITION_UPDATE;
 		break;
+=======
+>>>>>>> p9x
 	default:
 		cmd = cmd32;
 		break;
@@ -116,6 +126,7 @@ static unsigned int __do_compat_ioctl_nr(unsigned int cmd32)
 	return cmd;
 }
 
+<<<<<<< HEAD
 static void  __copy_atomic_commit_struct(struct mdp_layer_commit  *commit,
 	struct mdp_layer_commit32 *commit32)
 {
@@ -506,6 +517,10 @@ static int __compat_async_position_update(struct fb_info *info,
 
 static int mdss_fb_compat_buf_sync(struct fb_info *info, unsigned int cmd,
 			 unsigned long arg, struct file *file)
+=======
+static int mdss_fb_compat_buf_sync(struct fb_info *info, unsigned int cmd,
+			 unsigned long arg)
+>>>>>>> p9x
 {
 	struct mdp_buf_sync32 __user *buf_sync32;
 	struct mdp_buf_sync __user *buf_sync;
@@ -532,7 +547,11 @@ static int mdss_fb_compat_buf_sync(struct fb_info *info, unsigned int cmd,
 	    put_user(compat_ptr(data), &buf_sync->retire_fen_fd))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) buf_sync, file);
+=======
+	ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) buf_sync);
+>>>>>>> p9x
 	if (ret) {
 		pr_err("%s: failed %d\n", __func__, ret);
 		return ret;
@@ -617,7 +636,11 @@ static int __from_user_fb_image(struct fb_image __user *image,
 }
 
 static int mdss_fb_compat_cursor(struct fb_info *info, unsigned int cmd,
+<<<<<<< HEAD
 			unsigned long arg, struct file *file)
+=======
+			unsigned long arg)
+>>>>>>> p9x
 {
 	struct fb_cursor32 __user *cursor32;
 	struct fb_cursor __user *cursor;
@@ -645,12 +668,20 @@ static int mdss_fb_compat_cursor(struct fb_info *info, unsigned int cmd,
 	if (__from_user_fb_image(&cursor->image, &cursor32->image))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) cursor, file);
 	return ret;
 }
 
 static int mdss_fb_compat_set_lut(struct fb_info *info, unsigned long arg,
 	struct file *file)
+=======
+	ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) cursor);
+	return ret;
+}
+
+static int mdss_fb_compat_set_lut(struct fb_info *info, unsigned long arg)
+>>>>>>> p9x
 {
 	struct fb_cmap_user __user *cmap;
 	struct fb_cmap32 __user *cmap32;
@@ -673,7 +704,11 @@ static int mdss_fb_compat_set_lut(struct fb_info *info, unsigned long arg,
 	    put_user(compat_ptr(data), &cmap->transp))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	ret = mdss_fb_do_ioctl(info, MSMFB_SET_LUT, (unsigned long) cmap, file);
+=======
+	ret = mdss_fb_do_ioctl(info, MSMFB_SET_LUT, (unsigned long) cmap);
+>>>>>>> p9x
 	if (!ret)
 		pr_debug("%s: compat ioctl successful\n", __func__);
 
@@ -866,6 +901,7 @@ static int __to_user_pcc_coeff(
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __from_user_pcc_coeff_v17(
 			struct mdp_pcc_cfg_data32 __user *pcc_cfg32,
 			struct mdp_pcc_cfg_data __user *pcc_cfg)
@@ -916,17 +952,23 @@ static int __from_user_pcc_coeff_v17(
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 static int __from_user_pcc_cfg_data(
 			struct mdp_pcc_cfg_data32 __user *pcc_cfg32,
 			struct mdp_pcc_cfg_data __user *pcc_cfg)
 {
+<<<<<<< HEAD
 	u32 version;
 
+=======
+>>>>>>> p9x
 	if (copy_in_user(&pcc_cfg->block,
 			&pcc_cfg32->block,
 			sizeof(uint32_t)) ||
 	    copy_in_user(&pcc_cfg->ops,
 			&pcc_cfg32->ops,
+<<<<<<< HEAD
 			sizeof(uint32_t)) ||
 	    copy_in_user(&pcc_cfg->version,
 			&pcc_cfg32->version,
@@ -1010,15 +1052,34 @@ static int __to_user_pcc_coeff_v1_7(
 		pr_err("failed to copy payload for pcc to user\n");
 		return -EFAULT;
 	}
+=======
+			sizeof(uint32_t)))
+		return -EFAULT;
+
+	if (__from_user_pcc_coeff(
+			compat_ptr((uintptr_t)&pcc_cfg32->r),
+			&pcc_cfg->r) ||
+	    __from_user_pcc_coeff(
+			compat_ptr((uintptr_t)&pcc_cfg32->g),
+			&pcc_cfg->g) ||
+	    __from_user_pcc_coeff(
+			compat_ptr((uintptr_t)&pcc_cfg32->b),
+			&pcc_cfg->b))
+		return -EFAULT;
+>>>>>>> p9x
 
 	return 0;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 static int __to_user_pcc_cfg_data(
 			struct mdp_pcc_cfg_data32 __user *pcc_cfg32,
 			struct mdp_pcc_cfg_data __user *pcc_cfg)
 {
+<<<<<<< HEAD
 	u32 version;
 	u32 ops;
 
@@ -1059,6 +1120,26 @@ static int __to_user_pcc_cfg_data(
 			return -EFAULT;
 		break;
 	}
+=======
+	if (copy_in_user(&pcc_cfg32->block,
+			&pcc_cfg->block,
+			sizeof(uint32_t)) ||
+	    copy_in_user(&pcc_cfg32->ops,
+			&pcc_cfg->ops,
+			sizeof(uint32_t)))
+		return -EFAULT;
+
+	if (__to_user_pcc_coeff(
+			compat_ptr((uintptr_t)&pcc_cfg32->r),
+			&pcc_cfg->r) ||
+	    __to_user_pcc_coeff(
+			compat_ptr((uintptr_t)&pcc_cfg32->g),
+			&pcc_cfg->g) ||
+	    __to_user_pcc_coeff(
+			compat_ptr((uintptr_t)&pcc_cfg32->b),
+			&pcc_cfg->b))
+		return -EFAULT;
+>>>>>>> p9x
 
 	return 0;
 }
@@ -1150,6 +1231,7 @@ static int __to_user_csc_cfg_data(
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __from_user_igc_lut_data_v17(
 		struct mdp_igc_lut_data32 __user *igc_lut32,
 		struct mdp_igc_lut_data __user *igc_lut)
@@ -1177,13 +1259,18 @@ static int __from_user_igc_lut_data_v17(
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 static int __from_user_igc_lut_data(
 		struct mdp_igc_lut_data32 __user *igc_lut32,
 		struct mdp_igc_lut_data __user *igc_lut)
 {
 	uint32_t data;
+<<<<<<< HEAD
 	uint32_t version = mdp_igc_vmax;
 	int ret = 0;
+=======
+>>>>>>> p9x
 
 	if (copy_in_user(&igc_lut->block,
 			&igc_lut32->block,
@@ -1193,6 +1280,7 @@ static int __from_user_igc_lut_data(
 			sizeof(uint32_t)) ||
 	    copy_in_user(&igc_lut->ops,
 			&igc_lut32->ops,
+<<<<<<< HEAD
 			sizeof(uint32_t)) ||
 	    copy_in_user(&igc_lut->version,
 			&igc_lut32->version,
@@ -1222,6 +1310,18 @@ static int __from_user_igc_lut_data(
 		break;
 	}
 	return ret;
+=======
+			sizeof(uint32_t)))
+		return -EFAULT;
+
+	if (get_user(data, &igc_lut32->c0_c1_data) ||
+	    put_user(compat_ptr(data), &igc_lut->c0_c1_data) ||
+	    get_user(data, &igc_lut32->c2_data) ||
+	    put_user(compat_ptr(data), &igc_lut->c2_data))
+		return -EFAULT;
+
+	return 0;
+>>>>>>> p9x
 }
 
 static int __to_user_igc_lut_data(
@@ -1286,6 +1386,7 @@ static int __to_user_ar_gc_lut_data(
 	return 0;
 }
 
+<<<<<<< HEAD
 
 static int __from_user_pgc_lut_data_v1_7(
 			struct mdp_pgc_lut_data32 __user *pgc_lut32,
@@ -1313,6 +1414,9 @@ static int __from_user_pgc_lut_data_v1_7(
 }
 
 static int __from_user_pgc_lut_data_legacy(
+=======
+static int __from_user_pgc_lut_data(
+>>>>>>> p9x
 			struct mdp_pgc_lut_data32 __user *pgc_lut32,
 			struct mdp_pgc_lut_data __user *pgc_lut)
 {
@@ -1325,6 +1429,26 @@ static int __from_user_pgc_lut_data_legacy(
 	uint8_t num_r_stages, num_g_stages, num_b_stages;
 	int i;
 
+<<<<<<< HEAD
+=======
+	if (copy_in_user(&pgc_lut->block,
+			&pgc_lut32->block,
+			sizeof(uint32_t)) ||
+	    copy_in_user(&pgc_lut->flags,
+			&pgc_lut32->flags,
+			sizeof(uint32_t)) ||
+	    copy_in_user(&pgc_lut->num_r_stages,
+			&pgc_lut32->num_r_stages,
+			sizeof(uint8_t)) ||
+	    copy_in_user(&pgc_lut->num_g_stages,
+			&pgc_lut32->num_g_stages,
+			sizeof(uint8_t)) ||
+	    copy_in_user(&pgc_lut->num_b_stages,
+			&pgc_lut32->num_b_stages,
+			sizeof(uint8_t)))
+		return -EFAULT;
+
+>>>>>>> p9x
 	if (copy_from_user(&num_r_stages,
 			&pgc_lut32->num_r_stages,
 			sizeof(uint8_t)) ||
@@ -1336,6 +1460,7 @@ static int __from_user_pgc_lut_data_legacy(
 			sizeof(uint8_t)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	if (num_r_stages > GC_LUT_SEGMENTS || num_b_stages > GC_LUT_SEGMENTS
 	    || num_g_stages > GC_LUT_SEGMENTS || !num_r_stages || !num_b_stages
 	    || !num_g_stages) {
@@ -1344,6 +1469,8 @@ static int __from_user_pgc_lut_data_legacy(
 		return -EFAULT;
 	}
 
+=======
+>>>>>>> p9x
 	r_data_temp32 = compat_ptr((uintptr_t)pgc_lut32->r_data);
 	r_data_temp = pgc_lut->r_data;
 
@@ -1373,6 +1500,7 @@ static int __from_user_pgc_lut_data_legacy(
 				&b_data_temp[i]))
 			return -EFAULT;
 	}
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -1424,6 +1552,12 @@ static int __from_user_pgc_lut_data(
 	return ret;
 }
 
+=======
+
+	return 0;
+}
+
+>>>>>>> p9x
 static int __to_user_pgc_lut_data(
 			struct mdp_pgc_lut_data32 __user *pgc_lut32,
 			struct mdp_pgc_lut_data __user *pgc_lut)
@@ -1495,6 +1629,7 @@ static int __to_user_pgc_lut_data(
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __from_user_hist_lut_data_v1_7(
 			struct mdp_hist_lut_data32 __user *hist_lut32,
 			struct mdp_hist_lut_data __user *hist_lut)
@@ -1523,22 +1658,30 @@ static int __from_user_hist_lut_data_v1_7(
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 static int __from_user_hist_lut_data(
 			struct mdp_hist_lut_data32 __user *hist_lut32,
 			struct mdp_hist_lut_data __user *hist_lut)
 {
+<<<<<<< HEAD
 	uint32_t version = 0;
+=======
+>>>>>>> p9x
 	uint32_t data;
 
 	if (copy_in_user(&hist_lut->block,
 			&hist_lut32->block,
 			sizeof(uint32_t)) ||
+<<<<<<< HEAD
 	    copy_in_user(&hist_lut->version,
 			&hist_lut32->version,
 			sizeof(uint32_t)) ||
 	    copy_in_user(&hist_lut->hist_lut_first,
 			&hist_lut32->hist_lut_first,
 			sizeof(uint32_t)) ||
+=======
+>>>>>>> p9x
 	    copy_in_user(&hist_lut->ops,
 			&hist_lut32->ops,
 			sizeof(uint32_t)) ||
@@ -1547,6 +1690,7 @@ static int __from_user_hist_lut_data(
 			sizeof(uint32_t)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	if (copy_from_user(&version,
 			&hist_lut32->version,
 			sizeof(uint32_t))) {
@@ -1569,6 +1713,11 @@ static int __from_user_hist_lut_data(
 			return -EFAULT;
 		break;
 	}
+=======
+	if (get_user(data, &hist_lut32->data) ||
+	    put_user(compat_ptr(data), &hist_lut->data))
+		return -EFAULT;
+>>>>>>> p9x
 
 	return 0;
 }
@@ -1906,7 +2055,23 @@ static int __from_user_mem_col_cfg(
 			sizeof(uint32_t)) ||
 	    copy_in_user(&mem_col_cfg->val_region,
 			&mem_col_cfg32->val_region,
+<<<<<<< HEAD
 			sizeof(uint32_t)))
+=======
+			sizeof(uint32_t)) ||
+	    copy_in_user(&mem_col_cfg->color_adjust_p2,
+			&mem_col_cfg32->color_adjust_p2,
+			sizeof(uint32_t)) ||
+	    copy_in_user(&mem_col_cfg->blend_gain,
+			&mem_col_cfg32->blend_gain,
+			sizeof(uint32_t)) ||
+	    copy_in_user(&mem_col_cfg->sat_hold,
+			&mem_col_cfg32->sat_hold,
+			sizeof(uint8_t)) ||
+	    copy_in_user(&mem_col_cfg->val_hold,
+			&mem_col_cfg32->val_hold,
+			sizeof(uint8_t)))
+>>>>>>> p9x
 		return -EFAULT;
 
 	return 0;
@@ -1930,7 +2095,23 @@ static int __to_user_mem_col_cfg(
 			sizeof(uint32_t)) ||
 	    copy_in_user(&mem_col_cfg32->val_region,
 			&mem_col_cfg->val_region,
+<<<<<<< HEAD
 			sizeof(uint32_t)))
+=======
+			sizeof(uint32_t)) ||
+	    copy_in_user(&mem_col_cfg32->color_adjust_p2,
+			&mem_col_cfg->color_adjust_p2,
+			sizeof(uint32_t)) ||
+	    copy_in_user(&mem_col_cfg32->blend_gain,
+			&mem_col_cfg->blend_gain,
+			sizeof(uint32_t)) ||
+	    copy_in_user(&mem_col_cfg32->sat_hold,
+			&mem_col_cfg->sat_hold,
+			sizeof(uint8_t)) ||
+	    copy_in_user(&mem_col_cfg32->val_hold,
+			&mem_col_cfg->val_hold,
+			sizeof(uint8_t)))
+>>>>>>> p9x
 		return -EFAULT;
 
 	return 0;
@@ -1962,7 +2143,24 @@ static int __from_user_pa_v2_data(
 			sizeof(uint32_t)) ||
 	    copy_in_user(&pa_v2_data->six_zone_len,
 			&pa_v2_data32->six_zone_len,
+<<<<<<< HEAD
 			sizeof(uint32_t)))
+=======
+			sizeof(uint32_t)) ||
+	    copy_in_user(&pa_v2_data->six_zone_adj_p0,
+			&pa_v2_data32->six_zone_adj_p0,
+			sizeof(uint32_t)) ||
+	    copy_in_user(&pa_v2_data->six_zone_adj_p1,
+			&pa_v2_data32->six_zone_adj_p1,
+			sizeof(uint32_t)) ||
+	    copy_in_user(&pa_v2_data->six_zone_sat_hold,
+			&pa_v2_data32->six_zone_sat_hold,
+			sizeof(uint8_t)) ||
+	    copy_in_user(&pa_v2_data->six_zone_val_hold,
+			&pa_v2_data32->six_zone_val_hold,
+			sizeof(uint8_t)))
+
+>>>>>>> p9x
 		return -EFAULT;
 
 	if (get_user(data, &pa_v2_data32->six_zone_curve_p0) ||
@@ -2011,7 +2209,23 @@ static int __to_user_pa_v2_data(
 			sizeof(uint32_t)) ||
 	    copy_in_user(&pa_v2_data32->six_zone_len,
 			&pa_v2_data->six_zone_len,
+<<<<<<< HEAD
 			sizeof(uint32_t)))
+=======
+			sizeof(uint32_t)) ||
+	    copy_in_user(&pa_v2_data32->six_zone_adj_p0,
+			&pa_v2_data->six_zone_adj_p0,
+			sizeof(uint32_t)) ||
+	    copy_in_user(&pa_v2_data32->six_zone_adj_p1,
+			&pa_v2_data->six_zone_adj_p1,
+			sizeof(uint32_t)) ||
+	    copy_in_user(&pa_v2_data32->six_zone_sat_hold,
+			&pa_v2_data->six_zone_sat_hold,
+			sizeof(uint8_t)) ||
+	    copy_in_user(&pa_v2_data32->six_zone_val_hold,
+			&pa_v2_data->six_zone_val_hold,
+			sizeof(uint8_t)))
+>>>>>>> p9x
 		return -EFAULT;
 
 	if (get_user(data, (unsigned long *) &pa_v2_data->six_zone_curve_p0) ||
@@ -2034,6 +2248,7 @@ static int __to_user_pa_v2_data(
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void __from_user_pa_mem_col_data_v1_7(
 			struct mdp_pa_mem_col_data_v1_7_32 *mem_col_data32,
 			struct mdp_pa_mem_col_data_v1_7 *mem_col_data)
@@ -2099,10 +2314,13 @@ static int __from_user_pa_data_v1_7(
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 static int __from_user_pa_v2_cfg_data(
 			struct mdp_pa_v2_cfg_data32 __user *pa_v2_cfg32,
 			struct mdp_pa_v2_cfg_data __user *pa_v2_cfg)
 {
+<<<<<<< HEAD
 	uint32_t version;
 
 	if (copy_in_user(&pa_v2_cfg->block,
@@ -2199,6 +2417,17 @@ static int __to_user_pa_data_v1_7(
 		pr_err("Failed to copy to user pa cfg payload\n");
 		return -EFAULT;
 	}
+=======
+	if (copy_in_user(&pa_v2_cfg->block,
+			&pa_v2_cfg32->block,
+			sizeof(uint32_t)))
+		return -EFAULT;
+
+	if (__from_user_pa_v2_data(
+			compat_ptr((uintptr_t)&pa_v2_cfg32->pa_v2_data),
+			&pa_v2_cfg->pa_v2_data))
+		return -EFAULT;
+>>>>>>> p9x
 
 	return 0;
 }
@@ -2207,6 +2436,7 @@ static int __to_user_pa_v2_cfg_data(
 			struct mdp_pa_v2_cfg_data32 __user *pa_v2_cfg32,
 			struct mdp_pa_v2_cfg_data __user *pa_v2_cfg)
 {
+<<<<<<< HEAD
 	uint32_t version = 0;
 	uint32_t flags = 0;
 
@@ -2256,6 +2486,17 @@ static int __to_user_pa_v2_cfg_data(
 			return -EFAULT;
 		break;
 	}
+=======
+	if (copy_in_user(&pa_v2_cfg32->block,
+			&pa_v2_cfg->block,
+			sizeof(uint32_t)))
+		return -EFAULT;
+
+	if (__to_user_pa_v2_data(
+			compat_ptr((uintptr_t)&pa_v2_cfg32->pa_v2_data),
+			&pa_v2_cfg->pa_v2_data))
+		return -EFAULT;
+>>>>>>> p9x
 
 	return 0;
 }
@@ -2308,6 +2549,7 @@ static int __to_user_dither_cfg_data(
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __from_user_gamut_cfg_data_v17(
 			struct mdp_gamut_cfg_data32 __user *gamut_cfg32,
 			struct mdp_gamut_cfg_data __user *gamut_cfg)
@@ -2347,11 +2589,17 @@ static int __from_user_gamut_cfg_data_v17(
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 static int __from_user_gamut_cfg_data(
 			struct mdp_gamut_cfg_data32 __user *gamut_cfg32,
 			struct mdp_gamut_cfg_data __user *gamut_cfg)
 {
+<<<<<<< HEAD
 	uint32_t data, version;
+=======
+	uint32_t data;
+>>>>>>> p9x
 	int i;
 
 	if (copy_in_user(&gamut_cfg->block,
@@ -2365,6 +2613,7 @@ static int __from_user_gamut_cfg_data(
 			sizeof(uint32_t)) ||
 	    copy_in_user(&gamut_cfg->tbl_size[0],
 			&gamut_cfg32->tbl_size[0],
+<<<<<<< HEAD
 			MDP_GAMUT_TABLE_NUM * sizeof(uint32_t)) ||
 	    copy_in_user(&gamut_cfg->version,
 			&gamut_cfg32->version,
@@ -2386,10 +2635,16 @@ static int __from_user_gamut_cfg_data(
 		break;
 	default:
 		pr_debug("version invalid fallback to legacy\n");
+=======
+			MDP_GAMUT_TABLE_NUM * sizeof(uint32_t)))
+		return 0;
+
+>>>>>>> p9x
 	/* The Gamut LUT data contains 3 static arrays for R, G, and B
 	 * gamut data. Each these arrays contains pointers dynamic arrays
 	 * which hold the gamut LUTs for R, G, and B. Must copy the array of
 	 * pointers from 32 bit to 64 bit addresses. */
+<<<<<<< HEAD
 		for (i = 0; i < MDP_GAMUT_TABLE_NUM; i++) {
 			if (get_user(data, &gamut_cfg32->r_tbl[i]) ||
 			    put_user(compat_ptr(data), &gamut_cfg->r_tbl[i]))
@@ -2409,6 +2664,26 @@ static int __from_user_gamut_cfg_data(
 		}
 		break;
 	}
+=======
+	for (i = 0; i < MDP_GAMUT_TABLE_NUM; i++) {
+		if (get_user(data, &gamut_cfg32->r_tbl[i]) ||
+		    put_user(compat_ptr(data), &gamut_cfg->r_tbl[i]))
+			return -EFAULT;
+	}
+
+	for (i = 0; i < MDP_GAMUT_TABLE_NUM; i++) {
+		if (get_user(data, &gamut_cfg32->g_tbl[i]) ||
+		    put_user(compat_ptr(data), &gamut_cfg->g_tbl[i]))
+			return -EFAULT;
+	}
+
+	for (i = 0; i < MDP_GAMUT_TABLE_NUM; i++) {
+		if (get_user(data, &gamut_cfg32->b_tbl[i]) ||
+		    put_user(compat_ptr(data), &gamut_cfg->b_tbl[i]))
+			return -EFAULT;
+	}
+
+>>>>>>> p9x
 	return 0;
 }
 
@@ -2813,6 +3088,7 @@ static int __from_user_calib_dcm_state(
 	return 0;
 }
 
+<<<<<<< HEAD
 static u32 __pp_compat_size_igc(void)
 {
 	u32 alloc_size = 0;
@@ -2854,30 +3130,76 @@ static u32 __pp_compat_size_gamut(void)
 	return sizeof(struct mdp_gamut_data_v1_7);
 }
 
+=======
+>>>>>>> p9x
 static int __pp_compat_alloc(struct msmfb_mdp_pp32 __user *pp32,
 					struct msmfb_mdp_pp __user **pp,
 					uint32_t op)
 {
+<<<<<<< HEAD
 	uint32_t alloc_size = 0, lut_type, pgc_size = 0;
 
 	alloc_size = sizeof(struct msmfb_mdp_pp);
 	switch (op) {
 	case  mdp_op_lut_cfg:
+=======
+	uint32_t alloc_size = 0, lut_type, r_size, g_size, b_size;
+	struct mdp_pgc_lut_data32 __user *pgc_data32;
+	uint8_t num_r_stages, num_g_stages, num_b_stages;
+
+	alloc_size = sizeof(struct msmfb_mdp_pp);
+
+	if (op == mdp_op_lut_cfg) {
+>>>>>>> p9x
 		if (copy_from_user(&lut_type,
 			&pp32->data.lut_cfg_data.lut_type,
 			sizeof(uint32_t)))
 			return -EFAULT;
 
+<<<<<<< HEAD
 		switch (lut_type)  {
 		case mdp_lut_pgc:
 
 			pgc_size = GC_LUT_SEGMENTS *
 				sizeof(struct mdp_ar_gc_lut_data);
 			alloc_size += __pp_compat_size_pgc();
+=======
+		if (lut_type == mdp_lut_pgc) {
+			pgc_data32 = compat_ptr((uintptr_t)
+				&pp32->data.lut_cfg_data.data.pgc_lut_data);
+			if (copy_from_user(&num_r_stages,
+				&pgc_data32->num_r_stages,
+				sizeof(uint8_t)) ||
+			    copy_from_user(&num_g_stages,
+				&pgc_data32->num_g_stages,
+				sizeof(uint8_t)) ||
+			    copy_from_user(&num_b_stages,
+				&pgc_data32->num_b_stages,
+				sizeof(uint8_t)))
+				return -EFAULT;
+
+			if (num_r_stages > GC_LUT_SEGMENTS ||
+			    num_g_stages > GC_LUT_SEGMENTS ||
+			    num_b_stages > GC_LUT_SEGMENTS ||
+			    num_r_stages <= 0 ||
+			    num_g_stages <= 0 ||
+			    num_b_stages <= 0)
+				return -EINVAL;
+
+			r_size = num_r_stages *
+				sizeof(struct mdp_ar_gc_lut_data);
+			g_size = num_g_stages *
+				sizeof(struct mdp_ar_gc_lut_data);
+			b_size = num_b_stages *
+				sizeof(struct mdp_ar_gc_lut_data);
+
+			alloc_size += r_size + g_size + b_size;
+>>>>>>> p9x
 
 			*pp = compat_alloc_user_space(alloc_size);
 			if (NULL == *pp)
 				return -ENOMEM;
+<<<<<<< HEAD
 			if (clear_user(*pp, alloc_size))
 				return -EFAULT;
 			if (put_user((struct mdp_ar_gc_lut_data *)
@@ -2998,11 +3320,45 @@ static int __pp_compat_alloc(struct msmfb_mdp_pp32 __user *pp32,
 			return -EFAULT;
 		break;
 	}
+=======
+			memset(*pp, 0, alloc_size);
+
+			(*pp)->data.lut_cfg_data.data.pgc_lut_data.r_data =
+					(struct mdp_ar_gc_lut_data *)
+					((unsigned long) *pp +
+					sizeof(struct msmfb_mdp_pp));
+			(*pp)->data.lut_cfg_data.data.pgc_lut_data.g_data =
+					(struct mdp_ar_gc_lut_data *)
+					((unsigned long) *pp +
+					sizeof(struct msmfb_mdp_pp) + r_size);
+			(*pp)->data.lut_cfg_data.data.pgc_lut_data.b_data =
+					(struct mdp_ar_gc_lut_data *)
+					((unsigned long) *pp +
+					sizeof(struct msmfb_mdp_pp) +
+					r_size + g_size);
+		} else {
+			*pp = compat_alloc_user_space(alloc_size);
+			if (NULL == *pp)
+				return -ENOMEM;
+			memset(*pp, 0, alloc_size);
+		}
+	} else {
+		*pp = compat_alloc_user_space(alloc_size);
+		if (NULL == *pp)
+			return -ENOMEM;
+		memset(*pp, 0, alloc_size);
+	}
+
+>>>>>>> p9x
 	return 0;
 }
 
 static int mdss_compat_pp_ioctl(struct fb_info *info, unsigned int cmd,
+<<<<<<< HEAD
 			unsigned long arg, struct file *file)
+=======
+			unsigned long arg)
+>>>>>>> p9x
 {
 	uint32_t op;
 	int ret = 0;
@@ -3027,7 +3383,11 @@ static int mdss_compat_pp_ioctl(struct fb_info *info, unsigned int cmd,
 			&pp->data.pcc_cfg_data);
 		if (ret)
 			goto pp_compat_exit;
+<<<<<<< HEAD
 		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp, file);
+=======
+		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp);
+>>>>>>> p9x
 		if (ret)
 			goto pp_compat_exit;
 		ret = __to_user_pcc_cfg_data(
@@ -3040,7 +3400,11 @@ static int mdss_compat_pp_ioctl(struct fb_info *info, unsigned int cmd,
 			&pp->data.csc_cfg_data);
 		if (ret)
 			goto pp_compat_exit;
+<<<<<<< HEAD
 		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp, file);
+=======
+		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp);
+>>>>>>> p9x
 		if (ret)
 			goto pp_compat_exit;
 		ret = __to_user_csc_cfg_data(
@@ -3053,7 +3417,11 @@ static int mdss_compat_pp_ioctl(struct fb_info *info, unsigned int cmd,
 			&pp->data.lut_cfg_data);
 		if (ret)
 			goto pp_compat_exit;
+<<<<<<< HEAD
 		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp, file);
+=======
+		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp);
+>>>>>>> p9x
 		if (ret)
 			goto pp_compat_exit;
 		ret = __to_user_lut_cfg_data(
@@ -3066,7 +3434,11 @@ static int mdss_compat_pp_ioctl(struct fb_info *info, unsigned int cmd,
 			&pp->data.qseed_cfg_data);
 		if (ret)
 			goto pp_compat_exit;
+<<<<<<< HEAD
 		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp, file);
+=======
+		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp);
+>>>>>>> p9x
 		if (ret)
 			goto pp_compat_exit;
 		ret = __to_user_qseed_cfg_data(
@@ -3079,7 +3451,11 @@ static int mdss_compat_pp_ioctl(struct fb_info *info, unsigned int cmd,
 			&pp->data.bl_scale_data);
 		if (ret)
 			goto pp_compat_exit;
+<<<<<<< HEAD
 		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp, file);
+=======
+		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp);
+>>>>>>> p9x
 		break;
 	case mdp_op_pa_cfg:
 		ret = __from_user_pa_cfg_data(
@@ -3087,7 +3463,11 @@ static int mdss_compat_pp_ioctl(struct fb_info *info, unsigned int cmd,
 			&pp->data.pa_cfg_data);
 		if (ret)
 			goto pp_compat_exit;
+<<<<<<< HEAD
 		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp, file);
+=======
+		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp);
+>>>>>>> p9x
 		if (ret)
 			goto pp_compat_exit;
 		ret = __to_user_pa_cfg_data(
@@ -3100,7 +3480,11 @@ static int mdss_compat_pp_ioctl(struct fb_info *info, unsigned int cmd,
 			&pp->data.pa_v2_cfg_data);
 		if (ret)
 			goto pp_compat_exit;
+<<<<<<< HEAD
 		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp, file);
+=======
+		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp);
+>>>>>>> p9x
 		if (ret)
 			goto pp_compat_exit;
 		ret = __to_user_pa_v2_cfg_data(
@@ -3113,7 +3497,11 @@ static int mdss_compat_pp_ioctl(struct fb_info *info, unsigned int cmd,
 			&pp->data.dither_cfg_data);
 		if (ret)
 			goto pp_compat_exit;
+<<<<<<< HEAD
 		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp, file);
+=======
+		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp);
+>>>>>>> p9x
 		if (ret)
 			goto pp_compat_exit;
 		ret = __to_user_dither_cfg_data(
@@ -3126,7 +3514,11 @@ static int mdss_compat_pp_ioctl(struct fb_info *info, unsigned int cmd,
 			&pp->data.gamut_cfg_data);
 		if (ret)
 			goto pp_compat_exit;
+<<<<<<< HEAD
 		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp, file);
+=======
+		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp);
+>>>>>>> p9x
 		if (ret)
 			goto pp_compat_exit;
 		ret = __to_user_gamut_cfg_data(
@@ -3139,7 +3531,11 @@ static int mdss_compat_pp_ioctl(struct fb_info *info, unsigned int cmd,
 			&pp->data.calib_cfg);
 		if (ret)
 			goto pp_compat_exit;
+<<<<<<< HEAD
 		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp, file);
+=======
+		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp);
+>>>>>>> p9x
 		if (ret)
 			goto pp_compat_exit;
 		ret = __to_user_calib_config_data(
@@ -3152,7 +3548,11 @@ static int mdss_compat_pp_ioctl(struct fb_info *info, unsigned int cmd,
 			&pp->data.ad_init_cfg);
 		if (ret)
 			goto pp_compat_exit;
+<<<<<<< HEAD
 		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp, file);
+=======
+		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp);
+>>>>>>> p9x
 		break;
 	case mdp_op_ad_input:
 		ret = __from_user_ad_input(
@@ -3160,7 +3560,11 @@ static int mdss_compat_pp_ioctl(struct fb_info *info, unsigned int cmd,
 			&pp->data.ad_input);
 		if (ret)
 			goto pp_compat_exit;
+<<<<<<< HEAD
 		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp, file);
+=======
+		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp);
+>>>>>>> p9x
 		if (ret)
 			goto pp_compat_exit;
 		ret = __to_user_ad_input(
@@ -3173,7 +3577,11 @@ static int mdss_compat_pp_ioctl(struct fb_info *info, unsigned int cmd,
 			&pp->data.mdss_calib_cfg);
 		if (ret)
 			goto pp_compat_exit;
+<<<<<<< HEAD
 		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp, file);
+=======
+		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp);
+>>>>>>> p9x
 		break;
 	case mdp_op_calib_buffer:
 		ret = __from_user_calib_config_buffer(
@@ -3181,7 +3589,11 @@ static int mdss_compat_pp_ioctl(struct fb_info *info, unsigned int cmd,
 			&pp->data.calib_buffer);
 		if (ret)
 			goto pp_compat_exit;
+<<<<<<< HEAD
 		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp, file);
+=======
+		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp);
+>>>>>>> p9x
 		if (ret)
 			goto pp_compat_exit;
 		ret = __to_user_calib_config_buffer(
@@ -3194,7 +3606,11 @@ static int mdss_compat_pp_ioctl(struct fb_info *info, unsigned int cmd,
 			&pp->data.calib_dcm);
 		if (ret)
 			goto pp_compat_exit;
+<<<<<<< HEAD
 		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp, file);
+=======
+		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) pp);
+>>>>>>> p9x
 		break;
 	default:
 		break;
@@ -3394,7 +3810,11 @@ static int __to_user_hist_data(
 }
 
 static int mdss_histo_compat_ioctl(struct fb_info *info, unsigned int cmd,
+<<<<<<< HEAD
 			unsigned long arg, struct file *file)
+=======
+			unsigned long arg)
+>>>>>>> p9x
 {
 	struct mdp_histogram_data __user *hist;
 	struct mdp_histogram_data32 __user *hist32;
@@ -3413,6 +3833,7 @@ static int mdss_histo_compat_ioctl(struct fb_info *info, unsigned int cmd,
 				 sizeof(struct mdp_histogram_start_req));
 			return -EINVAL;
 		}
+<<<<<<< HEAD
 		if (clear_user(hist_req,
 				 sizeof(struct mdp_histogram_start_req)))
 			return -EFAULT;
@@ -3424,6 +3845,16 @@ static int mdss_histo_compat_ioctl(struct fb_info *info, unsigned int cmd,
 		break;
 	case MSMFB_HISTOGRAM_STOP:
 		ret = mdss_fb_do_ioctl(info, cmd, arg, file);
+=======
+		memset(hist_req, 0, sizeof(struct mdp_histogram_start_req));
+		ret = __from_user_hist_start_req(hist_req32, hist_req);
+		if (ret)
+			goto histo_compat_err;
+		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) hist_req);
+		break;
+	case MSMFB_HISTOGRAM_STOP:
+		ret = mdss_fb_do_ioctl(info, cmd, arg);
+>>>>>>> p9x
 		break;
 	case MSMFB_HISTOGRAM:
 		hist32 = compat_ptr(arg);
@@ -3435,12 +3866,20 @@ static int mdss_histo_compat_ioctl(struct fb_info *info, unsigned int cmd,
 				 sizeof(struct mdp_histogram_data));
 			return -EINVAL;
 		}
+<<<<<<< HEAD
 		if (clear_user(hist, sizeof(struct mdp_histogram_data)))
 			return -EFAULT;
 		ret = __from_user_hist_data(hist32, hist);
 		if (ret)
 			goto histo_compat_err;
 		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) hist, file);
+=======
+		memset(hist, 0, sizeof(struct mdp_histogram_data));
+		ret = __from_user_hist_data(hist32, hist);
+		if (ret)
+			goto histo_compat_err;
+		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) hist);
+>>>>>>> p9x
 		if (ret)
 			goto histo_compat_err;
 		ret = __to_user_hist_data(hist32, hist);
@@ -3453,6 +3892,7 @@ histo_compat_err:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __copy_layer_pp_info_qseed_params(
 			struct mdp_overlay_pp_params *pp_info,
 			struct mdp_overlay_pp_params32 *pp_info32)
@@ -3886,6 +4326,8 @@ exit:
 }
 
 
+=======
+>>>>>>> p9x
 static int __to_user_mdp_overlay(struct mdp_overlay32 __user *ov32,
 				 struct mdp_overlay __user *ov)
 {
@@ -3931,6 +4373,13 @@ static int __to_user_mdp_overlay(struct mdp_overlay32 __user *ov32,
 	if (ret)
 		return -EFAULT;
 
+<<<<<<< HEAD
+=======
+	ret |= put_user(ov->color_space, &ov32->color_space);
+	if (ret)
+		return -EFAULT;
+
+>>>>>>> p9x
 	ret = put_user(ov->frame_rate, &ov32->frame_rate);
 	if (ret)
 		return -EFAULT;
@@ -3939,7 +4388,11 @@ static int __to_user_mdp_overlay(struct mdp_overlay32 __user *ov32,
 }
 
 
+<<<<<<< HEAD
 static int __from_user_mdp_overlay(struct mdp_overlay __user *ov,
+=======
+static int __from_user_mdp_overlay(struct mdp_overlay *ov,
+>>>>>>> p9x
 				   struct mdp_overlay32 __user *ov32)
 {
 	__u32 data;
@@ -3991,6 +4444,13 @@ static int __from_user_mdp_overlay(struct mdp_overlay __user *ov,
 			 sizeof(struct mdp_scale_data)))
 		return -EFAULT;
 
+<<<<<<< HEAD
+=======
+	if (get_user(data, &ov32->color_space) ||
+	    put_user(data, &ov->color_space))
+		return -EFAULT;
+
+>>>>>>> p9x
 	if (get_user(data, &ov32->frame_rate) ||
 	    put_user(data, &ov->frame_rate))
 		return -EFAULT;
@@ -3998,12 +4458,21 @@ static int __from_user_mdp_overlay(struct mdp_overlay __user *ov,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __from_user_mdp_overlaylist(struct mdp_overlay_list __user *ovlist,
 				   struct mdp_overlay_list32 __user *ovlist32,
 				   struct mdp_overlay **to_list_head)
 {
 	__u32 i, ret;
 	unsigned long data, from_list_head, num_overlays;
+=======
+static int __from_user_mdp_overlaylist(struct mdp_overlay_list *ovlist,
+				   struct mdp_overlay_list32 *ovlist32,
+				   struct mdp_overlay **to_list_head)
+{
+	__u32 i, ret;
+	unsigned long data, from_list_head;
+>>>>>>> p9x
 	struct mdp_overlay32 *iter;
 
 	if (!to_list_head || !ovlist32 || !ovlist) {
@@ -4024,6 +4493,7 @@ static int __from_user_mdp_overlaylist(struct mdp_overlay_list __user *ovlist,
 			 sizeof(ovlist32->processed_overlays)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	if (get_user(data, &ovlist32->overlay_list) ||
 		get_user(num_overlays, &ovlist32->num_overlays)) {
 		ret = -EFAULT;
@@ -4031,6 +4501,13 @@ static int __from_user_mdp_overlaylist(struct mdp_overlay_list __user *ovlist,
 	}
 
 	for (i = 0; i < num_overlays; i++) {
+=======
+	if (get_user(data, &ovlist32->overlay_list)) {
+		ret = -EFAULT;
+		goto validate_exit;
+	}
+	for (i = 0; i < ovlist32->num_overlays; i++) {
+>>>>>>> p9x
 		if (get_user(from_list_head, (__u32 *)data + i)) {
 			ret = -EFAULT;
 			goto validate_exit;
@@ -4043,8 +4520,12 @@ static int __from_user_mdp_overlaylist(struct mdp_overlay_list __user *ovlist,
 			goto validate_exit;
 		}
 	}
+<<<<<<< HEAD
 	if (put_user(to_list_head, &ovlist->overlay_list))
 		return -EFAULT;
+=======
+	ovlist->overlay_list = to_list_head;
+>>>>>>> p9x
 
 	return 0;
 
@@ -4053,8 +4534,13 @@ validate_exit:
 	return -EFAULT;
 }
 
+<<<<<<< HEAD
 static int __to_user_mdp_overlaylist(struct mdp_overlay_list32 __user *ovlist32,
 				   struct mdp_overlay_list __user *ovlist,
+=======
+static int __to_user_mdp_overlaylist(struct mdp_overlay_list32 *ovlist32,
+				   struct mdp_overlay_list *ovlist,
+>>>>>>> p9x
 				   struct mdp_overlay **l_ptr)
 {
 	__u32 i, ret;
@@ -4116,6 +4602,7 @@ void mdss_compat_align_list(void __user *total_mem_chunk,
 		list_ptr[i] = contig_overlays + i;
 }
 
+<<<<<<< HEAD
 static u32 __pp_sspp_size(void)
 {
 	u32 size = 0;
@@ -4154,12 +4641,22 @@ int mdss_compat_overlay_ioctl(struct fb_info *info, unsigned int cmd,
 	struct mdp_overlay **layers_head;
 	struct mdp_overlay __user *ov;
 	struct mdp_overlay32 __user *ov32;
+=======
+int mdss_compat_overlay_ioctl(struct fb_info *info, unsigned int cmd,
+			 unsigned long arg)
+{
+	struct mdp_overlay *ov, **layers_head;
+	struct mdp_overlay32 *ov32;
+>>>>>>> p9x
 	struct mdp_overlay_list __user *ovlist;
 	struct mdp_overlay_list32 __user *ovlist32;
 	size_t layers_refs_sz, layers_sz, prepare_sz;
 	void __user *total_mem_chunk;
 	uint32_t num_overlays;
+<<<<<<< HEAD
 	uint32_t alloc_size = 0;
+=======
+>>>>>>> p9x
 	int ret;
 
 	if (!info || !info->par)
@@ -4168,22 +4665,34 @@ int mdss_compat_overlay_ioctl(struct fb_info *info, unsigned int cmd,
 
 	switch (cmd) {
 	case MSMFB_MDP_PP:
+<<<<<<< HEAD
 		ret = mdss_compat_pp_ioctl(info, cmd, arg, file);
+=======
+		ret = mdss_compat_pp_ioctl(info, cmd, arg);
+>>>>>>> p9x
 		break;
 	case MSMFB_HISTOGRAM_START:
 	case MSMFB_HISTOGRAM_STOP:
 	case MSMFB_HISTOGRAM:
+<<<<<<< HEAD
 		ret = mdss_histo_compat_ioctl(info, cmd, arg, file);
 		break;
 	case MSMFB_OVERLAY_GET:
 		alloc_size += sizeof(*ov) + __pp_sspp_size();
 		ov = compat_alloc_user_space(alloc_size);
+=======
+		ret = mdss_histo_compat_ioctl(info, cmd, arg);
+		break;
+	case MSMFB_OVERLAY_GET:
+		ov = compat_alloc_user_space(sizeof(*ov));
+>>>>>>> p9x
 		if (!ov) {
 			pr_err("%s:%u: compat alloc error [%zu] bytes\n",
 				 __func__, __LINE__, sizeof(*ov));
 			return -EINVAL;
 		}
 		ov32 = compat_ptr(arg);
+<<<<<<< HEAD
 		ret = __pp_sspp_set_offsets(ov);
 		if (ret) {
 			pr_err("setting the pp offsets failed ret %d\n", ret);
@@ -4200,24 +4709,49 @@ int mdss_compat_overlay_ioctl(struct fb_info *info, unsigned int cmd,
 	case MSMFB_OVERLAY_SET:
 		alloc_size += sizeof(*ov) + __pp_sspp_size();
 		ov = compat_alloc_user_space(alloc_size);
+=======
+		ret = __from_user_mdp_overlay(ov, ov32);
+
+		if (ret) {
+			pr_err("%s: compat mdp overlay failed\n", __func__);
+		} else {
+			ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) ov);
+
+			if (!ret)
+				ret = __to_user_mdp_overlay(ov32, ov);
+		}
+		break;
+	case MSMFB_OVERLAY_SET:
+		ov = compat_alloc_user_space(sizeof(*ov));
+>>>>>>> p9x
 		if (!ov) {
 			pr_err("%s:%u: compat alloc error [%zu] bytes\n",
 				 __func__, __LINE__, sizeof(*ov));
 			return -EINVAL;
 		}
+<<<<<<< HEAD
 		ret = __pp_sspp_set_offsets(ov);
 		if (ret) {
 			pr_err("setting the pp offsets failed ret %d\n", ret);
 			return ret;
 		}
+=======
+>>>>>>> p9x
 		ov32 = compat_ptr(arg);
 		ret = __from_user_mdp_overlay(ov, ov32);
 		if (ret) {
 			pr_err("%s: compat mdp overlay failed\n", __func__);
 		} else {
+<<<<<<< HEAD
 			ret = mdss_fb_do_ioctl(info, cmd,
 				(unsigned long) ov, file);
 			ret = __to_user_mdp_overlay(ov32, ov);
+=======
+			ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) ov);
+
+			if (!ret)
+				ret = __to_user_mdp_overlay(ov32, ov);
+>>>>>>> p9x
 		}
 		break;
 	case MSMFB_OVERLAY_PREPARE:
@@ -4256,20 +4790,37 @@ int mdss_compat_overlay_ioctl(struct fb_info *info, unsigned int cmd,
 			pr_err("compat mdp overlaylist failed\n");
 		} else {
 			ret = mdss_fb_do_ioctl(info, cmd,
+<<<<<<< HEAD
 				(unsigned long) ovlist, file);
+=======
+						(unsigned long) ovlist);
+>>>>>>> p9x
 			if (!ret)
 				ret = __to_user_mdp_overlaylist(ovlist32,
 							 ovlist, layers_head);
 		}
 		break;
 	case MSMFB_OVERLAY_UNSET:
+<<<<<<< HEAD
 	case MSMFB_OVERLAY_PLAY:
 	case MSMFB_OVERLAY_VSYNC_CTRL:
+=======
+	case MSMFB_OVERLAY_PLAY_ENABLE:
+	case MSMFB_OVERLAY_PLAY:
+	case MSMFB_OVERLAY_PLAY_WAIT:
+	case MSMFB_VSYNC_CTRL:
+	case MSMFB_OVERLAY_VSYNC_CTRL:
+	case MSMFB_OVERLAY_COMMIT:
+>>>>>>> p9x
 	case MSMFB_METADATA_SET:
 	case MSMFB_METADATA_GET:
 	default:
 		pr_debug("%s: overlay ioctl cmd=[%u]\n", __func__, cmd);
+<<<<<<< HEAD
 		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) arg, file);
+=======
+		ret = mdss_fb_do_ioctl(info, cmd, (unsigned long) arg);
+>>>>>>> p9x
 		break;
 	}
 	return ret;
@@ -4286,7 +4837,11 @@ int mdss_compat_overlay_ioctl(struct fb_info *info, unsigned int cmd,
  * framebuffer device driven in 64-bit kernel.
  */
 int mdss_fb_compat_ioctl(struct fb_info *info, unsigned int cmd,
+<<<<<<< HEAD
 			 unsigned long arg, struct file *file)
+=======
+			 unsigned long arg)
+>>>>>>> p9x
 {
 	int ret;
 
@@ -4296,6 +4851,7 @@ int mdss_fb_compat_ioctl(struct fb_info *info, unsigned int cmd,
 	cmd = __do_compat_ioctl_nr(cmd);
 	switch (cmd) {
 	case MSMFB_CURSOR:
+<<<<<<< HEAD
 		ret = mdss_fb_compat_cursor(info, cmd, arg, file);
 		break;
 	case MSMFB_SET_LUT:
@@ -4309,6 +4865,15 @@ int mdss_fb_compat_ioctl(struct fb_info *info, unsigned int cmd,
 		break;
 	case MSMFB_ASYNC_POSITION_UPDATE:
 		ret = __compat_async_position_update(info, cmd, arg);
+=======
+		ret = mdss_fb_compat_cursor(info, cmd, arg);
+		break;
+	case MSMFB_SET_LUT:
+		ret = mdss_fb_compat_set_lut(info, arg);
+		break;
+	case MSMFB_BUFFER_SYNC:
+		ret = mdss_fb_compat_buf_sync(info, cmd, arg);
+>>>>>>> p9x
 		break;
 	case MSMFB_MDP_PP:
 	case MSMFB_HISTOGRAM_START:
@@ -4317,6 +4882,7 @@ int mdss_fb_compat_ioctl(struct fb_info *info, unsigned int cmd,
 	case MSMFB_OVERLAY_GET:
 	case MSMFB_OVERLAY_SET:
 	case MSMFB_OVERLAY_UNSET:
+<<<<<<< HEAD
 	case MSMFB_OVERLAY_PLAY:
 	case MSMFB_OVERLAY_VSYNC_CTRL:
 	case MSMFB_METADATA_SET:
@@ -4328,6 +4894,22 @@ int mdss_fb_compat_ioctl(struct fb_info *info, unsigned int cmd,
 	case MSMFB_DISPLAY_COMMIT:
 	default:
 		ret = mdss_fb_do_ioctl(info, cmd, arg, file);
+=======
+	case MSMFB_OVERLAY_PLAY_ENABLE:
+	case MSMFB_OVERLAY_PLAY:
+	case MSMFB_OVERLAY_PLAY_WAIT:
+	case MSMFB_VSYNC_CTRL:
+	case MSMFB_OVERLAY_VSYNC_CTRL:
+	case MSMFB_OVERLAY_COMMIT:
+	case MSMFB_METADATA_SET:
+	case MSMFB_METADATA_GET:
+	case MSMFB_OVERLAY_PREPARE:
+		ret = mdss_compat_overlay_ioctl(info, cmd, arg);
+		break;
+	case MSMFB_DISPLAY_COMMIT:
+	default:
+		ret = mdss_fb_do_ioctl(info, cmd, arg);
+>>>>>>> p9x
 		break;
 	}
 

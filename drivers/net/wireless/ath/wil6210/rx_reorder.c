@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014-2016 Qualcomm Atheros, Inc.
+=======
+ * Copyright (c) 2014-2015 Qualcomm Atheros, Inc.
+>>>>>>> p9x
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -121,7 +125,10 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	r->total++;
+=======
+>>>>>>> p9x
 	hseq = r->head_seq_num;
 
 	/** Due to the race between WMI events, where BACK establishment
@@ -154,9 +161,12 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 	/* frame with out of date sequence number */
 	if (seq_less(seq, r->head_seq_num)) {
 		r->ssn_last_drop = seq;
+<<<<<<< HEAD
 		r->drop_old++;
 		wil_dbg_txrx(wil, "Rx drop: old seq 0x%03x head 0x%03x\n",
 			     seq, r->head_seq_num);
+=======
+>>>>>>> p9x
 		dev_kfree_skb(skb);
 		goto out;
 	}
@@ -177,8 +187,11 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 
 	/* check if we already stored this frame */
 	if (r->reorder_buf[index]) {
+<<<<<<< HEAD
 		r->drop_dup++;
 		wil_dbg_txrx(wil, "Rx drop: dup seq 0x%03x\n", seq);
+=======
+>>>>>>> p9x
 		dev_kfree_skb(skb);
 		goto out;
 	}
@@ -205,6 +218,7 @@ out:
 	spin_unlock(&sta->tid_rx_lock);
 }
 
+<<<<<<< HEAD
 /* process BAR frame, called in NAPI context */
 void wil_rx_bar(struct wil6210_priv *wil, u8 cid, u8 tid, u16 seq)
 {
@@ -231,6 +245,8 @@ out:
 	spin_unlock(&sta->tid_rx_lock);
 }
 
+=======
+>>>>>>> p9x
 struct wil_tid_ampdu_rx *wil_tid_ampdu_rx_alloc(struct wil6210_priv *wil,
 						int size, u16 ssn)
 {
@@ -261,6 +277,7 @@ struct wil_tid_ampdu_rx *wil_tid_ampdu_rx_alloc(struct wil6210_priv *wil,
 void wil_tid_ampdu_rx_free(struct wil6210_priv *wil,
 			   struct wil_tid_ampdu_rx *r)
 {
+<<<<<<< HEAD
 	int i;
 
 	if (!r)
@@ -274,6 +291,11 @@ void wil_tid_ampdu_rx_free(struct wil6210_priv *wil,
 	for (i = 0; i < r->buf_size; i++)
 		kfree_skb(r->reorder_buf[i]);
 
+=======
+	if (!r)
+		return;
+	wil_release_reorder_frames(wil, r, r->head_seq_num + r->buf_size);
+>>>>>>> p9x
 	kfree(r->reorder_buf);
 	kfree(r->reorder_time);
 	kfree(r);
@@ -291,6 +313,7 @@ static u16 wil_agg_size(struct wil6210_priv *wil, u16 req_agg_wsize)
 	return min(max_agg_size, req_agg_wsize);
 }
 
+<<<<<<< HEAD
 /* Block Ack - Rx side (recipient) */
 int wil_addba_rx_request(struct wil6210_priv *wil, u8 cidxtid,
 			 u8 dialog_token, __le16 ba_param_set,
@@ -300,6 +323,37 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 	u16 param_set = le16_to_cpu(ba_param_set);
 	u16 agg_timeout = le16_to_cpu(ba_timeout);
 	u16 seq_ctrl = le16_to_cpu(ba_seq_ctrl);
+=======
+/* Block Ack - Rx side (recipient */
+int wil_addba_rx_request(struct wil6210_priv *wil, u8 cidxtid,
+			 u8 dialog_token, __le16 ba_param_set,
+			 __le16 ba_timeout, __le16 ba_seq_ctrl)
+{
+	struct wil_back_rx *req = kzalloc(sizeof(*req), GFP_KERNEL);
+
+	if (!req)
+		return -ENOMEM;
+
+	req->cidxtid = cidxtid;
+	req->dialog_token = dialog_token;
+	req->ba_param_set = le16_to_cpu(ba_param_set);
+	req->ba_timeout = le16_to_cpu(ba_timeout);
+	req->ba_seq_ctrl = le16_to_cpu(ba_seq_ctrl);
+
+	mutex_lock(&wil->back_rx_mutex);
+	list_add_tail(&req->list, &wil->back_rx_pending);
+	mutex_unlock(&wil->back_rx_mutex);
+
+	queue_work(wil->wq_service, &wil->back_rx_worker);
+
+	return 0;
+}
+
+static void wil_back_rx_handle(struct wil6210_priv *wil,
+			       struct wil_back_rx *req)
+__acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
+{
+>>>>>>> p9x
 	struct wil_sta_info *sta;
 	u8 cid, tid;
 	u16 agg_wsize = 0;
@@ -308,6 +362,7 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 	 * bits 2..5: TID
 	 * bits 6..15: buffer size
 	 */
+<<<<<<< HEAD
 	u16 req_agg_wsize = WIL_GET_BITS(param_set, 6, 15);
 	bool agg_amsdu = !!(param_set & BIT(0));
 	int ba_policy = param_set & BIT(1);
@@ -318,25 +373,51 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 
 	might_sleep();
 	parse_cidxtid(cidxtid, &cid, &tid);
+=======
+	u16 req_agg_wsize = WIL_GET_BITS(req->ba_param_set, 6, 15);
+	bool agg_amsdu = !!(req->ba_param_set & BIT(0));
+	int ba_policy = req->ba_param_set & BIT(1);
+	u16 agg_timeout = req->ba_timeout;
+	u16 status = WLAN_STATUS_SUCCESS;
+	u16 ssn = req->ba_seq_ctrl >> 4;
+	struct wil_tid_ampdu_rx *r;
+	int rc;
+
+	might_sleep();
+	parse_cidxtid(req->cidxtid, &cid, &tid);
+>>>>>>> p9x
 
 	/* sanity checks */
 	if (cid >= WIL6210_MAX_CID) {
 		wil_err(wil, "BACK: invalid CID %d\n", cid);
+<<<<<<< HEAD
 		rc = -EINVAL;
 		goto out;
+=======
+		return;
+>>>>>>> p9x
 	}
 
 	sta = &wil->sta[cid];
 	if (sta->status != wil_sta_connected) {
 		wil_err(wil, "BACK: CID %d not connected\n", cid);
+<<<<<<< HEAD
 		rc = -EINVAL;
 		goto out;
+=======
+		return;
+>>>>>>> p9x
 	}
 
 	wil_dbg_wmi(wil,
 		    "ADDBA request for CID %d %pM TID %d size %d timeout %d AMSDU%s policy %d token %d SSN 0x%03x\n",
+<<<<<<< HEAD
 		    cid, sta->addr, tid, req_agg_wsize, agg_timeout,
 		    agg_amsdu ? "+" : "-", !!ba_policy, dialog_token, ssn);
+=======
+		    cid, sta->addr, tid, req_agg_wsize, req->ba_timeout,
+		    agg_amsdu ? "+" : "-", !!ba_policy, req->dialog_token, ssn);
+>>>>>>> p9x
 
 	/* apply policies */
 	if (ba_policy) {
@@ -346,6 +427,7 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 	if (status == WLAN_STATUS_SUCCESS)
 		agg_wsize = wil_agg_size(wil, req_agg_wsize);
 
+<<<<<<< HEAD
 	rc = wmi_addba_rx_resp(wil, cid, tid, dialog_token, status,
 			       agg_amsdu, agg_wsize, agg_timeout);
 	if (rc || (status != WLAN_STATUS_SUCCESS)) {
@@ -353,6 +435,12 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 			__func__, rc, status);
 		goto out;
 	}
+=======
+	rc = wmi_addba_rx_resp(wil, cid, tid, req->dialog_token, status,
+			       agg_amsdu, agg_wsize, agg_timeout);
+	if (rc || (status != WLAN_STATUS_SUCCESS))
+		return;
+>>>>>>> p9x
 
 	/* apply */
 	r = wil_tid_ampdu_rx_alloc(wil, agg_wsize, ssn);
@@ -360,6 +448,7 @@ __acquires(&sta->tid_rx_lock) __releases(&sta->tid_rx_lock)
 	wil_tid_ampdu_rx_free(wil, sta->tid_rx[tid]);
 	sta->tid_rx[tid] = r;
 	spin_unlock_bh(&sta->tid_rx_lock);
+<<<<<<< HEAD
 
 out:
 	return rc;
@@ -393,4 +482,145 @@ int wil_addba_tx_request(struct wil6210_priv *wil, u8 ringid, u16 wsize)
 
 out:
 	return rc;
+=======
+}
+
+void wil_back_rx_flush(struct wil6210_priv *wil)
+{
+	struct wil_back_rx *evt, *t;
+
+	wil_dbg_misc(wil, "%s()\n", __func__);
+
+	mutex_lock(&wil->back_rx_mutex);
+
+	list_for_each_entry_safe(evt, t, &wil->back_rx_pending, list) {
+		list_del(&evt->list);
+		kfree(evt);
+	}
+
+	mutex_unlock(&wil->back_rx_mutex);
+}
+
+/* Retrieve next ADDBA request from the pending list */
+static struct list_head *next_back_rx(struct wil6210_priv *wil)
+{
+	struct list_head *ret = NULL;
+
+	mutex_lock(&wil->back_rx_mutex);
+
+	if (!list_empty(&wil->back_rx_pending)) {
+		ret = wil->back_rx_pending.next;
+		list_del(ret);
+	}
+
+	mutex_unlock(&wil->back_rx_mutex);
+
+	return ret;
+}
+
+void wil_back_rx_worker(struct work_struct *work)
+{
+	struct wil6210_priv *wil = container_of(work, struct wil6210_priv,
+						back_rx_worker);
+	struct wil_back_rx *evt;
+	struct list_head *lh;
+
+	while ((lh = next_back_rx(wil)) != NULL) {
+		evt = list_entry(lh, struct wil_back_rx, list);
+
+		wil_back_rx_handle(wil, evt);
+		kfree(evt);
+	}
+}
+
+/* BACK - Tx (originator) side */
+static void wil_back_tx_handle(struct wil6210_priv *wil,
+			       struct wil_back_tx *req)
+{
+	struct vring_tx_data *txdata = &wil->vring_tx_data[req->ringid];
+	int rc;
+
+	if (txdata->addba_in_progress) {
+		wil_dbg_misc(wil, "ADDBA for vring[%d] already in progress\n",
+			     req->ringid);
+		return;
+	}
+	if (txdata->agg_wsize) {
+		wil_dbg_misc(wil,
+			     "ADDBA for vring[%d] already established wsize %d\n",
+			     req->ringid, txdata->agg_wsize);
+		return;
+	}
+	txdata->addba_in_progress = true;
+	rc = wmi_addba(wil, req->ringid, req->agg_wsize, req->agg_timeout);
+	if (rc)
+		txdata->addba_in_progress = false;
+}
+
+static struct list_head *next_back_tx(struct wil6210_priv *wil)
+{
+	struct list_head *ret = NULL;
+
+	mutex_lock(&wil->back_tx_mutex);
+
+	if (!list_empty(&wil->back_tx_pending)) {
+		ret = wil->back_tx_pending.next;
+		list_del(ret);
+	}
+
+	mutex_unlock(&wil->back_tx_mutex);
+
+	return ret;
+}
+
+void wil_back_tx_worker(struct work_struct *work)
+{
+	struct wil6210_priv *wil = container_of(work, struct wil6210_priv,
+						 back_tx_worker);
+	struct wil_back_tx *evt;
+	struct list_head *lh;
+
+	while ((lh = next_back_tx(wil)) != NULL) {
+		evt = list_entry(lh, struct wil_back_tx, list);
+
+		wil_back_tx_handle(wil, evt);
+		kfree(evt);
+	}
+}
+
+void wil_back_tx_flush(struct wil6210_priv *wil)
+{
+	struct wil_back_tx *evt, *t;
+
+	wil_dbg_misc(wil, "%s()\n", __func__);
+
+	mutex_lock(&wil->back_tx_mutex);
+
+	list_for_each_entry_safe(evt, t, &wil->back_tx_pending, list) {
+		list_del(&evt->list);
+		kfree(evt);
+	}
+
+	mutex_unlock(&wil->back_tx_mutex);
+}
+
+int wil_addba_tx_request(struct wil6210_priv *wil, u8 ringid, u16 wsize)
+{
+	struct wil_back_tx *req = kzalloc(sizeof(*req), GFP_KERNEL);
+
+	if (!req)
+		return -ENOMEM;
+
+	req->ringid = ringid;
+	req->agg_wsize = wil_agg_size(wil, wsize);
+	req->agg_timeout = 0;
+
+	mutex_lock(&wil->back_tx_mutex);
+	list_add_tail(&req->list, &wil->back_tx_pending);
+	mutex_unlock(&wil->back_tx_mutex);
+
+	queue_work(wil->wq_service, &wil->back_tx_worker);
+
+	return 0;
+>>>>>>> p9x
 }

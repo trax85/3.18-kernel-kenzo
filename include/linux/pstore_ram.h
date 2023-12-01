@@ -64,7 +64,11 @@ struct persistent_ram_zone {
 
 struct persistent_ram_zone *persistent_ram_new(phys_addr_t start, size_t size,
 			u32 sig, struct persistent_ram_ecc_info *ecc_info,
+<<<<<<< HEAD
 			unsigned int memtype, u32 flags);
+=======
+			unsigned int memtype);
+>>>>>>> p9x
 void persistent_ram_free(struct persistent_ram_zone *prz);
 void persistent_ram_zap(struct persistent_ram_zone *prz);
 

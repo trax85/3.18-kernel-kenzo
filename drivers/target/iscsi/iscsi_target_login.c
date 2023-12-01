@@ -455,6 +455,7 @@ static int iscsi_login_zero_tsih_s2(
 
 		if (iscsi_change_param_sprintf(conn, "MaxRecvDataSegmentLength=%lu\n", mrdsl))
 			return -1;
+<<<<<<< HEAD
 		/*
 		 * ISER currently requires that ImmediateData + Unsolicited
 		 * Data be disabled when protection / signature MRs are enabled.
@@ -473,6 +474,8 @@ check_prot:
 			pr_debug("Forcing ImmediateData=No + InitialR2T=Yes for"
 				 " T10-PI enabled ISER session\n");
 		}
+=======
+>>>>>>> p9x
 	}
 
 	return 0;
@@ -1319,6 +1322,11 @@ static int __iscsi_target_login_thread(struct iscsi_np *np)
 			iscsit_put_transport(conn->conn_transport);
 			kfree(conn);
 			conn = NULL;
+<<<<<<< HEAD
+=======
+			if (ret == -ENODEV)
+				goto out;
+>>>>>>> p9x
 			/* Get another socket */
 			return 1;
 		}
@@ -1435,9 +1443,18 @@ static int __iscsi_target_login_thread(struct iscsi_np *np)
 			goto old_sess_out;
 	}
 
+<<<<<<< HEAD
 	ret = iscsi_target_start_negotiation(login, conn);
 	if (ret < 0)
 		goto new_sess_out;
+=======
+	if (iscsi_target_start_negotiation(login, conn) < 0)
+		goto new_sess_out;
+
+	iscsi_stop_login_thread_timer(np);
+
+	iscsi_post_login_handler(np, conn, zero_tsih);
+>>>>>>> p9x
 
 	iscsi_stop_login_thread_timer(np);
 
@@ -1456,9 +1473,63 @@ static int __iscsi_target_login_thread(struct iscsi_np *np)
 new_sess_out:
 	new_sess = true;
 old_sess_out:
+<<<<<<< HEAD
 	tpg_np = conn->tpg_np;
 	iscsi_target_login_sess_out(conn, np, zero_tsih, new_sess);
 	new_sess = false;
+=======
+	iscsi_stop_login_thread_timer(np);
+	/*
+	 * If login negotiation fails check if the Time2Retain timer
+	 * needs to be restarted.
+	 */
+	if (!zero_tsih && conn->sess) {
+		spin_lock_bh(&conn->sess->conn_lock);
+		if (conn->sess->session_state == TARG_SESS_STATE_FAILED) {
+			struct se_portal_group *se_tpg =
+					&ISCSI_TPG_C(conn)->tpg_se_tpg;
+
+			atomic_set(&conn->sess->session_continuation, 0);
+			spin_unlock_bh(&conn->sess->conn_lock);
+			spin_lock_bh(&se_tpg->session_lock);
+			iscsit_start_time2retain_handler(conn->sess);
+			spin_unlock_bh(&se_tpg->session_lock);
+		} else
+			spin_unlock_bh(&conn->sess->conn_lock);
+		iscsit_dec_session_usage_count(conn->sess);
+	}
+
+	if (!IS_ERR(conn->conn_rx_hash.tfm))
+		crypto_free_hash(conn->conn_rx_hash.tfm);
+	if (!IS_ERR(conn->conn_tx_hash.tfm))
+		crypto_free_hash(conn->conn_tx_hash.tfm);
+
+	if (conn->conn_cpumask)
+		free_cpumask_var(conn->conn_cpumask);
+
+	kfree(conn->conn_ops);
+
+	if (conn->param_list) {
+		iscsi_release_param_list(conn->param_list);
+		conn->param_list = NULL;
+	}
+	iscsi_target_nego_release(conn);
+
+	if (conn->sock) {
+		sock_release(conn->sock);
+		conn->sock = NULL;
+	}
+
+	if (conn->conn_transport->iscsit_wait_conn)
+		conn->conn_transport->iscsit_wait_conn(conn);
+
+	if (conn->conn_transport->iscsit_free_conn)
+		conn->conn_transport->iscsit_free_conn(conn);
+
+	iscsit_put_transport(conn->conn_transport);
+
+	kfree(conn);
+>>>>>>> p9x
 
 	if (tpg) {
 		iscsit_deaccess_np(np, tpg, tpg_np);

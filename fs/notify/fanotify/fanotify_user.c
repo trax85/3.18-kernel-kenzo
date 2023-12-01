@@ -128,7 +128,11 @@ static int fill_event_metadata(struct fsnotify_group *group,
 	metadata->metadata_len = FAN_EVENT_METADATA_LEN;
 	metadata->vers = FANOTIFY_METADATA_VERSION;
 	metadata->reserved = 0;
+<<<<<<< HEAD
 	metadata->mask = fsn_event->mask & FAN_ALL_OUTGOING_EVENTS;
+=======
+	metadata->mask = event->mask & FAN_ALL_OUTGOING_EVENTS;
+>>>>>>> p9x
 	metadata->pid = pid_vnr(event->tgid);
 	if (unlikely(fsn_event->mask & FAN_Q_OVERFLOW))
 		metadata->fd = FAN_NOFD;

@@ -163,8 +163,17 @@ dtb-$(CONFIG_MACH_KIRKWOOD) += kirkwood-b3.dtb \
 	kirkwood-ts419-6282.dtb
 dtb-$(CONFIG_ARCH_LPC32XX) += ea3250.dtb phy3250.dtb
 dtb-$(CONFIG_ARCH_MARCO) += marco-evb.dtb
+<<<<<<< HEAD
 dtb-$(CONFIG_MACH_MESON6) += meson6-atv1200.dtb
 dtb-$(CONFIG_ARCH_MOXART) += moxart-uc7112lx.dtb
+=======
+dtb-$(CONFIG_ARCH_MVEBU) += armada-370-db.dtb \
+	armada-370-mirabox.dtb \
+	armada-370-rd.dtb \
+	armada-xp-db.dtb \
+	armada-xp-gp.dtb \
+	armada-xp-openblocks-ax3-4.dtb
+>>>>>>> p9x
 dtb-$(CONFIG_ARCH_MXC) += \
 	imx1-ads.dtb \
 	imx1-apf9328.dtb \
@@ -517,10 +526,23 @@ dtb-$(CONFIG_MACH_DOVE) += dove-cm-a510.dtb \
 	dove-dove-db.dtb
 dtb-$(CONFIG_ARCH_MEDIATEK) += mt6589-aquaris5.dtb
 
+<<<<<<< HEAD
 #used for cleaning - not building
 subdir- := qcom
 endif
 
+=======
+
+targets += dtbs
+targets += $(DTB_LIST)
+
+#used for cleaning - not building
+subdir- := dts/qcom
+endif
+
+# *.dtb used to be generated in the directory above. Clean out the
+# old build results so people don't accidentally use them.
+>>>>>>> p9x
 dtbs: $(addprefix $(obj)/, $(DTB_LIST))
 	$(Q)rm -f $(obj)/../*.dtb
 

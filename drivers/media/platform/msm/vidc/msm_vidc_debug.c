@@ -12,11 +12,15 @@
  */
 
 #define CREATE_TRACE_POINTS
+<<<<<<< HEAD
 #include "msm_vidc_common.h"
+=======
+>>>>>>> p9x
 #define MAX_SSR_STRING_LEN 10
 #include "msm_vidc_debug.h"
 #include "vidc_hfi_api.h"
 
+<<<<<<< HEAD
 int msm_vidc_debug = VIDC_ERR | VIDC_WARN;
 int msm_vidc_debug_out = VIDC_OUT_PRINTK;
 int msm_vidc_fw_debug = 0x18;
@@ -33,6 +37,23 @@ int msm_vidc_bitrate_clock_scaling = 1;
 int msm_vidc_debug_timeout = 0;
 
 #define MAX_DBG_BUF_SIZE 4096
+=======
+#define MAX_DBG_BUF_SIZE 4096
+int msm_vidc_debug = VIDC_ERR | VIDC_WARN;
+int msm_vidc_debug_out = VIDC_OUT_PRINTK;
+int msm_fw_debug = 0x18;
+int msm_fw_debug_mode = 0x1;
+int msm_fw_low_power_mode = 0x1;
+int msm_vidc_hw_rsp_timeout = 1000;
+u32 msm_fw_coverage = 0x0;
+int msm_vidc_reset_clock_control = 0x0;
+int msm_vidc_regulator_scaling = 0x0;
+int msm_vidc_dec_dcvs_mode = 0x1;
+int msm_vidc_enc_dcvs_mode = 0x1;
+int msm_vidc_sys_idle_indicator = 0x0;
+u32 msm_vidc_firmware_unload_delay = 15000;
+int msm_vidc_thermal_mitigation_disabled = 0x0;
+>>>>>>> p9x
 
 #define DYNAMIC_BUF_OWNER(__binfo) ({ \
 	atomic_read(&__binfo->ref_count) == 2 ? "video driver" : "firmware";\
@@ -66,7 +87,11 @@ static ssize_t core_info_read(struct file *file, char __user *buf,
 {
 	struct msm_vidc_core *core = file->private_data;
 	struct hfi_device *hdev;
+<<<<<<< HEAD
 	struct hal_fw_info fw_info = { {0} };
+=======
+	struct hal_fw_info fw_info;
+>>>>>>> p9x
 	char *dbuf, *cur, *end;
 	int i = 0, rc = 0;
 	ssize_t len = 0;
@@ -168,7 +193,10 @@ static const struct file_operations ssr_fops = {
 
 struct dentry *msm_vidc_debugfs_init_drv(void)
 {
+<<<<<<< HEAD
 	bool ok = false;
+=======
+>>>>>>> p9x
 	struct dentry *dir = NULL;
 
 	dir = debugfs_create_dir("msm_vidc", NULL);
@@ -177,6 +205,7 @@ struct dentry *msm_vidc_debugfs_init_drv(void)
 		goto failed_create_dir;
 	}
 
+<<<<<<< HEAD
 #define __debugfs_create(__type, __name, __value) ({                          \
 	struct dentry *f = debugfs_create_##__type(__name, S_IRUGO | S_IWUSR, \
 		dir, __value);                                                \
@@ -215,6 +244,83 @@ struct dentry *msm_vidc_debugfs_init_drv(void)
 	if (!ok)
 		goto failed_create_dir;
 
+=======
+	if (!debugfs_create_u32("debug_level", S_IRUGO | S_IWUSR,
+			dir, &msm_vidc_debug)) {
+		dprintk(VIDC_ERR, "debugfs_create_file: fail\n");
+		goto failed_create_dir;
+	}
+	if (!debugfs_create_u32("fw_level", S_IRUGO | S_IWUSR,
+			dir, &msm_fw_debug)) {
+		dprintk(VIDC_ERR, "debugfs_create_file: fail\n");
+		goto failed_create_dir;
+	}
+	if (!debugfs_create_u32("fw_debug_mode", S_IRUGO | S_IWUSR,
+			dir, &msm_fw_debug_mode)) {
+		dprintk(VIDC_ERR, "debugfs_create_file: fail\n");
+		goto failed_create_dir;
+	}
+	if (!debugfs_create_u32("fw_coverage", S_IRUGO | S_IWUSR,
+			dir, &msm_fw_coverage)) {
+		dprintk(VIDC_WARN, "debugfs_create_file fw_coverage: fail\n");
+		goto failed_create_dir;
+	}
+	if (!debugfs_create_u32("dcvs_dec_mode", S_IRUGO | S_IWUSR,
+			dir, &msm_vidc_dec_dcvs_mode)) {
+		dprintk(VIDC_WARN, "debugfs_create_file dcvs_dec_mode: fail\n");
+		goto failed_create_dir;
+	}
+	if (!debugfs_create_u32("dcvs_enc_mode", S_IRUGO | S_IWUSR,
+			dir, &msm_vidc_enc_dcvs_mode)) {
+		dprintk(VIDC_WARN, "debugfs_create_file dcvs_enc_mode: fail\n");
+		goto failed_create_dir;
+	}
+	if (!debugfs_create_u32("fw_low_power_mode", S_IRUGO | S_IWUSR,
+			dir, &msm_fw_low_power_mode)) {
+		dprintk(VIDC_ERR, "debugfs_create_file: fail\n");
+		goto failed_create_dir;
+	}
+	if (!debugfs_create_u32("debug_output", S_IRUGO | S_IWUSR,
+			dir, &msm_vidc_debug_out)) {
+		dprintk(VIDC_ERR, "debugfs_create_file: fail\n");
+		goto failed_create_dir;
+	}
+	if (!debugfs_create_u32("hw_rsp_timeout", S_IRUGO | S_IWUSR,
+			dir, &msm_vidc_hw_rsp_timeout)) {
+		dprintk(VIDC_ERR, "debugfs_create_file: fail\n");
+		goto failed_create_dir;
+	}
+	if (!debugfs_create_u32("reset_clock_control", S_IRUGO | S_IWUSR,
+			dir, &msm_vidc_reset_clock_control)) {
+		dprintk(VIDC_ERR,
+			"debugfs_create_file: reset_clock_control fail\n");
+		goto failed_create_dir;
+	}
+	if (!debugfs_create_u32("regulator_scaling", S_IRUGO | S_IWUSR,
+			dir, &msm_vidc_regulator_scaling)) {
+		dprintk(VIDC_ERR,
+			"debugfs_create_file: regulator_scaling fail\n");
+		goto failed_create_dir;
+	}
+	if (!debugfs_create_bool("sys_idle_indicator", S_IRUGO | S_IWUSR,
+			dir, &msm_vidc_sys_idle_indicator)) {
+		dprintk(VIDC_ERR,
+			"debugfs_create_file: sys_idle_indicator fail\n");
+		goto failed_create_dir;
+	}
+	if (!debugfs_create_u32("firmware_unload_delay", S_IRUGO | S_IWUSR,
+			dir, &msm_vidc_firmware_unload_delay)) {
+		dprintk(VIDC_ERR,
+			"debugfs_create_file: firmware_unload_delay fail\n");
+		goto failed_create_dir;
+	}
+	if (!debugfs_create_u32("disable_thermal_mitigation", S_IRUGO | S_IWUSR,
+			dir, &msm_vidc_thermal_mitigation_disabled)) {
+		dprintk(VIDC_ERR,
+			"debugfs_create_file: disable_thermal_mitigation fail\n");
+		goto failed_create_dir;
+	}
+>>>>>>> p9x
 	return dir;
 
 failed_create_dir:
@@ -294,6 +400,7 @@ static int publish_unreleased_reference(struct msm_vidc_inst *inst,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void put_inst_helper(struct kref *kref)
 {
 	struct msm_vidc_inst *inst = container_of(kref,
@@ -302,6 +409,8 @@ static void put_inst_helper(struct kref *kref)
 	msm_vidc_destroy(inst);
 }
 
+=======
+>>>>>>> p9x
 static ssize_t inst_info_read(struct file *file, char __user *buf,
 		size_t count, loff_t *ppos)
 {
@@ -325,7 +434,11 @@ static ssize_t inst_info_read(struct file *file, char __user *buf,
 		if (temp == inst)
 			break;
 	}
+<<<<<<< HEAD
 	inst = ((temp == inst) && kref_get_unless_zero(&inst->kref)) ?
+=======
+	inst = (temp == inst)?
+>>>>>>> p9x
 		inst : NULL;
 	mutex_unlock(&core->lock);
 
@@ -361,11 +474,19 @@ static ssize_t inst_info_read(struct file *file, char __user *buf,
 		cur += write_str(cur, end - cur, "capability: %s\n",
 			i == OUTPUT_PORT ? "Output" : "Capture");
 		cur += write_str(cur, end - cur, "name : %s\n",
+<<<<<<< HEAD
 			inst->fmts[i].name);
 		cur += write_str(cur, end - cur, "planes : %d\n",
 			inst->fmts[i].num_planes);
 		cur += write_str(cur, end - cur,
 			"type: %s\n", inst->fmts[i].type == OUTPUT_PORT ?
+=======
+			inst->fmts[i]->name);
+		cur += write_str(cur, end - cur, "planes : %d\n",
+			inst->fmts[i]->num_planes);
+		cur += write_str(cur, end - cur,
+			"type: %s\n", inst->fmts[i]->type == OUTPUT_PORT ?
+>>>>>>> p9x
 			"Output" : "Capture");
 
 		switch (inst->buffer_mode_set[i]) {
@@ -389,7 +510,11 @@ static ssize_t inst_info_read(struct file *file, char __user *buf,
 		cur += write_str(cur, end - cur, "count: %u\n",
 				inst->bufq[i].vb2_bufq.num_buffers);
 
+<<<<<<< HEAD
 		for (j = 0; j < inst->fmts[i].num_planes; j++)
+=======
+		for (j = 0; j < inst->fmts[i]->num_planes; j++)
+>>>>>>> p9x
 			cur += write_str(cur, end - cur,
 			"size for plane %d: %u\n", j,
 			inst->bufq[i].vb2_bufq.plane_sizes[j]);
@@ -415,7 +540,10 @@ static ssize_t inst_info_read(struct file *file, char __user *buf,
 
 	kfree(dbuf);
 failed_alloc:
+<<<<<<< HEAD
 	kref_put(&inst->kref, put_inst_helper);
+=======
+>>>>>>> p9x
 	return len;
 }
 
@@ -443,6 +571,10 @@ struct dentry *msm_vidc_debugfs_init_inst(struct msm_vidc_inst *inst,
 		dprintk(VIDC_ERR, "Invalid params, inst: %pK\n", inst);
 		goto exit;
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 	snprintf(debugfs_name, MAX_DEBUGFS_NAME, "inst_%pK", inst);
 
 	idata = kzalloc(sizeof(struct core_inst_pair), GFP_KERNEL);

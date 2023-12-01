@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -23,7 +27,11 @@
 #include <linux/workqueue.h>
 #include <linux/msm-bus.h>
 #include <linux/msm-bus-board.h>
+<<<<<<< HEAD
 #include <linux/kref.h>
+=======
+#include <soc/qcom/ocmem.h>
+>>>>>>> p9x
 #include <media/v4l2-dev.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
@@ -43,13 +51,18 @@
 #define DEFAULT_WIDTH 1920
 #define MIN_SUPPORTED_WIDTH 32
 #define MIN_SUPPORTED_HEIGHT 32
+<<<<<<< HEAD
 #define DEFAULT_FPS 15
+=======
+#define MAX_SUPPORTED_INSTANCES_COUNT 13
+>>>>>>> p9x
 
 /* Maintains the number of FTB's between each FBD over a window */
 #define DCVS_FTB_WINDOW 32
 
 #define V4L2_EVENT_VIDC_BASE  10
 
+<<<<<<< HEAD
 #define SYS_MSG_START HAL_SYS_INIT_DONE
 #define SYS_MSG_END HAL_SYS_ERROR
 #define SESSION_MSG_START HAL_SESSION_EVENT_CHANGE
@@ -61,6 +74,18 @@
 #define MAX_NAME_LENGTH 64
 
 #define EXTRADATA_IDX(__num_planes) ((__num_planes) ? (__num_planes) - 1 : 0)
+=======
+#define SYS_MSG_START VIDC_EVENT_CHANGE
+#define SYS_MSG_END SYS_DEBUG
+#define SESSION_MSG_START SESSION_LOAD_RESOURCE_DONE
+#define SESSION_MSG_END SESSION_PROPERTY_INFO
+#define SYS_MSG_INDEX(__msg) (__msg - SYS_MSG_START)
+#define SESSION_MSG_INDEX(__msg) (__msg - SESSION_MSG_START)
+
+#define MAX_NAME_LENGTH 64
+
+#define EXTRADATA_IDX(__num_planes) (__num_planes - 1)
+>>>>>>> p9x
 
 #define NUM_MBS_PER_SEC(__height, __width, __fps) \
 	(NUM_MBS_PER_FRAME(__height, __width) * __fps)
@@ -76,6 +101,10 @@ enum vidc_ports {
 
 enum vidc_core_state {
 	VIDC_CORE_UNINIT = 0,
+<<<<<<< HEAD
+=======
+	VIDC_CORE_LOADED,
+>>>>>>> p9x
 	VIDC_CORE_INIT,
 	VIDC_CORE_INIT_DONE,
 	VIDC_CORE_INVALID
@@ -148,8 +177,12 @@ struct msm_vidc_drv {
 	int num_cores;
 	struct dentry *debugfs_root;
 	int thermal_level;
+<<<<<<< HEAD
 	u32 platform_version;
 	u32 capability_version;
+=======
+	u32 version;
+>>>>>>> p9x
 };
 
 struct msm_video_device {
@@ -202,7 +235,11 @@ struct dcvs_stats {
 	bool is_clock_scaled;
 	int etb_counter;
 	bool is_power_save_mode;
+<<<<<<< HEAD
 	u32 supported_codecs;
+=======
+	bool is_additional_buff_added;
+>>>>>>> p9x
 };
 
 struct profile_data {
@@ -221,17 +258,41 @@ struct msm_vidc_debug {
 };
 
 enum msm_vidc_modes {
+<<<<<<< HEAD
 	VIDC_SECURE = BIT(0),
 	VIDC_TURBO = BIT(1),
 	VIDC_THUMBNAIL = BIT(2),
 	VIDC_LOW_POWER = BIT(3),
+=======
+	VIDC_SECURE = 1 << 0,
+	VIDC_TURBO = 1 << 1,
+	VIDC_THUMBNAIL = 1 << 2,
+	VIDC_POWER_SAVE = 1 << 3,
+	VIDC_LOW_LATENCY = 1 << 4,
+	VIDC_REALTIME = 1 << 5,
+};
+
+struct msm_vidc_idle_stats {
+	bool idle;
+	u32 fb_err_level;
+	u32 prev_fb_err_level;
+	ktime_t start_time;
+	ktime_t avg_idle_time;
+	u32 last_sample_index;
+	u32 sample_count;
+	ktime_t samples[IDLE_TIME_WINDOW_SIZE];
+>>>>>>> p9x
 };
 
 struct msm_vidc_core {
 	struct list_head list;
 	struct mutex lock;
 	int id;
+<<<<<<< HEAD
 	struct hfi_device *device;
+=======
+	void *device;
+>>>>>>> p9x
 	struct msm_video_device vdev[MSM_VIDC_MAX_DEVICES];
 	struct v4l2_device v4l2_dev;
 	struct list_head instances;
@@ -244,8 +305,13 @@ struct msm_vidc_core {
 	u32 dec_codec_supported;
 	u32 codec_count;
 	struct msm_vidc_capability *capabilities;
+<<<<<<< HEAD
 	struct delayed_work fw_unload_work;
 	bool smmu_fault_handled;
+=======
+	struct msm_vidc_idle_stats idle_stats;
+	struct delayed_work fw_unload_work;
+>>>>>>> p9x
 };
 
 struct msm_vidc_inst {
@@ -256,7 +322,11 @@ struct msm_vidc_inst {
 	void *session;
 	struct session_prop prop;
 	enum instance_state state;
+<<<<<<< HEAD
 	struct msm_vidc_format fmts[MAX_PORT_NUM];
+=======
+	struct msm_vidc_format *fmts[MAX_PORT_NUM];
+>>>>>>> p9x
 	struct buf_queue bufq[MAX_PORT_NUM];
 	struct msm_vidc_list pendingq;
 	struct msm_vidc_list scratchbufs;
@@ -271,11 +341,20 @@ struct msm_vidc_inst {
 	struct v4l2_ctrl **cluster;
 	struct v4l2_fh event_handler;
 	struct msm_smem *extradata_handle;
+<<<<<<< HEAD
 	bool in_reconfig;
 	u32 reconfig_width;
 	u32 reconfig_height;
 	u32 seqchanged_count;
 	struct dentry *debugfs_root;
+=======
+	wait_queue_head_t kernel_event_queue;
+	bool in_reconfig;
+	u32 reconfig_width;
+	u32 reconfig_height;
+	struct dentry *debugfs_root;
+	struct vb2_buffer *vb2_seq_hdr;
+>>>>>>> p9x
 	void *priv;
 	struct msm_vidc_debug debug;
 	struct buf_count count;
@@ -284,6 +363,7 @@ struct msm_vidc_inst {
 	struct msm_vidc_capability capability;
 	u32 buffer_size_limit;
 	enum buffer_mode_type buffer_mode_set[MAX_PORT_NUM];
+<<<<<<< HEAD
 	atomic_t seq_hdr_reqs;
 	struct v4l2_ctrl **ctrls;
 	bool dcvs_mode;
@@ -294,6 +374,13 @@ struct msm_vidc_inst {
 	atomic_t in_flush;
 	u32 pic_struct;
 	u32 colour_space;
+=======
+	bool map_output_buffer;
+	atomic_t seq_hdr_reqs;
+	struct v4l2_ctrl **ctrls;
+	bool dcvs_mode;
+	u32 operating_rate;
+>>>>>>> p9x
 };
 
 extern struct msm_vidc_drv *vidc_driver;
@@ -316,7 +403,11 @@ struct msm_vidc_ctrl {
 	const char * const *qmenu;
 };
 
+<<<<<<< HEAD
 void handle_cmd_response(enum hal_command_response cmd, void *data);
+=======
+void handle_cmd_response(enum command_response cmd, void *data);
+>>>>>>> p9x
 int msm_vidc_trigger_ssr(struct msm_vidc_core *core,
 	enum hal_ssr_trigger_type type);
 int msm_vidc_check_session_supported(struct msm_vidc_inst *inst);
@@ -357,7 +448,11 @@ int unmap_and_deregister_buf(struct msm_vidc_inst *inst,
 
 void msm_comm_handle_thermal_event(void);
 void *msm_smem_new_client(enum smem_type mtype,
+<<<<<<< HEAD
 		void *platform_resources, enum session_type stype);
+=======
+				void *platform_resources);
+>>>>>>> p9x
 struct msm_smem *msm_smem_alloc(void *clt, size_t size, u32 align, u32 flags,
 		enum hal_buffer buffer_type, int map_kernel);
 void msm_smem_free(void *clt, struct msm_smem *mem);
@@ -366,6 +461,7 @@ int msm_smem_cache_operations(void *clt, struct msm_smem *mem,
 		enum smem_cache_ops);
 struct msm_smem *msm_smem_user_to_kernel(void *clt, int fd, u32 offset,
 				enum hal_buffer buffer_type);
+<<<<<<< HEAD
 struct context_bank_info *msm_smem_get_context_bank(void *clt,
 		bool is_secure, enum hal_buffer buffer_type);
 void msm_vidc_fw_unload_handler(struct work_struct *work);
@@ -373,4 +469,10 @@ bool msm_smem_compare_buffers(void *clt, int fd, void *priv);
 /* XXX: normally should be in msm_vidc.h, but that's meant for public APIs,
  * whereas this is private */
 int msm_vidc_destroy(struct msm_vidc_inst *inst);
+=======
+bool msm_smem_compare_buffers(void *clt, int fd, void *priv);
+int msm_smem_get_domain_partition(void *clt, u32 flags, enum hal_buffer
+		buffer_type, int *domain_num, int *partition_num);
+void msm_vidc_fw_unload_handler(struct work_struct *work);
+>>>>>>> p9x
 #endif

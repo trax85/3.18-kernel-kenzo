@@ -25,7 +25,11 @@ endmenu
 menu "HSIC/SMUX support for DIAG"
 
 config DIAGFWD_BRIDGE_CODE
+<<<<<<< HEAD
 	depends on USB_QCOM_DIAG_BRIDGE || MSM_MHI
+=======
+	depends on USB_QCOM_DIAG_BRIDGE
+>>>>>>> p9x
 	default y
 	bool "Enable QSC/9K DIAG traffic over SMUX/HSIC"
 	help

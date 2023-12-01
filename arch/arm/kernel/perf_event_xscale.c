@@ -56,7 +56,7 @@ static const unsigned xscale_perf_map[PERF_COUNT_HW_MAX] = {
 	[PERF_COUNT_HW_STALLED_CYCLES_FRONTEND]	= XSCALE_PERFCTR_ICACHE_NO_DELIVER,
 };
 
-static const unsigned xscale_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
+static unsigned xscale_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
 					   [PERF_COUNT_HW_CACHE_OP_MAX]
 					   [PERF_COUNT_HW_CACHE_RESULT_MAX] = {
 	PERF_CACHE_MAP_ALL_UNSUPPORTED,

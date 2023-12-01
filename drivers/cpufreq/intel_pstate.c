@@ -121,6 +121,7 @@ struct pstate_adjust_policy {
 	int i_gain_pct;
 };
 
+<<<<<<< HEAD
 struct pstate_funcs {
 	int (*get_max)(void);
 	int (*get_min)(void);
@@ -128,6 +129,15 @@ struct pstate_funcs {
 	int (*get_scaling)(void);
 	void (*set)(struct cpudata*, int pstate);
 	void (*get_vid)(struct cpudata *);
+=======
+static struct pstate_adjust_policy default_policy = {
+	.sample_rate_ms = 10,
+	.deadband = 0,
+	.setpoint = 97,
+	.p_gain_pct = 20,
+	.d_gain_pct = 0,
+	.i_gain_pct = 0,
+>>>>>>> p9x
 };
 
 struct cpu_defaults {
@@ -593,6 +603,13 @@ static void intel_pstate_set_pstate(struct cpudata *cpu, int pstate)
 	trace_cpu_frequency(pstate * cpu->pstate.scaling, cpu->cpu);
 
 	cpu->pstate.current_pstate = pstate;
+<<<<<<< HEAD
+=======
+	if (limits.no_turbo)
+		wrmsrl(MSR_IA32_PERF_CTL, BIT(32) | (pstate << 8));
+	else
+		wrmsrl(MSR_IA32_PERF_CTL, pstate << 8);
+>>>>>>> p9x
 
 	pstate_funcs.set(cpu, pstate);
 }
@@ -611,8 +628,15 @@ static void intel_pstate_get_cpu_pstates(struct cpudata *cpu)
 
 static inline void intel_pstate_calc_busy(struct cpudata *cpu)
 {
+<<<<<<< HEAD
 	struct sample *sample = &cpu->sample;
 	int64_t core_pct;
+=======
+	u64 core_pct;
+	core_pct = div64_u64(int_tofp(sample->aperf * 100),
+			     sample->mperf);
+	sample->freq = fp_toint(cpu->pstate.max_pstate * core_pct * 1000);
+>>>>>>> p9x
 
 	core_pct = int_tofp(sample->aperf) * int_tofp(100);
 	core_pct = div64_u64(core_pct, int_tofp(sample->mperf));
@@ -658,6 +682,7 @@ static inline void intel_pstate_set_sample_time(struct cpudata *cpu)
 
 static inline int32_t intel_pstate_get_scaled_busy(struct cpudata *cpu)
 {
+<<<<<<< HEAD
 	int32_t core_busy, max_pstate, current_pstate, sample_ratio;
 	s64 duration_us;
 	u32 sample_time;
@@ -677,6 +702,14 @@ static inline int32_t intel_pstate_get_scaled_busy(struct cpudata *cpu)
 	}
 
 	return core_busy;
+=======
+	int32_t core_busy, max_pstate, current_pstate;
+
+	core_busy = cpu->samples[cpu->sample_ptr].core_pct_busy;
+	max_pstate = int_tofp(cpu->pstate.max_pstate);
+	current_pstate = int_tofp(cpu->pstate.current_pstate);
+	return mul_fp(core_busy, div_fp(max_pstate, current_pstate));
+>>>>>>> p9x
 }
 
 static inline void intel_pstate_adjust_busy_pstate(struct cpudata *cpu)
@@ -720,6 +753,7 @@ static void intel_pstate_timer_func(unsigned long __data)
 			(unsigned long)&policy }
 
 static const struct x86_cpu_id intel_pstate_cpu_ids[] = {
+<<<<<<< HEAD
 	ICPU(0x2a, core_params),
 	ICPU(0x2d, core_params),
 	ICPU(0x37, byt_params),
@@ -733,6 +767,16 @@ static const struct x86_cpu_id intel_pstate_cpu_ids[] = {
 	ICPU(0x4c, byt_params),
 	ICPU(0x4f, core_params),
 	ICPU(0x56, core_params),
+=======
+	ICPU(0x2a, default_policy),
+	ICPU(0x2d, default_policy),
+	ICPU(0x3a, default_policy),
+	ICPU(0x3c, default_policy),
+	ICPU(0x3e, default_policy),
+	ICPU(0x3f, default_policy),
+	ICPU(0x45, default_policy),
+	ICPU(0x46, default_policy),
+>>>>>>> p9x
 	{}
 };
 MODULE_DEVICE_TABLE(x86cpu, intel_pstate_cpu_ids);
@@ -751,6 +795,11 @@ static int intel_pstate_init_cpu(unsigned int cpunum)
 
 	cpu->cpu = cpunum;
 	intel_pstate_get_cpu_pstates(cpu);
+	if (!cpu->pstate.current_pstate) {
+		all_cpu_data[cpunum] = NULL;
+		kfree(cpu);
+		return -ENODATA;
+	}
 
 	init_timer_deferrable(&cpu->timer);
 	cpu->timer.function = intel_pstate_timer_func;
@@ -815,7 +864,11 @@ static int intel_pstate_verify_policy(struct cpufreq_policy *policy)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void intel_pstate_stop_cpu(struct cpufreq_policy *policy)
+=======
+static int intel_pstate_cpu_exit(struct cpufreq_policy *policy)
+>>>>>>> p9x
 {
 	int cpu_num = policy->cpu;
 	struct cpudata *cpu = all_cpu_data[cpu_num];
@@ -842,8 +895,13 @@ static int intel_pstate_cpu_init(struct cpufreq_policy *policy)
 	else
 		policy->policy = CPUFREQ_POLICY_POWERSAVE;
 
+<<<<<<< HEAD
 	policy->min = cpu->pstate.min_pstate * cpu->pstate.scaling;
 	policy->max = cpu->pstate.turbo_pstate * cpu->pstate.scaling;
+=======
+	policy->min = cpu->pstate.min_pstate * 100000;
+	policy->max = cpu->pstate.turbo_pstate * 100000;
+>>>>>>> p9x
 
 	/* cpuinfo and default policy values */
 	policy->cpuinfo.min_freq = cpu->pstate.min_pstate * cpu->pstate.scaling;

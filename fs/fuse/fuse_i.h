@@ -115,10 +115,17 @@ struct fuse_inode {
 enum {
 	/** Advise readdirplus  */
 	FUSE_I_ADVISE_RDPLUS,
+<<<<<<< HEAD
 	/** Initialized with readdirplus */
 	FUSE_I_INIT_RDPLUS,
 	/** An operation changing file size is in progress  */
 	FUSE_I_SIZE_UNSTABLE,
+=======
+	/** An operation changing file size is in progress  */
+	FUSE_I_SIZE_UNSTABLE,
+	/** i_mtime has been updated locally; a flush to userspace needed */
+	FUSE_I_MTIME_DIRTY,
+>>>>>>> p9x
 };
 
 struct fuse_conn;
@@ -893,8 +900,14 @@ int fuse_do_open(struct fuse_conn *fc, u64 nodeid, struct file *file,
 /** CUSE pass fuse_direct_io() a file which f_mapping->host is not from FUSE */
 #define FUSE_DIO_CUSE  (1 << 1)
 
+<<<<<<< HEAD
 ssize_t fuse_direct_io(struct fuse_io_priv *io, struct iov_iter *iter,
 		       loff_t *ppos, int flags);
+=======
+ssize_t fuse_direct_io(struct fuse_io_priv *io, const struct iovec *iov,
+		       unsigned long nr_segs, size_t count, loff_t *ppos,
+		       int flags);
+>>>>>>> p9x
 long fuse_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg,
 		   unsigned int flags);
 long fuse_ioctl_common(struct file *file, unsigned int cmd,
@@ -903,6 +916,11 @@ unsigned fuse_file_poll(struct file *file, poll_table *wait);
 int fuse_dev_release(struct inode *inode, struct file *file);
 
 bool fuse_write_update_size(struct inode *inode, loff_t pos);
+<<<<<<< HEAD
+=======
+
+int fuse_flush_mtime(struct file *file, bool nofail);
+>>>>>>> p9x
 
 int fuse_flush_times(struct inode *inode, struct fuse_file *ff);
 int fuse_write_inode(struct inode *inode, struct writeback_control *wbc);

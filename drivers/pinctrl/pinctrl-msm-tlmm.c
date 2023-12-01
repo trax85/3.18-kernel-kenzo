@@ -1153,6 +1153,10 @@ static const struct of_device_id msm_tlmm_dt_match[] = {
 	{ },
 };
 MODULE_DEVICE_TABLE(of, msm_tlmm_dt_match);
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 static int msm_tlmm_probe(struct platform_device *pdev)
 {
 	const struct of_device_id *match;

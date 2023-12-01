@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -10,21 +14,31 @@
  * GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
 #include <dt-bindings/msm/pm.h>
 
+=======
+>>>>>>> p9x
 &soc {
 	qcom,spm@b009000 {
 		compatible = "qcom,spm-v2";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		reg = <0xb009000 0x1000>;
+<<<<<<< HEAD
 		qcom,name = "cpu0";
 		qcom,cpu = <&CPU0>;
+=======
+		qcom,name = "core0";
+		qcom,core-id = <0>;
+		qcom,supports-rpm-hs;
+>>>>>>> p9x
 		qcom,saw2-ver-reg = <0xfd0>;
 		qcom,saw2-cfg = <0x101>;
 		qcom,saw2-spm-dly= <0x401004>;
 		qcom,saw2-spm-ctl = <0x1>;
 		qcom,cpu-vctl-mask = <0x1>;
+<<<<<<< HEAD
 		qcom,mode0 {
 			qcom,label = "qcom,saw2-spm-cmd-wfi";
 			qcom,sequence = [04 03 04 0f];
@@ -45,6 +59,10 @@
 			qcom,pc_mode;
 			qcom,slp_cmd_mode;
 		};
+=======
+		qcom,saw2-spm-cmd-wfi = [04 03 04 0f];
+		qcom,saw2-spm-cmd-pc = [1f 34 44 14 24 54 03 54 44 14 24 3e 0f];
+>>>>>>> p9x
 	};
 
 	qcom,lpm-levels {
@@ -82,12 +100,20 @@
 				reg = <2>;
 				label = "l2-pc";
 				qcom,latency-us = <30000>;
+<<<<<<< HEAD
 				qcom,ss-power = <4999>;
 				qcom,energy-overhead = <60351000>;
 				qcom,time-overhead = <7300>;
 				qcom,min-child-idx = <2>;
 				qcom,notify-rpm;
 				qcom,reset-level = <LPM_RESET_LVL_PC>;
+=======
+				qcom,ss-power = <5000>;
+				qcom,energy-overhead = <60350000>;
+				qcom,time-overhead = <7300>;
+				qcom,min-child-idx = <2>;
+				qcom,notify-rpm;
+>>>>>>> p9x
 			};
 
 			qcom,pm-cpu {
@@ -110,21 +136,30 @@
 					qcom,ss-power = <5000>;
 					qcom,energy-overhead = <60100000>;
 					qcom,time-overhead = <3000>;
+<<<<<<< HEAD
 					qcom,use-broadcast-timer;
 					qcom,is-reset;
 					qcom,reset-level = <LPM_RESET_LVL_PC>;
+=======
+>>>>>>> p9x
 				};
 
 				qcom,pm-cpu-level@2 {
 					reg = <2>;
 					qcom,spm-cpu-mode = "pc";
 					qcom,latency-us = <30000>;
+<<<<<<< HEAD
 					qcom,ss-power = <4999>;
 					qcom,energy-overhead = <60351000>;
 					qcom,time-overhead = <7300>;
 					qcom,use-broadcast-timer;
 					qcom,is-reset;
 					qcom,reset-level = <LPM_RESET_LVL_PC>;
+=======
+					qcom,ss-power = <5000>;
+					qcom,energy-overhead = <60350000>;
+					qcom,time-overhead = <7300>;
+>>>>>>> p9x
 				};
 			};
 		};
@@ -197,6 +232,10 @@
 			<0xff 207>, /* rpm_ipc(27)   */
 			<0xff 240>, /* summary_irq_kpss */
 			<0xff 270>; /* bam_irq[0] */
+<<<<<<< HEAD
+=======
+		qcom,gpio-parent = <&msm_gpio>;
+>>>>>>> p9x
 		qcom,gpio-map = <3 80>,
 			<4 91>,
 			<5 1>,
@@ -250,11 +289,22 @@
 	qcom,pm@8600664 {
 		compatible = "qcom,pm";
 		reg = <0x8600664 0x40>;
+<<<<<<< HEAD
 		clocks = <&clock_cpu  clk_a7ssmux>;
 		clock-names = "cpu0_clk";
 		qcom,use-sync-timer;
 		qcom,synced-clocks;
 		qcom,tz-flushes-cache;
+=======
+		clocks = <&clock_cpu  clk_a7ssmux>,
+                         <&clock_cpu  clk_a7ssmux>,
+                         <&clock_cpu  clk_a7ssmux>,
+                         <&clock_cpu  clk_a7ssmux>;
+                clock-names = "cpu0_clk", "cpu1_clk",
+			"cpu2_clk", "cpu3_clk";
+		qcom,use-sync-timer;
+		qcom,synced-clocks;
+>>>>>>> p9x
 	};
 
 	qcom,rpm-log@2a1c00 {
@@ -275,9 +325,23 @@
 		qcom,sleep-stats-version = <2>;
 	};
 
+<<<<<<< HEAD
 	qcom,rpm-master-stats@60150 {
 		compatible = "qcom,rpm-master-stats";
 		reg = <0x60150 0x2030>;
+=======
+	qcom,rpm-rbcpr-stats@200000 {
+		compatible = "qcom,rpmrbcpr-stats";
+		status="disabled";
+		reg = <0x200000 0x1a0000>;
+		qcom,start-offset = <0x190010>;
+	};
+
+	qcom,rpm-master-stats@fc428150 {
+		status = "disabled";
+		compatible = "qcom,rpm-master-stats";
+		reg = <0xfc428150 0x3200>;
+>>>>>>> p9x
 		qcom,masters = "APSS", "MPSS", "LPSS";
 		qcom,master-stats-version = <2>;
 		qcom,master-offset = <2560>;

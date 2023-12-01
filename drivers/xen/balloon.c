@@ -94,7 +94,10 @@ EXPORT_SYMBOL_GPL(balloon_stats);
 static xen_pfn_t frame_list[PAGE_SIZE / sizeof(unsigned long)];
 static DEFINE_PER_CPU(struct page *, balloon_scratch_page);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 /* List of ballooned pages, threaded through the mem_map array. */
 static LIST_HEAD(ballooned_pages);
 

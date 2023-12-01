@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2016, 2018 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -24,6 +28,7 @@
 #include <linux/suspend.h>
 #include <soc/qcom/spm.h>
 #include <soc/qcom/pm.h>
+<<<<<<< HEAD
 #include <soc/qcom/lpm-stats.h>
 
 #define MAX_STR_LEN 256
@@ -36,6 +41,13 @@ struct lpm_sleep_time {
 	unsigned int cpu;
 };
 
+=======
+
+#define MAX_STR_LEN 256
+const char *lpm_stats_reset = "reset";
+const char *lpm_stats_suspend = "suspend";
+
+>>>>>>> p9x
 struct level_stats {
 	const char *name;
 	struct lpm_stats *owner;
@@ -49,10 +61,32 @@ struct level_stats {
 	uint64_t enter_time;
 };
 
+<<<<<<< HEAD
+=======
+struct lifo_stats {
+	uint32_t last_in;
+	uint32_t first_out;
+};
+
+struct lpm_stats {
+	char name[MAX_STR_LEN];
+	struct level_stats *time_stats;
+	uint32_t num_levels;
+	struct lifo_stats lifo;
+	struct lpm_stats *parent;
+	struct list_head sibling;
+	struct list_head child;
+	struct cpumask mask;
+	struct dentry *directory;
+	bool is_cpu;
+};
+
+>>>>>>> p9x
 static struct level_stats suspend_time_stats;
 
 static DEFINE_PER_CPU_SHARED_ALIGNED(struct lpm_stats, cpu_stats);
 
+<<<<<<< HEAD
 static uint64_t get_total_sleep_time(unsigned int cpu_id)
 {
 	struct lpm_stats *stats = &per_cpu(cpu_stats, cpu_id);
@@ -65,6 +99,8 @@ static uint64_t get_total_sleep_time(unsigned int cpu_id)
 	return ret;
 }
 
+=======
+>>>>>>> p9x
 static void update_level_stats(struct level_stats *stats, uint64_t t,
 				bool success)
 {
@@ -426,9 +462,19 @@ static inline void update_exit_stats(struct lpm_stats *stats, uint32_t index,
 	uint64_t exit_time = 0;
 
 	/* Update time stats only when exit is preceded by enter */
+<<<<<<< HEAD
 	exit_time = stats->sleep_time;
 	update_level_stats(&stats->time_stats[index], exit_time,
 					success);
+=======
+	if (stats->time_stats[index].enter_time) {
+		exit_time = sched_clock() -
+				stats->time_stats[index].enter_time;
+		update_level_stats(&stats->time_stats[index], exit_time,
+					success);
+		stats->time_stats[index].enter_time = 0;
+	}
+>>>>>>> p9x
 }
 
 static int config_level(const char *name, const char **levels,
@@ -496,6 +542,7 @@ static int config_level(const char *name, const char **levels,
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t total_sleep_time_show(struct kobject *kobj,
 		struct kobj_attribute *attr, char *buf)
 {
@@ -584,6 +631,8 @@ failed:
 	return ret;
 }
 
+=======
+>>>>>>> p9x
 static struct lpm_stats *config_cpu_level(const char *name,
 	const char **levels, int num_levels, struct lpm_stats *parent,
 	struct cpumask *mask)
@@ -612,6 +661,7 @@ static struct lpm_stats *config_cpu_level(const char *name,
 				__func__, cpu_name);
 			return ERR_PTR(ret);
 		}
+<<<<<<< HEAD
 
 		ret = create_sysfs_node(cpu, stats);
 
@@ -619,6 +669,8 @@ static struct lpm_stats *config_cpu_level(const char *name,
 			pr_err("Could not create the sysfs node\n");
 			return ERR_PTR(ret);
 		}
+=======
+>>>>>>> p9x
 	}
 
 	return stats;
@@ -682,6 +734,7 @@ static void cleanup_stats(struct lpm_stats *stats)
 {
 	struct list_head *centry = NULL;
 	struct lpm_stats *pos = NULL;
+<<<<<<< HEAD
 	struct lpm_stats *n = NULL;
 
 	centry = &stats->child;
@@ -690,6 +743,13 @@ static void cleanup_stats(struct lpm_stats *stats)
 			cleanup_stats(pos);
 			continue;
 		}
+=======
+
+	centry = &stats->child;
+	list_for_each_entry_reverse(pos, centry, sibling) {
+		if (!list_empty(&pos->child))
+			cleanup_stats(pos);
+>>>>>>> p9x
 
 		list_del_init(&pos->child);
 
@@ -774,6 +834,11 @@ void lpm_stats_cluster_enter(struct lpm_stats *stats, uint32_t index)
 	if (IS_ERR_OR_NULL(stats))
 		return;
 
+<<<<<<< HEAD
+=======
+	stats->time_stats[index].enter_time = sched_clock();
+
+>>>>>>> p9x
 	update_last_in_stats(stats);
 }
 EXPORT_SYMBOL(lpm_stats_cluster_enter);
@@ -810,6 +875,7 @@ EXPORT_SYMBOL(lpm_stats_cluster_exit);
  * Function to communicate the low power mode level that the cpu is
  * prepared to enter.
  */
+<<<<<<< HEAD
 void lpm_stats_cpu_enter(uint32_t index, uint64_t time)
 {
 	struct lpm_stats *stats = &__get_cpu_var(cpu_stats);
@@ -819,6 +885,16 @@ void lpm_stats_cpu_enter(uint32_t index, uint64_t time)
 	if (!stats->time_stats)
 		return;
 
+=======
+void lpm_stats_cpu_enter(uint32_t index)
+{
+	struct lpm_stats *stats = &__get_cpu_var(cpu_stats);
+
+	if (!stats->time_stats)
+		return;
+
+	stats->time_stats[index].enter_time = sched_clock();
+>>>>>>> p9x
 }
 EXPORT_SYMBOL(lpm_stats_cpu_enter);
 
@@ -830,15 +906,22 @@ EXPORT_SYMBOL(lpm_stats_cpu_enter);
  *
  * Function to communicate the low power mode level that the cpu exited.
  */
+<<<<<<< HEAD
 void lpm_stats_cpu_exit(uint32_t index, uint64_t time, bool success)
+=======
+void lpm_stats_cpu_exit(uint32_t index, bool success)
+>>>>>>> p9x
 {
 	struct lpm_stats *stats = &__get_cpu_var(cpu_stats);
 
 	if (!stats->time_stats)
 		return;
 
+<<<<<<< HEAD
 	stats->sleep_time = time - stats->sleep_time;
 
+=======
+>>>>>>> p9x
 	update_exit_stats(stats, index, success);
 }
 EXPORT_SYMBOL(lpm_stats_cpu_exit);

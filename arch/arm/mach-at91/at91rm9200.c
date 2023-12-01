@@ -12,7 +12,10 @@
 
 #include <linux/module.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
 #include <linux/clk/at91_pmc.h>
+=======
+>>>>>>> p9x
 
 #include <asm/irq.h>
 #include <asm/mach/arch.h>

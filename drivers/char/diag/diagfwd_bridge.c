@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -18,6 +22,7 @@
 #include <linux/workqueue.h>
 #include <linux/ratelimit.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #ifdef USB_QCOM_DIAG_BRIDGE
 #include <linux/smux.h>
 #endif
@@ -27,6 +32,13 @@
 #include "diagfwd_hsic.h"
 #include "diagfwd_smux.h"
 #endif
+=======
+#include <linux/smux.h>
+#include "diag_mux.h"
+#include "diagfwd_bridge.h"
+#include "diagfwd_hsic.h"
+#include "diagfwd_smux.h"
+>>>>>>> p9x
 #include "diagfwd_mhi.h"
 #include "diag_dci.h"
 
@@ -90,6 +102,7 @@ static int diagfwd_bridge_mux_disconnect(int id, int mode)
 {
 	if (id < 0 || id >= NUM_REMOTE_DEV)
 		return -EINVAL;
+<<<<<<< HEAD
 
 	if ((mode == DIAG_USB_MODE &&
 		driver->logging_mode == DIAG_MEMORY_DEVICE_MODE) ||
@@ -102,6 +115,8 @@ static int diagfwd_bridge_mux_disconnect(int id, int mode)
 		return 0;
 	}
 
+=======
+>>>>>>> p9x
 	if (bridge_info[id].dev_ops && bridge_info[id].dev_ops->close)
 		bridge_info[id].dev_ops->close(bridge_info[id].ctxt);
 	return 0;
@@ -119,7 +134,11 @@ static int diagfwd_bridge_mux_write_done(unsigned char *buf, int len,
 
 	if (id < 0 || id >= NUM_REMOTE_DEV)
 		return -EINVAL;
+<<<<<<< HEAD
 	ch = &bridge_info[buf_ctx];
+=======
+	ch = &bridge_info[id];
+>>>>>>> p9x
 	if (ch->dev_ops && ch->dev_ops->fwd_complete)
 		ch->dev_ops->fwd_complete(ch->ctxt, buf, len, 0);
 	return 0;
@@ -272,11 +291,17 @@ int diagfwd_bridge_init()
 	err = diag_mdm_init();
 	if (err)
 		goto fail;
+<<<<<<< HEAD
 	#ifdef USB_QCOM_DIAG_BRIDGE
 	err = diag_smux_init();
 	if (err)
 		goto fail;
 	#endif
+=======
+	err = diag_smux_init();
+	if (err)
+		goto fail;
+>>>>>>> p9x
 	return 0;
 
 fail:
@@ -286,10 +311,15 @@ fail:
 
 void diagfwd_bridge_exit()
 {
+<<<<<<< HEAD
 	#ifdef USB_QCOM_DIAG_BRIDGE
 	diag_hsic_exit();
 	diag_smux_exit();
 	#endif
+=======
+	diag_hsic_exit();
+	diag_smux_exit();
+>>>>>>> p9x
 }
 
 int diagfwd_bridge_close(int id)

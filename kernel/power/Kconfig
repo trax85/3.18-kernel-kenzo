@@ -18,6 +18,7 @@ config SUSPEND_FREEZER
 
 	  Turning OFF this setting is NOT recommended! If in doubt, say Y.
 
+<<<<<<< HEAD
 config WAKELOCK
 	bool "Android's method of preventing suspend"
 	default y
@@ -26,6 +27,15 @@ config WAKELOCK
 	  they need it.
 
 	  Say Y if you are running an android userspace.
+=======
+config HAS_WAKELOCK
+	bool
+	default y
+
+config WAKELOCK
+	bool
+	default y
+>>>>>>> p9x
 
 config HIBERNATE_CALLBACKS
 	bool
@@ -326,6 +336,18 @@ config SUSPEND_TIME
 	  keeps statistics on the time spent in suspend in
 	  /sys/kernel/debug/suspend_time
 
+<<<<<<< HEAD
 config DEDUCE_WAKEUP_REASONS
 	bool
 	default n
+=======
+config BOEFFLA_WL_BLOCKER
+	bool "Boeffla generic wakelock blocker driver"
+	depends on PM
+	default N
+
+config PM_SYNC_BEFORE_SUSPEND
+	bool "Sync file systems before suspend"
+	depends on PM
+	default y
+>>>>>>> p9x

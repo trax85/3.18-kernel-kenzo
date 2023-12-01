@@ -164,5 +164,9 @@
 };
 
 &android_usb {
+<<<<<<< HEAD
 	qcom,android-usb-cdrom;
+=======
+        qcom,android-usb-cdrom;
+>>>>>>> p9x
 };

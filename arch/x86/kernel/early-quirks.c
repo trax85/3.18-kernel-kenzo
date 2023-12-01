@@ -224,6 +224,7 @@ static void __init intel_remapping_check(int num, int slot, int func)
 	 * revision 0x22 of device id 0x3405 has this problem.
 	 */
 	if (revision <= 0x13)
+<<<<<<< HEAD
 		set_irq_remapping_broken();
 	else if (device == 0x3405 && revision == 0x22)
 		set_irq_remapping_broken();
@@ -633,6 +634,11 @@ static void __init apple_airport_reset(int bus, int slot, int func)
 	udelay(10);
 
 	early_iounmap(mmio, BCM4331_MMIO_SIZE);
+=======
+		set_irq_remapping_broken();
+	else if (device == 0x3405 && revision == 0x22)
+		set_irq_remapping_broken();
+>>>>>>> p9x
 }
 
 #define QFLAG_APPLY_ONCE 	0x1

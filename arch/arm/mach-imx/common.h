@@ -13,7 +13,10 @@
 
 #include <linux/reboot.h>
 
+<<<<<<< HEAD
 struct irq_data;
+=======
+>>>>>>> p9x
 struct platform_device;
 struct pt_regs;
 struct clk;
@@ -58,6 +61,7 @@ int mx35_clocks_init(void);
 int mx31_clocks_init_dt(void);
 struct platform_device *mxc_register_gpio(char *name, int id,
 	resource_size_t iobase, resource_size_t iosize, int irq, int irq_high);
+<<<<<<< HEAD
 void mxc_set_cpu_type(unsigned int type);
 void mxc_restart(enum reboot_mode, const char *);
 void mxc_arch_reset_init(void __iomem *);
@@ -75,6 +79,16 @@ void imx_gpc_check_dt(void);
 void imx_gpc_set_arm_power_in_lpm(bool power_off);
 void imx_gpc_set_arm_power_up_timing(u32 sw2iso, u32 sw);
 void imx_gpc_set_arm_power_down_timing(u32 sw2iso, u32 sw);
+=======
+extern void mxc_set_cpu_type(unsigned int type);
+extern void mxc_restart(enum reboot_mode, const char *);
+extern void mxc_arch_reset_init(void __iomem *);
+extern int mx53_revision(void);
+extern int imx6q_revision(void);
+extern int mx53_display_revision(void);
+extern void imx_set_aips(void __iomem *);
+extern int mxc_device_init(void);
+>>>>>>> p9x
 
 enum mxc_cpu_pwr_mode {
 	WAIT_CLOCKED,		/* wfi only */

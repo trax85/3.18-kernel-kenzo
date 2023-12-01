@@ -1,4 +1,8 @@
 /* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2016 XiaoMi, Inc.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -37,6 +41,7 @@ enum pon_trigger_source {
 
 /**
  * enum pon_power_off_type: Possible power off actions to perform
+<<<<<<< HEAD
  * %PON_POWER_OFF_RESERVED:          Reserved, not used
  * %PON_POWER_OFF_WARM_RESET:        Reset the MSM but not all PMIC peripherals
  * %PON_POWER_OFF_SHUTDOWN:          Shutdown the MSM and PMIC completely
@@ -58,6 +63,25 @@ enum pon_restart_reason {
 	PON_RESTART_REASON_DMVERITY_CORRUPTED	= 0x04,
 	PON_RESTART_REASON_DMVERITY_ENFORCE	= 0x05,
 	PON_RESTART_REASON_KEYS_CLEAR		= 0x06,
+=======
+ * %PON_POWER_OFF_WARM_RESET:	Reset the MSM but not all PMIC peripherals
+ * %PON_POWER_OFF_SHUTDOWN:	Shutdown the MSM and PMIC completely
+ * %PON_POWER_OFF_HARD_RESET:	Reset the MSM and all PMIC peripherals
+ */
+enum pon_power_off_type {
+	PON_POWER_OFF_WARM_RESET	= 0x01,
+	PON_POWER_OFF_SHUTDOWN		= 0x04,
+	PON_POWER_OFF_HARD_RESET	= 0x07,
+};
+
+enum pon_restart_reason {
+	PON_RESTART_REASON_UNKNOWN	= 0x00,
+	PON_RESTART_REASON_RECOVERY	= 0x01,
+	PON_RESTART_REASON_BOOTLOADER	= 0x02,
+	PON_RESTART_REASON_RTC		= 0x03,
+	PON_RESTART_REASON_NORMAL	= 0x20,
+	PON_RESTART_REASON_PANIC	= 0x21,
+>>>>>>> p9x
 };
 
 #ifdef CONFIG_QPNP_POWER_ON

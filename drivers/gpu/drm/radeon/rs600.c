@@ -645,7 +645,21 @@ void rs600_gart_set_page(struct radeon_device *rdev, unsigned i,
 			 uint64_t entry)
 {
 	void __iomem *ptr = (void *)rdev->gart.ptr;
+<<<<<<< HEAD
 	writeq(entry, ptr + (i * 8));
+=======
+
+	if (i < 0 || i > rdev->gart.num_gpu_pages) {
+		return -EINVAL;
+	}
+	addr = addr & 0xFFFFFFFFFFFFF000ULL;
+	if (addr != rdev->dummy_page.addr)
+		addr |= R600_PTE_VALID | R600_PTE_READABLE |
+			R600_PTE_WRITEABLE;
+	addr |= R600_PTE_SYSTEM | R600_PTE_SNOOPED;
+	writeq(addr, ptr + (i * 8));
+	return 0;
+>>>>>>> p9x
 }
 
 int rs600_irq_set(struct radeon_device *rdev)

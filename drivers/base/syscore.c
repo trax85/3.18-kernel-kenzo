@@ -9,10 +9,15 @@
 #include <linux/syscore_ops.h>
 #include <linux/mutex.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/suspend.h>
 #include <trace/events/power.h>
 #include <linux/wakeup_reason.h>
 #include <linux/irq.h>
+=======
+#include <linux/interrupt.h>
+#include <linux/wakeup_reason.h>
+>>>>>>> p9x
 
 static LIST_HEAD(syscore_ops_list);
 static DEFINE_MUTEX(syscore_ops_lock);

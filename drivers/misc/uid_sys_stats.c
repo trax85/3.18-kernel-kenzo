@@ -21,11 +21,19 @@
 #include <linux/list.h>
 #include <linux/proc_fs.h>
 #include <linux/profile.h>
+<<<<<<< HEAD
 #include <linux/rtmutex.h>
+=======
+>>>>>>> p9x
 #include <linux/sched.h>
 #include <linux/seq_file.h>
 #include <linux/slab.h>
 #include <linux/uaccess.h>
+<<<<<<< HEAD
+=======
+#include <linux/rtmutex.h>
+#include <linux/cpufreq.h>
+>>>>>>> p9x
 
 #define UID_HASH_BITS	10
 DECLARE_HASHTABLE(hash_table, UID_HASH_BITS);
@@ -178,7 +186,12 @@ static ssize_t uid_remove_write(struct file *file,
 	struct hlist_node *tmp;
 	char uids[128];
 	char *start_uid, *end_uid = NULL;
+<<<<<<< HEAD
 	long int uid_start = 0, uid_end = 0;
+=======
+	long int start = 0, end = 0;
+	uid_t uid_start, uid_end;
+>>>>>>> p9x
 
 	if (count >= sizeof(uids))
 		count = sizeof(uids) - 1;
@@ -193,15 +206,43 @@ static ssize_t uid_remove_write(struct file *file,
 	if (!start_uid || !end_uid)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (kstrtol(start_uid, 10, &uid_start) != 0 ||
 		kstrtol(end_uid, 10, &uid_end) != 0) {
 		return -EINVAL;
 	}
+=======
+	if (kstrtol(start_uid, 10, &start) != 0 ||
+		kstrtol(end_uid, 10, &end) != 0) {
+		return -EINVAL;
+	}
+
+#define UID_T_MAX (((uid_t)~0U)-1)
+	if ((start < 0) || (end < 0) ||
+		(start > UID_T_MAX) || (end > UID_T_MAX)) {
+		return -EINVAL;
+	}
+
+	uid_start = start;
+	uid_end = end;
+
+	/* TODO need to unify uid_sys_stats interface with uid_time_in_state.
+	 * Here we are reusing remove_uid_range to reduce the number of
+	 * sys calls made by userspace clients, remove_uid_range removes uids
+	 * from both here as well as from cpufreq uid_time_in_state
+	 */
+	cpufreq_task_stats_remove_uids(uid_start, uid_end);
+
+>>>>>>> p9x
 	rt_mutex_lock(&uid_lock);
 
 	for (; uid_start <= uid_end; uid_start++) {
 		hash_for_each_possible_safe(hash_table, uid_entry, tmp,
+<<<<<<< HEAD
 							hash, (uid_t)uid_start) {
+=======
+							hash, uid_start) {
+>>>>>>> p9x
 			if (uid_start == uid_entry->uid) {
 				hash_del(&uid_entry->hash);
 				kfree(uid_entry);
@@ -210,6 +251,10 @@ static ssize_t uid_remove_write(struct file *file,
 	}
 
 	rt_mutex_unlock(&uid_lock);
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 	return count;
 }
 
@@ -219,7 +264,10 @@ static const struct file_operations uid_remove_fops = {
 	.write		= uid_remove_write,
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_TASK_IO_ACCOUNTING)
+=======
+>>>>>>> p9x
 static u64 compute_write_bytes(struct task_struct *task)
 {
 	if (task->ioac.write_bytes <= task->ioac.cancelled_write_bytes)
@@ -227,14 +275,19 @@ static u64 compute_write_bytes(struct task_struct *task)
 
 	return task->ioac.write_bytes - task->ioac.cancelled_write_bytes;
 }
+<<<<<<< HEAD
 #endif
 
 #if IS_ENABLED(CONFIG_TASK_IO_ACCOUNTING) || IS_ENABLED(CONFIG_TASK_XACCT)
+=======
+
+>>>>>>> p9x
 static void add_uid_io_stats(struct uid_entry *uid_entry,
 			struct task_struct *task, int slot)
 {
 	struct io_stats *io_slot = &uid_entry->io[slot];
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_TASK_IO_ACCOUNTING)
 	io_slot->read_bytes += task->ioac.read_bytes;
 	io_slot->write_bytes += compute_write_bytes(task);
@@ -252,12 +305,21 @@ static void add_uid_io_stats(struct uid_entry *uid_entry,
 	return;
 }
 #endif
+=======
+	io_slot->read_bytes += task->ioac.read_bytes;
+	io_slot->write_bytes += compute_write_bytes(task);
+	io_slot->rchar += task->ioac.rchar;
+	io_slot->wchar += task->ioac.wchar;
+	io_slot->fsync += task->ioac.syscfs;
+}
+>>>>>>> p9x
 
 static void compute_uid_io_bucket_stats(struct io_stats *io_bucket,
 					struct io_stats *io_curr,
 					struct io_stats *io_last,
 					struct io_stats *io_dead)
 {
+<<<<<<< HEAD
 	io_bucket->read_bytes += io_curr->read_bytes + io_dead->read_bytes -
 		io_last->read_bytes;
 	io_bucket->write_bytes += io_curr->write_bytes + io_dead->write_bytes -
@@ -265,6 +327,31 @@ static void compute_uid_io_bucket_stats(struct io_stats *io_bucket,
 	io_bucket->rchar += io_curr->rchar + io_dead->rchar - io_last->rchar;
 	io_bucket->wchar += io_curr->wchar + io_dead->wchar - io_last->wchar;
 	io_bucket->fsync += io_curr->fsync + io_dead->fsync - io_last->fsync;
+=======
+	s64 delta;
+
+	delta = io_curr->read_bytes + io_dead->read_bytes -
+		io_last->read_bytes;
+	if (delta > 0)
+		io_bucket->read_bytes += delta;
+
+	delta = io_curr->write_bytes + io_dead->write_bytes -
+		io_last->write_bytes;
+	if (delta > 0)
+		io_bucket->write_bytes += delta;
+
+	delta = io_curr->rchar + io_dead->rchar - io_last->rchar;
+	if (delta > 0)
+		io_bucket->rchar += delta;
+
+	delta = io_curr->wchar + io_dead->wchar - io_last->wchar;
+	if (delta > 0)
+		io_bucket->wchar += delta;
+
+	delta = io_curr->fsync + io_dead->fsync - io_last->fsync;
+	if (delta > 0)
+		io_bucket->fsync += delta;
+>>>>>>> p9x
 
 	io_last->read_bytes = io_curr->read_bytes;
 	io_last->write_bytes = io_curr->write_bytes;

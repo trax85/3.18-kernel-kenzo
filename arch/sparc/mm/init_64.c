@@ -2215,6 +2215,10 @@ void __init mem_init(void)
 {
 	high_memory = __va(last_valid_pfn << PAGE_SHIFT);
 
+<<<<<<< HEAD
+=======
+	register_page_bootmem_info();
+>>>>>>> p9x
 	free_all_bootmem();
 
 	/*
@@ -2769,6 +2773,7 @@ void hugetlb_setup(struct pt_regs *regs)
 }
 #endif
 
+<<<<<<< HEAD
 static struct resource code_resource = {
 	.name	= "Kernel code",
 	.flags	= IORESOURCE_BUSY | IORESOURCE_MEM
@@ -2833,6 +2838,8 @@ static int __init report_memory(void)
 }
 device_initcall(report_memory);
 
+=======
+>>>>>>> p9x
 #ifdef CONFIG_SMP
 #define do_flush_tlb_kernel_range	smp_flush_tlb_kernel_range
 #else
@@ -2847,8 +2854,13 @@ void flush_tlb_kernel_range(unsigned long start, unsigned long end)
 			do_flush_tlb_kernel_range(start, LOW_OBP_ADDRESS);
 		}
 		if (end > HI_OBP_ADDRESS) {
+<<<<<<< HEAD
 			flush_tsb_kernel_range(HI_OBP_ADDRESS, end);
 			do_flush_tlb_kernel_range(HI_OBP_ADDRESS, end);
+=======
+			flush_tsb_kernel_range(end, HI_OBP_ADDRESS);
+			do_flush_tlb_kernel_range(end, HI_OBP_ADDRESS);
+>>>>>>> p9x
 		}
 	} else {
 		flush_tsb_kernel_range(start, end);

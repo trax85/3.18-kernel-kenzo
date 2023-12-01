@@ -1201,7 +1201,22 @@ static void x86_pmu_del(struct perf_event *event, int flags)
 	x86_pmu_stop(event, PERF_EF_UPDATE);
 
 	for (i = 0; i < cpuc->n_events; i++) {
+<<<<<<< HEAD
 		if (event == cpuc->event_list[i])
+=======
+		if (event == cpuc->event_list[i]) {
+
+			if (i >= cpuc->n_events - cpuc->n_added)
+				--cpuc->n_added;
+
+			if (x86_pmu.put_event_constraints)
+				x86_pmu.put_event_constraints(cpuc, event);
+
+			while (++i < cpuc->n_events)
+				cpuc->event_list[i-1] = cpuc->event_list[i];
+
+			--cpuc->n_events;
+>>>>>>> p9x
 			break;
 	}
 
@@ -1294,16 +1309,28 @@ void perf_events_lapic_init(void)
 static int
 perf_event_nmi_handler(unsigned int cmd, struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	u64 start_clock;
 	u64 finish_clock;
 	int ret;
+=======
+	int ret;
+	u64 start_clock;
+	u64 finish_clock;
+>>>>>>> p9x
 
 	if (!atomic_read(&active_events))
 		return NMI_DONE;
 
+<<<<<<< HEAD
 	start_clock = sched_clock();
 	ret = x86_pmu.handle_irq(regs);
 	finish_clock = sched_clock();
+=======
+	start_clock = local_clock();
+	ret = x86_pmu.handle_irq(regs);
+	finish_clock = local_clock();
+>>>>>>> p9x
 
 	perf_sample_event_took(finish_clock - start_clock);
 

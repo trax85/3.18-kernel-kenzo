@@ -21,7 +21,10 @@
 #define F2FS_BLKSIZE			4096	/* support only 4KB block */
 #define F2FS_BLKSIZE_BITS		12	/* bits for F2FS_BLKSIZE */
 #define F2FS_MAX_EXTENSION		64	/* # of extension entries */
+<<<<<<< HEAD
 #define F2FS_EXTENSION_LEN		8	/* max size of extension */
+=======
+>>>>>>> p9x
 #define F2FS_BLK_ALIGN(x)	(((x) + F2FS_BLKSIZE - 1) >> F2FS_BLKSIZE_BITS)
 
 #define NULL_ADDR		((block_t)0)	/* used as block_t addresses */
@@ -37,16 +40,27 @@
 #define F2FS_NODE_INO(sbi)	(sbi->node_ino_num)
 #define F2FS_META_INO(sbi)	(sbi->meta_ino_num)
 
+<<<<<<< HEAD
 #define F2FS_MAX_QUOTAS		3
 
 #define F2FS_IO_SIZE(sbi)	(1 << F2FS_OPTION(sbi).write_io_size_bits) /* Blocks */
 #define F2FS_IO_SIZE_KB(sbi)	(1 << (F2FS_OPTION(sbi).write_io_size_bits + 2)) /* KB */
 #define F2FS_IO_SIZE_BYTES(sbi)	(1 << (F2FS_OPTION(sbi).write_io_size_bits + 12)) /* B */
 #define F2FS_IO_SIZE_BITS(sbi)	(F2FS_OPTION(sbi).write_io_size_bits) /* power of 2 */
+=======
+#define F2FS_IO_SIZE(sbi)	(1 << (sbi)->write_io_size_bits) /* Blocks */
+#define F2FS_IO_SIZE_KB(sbi)	(1 << ((sbi)->write_io_size_bits + 2)) /* KB */
+#define F2FS_IO_SIZE_BYTES(sbi)	(1 << ((sbi)->write_io_size_bits + 12)) /* B */
+#define F2FS_IO_SIZE_BITS(sbi)	((sbi)->write_io_size_bits) /* power of 2 */
+>>>>>>> p9x
 #define F2FS_IO_SIZE_MASK(sbi)	(F2FS_IO_SIZE(sbi) - 1)
 
 /* This flag is used by node and meta inodes, and by recovery */
 #define GFP_F2FS_ZERO		(GFP_NOFS | __GFP_ZERO)
+<<<<<<< HEAD
+=======
+#define GFP_F2FS_HIGH_ZERO	(GFP_NOFS | __GFP_ZERO | __GFP_HIGHMEM)
+>>>>>>> p9x
 
 /*
  * For further optimization on multi-head logs, on-disk layout supports maximum
@@ -102,7 +116,11 @@ struct f2fs_super_block {
 	__u8 uuid[16];			/* 128-bit uuid for volume */
 	__le16 volume_name[MAX_VOLUME_NAME];	/* volume name */
 	__le32 extension_count;		/* # of extensions below */
+<<<<<<< HEAD
 	__u8 extension_list[F2FS_MAX_EXTENSION][F2FS_EXTENSION_LEN];/* extension array */
+=======
+	__u8 extension_list[F2FS_MAX_EXTENSION][8];	/* extension array */
+>>>>>>> p9x
 	__le32 cp_payload;
 	__u8 version[VERSION_LEN];	/* the kernel version */
 	__u8 init_version[VERSION_LEN];	/* the initial kernel version */
@@ -110,16 +128,23 @@ struct f2fs_super_block {
 	__u8 encryption_level;		/* versioning level for encryption */
 	__u8 encrypt_pw_salt[16];	/* Salt used for string2key algorithm */
 	struct f2fs_device devs[MAX_DEVICES];	/* device list */
+<<<<<<< HEAD
 	__le32 qf_ino[F2FS_MAX_QUOTAS];	/* quota inode numbers */
 	__u8 hot_ext_count;		/* # of hot file extension */
 	__u8 reserved[314];		/* valid reserved region */
+=======
+	__u8 reserved[327];		/* valid reserved region */
+>>>>>>> p9x
 } __packed;
 
 /*
  * For checkpoint
  */
+<<<<<<< HEAD
 #define CP_LARGE_NAT_BITMAP_FLAG	0x00000400
 #define CP_NOCRC_RECOVERY_FLAG	0x00000200
+=======
+>>>>>>> p9x
 #define CP_TRIMMED_FLAG		0x00000100
 #define CP_NAT_BITS_FLAG	0x00000080
 #define CP_CRC_RECOVERY_FLAG	0x00000040
@@ -190,11 +215,16 @@ struct f2fs_extent {
 } __packed;
 
 #define F2FS_NAME_LEN		255
+<<<<<<< HEAD
 /* 200 bytes for inline xattrs by default */
 #define DEFAULT_INLINE_XATTR_ADDRS	50
 #define DEF_ADDRS_PER_INODE	923	/* Address Pointers in an Inode */
 #define CUR_ADDRS_PER_INODE(inode)	(DEF_ADDRS_PER_INODE - \
 					get_extra_isize(inode))
+=======
+#define F2FS_INLINE_XATTR_ADDRS	50	/* 200 bytes for inline xattrs */
+#define DEF_ADDRS_PER_INODE	923	/* Address Pointers in an Inode */
+>>>>>>> p9x
 #define DEF_NIDS_PER_INODE	5	/* Node IDs in an Inode */
 #define ADDRS_PER_INODE(inode)	addrs_per_inode(inode)
 #define ADDRS_PER_BLOCK		1018	/* Address Pointers in a Direct Block */
@@ -214,8 +244,14 @@ struct f2fs_extent {
 #define F2FS_INLINE_DENTRY	0x04	/* file inline dentry flag */
 #define F2FS_DATA_EXIST		0x08	/* file inline data exist flag */
 #define F2FS_INLINE_DOTS	0x10	/* file having implicit dot dentries */
+<<<<<<< HEAD
 #define F2FS_EXTRA_ATTR		0x20	/* file having extra attribute */
 #define F2FS_PIN_FILE		0x40	/* file should not be gced */
+=======
+
+#define MAX_INLINE_DATA		(sizeof(__le32) * (DEF_ADDRS_PER_INODE - \
+						F2FS_INLINE_XATTR_ADDRS - 1))
+>>>>>>> p9x
 
 struct f2fs_inode {
 	__le16 i_mode;			/* file mode */
@@ -249,6 +285,7 @@ struct f2fs_inode {
 
 	struct f2fs_extent i_ext;	/* caching a largest extent */
 
+<<<<<<< HEAD
 	union {
 		struct {
 			__le16 i_extra_isize;	/* extra inode attribute size */
@@ -261,6 +298,10 @@ struct f2fs_inode {
 		} __packed;
 		__le32 i_addr[DEF_ADDRS_PER_INODE];	/* Pointers to data blocks */
 	};
+=======
+	__le32 i_addr[DEF_ADDRS_PER_INODE];	/* Pointers to data blocks */
+
+>>>>>>> p9x
 	__le32 i_nid[DEF_NIDS_PER_INODE];	/* direct(2), indirect(2),
 						double_indirect(1) node id */
 } __packed;
@@ -305,10 +346,13 @@ struct f2fs_node {
  */
 #define NAT_ENTRY_PER_BLOCK (PAGE_SIZE / sizeof(struct f2fs_nat_entry))
 #define NAT_ENTRY_BITMAP_SIZE	((NAT_ENTRY_PER_BLOCK + 7) / 8)
+<<<<<<< HEAD
 #define NAT_ENTRY_BITMAP_SIZE_ALIGNED				\
 	((NAT_ENTRY_BITMAP_SIZE + BITS_PER_LONG - 1) /		\
 	BITS_PER_LONG * BITS_PER_LONG)
 
+=======
+>>>>>>> p9x
 
 struct f2fs_nat_entry {
 	__u8 version;		/* latest version of cached nat entry */
@@ -493,7 +537,11 @@ typedef __le32	f2fs_hash_t;
 #define MAX_DIR_BUCKETS		(1 << ((MAX_DIR_HASH_DEPTH / 2) - 1))
 
 /*
+<<<<<<< HEAD
  * space utilization of regular dentry and inline dentry (w/o extra reservation)
+=======
+ * space utilization of regular dentry and inline dentry
+>>>>>>> p9x
  *		regular dentry			inline dentry
  * bitmap	1 * 27 = 27			1 * 23 = 23
  * reserved	1 * 3 = 3			1 * 7 = 7
@@ -529,6 +577,24 @@ struct f2fs_dentry_block {
 	__u8 filename[NR_DENTRY_IN_BLOCK][F2FS_SLOT_LEN];
 } __packed;
 
+/* for inline dir */
+#define NR_INLINE_DENTRY	(MAX_INLINE_DATA * BITS_PER_BYTE / \
+				((SIZE_OF_DIR_ENTRY + F2FS_SLOT_LEN) * \
+				BITS_PER_BYTE + 1))
+#define INLINE_DENTRY_BITMAP_SIZE	((NR_INLINE_DENTRY + \
+					BITS_PER_BYTE - 1) / BITS_PER_BYTE)
+#define INLINE_RESERVED_SIZE	(MAX_INLINE_DATA - \
+				((SIZE_OF_DIR_ENTRY + F2FS_SLOT_LEN) * \
+				NR_INLINE_DENTRY + INLINE_DENTRY_BITMAP_SIZE))
+
+/* inline directory entry structure */
+struct f2fs_inline_dentry {
+	__u8 dentry_bitmap[INLINE_DENTRY_BITMAP_SIZE];
+	__u8 reserved[INLINE_RESERVED_SIZE];
+	struct f2fs_dir_entry dentry[NR_INLINE_DENTRY];
+	__u8 filename[NR_INLINE_DENTRY][F2FS_SLOT_LEN];
+} __packed;
+
 /* file types used in inode_info->flags */
 enum {
 	F2FS_FT_UNKNOWN,
@@ -544,6 +610,9 @@ enum {
 
 #define S_SHIFT 12
 
+<<<<<<< HEAD
 #define	F2FS_DEF_PROJID		0	/* default project ID */
 
+=======
+>>>>>>> p9x
 #endif  /* _LINUX_F2FS_FS_H */

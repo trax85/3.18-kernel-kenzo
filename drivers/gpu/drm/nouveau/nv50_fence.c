@@ -38,6 +38,10 @@ nv50_fence_context_new(struct nouveau_channel *chan)
 	struct nv10_fence_priv *priv = chan->drm->fence;
 	struct nv10_fence_chan *fctx;
 	struct ttm_mem_reg *mem = &priv->bo->bo.mem;
+<<<<<<< HEAD
+=======
+	struct nouveau_object *object;
+>>>>>>> p9x
 	u32 start = mem->start * PAGE_SIZE;
 	u32 limit = start + mem->size - 1;
 	int ret, i;
@@ -51,6 +55,7 @@ nv50_fence_context_new(struct nouveau_channel *chan)
 	fctx->base.read = nv10_fence_read;
 	fctx->base.sync = nv17_fence_sync;
 
+<<<<<<< HEAD
 	ret = nvif_object_init(&chan->user, NvSema, NV_DMA_IN_MEMORY,
 			       &(struct nv_dma_v0) {
 					.target = NV_DMA_V0_TARGET_VRAM,
@@ -59,6 +64,17 @@ nv50_fence_context_new(struct nouveau_channel *chan)
 					.limit = limit,
 			       }, sizeof(struct nv_dma_v0),
 			       &fctx->sema);
+=======
+	ret = nouveau_object_new(nv_object(chan->cli), chan->handle,
+				 NvSema, 0x003d,
+				 &(struct nv_dma_class) {
+					.flags = NV_DMA_TARGET_VRAM |
+						 NV_DMA_ACCESS_RDWR,
+					.start = start,
+					.limit = limit,
+				 }, sizeof(struct nv_dma_class),
+				 &object);
+>>>>>>> p9x
 
 	/* dma objects for display sync channel semaphore blocks */
 	for (i = 0; !ret && i < dev->mode_config.num_crtc; i++) {
@@ -66,6 +82,7 @@ nv50_fence_context_new(struct nouveau_channel *chan)
 		u32 start = bo->bo.mem.start * PAGE_SIZE;
 		u32 limit = start + bo->bo.mem.size - 1;
 
+<<<<<<< HEAD
 		ret = nvif_object_init(&chan->user, NvEvoSema0 + i,
 				       NV_DMA_IN_MEMORY, &(struct nv_dma_v0) {
 						.target = NV_DMA_V0_TARGET_VRAM,
@@ -74,6 +91,17 @@ nv50_fence_context_new(struct nouveau_channel *chan)
 						.limit = limit,
 				       }, sizeof(struct nv_dma_v0),
 				       &fctx->head[i]);
+=======
+		ret = nouveau_object_new(nv_object(chan->cli), chan->handle,
+					 NvEvoSema0 + i, 0x003d,
+					 &(struct nv_dma_class) {
+						.flags = NV_DMA_TARGET_VRAM |
+							 NV_DMA_ACCESS_RDWR,
+						.start = start,
+						.limit = limit,
+					 }, sizeof(struct nv_dma_class),
+					 &object);
+>>>>>>> p9x
 	}
 
 	if (ret)

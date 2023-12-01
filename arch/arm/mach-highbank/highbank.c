@@ -60,12 +60,47 @@ static void highbank_l2c310_write_sec(unsigned long val, unsigned reg)
 			  reg);
 }
 
+<<<<<<< HEAD
+=======
+static void highbank_l2x0_disable(void)
+{
+	outer_flush_all();
+	/* Disable PL310 L2 Cache controller */
+	highbank_smc1(0x102, 0x0);
+}
+
+>>>>>>> p9x
 static void __init highbank_init_irq(void)
 {
 	irqchip_init();
 
 	if (of_find_compatible_node(NULL, NULL, "arm,cortex-a9"))
 		highbank_scu_map_io();
+<<<<<<< HEAD
+=======
+
+	/* Enable PL310 L2 Cache controller */
+	if (IS_ENABLED(CONFIG_CACHE_L2X0) &&
+	    of_find_compatible_node(NULL, NULL, "arm,pl310-cache")) {
+		highbank_smc1(0x102, 0x1);
+		l2x0_of_init(0, ~0UL);
+		outer_cache.disable = highbank_l2x0_disable;
+	}
+}
+
+static void __init highbank_timer_init(void)
+{
+	struct device_node *np;
+
+	/* Map system registers */
+	np = of_find_compatible_node(NULL, NULL, "calxeda,hb-sregs");
+	sregs_base = of_iomap(np, 0);
+	WARN_ON(!sregs_base);
+
+	of_clk_init(NULL);
+
+	clocksource_of_init();
+>>>>>>> p9x
 }
 
 static void highbank_power_off(void)

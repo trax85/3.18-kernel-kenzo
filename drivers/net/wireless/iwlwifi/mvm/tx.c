@@ -982,10 +982,22 @@ int iwl_mvm_rx_ba_notif(struct iwl_mvm *mvm, struct iwl_rx_cmd_buffer *rxb,
 		 */
 		info->flags |= IEEE80211_TX_STAT_ACK;
 
+<<<<<<< HEAD
 		/* this is the first skb we deliver in this batch */
 		/* put the rate scaling data there */
 		if (freed == 1)
 			iwl_mvm_tx_info_from_ba_notif(info, ba_notif, tid_data);
+=======
+		if (freed == 1) {
+			/* this is the first skb we deliver in this batch */
+			/* put the rate scaling data there */
+			info->flags |= IEEE80211_TX_STAT_AMPDU;
+			info->status.ampdu_ack_len = ba_notif->txed_2_done;
+			info->status.ampdu_len = ba_notif->txed;
+			iwl_mvm_hwrate_to_tx_control(tid_data->rate_n_flags,
+						     info);
+		}
+>>>>>>> p9x
 	}
 
 	spin_unlock_bh(&mvmsta->lock);

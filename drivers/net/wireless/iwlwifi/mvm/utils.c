@@ -481,8 +481,11 @@ void iwl_mvm_dump_nic_error_log(struct iwl_mvm *mvm)
 			mvm->status, table.valid);
 	}
 
+<<<<<<< HEAD
 	/* Do not change this output - scripts rely on it */
 
+=======
+>>>>>>> p9x
 	IWL_ERR(mvm, "Loaded firmware version: %s\n", mvm->fw->fw_version);
 
 	trace_iwlwifi_dev_ucode_error(trans->dev, table.error_id, table.tsf_low,

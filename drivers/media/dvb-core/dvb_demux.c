@@ -5,7 +5,11 @@
  *		       & Marcus Metzler <marcus@convergence.de>
  *			 for convergence integrated media GmbH
  *
+<<<<<<< HEAD
  * Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -879,7 +883,11 @@ static int dvb_demux_save_idx_event(struct dvb_demux_feed *feed,
 
 	/* get entry from free list */
 	if (list_empty(&feed->rec_info->idx_info.free_list)) {
+<<<<<<< HEAD
 		pr_err("%s: index free list is empty\n", __func__);
+=======
+		printk(KERN_ERR "%s: index free list is empty\n", __func__);
+>>>>>>> p9x
 		return -ENOMEM;
 	}
 
@@ -1322,8 +1330,13 @@ static inline int dvb_dmx_swfilter_buffer_check(
 	 * Check that there's enough free space for data output.
 	 * If there no space, wait for it (block).
 	 * Since this function is called while spinlock
+<<<<<<< HEAD
 	 * is acquired, the lock should be released first.
 	 * Once we get control back, lock is acquired back
+=======
+	 * is aquired, the lock should be released first.
+	 * Once we get control back, lock is aquired back
+>>>>>>> p9x
 	 * and checks that the filter is still valid.
 	 */
 	for (j = 0; j < demux->feednum; j++) {
@@ -1778,8 +1791,14 @@ void dvb_dmx_swfilter_format(
 		break;
 
 	default:
+<<<<<<< HEAD
 		pr_err("%s: invalid TS packet format (format=%d)\n", __func__,
 			tsp_format);
+=======
+		printk(KERN_ERR "%s: invalid TS packet format (format=%d)\n",
+			   __func__,
+			   tsp_format);
+>>>>>>> p9x
 		break;
 	}
 }
@@ -2072,11 +2091,20 @@ static void dvb_dmx_free_rec_info(struct dmx_ts_feed *ts_feed)
 	struct dvb_demux_feed *feed = (struct dvb_demux_feed *)ts_feed;
 
 	if (!feed->rec_info || !feed->rec_info->ref_count) {
+<<<<<<< HEAD
 		pr_err("%s: invalid idx info state\n", __func__);
+=======
+		printk(KERN_ERR "%s: invalid idx info state\n", __func__);
+>>>>>>> p9x
 		return;
 	}
 
 	feed->rec_info->ref_count--;
+<<<<<<< HEAD
+=======
+
+	return;
+>>>>>>> p9x
 }
 
 static int dvb_demux_feed_find(struct dvb_demux_feed *feed)
@@ -2213,8 +2241,12 @@ static int dmx_ts_feed_start_filtering(struct dmx_ts_feed *ts_feed)
 		feed->rec_info = NULL;
 	}
 
+<<<<<<< HEAD
 	ret = demux->start_feed(feed);
 	if (ret < 0) {
+=======
+	if ((ret = demux->start_feed(feed)) < 0) {
+>>>>>>> p9x
 		if ((feed->ts_type & TS_PACKET) &&
 		    !(feed->ts_type & TS_PAYLOAD_ONLY)) {
 			dvb_dmx_free_rec_info(ts_feed);
@@ -3137,6 +3169,7 @@ static int dvbdmx_write(struct dmx_demux *demux, const char *buf, size_t count)
 	struct dvb_demux *dvbdemux = (struct dvb_demux *)demux;
 
 	if (!demux->frontend || !buf || demux->dvr_input_protected ||
+<<<<<<< HEAD
 		(demux->frontend->source != DMX_MEMORY_FE))
 		return -EINVAL;
 	if (mutex_lock_interruptible(&dvbdemux->mutex))
@@ -3145,6 +3178,13 @@ static int dvbdmx_write(struct dmx_demux *demux, const char *buf, size_t count)
 	dvb_dmx_swfilter_format(dvbdemux, buf, count, dvbdemux->tsp_format);
 
 	mutex_unlock(&dvbdemux->mutex);
+=======
+		(demux->frontend->source != DMX_MEMORY_FE)) {
+		return -EINVAL;
+	}
+
+	dvb_dmx_swfilter_format(dvbdemux, buf, count, dvbdemux->tsp_format);
+>>>>>>> p9x
 
 	if (signal_pending(current))
 		return -EINTR;

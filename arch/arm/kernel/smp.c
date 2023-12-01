@@ -70,8 +70,11 @@ enum ipi_msg_type {
 	IPI_CALL_FUNC,
 	IPI_CALL_FUNC_SINGLE,
 	IPI_CPU_STOP,
+<<<<<<< HEAD
 	IPI_IRQ_WORK,
 	IPI_COMPLETION,
+=======
+>>>>>>> p9x
 	IPI_CPU_BACKTRACE,
 };
 
@@ -228,7 +231,7 @@ void __cpu_die(unsigned int cpu)
 		pr_err("CPU%u: cpu didn't die\n", cpu);
 		return;
 	}
-	printk(KERN_NOTICE "CPU%u: shutdown\n", cpu);
+	pr_debug("CPU%u: shutdown\n", cpu);
 
 	/*
 	 * platform_cpu_kill() is generally expected to do the powering off
@@ -354,7 +357,7 @@ asmlinkage void secondary_start_kernel(void)
 
 	cpu_init();
 
-	printk("CPU%u: Booted secondary processor\n", cpu);
+	pr_debug("CPU%u: Booted secondary processor\n", cpu);
 
 	preempt_disable();
 	trace_hardirqs_off();
@@ -441,7 +444,11 @@ void __init smp_prepare_cpus(unsigned int max_cpus)
 	}
 }
 
+<<<<<<< HEAD
 static void (*__smp_cross_call)(const struct cpumask *, unsigned int);
+=======
+static void (*smp_cross_call)(const struct cpumask *, unsigned int);
+>>>>>>> p9x
 DEFINE_PER_CPU(bool, pending_ipi);
 
 static void smp_cross_call_common(const struct cpumask *cpumask,
@@ -452,7 +459,11 @@ static void smp_cross_call_common(const struct cpumask *cpumask,
 	for_each_cpu(cpu, cpumask)
 		per_cpu(pending_ipi, cpu) = true;
 
+<<<<<<< HEAD
 	__smp_cross_call(cpumask, func);
+=======
+	smp_cross_call(cpumask, func);
+>>>>>>> p9x
 }
 
 void __init set_smp_cross_call(void (*fn)(const struct cpumask *, unsigned int))
@@ -484,8 +495,11 @@ static const char *ipi_types[NR_IPI] __tracepoint_string = {
 	S(IPI_CALL_FUNC, "Function call interrupts"),
 	S(IPI_CALL_FUNC_SINGLE, "Single function call interrupts"),
 	S(IPI_CPU_STOP, "CPU stop interrupts"),
+<<<<<<< HEAD
 	S(IPI_IRQ_WORK, "IRQ work interrupts"),
 	S(IPI_COMPLETION, "completion interrupts"),
+=======
+>>>>>>> p9x
 	S(IPI_CPU_BACKTRACE, "CPU backtrace"),
 };
 
@@ -532,19 +546,21 @@ void arch_irq_work_raise(void)
 #ifdef CONFIG_GENERIC_CLOCKEVENTS_BROADCAST
 void tick_broadcast(const struct cpumask *mask)
 {
-	smp_cross_call(mask, IPI_TIMER);
+	smp_cross_call_common(mask, IPI_TIMER);
 }
 #endif
 
 static DEFINE_RAW_SPINLOCK(stop_lock);
 
+DEFINE_PER_CPU(struct pt_regs, regs_before_stop);
 /*
  * ipi_cpu_stop - handle IPI from smp_send_stop()
  */
-static void ipi_cpu_stop(unsigned int cpu)
+static void ipi_cpu_stop(unsigned int cpu, struct pt_regs *regs)
 {
 	if (system_state == SYSTEM_BOOTING ||
 	    system_state == SYSTEM_RUNNING) {
+		per_cpu(regs_before_stop, cpu) = *regs;
 		raw_spin_lock(&stop_lock);
 		printk(KERN_CRIT "CPU%u: stopping\n", cpu);
 		dump_stack();
@@ -556,10 +572,13 @@ static void ipi_cpu_stop(unsigned int cpu)
 	local_fiq_disable();
 	local_irq_disable();
 
+	flush_cache_all();
+
 	while (1)
 		cpu_relax();
 }
 
+<<<<<<< HEAD
 static DEFINE_PER_CPU(struct completion *, cpu_completion);
 
 int register_ipi_completion(struct completion *completion, int cpu)
@@ -573,6 +592,8 @@ static void ipi_complete(unsigned int cpu)
 	complete(per_cpu(cpu_completion, cpu));
 }
 
+=======
+>>>>>>> p9x
 static cpumask_t backtrace_mask;
 static DEFINE_RAW_SPINLOCK(backtrace_lock);
 
@@ -674,10 +695,11 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 
 	case IPI_CPU_STOP:
 		irq_enter();
-		ipi_cpu_stop(cpu);
+		ipi_cpu_stop(cpu, regs);
 		irq_exit();
 		break;
 
+<<<<<<< HEAD
 #ifdef CONFIG_IRQ_WORK
 	case IPI_IRQ_WORK:
 		irq_enter();
@@ -692,6 +714,8 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 		irq_exit();
 		break;
 
+=======
+>>>>>>> p9x
 	case IPI_CPU_BACKTRACE:
 		ipi_cpu_backtrace(cpu, regs);
 		break;
@@ -701,10 +725,13 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 		       cpu, ipinr);
 		break;
 	}
+<<<<<<< HEAD
 
 	if ((unsigned)ipinr < NR_IPI)
 		trace_ipi_exit(ipi_types[ipinr]);
 
+=======
+>>>>>>> p9x
 	per_cpu(pending_ipi, cpu) = false;
 
 	set_irq_regs(old_regs);
@@ -732,6 +759,7 @@ void smp_send_stop(void)
 		udelay(1);
 
 	if (num_active_cpus() > 1)
+<<<<<<< HEAD
 		pr_warn("SMP: failed to stop secondary CPUs\n");
 }
 
@@ -748,6 +776,9 @@ void panic_smp_self_stop(void)
 	set_cpu_online(smp_processor_id(), false);
 	while (1)
 		cpu_relax();
+=======
+		pr_warning("SMP: failed to stop secondary CPUs\n");
+>>>>>>> p9x
 }
 
 /*

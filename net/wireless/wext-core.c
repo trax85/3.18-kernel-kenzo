@@ -342,7 +342,11 @@ static const int compat_event_type_size[] = {
 
 /* IW event code */
 
+<<<<<<< HEAD
 void wireless_nlevent_flush(void)
+=======
+static void wireless_nlevent_flush(void)
+>>>>>>> p9x
 {
 	struct sk_buff *skb;
 	struct net *net;
@@ -355,7 +359,10 @@ void wireless_nlevent_flush(void)
 				    GFP_KERNEL);
 	}
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(wireless_nlevent_flush);
+=======
+>>>>>>> p9x
 
 static int wext_netdev_notifier_call(struct notifier_block *nb,
 				     unsigned long state, void *ptr)

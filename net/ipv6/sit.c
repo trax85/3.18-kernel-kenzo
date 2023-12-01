@@ -562,13 +562,21 @@ static int ipip6_err(struct sk_buff *skb, u32 info)
 
 	if (type == ICMP_DEST_UNREACH && code == ICMP_FRAG_NEEDED) {
 		ipv4_update_pmtu(skb, dev_net(skb->dev), info,
+<<<<<<< HEAD
 				 t->parms.link, 0, IPPROTO_IPV6, 0);
+=======
+				 t->parms.link, 0, iph->protocol, 0);
+>>>>>>> p9x
 		err = 0;
 		goto out;
 	}
 	if (type == ICMP_REDIRECT) {
 		ipv4_redirect(skb, dev_net(skb->dev), t->parms.link, 0,
+<<<<<<< HEAD
 			      IPPROTO_IPV6, 0);
+=======
+			      iph->protocol, 0);
+>>>>>>> p9x
 		err = 0;
 		goto out;
 	}
@@ -986,10 +994,28 @@ static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
 
 	skb_set_inner_ipproto(skb, IPPROTO_IPV6);
 
+<<<<<<< HEAD
 	err = iptunnel_xmit(skb->sk, rt, skb, fl4.saddr, fl4.daddr,
 			    protocol, tos, ttl, df,
 			    !net_eq(tunnel->net, dev_net(dev)));
 	iptunnel_xmit_stats(err, &dev->stats, dev->tstats);
+=======
+	iph 			=	ip_hdr(skb);
+	iph->version		=	4;
+	iph->ihl		=	sizeof(struct iphdr)>>2;
+	iph->frag_off		=	df;
+	iph->protocol		=	IPPROTO_IPV6;
+	iph->tos		=	INET_ECN_encapsulate(tos, ipv6_get_dsfield(iph6));
+	iph->daddr		=	fl4.daddr;
+	iph->saddr		=	fl4.saddr;
+
+	if ((iph->ttl = tiph->ttl) == 0)
+		iph->ttl	=	iph6->hop_limit;
+
+	skb->ip_summed = CHECKSUM_NONE;
+	ip_select_ident(skb, NULL);
+	iptunnel_xmit(skb, dev);
+>>>>>>> p9x
 	return NETDEV_TX_OK;
 
 tx_error_icmp:
@@ -1824,10 +1850,19 @@ static int __net_init sit_init_net(struct net *net)
 	}
 	dev_net_set(sitn->fb_tunnel_dev, net);
 	sitn->fb_tunnel_dev->rtnl_link_ops = &sit_link_ops;
+<<<<<<< HEAD
 	/* FB netdevice is special: we have one, and only one per netns.
 	 * Allowing to move it to another netns is clearly unsafe.
 	 */
 	sitn->fb_tunnel_dev->features |= NETIF_F_NETNS_LOCAL;
+=======
+
+	err = ipip6_fb_tunnel_init(sitn->fb_tunnel_dev);
+	if (err)
+		goto err_dev_free;
+
+	ipip6_tunnel_clone_6rd(sitn->fb_tunnel_dev, sitn);
+>>>>>>> p9x
 
 	if ((err = register_netdev(sitn->fb_tunnel_dev)))
 		goto err_reg_dev;

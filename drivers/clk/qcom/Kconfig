@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 config COMMON_CLK_QCOM
 	tristate "Support for Qualcomm's clock controllers"
 	depends on OF
@@ -70,3 +71,12 @@ config MSM_MMCC_8974
 	  Support for the multimedia clock controller on msm8974 devices.
 	  Say Y if you want to support multimedia devices such as display,
 	  graphics, video encode/decode, camera, etc.
+=======
+config MSM_CLK_CONTROLLER_V2
+	bool "QTI clock driver"
+	---help---
+	   Generate clock data structures from definitions found in
+	   device tree.
+
+source "drivers/clk/qcom/mdss/Kconfig"
+>>>>>>> p9x

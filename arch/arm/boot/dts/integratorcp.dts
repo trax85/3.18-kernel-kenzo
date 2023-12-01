@@ -99,9 +99,15 @@
 	};
 
 	timer0: timer@13000000 {
+<<<<<<< HEAD
 		/* TIMER0 runs directly on the 25MHz chrystal */
 		compatible = "arm,integrator-cp-timer";
 		clocks = <&xtal25mhz>;
+=======
+		/* TIMER0 runs @ 25MHz */
+		compatible = "arm,integrator-cp-timer";
+		status = "disabled";
+>>>>>>> p9x
 	};
 
 	timer1: timer@13000100 {

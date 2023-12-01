@@ -313,7 +313,11 @@ static __init int sel_netnode_init(void)
 		sel_netnode_hash[iter].size = 0;
 	}
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return ret;
+>>>>>>> p9x
 }
 
 __initcall(sel_netnode_init);

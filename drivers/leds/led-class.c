@@ -22,6 +22,8 @@
 #include <linux/timer.h>
 #include "leds.h"
 
+#define LED_BUFF_SIZE 50
+
 static struct class *leds_class;
 
 static ssize_t brightness_show(struct device *dev,
@@ -32,7 +34,7 @@ static ssize_t brightness_show(struct device *dev,
 	/* no lock needed for this */
 	led_update_brightness(led_cdev);
 
-	return sprintf(buf, "%u\n", led_cdev->brightness);
+	return snprintf(buf, LED_BUFF_SIZE, "%u\n", led_cdev->brightness);
 }
 
 static ssize_t brightness_store(struct device *dev,
@@ -82,13 +84,52 @@ static ssize_t max_brightness_store(struct device *dev,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	led_cdev->max_brightness = state;
 	led_set_brightness(led_cdev, led_cdev->usr_brightness_req);
+=======
+	led_cdev->usr_brightness_req = state;
+	__led_set_brightness(led_cdev, state);
+>>>>>>> p9x
 
 	return size;
 }
 static DEVICE_ATTR_RW(max_brightness);
 
+<<<<<<< HEAD
+=======
+static ssize_t led_max_brightness_store(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t size)
+{
+	struct led_classdev *led_cdev = dev_get_drvdata(dev);
+	ssize_t ret = -EINVAL;
+	unsigned long state = 0;
+
+	ret = strict_strtoul(buf, 10, &state);
+	if (!ret) {
+		ret = size;
+		if (state > LED_FULL)
+			state = LED_FULL;
+		led_cdev->max_brightness = state;
+		led_set_brightness(led_cdev, led_cdev->usr_brightness_req);
+	}
+
+	return ret;
+}
+
+static ssize_t led_max_brightness_show(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	struct led_classdev *led_cdev = dev_get_drvdata(dev);
+
+	return snprintf(buf, LED_BUFF_SIZE, "%u\n", led_cdev->max_brightness);
+}
+
+static struct device_attribute led_class_attrs[] = {
+	__ATTR(brightness, 0644, led_brightness_show, led_brightness_store),
+	__ATTR(max_brightness, 0644, led_max_brightness_show,
+			led_max_brightness_store),
+>>>>>>> p9x
 #ifdef CONFIG_LEDS_TRIGGERS
 static DEVICE_ATTR(trigger, 0644, led_trigger_show, led_trigger_store);
 static struct attribute *led_trigger_attrs[] = {

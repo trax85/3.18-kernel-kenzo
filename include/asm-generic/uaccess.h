@@ -226,10 +226,16 @@ extern int __put_user_bad(void) __attribute__((noreturn));
 
 #define get_user(x, ptr)					\
 ({								\
+<<<<<<< HEAD
 	const void *__p = (ptr);				\
 	might_fault();						\
 	access_ok(VERIFY_READ, __p, sizeof(*ptr)) ?		\
 		__get_user((x), (__typeof__(*(ptr)) *)__p) :	\
+=======
+	might_sleep();						\
+	access_ok(VERIFY_READ, ptr, sizeof(*ptr)) ?		\
+		__get_user(x, ptr) :				\
+>>>>>>> p9x
 		((x) = (__typeof__(*(ptr)))0,-EFAULT);		\
 })
 
@@ -262,7 +268,11 @@ static inline long copy_from_user(void *to,
 		const void __user * from, unsigned long n)
 {
 	unsigned long res = n;
+<<<<<<< HEAD
 	might_fault();
+=======
+	might_sleep();
+>>>>>>> p9x
 	if (likely(access_ok(VERIFY_READ, from, n)))
 		res = __copy_from_user(to, from, n);
 	if (unlikely(res))

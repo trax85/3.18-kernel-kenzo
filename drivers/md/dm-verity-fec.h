@@ -12,7 +12,10 @@
 #ifndef DM_VERITY_FEC_H
 #define DM_VERITY_FEC_H
 
+<<<<<<< HEAD
 #include "dm.h"
+=======
+>>>>>>> p9x
 #include "dm-verity.h"
 #include <linux/rslib.h>
 
@@ -28,9 +31,12 @@
 #define DM_VERITY_FEC_BUF_MAX \
 	(1 << (PAGE_SHIFT - DM_VERITY_FEC_BUF_RS_BITS))
 
+<<<<<<< HEAD
 /* maximum recursion level for verity_fec_decode */
 #define DM_VERITY_FEC_MAX_RECURSION	4
 
+=======
+>>>>>>> p9x
 #define DM_VERITY_OPT_FEC_DEV		"use_fec_from_device"
 #define DM_VERITY_OPT_FEC_BLOCKS	"fec_blocks"
 #define DM_VERITY_OPT_FEC_START		"fec_start"
@@ -52,8 +58,11 @@ struct dm_verity_fec {
 	mempool_t *extra_pool;	/* mempool for extra buffers */
 	mempool_t *output_pool;	/* mempool for output */
 	struct kmem_cache *cache;	/* cache for buffers */
+<<<<<<< HEAD
 	atomic_t corrected;		/* corrected errors */
 	struct dm_kobject_holder kobj_holder;	/* for sysfs attributes */
+=======
+>>>>>>> p9x
 };
 
 /* per-bio data */
@@ -64,7 +73,10 @@ struct dm_verity_fec_io {
 	unsigned nbufs;		/* number of buffers allocated */
 	u8 *output;		/* buffer for corrected output */
 	size_t output_pos;
+<<<<<<< HEAD
 	unsigned level;		/* recursion level */
+=======
+>>>>>>> p9x
 };
 
 #ifdef CONFIG_DM_VERITY_FEC
@@ -76,12 +88,20 @@ extern bool verity_fec_is_enabled(struct dm_verity *v);
 
 extern int verity_fec_decode(struct dm_verity *v, struct dm_verity_io *io,
 			     enum verity_block_type type, sector_t block,
+<<<<<<< HEAD
 			     u8 *dest, struct bvec_iter *iter);
+=======
+			     u8 *dest, unsigned vector, unsigned offset);
+>>>>>>> p9x
 
 extern unsigned verity_fec_status_table(struct dm_verity *v, unsigned sz,
 					char *result, unsigned maxlen);
 
+<<<<<<< HEAD
 extern void verity_fec_finish_io(struct dm_verity_io *io);
+=======
+extern void verity_fec_finish_io(struct dm_verity_io *io, int error);
+>>>>>>> p9x
 extern void verity_fec_init_io(struct dm_verity_io *io);
 
 extern bool verity_is_fec_opt_arg(const char *arg_name);
@@ -107,7 +127,11 @@ static inline int verity_fec_decode(struct dm_verity *v,
 				    struct dm_verity_io *io,
 				    enum verity_block_type type,
 				    sector_t block, u8 *dest,
+<<<<<<< HEAD
 				    struct bvec_iter *iter)
+=======
+				    unsigned vector, unsigned offset)
+>>>>>>> p9x
 {
 	return -EOPNOTSUPP;
 }
@@ -119,7 +143,11 @@ static inline unsigned verity_fec_status_table(struct dm_verity *v,
 	return sz;
 }
 
+<<<<<<< HEAD
 static inline void verity_fec_finish_io(struct dm_verity_io *io)
+=======
+static inline void verity_fec_finish_io(struct dm_verity_io *io, int error)
+>>>>>>> p9x
 {
 }
 

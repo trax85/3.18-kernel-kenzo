@@ -208,6 +208,7 @@ static int sctp_v6_xmit(struct sk_buff *skb, struct sctp_transport *transport)
 	struct sock *sk = skb->sk;
 	struct ipv6_pinfo *np = inet6_sk(sk);
 	struct flowi6 *fl6 = &transport->fl.u.ip6;
+<<<<<<< HEAD
 	int res;
 
 	pr_debug("%s: skb:%p, len:%d, src:%pI6 dst:%pI6\n", __func__, skb,
@@ -217,13 +218,28 @@ static int sctp_v6_xmit(struct sk_buff *skb, struct sctp_transport *transport)
 
 	if (!(transport->param_flags & SPP_PMTUD_ENABLE))
 		skb->ignore_df = 1;
+=======
 
-	SCTP_INC_STATS(sock_net(sk), SCTP_MIB_OUTSCTPPACKS);
+	SCTP_DEBUG_PRINTK("%s: skb:%p, len:%d, src:%pI6 dst:%pI6\n",
+			  __func__, skb, skb->len,
+			  &fl6->saddr, &fl6->daddr);
+>>>>>>> p9x
 
+	IP6_ECN_flow_xmit(sk, fl6->flowlabel);
+
+<<<<<<< HEAD
 	rcu_read_lock();
 	res = ip6_xmit(sk, skb, fl6, rcu_dereference(np->opt), np->tclass);
 	rcu_read_unlock();
 	return res;
+=======
+	if (!(transport->param_flags & SPP_PMTUD_ENABLE))
+		skb->local_df = 1;
+
+	SCTP_INC_STATS(sock_net(sk), SCTP_MIB_OUTSCTPPACKS);
+
+	return ip6_xmit(sk, skb, fl6, np->opt, np->tclass);
+>>>>>>> p9x
 }
 
 /* Returns the dst cache entry for the given source and destination ip
@@ -263,11 +279,16 @@ static void sctp_v6_get_dst(struct sctp_transport *t, union sctp_addr *saddr,
 		pr_debug("src=%pI6 - ", &fl6->saddr);
 	}
 
+<<<<<<< HEAD
 	rcu_read_lock();
 	final_p = fl6_update_dst(fl6, rcu_dereference(np->opt), &final);
 	rcu_read_unlock();
 
 	dst = ip6_dst_lookup_flow(sk, fl6, final_p);
+=======
+	final_p = fl6_update_dst(fl6, np->opt, &final);
+	dst = ip6_dst_lookup_flow(sk, fl6, final_p, false);
+>>>>>>> p9x
 	if (!asoc || saddr)
 		goto out;
 
@@ -345,6 +366,16 @@ static void sctp_v6_get_dst(struct sctp_transport *t, union sctp_addr *saddr,
 		matchlen = bmatchlen;
 	}
 	rcu_read_unlock();
+<<<<<<< HEAD
+=======
+
+	if (baddr) {
+		fl6->saddr = baddr->v6.sin6_addr;
+		fl6->fl6_sport = baddr->v6.sin6_port;
+		final_p = fl6_update_dst(fl6, np->opt, &final);
+		dst = ip6_dst_lookup_flow(sk, fl6, final_p, false);
+	}
+>>>>>>> p9x
 
 out:
 	if (!IS_ERR_OR_NULL(dst)) {

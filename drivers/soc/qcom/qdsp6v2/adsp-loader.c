@@ -1,6 +1,10 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2014, 2016,
  * 2017, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -21,8 +25,11 @@
 #include <linux/qdsp6v2/apr.h>
 #include <linux/of_device.h>
 #include <linux/sysfs.h>
+<<<<<<< HEAD
 #include <linux/workqueue.h>
 
+=======
+>>>>>>> p9x
 #include <soc/qcom/subsystem_restart.h>
 
 #define Q6_PIL_GET_DELAY_MS 100
@@ -47,6 +54,7 @@ static struct attribute *attrs[] = {
 	NULL,
 };
 
+<<<<<<< HEAD
 static struct work_struct adsp_ldr_work;
 static struct platform_device *adsp_private;
 static void adsp_loader_unload(struct platform_device *pdev);
@@ -54,6 +62,14 @@ static void adsp_loader_unload(struct platform_device *pdev);
 static void adsp_load_fw(struct work_struct *adsp_ldr_work)
 {
 	struct platform_device *pdev = adsp_private;
+=======
+static struct platform_device *adsp_private;
+static void adsp_loader_unload(struct platform_device *pdev);
+
+static void adsp_loader_do(struct platform_device *pdev)
+{
+
+>>>>>>> p9x
 	struct adsp_loader_private *priv = NULL;
 
 	const char *adsp_dt = "qcom,adsp-state";
@@ -89,10 +105,19 @@ static void adsp_load_fw(struct work_struct *adsp_ldr_work)
 		goto load_adsp;
 	}
 	if (!strcmp(img_name, "modem")) {
+<<<<<<< HEAD
 		/* adsp_state always returns "0". So load modem image based on
 		apr_modem_state to prevent loading of image twice */
 		adsp_state = apr_get_modem_state();
 		if (adsp_state != APR_SUBSYS_LOADED) {
+=======
+		/*
+                 * adsp_state always returns "0". So load modem image based on
+		 * apr_modem_state to prevent loading of image twice
+                 */
+		adsp_state = apr_get_modem_state();
+		if (adsp_state == APR_SUBSYS_DOWN) {
+>>>>>>> p9x
 			priv = platform_get_drvdata(pdev);
 			if (!priv) {
 				dev_err(&pdev->dev,
@@ -150,11 +175,14 @@ fail:
 	return;
 }
 
+<<<<<<< HEAD
 static void adsp_loader_do(struct platform_device *pdev)
 {
 	dev_info(&pdev->dev, "%s: scheduling work to load ADSP fw\n", __func__);
 	schedule_work(&adsp_ldr_work);
 }
+=======
+>>>>>>> p9x
 
 static ssize_t adsp_boot_store(struct kobject *kobj,
 	struct kobj_attribute *attr,
@@ -168,7 +196,11 @@ static ssize_t adsp_boot_store(struct kobject *kobj,
 		pr_debug("%s: going to call adsp_loader_do\n", __func__);
 		adsp_loader_do(adsp_private);
 	} else if (boot == IMAGE_UNLOAD_CMD) {
+<<<<<<< HEAD
 		pr_debug("%s: going to call adsp_unloader\n", __func__);
+=======
+		pr_debug("%s: going to call adsp_loader_unloader\n", __func__);
+>>>>>>> p9x
 		adsp_loader_unload(adsp_private);
 	}
 	return count;
@@ -279,8 +311,11 @@ static int adsp_loader_probe(struct platform_device *pdev)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	INIT_WORK(&adsp_ldr_work, adsp_load_fw);
 
+=======
+>>>>>>> p9x
 	return 0;
 }
 

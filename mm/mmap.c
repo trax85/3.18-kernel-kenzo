@@ -62,8 +62,13 @@
 #endif
 
 #ifdef CONFIG_HAVE_ARCH_MMAP_RND_BITS
+<<<<<<< HEAD
 int mmap_rnd_bits_min = CONFIG_ARCH_MMAP_RND_BITS_MIN;
 int mmap_rnd_bits_max = CONFIG_ARCH_MMAP_RND_BITS_MAX;
+=======
+const int mmap_rnd_bits_min = CONFIG_ARCH_MMAP_RND_BITS_MIN;
+const int mmap_rnd_bits_max = CONFIG_ARCH_MMAP_RND_BITS_MAX;
+>>>>>>> p9x
 int mmap_rnd_bits __read_mostly = CONFIG_ARCH_MMAP_RND_BITS;
 #endif
 #ifdef CONFIG_HAVE_ARCH_MMAP_RND_COMPAT_BITS
@@ -169,10 +174,13 @@ EXPORT_SYMBOL_GPL(vm_memory_committed);
 int __vm_enough_memory(struct mm_struct *mm, long pages, int cap_sys_admin)
 {
 	long free, allowed, reserve;
+<<<<<<< HEAD
 
 	VM_WARN_ONCE(percpu_counter_read(&vm_committed_as) <
 			-(s64)vm_committed_as_batch * num_online_cpus(),
 			"memory commitment underflow");
+=======
+>>>>>>> p9x
 
 	vm_acct_memory(pages);
 
@@ -475,6 +483,7 @@ static void validate_mm(struct mm_struct *mm)
 	while (vma) {
 		struct anon_vma *anon_vma = vma->anon_vma;
 		struct anon_vma_chain *avc;
+<<<<<<< HEAD
 
 		if (anon_vma) {
 			anon_vma_lock_read(anon_vma);
@@ -483,6 +492,12 @@ static void validate_mm(struct mm_struct *mm)
 			anon_vma_unlock_read(anon_vma);
 		}
 
+=======
+		vma_lock_anon_vma(vma);
+		list_for_each_entry(avc, &vma->anon_vma_chain, same_vma)
+			anon_vma_interval_tree_verify(avc);
+		vma_unlock_anon_vma(vma);
+>>>>>>> p9x
 		highest_address = vm_end_gap(vma);
 		vma = vma->vm_next;
 		i++;
@@ -947,7 +962,11 @@ again:			remove_next = 1 + (end > next->vm_end);
 		else if (next)
 			vma_gap_update(next);
 		else
+<<<<<<< HEAD
 			VM_WARN_ON(mm->highest_vm_end != vm_end_gap(vma));
+=======
+			WARN_ON(mm->highest_vm_end != vm_end_gap(vma));
+>>>>>>> p9x
 	}
 	if (insert && file)
 		uprobe_mmap(insert);
@@ -1076,7 +1095,11 @@ can_vma_merge_after(struct vm_area_struct *vma, unsigned long vm_flags,
 struct vm_area_struct *vma_merge(struct mm_struct *mm,
 			struct vm_area_struct *prev, unsigned long addr,
 			unsigned long end, unsigned long vm_flags,
+<<<<<<< HEAD
 		    struct anon_vma *anon_vma, struct file *file,
+=======
+		     	struct anon_vma *anon_vma, struct file *file,
+>>>>>>> p9x
 			pgoff_t pgoff, struct mempolicy *policy,
 			const char __user *anon_name)
 {
@@ -1335,10 +1358,18 @@ unsigned long do_mmap_pgoff(struct file *file, unsigned long addr,
 
 	*populate = 0;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MSM_APP_SETTINGS
 	if (use_app_setting)
 		apply_app_setting_bit(file);
 #endif
+=======
+	while (file && (file->f_mode & FMODE_NONMAPPABLE))
+		file = file->f_op->get_lower_file(file);
+
+        if (!len)
+		return -EINVAL;
+>>>>>>> p9x
 
 	/*
 	 * Does the application expect PROT_READ to imply PROT_EXEC?
@@ -1349,9 +1380,6 @@ unsigned long do_mmap_pgoff(struct file *file, unsigned long addr,
 	if ((prot & PROT_READ) && (current->personality & READ_IMPLIES_EXEC))
 		if (!(file && (file->f_path.mnt->mnt_flags & MNT_NOEXEC)))
 			prot |= PROT_EXEC;
-
-	if (!len)
-		return -EINVAL;
 
 	if (!(flags & MAP_FIXED))
 		addr = round_hint_to_min(addr);
@@ -2020,7 +2048,11 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
 	info.align_mask = 0;
 	return vm_unmapped_area(&info);
 }
+<<<<<<< HEAD
 #endif
+=======
+#endif	
+>>>>>>> p9x
 
 /*
  * This mmap-allocator allocates new areas top-down from below the
@@ -2266,7 +2298,11 @@ int expand_upwards(struct vm_area_struct *vma, unsigned long address)
 	 * is required to hold the mmap_sem in read mode.  We need the
 	 * anon_vma lock to serialize against concurrent expand_stacks.
 	 */
+<<<<<<< HEAD
 	anon_vma_lock_write(vma->anon_vma);
+=======
+	vma_lock_anon_vma(vma);
+>>>>>>> p9x
 
 	/* Somebody else might have raced and expanded it already */
 	if (address > vma->vm_end) {
@@ -2319,7 +2355,11 @@ int expand_downwards(struct vm_area_struct *vma,
 {
 	struct vm_area_struct *prev;
 	unsigned long gap_addr;
+<<<<<<< HEAD
 	int error = 0;
+=======
+	int error;
+>>>>>>> p9x
 
 	address &= PAGE_MASK;
 	if (address < mmap_min_addr)
@@ -2346,7 +2386,11 @@ int expand_downwards(struct vm_area_struct *vma,
 	 * is required to hold the mmap_sem in read mode.  We need the
 	 * anon_vma lock to serialize against concurrent expand_stacks.
 	 */
+<<<<<<< HEAD
 	anon_vma_lock_write(vma->anon_vma);
+=======
+	vma_lock_anon_vma(vma);
+>>>>>>> p9x
 
 	/* Somebody else might have raced and expanded it already */
 	if (address < vma->vm_start) {
@@ -2525,9 +2569,13 @@ detach_vmas_to_be_unmapped(struct mm_struct *mm, struct vm_area_struct *vma,
 	} else
 		mm->highest_vm_end = prev ? vm_end_gap(prev) : 0;
 	tail_vma->vm_next = NULL;
+<<<<<<< HEAD
 
 	/* Kill the cache */
 	vmacache_invalidate(mm);
+=======
+	mm->mmap_cache = NULL;		/* Kill the cache. */
+>>>>>>> p9x
 }
 
 /*

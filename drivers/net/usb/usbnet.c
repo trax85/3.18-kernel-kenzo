@@ -46,8 +46,12 @@
 #include <linux/kernel.h>
 #include <linux/pm_runtime.h>
 #include <linux/debugfs.h>
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/ipa_odu_bridge.h>
+=======
+
+>>>>>>> p9x
 #define DRIVER_VERSION		"22-Aug-2005"
 
 
@@ -64,7 +68,11 @@
  * more before an irq is required, under load.  Jumbograms change
  * the equation.
  */
+<<<<<<< HEAD
 #define	MAX_QUEUE_MEMORY	(600 * 1518)
+=======
+#define	MAX_QUEUE_MEMORY	(60 * 1518)
+>>>>>>> p9x
 #define	RX_QLEN(dev)		((dev)->rx_qlen)
 #define	TX_QLEN(dev)		((dev)->tx_qlen)
 
@@ -89,7 +97,13 @@ static u8	node_id [ETH_ALEN];
 
 static const char driver_name [] = "usbnet";
 
+<<<<<<< HEAD
 static struct workqueue_struct	*usbnet_wq;
+=======
+struct workqueue_struct	*usbnet_wq;
+
+static DECLARE_WAIT_QUEUE_HEAD(unlink_wakeup);
+>>>>>>> p9x
 
 /* use ethtool to change the level for any given device */
 static int msg_level = -1;
@@ -331,6 +345,7 @@ static void __usbnet_status_stop_force(struct usbnet *dev)
 void usbnet_skb_return (struct usbnet *dev, struct sk_buff *skb)
 {
 	int	status;
+<<<<<<< HEAD
 	struct sk_buff *pend_skb;
 	struct usbnet_ipa_ctx	*punet_ipa = dev->pusbnet_ipa;
 	struct	ipa_tx_meta ipa_meta = {0x0};
@@ -385,6 +400,16 @@ unlock_and_schedule:
 		spin_unlock(&dev->ipa_pendq.lock);
 		if (dev->ipa_pendq.qlen)
 			queue_work(usbnet_wq, &dev->ipa_send_task);
+=======
+	struct	ipa_tx_meta ipa_meta = {0x0};
+	u8	protocol_type = (skb->data[ETH_HLEN] & 0xf0);
+
+	/* Pass IPv4 and IPv6 packets to IPA by peeking into the IP header */
+	if (enable_ipa_bridge  &&
+		(protocol_type == 0x40 || protocol_type == 0x60)) {
+		dev->pusbnet_ipa->stats.rx_ipa_send++;
+		odu_bridge_tx_dp(skb, &ipa_meta);
+>>>>>>> p9x
 		return;
 	}
 
@@ -393,7 +418,9 @@ unlock_and_schedule:
 		return;
 	}
 
-	skb->protocol = eth_type_trans (skb, dev->net);
+	if (!skb->protocol)
+		skb->protocol = eth_type_trans(skb, dev->net);
+
 	dev->net->stats.rx_packets++;
 	dev->net->stats.rx_bytes += skb->len;
 
@@ -422,8 +449,12 @@ void usbnet_update_max_qlen(struct usbnet *dev)
 		dev->tx_qlen = MAX_QUEUE_MEMORY / dev->hard_mtu;
 		break;
 	case USB_SPEED_SUPER:
+<<<<<<< HEAD
 		/*
 		 * Not take default 5ms qlen for super speed HC to
+=======
+		/* Not take default 5ms qlen for super speed HC to
+>>>>>>> p9x
 		 * save memory, and iperf tests show 2.5ms qlen can
 		 * work well
 		 */
@@ -525,7 +556,7 @@ EXPORT_SYMBOL_GPL(usbnet_defer_kevent);
 
 /*-------------------------------------------------------------------------*/
 
-static void rx_complete (struct urb *urb);
+static void rx_complete(struct urb *urb);
 
 static int rx_submit (struct usbnet *dev, struct urb *urb, gfp_t flags)
 {
@@ -583,6 +614,7 @@ static int rx_submit (struct usbnet *dev, struct urb *urb, gfp_t flags)
 			queue_work(usbnet_wq, &dev->bh_w);
 			break;
 		case 0:
+			usb_mark_last_busy(dev->udev);
 			__usbnet_queue_skb(&dev->rxq, skb, rx_start);
 		}
 	} else {
@@ -630,7 +662,7 @@ done:
 
 /*-------------------------------------------------------------------------*/
 
-static void rx_complete (struct urb *urb)
+static void rx_complete(struct urb *urb)
 {
 	struct sk_buff		*skb = (struct sk_buff *) urb->context;
 	struct skb_data		*entry = (struct skb_data *) skb->cb;
@@ -724,6 +756,7 @@ block:
 	}
 	netif_dbg(dev, rx_err, dev->net, "no read resubmitted\n");
 }
+EXPORT_SYMBOL_GPL(rx_complete);
 
 /*-------------------------------------------------------------------------*/
 void usbnet_pause_rx(struct usbnet *dev)
@@ -823,7 +856,7 @@ EXPORT_SYMBOL_GPL(usbnet_unlink_rx_urbs);
 /*-------------------------------------------------------------------------*/
 
 // precondition: never called in_interrupt
-static void usbnet_terminate_urbs(struct usbnet *dev)
+void usbnet_terminate_urbs(struct usbnet *dev)
 {
 	DECLARE_WAITQUEUE(wait, current);
 	int temp;
@@ -846,6 +879,7 @@ static void usbnet_terminate_urbs(struct usbnet *dev)
 	set_current_state(TASK_RUNNING);
 	remove_wait_queue(&dev->wait, &wait);
 }
+EXPORT_SYMBOL_GPL(usbnet_terminate_urbs);
 
 int usbnet_stop (struct net_device *net)
 {
@@ -1311,12 +1345,15 @@ void usbnet_tx_timeout (struct net_device *net)
 
 	unlink_urbs (dev, &dev->txq);
 	queue_work(usbnet_wq, &dev->bh_w);
+<<<<<<< HEAD
 	/* this needs to be handled individually because the generic layer
 	 * doesn't know what is sufficient and could not restore private
 	 * information if a remedy of an unconditional reset were used.
 	 */
 	if (dev->driver_info->recover)
 		(dev->driver_info->recover)(dev);
+=======
+>>>>>>> p9x
 
 }
 EXPORT_SYMBOL_GPL(usbnet_tx_timeout);
@@ -1531,6 +1568,7 @@ static void usbnet_bh (unsigned long param)
 	struct sk_buff		*skb;
 	struct skb_data		*entry;
 
+	set_wake_up_idle(true);
 	while ((skb = skb_dequeue (&dev->done))) {
 		entry = (struct skb_data *) skb->cb;
 		switch (entry->state) {
@@ -1548,6 +1586,7 @@ static void usbnet_bh (unsigned long param)
 			netdev_dbg(dev->net, "bogus skb state %d\n", entry->state);
 		}
 	}
+	set_wake_up_idle(false);
 
 	/* restart RX again after disabling due to high error rate */
 	clear_bit(EVENT_RX_KILL, &dev->flags);
@@ -1557,7 +1596,11 @@ static void usbnet_bh (unsigned long param)
 	 */
 	if (waitqueue_active(&dev->wait)) {
 		if (dev->txq.qlen + dev->rxq.qlen + dev->done.qlen == 0)
+<<<<<<< HEAD
 			wake_up_all(&dev->wait);
+=======
+			wake_up_all(&unlink_wakeup);
+>>>>>>> p9x
 
 	// or are we maybe short a few urbs?
 	} else if (netif_running (dev->net) &&
@@ -1597,8 +1640,12 @@ static void usbnet_bh_w(struct work_struct *work)
  *
  *-------------------------------------------------------------------------*/
 static ssize_t usbnet_ipa_debugfs_read_stats(struct file *file,
+<<<<<<< HEAD
 					     char __user *user_buf,
 					     size_t count, loff_t *ppos)
+=======
+			char __user *user_buf, size_t count, loff_t *ppos)
+>>>>>>> p9x
 {
 	struct usbnet *dev = file->private_data;
 	struct usbnet_ipa_ctx *usbnet_ipa = dev->pusbnet_ipa;
@@ -1631,6 +1678,7 @@ static ssize_t usbnet_ipa_debugfs_read_stats(struct file *file,
 	"IPA TX Send: ", usbnet_ipa->stats.tx_ipa_send);
 	len += scnprintf(buf + len, buf_len - len, "%25s %10llu\n",
 	"IPA TX Send Err: ", usbnet_ipa->stats.tx_ipa_send_err);
+<<<<<<< HEAD
 	len += scnprintf(buf + len, buf_len - len, "%25s %10llu\n",
 	"IPA RX Packet Drops: ", usbnet_ipa->stats.flow_control_pkt_drop);
 	len += scnprintf(buf + len, buf_len - len, "%25s %10llu\n",
@@ -1641,6 +1689,8 @@ static ssize_t usbnet_ipa_debugfs_read_stats(struct file *file,
 	"IPA free desc cnt ", dev->ipa_free_desc_cnt);
 	len += scnprintf(buf + len, buf_len - len, "%25s %10d\n",
 	"IPA send qlen ", dev->ipa_pendq.qlen);
+=======
+>>>>>>> p9x
 
 	if (len > buf_len)
 		len = buf_len;
@@ -1665,7 +1715,11 @@ static int usbnet_debugfs_init(struct usbnet *dev)
 		return -ENOMEM;
 
 	debugfs_create_file("stats", S_IRUSR, dev->pusbnet_ipa->debugfs_dir,
+<<<<<<< HEAD
 			    dev, &fops_usbnet_ipa_stats);
+=======
+					dev, &fops_usbnet_ipa_stats);
+>>>>>>> p9x
 
 	return 0;
 }
@@ -1675,6 +1729,7 @@ void usbnet_debugfs_exit(struct usbnet *dev)
 	debugfs_remove_recursive(dev->pusbnet_ipa->debugfs_dir);
 }
 
+<<<<<<< HEAD
 static void usbnet_ipa_cleanup_rm(struct usbnet *dev)
 {
 	int ret;
@@ -1698,6 +1753,12 @@ static void usbnet_ipa_cleanup_rm(struct usbnet *dev)
 	ipa_rm_delete_dependency(IPA_RM_RESOURCE_ODU_ADAPT_PROD,
 				 IPA_RM_RESOURCE_APPS_CONS);
 
+=======
+static void usbnet_ipa_cleanup_rm(void)
+{
+	int ret;
+
+>>>>>>> p9x
 	ret = ipa_rm_delete_resource(IPA_RM_RESOURCE_ODU_ADAPT_PROD);
 	if (ret)
 		pr_warn("Resource:IPA_RM_RESOURCE_ODU_ADAPT_PROD del fail %d\n",
@@ -1736,6 +1797,7 @@ void usbnet_disconnect (struct usb_interface *intf)
 	cancel_work_sync(&dev->kevent);
 
 	if (enable_ipa_bridge) {
+<<<<<<< HEAD
 		skb_queue_purge(&dev->ipa_pendq);
 		retval = odu_bridge_disconnect();
 		if (retval)
@@ -1748,6 +1810,19 @@ void usbnet_disconnect (struct usb_interface *intf)
 				"%s ODU bridge cleanup failed.\n",
 				__func__);
 		usbnet_ipa_cleanup_rm(dev);
+=======
+		retval = odu_bridge_disconnect();
+		if (retval)
+			dev_dbg(&dev->udev->dev,
+			"%s Disconnect from ODU bridge failed.\n",
+			__func__);
+		retval = odu_bridge_cleanup();
+		if (retval)
+			dev_dbg(&dev->udev->dev,
+			"%s ODU bridge cleanup failed.\n",
+			__func__);
+		usbnet_ipa_cleanup_rm();
+>>>>>>> p9x
 		usbnet_debugfs_exit(dev);
 		kfree(dev->pusbnet_ipa);
 	}
@@ -1788,6 +1863,7 @@ static struct device_type wwan_type = {
 };
 
 static void usbnet_ipa_rm_notify(void *user_data, enum ipa_rm_event event,
+<<<<<<< HEAD
 				 unsigned long data)
 {
 	struct usbnet *dev = (struct usbnet *)user_data;
@@ -1806,6 +1882,11 @@ static void usbnet_ipa_rm_notify(void *user_data, enum ipa_rm_event event,
 			"Un-expected event %d\n", event);
 		break;
 	}
+=======
+							unsigned long data)
+{
+	pr_debug(" %s IPA RM Evt: %d\n", __func__, event);
+>>>>>>> p9x
 }
 
 static int usbnet_ipa_rm_cons_request(void)
@@ -1832,7 +1913,11 @@ static int usbnet_ipa_setup_rm(struct usbnet *dev)
 
 	ret = ipa_rm_create_resource(&create_params);
 	if (ret) {
+<<<<<<< HEAD
 		dev_err(&dev->udev->dev,
+=======
+		dev_dbg(&dev->udev->dev,
+>>>>>>> p9x
 			"Create ODU PROD RM resource failed: %d\n", ret);
 		goto prod_fail;
 	}
@@ -1845,11 +1930,16 @@ static int usbnet_ipa_setup_rm(struct usbnet *dev)
 
 	ret = ipa_rm_create_resource(&create_params);
 	if (ret) {
+<<<<<<< HEAD
 		dev_err(&dev->udev->dev,
+=======
+		dev_dbg(&dev->udev->dev,
+>>>>>>> p9x
 			"Create ODU CONC RM resource failed: %d\n", ret);
 		goto delete_prod;
 	}
 
+<<<<<<< HEAD
 	init_completion(&dev->rm_prod_granted_comp);
 
 	ipa_rm_add_dependency(IPA_RM_RESOURCE_ODU_ADAPT_PROD,
@@ -1887,12 +1977,29 @@ prod_fail:
 
 static void usbnet_ipa_tx_dp_cb(void *priv, enum ipa_dp_evt_type evt,
 				unsigned long data)
+=======
+	return ret;
+
+delete_prod:
+	ipa_rm_delete_resource(IPA_RM_RESOURCE_ODU_ADAPT_PROD);
+
+prod_fail:
+	return ret;
+
+}
+
+static void usbnet_ipa_tx_dp_cb(void *priv, enum ipa_dp_evt_type evt,
+							unsigned long data)
+>>>>>>> p9x
 {
 	struct usbnet *dev = priv;
 	struct usbnet_ipa_ctx *usbnet_ipa = dev->pusbnet_ipa;
 	struct sk_buff *skb = (struct sk_buff *)data;
 	int status;
+<<<<<<< HEAD
 	u32 qlen = 0;
+=======
+>>>>>>> p9x
 
 	switch (evt) {
 	case IPA_RECEIVE:
@@ -1911,6 +2018,7 @@ static void usbnet_ipa_tx_dp_cb(void *priv, enum ipa_dp_evt_type evt,
 		dev->net->stats.rx_packets++;
 		dev->net->stats.rx_bytes += skb->len;
 		dev_kfree_skb(skb);
+<<<<<<< HEAD
 		spin_lock(&dev->ipa_pendq.lock);
 		qlen = skb_queue_len(&dev->ipa_pendq);
 		dev->ipa_free_desc_cnt++;
@@ -1920,6 +2028,8 @@ static void usbnet_ipa_tx_dp_cb(void *priv, enum ipa_dp_evt_type evt,
 
 		if (qlen)
 			queue_work(usbnet_wq, &dev->ipa_send_task);
+=======
+>>>>>>> p9x
 		break;
 
 	default:
@@ -1938,7 +2048,11 @@ static void usbnet_ipa_tx_dl(void *priv, struct sk_buff *skb)
 
 	if (ret != NETDEV_TX_OK) {
 		pr_err("%s usbnet_ipa_tx_dl() failed xmit returned %d\n",
+<<<<<<< HEAD
 		       __func__, ret);
+=======
+					__func__, ret);
+>>>>>>> p9x
 		usbnet_ipa->stats.tx_ipa_send_err++;
 		dev_kfree_skb_any(skb);
 	} else {
@@ -1959,24 +2073,39 @@ static int usbnet_ipa_set_perf_level(struct usbnet *dev)
 		profile.max_supported_bandwidth_mbps = 400;
 
 	ret = ipa_rm_set_perf_profile(IPA_RM_RESOURCE_ODU_ADAPT_PROD,
+<<<<<<< HEAD
 				      &profile);
 	if (ret) {
 		pr_err("Err to set BW: IPA_RM_RESOURCE_ODU_ADAPT_PROD err:%d\n",
 		       ret);
+=======
+					&profile);
+	if (ret) {
+		pr_err("Err to set BW: IPA_RM_RESOURCE_ODU_ADAPT_PROD err:%d\n",
+			ret);
+>>>>>>> p9x
 		return ret;
 	}
 
 	ret = ipa_rm_set_perf_profile(IPA_RM_RESOURCE_ODU_ADAPT_CONS,
+<<<<<<< HEAD
 				      &profile);
 	if (ret) {
 		pr_err("Err to set BW: IPA_RM_RESOURCE_ODU_ADAPT_CONS err:%d\n",
 		       ret);
+=======
+					&profile);
+	if (ret) {
+		pr_err("Err to set BW: IPA_RM_RESOURCE_ODU_ADAPT_CONS err:%d\n",
+			ret);
+>>>>>>> p9x
 		return ret;
 	}
 
 	return ret;
 }
 
+<<<<<<< HEAD
 /* usbnet_ipa_send_routine - Sends packets to IPA/ODU bridge Driver
  * Scheduled on RX of IPA_WRITE_DONE Event
  */
@@ -2055,6 +2184,8 @@ static void usbnet_ipa_ready_callback(void *user_data)
 	queue_work(usbnet_wq, &dev->odu_bridge_init);
 }
 
+=======
+>>>>>>> p9x
 int
 usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 {
@@ -2067,6 +2198,11 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 	const char			*name;
 	struct usb_driver 	*driver = to_usb_driver(udev->dev.driver);
 	struct usbnet_ipa_ctx *usbnet_ipa = NULL;
+<<<<<<< HEAD
+=======
+	struct odu_bridge_params *params_ptr, params;
+	params_ptr = &params;
+>>>>>>> p9x
 
 	/* usbnet already took usb runtime pm, so have to enable the feature
 	 * for usb interface, otherwise usb_autopm_get_interface may return
@@ -2198,6 +2334,7 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 	/* initialize max rx_qlen and tx_qlen */
 	usbnet_update_max_qlen(dev);
 
+<<<<<<< HEAD
 	if (dev->can_dma_sg && !(info->flags & FLAG_SEND_ZLP) &&
 		!(info->flags & FLAG_MULTI_PACKET)) {
 		dev->padding_pkt = kzalloc(1, GFP_KERNEL);
@@ -2207,6 +2344,8 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 		}
 	}
 
+=======
+>>>>>>> p9x
 	status = register_netdev (net);
 	if (status)
 		goto free_padding_pkt;
@@ -2219,10 +2358,18 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 
 	if (enable_ipa_bridge) {
 		/* Init IPA Context */
+<<<<<<< HEAD
 		usbnet_ipa = kzalloc(sizeof(*usbnet_ipa), GFP_KERNEL);
 		if (!usbnet_ipa) {
 			status = -ENOMEM;
 			goto unreg_netdev;
+=======
+		usbnet_ipa = kzalloc(sizeof(struct usbnet_ipa_ctx), GFP_KERNEL);
+		if (!usbnet_ipa) {
+			pr_err("kzalloc err.\n");
+			status = -ENOMEM;
+			goto out4;
+>>>>>>> p9x
 		}
 
 		dev->pusbnet_ipa = usbnet_ipa;
@@ -2230,6 +2377,7 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 		dev->ipa_high_watermark = USBNET_IPA_SYS_PIPE_MAX_PKTS_DESC;
 		dev->ipa_low_watermark = USBNET_IPA_SYS_PIPE_MIN_PKTS_DESC;
 
+<<<<<<< HEAD
 		/* Initialize flow control variables */
 		skb_queue_head_init(&dev->ipa_pendq);
 		INIT_WORK(&dev->ipa_send_task, usbnet_ipa_send_routine);
@@ -2239,12 +2387,19 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 		if (status) {
 			pr_err("USBNET: IPA Setup RM Failed\n");
 			goto free_ipa;
+=======
+		status = usbnet_ipa_setup_rm(dev);
+		if (status) {
+			pr_err("USBNET: IPA Setup RM Failed\n");
+			goto out4;
+>>>>>>> p9x
 		}
 
 		status = usbnet_debugfs_init(dev);
 		if (status)
 			pr_err("USBNET: Debugfs Init Failed\n");
 
+<<<<<<< HEAD
 		status = ipa_register_ipa_ready_cb(usbnet_ipa_ready_callback,
 						   dev);
 		if (!status) {
@@ -2255,6 +2410,21 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 		} else {
 			pr_err("USBNET: error in ipa register cb\n");
 			goto free_ipa;
+=======
+		/* Initialize the ODU bridge driver now: odu_bridge_init()*/
+		params_ptr->netdev_name = net->name;
+		params_ptr->priv = dev;
+		params.tx_dp_notify = usbnet_ipa_tx_dp_cb;
+		params_ptr->send_dl_skb = (void *)&usbnet_ipa_tx_dl;
+		memcpy(params_ptr->device_ethaddr, net->dev_addr, 6);
+		params_ptr->ipa_desc_size = (dev->ipa_high_watermark + 1) *
+					sizeof(struct sps_iovec);
+
+		status = odu_bridge_init(params_ptr);
+		if (status) {
+			pr_err("Couldnt initialize ODU_Bridge Driver\n");
+			goto out4;
+>>>>>>> p9x
 		}
 	}
 
@@ -2265,6 +2435,15 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
 
 	if (dev->driver_info->flags & FLAG_LINK_INTR)
 		usbnet_link_change(dev, 0, 0);
+
+	if (enable_ipa_bridge) {
+		status = odu_bridge_connect();
+		if (status)
+			pr_err("Could not connect to ODU bridge %d\n",
+				status);
+		else
+			usbnet_ipa_set_perf_level(dev);
+	}
 
 	return 0;
 
@@ -2279,7 +2458,18 @@ free_urb:
 unbind:
 	if (info->unbind)
 		info->unbind (dev, udev);
+<<<<<<< HEAD
 free_netdevice:
+=======
+out1:
+	/* subdrivers must undo all they did in bind() if they
+	 * fail it, but we may fail later and a deferred kevent
+	 * may trigger an error resubmitting itself and, worse,
+	 * schedule a timer. So we kill it all just in case.
+	 */
+	cancel_work_sync(&dev->kevent);
+	del_timer_sync(&dev->delay);
+>>>>>>> p9x
 	free_netdev(net);
 exit:
 	return status;
@@ -2626,7 +2816,10 @@ static int __init usbnet_init(void)
 		pr_err("%s: Unable to create workqueue:usbnet\n", __func__);
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return 0;
 }
 module_init(usbnet_init);

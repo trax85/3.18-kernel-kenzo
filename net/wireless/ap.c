@@ -27,11 +27,17 @@ int __cfg80211_stop_ap(struct cfg80211_registered_device *rdev,
 	err = rdev_stop_ap(rdev, dev);
 	wdev->beacon_interval = 0;
 	if (!err) {
+<<<<<<< HEAD
 		memset(&wdev->chandef, 0, sizeof(wdev->chandef));
 		wdev->ssid_len = 0;
 		rdev_set_qos_map(rdev, dev, NULL);
 		if (notify)
 			nl80211_send_ap_stopped(wdev);
+=======
+		wdev->channel = NULL;
+		wdev->ssid_len = 0;
+		rdev_set_qos_map(rdev, dev, NULL);
+>>>>>>> p9x
 	}
 
 	return err;

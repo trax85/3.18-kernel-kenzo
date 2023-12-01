@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -21,6 +25,7 @@
 #include <linux/platform_device.h>
 #include <linux/gpio.h>
 #include <linux/of_gpio.h>
+<<<<<<< HEAD
 #include <dt-bindings/clock/msm-clocks-8996.h>
 #include <dt-bindings/clock/msm-clocks-9650.h>
 #include <sound/q6afe-v2.h>
@@ -41,6 +46,9 @@ struct pinctrl_info {
 	struct pinctrl_state *sleep;
 	struct pinctrl_state *active;
 };
+=======
+#include <dt-bindings/clock/msm-clocks-8952.h>
+>>>>>>> p9x
 
 struct audio_ext_ap_clk {
 	bool enabled;
@@ -53,6 +61,7 @@ struct audio_ext_pmi_clk {
 	struct clk c;
 };
 
+<<<<<<< HEAD
 struct audio_ext_ap_clk2 {
 	bool enabled;
 	struct pinctrl_info pnctrl_info;
@@ -103,6 +112,8 @@ static struct afe_clk_set digital_cdc_core_clk = {
 	0,
 };
 
+=======
+>>>>>>> p9x
 static inline struct audio_ext_ap_clk *to_audio_ap_clk(struct clk *clk)
 {
 	return container_of(clk, struct audio_ext_ap_clk, c);
@@ -113,9 +124,13 @@ static int audio_ext_clk_prepare(struct clk *clk)
 	struct audio_ext_ap_clk *audio_clk = to_audio_ap_clk(clk);
 
 	pr_debug("%s: gpio: %d\n", __func__, audio_clk->gpio);
+<<<<<<< HEAD
 	if (gpio_is_valid(audio_clk->gpio))
 		return gpio_direction_output(audio_clk->gpio, 1);
 	return 0;
+=======
+	return gpio_direction_output(audio_clk->gpio, 1);
+>>>>>>> p9x
 }
 
 static void audio_ext_clk_unprepare(struct clk *clk)
@@ -123,6 +138,7 @@ static void audio_ext_clk_unprepare(struct clk *clk)
 	struct audio_ext_ap_clk *audio_clk = to_audio_ap_clk(clk);
 
 	pr_debug("%s: gpio: %d\n", __func__, audio_clk->gpio);
+<<<<<<< HEAD
 	if (gpio_is_valid(audio_clk->gpio))
 		gpio_direction_output(audio_clk->gpio, 0);
 }
@@ -429,6 +445,10 @@ static void audio_ext_lpass_mclk2_unprepare(struct clk *clk)
 	ret = afe_set_lpass_clk_cfg(IDX_RSVD_3, &mclk2);
 	if (ret < 0)
 		pr_err("%s: failed to reset clock, ret = %d\n", __func__, ret);
+=======
+	gpio_direction_output(audio_clk->gpio, 0);
+
+>>>>>>> p9x
 }
 
 static struct clk_ops audio_ext_ap_clk_ops = {
@@ -436,6 +456,7 @@ static struct clk_ops audio_ext_ap_clk_ops = {
 	.unprepare = audio_ext_clk_unprepare,
 };
 
+<<<<<<< HEAD
 static struct clk_ops audio_ext_ap_clk2_ops = {
 	.prepare = audio_ext_clk2_prepare,
 	.unprepare = audio_ext_clk2_unprepare,
@@ -453,6 +474,9 @@ static struct clk_ops audio_ext_lpass_mclk2_ops = {
 
 static struct audio_ext_pmi_clk audio_pmi_clk = {
 	.gpio = -EINVAL,
+=======
+static struct audio_ext_pmi_clk audio_pmi_clk = {
+>>>>>>> p9x
 	.c = {
 		.dbg_name = "audio_ext_pmi_clk",
 		.ops = &clk_ops_dummy,
@@ -461,7 +485,10 @@ static struct audio_ext_pmi_clk audio_pmi_clk = {
 };
 
 static struct audio_ext_ap_clk audio_ap_clk = {
+<<<<<<< HEAD
 	.gpio = -EINVAL,
+=======
+>>>>>>> p9x
 	.c = {
 		.dbg_name = "audio_ext_ap_clk",
 		.ops = &audio_ext_ap_clk_ops,
@@ -469,6 +496,7 @@ static struct audio_ext_ap_clk audio_ap_clk = {
 	},
 };
 
+<<<<<<< HEAD
 static struct audio_ext_ap_clk2 audio_ap_clk2 = {
 	.c = {
 		.dbg_name = "audio_ext_ap_clk2",
@@ -591,11 +619,19 @@ static void audio_ref_update_afe_mclk_id(const char *ptr, enum clk_mux mux)
 	pr_debug("%s: clk_id = 0x%x\n", __func__, *clk_id);
 }
 
+=======
+static struct clk_lookup audio_ref_clock[] = {
+	CLK_LIST(audio_ap_clk),
+	CLK_LIST(audio_pmi_clk),
+};
+
+>>>>>>> p9x
 static int audio_ref_clk_probe(struct platform_device *pdev)
 {
 	int clk_gpio;
 	int ret;
 	struct clk *div_clk1;
+<<<<<<< HEAD
 	u32 mclk_freq;
 	const char *mclk_id = "qcom,lpass-mclk-id";
 	const char *mclk_str = NULL;
@@ -653,6 +689,8 @@ static int audio_ref_clk_probe(struct platform_device *pdev)
 
 	if (mclk_str)
 		audio_ref_update_afe_mclk_id(mclk_str, AP_CLK2);
+=======
+>>>>>>> p9x
 
 	clk_gpio = of_get_named_gpio(pdev->dev.of_node,
 				     "qcom,audio-ref-clk-gpio", 0);
@@ -685,11 +723,14 @@ static int audio_ref_clk_probe(struct platform_device *pdev)
 	} else
 		audio_ap_clk.gpio = clk_gpio;
 
+<<<<<<< HEAD
 	ret = audio_get_pinctrl(pdev, AP_CLK2);
 	if (ret)
 		dev_dbg(&pdev->dev, "%s: Parsing pinctrl failed\n",
 			__func__);
 
+=======
+>>>>>>> p9x
 	ret = of_msm_clock_register(pdev->dev.of_node, audio_ref_clock,
 			      ARRAY_SIZE(audio_ref_clock));
 	if (ret) {
@@ -709,13 +750,17 @@ err:
 
 static int audio_ref_clk_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct pinctrl_info *pnctrl_info = &audio_ap_clk2.pnctrl_info;
 
+=======
+>>>>>>> p9x
 	if (audio_pmi_clk.gpio > 0)
 		gpio_free(audio_pmi_clk.gpio);
 	else if (audio_ap_clk.gpio > 0)
 		gpio_free(audio_ap_clk.gpio);
 
+<<<<<<< HEAD
 	if (pnctrl_info->pinctrl) {
 		devm_pinctrl_put(pnctrl_info->pinctrl);
 		pnctrl_info->pinctrl = NULL;
@@ -736,6 +781,8 @@ static int audio_ref_clk_remove(struct platform_device *pdev)
 	if (audio_lpass_mclk.lpass_csr_gpio_mux_spkrctl_vaddr)
 		iounmap(audio_lpass_mclk.lpass_csr_gpio_mux_spkrctl_vaddr);
 
+=======
+>>>>>>> p9x
 	return 0;
 }
 

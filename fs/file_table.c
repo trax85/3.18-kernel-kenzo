@@ -316,6 +316,33 @@ struct file *alloc_file(struct path *path, fmode_t mode,
 }
 EXPORT_SYMBOL(alloc_file);
 
+<<<<<<< HEAD
+=======
+/**
+ * drop_file_write_access - give up ability to write to a file
+ * @file: the file to which we will stop writing
+ *
+ * This is a central place which will give up the ability
+ * to write to @file, along with access to write through
+ * its vfsmount.
+ */
+static void drop_file_write_access(struct file *file)
+{
+	struct vfsmount *mnt = file->f_path.mnt;
+	struct dentry *dentry = file->f_path.dentry;
+	struct inode *inode = dentry->d_inode;
+
+	if (special_file(inode->i_mode))
+		return;
+
+	put_write_access(inode);
+	if (file_check_writeable(file) != 0)
+		return;
+	__mnt_drop_write(mnt);
+	file_release_write(file);
+}
+
+>>>>>>> p9x
 /* the real guts of fput() - releasing the last reference to file
  */
 static void __fput(struct file *file)
@@ -414,7 +441,11 @@ void fput(struct file *file)
 		}
 
 		if (llist_add(&file->f_u.fu_llist, &delayed_fput_list))
+<<<<<<< HEAD
 			schedule_delayed_work(&delayed_fput_work, 1);
+=======
+			schedule_work(&delayed_fput_work);
+>>>>>>> p9x
 	}
 }
 
@@ -459,6 +490,11 @@ void __init files_init(unsigned long mempages)
 
 	n = (mempages * (PAGE_SIZE / 1024)) / 10;
 	files_stat.max_files = max_t(unsigned long, n, NR_FILE);
+<<<<<<< HEAD
 	percpu_counter_init(&nr_files, 0, GFP_KERNEL);
 	global_filetable_print_warning_once();
+=======
+	files_defer_init();
+	percpu_counter_init(&nr_files, 0);
+>>>>>>> p9x
 } 

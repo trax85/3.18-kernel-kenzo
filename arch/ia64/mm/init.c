@@ -633,8 +633,28 @@ mem_init (void)
 
 	set_max_mapnr(max_low_pfn);
 	high_memory = __va(max_low_pfn * PAGE_SIZE);
+<<<<<<< HEAD
 	free_all_bootmem();
 	mem_init_print_info(NULL);
+=======
+
+	for_each_online_pgdat(pgdat)
+		if (pgdat->bdata->node_bootmem_map)
+			free_all_bootmem_node(pgdat);
+
+	reserved_pages = 0;
+	efi_memmap_walk(count_reserved_pages, &reserved_pages);
+
+	codesize =  (unsigned long) _etext - (unsigned long) _stext;
+	datasize =  (unsigned long) _edata - (unsigned long) _etext;
+	initsize =  (unsigned long) __init_end - (unsigned long) __init_begin;
+
+	printk(KERN_INFO "Memory: %luk/%luk available (%luk code, %luk reserved, "
+	       "%luk data, %luk init)\n", nr_free_pages() << (PAGE_SHIFT - 10),
+	       num_physpages << (PAGE_SHIFT - 10), codesize >> 10,
+	       reserved_pages << (PAGE_SHIFT - 10), datasize >> 10, initsize >> 10);
+
+>>>>>>> p9x
 
 	/*
 	 * For fsyscall entrpoints with no light-weight handler, use the ordinary

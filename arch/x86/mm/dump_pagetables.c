@@ -31,7 +31,10 @@ struct pg_state {
 	unsigned long current_address;
 	const struct addr_marker *marker;
 	unsigned long lines;
+<<<<<<< HEAD
 	bool to_dmesg;
+=======
+>>>>>>> p9x
 };
 
 struct addr_marker {
@@ -48,9 +51,13 @@ enum address_markers_idx {
 	LOW_KERNEL_NR,
 	VMALLOC_START_NR,
 	VMEMMAP_START_NR,
+<<<<<<< HEAD
 # ifdef CONFIG_X86_ESPFIX64
 	ESPFIX_START_NR,
 # endif
+=======
+	ESPFIX_START_NR,
+>>>>>>> p9x
 	HIGH_KERNEL_NR,
 	MODULES_VADDR_NR,
 	MODULES_END_NR,
@@ -73,9 +80,13 @@ static struct addr_marker address_markers[] = {
 	{ PAGE_OFFSET,		"Low Kernel Mapping" },
 	{ VMALLOC_START,        "vmalloc() Area" },
 	{ VMEMMAP_START,        "Vmemmap" },
+<<<<<<< HEAD
 # ifdef CONFIG_X86_ESPFIX64
 	{ ESPFIX_BASE_ADDR,	"ESPfix Area", 16 },
 # endif
+=======
+	{ ESPFIX_BASE_ADDR,	"ESPfix Area", 16 },
+>>>>>>> p9x
 	{ __START_KERNEL_map,   "High Kernel Mapping" },
 	{ MODULES_VADDR,        "Modules" },
 	{ MODULES_END,          "End Modules" },
@@ -206,8 +217,12 @@ static void note_page(struct seq_file *m, struct pg_state *st,
 		st->level = level;
 		st->marker = address_markers;
 		st->lines = 0;
+<<<<<<< HEAD
 		pt_dump_seq_printf(m, st->to_dmesg, "---[ %s ]---\n",
 				   st->marker->name);
+=======
+		seq_printf(m, "---[ %s ]---\n", st->marker->name);
+>>>>>>> p9x
 	} else if (prot != cur || level != st->level ||
 		   st->current_address >= st->marker[1].start_address) {
 		const char *unit = units;
@@ -219,20 +234,33 @@ static void note_page(struct seq_file *m, struct pg_state *st,
 		 */
 		if (!st->marker->max_lines ||
 		    st->lines < st->marker->max_lines) {
+<<<<<<< HEAD
 			pt_dump_seq_printf(m, st->to_dmesg,
 					   "0x%0*lx-0x%0*lx   ",
 					   width, st->start_address,
 					   width, st->current_address);
 
 			delta = st->current_address - st->start_address;
+=======
+			seq_printf(m, "0x%0*lx-0x%0*lx   ",
+				   width, st->start_address,
+				   width, st->current_address);
+
+			delta = (st->current_address - st->start_address);
+>>>>>>> p9x
 			while (!(delta & 1023) && unit[1]) {
 				delta >>= 10;
 				unit++;
 			}
+<<<<<<< HEAD
 			pt_dump_cont_printf(m, st->to_dmesg, "%9lu%c ",
 					    delta, *unit);
 			printk_prot(m, st->current_prot, st->level,
 				    st->to_dmesg);
+=======
+			seq_printf(m, "%9lu%c ", delta, *unit);
+			printk_prot(m, st->current_prot, st->level);
+>>>>>>> p9x
 		}
 		st->lines++;
 
@@ -246,6 +274,7 @@ static void note_page(struct seq_file *m, struct pg_state *st,
 			    st->lines > st->marker->max_lines) {
 				unsigned long nskip =
 					st->lines - st->marker->max_lines;
+<<<<<<< HEAD
 				pt_dump_seq_printf(m, st->to_dmesg,
 						   "... %lu entr%s skipped ... \n",
 						   nskip,
@@ -255,6 +284,14 @@ static void note_page(struct seq_file *m, struct pg_state *st,
 			st->lines = 0;
 			pt_dump_seq_printf(m, st->to_dmesg, "---[ %s ]---\n",
 					   st->marker->name);
+=======
+				seq_printf(m, "... %lu entr%s skipped ... \n",
+					   nskip, nskip == 1 ? "y" : "ies");
+			}
+			st->marker++;
+			st->lines = 0;
+			seq_printf(m, "---[ %s ]---\n", st->marker->name);
+>>>>>>> p9x
 		}
 
 		st->start_address = st->current_address;

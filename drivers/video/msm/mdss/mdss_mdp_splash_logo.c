@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2015, 2017 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -21,13 +25,21 @@
 #include <linux/iommu.h>
 #include <linux/of_address.h>
 #include <linux/fb.h>
+<<<<<<< HEAD
 #include <linux/dma-buf.h>
+=======
+#include <linux/mm.h>
+#include <asm/page.h>
+>>>>>>> p9x
 
 #include "mdss_fb.h"
 #include "mdss_mdp.h"
 #include "splash.h"
 #include "mdss_mdp_splash_logo.h"
+<<<<<<< HEAD
 #include "mdss_smmu.h"
+=======
+>>>>>>> p9x
 
 #define INVALID_PIPE_INDEX 0xFFFF
 #define MAX_FRAME_DONE_COUNT_WAIT 2
@@ -39,7 +51,10 @@ static int mdss_mdp_splash_alloc_memory(struct msm_fb_data_type *mfd,
 	struct msm_fb_splash_info *sinfo;
 	unsigned long buf_size = size;
 	struct mdss_data_type *mdata;
+<<<<<<< HEAD
 	struct ion_handle *handle;
+=======
+>>>>>>> p9x
 
 	if (!mfd || !size)
 		return -EINVAL;
@@ -50,6 +65,7 @@ static int mdss_mdp_splash_alloc_memory(struct msm_fb_data_type *mfd,
 	if (!mdata || !mdata->iclient || sinfo->splash_buffer)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	handle = ion_alloc(mdata->iclient, size, SZ_4K,
 				ION_HEAP(ION_SYSTEM_HEAP_ID), 0);
 	if (IS_ERR_OR_NULL(handle)) {
@@ -91,11 +107,33 @@ static int mdss_mdp_splash_alloc_memory(struct msm_fb_data_type *mfd,
 	dma_buf_begin_cpu_access(sinfo->dma_buf, 0, size, DMA_BIDIRECTIONAL);
 	sinfo->splash_buffer = dma_buf_kmap(sinfo->dma_buf, 0);
 	if (IS_ERR(sinfo->splash_buffer)) {
+=======
+	sinfo->ion_handle = ion_alloc(mdata->iclient, size, SZ_4K,
+				ION_HEAP(ION_SYSTEM_HEAP_ID), 0);
+	if (IS_ERR_OR_NULL(sinfo->ion_handle)) {
+		pr_err("ion memory allocation failed\n");
+		rc = PTR_RET(sinfo->ion_handle);
+		goto end;
+	}
+
+	rc = ion_map_iommu(mdata->iclient, sinfo->ion_handle,
+			mdss_get_iommu_domain(MDSS_IOMMU_DOMAIN_UNSECURE),
+			0, SZ_4K, 0, &sinfo->iova, &buf_size, 0, 0);
+	if (rc) {
+		pr_err("ion memory map failed\n");
+		goto imap_err;
+	}
+
+	sinfo->splash_buffer = ion_map_kernel(mdata->iclient,
+						sinfo->ion_handle);
+	if (IS_ERR_OR_NULL(sinfo->splash_buffer)) {
+>>>>>>> p9x
 		pr_err("ion kernel memory mapping failed\n");
 		rc = IS_ERR(sinfo->splash_buffer);
 		goto kmap_err;
 	}
 
+<<<<<<< HEAD
 	/**
 	 * dma_buf has the reference
 	 */
@@ -114,6 +152,15 @@ err_put:
 	dma_buf_put(sinfo->dma_buf);
 imap_err:
 	ion_free(mdata->iclient, handle);
+=======
+	return rc;
+
+kmap_err:
+	ion_unmap_iommu(mdata->iclient, sinfo->ion_handle,
+			mdss_get_iommu_domain(MDSS_IOMMU_DOMAIN_UNSECURE), 0);
+imap_err:
+	ion_free(mdata->iclient, sinfo->ion_handle);
+>>>>>>> p9x
 end:
 	return rc;
 }
@@ -129,6 +176,7 @@ static void mdss_mdp_splash_free_memory(struct msm_fb_data_type *mfd)
 	sinfo = &mfd->splash_info;
 	mdata = mfd_to_mdata(mfd);
 
+<<<<<<< HEAD
 	if (!mdata || !mdata->iclient || !sinfo->dma_buf)
 		return;
 
@@ -143,11 +191,26 @@ static void mdss_mdp_splash_free_memory(struct msm_fb_data_type *mfd)
 	dma_buf_detach(sinfo->dma_buf, sinfo->attachment);
 	dma_buf_put(sinfo->dma_buf);
 
+=======
+	if (!mdata || !mdata->iclient || !sinfo->ion_handle)
+		return;
+
+	ion_unmap_kernel(mdata->iclient, sinfo->ion_handle);
+
+	ion_unmap_iommu(mdata->iclient, sinfo->ion_handle,
+			mdss_get_iommu_domain(MDSS_IOMMU_DOMAIN_UNSECURE), 0);
+
+	ion_free(mdata->iclient, sinfo->ion_handle);
+>>>>>>> p9x
 	sinfo->splash_buffer = NULL;
 }
 
 static int mdss_mdp_splash_iommu_attach(struct msm_fb_data_type *mfd)
 {
+<<<<<<< HEAD
+=======
+	struct iommu_domain *domain;
+>>>>>>> p9x
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
 	struct mdss_data_type *mdata = mdss_mdp_get_mdata();
 	int rc, ret;
@@ -167,20 +230,38 @@ static int mdss_mdp_splash_iommu_attach(struct msm_fb_data_type *mfd)
 		return -EPERM;
 	}
 
+<<<<<<< HEAD
 	rc = mdss_smmu_map(MDSS_IOMMU_DOMAIN_UNSECURE,
 				mdp5_data->splash_mem_addr,
 				mdp5_data->splash_mem_addr,
 				mdp5_data->splash_mem_size,
 				IOMMU_READ | IOMMU_NOEXEC);
+=======
+	domain = msm_get_iommu_domain(mdss_get_iommu_domain(
+						MDSS_IOMMU_DOMAIN_UNSECURE));
+	if (!domain) {
+		pr_debug("mdss iommu domain get failed\n");
+		return -EINVAL;
+	}
+
+	rc = iommu_map(domain, mdp5_data->splash_mem_addr,
+				mdp5_data->splash_mem_addr,
+				mdp5_data->splash_mem_size, IOMMU_READ);
+>>>>>>> p9x
 	if (rc) {
 		pr_debug("iommu memory mapping failed rc=%d\n", rc);
 	} else {
 		ret = mdss_iommu_ctrl(1);
 		if (IS_ERR_VALUE(ret)) {
 			pr_err("mdss iommu attach failed\n");
+<<<<<<< HEAD
 			mdss_smmu_unmap(MDSS_IOMMU_DOMAIN_UNSECURE,
 					mdp5_data->splash_mem_addr,
 					mdp5_data->splash_mem_size);
+=======
+			iommu_unmap(domain, mdp5_data->splash_mem_addr,
+						mdp5_data->splash_mem_size);
+>>>>>>> p9x
 		} else {
 			mfd->splash_info.iommu_dynamic_attached = true;
 		}
@@ -191,6 +272,7 @@ static int mdss_mdp_splash_iommu_attach(struct msm_fb_data_type *mfd)
 
 static void mdss_mdp_splash_unmap_splash_mem(struct msm_fb_data_type *mfd)
 {
+<<<<<<< HEAD
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
 
 	if (mfd->splash_info.iommu_dynamic_attached) {
@@ -198,6 +280,21 @@ static void mdss_mdp_splash_unmap_splash_mem(struct msm_fb_data_type *mfd)
 		mdss_smmu_unmap(MDSS_IOMMU_DOMAIN_UNSECURE,
 				mdp5_data->splash_mem_addr,
 				mdp5_data->splash_mem_size);
+=======
+	struct iommu_domain *domain;
+	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
+
+	if (mfd->splash_info.iommu_dynamic_attached) {
+		domain = msm_get_iommu_domain(mdss_get_iommu_domain(
+						MDSS_IOMMU_DOMAIN_UNSECURE));
+		if (!domain) {
+			pr_err("mdss iommu domain get failed\n");
+			return;
+		}
+
+		iommu_unmap(domain, mdp5_data->splash_mem_addr,
+						mdp5_data->splash_mem_size);
+>>>>>>> p9x
 		mdss_iommu_ctrl(0);
 
 		mfd->splash_info.iommu_dynamic_attached = false;
@@ -218,6 +315,16 @@ void mdss_mdp_release_splash_pipe(struct msm_fb_data_type *mfd)
 	if (sinfo->pipe_ndx[1] != INVALID_PIPE_INDEX)
 		mdss_mdp_overlay_release(mfd, sinfo->pipe_ndx[1]);
 	sinfo->splash_pipe_allocated = false;
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Once the splash pipe is released, reset the splash flag which
+	 * is being stored in var.reserved[3].
+	 */
+	mfd->fbi->var.reserved[3] = mfd->panel_info->cont_splash_enabled |
+					mfd->splash_info.splash_pipe_allocated;
+>>>>>>> p9x
 }
 
 /*
@@ -241,10 +348,14 @@ int mdss_mdp_splash_cleanup(struct msm_fb_data_type *mfd,
 {
 	struct mdss_overlay_private *mdp5_data;
 	struct mdss_mdp_ctl *ctl;
+<<<<<<< HEAD
 	static u32 splash_mem_addr;
 	static u32 splash_mem_size;
 	int rc = 0;
 	struct mdss_data_type *mdata = mdss_mdp_get_mdata();
+=======
+	int rc = 0;
+>>>>>>> p9x
 
 	if (!mfd)
 		return -EINVAL;
@@ -257,6 +368,7 @@ int mdss_mdp_splash_cleanup(struct msm_fb_data_type *mfd,
 	if (!ctl)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (!mfd->panel_info->cont_splash_enabled ||
 		(mfd->splash_info.iommu_dynamic_attached && !use_borderfill)) {
 		if (mfd->splash_info.iommu_dynamic_attached &&
@@ -275,6 +387,13 @@ int mdss_mdp_splash_cleanup(struct msm_fb_data_type *mfd,
 
 	if (use_borderfill && mdp5_data->handoff &&
 		!mfd->splash_info.iommu_dynamic_attached) {
+=======
+	if (mfd->splash_info.iommu_dynamic_attached ||
+			!mfd->panel_info->cont_splash_enabled)
+		goto end;
+
+	if (use_borderfill && mdp5_data->handoff) {
+>>>>>>> p9x
 		/*
 		 * Set up border-fill on the handed off pipes.
 		 * This is needed to ensure that there are no memory
@@ -310,6 +429,7 @@ int mdss_mdp_splash_cleanup(struct msm_fb_data_type *mfd,
 
 	mdss_mdp_ctl_splash_finish(ctl, mdp5_data->handoff);
 
+<<<<<<< HEAD
 	/* If DSI-1 interface is enabled by LK & split dsi is not enabled,
 	 * free cont_splash_mem for dsi during the cleanup for DSI-1.
 	 */
@@ -343,6 +463,16 @@ int mdss_mdp_splash_cleanup(struct msm_fb_data_type *mfd,
 		!mfd->splash_info.iommu_dynamic_attached) {
 		pr_debug("free splash mem for display %d\n",
 						mfd->panel_info->pdest);
+=======
+	/*
+	 * Once the splash cleanup is done, reset the splash flag which
+	 * is being stored in var.reserved[3].
+	 */
+	mfd->fbi->var.reserved[3] = mfd->panel_info->cont_splash_enabled |
+					mfd->splash_info.splash_pipe_allocated;
+
+	if (mdp5_data->splash_mem_addr) {
+>>>>>>> p9x
 		/* Give back the reserved memory to the system */
 		memblock_free(mdp5_data->splash_mem_addr,
 					mdp5_data->splash_mem_size);
@@ -362,7 +492,10 @@ static struct mdss_mdp_pipe *mdss_mdp_splash_get_pipe(
 	struct mdss_mdp_pipe *pipe;
 	int ret;
 	struct mdss_mdp_data *buf;
+<<<<<<< HEAD
 	struct mdss_overlay_private *mdp5_data = mfd_to_mdp5_data(mfd);
+=======
+>>>>>>> p9x
 	uint32_t image_size = SPLASH_IMAGE_WIDTH * SPLASH_IMAGE_HEIGHT
 						* SPLASH_IMAGE_BPP;
 
@@ -375,15 +508,23 @@ static struct mdss_mdp_pipe *mdss_mdp_splash_get_pipe(
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&mdp5_data->list_lock);
+=======
+>>>>>>> p9x
 	buf = mdss_mdp_overlay_buf_alloc(mfd, pipe);
 	if (!buf) {
 		pr_err("unable to allocate memory for splash buffer\n");
 		mdss_mdp_pipe_unmap(pipe);
+<<<<<<< HEAD
 		mutex_unlock(&mdp5_data->list_lock);
 		return NULL;
 	}
 	mutex_unlock(&mdp5_data->list_lock);
+=======
+		return NULL;
+	}
+>>>>>>> p9x
 
 	buf->p[0].addr = mfd->splash_info.iova;
 	buf->p[0].len = image_size;
@@ -399,7 +540,11 @@ static int mdss_mdp_splash_kickoff(struct msm_fb_data_type *mfd,
 {
 	struct mdss_mdp_pipe *pipe;
 	struct fb_info *fbi;
+<<<<<<< HEAD
 	struct mdp_overlay *req = NULL;
+=======
+	struct mdp_overlay req;
+>>>>>>> p9x
 	struct mdss_overlay_private *mdp5_data;
 	struct mdss_data_type *mdata;
 	struct mdss_mdp_mixer *mixer;
@@ -434,10 +579,14 @@ static int mdss_mdp_splash_kickoff(struct msm_fb_data_type *mfd,
 		goto end;
 	}
 
+<<<<<<< HEAD
 	req = kzalloc(sizeof(struct mdp_overlay), GFP_KERNEL);
 	if (!req)
 		return -ENOMEM;
 
+=======
+	memset(&req, 0, sizeof(struct mdp_overlay));
+>>>>>>> p9x
 	/*
 	 * use single pipe for
 	 * 1. split display disabled
@@ -456,6 +605,7 @@ static int mdss_mdp_splash_kickoff(struct msm_fb_data_type *mfd,
 		dest_rect->w < min_t(u16, mixer->width,
 					mdss_mdp_line_buffer_width()));
 
+<<<<<<< HEAD
 	req->src.width = src_rect->w;
 	if (use_single_pipe)
 		req->src_rect.w = src_rect->w;
@@ -473,6 +623,25 @@ static int mdss_mdp_splash_kickoff(struct msm_fb_data_type *mfd,
 	req->dst_rect.y = dest_rect->y;
 
 	pipe = mdss_mdp_splash_get_pipe(mfd, req);
+=======
+	req.src.width = src_rect->w;
+	if (use_single_pipe)
+		req.src_rect.w = src_rect->w;
+	else
+		req.src_rect.w = min_t(u16, mixer->width, src_rect->w >> 1);
+	req.dst_rect.w = req.src_rect.w;
+	req.src.height = req.dst_rect.h = req.src_rect.h =
+			src_rect->h;
+	req.src.format = SPLASH_IMAGE_FORMAT;
+	req.id = MSMFB_NEW_REQUEST;
+	req.z_order = MDSS_MDP_STAGE_0;
+	req.alpha = 0xff;
+	req.transp_mask = MDP_TRANSP_NOP;
+	req.dst_rect.x = dest_rect->x;
+	req.dst_rect.y = dest_rect->y;
+
+	pipe = mdss_mdp_splash_get_pipe(mfd, &req);
+>>>>>>> p9x
 	if (!pipe) {
 		pr_err("unable to allocate base pipe\n");
 		ret = -EINVAL;
@@ -482,11 +651,19 @@ static int mdss_mdp_splash_kickoff(struct msm_fb_data_type *mfd,
 	sinfo->pipe_ndx[0] = pipe->ndx;
 
 	if (!use_single_pipe) {
+<<<<<<< HEAD
 		req->id = MSMFB_NEW_REQUEST;
 		req->src_rect.x = src_rect->x + min_t(u16, mixer->width,
 					src_rect->w - req->src_rect.w);
 		req->dst_rect.x = mixer->width;
 		pipe = mdss_mdp_splash_get_pipe(mfd, req);
+=======
+		req.id = MSMFB_NEW_REQUEST;
+		req.src_rect.x = src_rect->x + min_t(u16, mixer->width,
+					src_rect->w - req.src_rect.w);
+		req.dst_rect.x = mixer->width;
+		pipe = mdss_mdp_splash_get_pipe(mfd, &req);
+>>>>>>> p9x
 		if (!pipe) {
 			pr_err("unable to allocate right base pipe\n");
 			mdss_mdp_overlay_release(mfd, sinfo->pipe_ndx[0]);
@@ -504,10 +681,15 @@ static int mdss_mdp_splash_kickoff(struct msm_fb_data_type *mfd,
 					sinfo->pipe_ndx[1]);
 	}
 
+<<<<<<< HEAD
 	kfree(req);
 	return ret;
 end:
 	kfree(req);
+=======
+	return ret;
+end:
+>>>>>>> p9x
 	sinfo->pipe_ndx[0] = INVALID_PIPE_INDEX;
 	sinfo->pipe_ndx[1] = INVALID_PIPE_INDEX;
 	mutex_unlock(&mdp5_data->ov_lock);
@@ -565,8 +747,21 @@ static int mdss_mdp_display_splash_image(struct msm_fb_data_type *mfd)
 	rc = mdss_mdp_splash_kickoff(mfd, &src_rect, &dest_rect);
 	if (rc)
 		pr_err("splash image display failed\n");
+<<<<<<< HEAD
 	else
 		sinfo->splash_pipe_allocated = true;
+=======
+	else {
+		sinfo->splash_pipe_allocated = true;
+		/*
+		 * Once the splash pipe is allocated, set the splash flag which
+		 * is being stored in var.reserved[3].
+		 */
+		mfd->fbi->var.reserved[3] =
+					mfd->panel_info->cont_splash_enabled |
+					mfd->splash_info.splash_pipe_allocated;
+	}
+>>>>>>> p9x
 end:
 	return rc;
 }

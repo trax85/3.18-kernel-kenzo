@@ -493,6 +493,10 @@ SYSFS_SPRSETUP(pir, SPRN_PIR);
 */
 static DEVICE_ATTR(mmcra, 0600, show_mmcra, store_mmcra);
 static DEVICE_ATTR(spurr, 0400, show_spurr, NULL);
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(dscr, 0600, show_dscr, store_dscr);
+>>>>>>> p9x
 static DEVICE_ATTR(purr, 0400, show_purr, store_purr);
 static DEVICE_ATTR(pir, 0400, show_pir, NULL);
 
@@ -514,6 +518,11 @@ static void write_dscr(void *val)
 
 SYSFS_SPRSETUP_SHOW_STORE(dscr);
 static DEVICE_ATTR(dscr, 0600, show_dscr, store_dscr);
+
+static void add_write_permission_dev_attr(struct device_attribute *attr)
+{
+	attr->attr.mode |= 0200;
+}
 
 static void add_write_permission_dev_attr(struct device_attribute *attr)
 {

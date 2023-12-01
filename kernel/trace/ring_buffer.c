@@ -471,7 +471,10 @@ struct ring_buffer_per_cpu {
 	arch_spinlock_t			lock;
 	struct lock_class_key		lock_key;
 	unsigned long			nr_pages;
+<<<<<<< HEAD
 	unsigned int			current_context;
+=======
+>>>>>>> p9x
 	struct list_head		*pages;
 	struct buffer_page		*head_page;	/* read from head */
 	struct buffer_page		*tail_page;	/* write to tail */
@@ -556,7 +559,11 @@ static void rb_wake_up_waiters(struct irq_work *work)
  * as data is added to any of the @buffer's cpu buffers. Otherwise
  * it will wait for data to be added to a specific cpu buffer.
  */
+<<<<<<< HEAD
 int ring_buffer_wait(struct ring_buffer *buffer, int cpu, bool full)
+=======
+int ring_buffer_wait(struct ring_buffer *buffer, int cpu)
+>>>>>>> p9x
 {
 	struct ring_buffer_per_cpu *uninitialized_var(cpu_buffer);
 	DEFINE_WAIT(wait);
@@ -570,9 +577,13 @@ int ring_buffer_wait(struct ring_buffer *buffer, int cpu, bool full)
 	 */
 	if (cpu == RING_BUFFER_ALL_CPUS) {
 		work = &buffer->irq_work;
+<<<<<<< HEAD
 		/* Full only makes sense on per cpu reads */
 		full = false;
 	} else {
+=======
+	else {
+>>>>>>> p9x
 		if (!cpumask_test_cpu(cpu, buffer->cpumask))
 			return -ENODEV;
 		cpu_buffer = buffer->buffers[cpu];
@@ -638,12 +649,17 @@ int ring_buffer_wait(struct ring_buffer *buffer, int cpu, bool full)
 		schedule();
 	}
 
+<<<<<<< HEAD
 	if (full)
 		finish_wait(&work->full_waiters, &wait);
 	else
 		finish_wait(&work->waiters, &wait);
 
 	return ret;
+=======
+	finish_wait(&work->waiters, &wait);
+	return 0;
+>>>>>>> p9x
 }
 
 /**
@@ -1989,12 +2005,6 @@ rb_set_commit_to_write(struct ring_buffer_per_cpu *cpu_buffer)
 		goto again;
 }
 
-static void rb_reset_reader_page(struct ring_buffer_per_cpu *cpu_buffer)
-{
-	cpu_buffer->read_stamp = cpu_buffer->reader_page->page->time_stamp;
-	cpu_buffer->reader_page->read = 0;
-}
-
 static void rb_inc_iter(struct ring_buffer_iter *iter)
 {
 	struct ring_buffer_per_cpu *cpu_buffer = iter->cpu_buffer;
@@ -2691,7 +2701,11 @@ rb_reserve_next_event(struct ring_buffer *buffer,
 static __always_inline int
 trace_recursive_lock(struct ring_buffer_per_cpu *cpu_buffer)
 {
+<<<<<<< HEAD
 	unsigned int val = cpu_buffer->current_context;
+=======
+	unsigned int val = __this_cpu_read(current_context);
+>>>>>>> p9x
 	int bit;
 
 	if (in_interrupt()) {
@@ -2708,7 +2722,11 @@ trace_recursive_lock(struct ring_buffer_per_cpu *cpu_buffer)
 		return 1;
 
 	val |= (1 << bit);
+<<<<<<< HEAD
 	cpu_buffer->current_context = val;
+=======
+	__this_cpu_write(current_context, val);
+>>>>>>> p9x
 
 	return 0;
 }
@@ -2716,7 +2734,14 @@ trace_recursive_lock(struct ring_buffer_per_cpu *cpu_buffer)
 static __always_inline void
 trace_recursive_unlock(struct ring_buffer_per_cpu *cpu_buffer)
 {
+<<<<<<< HEAD
 	cpu_buffer->current_context &= cpu_buffer->current_context - 1;
+=======
+	unsigned int val = __this_cpu_read(current_context);
+
+	val &= val & (val - 1);
+	__this_cpu_write(current_context, val);
+>>>>>>> p9x
 }
 
 #else
@@ -3668,7 +3693,7 @@ rb_get_reader_page(struct ring_buffer_per_cpu *cpu_buffer)
 
 	/* Finally update the reader page to the new head */
 	cpu_buffer->reader_page = reader;
-	rb_reset_reader_page(cpu_buffer);
+	cpu_buffer->reader_page->read = 0;
 
 	if (overwrite != cpu_buffer->last_overrun) {
 		cpu_buffer->lost_events = overwrite - cpu_buffer->last_overrun;
@@ -3678,6 +3703,10 @@ rb_get_reader_page(struct ring_buffer_per_cpu *cpu_buffer)
 	goto again;
 
  out:
+	/* Update the read_stamp on the first event */
+	if (reader && reader->read == 0)
+		cpu_buffer->read_stamp = reader->page->time_stamp;
+
 	arch_spin_unlock(&cpu_buffer->lock);
 	local_irq_restore(flags);
 

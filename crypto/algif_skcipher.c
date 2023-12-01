@@ -598,7 +598,11 @@ static int skcipher_sendmsg_nokey(struct kiocb *unused, struct socket *sock,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	return skcipher_sendmsg(NULL, sock, msg, size);
+=======
+	return skcipher_sendmsg(unused, sock, msg, size);
+>>>>>>> p9x
 }
 
 static ssize_t skcipher_sendpage_nokey(struct socket *sock, struct page *page,
@@ -622,7 +626,11 @@ static int skcipher_recvmsg_nokey(struct kiocb *unused, struct socket *sock,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	return skcipher_recvmsg(NULL, sock, msg, ignored, flags);
+=======
+	return skcipher_recvmsg(unused, sock, msg, ignored, flags);
+>>>>>>> p9x
 }
 
 static struct proto_ops algif_skcipher_ops_nokey = {
@@ -709,7 +717,10 @@ static int skcipher_accept_parent_nokey(void *private, struct sock *sk)
 	ctx = sock_kmalloc(sk, len, GFP_KERNEL);
 	if (!ctx)
 		return -ENOMEM;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	ctx->iv = sock_kmalloc(sk, crypto_ablkcipher_ivsize(skcipher),
 			       GFP_KERNEL);
 	if (!ctx->iv) {
@@ -718,7 +729,10 @@ static int skcipher_accept_parent_nokey(void *private, struct sock *sk)
 	}
 
 	memset(ctx->iv, 0, crypto_ablkcipher_ivsize(skcipher));
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 
 	INIT_LIST_HEAD(&ctx->tsgl);
 	ctx->len = len;
@@ -732,7 +746,7 @@ static int skcipher_accept_parent_nokey(void *private, struct sock *sk)
 
 	ablkcipher_request_set_tfm(&ctx->req, skcipher);
 	ablkcipher_request_set_callback(&ctx->req, CRYPTO_TFM_REQ_MAY_BACKLOG,
-					af_alg_complete, &ctx->completion);
+				      af_alg_complete, &ctx->completion);
 
 	sk->sk_destruct = skcipher_sock_destruct;
 
@@ -743,7 +757,11 @@ static int skcipher_accept_parent(void *private, struct sock *sk)
 {
 	struct skcipher_tfm *tfm = private;
 
+<<<<<<< HEAD
 	if (!tfm->has_key)
+=======
+	if (!tfm->has_key && crypto_ablkcipher_has_setkey(tfm->skcipher))
+>>>>>>> p9x
 		return -ENOKEY;
 
 	return skcipher_accept_parent_nokey(private, sk);

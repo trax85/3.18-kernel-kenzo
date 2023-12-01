@@ -12,7 +12,10 @@
 #include <linux/debug_locks.h>
 #include <linux/delay.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <linux/bug.h>
+=======
+>>>>>>> p9x
 #include <soc/qcom/watchdog.h>
 
 void __raw_spin_lock_init(raw_spinlock_t *lock, const char *name,
@@ -67,6 +70,13 @@ static void spin_dump(raw_spinlock_t *lock, const char *msg)
 		owner ? task_pid_nr(owner) : -1,
 		lock->owner_cpu);
 #ifdef CONFIG_DEBUG_SPINLOCK_BITE_ON_BUG
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MSM_DLOAD_MODE
+	if (!get_dload_mode())
+		BUG();
+#endif
+>>>>>>> p9x
 	msm_trigger_wdog_bite();
 #elif defined(CONFIG_DEBUG_SPINLOCK_PANIC_ON_BUG)
 	BUG();

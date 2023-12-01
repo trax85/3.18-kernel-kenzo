@@ -327,7 +327,11 @@ void bitmap_clear(unsigned long *map, unsigned int start, int len)
 EXPORT_SYMBOL(bitmap_clear);
 
 /**
+<<<<<<< HEAD
  * bitmap_find_next_zero_area_off - find a contiguous aligned zero area
+=======
+ * bitmap_find_next_zero_area - find a contiguous aligned zero area
+>>>>>>> p9x
  * @map: The address to base the search on
  * @size: The bitmap size in bits
  * @start: The bitnumber to start searching at

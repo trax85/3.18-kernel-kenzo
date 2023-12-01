@@ -26,6 +26,7 @@
 #define VERITY_METADATA_SIZE (8 * DATA_BLOCK_SIZE)
 #define VERITY_TABLE_ARGS 10
 #define VERITY_COMMANDLINE_PARAM_LENGTH 20
+<<<<<<< HEAD
 #define BUILD_VARIANT 20
 
 /*
@@ -43,6 +44,8 @@
  * setting VERITY_DEFAULT_KEY_ID_LENGTH to 200 characters.
  */
 #define VERITY_DEFAULT_KEY_ID_LENGTH 200
+=======
+>>>>>>> p9x
 
 #define FEC_MAGIC 0xFECFECFE
 #define FEC_BLOCK_SIZE (4 * 1024)
@@ -61,10 +64,13 @@
 #define VERITY_DEBUG 0
 
 #define DM_MSG_PREFIX                   "android-verity"
+<<<<<<< HEAD
 
 #define DM_LINEAR_ARGS 2
 #define DM_LINEAR_TARGET_OFFSET "0"
 
+=======
+>>>>>>> p9x
 /*
  * There can be two formats.
  * if fec is present
@@ -72,6 +78,12 @@
  * if fec is not present
  * <data_blocks> <verity_tree> <verity_metdata_32K>
  */
+<<<<<<< HEAD
+=======
+/* TODO: rearrange structure to reduce memory holes
+ * depends on userspace change.
+ */
+>>>>>>> p9x
 struct fec_header {
 	__le32 magic;
 	__le32 version;
@@ -80,7 +92,11 @@ struct fec_header {
 	__le32 fec_size;
 	__le64 inp_size;
 	u8 hash[SHA256_DIGEST_SIZE];
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+};
+>>>>>>> p9x
 
 struct android_metadata_header {
 	__le32 magic_number;
@@ -107,6 +123,7 @@ struct bio_read {
 	int number_of_pages;
 };
 
+<<<<<<< HEAD
 extern struct target_type linear_target;
 
 extern void dm_linear_dtr(struct dm_target *ti);
@@ -120,4 +137,6 @@ extern int dm_linear_merge(struct dm_target *ti, struct bvec_merge_data *bvm,
 extern int dm_linear_iterate_devices(struct dm_target *ti,
 			iterate_devices_callout_fn fn, void *data);
 extern int dm_linear_ctr(struct dm_target *ti, unsigned int argc, char **argv);
+=======
+>>>>>>> p9x
 #endif /* DM_ANDROID_VERITY_H */

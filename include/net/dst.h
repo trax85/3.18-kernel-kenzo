@@ -525,6 +525,7 @@ static inline struct dst_entry *xfrm_lookup(struct net *net,
 					    int flags)
 {
 	return dst_orig;
+<<<<<<< HEAD
 }
 
 static inline struct dst_entry *xfrm_lookup_route(struct net *net,
@@ -535,6 +536,9 @@ static inline struct dst_entry *xfrm_lookup_route(struct net *net,
 {
 	return dst_orig;
 }
+=======
+} 
+>>>>>>> p9x
 
 static inline struct xfrm_state *dst_xfrm(const struct dst_entry *dst)
 {
@@ -542,6 +546,7 @@ static inline struct xfrm_state *dst_xfrm(const struct dst_entry *dst)
 }
 
 #else
+<<<<<<< HEAD
 struct dst_entry *xfrm_lookup(struct net *net, struct dst_entry *dst_orig,
 			      const struct flowi *fl, struct sock *sk,
 			      int flags);
@@ -549,6 +554,11 @@ struct dst_entry *xfrm_lookup(struct net *net, struct dst_entry *dst_orig,
 struct dst_entry *xfrm_lookup_route(struct net *net, struct dst_entry *dst_orig,
 				    const struct flowi *fl, struct sock *sk,
 				    int flags);
+=======
+extern struct dst_entry *xfrm_lookup(struct net *net, struct dst_entry *dst_orig,
+				     const struct flowi *fl, struct sock *sk,
+				     int flags);
+>>>>>>> p9x
 
 /* skb attached with this dst needs transformation if dst->xfrm is valid */
 static inline struct xfrm_state *dst_xfrm(const struct dst_entry *dst)

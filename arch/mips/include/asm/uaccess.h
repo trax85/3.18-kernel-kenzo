@@ -15,7 +15,10 @@
 #include <linux/errno.h>
 #include <linux/thread_info.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <asm/asm-eva.h>
+=======
+>>>>>>> p9x
 
 /*
  * The fs value determines whether argument validity checking should be
@@ -1173,6 +1176,7 @@ extern size_t __copy_in_user_eva(void *__to, const void *__from, size_t __n);
 	__cu_to = (to);							\
 	__cu_from = (from);						\
 	__cu_len = (n);							\
+<<<<<<< HEAD
 	if (segment_eq(get_fs(), get_ds())) {				\
 		__cu_len = ___invoke_copy_in_kernel(__cu_to,__cu_from,	\
 						    __cu_len);		\
@@ -1184,6 +1188,15 @@ extern size_t __copy_in_user_eva(void *__to, const void *__from, size_t __n);
 							  __cu_from,	\
 							  __cu_len);	\
 		}							\
+=======
+	if (likely(access_ok(VERIFY_READ, __cu_from, __cu_len) &&	\
+		   access_ok(VERIFY_WRITE, __cu_to, __cu_len))) {	\
+		might_fault();						\
+		__cu_len = __invoke_copy_from_user(__cu_to, __cu_from,	\
+						   __cu_len);		\
+	} else {							\
+		memset(__cu_to, 0, __cu_len);				\
+>>>>>>> p9x
 	}								\
 	__cu_len;							\
 })

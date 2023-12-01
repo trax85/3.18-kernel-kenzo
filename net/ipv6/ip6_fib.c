@@ -630,12 +630,17 @@ insert_above:
 	return ln;
 }
 
+<<<<<<< HEAD
 static bool rt6_qualify_for_ecmp(struct rt6_info *rt)
+=======
+static inline bool rt6_qualify_for_ecmp(struct rt6_info *rt)
+>>>>>>> p9x
 {
 	return (rt->rt6i_flags & (RTF_GATEWAY|RTF_ADDRCONF|RTF_DYNAMIC)) ==
 	       RTF_GATEWAY;
 }
 
+<<<<<<< HEAD
 static int fib6_commit_metrics(struct dst_entry *dst,
 			       struct nlattr *mx, int mx_len)
 {
@@ -665,6 +670,8 @@ static int fib6_commit_metrics(struct dst_entry *dst,
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 static void fib6_purge_rt(struct rt6_info *rt, struct fib6_node *fn,
 			  struct net *net)
 {
@@ -703,7 +710,10 @@ static int fib6_add_rt2node(struct fib6_node *fn, struct rt6_info *rt,
 		   (info->nlh->nlmsg_flags & NLM_F_CREATE));
 	int found = 0;
 	bool rt_can_ecmp = rt6_qualify_for_ecmp(rt);
+<<<<<<< HEAD
 	int err;
+=======
+>>>>>>> p9x
 
 	ins = &fn->leaf;
 
@@ -886,9 +896,15 @@ int fib6_add(struct fib6_node *root, struct rt6_info *rt, struct nl_info *info,
 	if (!allow_create && !replace_required)
 		pr_warn("RTM_NEWROUTE with no NLM_F_CREATE or NLM_F_REPLACE\n");
 
+<<<<<<< HEAD
 	fn = fib6_add_1(root, &rt->rt6i_dst.addr, rt->rt6i_dst.plen,
 			offsetof(struct rt6_info, rt6i_dst), allow_create,
 			replace_required, sernum);
+=======
+	fn = fib6_add_1(root, &rt->rt6i_dst.addr, sizeof(struct in6_addr),
+			rt->rt6i_dst.plen, offsetof(struct rt6_info, rt6i_dst),
+			allow_create, replace_required);
+>>>>>>> p9x
 	if (IS_ERR(fn)) {
 		err = PTR_ERR(fn);
 		fn = NULL;
@@ -1713,7 +1729,11 @@ void fib6_run_gc(unsigned long expires, struct net *net, bool force)
 
 	gc_args.more = icmp6_dst_gc();
 
+<<<<<<< HEAD
 	fib6_clean_all(net, fib6_age, NULL);
+=======
+	fib6_clean_all(net, fib6_age, 0, NULL);
+>>>>>>> p9x
 	now = jiffies;
 	net->ipv6.ip6_rt_last_gc = now;
 

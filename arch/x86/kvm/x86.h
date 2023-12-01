@@ -165,8 +165,11 @@ bool kvm_mtrr_valid(struct kvm_vcpu *vcpu, u32 msr, u64 data);
 				| XSTATE_BNDREGS | XSTATE_BNDCSR)
 extern u64 host_xcr0;
 
+<<<<<<< HEAD
 extern u64 kvm_supported_xcr0(void);
 
+=======
+>>>>>>> p9x
 extern unsigned int min_timer_period_us;
 
 extern struct static_key kvm_no_apic_vcpu;

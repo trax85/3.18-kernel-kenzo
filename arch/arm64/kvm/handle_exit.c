@@ -34,7 +34,11 @@ static int handle_hvc(struct kvm_vcpu *vcpu, struct kvm_run *run)
 
 	ret = kvm_psci_call(vcpu);
 	if (ret < 0) {
+<<<<<<< HEAD
 		*vcpu_reg(vcpu, 0) = ~0UL;
+=======
+		kvm_inject_undefined(vcpu);
+>>>>>>> p9x
 		return 1;
 	}
 
@@ -43,7 +47,11 @@ static int handle_hvc(struct kvm_vcpu *vcpu, struct kvm_run *run)
 
 static int handle_smc(struct kvm_vcpu *vcpu, struct kvm_run *run)
 {
+<<<<<<< HEAD
 	*vcpu_reg(vcpu, 0) = ~0UL;
+=======
+	kvm_inject_undefined(vcpu);
+>>>>>>> p9x
 	return 1;
 }
 
@@ -66,8 +74,11 @@ static int kvm_handle_wfx(struct kvm_vcpu *vcpu, struct kvm_run *run)
 	else
 		kvm_vcpu_block(vcpu);
 
+<<<<<<< HEAD
 	kvm_skip_instr(vcpu, kvm_vcpu_trap_il_is32bit(vcpu));
 
+=======
+>>>>>>> p9x
 	return 1;
 }
 
@@ -75,9 +86,15 @@ static exit_handle_fn arm_exit_handlers[] = {
 	[ESR_EL2_EC_WFI]	= kvm_handle_wfx,
 	[ESR_EL2_EC_CP15_32]	= kvm_handle_cp15_32,
 	[ESR_EL2_EC_CP15_64]	= kvm_handle_cp15_64,
+<<<<<<< HEAD
 	[ESR_EL2_EC_CP14_MR]	= kvm_handle_cp14_32,
 	[ESR_EL2_EC_CP14_LS]	= kvm_handle_cp14_load_store,
 	[ESR_EL2_EC_CP14_64]	= kvm_handle_cp14_64,
+=======
+	[ESR_EL2_EC_CP14_MR]	= kvm_handle_cp14_access,
+	[ESR_EL2_EC_CP14_LS]	= kvm_handle_cp14_load_store,
+	[ESR_EL2_EC_CP14_64]	= kvm_handle_cp14_access,
+>>>>>>> p9x
 	[ESR_EL2_EC_HVC32]	= handle_hvc,
 	[ESR_EL2_EC_SMC32]	= handle_smc,
 	[ESR_EL2_EC_HVC64]	= handle_hvc,
@@ -93,7 +110,11 @@ static exit_handle_fn kvm_get_exit_handler(struct kvm_vcpu *vcpu)
 
 	if (hsr_ec >= ARRAY_SIZE(arm_exit_handlers) ||
 	    !arm_exit_handlers[hsr_ec]) {
+<<<<<<< HEAD
 		kvm_err("Unknown exception class: hsr: %#08x\n",
+=======
+		kvm_err("Unkown exception class: hsr: %#08x\n",
+>>>>>>> p9x
 			(unsigned int)kvm_vcpu_get_hsr(vcpu));
 		BUG();
 	}

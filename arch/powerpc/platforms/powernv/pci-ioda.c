@@ -862,8 +862,24 @@ static void pnv_pci_ioda_dma_dev_setup(struct pnv_phb *phb, struct pci_dev *pdev
 	set_iommu_table_base_and_group(&pdev->dev, &pe->tce32_table);
 }
 
+<<<<<<< HEAD
 static int pnv_pci_ioda_dma_set_mask(struct pnv_phb *phb,
 				     struct pci_dev *pdev, u64 dma_mask)
+=======
+static void pnv_ioda_setup_bus_dma(struct pnv_ioda_pe *pe, struct pci_bus *bus)
+{
+	struct pci_dev *dev;
+
+	list_for_each_entry(dev, &bus->devices, bus_list) {
+		set_iommu_table_base(&dev->dev, &pe->tce32_table);
+		if (dev->subordinate)
+			pnv_ioda_setup_bus_dma(pe, dev->subordinate);
+	}
+}
+
+static void pnv_pci_ioda1_tce_invalidate(struct iommu_table *tbl,
+					 u64 *startp, u64 *endp)
+>>>>>>> p9x
 {
 	struct pci_dn *pdn = pci_get_pdn(pdev);
 	struct pnv_ioda_pe *pe;
@@ -1109,6 +1125,11 @@ static void pnv_pci_ioda_setup_dma_pe(struct pnv_phb *phb,
 	else
 		pnv_ioda_setup_bus_dma(pe, pe->pbus, true);
 
+	if (pe->pdev)
+		set_iommu_table_base(&pe->pdev->dev, tbl);
+	else
+		pnv_ioda_setup_bus_dma(pe, pe->pbus);
+
 	return;
  fail:
 	/* XXX Failure: Try to fallback to 64-bit only ? */
@@ -1238,12 +1259,19 @@ static void pnv_pci_ioda2_setup_dma_pe(struct pnv_phb *phb,
 	iommu_register_group(tbl, phb->hose->global_number, pe->pe_number);
 
 	if (pe->pdev)
+<<<<<<< HEAD
 		set_iommu_table_base_and_group(&pe->pdev->dev, tbl);
 	else
 		pnv_ioda_setup_bus_dma(pe, pe->pbus, true);
 
 	/* Also create a bypass window */
 	pnv_pci_ioda2_setup_bypass_pe(phb, pe);
+=======
+		set_iommu_table_base(&pe->pdev->dev, tbl);
+	else
+		pnv_ioda_setup_bus_dma(pe, pe->pbus);
+
+>>>>>>> p9x
 	return;
 fail:
 	if (pe->tce32_seg >= 0)
@@ -1509,6 +1537,11 @@ static int pnv_pci_ioda_msi_setup(struct pnv_phb *phb, struct pci_dev *dev,
 				  unsigned int is_64, struct msi_msg *msg)
 {
 	struct pnv_ioda_pe *pe = pnv_ioda_get_pe(dev);
+<<<<<<< HEAD
+=======
+	struct irq_data *idata;
+	struct irq_chip *ichip;
+>>>>>>> p9x
 	unsigned int xive_num = hwirq - phb->msi_base;
 	__be32 data;
 	int rc;

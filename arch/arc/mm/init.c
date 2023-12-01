@@ -134,8 +134,40 @@ void __init setup_arch_memory(void)
 void __init mem_init(void)
 {
 	high_memory = (void *)(CONFIG_LINUX_LINK_BASE + arc_mem_sz);
+<<<<<<< HEAD
 	free_all_bootmem();
 	mem_init_print_info(NULL);
+=======
+
+	free_all_bootmem();
+
+	/* count all reserved pages [kernel code/data/mem_map..] */
+	reserved_pages = 0;
+	for (tmp = 0; tmp < max_mapnr; tmp++)
+		if (PageReserved(mem_map + tmp))
+			reserved_pages++;
+
+	/* XXX: nr_free_pages() is equivalent */
+	free_pages = max_mapnr - reserved_pages;
+
+	/*
+	 * For the purpose of display below, split the "reserve mem"
+	 * kernel code/data is already shown explicitly,
+	 * Show any other reservations (mem_map[ ] et al)
+	 */
+	reserved_pages -= (((unsigned int)_end - CONFIG_LINUX_LINK_BASE) >>
+								PAGE_SHIFT);
+
+	codesize = _etext - _text;
+	datasize = _end - _etext;
+	initsize = __init_end - __init_begin;
+
+	pr_info("Memory Available: %dM / %ldM (%dK code, %dK data, %dK init, %dK reserv)\n",
+		PAGES_TO_MB(free_pages),
+		TO_MB(arc_mem_sz),
+		TO_KB(codesize), TO_KB(datasize), TO_KB(initsize),
+		PAGES_TO_KB(reserved_pages));
+>>>>>>> p9x
 }
 
 /*
@@ -152,3 +184,13 @@ void __init free_initrd_mem(unsigned long start, unsigned long end)
 	free_reserved_area((void *)start, (void *)end, -1, "initrd");
 }
 #endif
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_OF_FLATTREE
+void __init early_init_dt_setup_initrd_arch(u64 start, u64 end)
+{
+	pr_err("%s(%llx, %llx)\n", __func__, start, end);
+}
+#endif /* CONFIG_OF_FLATTREE */
+>>>>>>> p9x

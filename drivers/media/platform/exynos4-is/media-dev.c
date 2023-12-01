@@ -1424,6 +1424,7 @@ err_clk:
 	fimc_md_put_clocks(fmd);
 err_m_ent:
 	fimc_md_unregister_entities(fmd);
+	media_device_unregister(&fmd->media_dev);
 err_md:
 	media_device_unregister(&fmd->media_dev);
 err_v4l2_dev:

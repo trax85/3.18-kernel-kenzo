@@ -43,6 +43,7 @@ static int perf_trace_event_perm(struct ftrace_event_call *tp_event,
 	 */
 
 	/* The ftrace function trace is allowed only for root. */
+<<<<<<< HEAD
 	if (ftrace_event_is_function(tp_event)) {
 		if (perf_paranoid_tracepoint_raw() && !capable(CAP_SYS_ADMIN))
 			return -EPERM;
@@ -62,6 +63,11 @@ static int perf_trace_event_perm(struct ftrace_event_call *tp_event,
 		if (p_event->attr.sample_type & PERF_SAMPLE_STACK_USER)
 			return -EINVAL;
 	}
+=======
+	if (ftrace_event_is_function(tp_event) &&
+	    perf_paranoid_tracepoint_raw() && !capable(CAP_SYS_ADMIN))
+		return -EPERM;
+>>>>>>> p9x
 
 	/* No tracing, just counting, so no obvious leak */
 	if (!(p_event->attr.sample_type & PERF_SAMPLE_RAW))

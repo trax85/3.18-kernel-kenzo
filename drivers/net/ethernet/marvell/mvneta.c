@@ -220,6 +220,12 @@
 #define MVNETA_RX_COAL_PKTS		32
 #define MVNETA_RX_COAL_USEC		100
 
+<<<<<<< HEAD
+=======
+/* Napi polling weight */
+#define MVNETA_RX_POLL_WEIGHT		64
+
+>>>>>>> p9x
 /* The two bytes Marvell header. Either contains a special value used
  * by Marvell switches when a specific hardware mode is enabled (not
  * supported by this driver) or is filled automatically by zeroes on
@@ -290,6 +296,12 @@ struct mvneta_port {
 	u32 cause_rx_tx;
 	struct napi_struct napi;
 
+<<<<<<< HEAD
+=======
+	/* Napi weight */
+	int weight;
+
+>>>>>>> p9x
 	/* Core clock */
 	struct clk *clk;
 	u8 mcast_count[256];
@@ -530,12 +542,20 @@ struct rtnl_link_stats64 *mvneta_get_stats64(struct net_device *dev,
 
 		cpu_stats = per_cpu_ptr(pp->stats, cpu);
 		do {
+<<<<<<< HEAD
 			start = u64_stats_fetch_begin_irq(&cpu_stats->syncp);
+=======
+			start = u64_stats_fetch_begin_bh(&cpu_stats->syncp);
+>>>>>>> p9x
 			rx_packets = cpu_stats->rx_packets;
 			rx_bytes   = cpu_stats->rx_bytes;
 			tx_packets = cpu_stats->tx_packets;
 			tx_bytes   = cpu_stats->tx_bytes;
+<<<<<<< HEAD
 		} while (u64_stats_fetch_retry_irq(&cpu_stats->syncp, start));
+=======
+		} while (u64_stats_fetch_retry_bh(&cpu_stats->syncp, start));
+>>>>>>> p9x
 
 		stats->rx_packets += rx_packets;
 		stats->rx_bytes   += rx_bytes;
@@ -732,6 +752,36 @@ static void mvneta_rxq_bm_disable(struct mvneta_port *pp,
 	mvreg_write(pp, MVNETA_RXQ_CONFIG_REG(rxq->id), val);
 }
 
+<<<<<<< HEAD
+=======
+
+
+/* Sets the RGMII Enable bit (RGMIIEn) in port MAC control register */
+static void mvneta_gmac_rgmii_set(struct mvneta_port *pp, int enable)
+{
+	u32  val;
+
+	val = mvreg_read(pp, MVNETA_GMAC_CTRL_2);
+
+	if (enable)
+		val |= MVNETA_GMAC2_PORT_RGMII;
+	else
+		val &= ~MVNETA_GMAC2_PORT_RGMII;
+
+	mvreg_write(pp, MVNETA_GMAC_CTRL_2, val);
+}
+
+/* Config SGMII port */
+static void mvneta_port_sgmii_config(struct mvneta_port *pp)
+{
+	u32 val;
+
+	val = mvreg_read(pp, MVNETA_GMAC_CTRL_2);
+	val |= MVNETA_GMAC2_PCS_ENABLE;
+	mvreg_write(pp, MVNETA_GMAC_CTRL_2, val);
+}
+
+>>>>>>> p9x
 /* Start the Ethernet port RX and TX activity */
 static void mvneta_port_up(struct mvneta_port *pp)
 {
@@ -947,7 +997,7 @@ static void mvneta_defaults_set(struct mvneta_port *pp)
 	/* Set CPU queue access map - all CPUs have access to all RX
 	 * queues and to all TX queues
 	 */
-	for (cpu = 0; cpu < CONFIG_NR_CPUS; cpu++)
+	for_each_present_cpu(cpu)
 		mvreg_write(pp, MVNETA_CPU_MAP(cpu),
 			    (MVNETA_CPU_RXQ_ACCESS_ALL_MASK |
 			     MVNETA_CPU_TXQ_ACCESS_ALL_MASK));
@@ -1482,6 +1532,7 @@ static int mvneta_rx(struct mvneta_port *pp, int rx_todo,
 			if (unlikely(!skb))
 				goto err_drop_frame;
 
+<<<<<<< HEAD
 			dma_sync_single_range_for_cpu(dev->dev.parent,
 			                              rx_desc->buf_phys_addr,
 			                              MVNETA_MH_SIZE + NET_SKB_PAD,
@@ -1509,6 +1560,10 @@ static int mvneta_rx(struct mvneta_port *pp, int rx_todo,
 		dma_unmap_single(dev->dev.parent, rx_desc->buf_phys_addr,
 				 MVNETA_RX_BUF_SIZE(pp->pkt_size), DMA_FROM_DEVICE);
 
+=======
+		rx_bytes = rx_desc->data_size -
+			(ETH_FCS_LEN + MVNETA_MH_SIZE);
+>>>>>>> p9x
 		rcvd_pkts++;
 		rcvd_bytes += rx_bytes;
 
@@ -1785,6 +1840,7 @@ static int mvneta_tx(struct sk_buff *skb, struct net_device *dev)
 out:
 	if (frags > 0) {
 		struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
+<<<<<<< HEAD
 		struct netdev_queue *nq = netdev_get_tx_queue(dev, txq_id);
 
 		txq->count += frags;
@@ -1796,6 +1852,12 @@ out:
 		u64_stats_update_begin(&stats->syncp);
 		stats->tx_packets++;
 		stats->tx_bytes  += len;
+=======
+
+		u64_stats_update_begin(&stats->syncp);
+		stats->tx_packets++;
+		stats->tx_bytes  += skb->len;
+>>>>>>> p9x
 		u64_stats_update_end(&stats->syncp);
 	} else {
 		dev->stats.tx_dropped++;
@@ -2074,7 +2136,13 @@ static int mvneta_poll(struct napi_struct *napi, int budget)
 
 	/* Release Tx descriptors */
 	if (cause_rx_tx & MVNETA_TX_INTR_MASK_ALL) {
+<<<<<<< HEAD
 		mvneta_tx_done_gbe(pp, (cause_rx_tx & MVNETA_TX_INTR_MASK_ALL));
+=======
+		int tx_todo = 0;
+
+		mvneta_tx_done_gbe(pp, (cause_rx_tx & MVNETA_TX_INTR_MASK_ALL), &tx_todo);
+>>>>>>> p9x
 		cause_rx_tx &= ~MVNETA_TX_INTR_MASK_ALL;
 	}
 
@@ -2815,7 +2883,10 @@ static const struct net_device_ops mvneta_netdev_ops = {
 	.ndo_set_rx_mode     = mvneta_set_rx_mode,
 	.ndo_set_mac_address = mvneta_set_mac_addr,
 	.ndo_change_mtu      = mvneta_change_mtu,
+<<<<<<< HEAD
 	.ndo_fix_features    = mvneta_fix_features,
+=======
+>>>>>>> p9x
 	.ndo_get_stats64     = mvneta_get_stats64,
 	.ndo_do_ioctl        = mvneta_ioctl,
 };
@@ -3014,6 +3085,11 @@ static int mvneta_probe(struct platform_device *pdev)
 	dev->ethtool_ops = &mvneta_eth_tool_ops;
 
 	pp = netdev_priv(dev);
+<<<<<<< HEAD
+=======
+
+	pp->weight = MVNETA_RX_POLL_WEIGHT;
+>>>>>>> p9x
 	pp->phy_node = phy_node;
 	pp->phy_interface = phy_mode;
 
@@ -3025,6 +3101,7 @@ static int mvneta_probe(struct platform_device *pdev)
 
 	clk_prepare_enable(pp->clk);
 
+<<<<<<< HEAD
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	pp->base = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(pp->base)) {
@@ -3034,10 +3111,15 @@ static int mvneta_probe(struct platform_device *pdev)
 
 	/* Alloc per-cpu stats */
 	pp->stats = netdev_alloc_pcpu_stats(struct mvneta_pcpu_stats);
+=======
+	/* Alloc per-cpu stats */
+	pp->stats = alloc_percpu(struct mvneta_pcpu_stats);
+>>>>>>> p9x
 	if (!pp->stats) {
 		err = -ENOMEM;
 		goto err_clk;
 	}
+<<<<<<< HEAD
 
 	dt_mac_addr = of_get_mac_address(dn);
 	if (dt_mac_addr) {
@@ -3056,6 +3138,8 @@ static int mvneta_probe(struct platform_device *pdev)
 
 	if (of_device_is_compatible(dn, "marvell,armada-370-neta"))
 		pp->tx_csum_limit = 1600;
+=======
+>>>>>>> p9x
 
 	pp->tx_ring_size = MVNETA_MAX_TXD;
 	pp->rx_ring_size = MVNETA_MAX_RXD;
@@ -3069,7 +3153,11 @@ static int mvneta_probe(struct platform_device *pdev)
 
 	err = mvneta_port_power_up(pp, phy_mode);
 	if (err < 0) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "can't power up port\n");
+=======
+		dev_err(&pdev->dev, "can't init eth hal\n");
+>>>>>>> p9x
 		goto err_free_stats;
 	}
 
@@ -3098,6 +3186,11 @@ static int mvneta_probe(struct platform_device *pdev)
 
 	return 0;
 
+<<<<<<< HEAD
+=======
+err_deinit:
+	mvneta_deinit(pp);
+>>>>>>> p9x
 err_free_stats:
 	free_percpu(pp->stats);
 err_clk:
@@ -3120,6 +3213,10 @@ static int mvneta_remove(struct platform_device *pdev)
 	unregister_netdev(dev);
 	clk_disable_unprepare(pp->clk);
 	free_percpu(pp->stats);
+<<<<<<< HEAD
+=======
+	iounmap(pp->base);
+>>>>>>> p9x
 	irq_dispose_mapping(dev->irq);
 	of_node_put(pp->phy_node);
 	free_netdev(dev);

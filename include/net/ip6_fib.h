@@ -300,7 +300,12 @@ void inet6_rt_notify(int event, struct rt6_info *rt, struct nl_info *info);
 
 void fib6_run_gc(unsigned long expires, struct net *net, bool force);
 
+<<<<<<< HEAD
 void fib6_gc_cleanup(void);
+=======
+extern void			fib6_run_gc(unsigned long expires,
+					    struct net *net, bool force);
+>>>>>>> p9x
 
 int fib6_init(void);
 

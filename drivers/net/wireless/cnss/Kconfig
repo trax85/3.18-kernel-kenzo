@@ -1,12 +1,16 @@
 config CNSS
 	tristate "CNSS driver for wifi module"
+<<<<<<< HEAD
 	select CNSS_UTILS
+=======
+>>>>>>> p9x
 	select CRYPTO
 	select CRYPTO_HASH
 	select CRYPTO_BLKCIPHER
 	---help---
 	  This module adds support for the CNSS connectivity subsystem used
 	  for wifi devices based on the QCA AR6320 chipset.
+<<<<<<< HEAD
 
 config CNSS_SDIO
 	bool "Enable/disable cnss sdio platform driver for wifi module"
@@ -38,6 +42,33 @@ config CNSS_ASYNC
 	 Using asynchronous probe will allow CNSS PCI platform driver to
 	 probe in parallel with other device drivers and will help to
 	 reduce kernel boot time.
+=======
+	  This driver also adds support to integrate WLAN module to subsystem
+	  restart framework.
+
+config CNSS_PCI
+	tristate "Flag to enable platform driver for PCIe based wifi device"
+	select CNSS
+	depends on PCI
+	depends on PCI_MSI
+	---help---
+	  This module specifies whether CNSS Platform Driver supports PCI.
+	  This flag needs to be disabled if CNSS platform Driver need to be
+	  supported for other buses.
+	  The Flag depends on the CNSS Platform Driver and PCI. This Flag
+	  is used by the CLD driver to use the PCIe exported API's through
+	  CNSS Driver.
+
+config CNSS_SDIO
+	tristate "Flag to enable platform driver for SIDO based wifi device"
+	select CNSS
+	depends on MMC_SDHCI
+	depends on MMC_SDHCI_MSM
+	---help---
+	  This module specifies whether CNSS Platform Driver supports SDIO.
+	  This flag needs to be disabled if CNSS platform Driver need to be
+	  supported for other buses.
+>>>>>>> p9x
 
 config CNSS_MAC_BUG
 	bool "Enable/disable 0-4K memory initialization for QCA6174"
@@ -60,7 +91,11 @@ config CLD_DEBUG
 	  Only say Y, if you are building a kernel with debug support.
 
 config CLD_HL_SDIO_CORE
+<<<<<<< HEAD
 	tristate "Qualcomm CORE driver for QCA6174 with SDIO interface"
+=======
+	tristate "QTI CORE driver for QCA6174 with SDIO interface"
+>>>>>>> p9x
 	select WIRELESS_EXT
 	select WEXT_PRIV
 	select WEXT_CORE
@@ -70,18 +105,28 @@ config CLD_HL_SDIO_CORE
 	depends on MMC
 
 config CLD_LL_CORE
+<<<<<<< HEAD
 	tristate "Qualcomm core WLAN driver for QCA6174 chipset"
+=======
+	tristate "QTI core WLAN driver for QCA6174 chipset"
+>>>>>>> p9x
 	select NL80211_TESTMODE
 	select WEXT_CORE
 	select WEXT_PRIV
 	select WEXT_SPY
 	select WIRELESS_EXT
+<<<<<<< HEAD
 	select CRYPTO
 	select CRYPTO_HASH
 	select CRYPTO_BLKCIPHER
 	---help---
 	  This section contains the necessary modules needed to enable the
 	  core WLAN driver for Qualcomm QCA6174 chipset.
+=======
+	---help---
+	  This section contains the necessary modules needed to enable the
+	  core WLAN driver for QTI QCA6174 chipset.
+>>>>>>> p9x
 	  Select Y to compile the driver in order to have WLAN functionality
 	  support.
 
@@ -96,7 +141,11 @@ config CNSS_SECURE_FW
 
 config BUS_AUTO_SUSPEND
 	bool "Enable/Disable Runtime PM support for PCIe based WLAN Drivers"
+<<<<<<< HEAD
 	depends on CNSS || CNSS2
+=======
+	depends on CNSS
+>>>>>>> p9x
 	depends on PCI
 	---help---
 	  Runtime Power Management is supported for PCIe based WLAN Drivers.
@@ -108,10 +157,16 @@ config BUS_AUTO_SUSPEND
 	  This config flag controls the feature per target based. The feature
 	  requires CNSS driver support.
 
+<<<<<<< HEAD
 source "drivers/net/wireless/cnss/logger/Kconfig"
 
 config WLAN_FEATURE_RX_WAKELOCK
 	bool "Enable RX wake lock feature"
+=======
+config WLAN_FEATURE_RX_WAKELOCK
+	bool "Enable RX wake lock feature"
+	default n
+>>>>>>> p9x
 	help
 	Enable WLAN_FEATURE_HOLD_RX_WAKELOCK which is required to take rx
 	wakelock when driver receives packets from fw.

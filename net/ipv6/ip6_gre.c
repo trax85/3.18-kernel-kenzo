@@ -363,7 +363,11 @@ static void ip6gre_tunnel_uninit(struct net_device *dev)
 	struct ip6_tnl *t = netdev_priv(dev);
 	struct ip6gre_net *ign = net_generic(t->net, ip6gre_net_id);
 
+<<<<<<< HEAD
 	ip6gre_tunnel_unlink(ign, t);
+=======
+	ip6gre_tunnel_unlink(ign, netdev_priv(dev));
+>>>>>>> p9x
 	ip6_tnl_dst_reset(netdev_priv(dev));
 	dev_put(dev);
 }
@@ -401,7 +405,11 @@ static void ip6gre_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 
 	t = ip6gre_tunnel_lookup(skb->dev, &ipv6h->daddr, &ipv6h->saddr,
 				 key, greh->protocol);
+<<<<<<< HEAD
 	if (t == NULL)
+=======
+	if (!t)
+>>>>>>> p9x
 		return;
 
 	switch (type) {
@@ -692,8 +700,11 @@ static netdev_tx_t ip6gre_xmit2(struct sk_buff *skb,
 			tunnel->err_count = 0;
 	}
 
+<<<<<<< HEAD
 	skb_scrub_packet(skb, !net_eq(tunnel->net, dev_net(dev)));
 
+=======
+>>>>>>> p9x
 	max_headroom += LL_RESERVED_SPACE(tdev) + gre_hlen + dst->header_len;
 
 	if (skb_headroom(skb) < max_headroom || skb_shared(skb) ||
@@ -1276,12 +1287,15 @@ static int ip6gre_tunnel_init(struct net_device *dev)
 	if (!dev->tstats)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	for_each_possible_cpu(i) {
 		struct pcpu_sw_netstats *ip6gre_tunnel_stats;
 		ip6gre_tunnel_stats = per_cpu_ptr(dev->tstats, i);
 		u64_stats_init(&ip6gre_tunnel_stats->syncp);
 	}
 
+=======
+>>>>>>> p9x
 	dev->iflink = tunnel->parms.link;
 
 	return 0;
@@ -1299,7 +1313,6 @@ static void ip6gre_fb_tunnel_init(struct net_device *dev)
 
 	dev_hold(dev);
 }
-
 
 static struct inet6_protocol ip6gre_protocol __read_mostly = {
 	.handler     = ip6gre_rcv,

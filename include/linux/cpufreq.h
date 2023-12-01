@@ -11,15 +11,24 @@
 #ifndef _LINUX_CPUFREQ_H
 #define _LINUX_CPUFREQ_H
 
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> p9x
 #include <linux/cpumask.h>
 #include <linux/completion.h>
 #include <linux/kobject.h>
 #include <linux/notifier.h>
+<<<<<<< HEAD
 #include <linux/spinlock.h>
 #include <linux/sysfs.h>
 #include <asm/cputime.h>
 
+=======
+#include <linux/pid_namespace.h>
+#include <linux/sysfs.h>
+#include <asm/cputime.h>
+>>>>>>> p9x
 
 /*********************************************************************
  *                        CPUFREQ INTERFACE                          *
@@ -108,6 +117,7 @@ struct cpufreq_policy {
 	 *     __cpufreq_governor(data, CPUFREQ_GOV_POLICY_EXIT);
 	 */
 	struct rw_semaphore	rwsem;
+<<<<<<< HEAD
 
 	/* Synchronization for frequency transitions */
 	bool			transition_ongoing; /* Tracks transition status */
@@ -117,6 +127,8 @@ struct cpufreq_policy {
 
 	/* For cpufreq driver's internal use */
 	void			*driver_data;
+=======
+>>>>>>> p9x
 };
 
 /* Only for ACPI */
@@ -158,7 +170,10 @@ u64 get_cpu_idle_time(unsigned int cpu, u64 *wall, int io_busy);
 int cpufreq_get_policy(struct cpufreq_policy *policy, unsigned int cpu);
 int cpufreq_update_policy(unsigned int cpu);
 bool have_governor_per_policy(void);
+<<<<<<< HEAD
 bool cpufreq_driver_is_slow(void);
+=======
+>>>>>>> p9x
 struct kobject *get_governor_parent_kobj(struct cpufreq_policy *policy);
 #else
 static inline unsigned int cpufreq_get(unsigned int cpu)
@@ -220,6 +235,7 @@ __ATTR(_name, 0644, show_##_name, store_##_name)
 
 
 struct cpufreq_driver {
+<<<<<<< HEAD
 	char		name[CPUFREQ_NAME_LEN];
 	u8		flags;
 	void		*driver_data;
@@ -280,6 +296,34 @@ struct cpufreq_driver {
 	bool		boost_supported;
 	bool		boost_enabled;
 	int		(*set_boost)(int state);
+=======
+	char			name[CPUFREQ_NAME_LEN];
+	u8			flags;
+	void			*driver_data;
+
+	/* needed by all drivers */
+	int	(*init)		(struct cpufreq_policy *policy);
+	int	(*verify)	(struct cpufreq_policy *policy);
+
+	/* define one out of two */
+	int	(*setpolicy)	(struct cpufreq_policy *policy);
+	int	(*target)	(struct cpufreq_policy *policy,	/* Deprecated */
+				 unsigned int target_freq,
+				 unsigned int relation);
+	int	(*target_index)	(struct cpufreq_policy *policy,
+				 unsigned int index);
+
+	/* should be defined, if possible */
+	unsigned int	(*get)	(unsigned int cpu);
+
+	/* optional */
+	int	(*bios_limit)	(int cpu, unsigned int *limit);
+
+	int	(*exit)		(struct cpufreq_policy *policy);
+	int	(*suspend)	(struct cpufreq_policy *policy);
+	int	(*resume)	(struct cpufreq_policy *policy);
+	struct freq_attr	**attr;
+>>>>>>> p9x
 };
 
 /* flags */
@@ -307,6 +351,7 @@ struct cpufreq_driver {
  */
 #define CPUFREQ_ASYNC_NOTIFICATION  (1 << 4)
 
+<<<<<<< HEAD
 /*
  * Set by drivers which want cpufreq core to check if CPU is running at a
  * frequency present in freq-table exposed by the driver. For these drivers if
@@ -324,6 +369,8 @@ struct cpufreq_driver {
  */
 #define CPUFREQ_DRIVER_FAST		(1 << 6)
 
+=======
+>>>>>>> p9x
 int cpufreq_register_driver(struct cpufreq_driver *driver_data);
 int cpufreq_unregister_driver(struct cpufreq_driver *driver_data);
 
@@ -353,6 +400,7 @@ cpufreq_verify_within_cpu_limits(struct cpufreq_policy *policy)
 			policy->cpuinfo.max_freq);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_FREQ
 void cpufreq_suspend(void);
 void cpufreq_resume(void);
@@ -362,6 +410,8 @@ static inline void cpufreq_suspend(void) {}
 static inline void cpufreq_resume(void) {}
 #endif
 
+=======
+>>>>>>> p9x
 /*********************************************************************
  *                     CPUFREQ NOTIFIER INTERFACE                    *
  *********************************************************************/
@@ -390,10 +440,15 @@ static inline void cpufreq_resume(void) {}
 int cpufreq_register_notifier(struct notifier_block *nb, unsigned int list);
 int cpufreq_unregister_notifier(struct notifier_block *nb, unsigned int list);
 
+<<<<<<< HEAD
 void cpufreq_freq_transition_begin(struct cpufreq_policy *policy,
 		struct cpufreq_freqs *freqs);
 void cpufreq_freq_transition_end(struct cpufreq_policy *policy,
 		struct cpufreq_freqs *freqs, int transition_failed);
+=======
+void cpufreq_notify_transition(struct cpufreq_policy *policy,
+		struct cpufreq_freqs *freqs, unsigned int state);
+>>>>>>> p9x
 /*
  * Governor specific info that can be passed to modules that subscribe
  * to CPUFREQ_GOVINFO_NOTIFIER
@@ -513,9 +568,12 @@ extern struct cpufreq_governor cpufreq_gov_conservative;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_INTERACTIVE)
 extern struct cpufreq_governor cpufreq_gov_interactive;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_interactive)
+<<<<<<< HEAD
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_SCHED)
 extern struct cpufreq_governor cpufreq_gov_sched;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_sched)
+=======
+>>>>>>> p9x
 #endif
 
 /*********************************************************************
@@ -529,7 +587,10 @@ extern struct cpufreq_governor cpufreq_gov_sched;
 #define CPUFREQ_BOOST_FREQ	(1 << 0)
 
 struct cpufreq_frequency_table {
+<<<<<<< HEAD
 	unsigned int	flags;
+=======
+>>>>>>> p9x
 	unsigned int	driver_data; /* driver specific data, not used by core */
 	unsigned int	frequency; /* kHz - doesn't need to be in ascending
 				    * order */
@@ -599,6 +660,7 @@ int cpufreq_frequency_table_target(struct cpufreq_policy *policy,
 int cpufreq_frequency_table_get_index(struct cpufreq_policy *policy,
 		unsigned int freq);
 
+<<<<<<< HEAD
 ssize_t cpufreq_show_cpus(const struct cpumask *mask, char *buf);
 
 #ifdef CONFIG_CPU_FREQ
@@ -631,11 +693,17 @@ static inline bool policy_has_boost_freq(struct cpufreq_policy *policy)
 	return false;
 }
 #endif
+=======
+void cpufreq_frequency_table_update_policy_cpu(struct cpufreq_policy *policy);
+ssize_t cpufreq_show_cpus(const struct cpumask *mask, char *buf);
+
+>>>>>>> p9x
 /* the following funtion is for cpufreq core use only */
 struct cpufreq_frequency_table *cpufreq_frequency_get_table(unsigned int cpu);
 
 /* the following are really really optional */
 extern struct freq_attr cpufreq_freq_attr_scaling_available_freqs;
+<<<<<<< HEAD
 extern struct freq_attr cpufreq_freq_attr_scaling_boost_freqs;
 extern struct freq_attr *cpufreq_generic_attr[];
 int cpufreq_table_validate_and_show(struct cpufreq_policy *policy,
@@ -645,14 +713,48 @@ unsigned int cpufreq_generic_get(unsigned int cpu);
 int cpufreq_generic_init(struct cpufreq_policy *policy,
 		struct cpufreq_frequency_table *table,
 		unsigned int transition_latency);
+=======
+extern struct freq_attr *cpufreq_generic_attr[];
+void cpufreq_frequency_table_get_attr(struct cpufreq_frequency_table *table,
+				      unsigned int cpu);
+void cpufreq_frequency_table_put_attr(unsigned int cpu);
+int cpufreq_table_validate_and_show(struct cpufreq_policy *policy,
+				      struct cpufreq_frequency_table *table);
+
+int cpufreq_generic_init(struct cpufreq_policy *policy,
+		struct cpufreq_frequency_table *table,
+		unsigned int transition_latency);
+static inline int cpufreq_generic_exit(struct cpufreq_policy *policy)
+{
+	cpufreq_frequency_table_put_attr(policy->cpu);
+	return 0;
+}
+>>>>>>> p9x
 
 /*********************************************************************
  *                         CPUFREQ STATS                             *
  *********************************************************************/
 
+<<<<<<< HEAD
 void acct_update_power(struct task_struct *p, cputime_t cputime);
 
 struct sched_domain;
 unsigned long cpufreq_scale_freq_capacity(struct sched_domain *sd, int cpu);
 unsigned long cpufreq_scale_max_freq_capacity(int cpu);
+=======
+#ifdef CONFIG_CPU_FREQ_STAT
+void acct_update_power(struct task_struct *p, cputime_t cputime);
+void cpufreq_task_stats_init(struct task_struct *p);
+void cpufreq_task_stats_exit(struct task_struct *p);
+void cpufreq_task_stats_remove_uids(uid_t uid_start, uid_t uid_end);
+int  proc_time_in_state_show(struct seq_file *m, struct pid_namespace *ns,
+	struct pid *pid, struct task_struct *p);
+#else
+static inline void acct_update_power(struct task_struct *p, cputime_t cputime) {}
+static inline void cpufreq_task_stats_init(struct task_struct *p) {}
+static inline void cpufreq_task_stats_exit(struct task_struct *p) {}
+static inline void cpufreq_task_stats_remove_uids(uid_t uid_start,
+	uid_t uid_end) {}
+#endif
+>>>>>>> p9x
 #endif /* _LINUX_CPUFREQ_H */

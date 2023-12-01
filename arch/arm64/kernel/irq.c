@@ -70,8 +70,12 @@ static bool migrate_one_irq(struct irq_desc *desc)
 
 	if (cpumask_any_and(affinity, cpu_online_mask) >= nr_cpu_ids)
 		affinity = cpu_online_mask;
+<<<<<<< HEAD
 
 	return irq_set_affinity_locked(d, affinity, false) != 0;
+=======
+	return irq_set_affinity_locked(d, affinity, 0) == 0;
+>>>>>>> p9x
 }
 
 /*

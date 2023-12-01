@@ -11,6 +11,7 @@
 #include "jr.h"
 #include "error.h"
 
+<<<<<<< HEAD
 static const struct {
 	u8 value;
 	const char *error_text;
@@ -68,6 +69,21 @@ static const struct {
 	{ 0xF0, "IPsec TTL or hop limit field either came in as 0, or was decremented to 0" },
 	{ 0xF1, "3GPP HFN matches or exceeds the Threshold" },
 };
+=======
+#define SPRINTFCAT(str, format, param, max_alloc)		\
+{								\
+	char *tmp;						\
+								\
+	tmp = kmalloc(sizeof(format) + max_alloc, GFP_ATOMIC);	\
+	if (likely(tmp)) {					\
+		sprintf(tmp, format, param);			\
+		strcat(str, tmp);				\
+		kfree(tmp);					\
+	} else {						\
+		strcat(str, "kmalloc failure in SPRINTFCAT");	\
+	}							\
+}
+>>>>>>> p9x
 
 static const char * const cha_id_list[] = {
 	"",

@@ -36,6 +36,15 @@
  * of type casting from pmd_t * to pte_t *.
  */
 
+<<<<<<< HEAD
+=======
+struct page *follow_huge_addr(struct mm_struct *mm, unsigned long address,
+			      int write)
+{
+	return ERR_PTR(-EINVAL);
+}
+
+>>>>>>> p9x
 int pud_huge(pud_t pud)
 {
 	return 0;
@@ -50,3 +59,11 @@ int pmd_huge(pmd_t pmd)
 {
 	return pmd_val(pmd) && !(pmd_val(pmd) & PMD_TABLE_BIT);
 }
+<<<<<<< HEAD
+=======
+
+int pmd_huge_support(void)
+{
+	return 1;
+}
+>>>>>>> p9x

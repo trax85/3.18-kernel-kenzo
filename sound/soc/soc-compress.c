@@ -68,11 +68,22 @@ out:
 static int soc_compr_open_fe(struct snd_compr_stream *cstream)
 {
 	struct snd_soc_pcm_runtime *fe = cstream->private_data;
+<<<<<<< HEAD
 	struct snd_pcm_substream *fe_substream =
 		 fe->pcm->streams[cstream->direction].substream;
 	struct snd_soc_platform *platform = fe->platform;
 	struct snd_soc_dpcm *dpcm;
 	struct snd_soc_dapm_widget_list *list;
+=======
+	struct snd_pcm_substream *fe_substream = fe->pcm->streams[0].substream;
+	struct snd_soc_platform *platform = fe->platform;
+	struct snd_soc_dpcm *dpcm;
+	struct snd_soc_dapm_widget_list *list;
+
+	struct snd_soc_dai *cpu_dai = fe->cpu_dai;
+	struct snd_soc_dai *codec_dai = fe->codec_dai;
+
+>>>>>>> p9x
 	int stream;
 	int ret = 0;
 
@@ -87,7 +98,11 @@ static int soc_compr_open_fe(struct snd_compr_stream *cstream)
 		ret = platform->driver->compr_ops->open(cstream);
 		if (ret < 0) {
 			pr_err("compress asoc: can't open platform %s\n",
+<<<<<<< HEAD
 				platform->component.name);
+=======
+								platform->name);
+>>>>>>> p9x
 			goto out;
 		}
 	}
@@ -95,19 +110,31 @@ static int soc_compr_open_fe(struct snd_compr_stream *cstream)
 	if (fe->dai_link->compr_ops && fe->dai_link->compr_ops->startup) {
 		ret = fe->dai_link->compr_ops->startup(cstream);
 		if (ret < 0) {
+<<<<<<< HEAD
 			pr_err("compress asoc: %s startup failed\n", fe->dai_link->name);
+=======
+			pr_err("compress asoc: %s startup failed\n",
+							fe->dai_link->name);
+>>>>>>> p9x
 			goto machine_err;
 		}
 	}
 
 	fe->dpcm[stream].runtime = fe_substream->runtime;
 
+<<<<<<< HEAD
 	ret = dpcm_path_get(fe, stream, &list);
 	if (ret < 0)
 		goto fe_err;
 	else if (ret == 0)
 		dev_dbg(fe->dev, "ASoC: %s no valid %s route\n",
 			fe->dai_link->name, stream ? "capture" : "playback");
+=======
+	if (dpcm_path_get(fe, stream, &list) <= 0) {
+		dev_dbg(fe->dev, "ASoC: %s no valid %s route\n",
+			fe->dai_link->name, stream ? "capture" : "playback");
+	}
+>>>>>>> p9x
 
 	/* calculate valid and active FE <-> BE dpcms */
 	dpcm_process_paths(fe, stream, &list, 1);
@@ -131,7 +158,21 @@ static int soc_compr_open_fe(struct snd_compr_stream *cstream)
 	fe->dpcm[stream].state = SND_SOC_DPCM_STATE_OPEN;
 	fe->dpcm[stream].runtime_update = SND_SOC_DPCM_UPDATE_NO;
 
+<<<<<<< HEAD
 	snd_soc_runtime_activate(fe, stream);
+=======
+	if (cstream->direction == SND_COMPRESS_PLAYBACK) {
+		cpu_dai->playback_active++;
+		codec_dai->playback_active++;
+	} else {
+		cpu_dai->capture_active++;
+		codec_dai->capture_active++;
+	}
+
+	cpu_dai->active++;
+	codec_dai->active++;
+	fe->codec->active++;
+>>>>>>> p9x
 
 	mutex_unlock(&fe->card->mutex);
 
@@ -235,19 +276,45 @@ static int soc_compr_free_fe(struct snd_compr_stream *cstream)
 {
 	struct snd_soc_pcm_runtime *fe = cstream->private_data;
 	struct snd_soc_platform *platform = fe->platform;
+<<<<<<< HEAD
 	struct snd_soc_dai *codec_dai = fe->codec_dai;
 	struct snd_soc_dpcm *dpcm;
 	int stream, ret;
 
 	mutex_lock_nested(&fe->card->mutex, SND_SOC_CARD_CLASS_RUNTIME);
+=======
+	struct snd_soc_dpcm *dpcm;
+	int stream, ret;
+
+	struct snd_soc_dai *cpu_dai = fe->cpu_dai;
+	struct snd_soc_dai *codec_dai = fe->codec_dai;
+	struct snd_soc_codec *codec = fe->codec;
+>>>>>>> p9x
 
 	if (cstream->direction == SND_COMPRESS_PLAYBACK)
 		stream = SNDRV_PCM_STREAM_PLAYBACK;
 	else
 		stream = SNDRV_PCM_STREAM_CAPTURE;
 
+<<<<<<< HEAD
 	snd_soc_runtime_deactivate(fe, stream);
 	snd_soc_dai_digital_mute(codec_dai, 1, cstream->direction);
+=======
+	mutex_lock_nested(&fe->card->mutex, SND_SOC_CARD_CLASS_RUNTIME);
+
+	if (cstream->direction == SND_COMPRESS_PLAYBACK) {
+		cpu_dai->playback_active--;
+		codec_dai->playback_active--;
+		snd_soc_dai_digital_mute(codec_dai, 1, cstream->direction);
+	} else {
+		cpu_dai->capture_active--;
+		codec_dai->capture_active--;
+	}
+
+	cpu_dai->active--;
+	codec_dai->active--;
+	codec->active--;
+>>>>>>> p9x
 
 	fe->dpcm[stream].runtime_update = SND_SOC_DPCM_UPDATE_FE;
 
@@ -279,6 +346,10 @@ static int soc_compr_free_fe(struct snd_compr_stream *cstream)
 
 	if (platform->driver->compr_ops && platform->driver->compr_ops->free)
 		platform->driver->compr_ops->free(cstream);
+<<<<<<< HEAD
+=======
+	/*cpu_dai->runtime = NULL;*/
+>>>>>>> p9x
 
 	mutex_unlock(&fe->card->mutex);
 	return 0;
@@ -291,6 +362,17 @@ static int soc_compr_trigger(struct snd_compr_stream *cstream, int cmd)
 	struct snd_soc_platform *platform = rtd->platform;
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
 	int ret = 0;
+
+	/* for partial-drain/drain cmd, don't acquire lock while invoking DSP.
+	 * These calls will be blocked till these operation can complete which
+	 * will be a while. And during that time, app can invoke STOP, PAUSE etc
+	 */
+	if (cmd == SND_COMPR_TRIGGER_PARTIAL_DRAIN ||
+				cmd == SND_COMPR_TRIGGER_DRAIN) {
+		if (platform->driver->compr_ops &&
+					platform->driver->compr_ops->trigger)
+			return platform->driver->compr_ops->trigger(cstream, cmd);
+	}
 
 	mutex_lock_nested(&rtd->pcm_mutex, rtd->pcm_subclass);
 
@@ -320,6 +402,7 @@ static int soc_compr_trigger_fe(struct snd_compr_stream *cstream, int cmd)
 	struct snd_soc_platform *platform = fe->platform;
 	int ret = 0, stream;
 
+<<<<<<< HEAD
 	if (cmd == SND_COMPR_TRIGGER_PARTIAL_DRAIN ||
 		cmd == SND_COMPR_TRIGGER_DRAIN) {
 
@@ -327,6 +410,17 @@ static int soc_compr_trigger_fe(struct snd_compr_stream *cstream, int cmd)
 		    platform->driver->compr_ops->trigger)
 			return platform->driver->compr_ops->trigger(cstream,
 								    cmd);
+=======
+	/* for partial-drain/drain cmd, don't acquire lock while invoking DSP.
+	 * These calls will be blocked till these operation can complete which
+	 * will be a while. And during that time, app can invoke STOP, PAUSE etc
+	 */
+	if (cmd == SND_COMPR_TRIGGER_PARTIAL_DRAIN ||
+				cmd == SND_COMPR_TRIGGER_DRAIN) {
+		if (platform->driver->compr_ops &&
+					platform->driver->compr_ops->trigger)
+			return platform->driver->compr_ops->trigger(cstream, cmd);
+>>>>>>> p9x
 	}
 
 	if (cstream->direction == SND_COMPRESS_PLAYBACK)
@@ -337,7 +431,12 @@ static int soc_compr_trigger_fe(struct snd_compr_stream *cstream, int cmd)
 
 	mutex_lock_nested(&fe->card->mutex, SND_SOC_CARD_CLASS_RUNTIME);
 
+<<<<<<< HEAD
 	if (platform->driver->compr_ops && platform->driver->compr_ops->trigger) {
+=======
+	if (platform->driver->compr_ops &&
+				platform->driver->compr_ops->trigger) {
+>>>>>>> p9x
 		ret = platform->driver->compr_ops->trigger(cstream, cmd);
 		if (ret < 0)
 			goto out;
@@ -450,13 +549,20 @@ static int soc_compr_set_params_fe(struct snd_compr_stream *cstream,
 					struct snd_compr_params *params)
 {
 	struct snd_soc_pcm_runtime *fe = cstream->private_data;
+<<<<<<< HEAD
 	struct snd_pcm_substream *fe_substream =
 		 fe->pcm->streams[cstream->direction].substream;
+=======
+	struct snd_pcm_substream *fe_substream = fe->pcm->streams[0].substream;
+>>>>>>> p9x
 	struct snd_soc_platform *platform = fe->platform;
 	struct snd_soc_pcm_runtime *be_list[DPCM_MAX_BE_USERS];
 	struct snd_soc_dpcm *dpcm;
 	int ret = 0, stream, i, j = 0;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	ASYNC_DOMAIN_EXCLUSIVE(async_domain);
 
 	if (cstream->direction == SND_COMPRESS_PLAYBACK)
@@ -489,6 +595,7 @@ static int soc_compr_set_params_fe(struct snd_compr_stream *cstream,
 				goto out;
 		}
 
+<<<<<<< HEAD
 		/*
 		 * Create an empty hw_params for the BE as the machine
 		 * driver must fix this up to match DSP decoder and
@@ -496,6 +603,8 @@ static int soc_compr_set_params_fe(struct snd_compr_stream *cstream,
 		 * I.e. machine driver fixup for compressed BE is
 		 * mandatory.
 		 */
+=======
+>>>>>>> p9x
 		memset(&fe->dpcm[fe_substream->stream].hw_params, 0,
 				sizeof(struct snd_pcm_hw_params));
 
@@ -509,6 +618,7 @@ static int soc_compr_set_params_fe(struct snd_compr_stream *cstream,
 		if (ret < 0)
 			goto out;
 	} else {
+<<<<<<< HEAD
 		/*
 		 * Create an empty hw_params for the BE as the machine
 		 * driver must fix this up to match DSP decoder and
@@ -516,6 +626,8 @@ static int soc_compr_set_params_fe(struct snd_compr_stream *cstream,
 		 * I.e. machine driver fixup for compressed BE is
 		 * mandatory.
 		 */
+=======
+>>>>>>> p9x
 		memset(&fe->dpcm[fe_substream->stream].hw_params, 0,
 				sizeof(struct snd_pcm_hw_params));
 
@@ -524,7 +636,10 @@ static int soc_compr_set_params_fe(struct snd_compr_stream *cstream,
 		list_for_each_entry(dpcm,
 				&fe->dpcm[stream].be_clients, list_be) {
 			struct snd_soc_pcm_runtime *be = dpcm->be;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 			if (be->dai_link->async_ops &
 				ASYNC_DPCM_SND_SOC_HW_PARAMS) {
 				cstream->be = be;
@@ -570,10 +685,15 @@ exit:
 		if (fe->err_ops < 0 || ret < 0)
 			goto out;
 	}
+<<<<<<< HEAD
 	if (stream == SNDRV_PCM_STREAM_PLAYBACK)
 		dpcm_dapm_stream_event(fe, stream, SND_SOC_DAPM_STREAM_START);
 	else
 		dpcm_dapm_stream_event(fe, stream, SND_SOC_DAPM_STREAM_START);
+=======
+
+	dpcm_dapm_stream_event(fe, stream, SND_SOC_DAPM_STREAM_START);
+>>>>>>> p9x
 
 	fe->dpcm[stream].state = SND_SOC_DPCM_STATE_PREPARE;
 
@@ -694,7 +814,11 @@ static int sst_compr_set_next_track_param(struct snd_compr_stream *cstream,
 }
 
 
+<<<<<<< HEAD
 static int soc_compr_set_metadata(struct snd_compr_stream *cstream,
+=======
+static int sst_compr_set_metadata(struct snd_compr_stream *cstream,
+>>>>>>> p9x
 				struct snd_compr_metadata *metadata)
 {
 	struct snd_soc_pcm_runtime *rtd = cstream->private_data;
@@ -722,6 +846,7 @@ static int soc_compr_get_metadata(struct snd_compr_stream *cstream,
 
 /* ASoC Compress operations */
 static struct snd_compr_ops soc_compr_ops = {
+<<<<<<< HEAD
 	.open		= soc_compr_open,
 	.free		= soc_compr_free,
 	.set_params	= soc_compr_set_params,
@@ -734,6 +859,36 @@ static struct snd_compr_ops soc_compr_ops = {
 	.ack		= soc_compr_ack,
 	.get_caps	= soc_compr_get_caps,
 	.get_codec_caps = soc_compr_get_codec_caps
+=======
+	.open			= soc_compr_open,
+	.free			= soc_compr_free,
+	.set_params		= soc_compr_set_params,
+	.set_metadata		= sst_compr_set_metadata,
+	.set_next_track_param	= sst_compr_set_next_track_param,
+	.get_metadata		= sst_compr_get_metadata,
+	.get_params		= soc_compr_get_params,
+	.trigger		= soc_compr_trigger,
+	.pointer		= soc_compr_pointer,
+	.ack			= soc_compr_ack,
+	.get_caps		= soc_compr_get_caps,
+	.get_codec_caps		= soc_compr_get_codec_caps
+};
+
+/* ASoC Dynamic Compress operations */
+static struct snd_compr_ops soc_compr_dyn_ops = {
+	.open			= soc_compr_open_fe,
+	.free			= soc_compr_free_fe,
+	.set_params		= soc_compr_set_params_fe,
+	.get_params		= soc_compr_get_params,
+	.set_metadata		= sst_compr_set_metadata,
+	.set_next_track_param	= sst_compr_set_next_track_param,
+	.get_metadata		= sst_compr_get_metadata,
+	.trigger		= soc_compr_trigger_fe,
+	.pointer		= soc_compr_pointer,
+	.ack			= soc_compr_ack,
+	.get_caps		= soc_compr_get_caps,
+	.get_codec_caps		= soc_compr_get_codec_caps
+>>>>>>> p9x
 };
 
 /* ASoC Dynamic Compress operations */
@@ -761,8 +916,11 @@ int soc_new_compress(struct snd_soc_pcm_runtime *rtd, int num)
 	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
 	struct snd_compr *compr;
 	struct snd_pcm *be_pcm;
+<<<<<<< HEAD
 	struct snd_pcm_substream *be_playback_substream;
 	struct snd_pcm_substream *be_capture_substream;
+=======
+>>>>>>> p9x
 	char new_name[64];
 	int ret = 0, direction = 0;
 	int playback = 0, capture = 0;
@@ -818,8 +976,12 @@ int soc_new_compress(struct snd_soc_pcm_runtime *rtd, int num)
 			rtd->dai_link->stream_name);
 
 		ret = snd_pcm_new_internal(rtd->card->snd_card, new_name, num,
+<<<<<<< HEAD
 				rtd->dai_link->dpcm_playback,
 				rtd->dai_link->dpcm_capture, &be_pcm);
+=======
+				1, 0, &be_pcm);
+>>>>>>> p9x
 		if (ret < 0) {
 			dev_err(rtd->card->dev, "ASoC: can't create compressed for %s\n",
 				rtd->dai_link->name);
@@ -828,6 +990,7 @@ int soc_new_compress(struct snd_soc_pcm_runtime *rtd, int num)
 
 		rtd->pcm = be_pcm;
 		rtd->fe_compr = 1;
+<<<<<<< HEAD
 		be_playback_substream =
 			be_pcm->streams[SNDRV_PCM_STREAM_PLAYBACK].substream;
 		be_capture_substream =
@@ -841,6 +1004,14 @@ int soc_new_compress(struct snd_soc_pcm_runtime *rtd, int num)
 		else if (rtd->dai_link->dpcm_capture)
 			be_pcm->streams[SNDRV_PCM_STREAM_CAPTURE].substream->private_data = rtd;
 		memcpy(compr->ops, &soc_compr_dyn_ops, sizeof(soc_compr_dyn_ops));
+=======
+		be_pcm->streams[SNDRV_PCM_STREAM_PLAYBACK].
+					substream->private_data = rtd;
+		/*be_pcm->streams[SNDRV_PCM_STREAM_CAPTURE].
+					substream->private_data = rtd;*/
+		memcpy(compr->ops, &soc_compr_dyn_ops,
+						sizeof(soc_compr_dyn_ops));
+>>>>>>> p9x
 	} else
 		memcpy(compr->ops, &soc_compr_ops, sizeof(soc_compr_ops));
 
@@ -870,8 +1041,13 @@ int soc_new_compress(struct snd_soc_pcm_runtime *rtd, int num)
 		}
 	}
 
+<<<<<<< HEAD
 	dev_dbg(rtd->card->dev, "compress asoc: %s <-> %s mapping ok\n",
 		codec_dai->name, cpu_dai->name);
+=======
+	printk(KERN_INFO "compress asoc: %s <-> %s mapping ok\n", codec_dai->name,
+		cpu_dai->name);
+>>>>>>> p9x
 	return ret;
 
 compr_err:

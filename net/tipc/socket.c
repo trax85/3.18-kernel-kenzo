@@ -1338,7 +1338,11 @@ static int tipc_recvmsg(struct kiocb *iocb, struct socket *sock,
 		goto exit;
 	}
 
+<<<<<<< HEAD
 	timeo = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
+=======
+	timeout = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
+>>>>>>> p9x
 restart:
 
 	/* Look for a message in receive queue; wait if necessary */
@@ -1584,13 +1588,26 @@ static int filter_connect(struct tipc_sock *tsk, struct sk_buff **buf)
 		break;
 	case SS_CONNECTING:
 		/* Accept only ACK or NACK message */
+<<<<<<< HEAD
+=======
+		if (unlikely(msg_errcode(msg))) {
+			sock->state = SS_DISCONNECTING;
+			sk->sk_err = ECONNREFUSED;
+			retval = TIPC_OK;
+			break;
+		}
+>>>>>>> p9x
 
 		if (unlikely(!msg_connected(msg)))
 			break;
 
 		if (unlikely(msg_errcode(msg))) {
 			sock->state = SS_DISCONNECTING;
+<<<<<<< HEAD
 			sk->sk_err = ECONNREFUSED;
+=======
+			sk->sk_err = -res;
+>>>>>>> p9x
 			retval = TIPC_OK;
 			break;
 		}
@@ -1990,6 +2007,7 @@ static int tipc_accept(struct socket *sock, struct socket *new_sock, int flags)
 	res = tipc_wait_for_accept(sock, timeo);
 	if (res)
 		goto exit;
+	security_sk_clone(sock->sk, new_sock->sk);
 
 	buf = skb_peek(&sk->sk_receive_queue);
 

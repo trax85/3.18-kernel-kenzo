@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2015,2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -29,6 +33,7 @@ enum ep_pcie_event {
 	EP_PCIE_EVENT_PM_RST_DEAST = 0x8,
 	EP_PCIE_EVENT_LINKDOWN = 0x10,
 	EP_PCIE_EVENT_LINKUP = 0x20,
+<<<<<<< HEAD
 	EP_PCIE_EVENT_MHI_A7 = 0x40,
 	EP_PCIE_EVENT_MMIO_WRITE = 0x80,
 };
@@ -48,6 +53,8 @@ enum ep_pcie_irq_event {
 	EP_PCIE_INT_EVT_BRIDGE_FLUSH_N,
 	EP_PCIE_INT_EVT_LINK_UP,
 	EP_PCIE_INT_EVT_MAX = 13,
+=======
+>>>>>>> p9x
 };
 
 enum ep_pcie_trigger {
@@ -60,7 +67,10 @@ enum ep_pcie_options {
 	EP_PCIE_OPT_AST_WAKE = 0x1,
 	EP_PCIE_OPT_POWER_ON = 0x2,
 	EP_PCIE_OPT_ENUM = 0x4,
+<<<<<<< HEAD
 	EP_PCIE_OPT_ENUM_ASYNC = 0x8,
+=======
+>>>>>>> p9x
 	EP_PCIE_OPT_ALL = 0xFFFFFFFF,
 };
 
@@ -117,8 +127,11 @@ struct ep_pcie_hw {
 	int (*disable_endpoint)(void);
 	int (*config_db_routing)(struct ep_pcie_db_config chdb_cfg,
 				struct ep_pcie_db_config erdb_cfg);
+<<<<<<< HEAD
 	int (*mask_irq_event)(enum ep_pcie_irq_event event,
 				bool enable);
+=======
+>>>>>>> p9x
 };
 
 /*
@@ -273,6 +286,7 @@ int ep_pcie_disable_endpoint(struct ep_pcie_hw *phandle);
 int ep_pcie_config_db_routing(struct ep_pcie_hw *phandle,
 				struct ep_pcie_db_config chdb_cfg,
 				struct ep_pcie_db_config erdb_cfg);
+<<<<<<< HEAD
 
 /*
  * ep_pcie_mask_irq_event - enable and disable IRQ event.
@@ -287,4 +301,6 @@ int ep_pcie_config_db_routing(struct ep_pcie_hw *phandle,
 int ep_pcie_mask_irq_event(struct ep_pcie_hw *phandle,
 				enum ep_pcie_irq_event event,
 				bool enable);
+=======
+>>>>>>> p9x
 #endif

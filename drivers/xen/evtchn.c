@@ -421,12 +421,22 @@ static long evtchn_ioctl(struct file *file,
 			break;
 
 		rc = -ENOTCONN;
+<<<<<<< HEAD
 		evtchn = find_evtchn(u, unbind.port);
 		if (!evtchn)
 			break;
 
 		disable_irq(irq_from_evtchn(unbind.port));
 		evtchn_unbind_from_user(u, evtchn);
+=======
+		if (get_port_user(unbind.port) != u)
+			break;
+
+		disable_irq(irq_from_evtchn(unbind.port));
+
+		evtchn_unbind_from_user(u, unbind.port);
+
+>>>>>>> p9x
 		rc = 0;
 		break;
 	}
@@ -524,12 +534,21 @@ static int evtchn_release(struct inode *inode, struct file *filp)
 	struct per_user_data *u = filp->private_data;
 	struct rb_node *node;
 
+<<<<<<< HEAD
 	while ((node = u->evtchns.rb_node)) {
 		struct user_evtchn *evtchn;
 
 		evtchn = rb_entry(node, struct user_evtchn, node);
 		disable_irq(irq_from_evtchn(evtchn->port));
 		evtchn_unbind_from_user(u, evtchn);
+=======
+	for (i = 0; i < NR_EVENT_CHANNELS; i++) {
+		if (get_port_user(i) != u)
+			continue;
+
+		disable_irq(irq_from_evtchn(i));
+		evtchn_unbind_from_user(get_port_user(i), i);
+>>>>>>> p9x
 	}
 
 	free_page((unsigned long)u->ring);

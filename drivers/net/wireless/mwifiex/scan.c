@@ -1921,6 +1921,105 @@ int mwifiex_ret_802_11_scan(struct mwifiex_private *priv,
 					     &chan_band_tlv);
 
 	for (idx = 0; idx < scan_rsp->number_of_sets && bytes_left; idx++) {
+<<<<<<< HEAD
+=======
+		u8 bssid[ETH_ALEN];
+		s32 rssi;
+		const u8 *ie_buf;
+		size_t ie_len;
+		u16 channel = 0;
+		__le64 fw_tsf = 0;
+		u16 beacon_size = 0;
+		u32 curr_bcn_bytes;
+		u32 freq;
+		u16 beacon_period;
+		u16 cap_info_bitmap;
+		u8 *current_ptr;
+		u64 timestamp;
+		struct mwifiex_bcn_param *bcn_param;
+		struct mwifiex_bss_priv *bss_priv;
+
+		if (bytes_left >= sizeof(beacon_size)) {
+			/* Extract & convert beacon size from command buffer */
+			memcpy(&beacon_size, bss_info, sizeof(beacon_size));
+			bytes_left -= sizeof(beacon_size);
+			bss_info += sizeof(beacon_size);
+		}
+
+		if (!beacon_size || beacon_size > bytes_left) {
+			bss_info += bytes_left;
+			bytes_left = 0;
+			ret = -1;
+			goto check_next_scan;
+		}
+
+		/* Initialize the current working beacon pointer for this BSS
+		 * iteration */
+		current_ptr = bss_info;
+
+		/* Advance the return beacon pointer past the current beacon */
+		bss_info += beacon_size;
+		bytes_left -= beacon_size;
+
+		curr_bcn_bytes = beacon_size;
+
+		/*
+		 * First 5 fields are bssid, RSSI, time stamp, beacon interval,
+		 *   and capability information
+		 */
+		if (curr_bcn_bytes < sizeof(struct mwifiex_bcn_param)) {
+			dev_err(adapter->dev,
+				"InterpretIE: not enough bytes left\n");
+			continue;
+		}
+		bcn_param = (struct mwifiex_bcn_param *)current_ptr;
+		current_ptr += sizeof(*bcn_param);
+		curr_bcn_bytes -= sizeof(*bcn_param);
+
+		memcpy(bssid, bcn_param->bssid, ETH_ALEN);
+
+		rssi = (s32) bcn_param->rssi;
+		rssi = (-rssi) * 100;		/* Convert dBm to mBm */
+		dev_dbg(adapter->dev, "info: InterpretIE: RSSI=%d\n", rssi);
+
+		timestamp = le64_to_cpu(bcn_param->timestamp);
+		beacon_period = le16_to_cpu(bcn_param->beacon_period);
+
+		cap_info_bitmap = le16_to_cpu(bcn_param->cap_info_bitmap);
+		dev_dbg(adapter->dev, "info: InterpretIE: capabilities=0x%X\n",
+			cap_info_bitmap);
+
+		/* Rest of the current buffer are IE's */
+		ie_buf = current_ptr;
+		ie_len = curr_bcn_bytes;
+		dev_dbg(adapter->dev,
+			"info: InterpretIE: IELength for this AP = %d\n",
+			curr_bcn_bytes);
+
+		while (curr_bcn_bytes >= sizeof(struct ieee_types_header)) {
+			u8 element_id, element_len;
+
+			element_id = *current_ptr;
+			element_len = *(current_ptr + 1);
+			if (curr_bcn_bytes < element_len +
+					sizeof(struct ieee_types_header)) {
+				dev_err(priv->adapter->dev,
+					"%s: bytes left < IE length\n",
+					__func__);
+				goto check_next_scan;
+			}
+			if (element_id == WLAN_EID_DS_PARAMS) {
+				channel = *(current_ptr + sizeof(struct ieee_types_header));
+				break;
+			}
+
+			current_ptr += element_len +
+					sizeof(struct ieee_types_header);
+			curr_bcn_bytes -= element_len +
+					sizeof(struct ieee_types_header);
+		}
+
+>>>>>>> p9x
 		/*
 		 * If the TSF TLV was appended to the scan results, save this
 		 * entry's TSF value in the fw_tsf field. It is the firmware's
@@ -1931,9 +2030,47 @@ int mwifiex_ret_802_11_scan(struct mwifiex_private *priv,
 			memcpy(&fw_tsf, &tsf_tlv->tsf_data[idx * TSF_DATA_SIZE],
 			       sizeof(fw_tsf));
 
+<<<<<<< HEAD
 		if (chan_band_tlv) {
 			chan_band = &chan_band_tlv->chan_band_param[idx];
 			radio_type = &chan_band->radio_type;
+=======
+		if (channel) {
+			struct ieee80211_channel *chan;
+			u8 band;
+
+			band = BAND_G;
+			if (chan_band_tlv) {
+				chan_band =
+					&chan_band_tlv->chan_band_param[idx];
+				band = mwifiex_radio_type_to_band(
+						chan_band->radio_type
+						& (BIT(0) | BIT(1)));
+			}
+
+			cfp = mwifiex_get_cfp(priv, band, channel, 0);
+
+			freq = cfp ? cfp->freq : 0;
+
+			chan = ieee80211_get_channel(priv->wdev->wiphy, freq);
+
+			if (chan && !(chan->flags & IEEE80211_CHAN_DISABLED)) {
+				bss = cfg80211_inform_bss(priv->wdev->wiphy,
+					      chan, bssid, timestamp,
+					      cap_info_bitmap, beacon_period,
+					      ie_buf, ie_len, rssi, GFP_KERNEL);
+				bss_priv = (struct mwifiex_bss_priv *)bss->priv;
+				bss_priv->band = band;
+				bss_priv->fw_tsf = le64_to_cpu(fw_tsf);
+				if (priv->media_connected &&
+				    !memcmp(bssid,
+					    priv->curr_bss_params.bss_descriptor
+					    .mac_address, ETH_ALEN))
+					mwifiex_update_curr_bss_params(priv,
+								       bss);
+				cfg80211_put_bss(priv->wdev->wiphy, bss);
+			}
+>>>>>>> p9x
 		} else {
 			radio_type = NULL;
 		}

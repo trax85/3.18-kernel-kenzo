@@ -163,7 +163,11 @@ static void kmap_remove_unused_cpu(int cpu)
 
 	pagefault_disable();
 	type = kmap_atomic_idx();
+<<<<<<< HEAD
 	start_idx = FIX_KMAP_BEGIN + type + 1 + KM_TYPE_NR * cpu;
+=======
+	start_idx = type + 1 + KM_TYPE_NR * cpu;
+>>>>>>> p9x
 
 	for (idx = start_idx; idx < KM_TYPE_NR + KM_TYPE_NR * cpu; idx++) {
 		unsigned long vaddr = __fix_to_virt(FIX_KMAP_BEGIN + idx);

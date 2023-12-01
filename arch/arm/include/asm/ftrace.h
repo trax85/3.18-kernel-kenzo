@@ -53,6 +53,7 @@ static inline void *return_address(unsigned int level)
 #endif
 
 #define ftrace_return_address(n) return_address(n)
+<<<<<<< HEAD
 
 #define ARCH_HAS_SYSCALL_MATCH_SYM_NAME
 
@@ -71,6 +72,8 @@ static inline bool arch_syscall_match_sym_name(const char *sym,
 	/* Ignore case since sym may start with "SyS" instead of "sys" */
 	return !strcasecmp(sym, name);
 }
+=======
+>>>>>>> p9x
 
 #endif /* ifndef __ASSEMBLY__ */
 

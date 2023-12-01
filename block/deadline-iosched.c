@@ -341,10 +341,23 @@ static int deadline_init_queue(struct request_queue *q, struct elevator_type *e)
 {
 	struct deadline_data *dd;
 	struct elevator_queue *eq;
+<<<<<<< HEAD
+
+	eq = elevator_alloc(q, e);
+	if (!eq)
+=======
 
 	eq = elevator_alloc(q, e);
 	if (!eq)
 		return -ENOMEM;
+
+	dd = kmalloc_node(sizeof(*dd), GFP_KERNEL | __GFP_ZERO, q->node);
+	if (!dd) {
+		kobject_put(&eq->kobj);
+>>>>>>> p9x
+		return -ENOMEM;
+	}
+	eq->elevator_data = dd;
 
 	dd = kzalloc_node(sizeof(*dd), GFP_KERNEL, q->node);
 	if (!dd) {

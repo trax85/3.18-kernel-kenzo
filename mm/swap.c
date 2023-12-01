@@ -31,6 +31,7 @@
 #include <linux/memcontrol.h>
 #include <linux/gfp.h>
 #include <linux/uio.h>
+#include <linux/hugetlb.h>
 
 #include "internal.h"
 
@@ -109,6 +110,7 @@ static void __put_compound_page(struct page *page)
 static __always_inline
 void put_unrefcounted_compound_page(struct page *page_head, struct page *page)
 {
+<<<<<<< HEAD
 	/*
 	 * If @page is a THP tail, we must read the tail page
 	 * flags after the head page flags. The
@@ -125,6 +127,16 @@ void put_unrefcounted_compound_page(struct page *page_head, struct page *page)
 		VM_BUG_ON_PAGE(!PageHead(page_head), page_head);
 		VM_BUG_ON_PAGE(page_mapcount(page) != 0, page);
 		if (put_page_testzero(page_head)) {
+=======
+	if (unlikely(PageTail(page))) {
+		/* __split_huge_page_refcount can run under us */
+		struct page *page_head = compound_head(page);
+
+		if (likely(page != page_head &&
+			   get_page_unless_zero(page_head))) {
+			unsigned long flags;
+
+>>>>>>> p9x
 			/*
 			 * If this is the tail of a slab THP page,
 			 * the tail pin must not be the last reference
@@ -139,6 +151,7 @@ void put_unrefcounted_compound_page(struct page *page_head, struct page *page)
 			 * not go away until the compound page enters
 			 * the buddy allocator.
 			 */
+<<<<<<< HEAD
 			VM_BUG_ON_PAGE(PageSlab(page_head), page_head);
 			__put_compound_page(page_head);
 		}
@@ -170,6 +183,88 @@ void put_refcounted_compound_page(struct page *page_head, struct page *page)
 		if (unlikely(!PageTail(page))) {
 			/* __split_huge_page_refcount run before us */
 			compound_unlock_irqrestore(page_head, flags);
+=======
+			if (PageSlab(page_head) || PageHeadHuge(page_head)) {
+				if (likely(PageTail(page))) {
+					/*
+					 * __split_huge_page_refcount
+					 * cannot race here.
+					 */
+					VM_BUG_ON(!PageHead(page_head));
+					atomic_dec(&page->_mapcount);
+					if (put_page_testzero(page_head))
+						VM_BUG_ON(1);
+					if (put_page_testzero(page_head))
+						__put_compound_page(page_head);
+					return;
+				} else
+					/*
+					 * __split_huge_page_refcount
+					 * run before us, "page" was a
+					 * THP tail. The split
+					 * page_head has been freed
+					 * and reallocated as slab or
+					 * hugetlbfs page of smaller
+					 * order (only possible if
+					 * reallocated as slab on
+					 * x86).
+					 */
+					goto skip_lock;
+			}
+			/*
+			 * page_head wasn't a dangling pointer but it
+			 * may not be a head page anymore by the time
+			 * we obtain the lock. That is ok as long as it
+			 * can't be freed from under us.
+			 */
+			flags = compound_lock_irqsave(page_head);
+			if (unlikely(!PageTail(page))) {
+				/* __split_huge_page_refcount run before us */
+				compound_unlock_irqrestore(page_head, flags);
+skip_lock:
+				if (put_page_testzero(page_head)) {
+					/*
+					 * The head page may have been
+					 * freed and reallocated as a
+					 * compound page of smaller
+					 * order and then freed again.
+					 * All we know is that it
+					 * cannot have become: a THP
+					 * page, a compound page of
+					 * higher order, a tail page.
+					 * That is because we still
+					 * hold the refcount of the
+					 * split THP tail and
+					 * page_head was the THP head
+					 * before the split.
+					 */
+					if (PageHead(page_head))
+						__put_compound_page(page_head);
+					else
+						__put_single_page(page_head);
+				}
+out_put_single:
+				if (put_page_testzero(page))
+					__put_single_page(page);
+				return;
+			}
+			VM_BUG_ON(page_head != page->first_page);
+			/*
+			 * We can release the refcount taken by
+			 * get_page_unless_zero() now that
+			 * __split_huge_page_refcount() is blocked on
+			 * the compound_lock.
+			 */
+			if (put_page_testzero(page_head))
+				VM_BUG_ON(1);
+			/* __split_huge_page_refcount will wait now */
+			VM_BUG_ON(page_mapcount(page) <= 0);
+			atomic_dec(&page->_mapcount);
+			VM_BUG_ON(atomic_read(&page_head->_count) <= 0);
+			VM_BUG_ON(atomic_read(&page->_count) != 0);
+			compound_unlock_irqrestore(page_head, flags);
+
+>>>>>>> p9x
 			if (put_page_testzero(page_head)) {
 				/*
 				 * The @page_head may have been freed
@@ -285,6 +380,7 @@ bool __get_page_tail(struct page *page)
 	 * split_huge_page().
 	 */
 	unsigned long flags;
+<<<<<<< HEAD
 	bool got;
 	struct page *page_head = compound_head(page);
 
@@ -311,6 +407,36 @@ bool __get_page_tail(struct page *page)
 			 * slab on x86).
 			 */
 			return false;
+=======
+	bool got = false;
+	struct page *page_head = compound_head(page);
+
+	if (likely(page != page_head && get_page_unless_zero(page_head))) {
+		/* Ref to put_compound_page() comment. */
+		if (PageSlab(page_head) || PageHeadHuge(page_head)) {
+			if (likely(PageTail(page))) {
+				/*
+				 * This is a hugetlbfs page or a slab
+				 * page. __split_huge_page_refcount
+				 * cannot race here.
+				 */
+				VM_BUG_ON(!PageHead(page_head));
+				__get_page_tail_foll(page, false);
+				return true;
+			} else {
+				/*
+				 * __split_huge_page_refcount run
+				 * before us, "page" was a THP
+				 * tail. The split page_head has been
+				 * freed and reallocated as slab or
+				 * hugetlbfs page of smaller order
+				 * (only possible if reallocated as
+				 * slab on x86).
+				 */
+				put_page(page_head);
+				return false;
+			}
+>>>>>>> p9x
 		}
 	}
 

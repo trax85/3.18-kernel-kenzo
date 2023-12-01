@@ -121,8 +121,14 @@ config S390
 	select HAVE_DYNAMIC_FTRACE if 64BIT
 	select HAVE_DYNAMIC_FTRACE_WITH_REGS if 64BIT
 	select HAVE_FTRACE_MCOUNT_RECORD
+<<<<<<< HEAD
 	select HAVE_FUNCTION_GRAPH_TRACER if 64BIT
 	select HAVE_FUNCTION_TRACER if 64BIT
+=======
+	select HAVE_FUNCTION_GRAPH_TRACER
+	select HAVE_FUNCTION_TRACER
+	select HAVE_FUNCTION_TRACE_MCOUNT_TEST
+>>>>>>> p9x
 	select HAVE_FUTEX_CMPXCHG if FUTEX
 	select HAVE_KERNEL_BZIP2
 	select HAVE_KERNEL_GZIP
@@ -148,7 +154,10 @@ config S390
 	select OLD_SIGACTION
 	select OLD_SIGSUSPEND3
 	select SYSCTL_EXCEPTION_TRACE
+<<<<<<< HEAD
 	select TTY
+=======
+>>>>>>> p9x
 	select VIRT_CPU_ACCOUNTING
 	select VIRT_TO_BUS
 	select ARCH_HAS_SG_CHAIN
@@ -243,6 +252,7 @@ config MARCH_ZEC12
 	  Select this to enable optimizations for IBM zBC12 and zEC12 (2828 and
 	  2827 series). The kernel will be slightly faster but will not work on
 	  older machines.
+<<<<<<< HEAD
 
 endchoice
 
@@ -304,6 +314,8 @@ config TUNE_Z196
 
 config TUNE_ZEC12
 	bool "IBM zBC12 and zEC12"
+=======
+>>>>>>> p9x
 
 endchoice
 

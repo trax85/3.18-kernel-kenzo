@@ -3055,6 +3055,14 @@ int jfs_readdir(struct file *file, struct dir_context *ctx)
 		if (dir_index)
 			dir_index--;
 
+		/*
+		 * NFSv4 reserves cookies 1 and 2 for . and .. so we add
+		 * the value we return to the vfs is one greater than the
+		 * one we use internally.
+		 */
+		if (dir_index)
+			dir_index--;
+
 		if (dir_index > 1) {
 			struct dir_table_slot dirtab_slot;
 
@@ -3094,7 +3102,11 @@ int jfs_readdir(struct file *file, struct dir_context *ctx)
 			if (p->header.flag & BT_INTERNAL) {
 				jfs_err("jfs_readdir: bad index table");
 				DT_PUTPAGE(mp);
+<<<<<<< HEAD
 				ctx->pos = DIREND;
+=======
+				filp->f_pos = DIREND;
+>>>>>>> p9x
 				return 0;
 			}
 		} else {
@@ -3102,15 +3114,26 @@ int jfs_readdir(struct file *file, struct dir_context *ctx)
 				/*
 				 * self "."
 				 */
+<<<<<<< HEAD
 				ctx->pos = 1;
 				if (!dir_emit(ctx, ".", 1, ip->i_ino, DT_DIR))
+=======
+				filp->f_pos = 1;
+				if (filldir(dirent, ".", 1, 1, ip->i_ino,
+					    DT_DIR))
+>>>>>>> p9x
 					return 0;
 			}
 			/*
 			 * parent ".."
 			 */
+<<<<<<< HEAD
 			ctx->pos = 2;
 			if (!dir_emit(ctx, "..", 2, PARENT(ip), DT_DIR))
+=======
+			filp->f_pos = 2;
+			if (filldir(dirent, "..", 2, 2, PARENT(ip), DT_DIR))
+>>>>>>> p9x
 				return 0;
 
 			/*
@@ -3135,6 +3158,7 @@ int jfs_readdir(struct file *file, struct dir_context *ctx)
 		 * pn > 0:		Real entries, pn=1 -> leftmost page
 		 * pn = index = -1:	No more entries
 		 */
+<<<<<<< HEAD
 		dtpos = ctx->pos;
 		if (dtpos < 2) {
 			/* build "." entry */
@@ -3143,6 +3167,18 @@ int jfs_readdir(struct file *file, struct dir_context *ctx)
 				return 0;
 			dtoffset->index = 2;
 			ctx->pos = dtpos;
+=======
+		dtpos = filp->f_pos;
+		if (dtpos < 2) {
+			/* build "." entry */
+
+			filp->f_pos = 1;
+			if (filldir(dirent, ".", 1, filp->f_pos, ip->i_ino,
+				    DT_DIR))
+				return 0;
+			dtoffset->index = 2;
+			filp->f_pos = dtpos;
+>>>>>>> p9x
 		}
 
 		if (dtoffset->pn == 0) {

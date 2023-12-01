@@ -115,7 +115,11 @@ struct hci_conn *phylink_add(struct hci_dev *hdev, struct amp_mgr *mgr,
 	struct hci_conn *hcon;
 	u8 role = out ? HCI_ROLE_MASTER : HCI_ROLE_SLAVE;
 
+<<<<<<< HEAD
 	hcon = hci_conn_add(hdev, AMP_LINK, dst, role);
+=======
+	hcon = hci_conn_add(hdev, AMP_LINK, 0, dst);
+>>>>>>> p9x
 	if (!hcon)
 		return NULL;
 

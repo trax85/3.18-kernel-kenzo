@@ -304,6 +304,11 @@ int module_finalize(const Elf32_Ehdr *hdr, const Elf_Shdr *sechdrs,
 			maps[ARM_SEC_CORE].unw_sec = s;
 		else if (strcmp(".ARM.exidx.exit.text", secname) == 0)
 			maps[ARM_SEC_EXIT].unw_sec = s;
+<<<<<<< HEAD
+=======
+		else if (strcmp(".ARM.exidx.devexit.text", secname) == 0)
+			maps[ARM_SEC_DEVEXIT].unw_sec = s;
+>>>>>>> p9x
 		else if (strcmp(".ARM.exidx.text.unlikely", secname) == 0)
 			maps[ARM_SEC_UNLIKELY].unw_sec = s;
 		else if (strcmp(".ARM.exidx.text.hot", secname) == 0)
@@ -316,6 +321,11 @@ int module_finalize(const Elf32_Ehdr *hdr, const Elf_Shdr *sechdrs,
 			maps[ARM_SEC_CORE].txt_sec = s;
 		else if (strcmp(".exit.text", secname) == 0)
 			maps[ARM_SEC_EXIT].txt_sec = s;
+<<<<<<< HEAD
+=======
+		else if (strcmp(".devexit.text", secname) == 0)
+			maps[ARM_SEC_DEVEXIT].txt_sec = s;
+>>>>>>> p9x
 		else if (strcmp(".text.unlikely", secname) == 0)
 			maps[ARM_SEC_UNLIKELY].txt_sec = s;
 		else if (strcmp(".text.hot", secname) == 0)

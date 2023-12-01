@@ -193,6 +193,12 @@ static const u8 hid_reportid_size_map[NUMBER_OF_HID_REPORTS] = {
 
 static struct hid_ll_driver logi_dj_ll_driver;
 
+<<<<<<< HEAD
+=======
+static int logi_dj_output_hidraw_report(struct hid_device *hid, u8 * buf,
+					size_t count,
+					unsigned char report_type);
+>>>>>>> p9x
 static int logi_dj_recv_query_paired_devices(struct dj_receiver_dev *djrcv_dev);
 
 static void logi_dj_recv_destroy_djhid_device(struct dj_receiver_dev *djrcv_dev,
@@ -385,6 +391,21 @@ static void logi_dj_recv_forward_null_report(struct dj_receiver_dev *djrcv_dev,
 
 	djdev = djrcv_dev->paired_dj_devices[dj_report->device_index];
 
+<<<<<<< HEAD
+=======
+	if (!djdev) {
+		dbg_hid("djrcv_dev->paired_dj_devices[dj_report->device_index]"
+			" is NULL, index %d\n", dj_report->device_index);
+		kfifo_in(&djrcv_dev->notif_fifo, dj_report, sizeof(struct dj_report));
+
+		if (schedule_work(&djrcv_dev->work) == 0) {
+			dbg_hid("%s: did not schedule the work item, was already "
+			"queued\n", __func__);
+		}
+		return;
+	}
+
+>>>>>>> p9x
 	memset(reportbuffer, 0, sizeof(reportbuffer));
 
 	for (i = 0; i < NUMBER_OF_HID_REPORTS; i++) {
@@ -409,6 +430,21 @@ static void logi_dj_recv_forward_report(struct dj_receiver_dev *djrcv_dev,
 
 	dj_device = djrcv_dev->paired_dj_devices[dj_report->device_index];
 
+<<<<<<< HEAD
+=======
+	if (dj_device == NULL) {
+		dbg_hid("djrcv_dev->paired_dj_devices[dj_report->device_index]"
+			" is NULL, index %d\n", dj_report->device_index);
+		kfifo_in(&djrcv_dev->notif_fifo, dj_report, sizeof(struct dj_report));
+
+		if (schedule_work(&djrcv_dev->work) == 0) {
+			dbg_hid("%s: did not schedule the work item, was already "
+			"queued\n", __func__);
+		}
+		return;
+	}
+
+>>>>>>> p9x
 	if ((dj_report->report_type > ARRAY_SIZE(hid_reportid_size_map) - 1) ||
 	    (hid_reportid_size_map[dj_report->report_type] == 0)) {
 		dbg_hid("invalid report type:%x\n", dj_report->report_type);
@@ -603,6 +639,61 @@ static int logi_dj_ll_parse(struct hid_device *hid)
 	return retval;
 }
 
+<<<<<<< HEAD
+=======
+static int logi_dj_ll_input_event(struct input_dev *dev, unsigned int type,
+				  unsigned int code, int value)
+{
+	/* Sent by the input layer to handle leds and Force Feedback */
+	struct hid_device *dj_hiddev = input_get_drvdata(dev);
+	struct dj_device *dj_dev = dj_hiddev->driver_data;
+
+	struct dj_receiver_dev *djrcv_dev =
+	    dev_get_drvdata(dj_hiddev->dev.parent);
+	struct hid_device *dj_rcv_hiddev = djrcv_dev->hdev;
+	struct hid_report_enum *output_report_enum;
+
+	struct hid_field *field;
+	struct hid_report *report;
+	unsigned char *data;
+	int offset;
+
+	dbg_hid("%s: %s, type:%d | code:%d | value:%d\n",
+		__func__, dev->phys, type, code, value);
+
+	if (type != EV_LED)
+		return -1;
+
+	offset = hidinput_find_field(dj_hiddev, type, code, &field);
+
+	if (offset == -1) {
+		dev_warn(&dev->dev, "event field not found\n");
+		return -1;
+	}
+	hid_set_field(field, offset, value);
+
+	data = hid_alloc_report_buf(field->report, GFP_KERNEL);
+	if (!data) {
+		dev_warn(&dev->dev, "failed to allocate report buf memory\n");
+		return -1;
+	}
+
+	hid_output_report(field->report, &data[0]);
+
+	output_report_enum = &dj_rcv_hiddev->report_enum[HID_OUTPUT_REPORT];
+	report = output_report_enum->report_id_hash[REPORT_ID_DJ_SHORT];
+	hid_set_field(report->field[0], 0, dj_dev->device_index);
+	hid_set_field(report->field[0], 1, REPORT_TYPE_LEDS);
+	hid_set_field(report->field[0], 2, data[1]);
+
+	hid_hw_request(dj_rcv_hiddev, report, HID_REQ_SET_REPORT);
+
+	kfree(data);
+
+	return 0;
+}
+
+>>>>>>> p9x
 static int logi_dj_ll_start(struct hid_device *hid)
 {
 	dbg_hid("%s\n", __func__);
@@ -674,6 +765,25 @@ static int logi_dj_raw_event(struct hid_device *hdev,
 			dev_err(&hdev->dev, "%s: invalid device index:%d\n",
 				__func__, dj_report->device_index);
 		return false;
+<<<<<<< HEAD
+=======
+	}
+
+	spin_lock_irqsave(&djrcv_dev->lock, flags);
+	switch (dj_report->report_type) {
+	case REPORT_TYPE_NOTIF_DEVICE_PAIRED:
+	case REPORT_TYPE_NOTIF_DEVICE_UNPAIRED:
+		logi_dj_recv_queue_notification(djrcv_dev, dj_report);
+		break;
+	case REPORT_TYPE_NOTIF_CONNECTION_STATUS:
+		if (dj_report->report_params[CONNECTION_STATUS_PARAM_STATUS] ==
+		    STATUS_LINKLOSS) {
+			logi_dj_recv_forward_null_report(djrcv_dev, dj_report);
+		}
+		break;
+	default:
+		logi_dj_recv_forward_report(djrcv_dev, dj_report);
+>>>>>>> p9x
 	}
 
 	spin_lock_irqsave(&djrcv_dev->lock, flags);

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2002,2007-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2002,2007-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -39,7 +43,10 @@ struct kgsl_context;
  * @pending: Priority list node for the dispatcher list of pending contexts
  * @wq: Workqueue structure for contexts to sleep pending room in the queue
  * @waiting: Workqueue structure for contexts waiting for a timestamp or event
+<<<<<<< HEAD
  * @timeout: Workqueue structure for contexts waiting to invalidate
+=======
+>>>>>>> p9x
  * @queued: Number of commands queued in the cmdqueue
  * @fault_policy: GFT fault policy set in cmdbatch_skip_cmd();
  * @debug_root: debugfs entry for this context.
@@ -50,8 +57,11 @@ struct kgsl_context;
  *                       to retire
  * @ticks_index: The index into submit_retire_ticks[] where the new delta will
  *		 be written.
+<<<<<<< HEAD
  * @active_node: Linkage for nodes in active_list
  * @active_time: Time when this context last seen
+=======
+>>>>>>> p9x
  */
 struct adreno_context {
 	struct kgsl_context base;
@@ -68,7 +78,10 @@ struct adreno_context {
 	struct plist_node pending;
 	wait_queue_head_t wq;
 	wait_queue_head_t waiting;
+<<<<<<< HEAD
 	wait_queue_head_t timeout;
+=======
+>>>>>>> p9x
 
 	int queued;
 	unsigned int fault_policy;
@@ -78,13 +91,22 @@ struct adreno_context {
 	unsigned int submitted_timestamp;
 	uint64_t submit_retire_ticks[SUBMIT_RETIRE_TICKS_SIZE];
 	int ticks_index;
+<<<<<<< HEAD
 
 	struct list_head active_node;
 	unsigned long active_time;
+=======
+>>>>>>> p9x
 };
 
 /* Flag definitions for flag field in adreno_context */
 
+<<<<<<< HEAD
+=======
+/* Set when sync timer of cmdbatch belonging to the context times out */
+#define ADRENO_CONTEXT_CMDBATCH_FLAG_FENCE_LOG	BIT(0)
+
+>>>>>>> p9x
 /**
  * enum adreno_context_priv - Private flags for an adreno draw context
  * @ADRENO_CONTEXT_FAULT - set if the context has faulted (and recovered)
@@ -106,9 +128,12 @@ enum adreno_context_priv {
 	ADRENO_CONTEXT_SKIP_CMD,
 };
 
+<<<<<<< HEAD
 /* Flags for adreno_drawctxt_switch() */
 #define ADRENO_CONTEXT_SWITCH_FORCE_GPU BIT(0)
 
+=======
+>>>>>>> p9x
 struct kgsl_context *adreno_drawctxt_create(struct kgsl_device_private *,
 			uint32_t *flags);
 

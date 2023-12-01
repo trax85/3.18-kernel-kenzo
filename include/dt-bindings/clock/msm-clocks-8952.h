@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -16,6 +20,7 @@
 /* clock_gcc controlled clocks */
 
 /* GPLLs */
+<<<<<<< HEAD
 #define clk_gpll0_clk_src_8952			0x1617c790
 #define clk_gpll0_ao_clk_src_8952		0x9b4db4e8
 #define clk_gpll0_clk_src_8937			0x94350fc4
@@ -26,6 +31,14 @@
 #define clk_gpll0_out_main			0x850fecec
 #define clk_gpll0_out_aux			0x64e55d63
 #define clk_gpll0_misc				0xe06ee816
+=======
+#define clk_gpll0_clk_src			0x5933b69f
+#define clk_gpll0_ao_clk_src			0x6b2fb034
+#define clk_gpll0_out_main			0x850fecec
+#define clk_gpll0_out_aux			0x64e55d63
+#define clk_gpll0_misc				0xe06ee816
+#define clk_gpll0_thermal_clk_src		0x02840712
+>>>>>>> p9x
 #define clk_gpll3_clk_src			0x5b1eccd5
 #define clk_gpll3_out_main			0xf5fc71ab
 #define clk_gpll3_out_aux			0xe72bea1a
@@ -33,6 +46,10 @@
 #define clk_gpll4_out_main                      0xdca8db2a
 #define clk_gpll6_clk_src			0x17dceaad
 #define clk_gpll6_out_main			0x27b8b7be
+<<<<<<< HEAD
+=======
+#define clk_gpll6_thermal_clk_src		0x32fbf20f
+>>>>>>> p9x
 #define clk_a53ss_c0_pll			0xf761da94
 #define clk_a53ss_c1_pll			0xfbc57bbd
 #define clk_a53ss_cci_pll			0x17d32f1e
@@ -75,7 +92,11 @@
 #define clk_blsp1_uart2_apps_clk_src		0xfc9c2f73
 #define clk_byte0_clk_src			0x75cc885b
 #define clk_cci_clk_src				0x822f3d97
+<<<<<<< HEAD
 #define clk_camss_top_ahb_clk_src		0xf92304fb
+=======
+#define clk_camss_top_ahb_clk_src		0xa68afe9c
+>>>>>>> p9x
 #define clk_camss_gp0_clk_src			0x43b063e9
 #define clk_camss_gp1_clk_src			0xa3315f1b
 #define clk_crypto_clk_src			0x37a21414
@@ -93,7 +114,11 @@
 #define clk_mdp_clk_src				0x6dc1f8f1
 #define clk_mclk0_clk_src			0x266b3853
 #define clk_mclk1_clk_src			0xa73cad0c
+<<<<<<< HEAD
 #define clk_mclk2_clk_src                       0x42545468
+=======
+#define clk_mclk2_clk_src                       0x6be1dc47
+>>>>>>> p9x
 #define clk_pclk0_clk_src			0xccac1f35
 #define clk_pdm2_clk_src			0x31e494fd
 #define clk_sdcc1_apps_clk_src			0xd4975db2
@@ -102,7 +127,10 @@
 #define clk_usb_hs_system_clk_src		0x28385546
 #define clk_usb_fs_system_clk_src               0x06ee1762
 #define clk_usb_fs_ic_clk_src			0x25d4acc8
+<<<<<<< HEAD
 #define clk_usb_fs_ic_clk_src			0x25d4acc8
+=======
+>>>>>>> p9x
 #define clk_gcc_qusb2_phy_clk			0x996884d5
 #define clk_gcc_usb2_hs_phy_only_clk		0x0047179d
 #define clk_vsync_clk_src			0xecb43940
@@ -114,7 +142,10 @@
 #define clk_gcc_crypto_axi_clk			0xd4415c9b
 #define clk_gcc_crypto_clk			0x00d390d2
 #define clk_gcc_prng_ahb_clk			0x397e7eaa
+<<<<<<< HEAD
 #define clk_gcc_qdss_dap_clk			0x7fa9aa73
+=======
+>>>>>>> p9x
 #define clk_gcc_apss_tcu_clk			0xaf56a329
 #define clk_gcc_ipa_tbu_clk			0x75bbfb5c
 #define clk_gcc_gfx_tbu_clk			0x18bb9a90
@@ -174,7 +205,11 @@
 #define clk_gcc_camss_jpeg_axi_clk		0x3e278896
 #define clk_gcc_camss_mclk0_clk			0x80902deb
 #define clk_gcc_camss_mclk1_clk			0x5002d85f
+<<<<<<< HEAD
 #define clk_gcc_camss_mclk2_clk                 0x222f8fff
+=======
+#define clk_gcc_camss_mclk2_clk                 0xa7c6507a
+>>>>>>> p9x
 #define clk_gcc_camss_micro_ahb_clk		0xfbbee8cf
 #define clk_gcc_camss_csi0phytimer_clk		0xf8897589
 #define clk_gcc_camss_csi1phytimer_clk		0x4d26438f
@@ -200,7 +235,10 @@
 #define clk_gcc_oxili_ahb_clk			0xd15c8a00
 #define clk_gcc_oxili_gfx3d_clk			0x49a51fd9
 #define clk_gcc_oxili_timer_clk			0x1180db06
+<<<<<<< HEAD
 #define clk_gcc_oxili_aon_clk			0xae18e54d
+=======
+>>>>>>> p9x
 #define clk_gcc_pdm2_clk			0x99d55711
 #define clk_gcc_pdm_ahb_clk			0x365664f6
 #define clk_gcc_sdcc1_ahb_clk			0x691e0caa
@@ -226,6 +264,7 @@
 #define clk_gcc_bimc_gfx_clk			0x3edd69ad
 #define clk_ipa_clk				0xfa685cda
 #define clk_ipa_a_clk				0xeeec2919
+<<<<<<< HEAD
 #define clk_mdss_mdp_vote_clk			0x588460a4
 #define clk_mdss_rotator_vote_clk		0x5b1f675e
 
@@ -248,6 +287,11 @@
 #define clk_gcc_mdss_esc1_clk			0x34653cc7
 #define clk_gcc_dcc_clk				0xd1000c50
 #define clk_gcc_debug_mux_8937			0x917968c2
+=======
+
+#define clk_pixel_clk_src                       0x8b6f83d8
+#define clk_byte_clk_src                        0x3a911c53
+>>>>>>> p9x
 
 /* clock_rpm controlled clocks */
 #define clk_pnoc_clk				0xc1296d0f
@@ -257,11 +301,18 @@
 #define clk_pnoc_keepalive_a_clk		0x9464f720
 #define clk_pnoc_sps_clk			0x23d3f584
 #define clk_pnoc_usb_a_clk			0x11d6a74e
+<<<<<<< HEAD
 #define clk_pnoc_usb_clk                        0x266d8376
 #define clk_snoc_clk				0x2c341aa0
 #define clk_snoc_a_clk				0x8fcef2af
 #define clk_snoc_usb_a_clk			0x34b7821b
 #define clk_snoc_wcnss_a_clk			0xd3949ebc
+=======
+#define clk_pnoc_usb_clk			0x266d8376
+#define clk_snoc_clk				0x2c341aa0
+#define clk_snoc_a_clk				0x8fcef2af
+#define clk_snoc_usb_a_clk			0x34b7821b
+>>>>>>> p9x
 #define clk_snoc_usb_clk			0x29f9d73d
 #define clk_snoc_msmbus_clk			0xe6900bb6
 #define clk_snoc_msmbus_a_clk			0x5d4683bd
@@ -277,6 +328,7 @@
 #define clk_bimc_msmbus_clk			0xd212feea
 #define clk_bimc_msmbus_a_clk			0x71d1a499
 #define clk_bimc_usb_a_clk			0xea410834
+<<<<<<< HEAD
 #define clk_bimc_wcnss_a_clk			0x5a6df715
 #define clk_bimc_usb_clk			0x9bd2b2bf
 #define clk_bimc_gpu_clk			0xd3e0a327
@@ -284,6 +336,12 @@
 #define clk_qdss_clk				0x1492202a
 #define clk_qdss_a_clk				0xdd121669
 #define clk_xo_clk_src				0x23f5649f
+=======
+#define clk_bimc_usb_clk			0x9bd2b2bf
+#define clk_qdss_clk				0x1492202a
+#define clk_qdss_a_clk				0xdd121669
+#define clk_xo_clk_src				0x6ac2a778
+>>>>>>> p9x
 #define clk_xo_a_clk_src			0x2fdd2c7c
 #define clk_xo_otg_clk				0x79bca5cc
 #define clk_xo_a2				0xeba5a83d
@@ -330,6 +388,7 @@
 #define clk_cci_m_clk				0xec7e8afc
 
 #define clk_a53ssmux_lc				0x71a9377b
+<<<<<<< HEAD
 #define clk_a53ssmux_bc				0xb5983c42
 #define clk_a53ssmux_cci			0x15560bd5
 
@@ -340,5 +399,16 @@
 #define clk_audio_ap_clk			0x312ac429
 #define clk_audio_pmi_clk			0xb7ba2274
 #define clk_audio_lpass_mclk			0x575ec22b
+=======
+#define clk_a53_lc_clk				0xc69f0878
+#define clk_a53ssmux_bc				0xb5983c42
+#define clk_a53_bc_clk				0xcf28e63a
+#define clk_a53ssmux_cci			0x15560bd5
+#define clk_cci_clk                             0x96854074
+
+#define clk_audio_ap_clk 0x312ac429
+#define clk_audio_pmi_clk 0xb7ba2274
+#define clk_audio_ap_clk1			0x322ac429
+>>>>>>> p9x
 
 #endif

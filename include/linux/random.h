@@ -6,14 +6,26 @@
 #ifndef _LINUX_RANDOM_H
 #define _LINUX_RANDOM_H
 
+#include <linux/list.h>
 #include <uapi/linux/random.h>
 
+<<<<<<< HEAD
+=======
+struct random_ready_callback {
+	struct list_head list;
+	void (*func)(struct random_ready_callback *rdy);
+	struct module *owner;
+};
+
+>>>>>>> p9x
 extern void add_device_randomness(const void *, unsigned int);
 extern void add_input_randomness(unsigned int type, unsigned int code,
 				 unsigned int value);
 extern void add_interrupt_randomness(int irq, int irq_flags);
 
 extern void get_random_bytes(void *buf, int nbytes);
+extern int add_random_ready_callback(struct random_ready_callback *rdy);
+extern void del_random_ready_callback(struct random_ready_callback *rdy);
 extern void get_random_bytes_arch(void *buf, int nbytes);
 void generate_random_uuid(unsigned char uuid_out[16]);
 extern int random_int_secret_init(void);
@@ -72,10 +84,16 @@ static inline void prandom_seed_state(struct rnd_state *state, u64 seed)
 {
 	u32 i = (seed >> 32) ^ (seed << 10) ^ seed;
 
+<<<<<<< HEAD
 	state->s1 = __seed(i,   2U);
 	state->s2 = __seed(i,   8U);
 	state->s3 = __seed(i,  16U);
 	state->s4 = __seed(i, 128U);
+=======
+	state->s1 = __seed(i, 2);
+	state->s2 = __seed(i, 8);
+	state->s3 = __seed(i, 16);
+>>>>>>> p9x
 }
 
 #ifdef CONFIG_ARCH_RANDOM

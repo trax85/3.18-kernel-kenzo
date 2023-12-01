@@ -88,6 +88,7 @@ void set_default_offline_state(int cpu)
 
 static void rtas_stop_self(void)
 {
+<<<<<<< HEAD
 	static struct rtas_args args = {
 		.nargs = 0,
 		.nret = cpu_to_be32(1),
@@ -95,6 +96,14 @@ static void rtas_stop_self(void)
 	};
 
 	args.token = cpu_to_be32(rtas_stop_self_token);
+=======
+	struct rtas_args args = {
+		.token = cpu_to_be32(rtas_stop_self_token),
+		.nargs = 0,
+		.nret = 1,
+		.rets = &args.args[0],
+	};
+>>>>>>> p9x
 
 	local_irq_disable();
 

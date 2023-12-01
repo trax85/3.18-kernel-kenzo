@@ -356,6 +356,7 @@ static int vhci_release(struct inode *inode, struct file *file)
 
 	cancel_delayed_work_sync(&data->open_timeout);
 
+<<<<<<< HEAD
 	hdev = data->hdev;
 
 	if (hdev) {
@@ -363,6 +364,8 @@ static int vhci_release(struct inode *inode, struct file *file)
 		hci_free_dev(hdev);
 	}
 
+=======
+>>>>>>> p9x
 	skb_queue_purge(&data->readq);
 	file->private_data = NULL;
 	kfree(data);

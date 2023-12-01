@@ -2,7 +2,11 @@ AKM AK8963 3-axis electronic compass driver
 
 Required properties:
 
+<<<<<<< HEAD
  - compatible		: Should be "ak,ak8963" or "akm,akm8963".
+=======
+ - compatible		: Should be "ak,ak8963".
+>>>>>>> p9x
  - reg			: i2c address of the device.
  - pinctrl-names	: The pinctrl configration names of this sensor driver. Should be "ak8963_default".
  - pinctrl-0		: The pinctrl node corresponding to "ak8963_default", should be <&ak8963_default>.

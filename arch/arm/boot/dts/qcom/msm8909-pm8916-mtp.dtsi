@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -20,14 +24,20 @@
 	};
 
 	i2c@78b6000 {
+<<<<<<< HEAD
 		nq@28 {
 			qcom,nq-clkreq = <&pm8916_gpios 2 0>;
+=======
+		nfc-nci@e {
+			qcom,clk-gpio = <&pm8916_gpios 2 0>;
+>>>>>>> p9x
 		};
 	};
 
 };
 
 &audio_codec_mtp {
+<<<<<<< HEAD
 	qcom,model = "msm8909-pm8916-snd-card";
 	pinctrl-names =
 		"all_off",
@@ -40,6 +50,12 @@
 	pinctrl-3 = <&cdc_pdm_lines_act &cross_conn_det_act>;
 	asoc-codec = <&stub_codec>, <&pm8916_tombak_dig>;
 	asoc-codec-names = "msm-stub-codec.1", "cajon_codec";
+=======
+	status = "ok";
+	qcom,model = "msm8909-pm8916-snd-card";
+	asoc-codec = <&stub_codec>, <&pm8916_tombak_dig>;
+	asoc-codec-names = "msm-stub-codec.1", "tombak_codec";
+>>>>>>> p9x
 };
 
 &sdhc_1 {
@@ -52,6 +68,31 @@
 	vdd-io-supply = <&pm8916_l12>;
 };
 
+<<<<<<< HEAD
+=======
+&i2c_1 {
+	mpu6050@68 {
+		vdd-supply = <&pm8916_l17>;
+		vlogic-supply = <&pm8916_l6>;
+	};
+
+	avago@39 {
+		vdd-supply = <&pm8916_l17>;
+		vio-supply = <&pm8916_l6>;
+	};
+
+	memsic@30 {
+		vdd-supply = <&pm8916_l17>;
+		vio-supply = <&pm8916_l6>;
+	};
+
+	akm@c {
+		vdd-supply = <&pm8916_l17>;
+		vio-supply = <&pm8916_l6>;
+	};
+};
+
+>>>>>>> p9x
 &i2c_3 {
 	qcom,actuator@0 {
 		cam_vaf-supply = <&pm8916_l8>;
@@ -78,6 +119,7 @@
 	};
 };
 
+<<<<<<< HEAD
 &dsi_auo_qvga_cmd {
 	qcom,mdss-dsi-pwm-gpio = <&pm8916_mpps 4 0>;
 };
@@ -89,6 +131,8 @@
 	qcom,mdss-dsi-pwm-gpio = <&pm8916_mpps 4 0>;
 };
 
+=======
+>>>>>>> p9x
 &dsi_hx8394d_720_vid {
 	qcom,mdss-dsi-pwm-gpio = <&pm8916_mpps 4 0>;
 	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;

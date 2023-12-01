@@ -126,6 +126,16 @@ static int inet6_create(struct net *net, struct socket *sock, int protocol,
 	if (!current_has_network())
 		return -EACCES;
 
+<<<<<<< HEAD
+	if (protocol < 0 || protocol >= IPPROTO_MAX)
+		return -EINVAL;
+=======
+	if (sock->type != SOCK_RAW &&
+	    sock->type != SOCK_DGRAM &&
+	    !inet_ehash_secret)
+		build_ehash_secret();
+>>>>>>> p9x
+
 	if (protocol < 0 || protocol >= IPPROTO_MAX)
 		return -EINVAL;
 
@@ -495,6 +505,21 @@ int inet6_getname(struct socket *sock, struct sockaddr *uaddr,
 }
 EXPORT_SYMBOL(inet6_getname);
 
+int inet6_killaddr_ioctl(struct net *net, void __user *arg) {
+	struct in6_ifreq ireq;
+	struct sockaddr_in6 sin6;
+
+	if (!capable(CAP_NET_ADMIN))
+		return -EACCES;
+
+	if (copy_from_user(&ireq, arg, sizeof(struct in6_ifreq)))
+		return -EFAULT;
+
+	sin6.sin6_family = AF_INET6;
+	sin6.sin6_addr = ireq.ifr6_addr;
+	return tcp_nuke_addr(net, (struct sockaddr *) &sin6);
+}
+
 int inet6_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 {
 	struct sock *sk = sock->sk;
@@ -518,6 +543,8 @@ int inet6_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 		return addrconf_del_ifaddr(net, (void __user *) arg);
 	case SIOCSIFDSTADDR:
 		return addrconf_set_dstaddr(net, (void __user *) arg);
+	case SIOCKILLADDR:
+		return inet6_killaddr_ioctl(net, (void __user *) arg);
 	default:
 		if (!sk->sk_prot->ioctl)
 			return -ENOIOCTLCMD;
@@ -993,7 +1020,11 @@ sysctl_fail:
 	pingv6_exit();
 #endif
 pingv6_fail:
+<<<<<<< HEAD
 	ipv6_packet_cleanup();
+=======
+	pingv6_exit();
+>>>>>>> p9x
 ipv6_packet_fail:
 	tcpv6_exit();
 tcpv6_fail:
@@ -1053,4 +1084,54 @@ out_unregister_tcp_proto:
 }
 module_init(inet6_init);
 
+<<<<<<< HEAD
+=======
+static void __exit inet6_exit(void)
+{
+	if (disable_ipv6_mod)
+		return;
+
+	/* First of all disallow new sockets creation. */
+	sock_unregister(PF_INET6);
+	/* Disallow any further netlink messages */
+	rtnl_unregister_all(PF_INET6);
+
+	udpv6_exit();
+	udplitev6_exit();
+	tcpv6_exit();
+
+	/* Cleanup code parts. */
+	ipv6_packet_cleanup();
+	ipv6_frag_exit();
+	ipv6_exthdrs_exit();
+	addrconf_cleanup();
+	ip6_flowlabel_cleanup();
+	ndisc_late_cleanup();
+	ip6_route_cleanup();
+#ifdef CONFIG_PROC_FS
+
+	/* Cleanup code parts. */
+	if6_proc_exit();
+	ipv6_misc_proc_exit();
+	udplite6_proc_exit();
+	raw6_proc_exit();
+#endif
+	ipv6_netfilter_fini();
+	igmp6_cleanup();
+	ndisc_cleanup();
+	ip6_mr_cleanup();
+	icmpv6_cleanup();
+	rawv6_exit();
+
+	unregister_pernet_subsys(&inet6_net_ops);
+	proto_unregister(&rawv6_prot);
+	proto_unregister(&udplitev6_prot);
+	proto_unregister(&udpv6_prot);
+	proto_unregister(&tcpv6_prot);
+
+	rcu_barrier(); /* Wait for completion of call_rcu()'s */
+}
+module_exit(inet6_exit);
+
+>>>>>>> p9x
 MODULE_ALIAS_NETPROTO(PF_INET6);

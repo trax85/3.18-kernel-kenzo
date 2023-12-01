@@ -171,4 +171,7 @@ MODULE_AUTHOR("Clay Haapala <chaapala@cisco.com>");
 MODULE_DESCRIPTION("CRC32c (Castagnoli) calculations wrapper for lib/crc32c");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_CRYPTO("crc32c");
+<<<<<<< HEAD:crypto/crc32c_generic.c
 MODULE_ALIAS_CRYPTO("crc32c-generic");
+=======
+>>>>>>> p9x:crypto/crc32c.c

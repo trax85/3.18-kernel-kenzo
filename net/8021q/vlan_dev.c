@@ -68,6 +68,28 @@ static int vlan_dev_rebuild_header(struct sk_buff *skb)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static inline u16
+vlan_dev_get_egress_qos_mask(struct net_device *dev, struct sk_buff *skb)
+{
+	struct vlan_priority_tci_mapping *mp;
+
+	smp_rmb(); /* coupled with smp_wmb() in vlan_dev_set_egress_priority() */
+
+	mp = vlan_dev_priv(dev)->egress_priority_map[(skb->priority & 0xF)];
+	while (mp) {
+		if (mp->priority == skb->priority) {
+			return mp->vlan_qos; /* This should already be shifted
+					      * to mask correctly with the
+					      * VLAN's TCI */
+		}
+		mp = mp->next;
+	}
+	return 0;
+}
+
+>>>>>>> p9x
 /*
  *	Create the VLAN header for an arbitrary protocol layer
  *
@@ -509,10 +531,48 @@ static void vlan_dev_change_rx_flags(struct net_device *dev, int change)
 	}
 }
 
+static int vlan_calculate_locking_subclass(struct net_device *real_dev)
+{
+	int subclass = 0;
+
+	while (is_vlan_dev(real_dev)) {
+		subclass++;
+		real_dev = vlan_dev_priv(real_dev)->real_dev;
+	}
+
+	return subclass;
+}
+
+static void vlan_dev_mc_sync(struct net_device *to, struct net_device *from)
+{
+	int err = 0, subclass;
+
+	subclass = vlan_calculate_locking_subclass(to);
+
+	spin_lock_nested(&to->addr_list_lock, subclass);
+	err = __hw_addr_sync(&to->mc, &from->mc, to->addr_len);
+	if (!err)
+		__dev_set_rx_mode(to);
+	spin_unlock(&to->addr_list_lock);
+}
+
+static void vlan_dev_uc_sync(struct net_device *to, struct net_device *from)
+{
+	int err = 0, subclass;
+
+	subclass = vlan_calculate_locking_subclass(to);
+
+	spin_lock_nested(&to->addr_list_lock, subclass);
+	err = __hw_addr_sync(&to->uc, &from->uc, to->addr_len);
+	if (!err)
+		__dev_set_rx_mode(to);
+	spin_unlock(&to->addr_list_lock);
+}
+
 static void vlan_dev_set_rx_mode(struct net_device *vlan_dev)
 {
-	dev_mc_sync(vlan_dev_priv(vlan_dev)->real_dev, vlan_dev);
-	dev_uc_sync(vlan_dev_priv(vlan_dev)->real_dev, vlan_dev);
+	vlan_dev_mc_sync(vlan_dev_priv(vlan_dev)->real_dev, vlan_dev);
+	vlan_dev_uc_sync(vlan_dev_priv(vlan_dev)->real_dev, vlan_dev);
 }
 
 /*
@@ -630,9 +690,16 @@ static int vlan_dev_init(struct net_device *dev)
 
 	SET_NETDEV_DEVTYPE(dev, &vlan_type);
 
+<<<<<<< HEAD
 	vlan_dev_set_lockdep_class(dev, vlan_dev_get_lock_subclass(dev));
 
 	vlan_dev_priv(dev)->vlan_pcpu_stats = netdev_alloc_pcpu_stats(struct vlan_pcpu_stats);
+=======
+	subclass = vlan_calculate_locking_subclass(dev);
+	vlan_dev_set_lockdep_class(dev, subclass);
+
+	vlan_dev_priv(dev)->vlan_pcpu_stats = alloc_percpu(struct vlan_pcpu_stats);
+>>>>>>> p9x
 	if (!vlan_dev_priv(dev)->vlan_pcpu_stats)
 		return -ENOMEM;
 

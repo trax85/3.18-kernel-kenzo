@@ -1339,6 +1339,10 @@ tgafb_init_fix(struct fb_info *info)
 	if (!tga_type_name) {
 		tga_type_name = "Unknown";
 		memory_size = 16777216;
+<<<<<<< HEAD:drivers/video/fbdev/tgafb.c
+=======
+		break;
+>>>>>>> p9x:drivers/video/tgafb.c
 	}
 
 	strlcpy(info->fix.id, tga_type_name, sizeof(info->fix.id));

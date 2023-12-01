@@ -636,10 +636,13 @@ extern int devres_release_group(struct device *dev, void *id);
 
 /* managed devm_k.alloc/kfree for device drivers */
 extern void *devm_kmalloc(struct device *dev, size_t size, gfp_t gfp);
+<<<<<<< HEAD
 extern char *devm_kvasprintf(struct device *dev, gfp_t gfp, const char *fmt,
 			     va_list ap);
 extern __printf(3, 4)
 char *devm_kasprintf(struct device *dev, gfp_t gfp, const char *fmt, ...);
+=======
+>>>>>>> p9x
 static inline void *devm_kzalloc(struct device *dev, size_t size, gfp_t gfp)
 {
 	return devm_kmalloc(dev, size, gfp | __GFP_ZERO);

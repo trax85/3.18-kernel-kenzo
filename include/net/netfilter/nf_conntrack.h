@@ -33,7 +33,10 @@ struct sip_length {
 	int msg_length[SIP_LIST_ELEMENTS];
 	int skb_len[SIP_LIST_ELEMENTS];
 	int data_len[SIP_LIST_ELEMENTS];
+<<<<<<< HEAD
 	int orig_data_len[SIP_LIST_ELEMENTS];
+=======
+>>>>>>> p9x
 };
 
 /* per conntrack: protocol private data */
@@ -133,13 +136,19 @@ struct nf_conn {
 
 	struct list_head sip_segment_list;
 	const char *dptr_prev;
+<<<<<<< HEAD
 	bool dir_prev;
+=======
+>>>>>>> p9x
 	struct sip_length segment;
 	bool sip_original_dir;
 	bool sip_reply_dir;
 
+<<<<<<< HEAD
 	void *sfe_entry;
 
+=======
+>>>>>>> p9x
 	/* Storage reserved for other modules, must be the last member */
 	union nf_conntrack_proto proto;
 };

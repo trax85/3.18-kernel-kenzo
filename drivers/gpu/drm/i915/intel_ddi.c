@@ -729,9 +729,69 @@ void intel_ddi_init_dp_buf_reg(struct intel_encoder *encoder)
 	struct intel_digital_port *intel_dig_port =
 		enc_to_dig_port(&encoder->base);
 
+<<<<<<< HEAD
 	intel_dp->DP = intel_dig_port->saved_port_bits |
 		DDI_BUF_CTL_ENABLE | DDI_BUF_TRANS_SELECT(0);
 	intel_dp->DP |= DDI_PORT_WIDTH(intel_dp->lane_count);
+=======
+	DRM_DEBUG_KMS("Preparing DDI mode for Haswell on port %c, pipe %c\n",
+		      port_name(port), pipe_name(pipe));
+
+	intel_crtc->eld_vld = false;
+	if (type == INTEL_OUTPUT_DISPLAYPORT || type == INTEL_OUTPUT_EDP) {
+		struct intel_dp *intel_dp = enc_to_intel_dp(encoder);
+		struct intel_digital_port *intel_dig_port =
+			enc_to_dig_port(encoder);
+
+		intel_dp->DP = intel_dig_port->saved_port_bits |
+			       DDI_BUF_CTL_ENABLE | DDI_BUF_EMP_400MV_0DB_HSW;
+		switch (intel_dp->lane_count) {
+		case 1:
+			intel_dp->DP |= DDI_PORT_WIDTH_X1;
+			break;
+		case 2:
+			intel_dp->DP |= DDI_PORT_WIDTH_X2;
+			break;
+		case 4:
+			intel_dp->DP |= DDI_PORT_WIDTH_X4;
+			break;
+		default:
+			intel_dp->DP |= DDI_PORT_WIDTH_X4;
+			WARN(1, "Unexpected DP lane count %d\n",
+			     intel_dp->lane_count);
+			break;
+		}
+
+		if (intel_dp->has_audio) {
+			DRM_DEBUG_DRIVER("DP audio on pipe %c on DDI\n",
+					 pipe_name(intel_crtc->pipe));
+
+			/* write eld */
+			DRM_DEBUG_DRIVER("DP audio: write eld information\n");
+			intel_write_eld(encoder, adjusted_mode);
+		}
+
+		intel_dp_init_link_config(intel_dp);
+
+	} else if (type == INTEL_OUTPUT_HDMI) {
+		struct intel_hdmi *intel_hdmi = enc_to_intel_hdmi(encoder);
+
+		if (intel_hdmi->has_audio) {
+			/* Proper support for digital audio needs a new logic
+			 * and a new set of registers, so we leave it for future
+			 * patch bombing.
+			 */
+			DRM_DEBUG_DRIVER("HDMI audio on pipe %c on DDI\n",
+					 pipe_name(intel_crtc->pipe));
+
+			/* write eld */
+			DRM_DEBUG_DRIVER("HDMI audio: write eld information\n");
+			intel_write_eld(encoder, adjusted_mode);
+		}
+
+		intel_hdmi->set_infoframes(encoder, adjusted_mode);
+	}
+>>>>>>> p9x
 }
 
 static struct intel_encoder *
@@ -2063,6 +2123,79 @@ bool intel_ddi_get_hw_state(struct intel_encoder *encoder,
 	return false;
 }
 
+<<<<<<< HEAD
+=======
+static uint32_t intel_ddi_get_crtc_pll(struct drm_i915_private *dev_priv,
+				       enum pipe pipe)
+{
+	uint32_t temp, ret;
+	enum port port = I915_MAX_PORTS;
+	enum transcoder cpu_transcoder = intel_pipe_to_cpu_transcoder(dev_priv,
+								      pipe);
+	int i;
+
+	if (cpu_transcoder == TRANSCODER_EDP) {
+		port = PORT_A;
+	} else {
+		temp = I915_READ(TRANS_DDI_FUNC_CTL(cpu_transcoder));
+		temp &= TRANS_DDI_PORT_MASK;
+
+		for (i = PORT_B; i <= PORT_E; i++)
+			if (temp == TRANS_DDI_SELECT_PORT(i))
+				port = i;
+	}
+
+	if (port == I915_MAX_PORTS) {
+		WARN(1, "Pipe %c enabled on an unknown port\n",
+		     pipe_name(pipe));
+		ret = PORT_CLK_SEL_NONE;
+	} else {
+		ret = I915_READ(PORT_CLK_SEL(port));
+		DRM_DEBUG_KMS("Pipe %c connected to port %c using clock "
+			      "0x%08x\n", pipe_name(pipe), port_name(port),
+			      ret);
+	}
+
+	return ret;
+}
+
+void intel_ddi_setup_hw_pll_state(struct drm_device *dev)
+{
+	struct drm_i915_private *dev_priv = dev->dev_private;
+	enum pipe pipe;
+	struct intel_crtc *intel_crtc;
+
+	dev_priv->ddi_plls.spll_refcount = 0;
+	dev_priv->ddi_plls.wrpll1_refcount = 0;
+	dev_priv->ddi_plls.wrpll2_refcount = 0;
+
+	for_each_pipe(pipe) {
+		intel_crtc =
+			to_intel_crtc(dev_priv->pipe_to_crtc_mapping[pipe]);
+
+		if (!intel_crtc->active) {
+			intel_crtc->ddi_pll_sel = PORT_CLK_SEL_NONE;
+			continue;
+		}
+
+		intel_crtc->ddi_pll_sel = intel_ddi_get_crtc_pll(dev_priv,
+								 pipe);
+
+		switch (intel_crtc->ddi_pll_sel) {
+		case PORT_CLK_SEL_SPLL:
+			dev_priv->ddi_plls.spll_refcount++;
+			break;
+		case PORT_CLK_SEL_WRPLL1:
+			dev_priv->ddi_plls.wrpll1_refcount++;
+			break;
+		case PORT_CLK_SEL_WRPLL2:
+			dev_priv->ddi_plls.wrpll2_refcount++;
+			break;
+		}
+	}
+}
+
+>>>>>>> p9x
 void intel_ddi_enable_pipe_clock(struct intel_crtc *intel_crtc)
 {
 	struct drm_crtc *crtc = &intel_crtc->base;
@@ -3293,6 +3426,12 @@ void intel_ddi_init(struct drm_device *dev, enum port port)
 	intel_dig_port->saved_port_bits = I915_READ(DDI_BUF_CTL(port)) &
 					  (DDI_BUF_PORT_REVERSAL |
 					   DDI_A_4_LANES);
+<<<<<<< HEAD
+=======
+	if (hdmi_connector)
+		intel_dig_port->hdmi.hdmi_reg = DDI_BUF_CTL(port);
+	intel_dig_port->dp.output_reg = DDI_BUF_CTL(port);
+>>>>>>> p9x
 
 	intel_encoder->type = INTEL_OUTPUT_UNKNOWN;
 	intel_encoder->crtc_mask = (1 << 0) | (1 << 1) | (1 << 2);

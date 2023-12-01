@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -61,7 +65,10 @@ enum qpnp_regulator_logical_type {
 	QPNP_REGULATOR_LOGICAL_TYPE_ULT_LO_SMPS,
 	QPNP_REGULATOR_LOGICAL_TYPE_ULT_HO_SMPS,
 	QPNP_REGULATOR_LOGICAL_TYPE_ULT_LDO,
+<<<<<<< HEAD
 	QPNP_REGULATOR_LOGICAL_TYPE_FTSMPS2,
+=======
+>>>>>>> p9x
 };
 
 enum qpnp_regulator_type {
@@ -106,7 +113,10 @@ enum qpnp_regulator_subtype {
 	QPNP_REGULATOR_SUBTYPE_5V_BOOST		= 0x01,
 	QPNP_REGULATOR_SUBTYPE_FTS_CTL		= 0x08,
 	QPNP_REGULATOR_SUBTYPE_FTS2p5_CTL	= 0x09,
+<<<<<<< HEAD
 	QPNP_REGULATOR_SUBTYPE_FTS426		= 0x0A,
+=======
+>>>>>>> p9x
 	QPNP_REGULATOR_SUBTYPE_BB_2A		= 0x01,
 	QPNP_REGULATOR_SUBTYPE_ULT_HF_CTL1	= 0x0D,
 	QPNP_REGULATOR_SUBTYPE_ULT_HF_CTL2	= 0x0E,
@@ -114,7 +124,10 @@ enum qpnp_regulator_subtype {
 	QPNP_REGULATOR_SUBTYPE_ULT_HF_CTL4	= 0x10,
 };
 
+<<<<<<< HEAD
 /* First common register layout used by older devices */
+=======
+>>>>>>> p9x
 enum qpnp_common_regulator_registers {
 	QPNP_COMMON_REG_DIG_MAJOR_REV		= 0x01,
 	QPNP_COMMON_REG_TYPE			= 0x04,
@@ -127,6 +140,7 @@ enum qpnp_common_regulator_registers {
 	QPNP_COMMON_REG_STEP_CTRL		= 0x61,
 };
 
+<<<<<<< HEAD
 /*
  * Second common register layout used by newer devices
  * Note that some of the registers from the first common layout remain
@@ -139,6 +153,8 @@ enum qpnp_common2_regulator_registers {
 	QPNP_COMMON2_REG_STEP_CTRL		= 0x61,
 };
 
+=======
+>>>>>>> p9x
 enum qpnp_ldo_registers {
 	QPNP_LDO_REG_SOFT_START			= 0x4C,
 };
@@ -164,12 +180,15 @@ enum qpnp_common_control_register_index {
 	QPNP_COMMON_IDX_ENABLE			= 6,
 };
 
+<<<<<<< HEAD
 enum qpnp_common2_control_register_index {
 	QPNP_COMMON2_IDX_VOLTAGE_LSB		= 0,
 	QPNP_COMMON2_IDX_VOLTAGE_MSB		= 1,
 	QPNP_COMMON2_IDX_MODE			= 5,
 };
 
+=======
+>>>>>>> p9x
 /* Common regulator control register layout */
 #define QPNP_COMMON_ENABLE_MASK			0x80
 #define QPNP_COMMON_ENABLE			0x80
@@ -180,7 +199,11 @@ enum qpnp_common2_control_register_index {
 #define QPNP_COMMON_ENABLE_FOLLOW_HW_EN0_MASK	0x01
 #define QPNP_COMMON_ENABLE_FOLLOW_ALL_MASK	0x0F
 
+<<<<<<< HEAD
 /* First common regulator mode register layout */
+=======
+/* Common regulator mode register layout */
+>>>>>>> p9x
 #define QPNP_COMMON_MODE_HPM_MASK		0x80
 #define QPNP_COMMON_MODE_AUTO_MASK		0x40
 #define QPNP_COMMON_MODE_BYPASS_MASK		0x20
@@ -191,6 +214,7 @@ enum qpnp_common2_control_register_index {
 #define QPNP_COMMON_MODE_FOLLOW_HW_EN0_MASK	0x01
 #define QPNP_COMMON_MODE_FOLLOW_ALL_MASK	0x1F
 
+<<<<<<< HEAD
 /* Second common regulator mode register values */
 #define QPNP_COMMON2_MODE_BYPASS		3
 #define QPNP_COMMON2_MODE_RETENTION		4
@@ -200,6 +224,8 @@ enum qpnp_common2_control_register_index {
 
 #define QPNP_COMMON2_MODE_MASK			0x07
 
+=======
+>>>>>>> p9x
 /* Common regulator pull down control register layout */
 #define QPNP_COMMON_PULL_DOWN_ENABLE_MASK	0x80
 
@@ -244,6 +270,7 @@ enum qpnp_common2_control_register_index {
 #define QPNP_FTSMPS_STEP_MARGIN_NUM	4
 #define QPNP_FTSMPS_STEP_MARGIN_DEN	5
 
+<<<<<<< HEAD
 #define QPNP_FTSMPS2_STEP_CTRL_DELAY_MASK	0x03
 #define QPNP_FTSMPS2_STEP_CTRL_DELAY_SHIFT	0
 
@@ -260,6 +287,8 @@ enum qpnp_common2_control_register_index {
 #define QPNP_FTSMPS2_STEP_MARGIN_NUM	10
 #define QPNP_FTSMPS2_STEP_MARGIN_DEN	11
 
+=======
+>>>>>>> p9x
 /*
  * This voltage in uV is returned by get_voltage functions when there is no way
  * to determine the current voltage level.  It is needed because the regulator
@@ -347,7 +376,10 @@ struct qpnp_regulator {
 	u16					base_addr;
 	/* ctrl_reg provides a shadow copy of register values 0x40 to 0x47. */
 	u8					ctrl_reg[8];
+<<<<<<< HEAD
 	u8					init_mode;
+=======
+>>>>>>> p9x
 };
 
 #define QPNP_VREG_MAP(_type, _subtype, _dig_major_min, _dig_major_max, \
@@ -454,10 +486,13 @@ static struct qpnp_voltage_range ult_pldo_ranges[] = {
 	VOLTAGE_RANGE(0, 1750000, 1750000, 3337500, 3337500, 12500),
 };
 
+<<<<<<< HEAD
 static struct qpnp_voltage_range ftsmps426_ranges[] = {
 	VOLTAGE_RANGE(0,       0,  320000, 1352000, 1352000,  4000),
 };
 
+=======
+>>>>>>> p9x
 static struct qpnp_voltage_set_points pldo_set_points = SET_POINTS(pldo_ranges);
 static struct qpnp_voltage_set_points nldo1_set_points
 					= SET_POINTS(nldo1_ranges);
@@ -484,8 +519,11 @@ static struct qpnp_voltage_set_points ult_nldo_set_points
 					= SET_POINTS(ult_nldo_ranges);
 static struct qpnp_voltage_set_points ult_pldo_set_points
 					= SET_POINTS(ult_pldo_ranges);
+<<<<<<< HEAD
 static struct qpnp_voltage_set_points ftsmps426_set_points
 					= SET_POINTS(ftsmps426_ranges);
+=======
+>>>>>>> p9x
 static struct qpnp_voltage_set_points none_set_points;
 
 static struct qpnp_voltage_set_points *all_set_points[] = {
@@ -503,7 +541,10 @@ static struct qpnp_voltage_set_points *all_set_points[] = {
 	&ult_ho_smps_set_points,
 	&ult_nldo_set_points,
 	&ult_pldo_set_points,
+<<<<<<< HEAD
 	&ftsmps426_set_points,
+=======
+>>>>>>> p9x
 };
 
 /* Determines which label to add to a debug print statement. */
@@ -847,6 +888,7 @@ static int qpnp_regulator_select_voltage(struct qpnp_regulator *vreg,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int qpnp_regulator_delay_for_slewing(struct qpnp_regulator *vreg,
 		int prev_voltage)
 {
@@ -868,11 +910,17 @@ static int qpnp_regulator_delay_for_slewing(struct qpnp_regulator *vreg,
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 static int qpnp_regulator_common_set_voltage(struct regulator_dev *rdev,
 		int min_uV, int max_uV, unsigned *selector)
 {
 	struct qpnp_regulator *vreg = rdev_get_drvdata(rdev);
+<<<<<<< HEAD
 	int rc, range_sel, voltage_sel, voltage_old = 0;
+=======
+	int rc, range_sel, voltage_sel, voltage_old, voltage_new;
+>>>>>>> p9x
 	u8 buf[2];
 
 	if (vreg->slew_rate && vreg->rdesc.ops->get_voltage) {
@@ -919,9 +967,24 @@ static int qpnp_regulator_common_set_voltage(struct regulator_dev *rdev,
 	if (rc) {
 		vreg_err(vreg, "SPMI write failed, rc=%d\n", rc);
 	} else {
+<<<<<<< HEAD
 		rc = qpnp_regulator_delay_for_slewing(vreg, voltage_old);
 		if (rc)
 			return rc;
+=======
+		/* Delay for voltage slewing if a step rate is specified. */
+		if (vreg->slew_rate && vreg->rdesc.ops->get_voltage) {
+			voltage_new = vreg->rdesc.ops->get_voltage(rdev);
+			if (voltage_new < 0) {
+				vreg_err(vreg, "could not get new voltage, rc=%d\n",
+					voltage_new);
+				return voltage_new;
+			}
+
+			udelay(DIV_ROUND_UP(abs(voltage_new - voltage_old),
+						vreg->slew_rate));
+		}
+>>>>>>> p9x
 
 		qpnp_vreg_show_state(rdev, QPNP_REGULATOR_ACTION_VOLTAGE);
 	}
@@ -1084,6 +1147,7 @@ static int qpnp_regulator_common_list_voltage(struct regulator_dev *rdev,
 	return uV;
 }
 
+<<<<<<< HEAD
 static int qpnp_regulator_common2_set_voltage(struct regulator_dev *rdev,
 		int min_uV, int max_uV, unsigned *selector)
 {
@@ -1144,6 +1208,8 @@ static int qpnp_regulator_common2_get_voltage(struct regulator_dev *rdev)
 		| (int)vreg->ctrl_reg[QPNP_COMMON2_IDX_VOLTAGE_LSB]) * 1000;
 }
 
+=======
+>>>>>>> p9x
 static unsigned int qpnp_regulator_common_get_mode(struct regulator_dev *rdev)
 {
 	struct qpnp_regulator *vreg = rdev_get_drvdata(rdev);
@@ -1194,6 +1260,7 @@ static unsigned int qpnp_regulator_common_get_optimum_mode(
 	return mode;
 }
 
+<<<<<<< HEAD
 static unsigned int qpnp_regulator_common2_get_mode(struct regulator_dev *rdev)
 {
 	struct qpnp_regulator *vreg = rdev_get_drvdata(rdev);
@@ -1236,6 +1303,8 @@ static int qpnp_regulator_common2_set_mode(struct regulator_dev *rdev,
 	return rc;
 }
 
+=======
+>>>>>>> p9x
 static int qpnp_regulator_common_enable_time(struct regulator_dev *rdev)
 {
 	struct qpnp_regulator *vreg = rdev_get_drvdata(rdev);
@@ -1333,6 +1402,7 @@ static const char * const qpnp_print_actions[] = {
 	[QPNP_REGULATOR_ACTION_MODE]	= "set mode   ",
 };
 
+<<<<<<< HEAD
 static const char * const qpnp_common2_mode_label[] = {
 	[0]				= "RSV",
 	[1]				= "RSV",
@@ -1344,6 +1414,8 @@ static const char * const qpnp_common2_mode_label[] = {
 	[QPNP_COMMON2_MODE_HPM]		= "HPM",
 };
 
+=======
+>>>>>>> p9x
 static void qpnp_vreg_show_state(struct regulator_dev *rdev,
 				   enum qpnp_regulator_action action)
 {
@@ -1353,7 +1425,11 @@ static void qpnp_vreg_show_state(struct regulator_dev *rdev,
 	int uV = 0;
 	const char *mode_label = "";
 	enum qpnp_regulator_logical_type type;
+<<<<<<< HEAD
 	const char *enable_label = "";
+=======
+	const char *enable_label;
+>>>>>>> p9x
 	char pc_enable_label[5] = {'\0'};
 	char pc_mode_label[8] = {'\0'};
 	bool show_req, show_dupe, show_init, has_changed;
@@ -1373,6 +1449,7 @@ static void qpnp_vreg_show_state(struct regulator_dev *rdev,
 
 	type = vreg->logical_type;
 
+<<<<<<< HEAD
 	if (vreg->rdesc.ops->is_enabled)
 		enable_label = vreg->rdesc.ops->is_enabled(rdev)
 				? "on " : "off";
@@ -1382,6 +1459,33 @@ static void qpnp_vreg_show_state(struct regulator_dev *rdev,
 
 	if (vreg->rdesc.ops->get_mode) {
 		mode = vreg->rdesc.ops->get_mode(rdev);
+=======
+	enable_label = qpnp_regulator_common_is_enabled(rdev) ? "on " : "off";
+
+	if (type == QPNP_REGULATOR_LOGICAL_TYPE_SMPS
+	    || type == QPNP_REGULATOR_LOGICAL_TYPE_LDO
+	    || type == QPNP_REGULATOR_LOGICAL_TYPE_LN_LDO
+	    || type == QPNP_REGULATOR_LOGICAL_TYPE_FTSMPS)
+		uV = qpnp_regulator_common_get_voltage(rdev);
+
+	if (type == QPNP_REGULATOR_LOGICAL_TYPE_BOOST
+	    || type == QPNP_REGULATOR_LOGICAL_TYPE_BOOST_BYP
+	    || type == QPNP_REGULATOR_LOGICAL_TYPE_ULT_HO_SMPS
+	    || type == QPNP_REGULATOR_LOGICAL_TYPE_ULT_LDO)
+		uV = qpnp_regulator_single_range_get_voltage(rdev);
+
+	if (type == QPNP_REGULATOR_LOGICAL_TYPE_ULT_LO_SMPS)
+		uV = qpnp_regulator_ult_lo_smps_get_voltage(rdev);
+
+	if (type == QPNP_REGULATOR_LOGICAL_TYPE_SMPS
+	    || type == QPNP_REGULATOR_LOGICAL_TYPE_LDO
+	    || type == QPNP_REGULATOR_LOGICAL_TYPE_FTSMPS
+	    || type == QPNP_REGULATOR_LOGICAL_TYPE_ULT_LDO
+	    || type == QPNP_REGULATOR_LOGICAL_TYPE_ULT_LO_SMPS
+	    || type == QPNP_REGULATOR_LOGICAL_TYPE_ULT_HO_SMPS
+	    || type == QPNP_REGULATOR_LOGICAL_TYPE_VS) {
+		mode = qpnp_regulator_common_get_mode(rdev);
+>>>>>>> p9x
 		mode_label = mode == REGULATOR_MODE_NORMAL ? "HPM" : "LPM";
 	}
 
@@ -1498,6 +1602,7 @@ static void qpnp_vreg_show_state(struct regulator_dev *rdev,
 			action_label, vreg->rdesc.name, enable_label, uV,
 			mode_label, pc_mode_label);
 		break;
+<<<<<<< HEAD
 	case QPNP_REGULATOR_LOGICAL_TYPE_FTSMPS2:
 		mode_reg = vreg->ctrl_reg[QPNP_COMMON_IDX_MODE];
 		mode_label = qpnp_common2_mode_label[mode_reg
@@ -1506,6 +1611,8 @@ static void qpnp_vreg_show_state(struct regulator_dev *rdev,
 			action_label, vreg->rdesc.name, enable_label, uV,
 			mode_label);
 		break;
+=======
+>>>>>>> p9x
 	default:
 		break;
 	}
@@ -1616,6 +1723,7 @@ static struct regulator_ops qpnp_ult_ldo_ops = {
 	.enable_time		= qpnp_regulator_common_enable_time,
 };
 
+<<<<<<< HEAD
 static struct regulator_ops qpnp_ftsmps426_ops = {
 	.enable			= qpnp_regulator_common_enable,
 	.disable		= qpnp_regulator_common_disable,
@@ -1629,6 +1737,8 @@ static struct regulator_ops qpnp_ftsmps426_ops = {
 	.enable_time		= qpnp_regulator_common_enable_time,
 };
 
+=======
+>>>>>>> p9x
 /* Maximum possible digital major revision value */
 #define INF 0xFF
 
@@ -1690,8 +1800,11 @@ static const struct qpnp_regulator_mapping supported_regulators[] = {
 									10000),
 	QPNP_VREG_MAP(ULT_LDO, P50,     0, INF, ULT_LDO, ult_ldo, ult_pldo,
 									 5000),
+<<<<<<< HEAD
 	QPNP_VREG_MAP(FTS,     FTS426,  0, INF, FTSMPS2, ftsmps426, ftsmps426,
 								       100000),
+=======
+>>>>>>> p9x
 };
 
 static int qpnp_regulator_match(struct qpnp_regulator *vreg)
@@ -1797,6 +1910,7 @@ static int qpnp_regulator_ftsmps_init_slew_rate(struct qpnp_regulator *vreg)
 	return rc;
 }
 
+<<<<<<< HEAD
 static int qpnp_regulator_ftsmps2_init_slew_rate(struct qpnp_regulator *vreg)
 {
 	struct qpnp_voltage_range *range = NULL;
@@ -1840,6 +1954,8 @@ static int qpnp_regulator_ftsmps2_init_slew_rate(struct qpnp_regulator *vreg)
 	return rc;
 }
 
+=======
+>>>>>>> p9x
 static int qpnp_regulator_init_registers(struct qpnp_regulator *vreg,
 				struct qpnp_regulator_platform_data *pdata)
 {
@@ -1897,6 +2013,7 @@ static int qpnp_regulator_init_registers(struct qpnp_regulator *vreg,
 		     (pdata->auto_mode_enable ? QPNP_COMMON_MODE_AUTO_MASK : 0);
 	}
 
+<<<<<<< HEAD
 	if (type == QPNP_REGULATOR_LOGICAL_TYPE_FTSMPS2) {
 		if (pdata->hpm_enable == QPNP_REGULATOR_ENABLE)
 			ctrl_reg[QPNP_COMMON2_IDX_MODE]
@@ -1916,6 +2033,8 @@ static int qpnp_regulator_init_registers(struct qpnp_regulator *vreg,
 				= QPNP_COMMON2_MODE_LPM;
 	}
 
+=======
+>>>>>>> p9x
 	/* Set up mode pin control. */
 	if ((type == QPNP_REGULATOR_LOGICAL_TYPE_SMPS
 	    || type == QPNP_REGULATOR_LOGICAL_TYPE_LDO)
@@ -2007,8 +2126,12 @@ static int qpnp_regulator_init_registers(struct qpnp_regulator *vreg,
 		}
 	}
 
+<<<<<<< HEAD
 	if ((type == QPNP_REGULATOR_LOGICAL_TYPE_FTSMPS
 	    || type == QPNP_REGULATOR_LOGICAL_TYPE_FTSMPS2)
+=======
+	if (type == QPNP_REGULATOR_LOGICAL_TYPE_FTSMPS
+>>>>>>> p9x
 	    && pdata->pull_down_enable != QPNP_REGULATOR_USE_HW_DEFAULT) {
 		/* FTSMPS has other bits in the pull down control register. */
 		reg = pdata->pull_down_enable
@@ -2079,6 +2202,7 @@ static int qpnp_regulator_init_registers(struct qpnp_regulator *vreg,
 		}
 	}
 
+<<<<<<< HEAD
 	/* Calculate the slew rate for FTSMPS2 regulators. */
 	if (type == QPNP_REGULATOR_LOGICAL_TYPE_FTSMPS2) {
 		rc = qpnp_regulator_ftsmps2_init_slew_rate(vreg);
@@ -2091,6 +2215,8 @@ static int qpnp_regulator_init_registers(struct qpnp_regulator *vreg,
 
 	vreg->init_mode = vreg->ctrl_reg[QPNP_COMMON_IDX_MODE];
 
+=======
+>>>>>>> p9x
 	return rc;
 }
 
@@ -2315,10 +2441,13 @@ static int qpnp_regulator_probe(struct spmi_device *spmi)
 		goto cancel_ocp_work;
 	}
 
+<<<<<<< HEAD
 	if (qpnp_vreg_debug_mask & QPNP_VREG_DEBUG_INIT && vreg->slew_rate)
 		pr_info("%-11s: step rate=%d uV/us\n", vreg->rdesc.name,
 			vreg->slew_rate);
 
+=======
+>>>>>>> p9x
 	qpnp_vreg_show_state(vreg->rdev, QPNP_REGULATOR_ACTION_INIT);
 
 	return 0;

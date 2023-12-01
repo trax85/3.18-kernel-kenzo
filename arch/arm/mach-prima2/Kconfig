@@ -3,6 +3,10 @@ menuconfig ARCH_SIRF
 	select ARCH_HAS_RESET_CONTROLLER
 	select ARCH_REQUIRE_GPIOLIB
 	select GENERIC_IRQ_CHIP
+<<<<<<< HEAD
+=======
+	select MIGHT_HAVE_CACHE_L2X0
+>>>>>>> p9x
 	select NO_IOPORT_MAP
 	select PINCTRL
 	select PINCTRL_SIRF

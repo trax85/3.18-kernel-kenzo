@@ -471,13 +471,22 @@ static int kvmppc_mmu_book3s_64_hv_xlate(struct kvm_vcpu *vcpu, gva_t eaddr,
 		preempt_enable();
 		return -ENOENT;
 	}
+<<<<<<< HEAD
 	hptep = (__be64 *)(kvm->arch.hpt_virt + (index << 4));
 	v = be64_to_cpu(hptep[0]) & ~HPTE_V_HVLOCK;
+=======
+	hptep = (unsigned long *)(kvm->arch.hpt_virt + (index << 4));
+	v = hptep[0] & ~HPTE_V_HVLOCK;
+>>>>>>> p9x
 	gr = kvm->arch.revmap[index].guest_rpte;
 
 	/* Unlock the HPTE */
 	asm volatile("lwsync" : : : "memory");
+<<<<<<< HEAD
 	hptep[0] = cpu_to_be64(v);
+=======
+	hptep[0] = v;
+>>>>>>> p9x
 	preempt_enable();
 
 	gpte->eaddr = eaddr;

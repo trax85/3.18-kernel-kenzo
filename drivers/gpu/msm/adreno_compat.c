@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -40,8 +44,12 @@ int adreno_getproperty_compat(struct kgsl_device *device,
 			memset(&devinfo, 0, sizeof(devinfo));
 			devinfo.device_id = device->id + 1;
 			devinfo.chip_id = adreno_dev->chipid;
+<<<<<<< HEAD
 			devinfo.mmu_enabled =
 				MMU_FEATURE(&device->mmu, KGSL_MMU_PAGED);
+=======
+			devinfo.mmu_enabled = kgsl_mmu_enabled();
+>>>>>>> p9x
 			devinfo.gmem_gpubaseaddr = adreno_dev->gmem_base;
 			devinfo.gmem_sizebytes = adreno_dev->gmem_size;
 
@@ -89,6 +97,7 @@ int adreno_getproperty_compat(struct kgsl_device *device,
 			status = 0;
 		}
 		break;
+<<<<<<< HEAD
 	case KGSL_PROP_DEVICE_QDSS_STM:
 		{
 			struct kgsl_qdss_stm_prop qdssprop = {0};
@@ -113,6 +122,8 @@ int adreno_getproperty_compat(struct kgsl_device *device,
 			status = 0;
 		}
 		break;
+=======
+>>>>>>> p9x
 	default:
 		/*
 		 * Call the adreno_getproperty to check if the property type

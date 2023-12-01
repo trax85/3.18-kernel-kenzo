@@ -1090,9 +1090,14 @@ void __init debug_objects_mem_init(void)
 
 	obj_cache = kmem_cache_create("debug_objects_cache",
 				      sizeof (struct debug_obj), 0,
+<<<<<<< HEAD
 				      SLAB_DEBUG_OBJECTS | SLAB_NOLEAKTRACE,
 				      NULL);
 
+=======
+				      SLAB_DEBUG_OBJECTS, NULL);
+	kmemleak_not_leak(obj_cache);
+>>>>>>> p9x
 	if (!obj_cache || debug_objects_replace_static_objects()) {
 		debug_objects_enabled = 0;
 		if (obj_cache)

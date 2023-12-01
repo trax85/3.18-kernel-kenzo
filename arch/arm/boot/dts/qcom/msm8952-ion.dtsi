@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2016, Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -22,12 +26,20 @@
 		};
 
 		qcom,ion-heap@8 { /* CP_MM HEAP */
+<<<<<<< HEAD
 			reg = <8>;
 			memory-region = <&secure_mem>;
+=======
+			compatible = "qcom,msm-ion-reserve";
+			reg = <8>;
+			qcom,heap-align = <0x1000>;
+			linux,contiguous-region = <&secure_mem>;
+>>>>>>> p9x
 			qcom,ion-heap-type = "SECURE_DMA";
 		};
 
 		qcom,ion-heap@27 { /* QSEECOM HEAP */
+<<<<<<< HEAD
 			reg = <27>;
 			memory-region = <&qseecom_mem>;
 			qcom,ion-heap-type = "DMA";
@@ -36,6 +48,25 @@
 		qcom,ion-heap@22 {
 			reg = <22>;
 			memory-region = <&adsp_mem>;
+=======
+			compatible = "qcom,msm-ion-reserve";
+			reg = <27>;
+			linux,contiguous-region = <&qseecom_mem>;
+			qcom,ion-heap-type = "DMA";
+		};
+
+		qcom,ion-heap@23 { /* OTHER PIL HEAP */
+			compatible = "qcom,msm-ion-reserve";
+			reg = <23>;
+			linux,contiguous-region = <&reloc_mem>;
+			qcom,ion-heap-type = "DMA";
+		};
+
+		qcom,ion-heap@26 { /* MODEM HEAP */
+			compatible = "qcom,msm-ion-reserve";
+			reg = <26>;
+			linux,contiguous-region = <&modem_mem>;
+>>>>>>> p9x
 			qcom,ion-heap-type = "DMA";
 		};
 	};

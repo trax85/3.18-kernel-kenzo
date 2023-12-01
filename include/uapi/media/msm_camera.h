@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2009-2012, 2014-2016 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2009-2012, 2014-2015 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -13,9 +17,23 @@
 #ifndef __UAPI_MSM_CAMERA_H
 #define __UAPI_MSM_CAMERA_H
 
+<<<<<<< HEAD
 #include <linux/videodev2.h>
 #include <linux/types.h>
 #include <linux/ioctl.h>
+=======
+#ifdef MSM_CAMERA_BIONIC
+#include <sys/types.h>
+#endif
+#include <linux/videodev2.h>
+#include <linux/types.h>
+#include <linux/ioctl.h>
+#ifdef MSM_CAMERA_GCC
+#include <time.h>
+#else
+#include <linux/time.h>
+#endif
+>>>>>>> p9x
 
 #include <linux/msm_ion.h>
 
@@ -682,7 +700,11 @@ struct outputCfg {
 #define OUTPUT_ALL_CHNLS 8
 #define OUTPUT_VIDEO_ALL_CHNLS 9
 #define OUTPUT_ZSL_ALL_CHNLS 10
+<<<<<<< HEAD
 #define LAST_AXI_OUTPUT_MODE_ENUM OUTPUT_ZSL_ALL_CHNLS
+=======
+#define LAST_AXI_OUTPUT_MODE_ENUM = OUTPUT_ZSL_ALL_CHNLS
+>>>>>>> p9x
 
 #define OUTPUT_PRIM              BIT(8)
 #define OUTPUT_PRIM_ALL_CHNLS    BIT(9)
@@ -2062,7 +2084,11 @@ struct msm_mctl_set_sdev_data {
 	_IOWR('V', BASE_VIDIOC_PRIVATE + 22, void *)
 
 #define VIDIOC_MSM_AXI_RDI_COUNT_UPDATE \
+<<<<<<< HEAD
 	_IOWR('V', BASE_VIDIOC_PRIVATE + 23, void *)
+=======
+	_IOWR('V', BASE_VIDIOC_PRIVATE + 23, struct rdi_count_msg)
+>>>>>>> p9x
 
 #define VIDIOC_MSM_VFE_INIT \
 	_IO('V', BASE_VIDIOC_PRIVATE + 24)
@@ -2221,4 +2247,9 @@ struct msm_ver_num_info {
 	((handle & 0x80) ? (handle & 0x7F) : 0xFF)
 #define SET_VIDEO_INST_IDX(handle, data)	\
 	(handle |= (0x1 << 7) | (data & 0x7F))
+<<<<<<< HEAD
 #endif
+=======
+
+#endif /* __UAPI_MSM_CAMERA_H */
+>>>>>>> p9x

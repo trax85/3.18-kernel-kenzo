@@ -14,7 +14,11 @@
 #define _QCOM_INLINE_CRYPTO_ENGINE_REGS_H_
 
 /* Register bits for ICE version */
+<<<<<<< HEAD
 #define ICE_CORE_CURRENT_MAJOR_VERSION 0x03
+=======
+#define ICE_CORE_CURRENT_MAJOR_VERSION 0x02
+>>>>>>> p9x
 
 #define ICE_CORE_STEP_REV_MASK		0xFFFF
 #define ICE_CORE_STEP_REV		0 /* bit 15-0 */
@@ -23,11 +27,15 @@
 #define ICE_CORE_MINOR_REV_MASK		0xFF0000
 #define ICE_CORE_MINOR_REV		16 /* bit 23-16 */
 
+<<<<<<< HEAD
 #define ICE_BIST_STATUS_MASK		(0xF0000000)	/* bits 28-31 */
 
 #define ICE_FUSE_SETTING_MASK			0x1
 #define ICE_FORCE_HW_KEY0_SETTING_MASK		0x2
 #define ICE_FORCE_HW_KEY1_SETTING_MASK		0x4
+=======
+#define ICE_FUSE_SETTING_MASK		0x1
+>>>>>>> p9x
 
 /* QCOM ICE Registers from SWI */
 #define QCOM_ICE_REGS_CONTROL			0x0000
@@ -102,6 +110,10 @@
 #define QCOM_ICE_STREAM1_NOT_EXPECTED_NEW_TRNS		(1L << 14)
 #define QCOM_ICE_STREAM2_NOT_EXPECTED_NEW_TRNS		(1L << 15)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 #define QCOM_ICE_NON_SEC_IRQ_MASK				\
 			(QCOM_ICE_STREAM1_PREMATURE_LBA_CHANGE |\
 			 QCOM_ICE_STREAM2_PREMATURE_LBA_CHANGE |\

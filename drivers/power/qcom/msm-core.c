@@ -43,14 +43,20 @@
 #define TEMP_MAX_POINT 95
 #define CPU_HOTPLUG_LIMIT 80
 #define CPU_BIT_MASK(cpu) BIT(cpu)
+<<<<<<< HEAD
 #define DEFAULT_TEMP 40
+=======
+>>>>>>> p9x
 #define DEFAULT_LOW_HYST_TEMP 10
 #define DEFAULT_HIGH_HYST_TEMP 5
 #define CLUSTER_OFFSET_FOR_MPIDR 8
 #define MAX_CORES_PER_CLUSTER 4
 #define MAX_NUM_OF_CLUSTERS 2
 #define NUM_OF_CORNERS 10
+<<<<<<< HEAD
 #define DEFAULT_SCALING_FACTOR 1
+=======
+>>>>>>> p9x
 
 #define ALLOCATE_2D_ARRAY(type)\
 static type **allocate_2d_array_##type(int idx)\
@@ -109,7 +115,10 @@ static struct platform_device *msm_core_pdev;
 static struct cpu_activity_info activity[NR_CPUS];
 DEFINE_PER_CPU(struct cpu_pstate_pwr *, ptable);
 static struct cpu_pwr_stats cpu_stats[NR_CPUS];
+<<<<<<< HEAD
 static uint32_t scaling_factor;
+=======
+>>>>>>> p9x
 ALLOCATE_2D_ARRAY(uint32_t);
 
 static int poll_ms;
@@ -121,9 +130,12 @@ module_param_named(disabled, disabled, int,
 		S_IRUGO | S_IWUSR | S_IWGRP);
 static bool in_suspend;
 static bool activate_power_table;
+<<<<<<< HEAD
 static int max_throttling_temp = 80; /* in C */
 module_param_named(throttling_temp, max_throttling_temp, int,
 		S_IRUGO | S_IWUSR | S_IWGRP);
+=======
+>>>>>>> p9x
 
 /*
  * Cannot be called from an interrupt context
@@ -160,17 +172,26 @@ static void set_threshold(struct cpu_activity_info *cpu_node)
 	sensor_activate_trip(cpu_node->sensor_id,
 			&cpu_node->low_threshold, false);
 
+<<<<<<< HEAD
 	cpu_node->hi_threshold.temp = (cpu_node->temp + high_hyst_temp) *
 					scaling_factor;
 	cpu_node->low_threshold.temp = (cpu_node->temp - low_hyst_temp) *
 					scaling_factor;
+=======
+	cpu_node->hi_threshold.temp = cpu_node->temp + high_hyst_temp;
+	cpu_node->low_threshold.temp = cpu_node->temp - low_hyst_temp;
+>>>>>>> p9x
 
 	/*
 	 * Set the threshold only if we are below the hotplug limit
 	 * Adding more work at this high temperature range, seems to
 	 * fail hotplug notifications.
 	 */
+<<<<<<< HEAD
 	if (cpu_node->hi_threshold.temp < (CPU_HOTPLUG_LIMIT * scaling_factor))
+=======
+	if (cpu_node->hi_threshold.temp < CPU_HOTPLUG_LIMIT)
+>>>>>>> p9x
 		set_and_activate_threshold(cpu_node->sensor_id,
 			&cpu_node->hi_threshold);
 
@@ -193,7 +214,11 @@ static void core_temp_notify(enum thermal_trip_type type,
 	trace_temp_notification(cpu_node->sensor_id,
 		type, temp, cpu_node->temp);
 
+<<<<<<< HEAD
 	cpu_node->temp = temp / scaling_factor;
+=======
+	cpu_node->temp = temp;
+>>>>>>> p9x
 
 	complete(&sampling_completion);
 }
@@ -228,7 +253,10 @@ void trigger_cpu_pwr_stats_calc(void)
 	int cpu;
 	static long prev_temp[NR_CPUS];
 	struct cpu_activity_info *cpu_node;
+<<<<<<< HEAD
 	long temp;
+=======
+>>>>>>> p9x
 
 	if (disabled)
 		return;
@@ -240,11 +268,16 @@ void trigger_cpu_pwr_stats_calc(void)
 		if (cpu_node->sensor_id < 0)
 			continue;
 
+<<<<<<< HEAD
 		if (cpu_node->temp == prev_temp[cpu]) {
 			sensor_get_temp(cpu_node->sensor_id, &temp);
 			cpu_node->temp = temp / scaling_factor;
 		}
 
+=======
+		if (cpu_node->temp == prev_temp[cpu])
+			sensor_get_temp(cpu_node->sensor_id, &cpu_node->temp);
+>>>>>>> p9x
 		prev_temp[cpu] = cpu_node->temp;
 
 		/*
@@ -323,10 +356,15 @@ static __ref int do_sampling(void *data)
 				prev_temp[cpu] = cpu_node->temp;
 				set_threshold(cpu_node);
 				trace_temp_threshold(cpu, cpu_node->temp,
+<<<<<<< HEAD
 					cpu_node->hi_threshold.temp /
 					scaling_factor,
 					cpu_node->low_threshold.temp /
 					scaling_factor);
+=======
+					cpu_node->hi_threshold.temp,
+					cpu_node->low_threshold.temp);
+>>>>>>> p9x
 			}
 		}
 		if (!poll_ms)
@@ -356,6 +394,7 @@ static void clear_static_power(struct cpu_static_info *sp)
 	kfree(sp);
 }
 
+<<<<<<< HEAD
 BLOCKING_NOTIFIER_HEAD(msm_core_stats_notifier_list);
 
 struct blocking_notifier_head *get_power_update_notifier(void)
@@ -369,15 +408,24 @@ int register_cpu_pwr_stats_ready_notifier(struct notifier_block *nb)
 						nb);
 }
 
+=======
+>>>>>>> p9x
 static int update_userspace_power(struct sched_params __user *argp)
 {
 	int i;
 	int ret;
+<<<<<<< HEAD
 	int cpu = -1;
 	struct cpu_activity_info *node;
 	struct cpu_static_info *sp, *clear_sp;
 	int cpumask, cluster, mpidr;
 	bool pdata_valid[NR_CPUS] = {0};
+=======
+	int cpu;
+	struct cpu_activity_info *node;
+	struct cpu_static_info *sp, *clear_sp;
+	int cpumask, cluster, mpidr;
+>>>>>>> p9x
 
 	get_user(cpumask, &argp->cpumask);
 	get_user(cluster, &argp->cluster);
@@ -396,7 +444,11 @@ static int update_userspace_power(struct sched_params __user *argp)
 		}
 	}
 
+<<<<<<< HEAD
 	if ((cpu < 0) || (cpu >= num_possible_cpus()))
+=======
+	if (cpu >= num_possible_cpus())
+>>>>>>> p9x
 		return -EINVAL;
 
 	node = &activity[cpu];
@@ -429,8 +481,13 @@ static int update_userspace_power(struct sched_params __user *argp)
 	/* Copy the same power values for all the cpus in the cpumask
 	 * argp->cpumask within the cluster (argp->cluster)
 	 */
+<<<<<<< HEAD
 	get_user(cpumask, &argp->cpumask);
 	spin_lock(&update_lock);
+=======
+	spin_lock(&update_lock);
+	get_user(cpumask, &argp->cpumask);
+>>>>>>> p9x
 	for (i = 0; i < MAX_CORES_PER_CLUSTER; i++, cpumask >>= 1) {
 		if (!(cpumask & 0x01))
 			continue;
@@ -450,12 +507,16 @@ static int update_userspace_power(struct sched_params __user *argp)
 			}
 			cpu_stats[cpu].ptable = per_cpu(ptable, cpu);
 			repopulate_stats(cpu);
+<<<<<<< HEAD
 			pdata_valid[cpu] = true;
+=======
+>>>>>>> p9x
 		}
 	}
 	spin_unlock(&update_lock);
 	mutex_unlock(&policy_update_mutex);
 
+<<<<<<< HEAD
 	for_each_possible_cpu(cpu) {
 		if (!pdata_valid[cpu])
 			continue;
@@ -464,6 +525,8 @@ static int update_userspace_power(struct sched_params __user *argp)
 			&msm_core_stats_notifier_list, cpu, NULL);
 	}
 
+=======
+>>>>>>> p9x
 	activate_power_table = true;
 	return 0;
 
@@ -483,7 +546,12 @@ static long msm_core_ioctl(struct file *file, unsigned int cmd,
 	struct cpu_activity_info *node = NULL;
 	struct sched_params __user *argp = (struct sched_params __user *)arg;
 	int i, cpu = num_possible_cpus();
+<<<<<<< HEAD
 	int mpidr, cluster, cpumask;
+=======
+	int mpidr;
+	int cluster, cpumask;
+>>>>>>> p9x
 
 	if (!argp)
 		return -EINVAL;
@@ -588,7 +656,10 @@ static int msm_core_stats_init(struct device *dev, int cpu)
 		pstate[i].freq = cpu_node->sp->table[i].frequency;
 
 	per_cpu(ptable, cpu) = pstate;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return 0;
 }
 
@@ -645,7 +716,11 @@ static int msm_get_voltage_levels(struct device *dev, int cpu,
 	unsigned int *voltage;
 	int i;
 	int corner;
+<<<<<<< HEAD
 	struct dev_pm_opp *opp;
+=======
+	struct opp *opp;
+>>>>>>> p9x
 	struct device *cpu_dev = get_cpu_device(cpu);
 	/*
 	 * Convert cpr corner voltage to average voltage of both
@@ -707,12 +782,19 @@ static int msm_core_tsens_init(struct device_node *node, int cpu)
 	struct device_node *phandle;
 	const char *sensor_type = NULL;
 	struct cpu_activity_info *cpu_node = &activity[cpu];
+<<<<<<< HEAD
 	long temp;
+=======
+>>>>>>> p9x
 
 	if (!node)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	key = "sensor";
+=======
+	key = "qcom,sensor";
+>>>>>>> p9x
 	phandle = of_parse_phandle(node, key, 0);
 	if (!phandle) {
 		pr_info("%s: No sensor mapping found for the core\n",
@@ -739,6 +821,7 @@ static int msm_core_tsens_init(struct device_node *node, int cpu)
 	if (cpu_node->sensor_id < 0)
 		return cpu_node->sensor_id;
 
+<<<<<<< HEAD
 	key = "qcom,scaling-factor";
 	ret = of_property_read_u32(phandle, key,
 				&scaling_factor);
@@ -760,17 +843,50 @@ static int msm_core_tsens_init(struct device_node *node, int cpu)
 	init_sens_threshold(&cpu_node->low_threshold,
 			THERMAL_TRIP_CONFIGURABLE_LOW,
 			(cpu_node->temp - low_hyst_temp) * scaling_factor,
+=======
+	ret = sensor_get_temp(cpu_node->sensor_id, &cpu_node->temp);
+	if (ret)
+		return ret;
+
+	init_sens_threshold(&cpu_node->hi_threshold,
+			THERMAL_TRIP_CONFIGURABLE_HI,
+			cpu_node->temp + high_hyst_temp,
+			(void *)cpu_node);
+	init_sens_threshold(&cpu_node->low_threshold,
+			THERMAL_TRIP_CONFIGURABLE_LOW,
+			cpu_node->temp - low_hyst_temp,
+>>>>>>> p9x
 			(void *)cpu_node);
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int msm_core_mpidr_init(struct device_node *phandle)
 {
 	int ret = 0;
 	char *key = NULL;
 	int mpidr;
 
+=======
+static int msm_core_mpidr_init(struct device_node *node)
+{
+	int ret = 0;
+	char *key = NULL;
+	struct device_node *phandle;
+	int mpidr;
+
+	if (!node)
+		return -ENODEV;
+
+	key = "qcom,cpu-name";
+	phandle = of_parse_phandle(node, key, 0);
+	if (!phandle) {
+		pr_err("%s: Cannot map cpu handle\n", __func__);
+		return -ENODEV;
+	}
+
+>>>>>>> p9x
 	key = "reg";
 	ret = of_property_read_u32(phandle, key,
 				&mpidr);
@@ -897,6 +1013,7 @@ static int msm_core_params_init(struct platform_device *pdev)
 {
 	int ret = 0;
 	unsigned long cpu = 0;
+<<<<<<< HEAD
 	struct device_node *child_node = NULL;
 	struct device_node *ea_node = NULL;
 	char *key = NULL;
@@ -908,15 +1025,37 @@ static int msm_core_params_init(struct platform_device *pdev)
 		if (!child_node)
 			continue;
 
+=======
+	struct device_node *node = NULL;
+	struct device_node *child_node = NULL;
+	int mpidr;
+
+	node = of_find_node_by_name(pdev->dev.of_node,
+				"qcom,core-mapping");
+	if (!node) {
+		pr_err("No per core params found\n");
+		return -ENODEV;
+	}
+
+	for_each_child_of_node(node, child_node) {
+>>>>>>> p9x
 		mpidr = msm_core_mpidr_init(child_node);
 		if (mpidr < 0)
 			return mpidr;
 
+<<<<<<< HEAD
+=======
+		for_each_possible_cpu(cpu)
+			if (cpu_logical_map(cpu) == mpidr)
+				break;
+
+>>>>>>> p9x
 		if (cpu >= num_possible_cpus())
 			continue;
 
 		activity[cpu].mpidr = mpidr;
 
+<<<<<<< HEAD
 		key = "qcom,ea";
 		ea_node = of_parse_phandle(child_node, key, 0);
 		if (!ea_node) {
@@ -926,6 +1065,9 @@ static int msm_core_params_init(struct platform_device *pdev)
 		}
 
 		ret = msm_core_tsens_init(ea_node, cpu);
+=======
+		ret = msm_core_tsens_init(child_node, cpu);
+>>>>>>> p9x
 		if (ret)
 			return ret;
 
@@ -1026,7 +1168,10 @@ static int msm_core_dev_probe(struct platform_device *pdev)
 	char *key = NULL;
 	struct device_node *node;
 	int cpu;
+<<<<<<< HEAD
 	struct uio_info *info;
+=======
+>>>>>>> p9x
 
 	if (!pdev)
 		return -ENODEV;
@@ -1051,8 +1196,11 @@ static int msm_core_dev_probe(struct platform_device *pdev)
 	if (ret)
 		pr_info("msm-core initialized without polling period\n");
 
+<<<<<<< HEAD
 	key = "qcom,throttling-temp";
 	ret = of_property_read_u32(node, key, &max_throttling_temp);
+=======
+>>>>>>> p9x
 
 	ret = uio_init(pdev);
 	if (ret)
@@ -1060,19 +1208,30 @@ static int msm_core_dev_probe(struct platform_device *pdev)
 
 	ret = msm_core_freq_init();
 	if (ret)
+<<<<<<< HEAD
 		goto failed;
+=======
+		return ret;
+>>>>>>> p9x
 
 	ret = misc_register(&msm_core_device);
 	if (ret) {
 		pr_err("%s: Error registering device %d\n", __func__, ret);
+<<<<<<< HEAD
 		goto failed;
+=======
+		return ret;
+>>>>>>> p9x
 	}
 
 	ret = msm_core_params_init(pdev);
 	if (ret)
 		goto failed;
 
+<<<<<<< HEAD
 	INIT_DEFERRABLE_WORK(&sampling_work, samplequeue_handle);
+=======
+>>>>>>> p9x
 	ret = msm_core_task_init(&pdev->dev);
 	if (ret)
 		goto failed;
@@ -1080,13 +1239,20 @@ static int msm_core_dev_probe(struct platform_device *pdev)
 	for_each_possible_cpu(cpu)
 		set_threshold(&activity[cpu]);
 
+<<<<<<< HEAD
+=======
+	INIT_DEFERRABLE_WORK(&sampling_work, samplequeue_handle);
+>>>>>>> p9x
 	schedule_delayed_work(&sampling_work, msecs_to_jiffies(0));
 	cpufreq_register_notifier(&cpu_policy, CPUFREQ_POLICY_NOTIFIER);
 	pm_notifier(system_suspend_handler, 0);
 	return 0;
 failed:
+<<<<<<< HEAD
 	info = dev_get_drvdata(&pdev->dev);
 	uio_unregister_device(info);
+=======
+>>>>>>> p9x
 	free_dyn_memory();
 	return ret;
 }

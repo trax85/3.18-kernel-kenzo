@@ -42,12 +42,22 @@
 #include <linux/sys_soc.h>
 #include <linux/termios.h>
 #include <linux/sched_clock.h>
+<<<<<<< HEAD
 #include <linux/clk-provider.h>
+=======
+#include <video/vga.h>
+>>>>>>> p9x
 
 #include <asm/hardware/arm_timer.h>
 #include <asm/setup.h>
 #include <asm/param.h>		/* HZ */
 #include <asm/mach-types.h>
+<<<<<<< HEAD
+=======
+
+#include <mach/lm.h>
+#include <mach/irqs.h>
+>>>>>>> p9x
 
 #include <asm/mach/arch.h>
 #include <asm/mach/irq.h>

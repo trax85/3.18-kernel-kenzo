@@ -155,12 +155,16 @@ struct ntb_device {
 	struct delayed_work hb_timer;
 	unsigned long last_ts;
 
+<<<<<<< HEAD
 	struct delayed_work lr_timer;
 
 	struct dentry *debugfs_dir;
 	struct dentry *debugfs_info;
 
 	unsigned int wa_flags;
+=======
+	struct dentry *debugfs_dir;
+>>>>>>> p9x
 };
 
 /**

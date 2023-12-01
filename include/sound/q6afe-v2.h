@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -39,6 +43,7 @@
 #define RT_PROXY_DAI_002_TX	0xE1
 #define VIRTUAL_ID_TO_PORTID(val) ((val & 0xF) | 0x2000)
 
+<<<<<<< HEAD
 #define AFE_CLK_VERSION_V1    1
 #define AFE_CLK_VERSION_V2    2
 
@@ -174,6 +179,63 @@ enum {
 	IDX_AFE_PORT_ID_QUATERNARY_TDM_RX_7,
 	IDX_AFE_PORT_ID_QUATERNARY_TDM_TX_7,
 	IDX_AFE_LOOPBACK_TX,
+=======
+enum {
+	IDX_PRIMARY_I2S_RX = 0,
+	IDX_PRIMARY_I2S_TX = 1,
+	IDX_AFE_PORT_ID_PRIMARY_PCM_RX = 2,
+	IDX_AFE_PORT_ID_PRIMARY_PCM_TX = 3,
+	IDX_SECONDARY_I2S_RX = 4,
+	IDX_SECONDARY_I2S_TX = 5,
+	IDX_MI2S_RX = 6,
+	IDX_MI2S_TX = 7,
+	IDX_HDMI_RX = 8,
+	IDX_RSVD_2 = 9,
+	IDX_RSVD_3 = 10,
+	IDX_DIGI_MIC_TX = 11,
+	IDX_VOICE_RECORD_RX = 12,
+	IDX_VOICE_RECORD_TX = 13,
+	IDX_VOICE_PLAYBACK_TX = 14,
+	IDX_SLIMBUS_0_RX = 15,
+	IDX_SLIMBUS_0_TX = 16,
+	IDX_SLIMBUS_1_RX = 17,
+	IDX_SLIMBUS_1_TX = 18,
+	IDX_SLIMBUS_2_RX = 19,
+	IDX_SLIMBUS_2_TX = 20,
+	IDX_SLIMBUS_3_RX = 21,
+	IDX_SLIMBUS_3_TX = 22,
+	IDX_SLIMBUS_4_RX = 23,
+	IDX_SLIMBUS_4_TX = 24,
+	IDX_SLIMBUS_5_RX = 25,
+	IDX_SLIMBUS_5_TX = 26,
+	IDX_INT_BT_SCO_RX = 27,
+	IDX_INT_BT_SCO_TX = 28,
+	IDX_INT_BT_A2DP_RX = 29,
+	IDX_INT_FM_RX = 30,
+	IDX_INT_FM_TX = 31,
+	IDX_RT_PROXY_PORT_001_RX = 32,
+	IDX_RT_PROXY_PORT_001_TX = 33,
+	IDX_AFE_PORT_ID_QUATERNARY_MI2S_RX = 34,
+	IDX_AFE_PORT_ID_QUATERNARY_MI2S_TX = 35,
+	IDX_AFE_PORT_ID_SECONDARY_MI2S_RX = 36,
+	IDX_AFE_PORT_ID_SECONDARY_MI2S_TX = 37,
+	IDX_AFE_PORT_ID_TERTIARY_MI2S_RX = 38,
+	IDX_AFE_PORT_ID_TERTIARY_MI2S_TX = 39,
+	IDX_AFE_PORT_ID_PRIMARY_MI2S_RX = 40,
+	IDX_AFE_PORT_ID_PRIMARY_MI2S_TX = 41,
+	IDX_AFE_PORT_ID_SECONDARY_PCM_RX = 42,
+	IDX_AFE_PORT_ID_SECONDARY_PCM_TX = 43,
+	IDX_VOICE2_PLAYBACK_TX = 44,
+	IDX_SLIMBUS_6_RX = 45,
+	IDX_SLIMBUS_6_TX = 46,
+	IDX_SPDIF_RX = 47,
+	IDX_GLOBAL_CFG,
+	IDX_AUDIO_PORT_ID_I2S_RX,
+	IDX_AFE_PORT_ID_SECONDARY_MI2S_RX_SD1,
+	IDX_AFE_PORT_ID_QUINARY_MI2S_RX = 51,
+	IDX_AFE_PORT_ID_QUINARY_MI2S_TX = 52,
+	IDX_AFE_PORT_ID_SENARY_MI2S_TX = 53,
+>>>>>>> p9x
 	AFE_MAX_PORTS
 };
 
@@ -190,11 +252,14 @@ enum afe_cal_mode {
 	AFE_CAL_MODE_NONE,
 };
 
+<<<<<<< HEAD
 enum lpass_clk_ver {
 	LPASS_CLK_VER_1,
 	LPASS_CLK_VER_2,
 };
 
+=======
+>>>>>>> p9x
 struct afe_audio_buffer {
 	dma_addr_t phys;
 	void       *data;
@@ -240,13 +305,19 @@ struct aanc_data {
 
 int afe_open(u16 port_id, union afe_port_config *afe_config, int rate);
 int afe_close(int port_id);
+<<<<<<< HEAD
 enum lpass_clk_ver afe_get_lpass_clk_ver(void);
+=======
+>>>>>>> p9x
 int afe_loopback(u16 enable, u16 rx_port, u16 tx_port);
 int afe_sidetone(u16 tx_port_id, u16 rx_port_id, u16 enable, uint16_t gain);
 int afe_loopback_gain(u16 port_id, u16 volume);
 int afe_validate_port(u16 port_id);
 int afe_get_port_index(u16 port_id);
+<<<<<<< HEAD
 int afe_get_topology(int port_id);
+=======
+>>>>>>> p9x
 int afe_start_pseudo_port(u16 port_id);
 int afe_stop_pseudo_port(u16 port_id);
 uint32_t afe_req_mmap_handle(struct afe_audio_client *ac);
@@ -297,7 +368,10 @@ int afe_pseudo_port_start_nowait(u16 port_id);
 int afe_pseudo_port_stop_nowait(u16 port_id);
 int afe_set_lpass_clock(u16 port_id, struct afe_clk_cfg *cfg);
 int afe_set_lpass_clock_v2(u16 port_id, struct afe_clk_set *cfg);
+<<<<<<< HEAD
 int afe_set_lpass_clk_cfg(int index, struct afe_clk_set *cfg);
+=======
+>>>>>>> p9x
 int afe_set_digital_codec_core_clock(u16 port_id,
 			struct afe_digital_clk_cfg *cfg);
 int afe_set_lpass_internal_digital_codec_clock(u16 port_id,
@@ -323,6 +397,7 @@ void afe_clear_config(enum afe_config_type config);
 bool afe_has_config(enum afe_config_type config);
 
 void afe_set_aanc_info(struct aanc_data *aanc_info);
+<<<<<<< HEAD
 int afe_port_group_set_param(u16 group_id,
 	union afe_port_group_config *afe_group_config);
 int afe_port_group_enable(u16 group_id,
@@ -337,4 +412,10 @@ int afe_send_custom_tdm_header_cfg(
 	u16 port_id);
 int afe_tdm_port_start(u16 port_id, struct afe_tdm_port_config *tdm_port,
 		u32 rate, u16 num_groups);
+=======
+int afe_port_group_set_param(u16 *port_id, int channel_count);
+int afe_port_group_enable(u16 enable);
+int afe_unmap_rtac_block(uint32_t *mem_map_handle);
+int afe_map_rtac_block(struct rtac_cal_block_data *cal_block);
+>>>>>>> p9x
 #endif /* __Q6AFE_V2_H__ */

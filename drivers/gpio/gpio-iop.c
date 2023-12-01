@@ -16,9 +16,14 @@
 #include <linux/errno.h>
 #include <linux/gpio.h>
 #include <linux/export.h>
+<<<<<<< HEAD:drivers/gpio/gpio-iop.c
 #include <linux/platform_device.h>
 #include <linux/bitops.h>
 #include <linux/io.h>
+=======
+#include <asm/hardware/iop3xx.h>
+#include <mach/gpio.h>
+>>>>>>> p9x:arch/arm/plat-iop/gpio.c
 
 #define IOP3XX_N_GPIOS	8
 

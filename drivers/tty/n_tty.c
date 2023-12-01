@@ -164,12 +164,34 @@ static inline int tty_put_user(struct tty_struct *tty, unsigned char x,
 	return put_user(x, ptr);
 }
 
+<<<<<<< HEAD
 static int receive_room(struct tty_struct *tty)
 {
 	struct n_tty_data *ldata = tty->disc_data;
 	int left;
 	size_t tail = smp_load_acquire(&ldata->read_tail);
 	size_t head = ldata->read_head;
+=======
+/**
+ *	n_tty_set_room	-	receive space
+ *	@tty: terminal
+ *
+ *	Sets tty->receive_room to reflect the currently available space
+ *	in the input buffer, and re-schedules the flip buffer work if space
+ *	just became available.
+ *
+ *	Locks: Concurrent update is protected with read_lock
+ */
+
+static void n_tty_set_room(struct tty_struct *tty)
+{
+	struct n_tty_data *ldata = tty->disc_data;
+	int left;
+	int old_left;
+	unsigned long flags;
+
+	raw_spin_lock_irqsave(&ldata->read_lock, flags);
+>>>>>>> p9x
 
 	if (I_PARMRK(tty)) {
 		/* Multiply read_cnt by 3, since each byte might take up to
@@ -231,6 +253,8 @@ static inline int tty_copy_to_user(struct tty_struct *tty,
 static void n_tty_set_room(struct tty_struct *tty)
 {
 	struct n_tty_data *ldata = tty->disc_data;
+
+	raw_spin_unlock_irqrestore(&ldata->read_lock, flags);
 
 	/* Did this open up the receive buffer? We may need to flip */
 	if (unlikely(ldata->no_room) && receive_room(tty)) {
@@ -2297,6 +2321,24 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
 				down_read(&tty->termios_rwsem);
 				continue;
 			}
+<<<<<<< HEAD
+=======
+			if (tty_hung_up_p(file))
+				break;
+			if (!timeout)
+				break;
+			if (file->f_flags & O_NONBLOCK) {
+				retval = -EAGAIN;
+				break;
+			}
+			if (signal_pending(current)) {
+				retval = -ERESTARTSYS;
+				break;
+			}
+			n_tty_set_room(tty);
+			timeout = schedule_timeout(timeout);
+			continue;
+>>>>>>> p9x
 		}
 		__set_current_state(TASK_RUNNING);
 

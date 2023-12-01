@@ -547,7 +547,11 @@ static int cifs_sfu_mode(struct cifs_fattr *fattr, const unsigned char *path,
 	rc = tcon->ses->server->ops->query_all_EAs(xid, tcon, path,
 			"SETFILEBITS", ea_value, 4 /* size of buf */,
 			cifs_sb->local_nls,
+<<<<<<< HEAD
 			cifs_remap(cifs_sb));
+=======
+			cifs_sb->mnt_cifs_flags & CIFS_MOUNT_MAP_SPECIAL_CHR);
+>>>>>>> p9x
 	cifs_put_tlink(tlink);
 	if (rc < 0)
 		return (int)rc;
@@ -618,6 +622,7 @@ cifs_all_info_to_fattr(struct cifs_fattr *fattr, FILE_ALL_INFO *info,
 		if (fattr->cf_cifsattrs & ATTR_READONLY)
 			fattr->cf_mode &= ~(S_IWUGO);
 
+<<<<<<< HEAD
 		/*
 		 * Don't accept zero nlink from non-unix servers unless
 		 * delete is pending.  Instead mark it as unknown.
@@ -627,6 +632,13 @@ cifs_all_info_to_fattr(struct cifs_fattr *fattr, FILE_ALL_INFO *info,
 			cifs_dbg(1, "bogus file nlink value %u\n",
 				fattr->cf_nlink);
 			fattr->cf_flags |= CIFS_FATTR_UNKNOWN_NLINK;
+=======
+		fattr->cf_nlink = le32_to_cpu(info->NumberOfLinks);
+		if (fattr->cf_nlink < 1) {
+			cifs_dbg(1, "replacing bogus file nlink value %u\n",
+				fattr->cf_nlink);
+			fattr->cf_nlink = 1;
+>>>>>>> p9x
 		}
 	}
 
@@ -984,6 +996,7 @@ struct inode *cifs_root_iget(struct super_block *sb)
 	}
 
 	xid = get_xid();
+<<<<<<< HEAD
 	if (tcon->unix_ext) {
 		rc = cifs_get_inode_info_unix(&inode, path, sb, xid);
 		/* some servers mistakenly claim POSIX support */
@@ -992,6 +1005,13 @@ struct inode *cifs_root_iget(struct super_block *sb)
 		cifs_dbg(VFS, "server does not support POSIX extensions");
 		tcon->unix_ext = false;
 	}
+=======
+	convert_delimiter(path, CIFS_DIR_SEP(cifs_sb));
+	if (tcon->unix_ext)
+		rc = cifs_get_inode_info_unix(&inode, path, sb, xid);
+	else
+		rc = cifs_get_inode_info(&inode, path, NULL, sb, xid, NULL);
+>>>>>>> p9x
 
 	convert_delimiter(path, CIFS_DIR_SEP(cifs_sb));
 	rc = cifs_get_inode_info(&inode, path, NULL, sb, xid, NULL);
@@ -1754,7 +1774,11 @@ cifs_rename2(struct inode *source_dir, struct dentry *source_dentry,
 unlink_target:
 	/* Try unlinking the target dentry if it's not negative */
 	if (target_dentry->d_inode && (rc == -EACCES || rc == -EEXIST)) {
+<<<<<<< HEAD
 		if (d_is_dir(target_dentry))
+=======
+		if (S_ISDIR(target_dentry->d_inode->i_mode))
+>>>>>>> p9x
 			tmprc = cifs_rmdir(target_dir, target_dentry);
 		else
 			tmprc = cifs_unlink(target_dir, target_dentry);

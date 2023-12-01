@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -155,6 +159,7 @@ int msm_pcie_shadow_control(struct pci_dev *dev, bool enable);
  */
 int msm_pcie_debug_info(struct pci_dev *dev, u32 option, u32 base,
 			u32 offset, u32 mask, u32 value);
+<<<<<<< HEAD
 
 /*
  * msm_pcie_configure_sid - calculates the SID for a PCIe endpoint.
@@ -168,4 +173,6 @@ int msm_pcie_debug_info(struct pci_dev *dev, u32 option, u32 base,
  */
 int msm_pcie_configure_sid(struct device *dev, u32 *sid,
 			int *domain);
+=======
+>>>>>>> p9x
 #endif

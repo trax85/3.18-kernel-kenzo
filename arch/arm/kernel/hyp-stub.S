@@ -153,11 +153,14 @@ ARM_BE8(orr	r7, r7, #(1 << 25))     @ HSCTLR.EE
 	mcr	p15, 4, r7, c14, c1, 0	@ CNTHCTL
 	mov	r7, #0
 	mcrr	p15, 4, r7, r7, c14	@ CNTVOFF
+<<<<<<< HEAD
 
 	@ Disable virtual timer in case it was counting
 	mrc	p15, 0, r7, c14, c3, 1	@ CNTV_CTL
 	bic	r7, #1			@ Clear ENABLE
 	mcr	p15, 0, r7, c14, c3, 1	@ CNTV_CTL
+=======
+>>>>>>> p9x
 1:
 #endif
 

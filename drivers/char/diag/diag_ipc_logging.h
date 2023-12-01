@@ -23,8 +23,11 @@
 #define DIAG_DEBUG_PERIPHERALS	0x0008
 #define DIAG_DEBUG_MASKS	0x0010
 #define DIAG_DEBUG_POWER	0x0020
+<<<<<<< HEAD
 #define DIAG_DEBUG_BRIDGE	0x0040
 
+=======
+>>>>>>> p9x
 #define DIAG_DEBUG
 
 #ifdef DIAG_DEBUG

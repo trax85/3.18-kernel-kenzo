@@ -47,8 +47,14 @@ int cpufreq_frequency_table_cpuinfo(struct cpufreq_policy *policy,
 		if (!cpufreq_boost_enabled()
 		    && (pos->flags & CPUFREQ_BOOST_FREQ))
 			continue;
+<<<<<<< HEAD
 
 		pr_debug("table entry %u: %u kHz\n", (int)(pos - table), freq);
+=======
+		}
+		pr_debug("table entry %u: %u kHz, %u driver_data\n",
+					i, freq, table[i].driver_data);
+>>>>>>> p9x
 		if (freq < min_freq)
 			min_freq = freq;
 		if (freq > max_freq)
@@ -69,8 +75,12 @@ EXPORT_SYMBOL_GPL(cpufreq_frequency_table_cpuinfo);
 int cpufreq_frequency_table_verify(struct cpufreq_policy *policy,
 				   struct cpufreq_frequency_table *table)
 {
+<<<<<<< HEAD
 	struct cpufreq_frequency_table *pos;
 	unsigned int freq, next_larger = ~0;
+=======
+	unsigned int next_larger = ~0, freq, i = 0;
+>>>>>>> p9x
 	bool found = false;
 
 	pr_debug("request for verification of policy (%u - %u kHz) for cpu %u\n",
@@ -78,9 +88,15 @@ int cpufreq_frequency_table_verify(struct cpufreq_policy *policy,
 
 	cpufreq_verify_within_cpu_limits(policy);
 
+<<<<<<< HEAD
 	cpufreq_for_each_valid_entry(pos, table) {
 		freq = pos->frequency;
 
+=======
+	for (; freq = table[i].frequency, freq != CPUFREQ_TABLE_END; i++) {
+		if (freq == CPUFREQ_ENTRY_INVALID)
+			continue;
+>>>>>>> p9x
 		if ((freq >= policy->min) && (freq <= policy->max)) {
 			found = true;
 			break;
@@ -103,8 +119,13 @@ int cpufreq_frequency_table_verify(struct cpufreq_policy *policy,
 EXPORT_SYMBOL_GPL(cpufreq_frequency_table_verify);
 
 /*
+<<<<<<< HEAD
  * Generic routine to verify policy & frequency table, requires driver to set
  * policy->freq_table prior to it.
+=======
+ * Generic routine to verify policy & frequency table, requires driver to call
+ * cpufreq_frequency_table_get_attr() prior to it.
+>>>>>>> p9x
  */
 int cpufreq_generic_frequency_table_verify(struct cpufreq_policy *policy)
 {
@@ -131,8 +152,12 @@ int cpufreq_frequency_table_target(struct cpufreq_policy *policy,
 		.driver_data = ~0,
 		.frequency = 0,
 	};
+<<<<<<< HEAD
 	struct cpufreq_frequency_table *pos;
 	unsigned int freq, diff, i = 0;
+=======
+	unsigned int diff, i;
+>>>>>>> p9x
 
 	pr_debug("request for target %u kHz (relation: %u) for cpu %u\n",
 					target_freq, relation, policy->cpu);
@@ -202,8 +227,13 @@ int cpufreq_frequency_table_target(struct cpufreq_policy *policy,
 	} else
 		*index = optimal.driver_data;
 
+<<<<<<< HEAD
 	pr_debug("target index is %u, freq is:%u kHz\n", *index,
 		 table[*index].frequency);
+=======
+	pr_debug("target is %u (%u kHz, %u)\n", *index, table[*index].frequency,
+		table[*index].driver_data);
+>>>>>>> p9x
 
 	return 0;
 }
@@ -279,9 +309,21 @@ static ssize_t scaling_available_frequencies_show(struct cpufreq_policy *policy,
 cpufreq_attr_available_freq(scaling_available);
 EXPORT_SYMBOL_GPL(cpufreq_freq_attr_scaling_available_freqs);
 
+<<<<<<< HEAD
 /**
  * show_available_boost_freqs - show available boost frequencies for
  * the specified CPU
+=======
+struct freq_attr *cpufreq_generic_attr[] = {
+	&cpufreq_freq_attr_scaling_available_freqs,
+	NULL,
+};
+EXPORT_SYMBOL_GPL(cpufreq_generic_attr);
+
+/*
+ * if you use these, you must assure that the frequency table is valid
+ * all the time between get_attr and put_attr!
+>>>>>>> p9x
  */
 static ssize_t scaling_boost_frequencies_show(struct cpufreq_policy *policy,
 					      char *buf)
@@ -302,6 +344,20 @@ EXPORT_SYMBOL_GPL(cpufreq_generic_attr);
 
 int cpufreq_table_validate_and_show(struct cpufreq_policy *policy,
 				      struct cpufreq_frequency_table *table)
+<<<<<<< HEAD
+=======
+{
+	int ret = cpufreq_frequency_table_cpuinfo(policy, table);
+
+	if (!ret)
+		cpufreq_frequency_table_get_attr(table, policy->cpu);
+
+	return ret;
+}
+EXPORT_SYMBOL_GPL(cpufreq_table_validate_and_show);
+
+void cpufreq_frequency_table_update_policy_cpu(struct cpufreq_policy *policy)
+>>>>>>> p9x
 {
 	int ret = cpufreq_frequency_table_cpuinfo(policy, table);
 

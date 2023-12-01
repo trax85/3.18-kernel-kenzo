@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2015-2017, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -21,7 +25,10 @@
 #include "wcd9xxx-common-v2.h"
 
 #define WCD_USLEEP_RANGE 50
+<<<<<<< HEAD
 #define MAX_IMPED_PARAMS 6
+=======
+>>>>>>> p9x
 
 enum {
 	DAC_GAIN_0DB = 0,
@@ -50,6 +57,7 @@ enum {
 	DELTA_I_50MA,
 };
 
+<<<<<<< HEAD
 struct wcd_imped_val {
 	u32 imped_val;
 	u8 index;
@@ -143,10 +151,13 @@ static const struct wcd_imped_val imped_index[] = {
 	{13, 9},
 };
 
+=======
+>>>>>>> p9x
 static void (*clsh_state_fp[NUM_CLSH_STATES_V2])(struct snd_soc_codec *,
 					      struct wcd_clsh_cdc_data *,
 					      u8 req_state, bool en, int mode);
 
+<<<<<<< HEAD
 static int get_impedance_index(int imped)
 {
 	int i = 0;
@@ -230,6 +241,8 @@ static bool is_native_44_1_active(struct snd_soc_codec *codec)
 	return native_active;
 }
 
+=======
+>>>>>>> p9x
 static const char *mode_to_str(int mode)
 {
 	switch (mode) {
@@ -441,8 +454,11 @@ static void wcd_clsh_set_gain_path(struct snd_soc_codec *codec,
 	case CLS_H_LP:
 		val = 0x01;
 		break;
+<<<<<<< HEAD
 	default:
 		return;
+=======
+>>>>>>> p9x
 	};
 	snd_soc_update_bits(codec, WCD9XXX_HPH_L_EN, 0xC0, (val << 6));
 	snd_soc_update_bits(codec, WCD9XXX_HPH_R_EN, 0xC0, (val << 6));
@@ -479,8 +495,11 @@ static void wcd_clsh_set_hph_mode(struct snd_soc_codec *codec,
 		val = 0x04;
 		ipeak = DELTA_I_30MA;
 		break;
+<<<<<<< HEAD
 	default:
 		return;
+=======
+>>>>>>> p9x
 	};
 
 	snd_soc_update_bits(codec, WCD9XXX_A_ANA_HPH, 0x0C, val);
@@ -495,6 +514,7 @@ static void wcd_clsh_set_hph_mode(struct snd_soc_codec *codec,
 	}
 }
 
+<<<<<<< HEAD
 static void wcd_clsh_set_flyback_vneg_ctl(struct snd_soc_codec *codec,
 					  bool enable)
 {
@@ -511,6 +531,8 @@ static void wcd_clsh_set_flyback_vneg_ctl(struct snd_soc_codec *codec,
 	}
 }
 
+=======
+>>>>>>> p9x
 static void wcd_clsh_set_flyback_current(struct snd_soc_codec *codec, int mode)
 {
 	struct wcd9xxx *wcd9xxx = dev_get_drvdata(codec->dev->parent);
@@ -546,7 +568,10 @@ static void wcd_clsh_state_lo(struct snd_soc_codec *codec,
 
 	if (is_enable) {
 		wcd_clsh_set_buck_regulator_mode(codec, mode);
+<<<<<<< HEAD
 		wcd_clsh_set_flyback_vneg_ctl(codec, true);
+=======
+>>>>>>> p9x
 		wcd_clsh_set_buck_mode(codec, mode);
 		wcd_clsh_set_flyback_mode(codec, mode);
 		wcd_clsh_flyback_ctrl(codec, clsh_d, mode, true);
@@ -557,7 +582,10 @@ static void wcd_clsh_state_lo(struct snd_soc_codec *codec,
 		wcd_clsh_flyback_ctrl(codec, clsh_d, mode, false);
 		wcd_clsh_set_flyback_mode(codec, CLS_H_NORMAL);
 		wcd_clsh_set_buck_mode(codec, CLS_H_NORMAL);
+<<<<<<< HEAD
 		wcd_clsh_set_flyback_vneg_ctl(codec, false);
+=======
+>>>>>>> p9x
 		wcd_clsh_set_buck_regulator_mode(codec, CLS_H_NORMAL);
 	}
 }
@@ -584,13 +612,18 @@ static void wcd_clsh_state_hph_ear(struct snd_soc_codec *codec,
 			else if (clsh_d->state & WCD_CLSH_STATE_HPHR)
 				hph_mode = wcd_clsh_get_int_mode(clsh_d,
 						WCD_CLSH_STATE_HPHR);
+<<<<<<< HEAD
 			else
 				return;
 			if (hph_mode != CLS_AB && !is_native_44_1_active(codec))
+=======
+			if (hph_mode != CLS_AB)
+>>>>>>> p9x
 				snd_soc_update_bits(codec,
 						WCD9XXX_A_CDC_RX0_RX_PATH_CFG0,
 						0x40, 0x40);
 		}
+<<<<<<< HEAD
 
 		if (is_native_44_1_active(codec)) {
 			snd_soc_write(codec, WCD9XXX_CDC_CLSH_HPH_V_PA, 0x39);
@@ -604,6 +637,8 @@ static void wcd_clsh_state_hph_ear(struct snd_soc_codec *codec,
 						0x40, 0x00);
 		}
 
+=======
+>>>>>>> p9x
 		if (req_state == WCD_CLSH_STATE_HPHL)
 			snd_soc_update_bits(codec,
 					    WCD9XXX_A_CDC_RX1_RX_PATH_CFG0,
@@ -631,6 +666,7 @@ static void wcd_clsh_state_hph_ear(struct snd_soc_codec *codec,
 						WCD9XXX_A_CDC_RX0_RX_PATH_CFG0,
 						0x40, 0x00);
 		}
+<<<<<<< HEAD
 
 		if (is_native_44_1_active(codec)) {
 			snd_soc_write(codec, WCD9XXX_CDC_CLSH_HPH_V_PA, 0x1C);
@@ -646,6 +682,8 @@ static void wcd_clsh_state_hph_ear(struct snd_soc_codec *codec,
 						0x40, 0x40);
 		}
 
+=======
+>>>>>>> p9x
 		if (req_state == WCD_CLSH_STATE_HPHL)
 			snd_soc_update_bits(codec,
 					WCD9XXX_A_CDC_RX1_RX_PATH_CFG0,
@@ -737,7 +775,10 @@ static void wcd_clsh_state_hph_lo(struct snd_soc_codec *codec,
 						WCD9XXX_A_CDC_CLSH_K1_LSB,
 						0xFF, 0xC0);
 				wcd_clsh_set_flyback_mode(codec, mode);
+<<<<<<< HEAD
 				wcd_clsh_set_flyback_vneg_ctl(codec, false);
+=======
+>>>>>>> p9x
 				wcd_clsh_set_buck_mode(codec, mode);
 				wcd_clsh_set_hph_mode(codec, mode);
 				wcd_clsh_set_gain_path(codec, mode);
@@ -773,7 +814,10 @@ static void wcd_clsh_state_hph_lo(struct snd_soc_codec *codec,
 			if ((clsh_d->state & WCD_CLSH_STATE_HPH_ST)
 				!= WCD_CLSH_STATE_HPH_ST) {
 				wcd_enable_clsh_block(codec, clsh_d, false);
+<<<<<<< HEAD
 				wcd_clsh_set_flyback_vneg_ctl(codec, true);
+=======
+>>>>>>> p9x
 				wcd_clsh_set_flyback_mode(codec, CLS_H_NORMAL);
 				wcd_clsh_set_buck_mode(codec, CLS_H_NORMAL);
 			}
@@ -789,8 +833,11 @@ static void wcd_clsh_state_hph_lo(struct snd_soc_codec *codec,
 			else if (clsh_d->state & WCD_CLSH_STATE_HPHR)
 				hph_mode = wcd_clsh_get_int_mode(clsh_d,
 						WCD_CLSH_STATE_HPHR);
+<<<<<<< HEAD
 			else
 				return;
+=======
+>>>>>>> p9x
 			dev_dbg(codec->dev, "%s: hph_mode = %d\n", __func__,
 				hph_mode);
 

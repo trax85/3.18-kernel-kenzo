@@ -32,9 +32,15 @@ enum led_brightness {
 
 struct led_classdev {
 	const char		*name;
+<<<<<<< HEAD
 	enum led_brightness	 brightness;
 	enum led_brightness	 max_brightness;
 	enum led_brightness	 usr_brightness_req;
+=======
+	int			 brightness;
+	int			 max_brightness;
+	int			 usr_brightness_req;
+>>>>>>> p9x
 	int			 flags;
 
 	/* Lower 16 bits reflect status */

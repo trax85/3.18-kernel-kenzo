@@ -399,7 +399,11 @@ static int xs_send_kvec(struct socket *sock, struct sockaddr *addr, int addrlen,
 	return kernel_sendmsg(sock, &msg, NULL, 0, 0);
 }
 
+<<<<<<< HEAD
 static int xs_send_pagedata(struct socket *sock, struct xdr_buf *xdr, unsigned int base, int more, bool zerocopy, int *sent_p)
+=======
+static int xs_send_pagedata(struct socket *sock, struct xdr_buf *xdr, unsigned int base, int more, bool zerocopy)
+>>>>>>> p9x
 {
 	ssize_t (*do_sendpage)(struct socket *sock, struct page *page,
 			int offset, size_t size, int flags);
@@ -443,10 +447,16 @@ static int xs_send_pagedata(struct socket *sock, struct xdr_buf *xdr, unsigned i
  * @xdr: buffer containing this request
  * @base: starting position in the buffer
  * @zerocopy: true if it is safe to use sendpage()
+<<<<<<< HEAD
  * @sent_p: return the total number of bytes successfully queued for sending
  *
  */
 static int xs_sendpages(struct socket *sock, struct sockaddr *addr, int addrlen, struct xdr_buf *xdr, unsigned int base, bool zerocopy, int *sent_p)
+=======
+ *
+ */
+static int xs_sendpages(struct socket *sock, struct sockaddr *addr, int addrlen, struct xdr_buf *xdr, unsigned int base, bool zerocopy)
+>>>>>>> p9x
 {
 	unsigned int remainder = xdr->len - base;
 	int err = 0;
@@ -475,9 +485,14 @@ static int xs_sendpages(struct socket *sock, struct sockaddr *addr, int addrlen,
 	if (base < xdr->page_len) {
 		unsigned int len = xdr->page_len - base;
 		remainder -= len;
+<<<<<<< HEAD
 		err = xs_send_pagedata(sock, xdr, base, remainder != 0, zerocopy, &sent);
 		*sent_p += sent;
 		if (remainder == 0 || sent != len)
+=======
+		err = xs_send_pagedata(sock, xdr, base, remainder != 0, zerocopy);
+		if (remainder == 0 || err != len)
+>>>>>>> p9x
 			goto out;
 		base = 0;
 	} else
@@ -582,8 +597,13 @@ static int xs_local_send_request(struct rpc_task *task)
 	xs_pktdump("packet data:",
 			req->rq_svec->iov_base, req->rq_svec->iov_len);
 
+<<<<<<< HEAD
 	status = xs_sendpages(transport->sock, NULL, 0, xdr, req->rq_bytes_sent,
 			      true, &sent);
+=======
+	status = xs_sendpages(transport->sock, NULL, 0,
+						xdr, req->rq_bytes_sent, true);
+>>>>>>> p9x
 	dprintk("RPC:       %s(%u) = %d\n",
 			__func__, xdr->len - req->rq_bytes_sent, status);
 	if (likely(sent > 0) || status == 0) {
@@ -638,8 +658,15 @@ static int xs_udp_send_request(struct rpc_task *task)
 
 	if (!xprt_bound(xprt))
 		return -ENOTCONN;
+<<<<<<< HEAD
 	status = xs_sendpages(transport->sock, xs_addr(xprt), xprt->addrlen,
 			      xdr, req->rq_bytes_sent, true, &sent);
+=======
+	status = xs_sendpages(transport->sock,
+			      xs_addr(xprt),
+			      xprt->addrlen, xdr,
+			      req->rq_bytes_sent, true);
+>>>>>>> p9x
 
 	dprintk("RPC:       xs_udp_send_request(%u) = %d\n",
 			xdr->len - req->rq_bytes_sent, status);
@@ -739,9 +766,15 @@ static int xs_tcp_send_request(struct rpc_task *task)
 	 * to cope with writespace callbacks arriving _after_ we have
 	 * called sendmsg(). */
 	while (1) {
+<<<<<<< HEAD
 		sent = 0;
 		status = xs_sendpages(transport->sock, NULL, 0, xdr,
 				      req->rq_bytes_sent, zerocopy, &sent);
+=======
+		status = xs_sendpages(transport->sock,
+					NULL, 0, xdr, req->rq_bytes_sent,
+					zerocopy);
+>>>>>>> p9x
 
 		dprintk("RPC:       xs_tcp_send_request(%u) = %d\n",
 				xdr->len - req->rq_bytes_sent, status);

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 Qualcomm Technology Inc MSM8939 CPU clock tree
+=======
+Qualcomm MSM8939 CPU clock tree
+>>>>>>> p9x
 
 clock-cpu-8939 is a device that represents the MSM8939 or MSM8952 CPU
 subsystem clock tree. It lists the various power supplies that need to be
@@ -7,7 +11,11 @@ fmax tables, avs settings table, etc.
 
 Required properties:
 - compatible:		Must be one of "qcom,clock-cpu-8939" or
+<<<<<<< HEAD
 			"qcom,cpu-clock-8952", "qcom,cpu-clock-8917".
+=======
+			"qcom,cpu-clock-8952"
+>>>>>>> p9x
 - reg:			Pairs of physical base addresses and region sizes of
 			memory mapped registers.
 - reg-names:		Names of the bases for the above registers. Expected
@@ -33,8 +41,11 @@ Required properties:
 Optional properties:
 - qcom,cpu-pcnoc-vote:  Boolean to indicate cpu clocks would need to keep
 			active pcnoc vote.
+<<<<<<< HEAD
 - qcom,num-cluster:     Boolean to indicate cpu clock code is used for single
 			cluster.
+=======
+>>>>>>> p9x
 Example:
 	clock_cpu: qcom,cpu-clock-8939@f9015000 {
 		compatible = "qcom,cpu-clock-8939";

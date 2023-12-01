@@ -58,6 +58,14 @@ endif
 #
 KBUILD_CFLAGS	+= $(call cc-option,-fno-ipa-sra)
 
+#
+# The Scalar Replacement of Aggregates (SRA) optimization pass in GCC 4.9 and
+# later may result in code being generated that handles signed short and signed
+# char struct members incorrectly. So disable it.
+# (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=65932)
+#
+KBUILD_CFLAGS	+= $(call cc-option,-fno-ipa-sra)
+
 # This selects which instruction set is used.
 # Note that GCC does not numerically define an architecture version
 # macro, but instead defines a whole series of macros which makes
@@ -77,6 +85,18 @@ arch-$(CONFIG_CPU_32v3)		=-D__LINUX_ARM_ARCH__=3 -march=armv3
 
 # Evaluate arch cc-option calls now
 arch-y := $(arch-y)
+
+# Since 'cortex-a15' is a superset of the 'armv7-a' arch spec, we need to
+# explicitly redefine the arch options to not include '-march=armv7-a' when
+# generating code for Krait, which is compatible with the instruction set of the
+# Cortex-A15, because GCC will warn us about ambiguous ISA restrictions caused
+# by seemingly conflicting -march and -mcpu options.
+# If $(CC) does not support the -mcpu=cortex-a15 option, fall back on passing
+# -march=armv7-a to specify the ISA restriction, though this is suboptimal. To
+# keep things simpler, we don't bother with a fallback option if the compiler
+# doesn't even support -march=armv7-a, since in that situation we would have
+# bigger problems.
+arch-$(CONFIG_ARCH_MSM_KRAIT)	:=-D__LINUX_ARM_ARCH__=7 $(call cc-option,-mcpu=cortex-a15,-march=armv7-a)
 
 # This selects how we optimise for the processor.
 tune-$(CONFIG_CPU_ARM7TDMI)	=-mtune=arm7tdmi
@@ -144,10 +164,13 @@ textofs-$(CONFIG_PM_H1940)      := 0x00108000
 ifeq ($(CONFIG_ARCH_SA1100),y)
 textofs-$(CONFIG_SA1111) := 0x00208000
 endif
+<<<<<<< HEAD
 textofs-$(CONFIG_ARCH_MSM7X30) := 0x00208000
 textofs-$(CONFIG_ARCH_MSM8X60) := 0x00208000
 textofs-$(CONFIG_ARCH_MSM8960) := 0x00208000
 textofs-$(CONFIG_ARCH_AXXIA) := 0x00308000
+=======
+>>>>>>> p9x
 
 # Machine directory name.  This list is sorted alphanumerically
 # by CONFIG_* macro name.
@@ -330,6 +353,7 @@ dtbs: scripts
 
 zImage-dtb: vmlinux scripts dtbs
 	$(Q)$(MAKE) $(build)=$(boot) MACHINE=$(MACHINE) DTSSUBDIR=$(DTSSUBDIR) $(boot)/$@
+<<<<<<< HEAD
 
 PHONY += vdso_install
 vdso_install:
@@ -342,6 +366,8 @@ vdso_install:
 ifeq ($(CONFIG_VDSO),y)
 	$(Q)$(MAKE) $(build)=arch/arm/vdso $@
 endif
+=======
+>>>>>>> p9x
 
 # We use MRPROPER_FILES and CLEAN_FILES now
 archclean:

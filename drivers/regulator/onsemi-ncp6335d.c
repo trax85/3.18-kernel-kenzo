@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2014, 2017 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -153,6 +157,7 @@ static void ncp633d_slew_delay(struct ncp6335d_info *dd,
 	udelay(delay);
 }
 
+<<<<<<< HEAD
 static int ncp6335d_is_enabled(struct regulator_dev *rdev)
 {
 	int rc, val = 0;
@@ -167,6 +172,8 @@ static int ncp6335d_is_enabled(struct regulator_dev *rdev)
 	return ((val & NCP6335D_ENABLE) ? 1 : 0);
 }
 
+=======
+>>>>>>> p9x
 static int ncp6335d_enable(struct regulator_dev *rdev)
 {
 	int rc;
@@ -311,7 +318,10 @@ static struct regulator_ops ncp6335d_ops = {
 	.set_voltage = ncp6335d_set_voltage,
 	.get_voltage = ncp6335d_get_voltage,
 	.list_voltage = ncp6335d_list_voltage,
+<<<<<<< HEAD
 	.is_enabled = ncp6335d_is_enabled,
+=======
+>>>>>>> p9x
 	.enable = ncp6335d_enable,
 	.disable = ncp6335d_disable,
 	.set_mode = ncp6335d_set_mode,
@@ -320,7 +330,10 @@ static struct regulator_ops ncp6335d_ops = {
 
 static struct regulator_desc rdesc = {
 	.name = "ncp6335d",
+<<<<<<< HEAD
 	.supply_name = "vin",
+=======
+>>>>>>> p9x
 	.owner = THIS_MODULE,
 	.n_voltages = NCP6335D_VOLTAGE_STEPS,
 	.ops = &ncp6335d_ops,
@@ -528,8 +541,15 @@ static struct ncp6335d_platform_data *
 
 	pdata = devm_kzalloc(&client->dev,
 			sizeof(struct ncp6335d_platform_data), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!pdata)
 		return pdata;
+=======
+	if (!pdata) {
+		dev_err(&client->dev, "ncp6335d_platform_data allocation failed.\n");
+		return pdata;
+	}
+>>>>>>> p9x
 
 	rc = of_property_read_u32(client->dev.of_node,
 			"onnn,vsel", &pdata->default_vsel);
@@ -635,8 +655,15 @@ static int ncp6335d_regulator_probe(struct i2c_client *client,
 	}
 
 	dd = devm_kzalloc(&client->dev, sizeof(*dd), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!dd)
 		return -ENOMEM;
+=======
+	if (!dd) {
+		dev_err(&client->dev, "Unable to allocate memory\n");
+		return -ENOMEM;
+	}
+>>>>>>> p9x
 
 	if (client->dev.of_node) {
 		rc = ncp6335d_parse_dt(client, dd);
@@ -669,7 +696,11 @@ static int ncp6335d_regulator_probe(struct i2c_client *client,
 
 	rc = ncp6335d_init(client, dd, pdata);
 	if (rc) {
+<<<<<<< HEAD
 		dev_err(&client->dev, "Unable to initialize the regulator\n");
+=======
+		dev_err(&client->dev, "Unable to intialize the regulator\n");
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
@@ -724,7 +755,11 @@ static int ncp6335d_regulator_remove(struct i2c_client *client)
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct of_device_id ncp6335d_match_table[] = {
+=======
+static struct of_device_id ncp6335d_match_table[] = {
+>>>>>>> p9x
 	{ .compatible = "onnn,ncp6335d-regulator", },
 	{},
 };
@@ -758,13 +793,22 @@ int __init ncp6335d_regulator_init(void)
 
 	if (initialized)
 		return 0;
+<<<<<<< HEAD
 
 	initialized = true;
+=======
+	else
+		initialized = true;
+>>>>>>> p9x
 
 	return i2c_add_driver(&ncp6335d_regulator_driver);
 }
 EXPORT_SYMBOL(ncp6335d_regulator_init);
+<<<<<<< HEAD
 subsys_initcall(ncp6335d_regulator_init);
+=======
+arch_initcall(ncp6335d_regulator_init);
+>>>>>>> p9x
 
 static void __exit ncp6335d_regulator_exit(void)
 {

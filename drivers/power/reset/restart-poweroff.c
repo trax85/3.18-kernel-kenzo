@@ -20,8 +20,12 @@
 
 static void restart_poweroff_do_poweroff(void)
 {
+<<<<<<< HEAD
 	reboot_mode = REBOOT_HARD;
 	machine_restart(NULL);
+=======
+	arm_pm_restart(REBOOT_HARD, NULL);
+>>>>>>> p9x
 }
 
 static int restart_poweroff_probe(struct platform_device *pdev)

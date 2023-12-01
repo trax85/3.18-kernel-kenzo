@@ -10,6 +10,10 @@
 #define SEG_GRANULARITY_4KB	(1 << 0)
 
 #define DESC_TYPE_CODE_DATA	(1 << 0)
+<<<<<<< HEAD
+=======
+#define EFI_READ_CHUNK_SIZE	(1024 * 1024)
+>>>>>>> p9x
 
 #define EFI_CONSOLE_OUT_DEVICE_GUID    \
 	EFI_GUID(0xd3b36f2c, 0xd551, 0x11d4, 0x9a, 0x46, 0x0, 0x90, 0x27, \
@@ -103,6 +107,7 @@ struct efi_uga_draw_protocol {
 	void *blt;
 };
 
+<<<<<<< HEAD
 struct efi_config {
 	u64 image_handle;
 	u64 table;
@@ -119,4 +124,6 @@ struct efi_config {
 	bool is64;
 } __packed;
 
+=======
+>>>>>>> p9x
 #endif /* BOOT_COMPRESSED_EBOOT_H */

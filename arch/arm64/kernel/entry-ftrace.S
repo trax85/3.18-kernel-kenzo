@@ -78,6 +78,10 @@
 	.macro mcount_get_lr reg
 	ldr	\reg, [x29]
 	ldr	\reg, [\reg, #8]
+<<<<<<< HEAD
+=======
+	mcount_adjust_addr	\reg, \reg
+>>>>>>> p9x
 	.endm
 
 	.macro mcount_get_lr_addr reg
@@ -95,6 +99,14 @@
  *     - ftrace_graph_caller to set up an exit hook
  */
 ENTRY(_mcount)
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_HAVE_FUNCTION_TRACE_MCOUNT_TEST
+	ldr	x0, =ftrace_trace_stop
+	ldr	x0, [x0]		// if ftrace_trace_stop
+	ret				//   return;
+#endif
+>>>>>>> p9x
 	mcount_enter
 
 	ldr	x0, =ftrace_trace_function

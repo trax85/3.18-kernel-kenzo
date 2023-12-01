@@ -332,7 +332,156 @@ struct dt282x_private {
 	int dma_dir;
 };
 
+<<<<<<< HEAD
 static int dt282x_prep_ai_dma(struct comedi_device *dev, int dma_index, int n)
+=======
+/*
+ *    Some useless abstractions
+ */
+#define chan_to_DAC(a)	((a)&1)
+#define mux_busy() (inw(dev->iobase+DT2821_ADCSR)&DT2821_MUXBUSY)
+#define ad_done() (inw(dev->iobase+DT2821_ADCSR)&DT2821_ADDONE)
+
+/*
+ *    danger! macro abuse... a is the expression to wait on, and b is
+ *      the statement(s) to execute if it doesn't happen.
+ */
+#define wait_for(a, b)						\
+	do {							\
+		int _i;						\
+		for (_i = 0; _i < DT2821_TIMEOUT; _i++) {	\
+			if (a) {				\
+				_i = 0;				\
+				break;				\
+			}					\
+			udelay(5);				\
+		}						\
+		if (_i) {					\
+			b					\
+		}						\
+	} while (0)
+
+static int prep_ai_dma(struct comedi_device *dev, int chan, int size);
+static int prep_ao_dma(struct comedi_device *dev, int chan, int size);
+static int dt282x_ai_cancel(struct comedi_device *dev,
+			    struct comedi_subdevice *s);
+static int dt282x_ao_cancel(struct comedi_device *dev,
+			    struct comedi_subdevice *s);
+static int dt282x_ns_to_timer(int *nanosec, int round_mode);
+static void dt282x_disable_dma(struct comedi_device *dev);
+
+static int dt282x_grab_dma(struct comedi_device *dev, int dma1, int dma2);
+
+static void dt282x_munge(struct comedi_device *dev, short *buf,
+			 unsigned int nbytes)
+{
+	const struct dt282x_board *board = comedi_board(dev);
+	struct dt282x_private *devpriv = dev->private;
+	unsigned int i;
+	unsigned short mask = (1 << board->adbits) - 1;
+	unsigned short sign = 1 << (board->adbits - 1);
+	int n;
+
+	if (devpriv->ad_2scomp)
+		sign = 1 << (board->adbits - 1);
+	else
+		sign = 0;
+
+	if (nbytes % 2)
+		comedi_error(dev, "bug! odd number of bytes from dma xfer");
+	n = nbytes / 2;
+	for (i = 0; i < n; i++)
+		buf[i] = (buf[i] & mask) ^ sign;
+}
+
+static void dt282x_ao_dma_interrupt(struct comedi_device *dev)
+{
+	struct dt282x_private *devpriv = dev->private;
+	void *ptr;
+	int size;
+	int i;
+	struct comedi_subdevice *s = &dev->subdevices[1];
+
+	outw(devpriv->supcsr | DT2821_CLRDMADNE, dev->iobase + DT2821_SUPCSR);
+
+	if (!s->async->prealloc_buf) {
+		printk(KERN_ERR "async->data disappeared.  dang!\n");
+		return;
+	}
+
+	i = devpriv->current_dma_index;
+	ptr = devpriv->dma[i].buf;
+
+	disable_dma(devpriv->dma[i].chan);
+
+	devpriv->current_dma_index = 1 - i;
+
+	size = cfc_read_array_from_buffer(s, ptr, devpriv->dma_maxsize);
+	if (size == 0) {
+		printk(KERN_ERR "dt282x: AO underrun\n");
+		dt282x_ao_cancel(dev, s);
+		s->async->events |= COMEDI_CB_OVERFLOW;
+		return;
+	}
+	prep_ao_dma(dev, i, size);
+	return;
+}
+
+static void dt282x_ai_dma_interrupt(struct comedi_device *dev)
+{
+	struct dt282x_private *devpriv = dev->private;
+	void *ptr;
+	int size;
+	int i;
+	int ret;
+	struct comedi_subdevice *s = &dev->subdevices[0];
+
+	outw(devpriv->supcsr | DT2821_CLRDMADNE, dev->iobase + DT2821_SUPCSR);
+
+	if (!s->async->prealloc_buf) {
+		printk(KERN_ERR "async->data disappeared.  dang!\n");
+		return;
+	}
+
+	i = devpriv->current_dma_index;
+	ptr = devpriv->dma[i].buf;
+	size = devpriv->dma[i].size;
+
+	disable_dma(devpriv->dma[i].chan);
+
+	devpriv->current_dma_index = 1 - i;
+
+	dt282x_munge(dev, ptr, size);
+	ret = cfc_write_array_to_buffer(s, ptr, size);
+	if (ret != size) {
+		dt282x_ai_cancel(dev, s);
+		return;
+	}
+	devpriv->nread -= size / 2;
+
+	if (devpriv->nread < 0) {
+		printk(KERN_INFO "dt282x: off by one\n");
+		devpriv->nread = 0;
+	}
+	if (!devpriv->nread) {
+		dt282x_ai_cancel(dev, s);
+		s->async->events |= COMEDI_CB_EOA;
+		return;
+	}
+#if 0
+	/* clear the dual dma flag, making this the last dma segment */
+	/* XXX probably wrong */
+	if (!devpriv->ntrig) {
+		devpriv->supcsr &= ~(DT2821_DDMA);
+		outw(devpriv->supcsr, dev->iobase + DT2821_SUPCSR);
+	}
+#endif
+	/* restart the channel */
+	prep_ai_dma(dev, i, 0);
+}
+
+static int prep_ai_dma(struct comedi_device *dev, int dma_index, int n)
+>>>>>>> p9x
 {
 	struct dt282x_private *devpriv = dev->private;
 	int dma_chan;

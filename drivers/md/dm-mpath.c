@@ -453,6 +453,71 @@ static int queue_if_no_path(struct multipath *m, unsigned queue_if_no_path,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/*-----------------------------------------------------------------
+ * The multipath daemon is responsible for resubmitting queued ios.
+ *---------------------------------------------------------------*/
+
+static void dispatch_queued_ios(struct multipath *m)
+{
+	int r;
+	unsigned long flags;
+	union map_info *info;
+	struct request *clone, *n;
+	LIST_HEAD(cl);
+
+	spin_lock_irqsave(&m->lock, flags);
+	list_splice_init(&m->queued_ios, &cl);
+	spin_unlock_irqrestore(&m->lock, flags);
+
+	list_for_each_entry_safe(clone, n, &cl, queuelist) {
+		list_del_init(&clone->queuelist);
+
+		info = dm_get_rq_mapinfo(clone);
+
+		r = map_io(m, clone, info, 1);
+		if (r < 0) {
+			clear_mapinfo(m, info);
+			dm_kill_unmapped_request(clone, r);
+		} else if (r == DM_MAPIO_REMAPPED)
+			dm_dispatch_request(clone);
+		else if (r == DM_MAPIO_REQUEUE) {
+			clear_mapinfo(m, info);
+			dm_requeue_unmapped_request(clone);
+		}
+	}
+}
+
+static void process_queued_ios(struct work_struct *work)
+{
+	struct multipath *m =
+		container_of(work, struct multipath, process_queued_ios);
+	struct pgpath *pgpath = NULL;
+	unsigned must_queue = 1;
+	unsigned long flags;
+
+	spin_lock_irqsave(&m->lock, flags);
+
+	if (!m->current_pgpath)
+		__choose_pgpath(m, 0);
+
+	pgpath = m->current_pgpath;
+
+	if ((pgpath && !m->queue_io) ||
+	    (!pgpath && !m->queue_if_no_path))
+		must_queue = 0;
+
+	if (m->pg_init_required && !m->pg_init_in_progress && pgpath &&
+	    !m->pg_init_disabled)
+		__pg_init_all_paths(m);
+
+	spin_unlock_irqrestore(&m->lock, flags);
+	if (!must_queue)
+		dispatch_queued_ios(m);
+}
+
+>>>>>>> p9x
 /*
  * An event is triggered whenever a path is taken out of use.
  * Includes path failure and PG bypass.
@@ -1242,8 +1307,21 @@ static int do_end_io(struct multipath *m, struct request *clone,
 	if (!error && !clone->errors)
 		return 0;	/* I/O complete */
 
+<<<<<<< HEAD
 	if (noretry_error(error))
+=======
+	if (error == -EOPNOTSUPP || error == -EREMOTEIO || error == -EILSEQ) {
+		if ((clone->cmd_flags & REQ_WRITE_SAME) &&
+		    !clone->q->limits.max_write_same_sectors) {
+			struct queue_limits *limits;
+
+			/* device doesn't really support WRITE SAME, disable it */
+			limits = dm_get_queue_limits(dm_table_get_md(m->ti->table));
+			limits->max_write_same_sectors = 0;
+		}
+>>>>>>> p9x
 		return error;
+	}
 
 	if (mpio->pgpath)
 		fail_path(mpio->pgpath);
@@ -1551,6 +1629,7 @@ static int multipath_ioctl(struct dm_target *ti, unsigned int cmd,
 			r = err;
 	}
 
+<<<<<<< HEAD
 	if (r == -ENOTCONN && !fatal_signal_pending(current)) {
 		spin_lock_irqsave(&m->lock, flags);
 		if (!m->current_pg) {
@@ -1562,6 +1641,10 @@ static int multipath_ioctl(struct dm_target *ti, unsigned int cmd,
 		spin_unlock_irqrestore(&m->lock, flags);
 		dm_table_run_md_queue_async(m->ti->table);
 	}
+=======
+	if (r == -ENOTCONN && !fatal_signal_pending(current))
+		queue_work(kmultipathd, &m->process_queued_ios);
+>>>>>>> p9x
 
 	return r ? : __blkdev_driver_ioctl(bdev, mode, cmd, arg);
 }
@@ -1666,7 +1749,11 @@ out:
  *---------------------------------------------------------------*/
 static struct target_type multipath_target = {
 	.name = "multipath",
+<<<<<<< HEAD
 	.version = {1, 7, 0},
+=======
+	.version = {1, 6, 0},
+>>>>>>> p9x
 	.module = THIS_MODULE,
 	.ctr = multipath_ctr,
 	.dtr = multipath_dtr,

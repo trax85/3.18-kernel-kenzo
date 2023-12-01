@@ -275,6 +275,8 @@ void atombios_crtc_dpms(struct drm_crtc *crtc, int mode)
 			atombios_enable_crtc_memreq(crtc, ATOM_ENABLE);
 		atombios_blank_crtc(crtc, ATOM_DISABLE);
 		drm_vblank_post_modeset(dev, radeon_crtc->crtc_id);
+		/* Make sure vblank interrupt is still enabled if needed */
+		radeon_irq_set(rdev);
 		radeon_crtc_load_lut(crtc);
 		break;
 	case DRM_MODE_DPMS_STANDBY:
@@ -898,11 +900,14 @@ static void atombios_crtc_program_pll(struct drm_crtc *crtc,
 					args.v5.ucMiscInfo |= PIXEL_CLOCK_V5_MISC_HDMI_24BPP;
 					break;
 				case 10:
+<<<<<<< HEAD
 					/* yes this is correct, the atom define is wrong */
 					args.v5.ucMiscInfo |= PIXEL_CLOCK_V5_MISC_HDMI_32BPP;
 					break;
 				case 12:
 					/* yes this is correct, the atom define is wrong */
+=======
+>>>>>>> p9x
 					args.v5.ucMiscInfo |= PIXEL_CLOCK_V5_MISC_HDMI_30BPP;
 					break;
 				}
@@ -927,10 +932,17 @@ static void atombios_crtc_program_pll(struct drm_crtc *crtc,
 					args.v6.ucMiscInfo |= PIXEL_CLOCK_V6_MISC_HDMI_24BPP;
 					break;
 				case 10:
+<<<<<<< HEAD
 					args.v6.ucMiscInfo |= PIXEL_CLOCK_V6_MISC_HDMI_30BPP_V6;
 					break;
 				case 12:
 					args.v6.ucMiscInfo |= PIXEL_CLOCK_V6_MISC_HDMI_36BPP_V6;
+=======
+					args.v6.ucMiscInfo |= PIXEL_CLOCK_V6_MISC_HDMI_30BPP;
+					break;
+				case 12:
+					args.v6.ucMiscInfo |= PIXEL_CLOCK_V6_MISC_HDMI_36BPP;
+>>>>>>> p9x
 					break;
 				case 16:
 					args.v6.ucMiscInfo |= PIXEL_CLOCK_V6_MISC_HDMI_48BPP;

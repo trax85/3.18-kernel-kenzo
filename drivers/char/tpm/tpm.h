@@ -73,6 +73,17 @@ struct tpm_vendor_specific {
 	int region_size;
 	int have_region;
 
+<<<<<<< HEAD
+=======
+	int (*recv) (struct tpm_chip *, u8 *, size_t);
+	int (*send) (struct tpm_chip *, u8 *, size_t);
+	void (*cancel) (struct tpm_chip *);
+	u8 (*status) (struct tpm_chip *);
+	bool (*update_timeouts)(struct tpm_chip *chip,
+				unsigned long *timeout_cap);
+
+	void (*release) (struct device *);
+>>>>>>> p9x
 	struct miscdevice miscdev;
 	struct list_head list;
 	int locality;

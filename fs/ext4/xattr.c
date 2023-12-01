@@ -124,17 +124,18 @@ static __le32 ext4_xattr_block_csum(struct inode *inode,
 {
 	struct ext4_sb_info *sbi = EXT4_SB(inode->i_sb);
 	__u32 csum;
-	__le32 save_csum;
 	__le64 dsk_block_nr = cpu_to_le64(block_nr);
+	__u32 dummy_csum = 0;
+	int offset = offsetof(struct ext4_xattr_header, h_checksum);
 
-	save_csum = hdr->h_checksum;
-	hdr->h_checksum = 0;
 	csum = ext4_chksum(sbi, sbi->s_csum_seed, (__u8 *)&dsk_block_nr,
 			   sizeof(dsk_block_nr));
-	csum = ext4_chksum(sbi, csum, (__u8 *)hdr,
-			   EXT4_BLOCK_SIZE(inode->i_sb));
+	csum = ext4_chksum(sbi, csum, (__u8 *)hdr, offset);
+	csum = ext4_chksum(sbi, csum, (__u8 *)&dummy_csum, sizeof(dummy_csum));
+	offset += sizeof(dummy_csum);
+	csum = ext4_chksum(sbi, csum, (__u8 *)hdr + offset,
+			   EXT4_BLOCK_SIZE(inode->i_sb) - offset);
 
-	hdr->h_checksum = save_csum;
 	return cpu_to_le32(csum);
 }
 
@@ -365,7 +366,11 @@ ext4_xattr_ibody_get(struct inode *inode, int name_index, const char *name,
 	header = IHDR(inode, raw_inode);
 	entry = IFIRST(header);
 	end = (void *)raw_inode + EXT4_SB(inode->i_sb)->s_inode_size;
+<<<<<<< HEAD
 	error = xattr_check_inode(inode, header, end);
+=======
+	error = ext4_xattr_check_names(entry, end, entry);
+>>>>>>> p9x
 	if (error)
 		goto cleanup;
 	error = ext4_xattr_find_entry(&entry, name_index, name,
@@ -497,7 +502,11 @@ ext4_xattr_ibody_list(struct dentry *dentry, char *buffer, size_t buffer_size)
 	raw_inode = ext4_raw_inode(&iloc);
 	header = IHDR(inode, raw_inode);
 	end = (void *)raw_inode + EXT4_SB(inode->i_sb)->s_inode_size;
+<<<<<<< HEAD
 	error = xattr_check_inode(inode, header, end);
+=======
+	error = ext4_xattr_check_names(IFIRST(header), end, IFIRST(header));
+>>>>>>> p9x
 	if (error)
 		goto cleanup;
 	error = ext4_xattr_list_entries(dentry, IFIRST(header),
@@ -1020,7 +1029,12 @@ int ext4_xattr_ibody_find(struct inode *inode, struct ext4_xattr_info *i,
 	is->s.here = is->s.first;
 	is->s.end = (void *)raw_inode + EXT4_SB(inode->i_sb)->s_inode_size;
 	if (ext4_test_inode_state(inode, EXT4_STATE_XATTR)) {
+<<<<<<< HEAD
 		error = xattr_check_inode(inode, header, is->s.end);
+=======
+		error = ext4_xattr_check_names(IFIRST(header), is->s.end,
+					       IFIRST(header));
+>>>>>>> p9x
 		if (error)
 			return error;
 		/* Find the named attribute. */
@@ -1281,9 +1295,17 @@ int ext4_expand_extra_isize_ea(struct inode *inode, int new_extra_isize,
 	int s_min_extra_isize = le16_to_cpu(EXT4_SB(inode->i_sb)->s_es->s_min_extra_isize);
 	int no_expand;
 
+<<<<<<< HEAD
 	if (ext4_write_trylock_xattr(inode, &no_expand) == 0)
 		return 0;
 
+=======
+	down_write(&EXT4_I(inode)->xattr_sem);
+	/*
+	 * Set EXT4_STATE_NO_EXPAND to avoid recursion when marking inode dirty
+	 */
+	ext4_set_inode_state(inode, EXT4_STATE_NO_EXPAND);
+>>>>>>> p9x
 retry:
 	if (EXT4_I(inode)->i_extra_isize >= new_extra_isize)
 		goto out;
@@ -1481,7 +1503,12 @@ retry:
 	}
 	brelse(bh);
 out:
+<<<<<<< HEAD
 	ext4_write_unlock_xattr(inode, &no_expand);
+=======
+	ext4_clear_inode_state(inode, EXT4_STATE_NO_EXPAND);
+	up_write(&EXT4_I(inode)->xattr_sem);
+>>>>>>> p9x
 	return 0;
 
 cleanup:
@@ -1495,10 +1522,17 @@ cleanup:
 	kfree(bs);
 	brelse(bh);
 	/*
+<<<<<<< HEAD
 	 * Inode size expansion failed; don't try again
 	 */
 	no_expand = 1;
 	ext4_write_unlock_xattr(inode, &no_expand);
+=======
+	 * We deliberately leave EXT4_STATE_NO_EXPAND set here since inode
+	 * size expansion failed.
+	 */
+	up_write(&EXT4_I(inode)->xattr_sem);
+>>>>>>> p9x
 	return error;
 }
 

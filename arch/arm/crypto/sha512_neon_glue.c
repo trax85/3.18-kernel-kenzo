@@ -301,5 +301,10 @@ module_exit(sha512_neon_mod_fini);
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("SHA512 Secure Hash Algorithm, NEON accelerated");
 
+<<<<<<< HEAD
 MODULE_ALIAS_CRYPTO("sha512");
 MODULE_ALIAS_CRYPTO("sha384");
+=======
+MODULE_ALIAS("sha512");
+MODULE_ALIAS("sha384");
+>>>>>>> p9x

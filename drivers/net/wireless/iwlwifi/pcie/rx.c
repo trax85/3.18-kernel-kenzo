@@ -476,6 +476,7 @@ static void iwl_pcie_rx_hw_init(struct iwl_trans *trans, struct iwl_rxq *rxq)
 	/* W/A for interrupt coalescing bug in 7260 and 3160 */
 	if (trans->cfg->host_interrupt_operation_mode)
 		iwl_set_bit(trans, CSR_INT_COALESCING, IWL_HOST_INT_OPER_MODE);
+<<<<<<< HEAD
 }
 
 static void iwl_pcie_rx_init_rxb_lists(struct iwl_rxq *rxq)
@@ -490,6 +491,8 @@ static void iwl_pcie_rx_init_rxb_lists(struct iwl_rxq *rxq)
 
 	for (i = 0; i < RX_FREE_BUFFERS + RX_QUEUE_SIZE; i++)
 		list_add(&rxq->pool[i].list, &rxq->rx_used);
+=======
+>>>>>>> p9x
 }
 
 int iwl_pcie_rx_init(struct iwl_trans *trans)

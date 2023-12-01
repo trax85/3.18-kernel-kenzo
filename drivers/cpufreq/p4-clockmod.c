@@ -109,12 +109,35 @@ static int cpufreq_p4_target(struct cpufreq_policy *policy, unsigned int index)
 {
 	int i;
 
+<<<<<<< HEAD
+=======
+	if (cpufreq_frequency_table_target(policy, &p4clockmod_table[0],
+				target_freq, relation, &newstate))
+		return -EINVAL;
+
+	freqs.old = cpufreq_p4_get(policy->cpu);
+	freqs.new = stock_freq * p4clockmod_table[newstate].driver_data / 8;
+
+	if (freqs.new == freqs.old)
+		return 0;
+
+	/* notifiers */
+	cpufreq_notify_transition(policy, &freqs, CPUFREQ_PRECHANGE);
+
+>>>>>>> p9x
 	/* run on each logical CPU,
 	 * see section 13.15.3 of IA32 Intel Architecture Software
 	 * Developer's Manual, Volume 3
 	 */
 	for_each_cpu(i, policy->cpus)
+<<<<<<< HEAD
 		cpufreq_p4_setdc(i, p4clockmod_table[index].driver_data);
+=======
+		cpufreq_p4_setdc(i, p4clockmod_table[newstate].driver_data);
+
+	/* notifiers */
+	cpufreq_notify_transition(policy, &freqs, CPUFREQ_POSTCHANGE);
+>>>>>>> p9x
 
 	return 0;
 }
@@ -239,7 +262,11 @@ static struct cpufreq_driver p4clockmod_driver = {
 	.init		= cpufreq_p4_cpu_init,
 	.get		= cpufreq_p4_get,
 	.name		= "p4-clockmod",
+<<<<<<< HEAD
 	.attr		= cpufreq_generic_attr,
+=======
+	.attr		= p4clockmod_attr,
+>>>>>>> p9x
 };
 
 static const struct x86_cpu_id cpufreq_p4_id[] = {

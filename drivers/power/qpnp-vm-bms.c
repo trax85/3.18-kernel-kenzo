@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, 2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -35,7 +39,11 @@
 #include <linux/qpnp/qpnp-adc.h>
 #include <linux/of_batterydata.h>
 #include <linux/batterydata-interface.h>
+<<<<<<< HEAD
 #include <linux/qpnp/qpnp-revid.h>
+=======
+#include <linux/qpnp-revid.h>
+>>>>>>> p9x
 #include <uapi/linux/vm_bms.h>
 
 #define _BMS_MASK(BITS, POS) \
@@ -2203,6 +2211,7 @@ static int get_prop_bms_current_now(struct qpnp_bms_chip *chip)
 	return chip->current_now;
 }
 
+<<<<<<< HEAD
 static int get_current_cc(struct qpnp_bms_chip *chip)
 {
 	int soc, cc_full;
@@ -2227,6 +2236,8 @@ static int get_current_cc(struct qpnp_bms_chip *chip)
 	return current_charge;
 }
 
+=======
+>>>>>>> p9x
 static enum power_supply_property bms_power_props[] = {
 	POWER_SUPPLY_PROP_CAPACITY,
 	POWER_SUPPLY_PROP_STATUS,
@@ -2240,7 +2251,10 @@ static enum power_supply_property bms_power_props[] = {
 	POWER_SUPPLY_PROP_BATTERY_TYPE,
 	POWER_SUPPLY_PROP_TEMP,
 	POWER_SUPPLY_PROP_CYCLE_COUNT,
+<<<<<<< HEAD
 	POWER_SUPPLY_PROP_CHARGE_COUNTER,
+=======
+>>>>>>> p9x
 };
 
 static int
@@ -2319,9 +2333,12 @@ static int qpnp_vm_bms_power_get_property(struct power_supply *psy,
 		else
 			val->intval = -EINVAL;
 		break;
+<<<<<<< HEAD
 	case POWER_SUPPLY_PROP_CHARGE_COUNTER:
 		val->intval = get_current_cc(chip);
 		break;
+=======
+>>>>>>> p9x
 	default:
 		return -EINVAL;
 	}
@@ -3821,7 +3838,11 @@ static int qpnp_vm_bms_probe(struct spmi_device *spmi)
 		pr_err("revid error rc = %ld\n", PTR_ERR(chip->revid_data));
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	if ((chip->revid_data->pmic_subtype == PM8916_SUBTYPE) &&
+=======
+	if ((chip->revid_data->pmic_subtype == PM8916_V2P0_SUBTYPE) &&
+>>>>>>> p9x
 				chip->revid_data->rev4 == PM8916_V2P0_REV4)
 		chip->workaround_flag |= WRKARND_PON_OCV_COMP;
 

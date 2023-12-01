@@ -196,9 +196,17 @@ void __init lpc32xx_map_io(void)
 
 void lpc23xx_restart(enum reboot_mode mode, const char *cmd)
 {
+<<<<<<< HEAD
 	/* Make sure WDT clocks are enabled */
 	__raw_writel(LPC32XX_CLKPWR_PWMCLK_WDOG_EN,
 		LPC32XX_CLKPWR_TIMER_CLK_CTRL);
+=======
+	switch (mode) {
+	case REBOOT_SOFT:
+	case REBOOT_HARD:
+		lpc32xx_watchdog_reset();
+		break;
+>>>>>>> p9x
 
 	/* Instant assert of RESETOUT_N with pulse length 1mS */
 	__raw_writel(13000, io_p2v(LPC32XX_WDTIM_BASE + 0x18));

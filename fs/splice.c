@@ -212,6 +212,7 @@ ssize_t splice_to_pipe(struct pipe_inode_info *pipe,
 			buf->len = spd->partial[page_nr].len;
 			buf->private = spd->partial[page_nr].private;
 			buf->ops = spd->ops;
+			buf->flags = 0;
 			if (spd->flags & SPLICE_F_GIFT)
 				buf->flags |= PIPE_BUF_FLAG_GIFT;
 
@@ -562,6 +563,11 @@ static int generic_pipe_buf_nosteal(struct pipe_inode_info *pipe,
 /* Pipe buffer operations for a socket and similar. */
 const struct pipe_buf_operations nosteal_pipe_buf_ops = {
 	.can_merge = 0,
+<<<<<<< HEAD
+=======
+	.map = generic_pipe_buf_map,
+	.unmap = generic_pipe_buf_unmap,
+>>>>>>> p9x
 	.confirm = generic_pipe_buf_confirm,
 	.release = generic_pipe_buf_release,
 	.steal = generic_pipe_buf_nosteal,
@@ -891,6 +897,7 @@ ssize_t __splice_from_pipe(struct pipe_inode_info *pipe, struct splice_desc *sd,
 
 	splice_from_pipe_begin(sd);
 	do {
+		cond_resched();
 		ret = splice_from_pipe_next(pipe, sd);
 		if (ret > 0)
 			ret = splice_from_pipe_feed(pipe, sd, actor);
@@ -953,9 +960,7 @@ iter_file_splice_write(struct pipe_inode_info *pipe, struct file *out,
 			  loff_t *ppos, size_t len, unsigned int flags)
 {
 	struct splice_desc sd = {
-		.total_len = len,
 		.flags = flags,
-		.pos = *ppos,
 		.u.file = out,
 	};
 	int nbufs = pipe->buffers;
@@ -963,8 +968,16 @@ iter_file_splice_write(struct pipe_inode_info *pipe, struct file *out,
 					GFP_KERNEL);
 	ssize_t ret;
 
+<<<<<<< HEAD
 	if (unlikely(!array))
 		return -ENOMEM;
+=======
+	ret = generic_write_checks(out, ppos, &len, S_ISBLK(inode->i_mode));
+	if (ret)
+		return ret;
+	sd.total_len = len;
+	sd.pos = *ppos;
+>>>>>>> p9x
 
 	pipe_lock(pipe);
 
@@ -1184,7 +1197,7 @@ ssize_t splice_direct_to_actor(struct file *in, struct splice_desc *sd,
 	long ret, bytes;
 	umode_t i_mode;
 	size_t len;
-	int i, flags;
+	int i, flags, more;
 
 	/*
 	 * We require the input being a regular file, as we don't want to
@@ -1227,6 +1240,7 @@ ssize_t splice_direct_to_actor(struct file *in, struct splice_desc *sd,
 	 * Don't block on output, we have to drain the direct pipe.
 	 */
 	sd->flags &= ~SPLICE_F_NONBLOCK;
+	more = sd->flags & SPLICE_F_MORE;
 
 	while (len) {
 		size_t read_len;
@@ -1239,6 +1253,15 @@ ssize_t splice_direct_to_actor(struct file *in, struct splice_desc *sd,
 		read_len = ret;
 		sd->total_len = read_len;
 
+		/*
+		 * If more data is pending, set SPLICE_F_MORE
+		 * If this is the last data and SPLICE_F_MORE was not set
+		 * initially, clears it.
+		 */
+		if (read_len < len)
+			sd->flags |= SPLICE_F_MORE;
+		else if (!more)
+			sd->flags &= ~SPLICE_F_MORE;
 		/*
 		 * NOTE: nonblocking mode only applies to the input. We
 		 * must not do the output in nonblocking mode as then we

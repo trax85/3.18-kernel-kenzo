@@ -1,6 +1,9 @@
 # CPUfreq core
 obj-$(CONFIG_CPU_FREQ)			+= cpufreq.o freq_table.o
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 # CPUfreq stats
 obj-$(CONFIG_CPU_FREQ_STAT)             += cpufreq_stats.o
 
@@ -14,7 +17,11 @@ obj-$(CONFIG_CPU_FREQ_GOV_INTERACTIVE)	+= cpufreq_interactive.o
 obj-$(CONFIG_CPU_FREQ_GOV_COMMON)		+= cpufreq_governor.o
 obj-$(CONFIG_CPU_BOOST)			+= cpu-boost.o
 
+<<<<<<< HEAD
 obj-$(CONFIG_CPUFREQ_DT)		+= cpufreq-dt.o
+=======
+obj-$(CONFIG_GENERIC_CPUFREQ_CPU0)	+= cpufreq-cpu0.o
+>>>>>>> p9x
 
 ##################################################################################
 # x86 drivers.
@@ -76,9 +83,14 @@ obj-$(CONFIG_ARM_S5PV210_CPUFREQ)	+= s5pv210-cpufreq.o
 obj-$(CONFIG_ARM_SA1100_CPUFREQ)	+= sa1100-cpufreq.o
 obj-$(CONFIG_ARM_SA1110_CPUFREQ)	+= sa1110-cpufreq.o
 obj-$(CONFIG_ARM_SPEAR_CPUFREQ)		+= spear-cpufreq.o
+<<<<<<< HEAD
 obj-$(CONFIG_ARM_TEGRA_CPUFREQ)		+= tegra-cpufreq.o
 obj-$(CONFIG_CPU_FREQ_MSM)              += qcom-cpufreq.o
 obj-$(CONFIG_ARM_VEXPRESS_SPC_CPUFREQ)	+= vexpress-spc-cpufreq.o
+=======
+obj-$(CONFIG_ARCH_TEGRA)		+= tegra-cpufreq.o
+obj-$(CONFIG_CPU_FREQ_MSM)		+= qcom-cpufreq.o
+>>>>>>> p9x
 
 ##################################################################################
 # PowerPC platform drivers
@@ -104,3 +116,4 @@ obj-$(CONFIG_SH_CPU_FREQ)		+= sh-cpufreq.o
 obj-$(CONFIG_SPARC_US2E_CPUFREQ)	+= sparc-us2e-cpufreq.o
 obj-$(CONFIG_SPARC_US3_CPUFREQ)		+= sparc-us3-cpufreq.o
 obj-$(CONFIG_UNICORE32)			+= unicore2-cpufreq.o
+obj-$(CONFIG_CPU_FREQ_STAT)		+= cpufreq_persistent_stats.o

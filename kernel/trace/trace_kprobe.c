@@ -73,8 +73,13 @@ static nokprobe_inline bool trace_kprobe_is_on_module(struct trace_kprobe *tk)
 	return !!strchr(trace_kprobe_symbol(tk), ':');
 }
 
+<<<<<<< HEAD
 static int register_kprobe_event(struct trace_kprobe *tk);
 static int unregister_kprobe_event(struct trace_kprobe *tk);
+=======
+static int register_probe_event(struct trace_probe *tp);
+static int unregister_probe_event(struct trace_probe *tp);
+>>>>>>> p9x
 
 static DEFINE_MUTEX(probe_lock);
 static LIST_HEAD(probe_list);
@@ -407,7 +412,11 @@ enable_trace_kprobe(struct trace_kprobe *tk, struct ftrace_event_file *file)
 static int
 disable_trace_kprobe(struct trace_kprobe *tk, struct ftrace_event_file *file)
 {
+<<<<<<< HEAD
 	struct event_file_link *link = NULL;
+=======
+	struct ftrace_event_file **old = NULL;
+>>>>>>> p9x
 	int wait = 0;
 	int ret = 0;
 
@@ -423,7 +432,18 @@ disable_trace_kprobe(struct trace_kprobe *tk, struct ftrace_event_file *file)
 		if (!list_empty(&tk->tp.files))
 			goto out;
 
+<<<<<<< HEAD
 		tk->tp.flags &= ~TP_FLAG_TRACE;
+=======
+			/* This copy & check loop copies the NULL stopper too */
+			for (i = 0, j = 0; j < n && i < n + 1; i++)
+				if (old[i] != file)
+					new[j++] = old[i];
+		}
+
+		rcu_assign_pointer(tp->files, new);
+		wait = 1;
+>>>>>>> p9x
 	} else
 		tk->tp.flags &= ~TP_FLAG_PROFILE;
 
@@ -431,6 +451,7 @@ disable_trace_kprobe(struct trace_kprobe *tk, struct ftrace_event_file *file)
 		if (trace_kprobe_is_return(tk))
 			disable_kretprobe(&tk->rp);
 		else
+<<<<<<< HEAD
 			disable_kprobe(&tk->rp.kp);
 		wait = 1;
 	}
@@ -446,6 +467,23 @@ disable_trace_kprobe(struct trace_kprobe *tk, struct ftrace_event_file *file)
 		 */
 		synchronize_sched();
 		kfree(link);	/* Ignored if link == NULL */
+=======
+			disable_kprobe(&tp->rp.kp);
+		wait = 1;
+>>>>>>> p9x
+	}
+
+	if (wait) {
+		/*
+		 * Synchronize with kprobe_trace_func/kretprobe_trace_func
+		 * to ensure disabled (all running handlers are finished).
+		 * This is not only for kfree(), but also the caller,
+		 * trace_remove_event_call() supposes it for releasing
+		 * event_call related objects, which will be accessed in
+		 * the kprobe_trace_func/kretprobe_trace_func.
+		 */
+		synchronize_sched();
+		kfree(old);	/* Ignored if link == NULL */
 	}
 
 	return ret;
@@ -516,11 +554,19 @@ static int unregister_trace_kprobe(struct trace_kprobe *tk)
 		return -EBUSY;
 
 	/* Will fail if probe is being used by ftrace or perf */
+<<<<<<< HEAD
 	if (unregister_kprobe_event(tk))
 		return -EBUSY;
 
 	__unregister_trace_kprobe(tk);
 	list_del(&tk->list);
+=======
+	if (unregister_probe_event(tp))
+		return -EBUSY;
+
+	__unregister_trace_probe(tp);
+	list_del(&tp->list);
+>>>>>>> p9x
 
 	return 0;
 }
@@ -797,11 +843,19 @@ static int release_all_trace_kprobes(void)
 		}
 	/* TODO: Use batch unregistration */
 	while (!list_empty(&probe_list)) {
+<<<<<<< HEAD
 		tk = list_entry(probe_list.next, struct trace_kprobe, list);
 		ret = unregister_trace_kprobe(tk);
 		if (ret)
 			goto end;
 		free_trace_kprobe(tk);
+=======
+		tp = list_entry(probe_list.next, struct trace_probe, list);
+		ret = unregister_trace_probe(tp);
+		if (ret)
+			goto end;
+		free_trace_probe(tp);
+>>>>>>> p9x
 	}
 
 end:
@@ -1315,14 +1369,24 @@ static int register_kprobe_event(struct trace_kprobe *tk)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int unregister_kprobe_event(struct trace_kprobe *tk)
+=======
+static int unregister_probe_event(struct trace_probe *tp)
+>>>>>>> p9x
 {
 	int ret;
 
 	/* tp->event is unregistered in trace_remove_event_call() */
+<<<<<<< HEAD
 	ret = trace_remove_event_call(&tk->tp.call);
 	if (!ret)
 		kfree(tk->tp.call.print_fmt);
+=======
+	ret = trace_remove_event_call(&tp->call);
+	if (!ret)
+		kfree(tp->call.print_fmt);
+>>>>>>> p9x
 	return ret;
 }
 

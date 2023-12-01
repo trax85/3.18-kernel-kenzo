@@ -238,7 +238,12 @@ static int wm831x_status_probe(struct platform_device *pdev)
 	res = platform_get_resource(pdev, IORESOURCE_REG, 0);
 	if (res == NULL) {
 		dev_err(&pdev->dev, "No register resource\n");
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		ret = -EINVAL;
+		goto err;
+>>>>>>> p9x
 	}
 
 	drvdata = devm_kzalloc(&pdev->dev, sizeof(struct wm831x_status),

@@ -305,7 +305,11 @@ int ubifs_recover_master_node(struct ubifs_info *c)
 		mst = mst2;
 	}
 
+<<<<<<< HEAD
 	ubifs_msg(c, "recovered master node from LEB %d",
+=======
+	ubifs_msg("recovered master node from LEB %d", c->vi.ubi_num,
+>>>>>>> p9x
 		  (mst == mst1 ? UBIFS_MST_LNUM : UBIFS_MST_LNUM + 1));
 
 	memcpy(c->mst_node, mst, UBIFS_MST_NODE_SZ);
@@ -360,6 +364,7 @@ int ubifs_recover_master_node(struct ubifs_info *c)
 out_err:
 	err = -EINVAL;
 out_free:
+<<<<<<< HEAD
 	ubifs_err(c, "failed to recover master node");
 	if (mst1) {
 		ubifs_err(c, "dumping first master node");
@@ -367,6 +372,15 @@ out_free:
 	}
 	if (mst2) {
 		ubifs_err(c, "dumping second master node");
+=======
+	ubifs_err("failed to recover master node", c->vi.ubi_num);
+	if (mst1) {
+		ubifs_err("dumping first master node", c->vi.ubi_num);
+		ubifs_dump_node(c, mst1);
+	}
+	if (mst2) {
+		ubifs_err("dumping second master node", c->vi.ubi_num);
+>>>>>>> p9x
 		ubifs_dump_node(c, mst2);
 	}
 	vfree(buf2);
@@ -682,7 +696,12 @@ struct ubifs_scan_leb *ubifs_recover_leb(struct ubifs_info *c, int lnum,
 				  ret, lnum, offs);
 			break;
 		} else {
+<<<<<<< HEAD
 			ubifs_err(c, "unexpected return value %d", ret);
+=======
+			ubifs_err("unexpected return value %d", c->vi.ubi_num,
+					ret);
+>>>>>>> p9x
 			err = -EINVAL;
 			goto error;
 		}
@@ -702,8 +721,13 @@ struct ubifs_scan_leb *ubifs_recover_leb(struct ubifs_info *c, int lnum,
 			 * See header comment for this file for more
 			 * explanations about the reasons we have this check.
 			 */
+<<<<<<< HEAD
 			ubifs_err(c, "corrupt empty space LEB %d:%d, corruption starts at %d",
 				  lnum, offs, corruption);
+=======
+			ubifs_err("corrupt empty space LEB %d:%d, corruption starts at %d",
+					c->vi.ubi_num, lnum, offs, corruption);
+>>>>>>> p9x
 			/* Make sure we dump interesting non-0xFF data */
 			offs += corruption;
 			buf += corruption;
@@ -788,13 +812,22 @@ struct ubifs_scan_leb *ubifs_recover_leb(struct ubifs_info *c, int lnum,
 
 corrupted_rescan:
 	/* Re-scan the corrupted data with verbose messages */
+<<<<<<< HEAD
 	ubifs_err(c, "corruption %d", ret);
 	ubifs_scan_a_node(c, buf, len, lnum, offs, 0);
+=======
+	ubifs_err("corruption %d", c->vi.ubi_num, ret);
+	ubifs_scan_a_node(c, buf, len, lnum, offs, 1);
+>>>>>>> p9x
 corrupted:
 	ubifs_scanned_corruption(c, lnum, offs, buf);
 	err = -EUCLEAN;
 error:
+<<<<<<< HEAD
 	ubifs_err(c, "LEB %d scanning failed", lnum);
+=======
+	ubifs_err("LEB %d scanning failed", c->vi.ubi_num, lnum);
+>>>>>>> p9x
 	ubifs_scan_destroy(sleb);
 	return ERR_PTR(err);
 }
@@ -826,6 +859,7 @@ static int get_cs_sqnum(struct ubifs_info *c, int lnum, int offs,
 		goto out_free;
 	ret = ubifs_scan_a_node(c, cs_node, UBIFS_CS_NODE_SZ, lnum, offs, 0);
 	if (ret != SCANNED_A_NODE) {
+<<<<<<< HEAD
 		ubifs_err(c, "Not a valid node");
 		goto out_err;
 	}
@@ -835,6 +869,19 @@ static int get_cs_sqnum(struct ubifs_info *c, int lnum, int offs,
 	}
 	if (le64_to_cpu(cs_node->cmt_no) != c->cmt_no) {
 		ubifs_err(c, "CS node cmt_no %llu != current cmt_no %llu",
+=======
+		ubifs_err("Not a valid node", c->vi.ubi_num);
+		goto out_err;
+	}
+	if (cs_node->ch.node_type != UBIFS_CS_NODE) {
+		ubifs_err("Node a CS node, type is %d", c->vi.ubi_num,
+			  cs_node->ch.node_type);
+		goto out_err;
+	}
+	if (le64_to_cpu(cs_node->cmt_no) != c->cmt_no) {
+		ubifs_err("CS node cmt_no %llu != current cmt_no %llu",
+			  c->vi.ubi_num,
+>>>>>>> p9x
 			  (unsigned long long)le64_to_cpu(cs_node->cmt_no),
 			  c->cmt_no);
 		goto out_err;
@@ -847,7 +894,11 @@ static int get_cs_sqnum(struct ubifs_info *c, int lnum, int offs,
 out_err:
 	err = -EINVAL;
 out_free:
+<<<<<<< HEAD
 	ubifs_err(c, "failed to get CS sqnum");
+=======
+	ubifs_err("failed to get CS sqnum", c->vi.ubi_num);
+>>>>>>> p9x
 	kfree(cs_node);
 	return err;
 }
@@ -899,8 +950,13 @@ struct ubifs_scan_leb *ubifs_recover_log_leb(struct ubifs_info *c, int lnum,
 				}
 			}
 			if (snod->sqnum > cs_sqnum) {
+<<<<<<< HEAD
 				ubifs_err(c, "unrecoverable log corruption in LEB %d",
 					  lnum);
+=======
+				ubifs_err("unrecoverable log corruption in LEB %d",
+						c->vi.ubi_num, lnum);
+>>>>>>> p9x
 				ubifs_scan_destroy(sleb);
 				return ERR_PTR(-EUCLEAN);
 			}
@@ -1037,8 +1093,13 @@ static int clean_an_unclean_leb(struct ubifs_info *c,
 		}
 
 		if (ret == SCANNED_EMPTY_SPACE) {
+<<<<<<< HEAD
 			ubifs_err(c, "unexpected empty space at %d:%d",
 				  lnum, offs);
+=======
+			ubifs_err("unexpected empty space at %d:%d",
+					c->vi.ubi_num, lnum, offs);
+>>>>>>> p9x
 			return -EUCLEAN;
 		}
 
@@ -1131,7 +1192,11 @@ static int grab_empty_leb(struct ubifs_info *c)
 	 */
 	lnum = ubifs_find_free_leb_for_idx(c);
 	if (lnum < 0) {
+<<<<<<< HEAD
 		ubifs_err(c, "could not find an empty LEB");
+=======
+		ubifs_err("could not find an empty LEB", c->vi.ubi_num);
+>>>>>>> p9x
 		ubifs_dump_lprops(c);
 		ubifs_dump_budg(c, &c->bi);
 		return lnum;
@@ -1211,7 +1276,11 @@ int ubifs_rcvry_gc_commit(struct ubifs_info *c)
 	}
 	mutex_unlock(&wbuf->io_mutex);
 	if (err < 0) {
+<<<<<<< HEAD
 		ubifs_err(c, "GC failed, error %d", err);
+=======
+		ubifs_err("GC failed, error %d", c->vi.ubi_num, err);
+>>>>>>> p9x
 		if (err == -EAGAIN)
 			err = -EINVAL;
 		return err;
@@ -1457,8 +1526,14 @@ static int fix_size_in_place(struct ubifs_info *c, struct size_entry *e)
 	return 0;
 
 out:
+<<<<<<< HEAD
 	ubifs_warn(c, "inode %lu failed to fix size %lld -> %lld error %d",
 		   (unsigned long)e->inum, e->i_size, e->d_size, err);
+=======
+	ubifs_warn("inode %lu failed to fix size %lld -> %lld error %d",
+		   c->vi.ubi_num, (unsigned long)e->inum, e->i_size, e->d_size,
+		   err);
+>>>>>>> p9x
 	return err;
 }
 

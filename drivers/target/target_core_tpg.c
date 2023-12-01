@@ -846,7 +846,49 @@ void core_tpg_remove_lun(
 	lun->lun_shutdown = true;
 
 	core_clear_lun_from_tpg(lun, tpg);
+<<<<<<< HEAD
 	transport_clear_lun_ref(lun);
+=======
+	transport_clear_lun_from_sessions(lun);
+}
+
+struct se_lun *core_tpg_pre_dellun(
+	struct se_portal_group *tpg,
+	u32 unpacked_lun)
+{
+	struct se_lun *lun;
+
+	if (unpacked_lun > (TRANSPORT_MAX_LUNS_PER_TPG-1)) {
+		pr_err("%s LUN: %u exceeds TRANSPORT_MAX_LUNS_PER_TPG"
+			"-1: %u for Target Portal Group: %u\n",
+			tpg->se_tpg_tfo->get_fabric_name(), unpacked_lun,
+			TRANSPORT_MAX_LUNS_PER_TPG-1,
+			tpg->se_tpg_tfo->tpg_get_tag(tpg));
+		return ERR_PTR(-EOVERFLOW);
+	}
+
+	spin_lock(&tpg->tpg_lun_lock);
+	lun = tpg->tpg_lun_list[unpacked_lun];
+	if (lun->lun_status != TRANSPORT_LUN_STATUS_ACTIVE) {
+		pr_err("%s Logical Unit Number: %u is not active on"
+			" Target Portal Group: %u, ignoring request.\n",
+			tpg->se_tpg_tfo->get_fabric_name(), unpacked_lun,
+			tpg->se_tpg_tfo->tpg_get_tag(tpg));
+		spin_unlock(&tpg->tpg_lun_lock);
+		return ERR_PTR(-ENODEV);
+	}
+	lun->lun_shutdown = false;
+	spin_unlock(&tpg->tpg_lun_lock);
+
+	return lun;
+}
+
+int core_tpg_post_dellun(
+	struct se_portal_group *tpg,
+	struct se_lun *lun)
+{
+	core_tpg_shutdown_lun(tpg, lun);
+>>>>>>> p9x
 
 	core_dev_unexport(lun->lun_se_dev, tpg, lun);
 

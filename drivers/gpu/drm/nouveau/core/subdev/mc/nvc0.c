@@ -52,8 +52,20 @@ nvc0_mc_intr[] = {
 static void
 nvc0_mc_msi_rearm(struct nouveau_mc *pmc)
 {
+<<<<<<< HEAD
 	struct nv04_mc_priv *priv = (void *)pmc;
 	nv_wr32(priv, 0x088704, 0x00000000);
+=======
+	struct nvc0_mc_priv *priv;
+	int ret;
+
+	ret = nouveau_mc_create(parent, engine, oclass, nvc0_mc_intr, &priv);
+	*pobject = nv_object(priv);
+	if (ret)
+		return ret;
+
+	return 0;
+>>>>>>> p9x
 }
 
 void

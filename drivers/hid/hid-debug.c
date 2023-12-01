@@ -941,12 +941,15 @@ static const char *keys[KEY_MAX + 1] = {
 	[KEY_BRIGHTNESS_MIN] = "BrightnessMin",
 	[KEY_BRIGHTNESS_MAX] = "BrightnessMax",
 	[KEY_BRIGHTNESS_AUTO] = "BrightnessAuto",
+<<<<<<< HEAD
 	[KEY_KBDINPUTASSIST_PREV] = "KbdInputAssistPrev",
 	[KEY_KBDINPUTASSIST_NEXT] = "KbdInputAssistNext",
 	[KEY_KBDINPUTASSIST_PREVGROUP] = "KbdInputAssistPrevGroup",
 	[KEY_KBDINPUTASSIST_NEXTGROUP] = "KbdInputAssistNextGroup",
 	[KEY_KBDINPUTASSIST_ACCEPT] = "KbdInputAssistAccept",
 	[KEY_KBDINPUTASSIST_CANCEL] = "KbdInputAssistCancel",
+=======
+>>>>>>> p9x
 };
 
 static const char *relatives[REL_MAX + 1] = {

@@ -32,6 +32,7 @@ Optional Properties:
 - qcom,using-pmic-therm		This property indicates thermal pin connected to pmic or smb.
 - qcom,bms-psy-name		This is a string and it points to the bms
 				power supply name.
+<<<<<<< HEAD
 - qcom,use-external-fg		This is a bool property to indicate if the SMB charger
 				working with an external Fuel Gauge(FG). If yes, the SMB
 				charger would interact with FG and several software
@@ -43,6 +44,8 @@ Optional Properties:
 				property is defined, recharging behavior will be based
 				upon the SOC reported by FG and the recharging based on
 				internal voltage will be disabled.
+=======
+>>>>>>> p9x
 - qcom,iterm-ma			Specifies the termination current to indicate end-of-charge.
 				Possible values in mA - 70, 100, 200, 300, 400, 500, 600, 700.
 - qcom,iterm-disabled		Disables the termination current feature. This is a bool
@@ -59,6 +62,10 @@ Optional Properties:
 				property should be used with 'qcom,iterm-disabled'
 				to ensure EOC detection in charger is disabled.
 - qcom,force-hvdcp-2p0		Boolean value which allows to force hvdcp working on 2.0 mode.
+<<<<<<< HEAD
+=======
+- qcom,parallel-charger		Boolean value which enables the parallel charger.
+>>>>>>> p9x
 - qcom,chg-vadc			Corresponding VADC device's phandle.
 - qcom,chg-adc_tm		phandle to the corresponding VADC device to read the ADC channels.
 - qcom,batt-cold-decidegc	Cold battery temperature in decidegC.
@@ -75,6 +82,7 @@ Optional Properties:
 - qcom,batt-cool-ma:		Maximum cool battery charge current in milli-amps.
 - qcom,batt-warm-mv:		Maximum warm battery target voltage in milli-volts.
 - qcom,batt-cool-mv:		Maximum cool battery target voltage in milli-volts.
+<<<<<<< HEAD
 - qcom,switch-freq:		Switching frequency of charger. Supported values:
 				0 - 750 kHz, 1 - 1 MHz, 2 - 1.5 MHz, 3 - 3 MHz.
 - qcom,parallel-usb-min-current-ma:
@@ -125,6 +133,11 @@ Optional Properties:
 				charger in parallel charger configuration:
 					0 - Active low
 					1 - Active high.
+=======
+- qcom,parallel-en-pin-polarity Specify the polarity of enable signal controlled
+				via pin in a parallel-charger configuration.
+				0 - Active low and 1  - Active high.
+>>>>>>> p9x
 				If not specified the default value is active-low.
 
 Example for standalone charger:
@@ -154,6 +167,7 @@ Example for standalone charger:
 		qcom,batt-cool-ma = <350>;
 		qcom,batt-warm-mv = <4200>;
 		qcom,batt-cool-mv = <4200>;
+<<<<<<< HEAD
 		qcom,parallel-usb-min-current-ma = <1300>;
 		qcom,parallel-usb-9v-min-current-ma = <900>;
 		qcom,parallel-usb-12v-min-current-ma = <900>;
@@ -161,6 +175,8 @@ Example for standalone charger:
 		qcom,parallel-main-chg-fcc-percent = <50>;
 		qcom,parallel-main-chg-icl-percent = <50>;
 
+=======
+>>>>>>> p9x
 	};
 };
 

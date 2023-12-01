@@ -1109,8 +1109,12 @@ static int tc_get_qdisc(struct sk_buff *skb, struct nlmsghdr *n)
 	struct Qdisc *p = NULL;
 	int err;
 
+<<<<<<< HEAD
 	if ((n->nlmsg_type != RTM_GETQDISC) &&
 	    !netlink_ns_capable(skb, net->user_ns, CAP_NET_ADMIN))
+=======
+	if ((n->nlmsg_type != RTM_GETQDISC) && !netlink_capable(skb, CAP_NET_ADMIN))
+>>>>>>> p9x
 		return -EPERM;
 
 	err = nlmsg_parse(n, sizeof(*tcm), tca, TCA_MAX, NULL);
@@ -1186,12 +1190,19 @@ tc_qdisc_flow_control(struct net_device *dev, u32 tcm_handle, int enable_flow)
 	q = qdisc_lookup(dev, tcm_handle);
 
 	/* call registered change function */
+<<<<<<< HEAD
 	if (likely(q && q->ops)) {
 		if (likely(q->ops->change)) {
 			qdisc_len = q->q.qlen;
 			if (q->ops->change(q, &req.attr) != 0)
 				pr_err("%s(): qdisc change failed", __func__);
 		}
+=======
+	if (q) {
+		qdisc_len = q->q.qlen;
+		if (q->ops->change(q, &(req.attr)) != 0)
+			pr_err("tc_qdisc_flow_control: qdisc change failed");
+>>>>>>> p9x
 	}
 	return qdisc_len;
 }
@@ -1211,7 +1222,11 @@ static int tc_modify_qdisc(struct sk_buff *skb, struct nlmsghdr *n)
 	struct Qdisc *q, *p;
 	int err;
 
+<<<<<<< HEAD
 	if (!netlink_ns_capable(skb, net->user_ns, CAP_NET_ADMIN))
+=======
+	if (!netlink_capable(skb, CAP_NET_ADMIN))
+>>>>>>> p9x
 		return -EPERM;
 
 replay:
@@ -1558,8 +1573,12 @@ static int tc_ctl_tclass(struct sk_buff *skb, struct nlmsghdr *n)
 	u32 qid;
 	int err;
 
+<<<<<<< HEAD
 	if ((n->nlmsg_type != RTM_GETTCLASS) &&
 	    !netlink_ns_capable(skb, net->user_ns, CAP_NET_ADMIN))
+=======
+	if ((n->nlmsg_type != RTM_GETTCLASS) && !netlink_capable(skb, CAP_NET_ADMIN))
+>>>>>>> p9x
 		return -EPERM;
 
 	err = nlmsg_parse(n, sizeof(*tcm), tca, TCA_MAX, NULL);

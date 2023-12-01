@@ -411,10 +411,17 @@ xfs_attrlist_by_handle(
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
 	if (copy_from_user(&al_hreq, arg, sizeof(xfs_fsop_attrlist_handlereq_t)))
+<<<<<<< HEAD
 		return -EFAULT;
 	if (al_hreq.buflen < sizeof(struct attrlist) ||
 	    al_hreq.buflen > XATTR_LIST_MAX)
 		return -EINVAL;
+=======
+		return -XFS_ERROR(EFAULT);
+	if (al_hreq.buflen < sizeof(struct attrlist) ||
+	    al_hreq.buflen > XATTR_LIST_MAX)
+		return -XFS_ERROR(EINVAL);
+>>>>>>> p9x
 
 	/*
 	 * Reject flags, only allow namespaces.
@@ -1800,6 +1807,12 @@ xfs_file_ioctl(
 
 		if (mp->m_flags & XFS_MOUNT_RDONLY)
 			return -EROFS;
+
+		if (!capable(CAP_SYS_ADMIN))
+			return -EPERM;
+
+		if (mp->m_flags & XFS_MOUNT_RDONLY)
+			return -XFS_ERROR(EROFS);
 
 		if (copy_from_user(&eofb, arg, sizeof(eofb)))
 			return -EFAULT;

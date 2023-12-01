@@ -2410,6 +2410,7 @@ __init int intel_pmu_init(void)
 		intel_perfmon_event_map[PERF_COUNT_HW_STALLED_CYCLES_BACKEND] =
 			X86_CONFIG(.event=0xb1, .umask=0x3f, .inv=1, .cmask=1);
 
+		intel_pmu_pebs_data_source_nhm();
 		x86_add_quirk(intel_nehalem_quirk);
 
 		pr_cont("Nehalem events, ");
@@ -2472,6 +2473,7 @@ __init int intel_pmu_init(void)
 		intel_perfmon_event_map[PERF_COUNT_HW_STALLED_CYCLES_BACKEND] =
 			X86_CONFIG(.event=0xb1, .umask=0x3f, .inv=1, .cmask=1);
 
+		intel_pmu_pebs_data_source_nhm();
 		pr_cont("Westmere events, ");
 		break;
 
@@ -2604,6 +2606,7 @@ __init int intel_pmu_init(void)
 		 * counter, so do not extend mask to generic counters
 		 */
 		for_each_event_constraint(c, x86_pmu.event_constraints) {
+<<<<<<< HEAD
 			if (c->cmask == FIXED_EVENT_FLAGS
 			    && c->idxmsk64 != INTEL_PMC_MSK_FIXED_REF_CYCLES) {
 				c->idxmsk64 |= (1ULL << x86_pmu.num_counters) - 1;
@@ -2611,6 +2614,18 @@ __init int intel_pmu_init(void)
 			c->idxmsk64 &=
 				~(~0ULL << (INTEL_PMC_IDX_FIXED + x86_pmu.num_counters_fixed));
 			c->weight = hweight64(c->idxmsk64);
+=======
+			if (c->cmask == X86_RAW_EVENT_MASK
+			    && c->idxmsk64 == INTEL_PMC_MSK_FIXED_REF_CYCLES) {
+				c->idxmsk64 |= (1ULL << x86_pmu.num_counters) - 1;
+				continue;
+			}
+
+			c->idxmsk64 &=
+				~(~0ULL << (INTEL_PMC_IDX_FIXED + x86_pmu.num_counters_fixed));
+			c->weight = hweight64(c->idxmsk64);
+
+>>>>>>> p9x
 		}
 	}
 

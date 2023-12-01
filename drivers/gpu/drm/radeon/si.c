@@ -6771,10 +6771,13 @@ restart_ih:
 				break;
 			}
 			break;
+<<<<<<< HEAD
 		case 96:
 			DRM_ERROR("SRBM_READ_ERROR: 0x%x\n", RREG32(SRBM_READ_ERROR));
 			WREG32(SRBM_INT_ACK, 0x1);
 			break;
+=======
+>>>>>>> p9x
 		case 124: /* UVD */
 			DRM_DEBUG("IH: UVD int: 0x%08x\n", src_data);
 			radeon_fence_process(rdev, R600_RING_TYPE_UVD_INDEX);
@@ -6873,16 +6876,36 @@ static int si_startup(struct radeon_device *rdev)
 	struct radeon_ring *ring;
 	int r;
 
+<<<<<<< HEAD
 	/* enable pcie gen2/3 link */
 	si_pcie_gen3_enable(rdev);
 	/* enable aspm */
 	si_program_aspm(rdev);
+=======
+	si_mc_program(rdev);
+
+	if (!rdev->me_fw || !rdev->pfp_fw || !rdev->ce_fw ||
+	    !rdev->rlc_fw || !rdev->mc_fw) {
+		r = si_init_microcode(rdev);
+		if (r) {
+			DRM_ERROR("Failed to load firmware!\n");
+			return r;
+		}
+	}
+
+	r = si_mc_load_microcode(rdev);
+	if (r) {
+		DRM_ERROR("Failed to load MC firmware!\n");
+		return r;
+	}
+>>>>>>> p9x
 
 	/* scratch needs to be initialized before MC */
 	r = r600_vram_scratch_init(rdev);
 	if (r)
 		return r;
 
+<<<<<<< HEAD
 	si_mc_program(rdev);
 
 	if (!rdev->pm.dpm_enabled) {
@@ -6893,6 +6916,8 @@ static int si_startup(struct radeon_device *rdev)
 		}
 	}
 
+=======
+>>>>>>> p9x
 	r = si_pcie_gart_enable(rdev);
 	if (r)
 		return r;
@@ -7115,7 +7140,11 @@ int si_suspend(struct radeon_device *rdev)
 	si_cp_enable(rdev, false);
 	cayman_dma_stop(rdev);
 	if (rdev->has_uvd) {
+<<<<<<< HEAD
 		uvd_v1_0_fini(rdev);
+=======
+		r600_uvd_stop(rdev);
+>>>>>>> p9x
 		radeon_uvd_suspend(rdev);
 		radeon_vce_suspend(rdev);
 	}
@@ -7285,9 +7314,14 @@ void si_fini(struct radeon_device *rdev)
 	radeon_ib_pool_fini(rdev);
 	radeon_irq_kms_fini(rdev);
 	if (rdev->has_uvd) {
+<<<<<<< HEAD
 		uvd_v1_0_fini(rdev);
 		radeon_uvd_fini(rdev);
 		radeon_vce_fini(rdev);
+=======
+		r600_uvd_stop(rdev);
+		radeon_uvd_fini(rdev);
+>>>>>>> p9x
 	}
 	si_pcie_gart_fini(rdev);
 	r600_vram_scratch_fini(rdev);
@@ -7404,6 +7438,9 @@ int si_set_uvd_clocks(struct radeon_device *rdev, u32 vclk, u32 dclk)
 		~(VCLK_SRC_SEL_MASK | DCLK_SRC_SEL_MASK));
 
 	mdelay(100);
+
+	/* posting read */
+	RREG32(SRBM_STATUS);
 
 	return 0;
 }

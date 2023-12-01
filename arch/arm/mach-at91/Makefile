@@ -2,7 +2,14 @@
 # Makefile for the linux kernel.
 #
 
+<<<<<<< HEAD
 obj-y		:= gpio.o setup.o sysirq_mask.o
+=======
+obj-y		:= irq.o gpio.o setup.o sysirq_mask.o
+obj-m		:=
+obj-n		:=
+obj-		:=
+>>>>>>> p9x
 
 obj-$(CONFIG_OLD_IRQ_AT91)	+= irq.o
 obj-$(CONFIG_OLD_CLK_AT91)	+= clock.o

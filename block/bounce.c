@@ -207,8 +207,13 @@ static void __blk_queue_bounce(struct request_queue *q, struct bio **bio_orig,
 
 	if (force)
 		goto bounce;
+<<<<<<< HEAD:block/bounce.c
 	bio_for_each_segment(from, *bio_orig, iter)
 		if (page_to_pfn(from.bv_page) > queue_bounce_pfn(q))
+=======
+	bio_for_each_segment(from, *bio_orig, i)
+		if (page_to_pfn(from->bv_page) > queue_bounce_pfn(q))
+>>>>>>> p9x:mm/bounce.c
 			goto bounce;
 
 	return;

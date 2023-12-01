@@ -533,6 +533,13 @@ struct sk_buff *alloc_can_skb(struct net_device *dev, struct can_frame **cf)
 	skb_reset_network_header(skb);
 	skb_reset_transport_header(skb);
 
+<<<<<<< HEAD
+=======
+	skb_reset_mac_header(skb);
+	skb_reset_network_header(skb);
+	skb_reset_transport_header(skb);
+
+>>>>>>> p9x
 	can_skb_reserve(skb);
 	can_skb_prv(skb)->ifindex = dev->ifindex;
 
@@ -776,6 +783,26 @@ static int can_changelink(struct net_device *dev,
 	/* We need synchronization with dev->stop() */
 	ASSERT_RTNL();
 
+<<<<<<< HEAD
+=======
+	if (data[IFLA_CAN_CTRLMODE]) {
+		struct can_ctrlmode *cm;
+
+		/* Do not allow changing controller mode while running */
+		if (dev->flags & IFF_UP)
+			return -EBUSY;
+		cm = nla_data(data[IFLA_CAN_CTRLMODE]);
+
+		/* check whether changed bits are allowed to be modified */
+		if (cm->mask & ~priv->ctrlmode_supported)
+			return -EOPNOTSUPP;
+
+		/* clear bits to be modified and copy the flag values */
+		priv->ctrlmode &= ~cm->mask;
+		priv->ctrlmode |= (cm->flags & cm->mask);
+	}
+
+>>>>>>> p9x
 	if (data[IFLA_CAN_BITTIMING]) {
 		struct can_bittiming bt;
 
@@ -876,6 +903,7 @@ static size_t can_get_size(const struct net_device *dev)
 	struct can_priv *priv = netdev_priv(dev);
 	size_t size = 0;
 
+<<<<<<< HEAD
 	if (priv->bittiming.bitrate)				/* IFLA_CAN_BITTIMING */
 		size += nla_total_size(sizeof(struct can_bittiming));
 	if (priv->bittiming_const)				/* IFLA_CAN_BITTIMING_CONST */
@@ -889,6 +917,16 @@ static size_t can_get_size(const struct net_device *dev)
 	if (priv->data_bittiming.bitrate)			/* IFLA_CAN_DATA_BITTIMING */
 		size += nla_total_size(sizeof(struct can_bittiming));
 	if (priv->data_bittiming_const)				/* IFLA_CAN_DATA_BITTIMING_CONST */
+=======
+	size = nla_total_size(sizeof(u32));   /* IFLA_CAN_STATE */
+	size += nla_total_size(sizeof(struct can_ctrlmode));  /* IFLA_CAN_CTRLMODE */
+	size += nla_total_size(sizeof(u32));  /* IFLA_CAN_RESTART_MS */
+	size += nla_total_size(sizeof(struct can_bittiming)); /* IFLA_CAN_BITTIMING */
+	size += nla_total_size(sizeof(struct can_clock));     /* IFLA_CAN_CLOCK */
+	if (priv->do_get_berr_counter)        /* IFLA_CAN_BERR_COUNTER */
+		size += nla_total_size(sizeof(struct can_berr_counter));
+	if (priv->bittiming_const)	      /* IFLA_CAN_BITTIMING_CONST */
+>>>>>>> p9x
 		size += nla_total_size(sizeof(struct can_bittiming_const));
 
 	return size;

@@ -321,8 +321,12 @@ void __init mem_init(void)
 		free_highmem_page(pfn_to_page(tmp));
 #endif
 
+<<<<<<< HEAD
 	max_mapnr = max_pfn - ARCH_PFN_OFFSET;
 	high_memory = (void *)__va(max_low_pfn << PAGE_SHIFT);
+=======
+	free_all_bootmem();
+>>>>>>> p9x
 
 	free_all_bootmem();
 

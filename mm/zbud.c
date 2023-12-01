@@ -97,6 +97,13 @@ struct zbud_pool {
 	struct list_head lru;
 	u64 pages_nr;
 	struct zbud_ops *ops;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ZPOOL
+	struct zpool *zpool;
+	const struct zpool_ops *zpool_ops;
+#endif
+>>>>>>> p9x
 };
 
 /*
@@ -123,7 +130,14 @@ struct zbud_header {
 
 static int zbud_zpool_evict(struct zbud_pool *pool, unsigned long handle)
 {
+<<<<<<< HEAD
 	return zpool_evict(pool, handle);
+=======
+	if (pool->zpool && pool->zpool_ops && pool->zpool_ops->evict)
+		return pool->zpool_ops->evict(pool->zpool, handle);
+	else
+		return -ENOENT;
+>>>>>>> p9x
 }
 
 static struct zbud_ops zbud_zpool_ops = {
@@ -131,9 +145,23 @@ static struct zbud_ops zbud_zpool_ops = {
 };
 
 static void *zbud_zpool_create(char *name, gfp_t gfp,
+<<<<<<< HEAD
 			struct zpool_ops *zpool_ops)
 {
 	return zbud_create_pool(gfp, &zbud_zpool_ops);
+=======
+			       const struct zpool_ops *zpool_ops,
+			       struct zpool *zpool)
+{
+	struct zbud_pool *pool;
+
+	pool = zbud_create_pool(gfp, zpool_ops ? &zbud_zpool_ops : NULL);
+	if (pool) {
+		pool->zpool = zpool;
+		pool->zpool_ops = zpool_ops;
+	}
+	return pool;
+>>>>>>> p9x
 }
 
 static void zbud_zpool_destroy(void *pool)
@@ -292,7 +320,11 @@ struct zbud_pool *zbud_create_pool(gfp_t gfp, struct zbud_ops *ops)
 	struct zbud_pool *pool;
 	int i;
 
+<<<<<<< HEAD
 	pool = kmalloc(sizeof(struct zbud_pool), gfp);
+=======
+	pool = kzalloc(sizeof(struct zbud_pool), gfp);
+>>>>>>> p9x
 	if (!pool)
 		return NULL;
 	spin_lock_init(&pool->lock);
@@ -342,15 +374,22 @@ int zbud_alloc(struct zbud_pool *pool, size_t size, gfp_t gfp,
 	struct zbud_header *zhdr = NULL;
 	enum buddy bud;
 	struct page *page;
+<<<<<<< HEAD
 	unsigned long flags;
 	int found = 0;
+=======
+>>>>>>> p9x
 
 	if (!size || (gfp & __GFP_HIGHMEM))
 		return -EINVAL;
 	if (size > PAGE_SIZE - ZHDR_SIZE_ALIGNED - CHUNK_SIZE)
 		return -ENOSPC;
 	chunks = size_to_chunks(size);
+<<<<<<< HEAD
 	spin_lock_irqsave(&pool->lock, flags);
+=======
+	spin_lock(&pool->lock);
+>>>>>>> p9x
 
 	/* First, try to find an unbuddied zbud page. */
 	zhdr = NULL;
@@ -363,17 +402,28 @@ int zbud_alloc(struct zbud_pool *pool, size_t size, gfp_t gfp,
 				bud = FIRST;
 			else
 				bud = LAST;
+<<<<<<< HEAD
 			found = 1;
+=======
+>>>>>>> p9x
 			goto found;
 		}
 	}
 
 	/* Couldn't find unbuddied zbud page, create new one */
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&pool->lock, flags);
 	page = alloc_page(gfp);
 	if (!page)
 		return -ENOMEM;
 	spin_lock_irqsave(&pool->lock, flags);
+=======
+	spin_unlock(&pool->lock);
+	page = alloc_page(gfp);
+	if (!page)
+		return -ENOMEM;
+	spin_lock(&pool->lock);
+>>>>>>> p9x
 	pool->pages_nr++;
 	zhdr = init_zbud_page(page);
 	bud = FIRST;
@@ -399,9 +449,13 @@ found:
 	list_add(&zhdr->lru, &pool->lru);
 
 	*handle = encode_handle(zhdr, bud);
+<<<<<<< HEAD
 	if ((gfp & __GFP_ZERO) && found)
 		memset((void *)*handle, 0, size);
 	spin_unlock_irqrestore(&pool->lock, flags);
+=======
+	spin_unlock(&pool->lock);
+>>>>>>> p9x
 
 	return 0;
 }
@@ -420,9 +474,14 @@ void zbud_free(struct zbud_pool *pool, unsigned long handle)
 {
 	struct zbud_header *zhdr;
 	int freechunks;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	spin_lock_irqsave(&pool->lock, flags);
+=======
+
+	spin_lock(&pool->lock);
+>>>>>>> p9x
 	zhdr = handle_to_zbud_header(handle);
 
 	/* If first buddy, handle will be page aligned */
@@ -433,7 +492,11 @@ void zbud_free(struct zbud_pool *pool, unsigned long handle)
 
 	if (zhdr->under_reclaim) {
 		/* zbud page is under reclaim, reclaim will free */
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&pool->lock, flags);
+=======
+		spin_unlock(&pool->lock);
+>>>>>>> p9x
 		return;
 	}
 
@@ -451,7 +514,11 @@ void zbud_free(struct zbud_pool *pool, unsigned long handle)
 		list_add(&zhdr->buddy, &pool->unbuddied[freechunks]);
 	}
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&pool->lock, flags);
+=======
+	spin_unlock(&pool->lock);
+>>>>>>> p9x
 }
 
 #define list_tail_entry(ptr, type, member) \
@@ -496,6 +563,7 @@ int zbud_reclaim_page(struct zbud_pool *pool, unsigned int retries)
 {
 	int i, ret, freechunks;
 	struct zbud_header *zhdr;
+<<<<<<< HEAD
 	unsigned long flags;
 	unsigned long first_handle = 0, last_handle = 0;
 
@@ -503,6 +571,14 @@ int zbud_reclaim_page(struct zbud_pool *pool, unsigned int retries)
 	if (!pool->ops || !pool->ops->evict || list_empty(&pool->lru) ||
 			retries == 0) {
 		spin_unlock_irqrestore(&pool->lock, flags);
+=======
+	unsigned long first_handle = 0, last_handle = 0;
+
+	spin_lock(&pool->lock);
+	if (!pool->ops || !pool->ops->evict || list_empty(&pool->lru) ||
+			retries == 0) {
+		spin_unlock(&pool->lock);
+>>>>>>> p9x
 		return -EINVAL;
 	}
 	for (i = 0; i < retries; i++) {
@@ -521,7 +597,11 @@ int zbud_reclaim_page(struct zbud_pool *pool, unsigned int retries)
 			first_handle = encode_handle(zhdr, FIRST);
 		if (zhdr->last_chunks)
 			last_handle = encode_handle(zhdr, LAST);
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&pool->lock, flags);
+=======
+		spin_unlock(&pool->lock);
+>>>>>>> p9x
 
 		/* Issue the eviction callback(s) */
 		if (first_handle) {
@@ -535,7 +615,11 @@ int zbud_reclaim_page(struct zbud_pool *pool, unsigned int retries)
 				goto next;
 		}
 next:
+<<<<<<< HEAD
 		spin_lock_irqsave(&pool->lock, flags);
+=======
+		spin_lock(&pool->lock);
+>>>>>>> p9x
 		zhdr->under_reclaim = false;
 		if (zhdr->first_chunks == 0 && zhdr->last_chunks == 0) {
 			/*
@@ -544,7 +628,11 @@ next:
 			 */
 			free_zbud_page(zhdr);
 			pool->pages_nr--;
+<<<<<<< HEAD
 			spin_unlock_irqrestore(&pool->lock, flags);
+=======
+			spin_unlock(&pool->lock);
+>>>>>>> p9x
 			return 0;
 		} else if (zhdr->first_chunks == 0 ||
 				zhdr->last_chunks == 0) {
@@ -559,7 +647,11 @@ next:
 		/* add to beginning of LRU */
 		list_add(&zhdr->lru, &pool->lru);
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&pool->lock, flags);
+=======
+	spin_unlock(&pool->lock);
+>>>>>>> p9x
 	return -EAGAIN;
 }
 
@@ -627,5 +719,9 @@ module_init(init_zbud);
 module_exit(exit_zbud);
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Seth Jennings <sjenning@linux.vnet.ibm.com>");
+=======
+MODULE_AUTHOR("Seth Jennings <sjennings@variantweb.net>");
+>>>>>>> p9x
 MODULE_DESCRIPTION("Buddy Allocator for Compressed Pages");

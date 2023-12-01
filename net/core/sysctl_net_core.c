@@ -23,11 +23,17 @@
 #include <net/pkt_sched.h>
 
 static int zero = 0;
+<<<<<<< HEAD
 static int one = 1;
 static int ushort_max = USHRT_MAX;
 static int min_sndbuf = SOCK_MIN_SNDBUF;
 static int min_rcvbuf = SOCK_MIN_RCVBUF;
 static int max_skb_frags = MAX_SKB_FRAGS;
+=======
+static int ushort_max = USHRT_MAX;
+static int min_sndbuf = SOCK_MIN_SNDBUF;
+static int min_rcvbuf = SOCK_MIN_RCVBUF;
+>>>>>>> p9x
 
 #ifdef CONFIG_RPS
 static int rps_sock_flow_sysctl(struct ctl_table *table, int write,

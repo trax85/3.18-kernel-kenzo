@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -24,7 +28,10 @@
 #include "msm_jpeg_core.h"
 #include "msm_jpeg_platform.h"
 #include "msm_jpeg_common.h"
+<<<<<<< HEAD
 #include "cam_hw_ops.h"
+=======
+>>>>>>> p9x
 
 #define JPEG_REG_SIZE 0x308
 #define JPEG_DEV_CNT 4
@@ -314,8 +321,13 @@ int msm_jpeg_evt_get(struct msm_jpeg_device *pgmn_dev,
 	kfree(buf_p);
 
 	if (ctrl_cmd.type == MSM_JPEG_EVT_SESSION_DONE) {
+<<<<<<< HEAD
 		/* update the bw with zeroth vector */
 		msm_camera_update_bus_vector(pgmn_dev->bus_client, 0);
+=======
+		msm_bus_scale_client_update_request(
+			pgmn_dev->jpeg_bus_client, 0);
+>>>>>>> p9x
 		JPEG_BUS_UNVOTED(pgmn_dev);
 		JPEG_DBG("%s:%d] Bus unvoted\n", __func__, __LINE__);
 	}
@@ -492,7 +504,10 @@ int msm_jpeg_output_buf_enqueue(struct msm_jpeg_device *pgmn_dev,
 	buf_p->ion_fd = buf_cmd.fd;
 	buf_p->y_buffer_addr = msm_jpeg_platform_v2p(pgmn_dev, buf_cmd.fd,
 		total_len, pgmn_dev->iommu_hdl);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	if (!buf_p->y_buffer_addr) {
 		JPEG_PR_ERR("%s:%d] v2p wrong\n", __func__, __LINE__);
 		kfree(buf_p);
@@ -734,6 +749,7 @@ int __msm_jpeg_open(struct msm_jpeg_device *pgmn_dev)
 
 	mutex_unlock(&pgmn_dev->lock);
 
+<<<<<<< HEAD
 	rc = cam_config_ahb_clk(NULL, 0, CAM_AHB_CLIENT_JPEG,
 			CAM_AHB_SVS_VOTE);
 	if (rc < 0) {
@@ -741,12 +757,15 @@ int __msm_jpeg_open(struct msm_jpeg_device *pgmn_dev)
 		return rc;
 	}
 
+=======
+>>>>>>> p9x
 	msm_jpeg_core_irq_install(msm_jpeg_irq);
 	if (pgmn_dev->core_type == MSM_JPEG_CORE_CODEC)
 		core_irq = msm_jpeg_core_irq;
 	else
 		core_irq = msm_jpegdma_core_irq;
 
+<<<<<<< HEAD
 	/* initialize the platform resources */
 	rc = msm_jpeg_platform_init(core_irq, pgmn_dev);
 	if (rc) {
@@ -757,6 +776,22 @@ int __msm_jpeg_open(struct msm_jpeg_device *pgmn_dev)
 	JPEG_DBG("%s:%d] platform resources - base %pK, irq %d\n",
 		__func__, __LINE__,
 		pgmn_dev->base, (int)pgmn_dev->jpeg_irq_res->start);
+=======
+	rc = msm_jpeg_platform_init(pgmn_dev->pdev,
+		&pgmn_dev->mem, &pgmn_dev->base,
+		&pgmn_dev->irq, core_irq, pgmn_dev);
+	if (rc) {
+		JPEG_PR_ERR("%s:%d] platform_init fail %d\n", __func__,
+			__LINE__, rc);
+		return rc;
+	}
+
+	JPEG_DBG("%s:%d] platform resources - mem %pK, base %pK, irq %d\n",
+		__func__, __LINE__,
+		pgmn_dev->mem, pgmn_dev->base, pgmn_dev->irq);
+	pgmn_dev->res_size = resource_size(pgmn_dev->mem);
+
+>>>>>>> p9x
 	msm_jpeg_q_cleanup(&pgmn_dev->evt_q);
 	msm_jpeg_q_cleanup(&pgmn_dev->output_rtn_q);
 	msm_jpeg_outbuf_q_cleanup(pgmn_dev, &pgmn_dev->output_buf_q);
@@ -766,12 +801,15 @@ int __msm_jpeg_open(struct msm_jpeg_device *pgmn_dev)
 
 	JPEG_DBG("%s:%d] success\n", __func__, __LINE__);
 	return rc;
+<<<<<<< HEAD
 
 platform_init_fail:
 	if (cam_config_ahb_clk(NULL, 0, CAM_AHB_CLIENT_JPEG,
 		CAM_AHB_SUSPEND_VOTE) < 0)
 		pr_err("%s: failed to remove vote for AHB\n", __func__);
 	return rc;
+=======
+>>>>>>> p9x
 }
 
 int __msm_jpeg_release(struct msm_jpeg_device *pgmn_dev)
@@ -797,6 +835,7 @@ int __msm_jpeg_release(struct msm_jpeg_device *pgmn_dev)
 	if (pgmn_dev->open_count)
 		JPEG_PR_ERR(KERN_ERR "%s: multiple opens\n", __func__);
 
+<<<<<<< HEAD
 	/* release the platform resources */
 	msm_jpeg_platform_release(pgmn_dev);
 
@@ -806,6 +845,12 @@ int __msm_jpeg_release(struct msm_jpeg_device *pgmn_dev)
 		CAM_AHB_SUSPEND_VOTE) < 0)
 		pr_err("%s: failed to remove vote for AHB\n", __func__);
 
+=======
+	msm_jpeg_platform_release(pgmn_dev->mem, pgmn_dev->base,
+		pgmn_dev->irq, pgmn_dev);
+
+	JPEG_DBG("%s:%d]\n", __func__, __LINE__);
+>>>>>>> p9x
 	return 0;
 }
 
@@ -901,10 +946,15 @@ int msm_jpeg_start(struct msm_jpeg_device *pgmn_dev, void * __user arg,
 
 	JPEG_DBG("%s:%d] Enter\n", __func__, __LINE__);
 
+<<<<<<< HEAD
 	msm_jpeg_platform_set_dt_config(pgmn_dev);
 
 	/* update the bw with vector index "1" */
 	msm_camera_update_bus_vector(pgmn_dev->bus_client, 1);
+=======
+	msm_bus_scale_client_update_request(
+		pgmn_dev->jpeg_bus_client, 1);
+>>>>>>> p9x
 	JPEG_BUS_VOTED(pgmn_dev);
 	JPEG_DBG("%s:%d] Bus Voted\n", __func__, __LINE__);
 
@@ -940,10 +990,15 @@ int msm_jpeg_start(struct msm_jpeg_device *pgmn_dev, void * __user arg,
 
 	JPEG_DBG_HIGH("%s:%d] START\n", __func__, __LINE__);
 	pgmn_dev->state = MSM_JPEG_EXECUTING;
+<<<<<<< HEAD
 	/* ensure write is done */
 	wmb();
 	rc = hw_ioctl(pgmn_dev, arg);
 	/* ensure write is done */
+=======
+	wmb();
+	rc = hw_ioctl(pgmn_dev, arg);
+>>>>>>> p9x
 	wmb();
 	JPEG_DBG("%s:%d]", __func__, __LINE__);
 	return rc;
@@ -965,7 +1020,11 @@ int msm_jpeg_ioctl_reset(struct msm_jpeg_device *pgmn_dev, void * __user arg)
 		pgmn_dev->op_mode = p_ctrl_cmd->type;
 
 		rc = msm_jpeg_core_reset(pgmn_dev, pgmn_dev->op_mode,
+<<<<<<< HEAD
 			pgmn_dev->base, pgmn_dev->res_size);
+=======
+			pgmn_dev->base, resource_size(pgmn_dev->mem));
+>>>>>>> p9x
 	} else {
 		JPEG_PR_ERR("%s:%d] JPEG not been initialized Wrong state\n",
 			__func__, __LINE__);
@@ -1526,10 +1585,17 @@ int __msm_jpeg_init(struct msm_jpeg_device *pgmn_dev)
 {
 	int rc = 0;
 	int idx = 0;
+<<<<<<< HEAD
 
 	char *iommu_name[JPEG_DEV_CNT] = {"jpeg_enc0", "jpeg_enc1",
 		"jpeg_dec", "jpeg_dma"};
 
+=======
+#ifdef CONFIG_MSM_IOMMU
+	char *iommu_name[JPEG_DEV_CNT] = {"jpeg_enc0", "jpeg_enc1",
+		"jpeg_dec", "jpeg_dma"};
+#endif
+>>>>>>> p9x
 
 	mutex_init(&pgmn_dev->lock);
 
@@ -1545,6 +1611,10 @@ int __msm_jpeg_init(struct msm_jpeg_device *pgmn_dev)
 	msm_jpeg_q_init("input_rtn_q", &pgmn_dev->input_rtn_q);
 	msm_jpeg_q_init("input_buf_q", &pgmn_dev->input_buf_q);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MSM_IOMMU
+>>>>>>> p9x
 	/*get device context for IOMMU*/
 	rc = cam_smmu_get_handle(iommu_name[idx], &pgmn_dev->iommu_hdl);
 	JPEG_DBG("%s:%d] hdl %d", __func__, __LINE__,
@@ -1552,6 +1622,7 @@ int __msm_jpeg_init(struct msm_jpeg_device *pgmn_dev)
 	if (rc < 0) {
 		JPEG_PR_ERR("%s: No iommu fw context found\n",
 				__func__);
+<<<<<<< HEAD
 		goto err_smmu;
 	}
 
@@ -1566,13 +1637,26 @@ int __msm_jpeg_init(struct msm_jpeg_device *pgmn_dev)
 	return rc;
 err_setup:
 err_smmu:
+=======
+		goto error;
+	}
+#endif
+
+	return rc;
+#ifdef CONFIG_MSM_IOMMU
+error:
+#endif
+>>>>>>> p9x
 	mutex_destroy(&pgmn_dev->lock);
 	return -EFAULT;
 }
 
 int __msm_jpeg_exit(struct msm_jpeg_device *pgmn_dev)
 {
+<<<<<<< HEAD
 	msm_jpeg_platform_cleanup(pgmn_dev);
+=======
+>>>>>>> p9x
 	mutex_destroy(&pgmn_dev->lock);
 	kfree(pgmn_dev);
 	return 0;

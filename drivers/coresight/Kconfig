@@ -235,13 +235,17 @@ config CORESIGHT_ETMV4_DEFAULT_ENABLE
 
 config CORESIGHT_REMOTE_ETM
 	bool "Remote processor ETM trace support"
+<<<<<<< HEAD
 	depends on MSM_QMI_INTERFACE
+=======
+>>>>>>> p9x
 	help
 	  Enables support for ETM trace collection on remote processor using
 	  CoreSight framework. Enabling this will allow turning on ETM
 	  tracing on remote processor via sysfs by configuring the required
 	  CoreSight components.
 
+<<<<<<< HEAD
 config CORESIGHT_REMOTE_ETM_DEFAULT_ENABLE
 	int "default enable bits for Remote processor ETM"
 	depends on CORESIGHT_REMOTE_ETM
@@ -250,6 +254,8 @@ config CORESIGHT_REMOTE_ETM_DEFAULT_ENABLE
 	  Support for enabling separated Remote processor ETM tracing. Depends
 	  on if instance id bit is set.
 
+=======
+>>>>>>> p9x
 endif
 
 config CORESIGHT_QPDI

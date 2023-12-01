@@ -209,10 +209,33 @@ static struct usb_gadget_strings *midi_strings[] = {
 	NULL,
 };
 
+<<<<<<< HEAD:drivers/usb/gadget/function/f_midi.c
 static inline struct usb_request *midi_alloc_ep_req(struct usb_ep *ep,
 						    unsigned length)
 {
 	return alloc_ep_req(ep, length);
+=======
+static struct usb_request *midi_alloc_ep_req(struct usb_ep *ep, unsigned length)
+{
+	struct usb_request *req;
+
+	req = usb_ep_alloc_request(ep, GFP_ATOMIC);
+	if (req) {
+		req->length = length;
+		req->buf = kmalloc(length, GFP_ATOMIC);
+		if (!req->buf) {
+			usb_ep_free_request(ep, req);
+			req = NULL;
+		}
+	}
+	return req;
+}
+
+static void midi_free_ep_req(struct usb_ep *ep, struct usb_request *req)
+{
+	kfree(req->buf);
+	usb_ep_free_request(ep, req);
+>>>>>>> p9x:drivers/usb/gadget/f_midi.c
 }
 
 static const uint8_t f_midi_cin_length[] = {
@@ -280,7 +303,7 @@ f_midi_complete(struct usb_ep *ep, struct usb_request *req)
 		if (ep == midi->out_ep)
 			f_midi_handle_out_data(ep, req);
 
-		free_ep_req(ep, req);
+		midi_free_ep_req(ep, req);
 		return;
 
 	case -EOVERFLOW:	/* buffer overrun on read means that
@@ -579,7 +602,7 @@ static void f_midi_transmit(struct f_midi *midi, struct usb_request *req)
 	if (req->length > 0)
 		usb_ep_queue(ep, req, GFP_ATOMIC);
 	else
-		free_ep_req(ep, req);
+		midi_free_ep_req(ep, req);
 }
 
 static void f_midi_in_tasklet(unsigned long data)
@@ -1051,7 +1074,10 @@ int /* __init */ f_midi_bind_config(struct usb_configuration *c,
 	if (status)
 		goto setup_fail;
 
+<<<<<<< HEAD:drivers/usb/gadget/function/f_midi.c
 	the_midi = midi;
+=======
+>>>>>>> p9x:drivers/usb/gadget/f_midi.c
 
 	if (config) {
 		config->card = midi->rmidi->card->number;

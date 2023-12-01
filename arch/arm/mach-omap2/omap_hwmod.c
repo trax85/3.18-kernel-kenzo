@@ -1946,6 +1946,14 @@ static int _ocp_softreset(struct omap_hwmod *oh)
 	if (ret)
 		goto dis_opt_clks;
 
+<<<<<<< HEAD
+=======
+	_write_sysconfig(v, oh);
+	ret = _clear_softreset(oh, &v);
+	if (ret)
+		goto dis_opt_clks;
+
+>>>>>>> p9x
 	_write_sysconfig(v, oh);
 
 	if (oh->class->sysc->srst_udelay)
@@ -2185,7 +2193,11 @@ static int _enable(struct omap_hwmod *oh)
 			 oh->mux->pads_dynamic))) {
 		omap_hwmod_mux(oh->mux, _HWMOD_STATE_ENABLED);
 		_reconfigure_io_chain();
+<<<<<<< HEAD
 	} else if (oh->flags & HWMOD_RECONFIG_IO_CHAIN) {
+=======
+	} else if (oh->flags & HWMOD_FORCE_MSTANDBY) {
+>>>>>>> p9x
 		_reconfigure_io_chain();
 	}
 
@@ -2293,7 +2305,11 @@ static int _idle(struct omap_hwmod *oh)
 	if (oh->mux && oh->mux->pads_dynamic) {
 		omap_hwmod_mux(oh->mux, _HWMOD_STATE_IDLE);
 		_reconfigure_io_chain();
+<<<<<<< HEAD
 	} else if (oh->flags & HWMOD_RECONFIG_IO_CHAIN) {
+=======
+	} else if (oh->flags & HWMOD_FORCE_MSTANDBY) {
+>>>>>>> p9x
 		_reconfigure_io_chain();
 	}
 

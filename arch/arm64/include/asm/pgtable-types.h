@@ -22,6 +22,8 @@
 
 #include <asm/types.h>
 
+#include <asm/types.h>
+
 typedef u64 pteval_t;
 typedef u64 pmdval_t;
 typedef u64 pudval_t;

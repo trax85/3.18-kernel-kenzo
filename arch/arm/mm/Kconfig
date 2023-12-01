@@ -422,6 +422,7 @@ config CPU_32v3
 	select NEEDS_SYSCALL_FOR_CMPXCHG if SMP
 	select NEED_KUSER_HELPERS
 	select TLS_REG_EMUL if SMP || !MMU
+	select NEED_KUSER_HELPERS
 
 config CPU_32v4
 	bool
@@ -429,6 +430,7 @@ config CPU_32v4
 	select NEEDS_SYSCALL_FOR_CMPXCHG if SMP
 	select NEED_KUSER_HELPERS
 	select TLS_REG_EMUL if SMP || !MMU
+	select NEED_KUSER_HELPERS
 
 config CPU_32v4T
 	bool
@@ -436,6 +438,7 @@ config CPU_32v4T
 	select NEEDS_SYSCALL_FOR_CMPXCHG if SMP
 	select NEED_KUSER_HELPERS
 	select TLS_REG_EMUL if SMP || !MMU
+	select NEED_KUSER_HELPERS
 
 config CPU_32v5
 	bool
@@ -443,6 +446,7 @@ config CPU_32v5
 	select NEEDS_SYSCALL_FOR_CMPXCHG if SMP
 	select NEED_KUSER_HELPERS
 	select TLS_REG_EMUL if SMP || !MMU
+	select NEED_KUSER_HELPERS
 
 config CPU_32v6
 	bool
@@ -673,7 +677,11 @@ config ARM_VIRT_EXT
 	  details.
 
 config SWP_EMULATE
+<<<<<<< HEAD
 	bool "Emulate SWP/SWPB instructions" if !SMP
+=======
+	bool "Emulate SWP/SWPB instructions"
+>>>>>>> p9x
 	depends on CPU_V7
 	default y if SMP
 	select HAVE_PROC_CPU if PROC_FS
@@ -696,6 +704,21 @@ config SWP_EMULATE
 	  monitor to maintain update atomicity. If your system does not
 	  implement a global monitor, this option can cause programs that
 	  perform SWP operations to uncached memory to deadlock.
+
+	  If unsure, say Y.
+
+config FORCE_INSTRUCTION_ALIGNMENT
+	bool "Force instructions address alignment"
+	depends on CPU_V7 && ALIGNMENT_TRAP
+	help
+	  Branching to an address in ARM state which is not word aligned,
+	  where this is defined to be UNPREDICTABLE, can cause one of the
+	  following two behaviours: 1. The unaligned location is forced to
+	  be aligned. 2. Using the unaligned address generates a Prefetch
+	  Abort on the first instruction using the unaligned PC value.
+
+	  To be consistant for the user space binaries, the unaligned location
+	  is forced aligned with this config.
 
 	  If unsure, say Y.
 
@@ -1008,6 +1031,7 @@ config ARCH_HAS_BARRIERS
 	  This option allows the use of custom mandatory barriers
 	  included via the mach/barriers.h file.
 
+<<<<<<< HEAD
 config ARCH_SUPPORTS_BIG_ENDIAN
 	bool
 	help
@@ -1034,3 +1058,16 @@ config DEBUG_RODATA
 	  text so it can be made explicitly non-executable. This creates
 	  another section-size padded region, so it can waste more memory
 	  space while gaining the read-only protections.
+=======
+config STRICT_MEMORY_RWX
+	bool "restrict kernel memory permissions as much as possible"
+	default n
+	help
+	  If this is set, kernel text will be made RX, kernel data and stack
+	  RW, rodata R (otherwise all of the kernel 1-to-1 mapping is
+	  made RWX).
+	  The tradeoff is that several sections are padded to
+	  1M boundaries (because their permissions are different and
+	  splitting the 1M pages into 4K ones causes TLB performance
+	  problems), wasting memory.
+>>>>>>> p9x

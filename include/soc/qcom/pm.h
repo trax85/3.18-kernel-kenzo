@@ -1,6 +1,10 @@
 /*
  * Copyright (C) 2007 Google, Inc.
+<<<<<<< HEAD
  * Copyright (c) 2009-2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2009-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  * Author: San Mehat <san@android.com>
  *
  * This software is licensed under the terms of the GNU General Public
@@ -21,12 +25,19 @@
 #include <linux/cpuidle.h>
 #include <asm/smp_plat.h>
 #include <asm/barrier.h>
+<<<<<<< HEAD
 #include <dt-bindings/msm/pm.h>
+=======
+>>>>>>> p9x
 
 #if !defined(CONFIG_SMP)
 #define msm_secondary_startup NULL
 #elif defined(CONFIG_CPU_V7)
+<<<<<<< HEAD
 #define msm_secondary_startup secondary_startup
+=======
+extern void msm_secondary_startup(void);
+>>>>>>> p9x
 #else
 #define msm_secondary_startup secondary_holding_pen
 #endif
@@ -36,7 +47,10 @@ enum msm_pm_sleep_mode {
 	MSM_PM_SLEEP_MODE_RETENTION,
 	MSM_PM_SLEEP_MODE_POWER_COLLAPSE_STANDALONE,
 	MSM_PM_SLEEP_MODE_POWER_COLLAPSE,
+<<<<<<< HEAD
 	MSM_PM_SLEEP_MODE_FASTPC,
+=======
+>>>>>>> p9x
 	MSM_PM_SLEEP_MODE_POWER_COLLAPSE_SUSPEND,
 	MSM_PM_SLEEP_MODE_NR,
 	MSM_PM_SLEEP_MODE_NOT_SELECTED,
@@ -45,6 +59,10 @@ enum msm_pm_sleep_mode {
 enum msm_pm_l2_scm_flag {
 	MSM_SCM_L2_ON = 0,
 	MSM_SCM_L2_OFF = 1,
+<<<<<<< HEAD
+=======
+	MSM_SCM_L2_RET = 2,
+>>>>>>> p9x
 	MSM_SCM_L2_GDHS = 3,
 	MSM_SCM_L3_PC_OFF = 4,
 };
@@ -63,12 +81,15 @@ struct msm_pm_sleep_status_data {
 	uint32_t mask;
 };
 
+<<<<<<< HEAD
 struct latency_level {
 	int affinity_level;
 	int reset_level;
 	const char *level_name;
 };
 
+=======
+>>>>>>> p9x
 /**
  * lpm_cpu_pre_pc_cb(): API to get the L2 flag to pass to TZ
  *
@@ -122,13 +143,17 @@ static inline void msm_arch_idle(void)
 }
 
 #ifdef CONFIG_MSM_PM
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 void msm_pm_set_rpm_wakeup_irq(unsigned int irq);
 int msm_pm_wait_cpu_shutdown(unsigned int cpu);
 int __init msm_pm_sleep_status_init(void);
 void lpm_cpu_hotplug_enter(unsigned int cpu);
 s32 msm_cpuidle_get_deep_idle_latency(void);
 int msm_pm_collapse(unsigned long unused);
+<<<<<<< HEAD
 
 /**
  * lpm_get_latency() - API to get latency for a low power mode
@@ -157,6 +182,8 @@ int msm_pm_collapse(unsigned long unused);
  */
 int lpm_get_latency(struct latency_level *level, uint32_t *latency);
 
+=======
+>>>>>>> p9x
 #else
 static inline void msm_pm_set_rpm_wakeup_irq(unsigned int irq) {}
 static inline int msm_pm_wait_cpu_shutdown(unsigned int cpu) { return 0; }
@@ -169,12 +196,15 @@ static inline void lpm_cpu_hotplug_enter(unsigned int cpu)
 
 static inline s32 msm_cpuidle_get_deep_idle_latency(void) { return 0; }
 #define msm_pm_collapse NULL
+<<<<<<< HEAD
 
 static inline int lpm_get_latency(struct latency_level *level,
 						uint32_t *latency)
 {
 	return 0;
 }
+=======
+>>>>>>> p9x
 #endif
 
 #ifdef CONFIG_HOTPLUG_CPU

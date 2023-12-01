@@ -3,7 +3,11 @@
  *
  * Copyright (C) 2001 Deep Blue Solutions Ltd.
  * Copyright (C) 2012 ARM Ltd.
+<<<<<<< HEAD
  * Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -26,6 +30,40 @@
 #include <asm/uaccess.h>
 
 /*
+ *     flush_dcache_louis()
+ *
+ *     Flush the D-cache up to the Level of Unification Inner Shareable
+ *
+ *     Corrupted registers: x0-x7, x9-x11
+ */
+
+ENTRY(flush_dcache_louis)
+	dsb	sy		// ensure ordering with previous memory accesses
+	mrs	x0, clidr_el1	// read clidr
+	and	x3, x0, #(7 << 21)	// extract LoUIS from clidr
+	lsr	x3, x3, #20	// x3 = LoUIS * 2
+	cbz	x3, done	// if LoUIS is 0, then no need to clean
+	mov	x10, #0		// start clean at cache level 0
+	b	loop1		// start flushing cache levels
+done:
+	ret
+ENDPROC(flush_dcache_louis)
+
+ /*
+ *     flush_kern_cache_louis(void)
+ *
+ *     Flush the data cache up to Level of Unification Inner Shareable.
+ *     Invalidate the I-cache to the point of unification.
+ */
+ENTRY(flush_cache_louis)
+	mov	x12, lr
+	bl	flush_dcache_louis
+	mov	x0, #0
+	ic	ialluis				// I+BTB cache invalidate
+	ret x12
+ENDPROC(flush_cache_louis)
+
+ /*
  *     flush_dcache_louis()
  *
  *     Flush the D-cache up to the Level of Unification Inner Shareable
@@ -205,7 +243,11 @@ ENTRY(__flush_dcache_area)
 	b.lo	1b
 	dsb	sy
 	ret
+<<<<<<< HEAD
 ENDPIPROC(__flush_dcache_area)
+=======
+ENDPROC(__flush_dcache_area)
+>>>>>>> p9x
 
 /*
  *	__inval_cache_range(start, end)
@@ -238,7 +280,11 @@ ENTRY(__dma_inv_range)
 	b.lo	2b
 	dsb	sy
 	ret
+<<<<<<< HEAD
 ENDPIPROC(__inval_cache_range)
+=======
+ENDPROC(__inval_cache_range)
+>>>>>>> p9x
 ENDPROC(__dma_inv_range)
 
 /*
@@ -250,12 +296,16 @@ ENTRY(__dma_clean_range)
 	dcache_line_size x2, x3
 	sub	x3, x2, #1
 	bic	x0, x0, x3
+<<<<<<< HEAD
 1:
 alternative_if_not ARM64_WORKAROUND_CLEAN_CACHE
 	dc	cvac, x0
 alternative_else
 	dc	civac, x0
 alternative_endif
+=======
+1:	dc	cvac, x0			// clean D / U line
+>>>>>>> p9x
 	add	x0, x0, x2
 	cmp	x0, x1
 	b.lo	1b
@@ -278,7 +328,11 @@ ENTRY(__dma_flush_range)
 	b.lo	1b
 	dsb	sy
 	ret
+<<<<<<< HEAD
 ENDPIPROC(__dma_flush_range)
+=======
+ENDPROC(__dma_flush_range)
+>>>>>>> p9x
 
 /*
  *	__dma_map_area(start, size, dir)
@@ -291,7 +345,11 @@ ENTRY(__dma_map_area)
 	cmp	w2, #DMA_FROM_DEVICE
 	b.eq	__dma_inv_range
 	b	__dma_clean_range
+<<<<<<< HEAD
 ENDPIPROC(__dma_map_area)
+=======
+ENDPROC(__dma_map_area)
+>>>>>>> p9x
 
 /*
  *	__dma_unmap_area(start, size, dir)
@@ -304,4 +362,8 @@ ENTRY(__dma_unmap_area)
 	cmp	w2, #DMA_TO_DEVICE
 	b.ne	__dma_inv_range
 	ret
+<<<<<<< HEAD
 ENDPIPROC(__dma_unmap_area)
+=======
+ENDPROC(__dma_unmap_area)
+>>>>>>> p9x

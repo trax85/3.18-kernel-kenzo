@@ -318,10 +318,13 @@ static int __init zero_bind(struct usb_composite_dev *cdev)
 	ss_opts->isoc_maxpacket = gzero_options.isoc_maxpacket;
 	ss_opts->isoc_mult = gzero_options.isoc_mult;
 	ss_opts->isoc_maxburst = gzero_options.isoc_maxburst;
+<<<<<<< HEAD:drivers/usb/gadget/legacy/zero.c
 	ss_opts->int_interval = gzero_options.int_interval;
 	ss_opts->int_maxpacket = gzero_options.int_maxpacket;
 	ss_opts->int_mult = gzero_options.int_mult;
 	ss_opts->int_maxburst = gzero_options.int_maxburst;
+=======
+>>>>>>> p9x:drivers/usb/gadget/zero.c
 	ss_opts->bulk_buflen = gzero_options.bulk_buflen;
 
 	func_ss = usb_get_function(func_inst_ss);

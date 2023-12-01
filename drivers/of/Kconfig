@@ -26,7 +26,10 @@ config OF_FLATTREE
 	bool
 	select DTC
 	select LIBFDT
+<<<<<<< HEAD
 	select CRC32
+=======
+>>>>>>> p9x
 
 config OF_EARLY_FLATTREE
 	bool
@@ -75,8 +78,13 @@ config OF_PCI_IRQ
 	  OpenFirmware PCI IRQ routing helpers
 
 config OF_SPMI
+<<<<<<< HEAD
 	def_tristate MSM_SPMI
 	depends on MSM_SPMI
+=======
+	def_tristate SPMI
+	depends on SPMI
+>>>>>>> p9x
 	help
 	  OpenFirmware SPMI bus accessors
 
@@ -84,6 +92,7 @@ config OF_MTD
 	depends on MTD
 	def_bool y
 
+<<<<<<< HEAD
 config OF_RESERVED_MEM
 	depends on OF_EARLY_FLATTREE
 	bool
@@ -93,6 +102,8 @@ config OF_RESERVED_MEM
 config OF_RESOLVE
 	bool
 
+=======
+>>>>>>> p9x
 config OF_SLIMBUS
 	def_tristate SLIMBUS
 	depends on SLIMBUS
@@ -110,9 +121,19 @@ config OF_BATTERYDATA
 	help
 	  OpenFirmware BatteryData accessors
 
+<<<<<<< HEAD
 config OF_OVERLAY
 	bool "Device Tree overlays"
 	select OF_DYNAMIC
 	select OF_RESOLVE
 
 endif # OF
+=======
+config OF_RESERVED_MEM
+	depends on OF_EARLY_FLATTREE
+	bool
+	help
+	  Helpers to allow for reservation of memory regions
+
+endmenu # OF
+>>>>>>> p9x

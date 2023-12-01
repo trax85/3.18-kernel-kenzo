@@ -470,6 +470,7 @@ int iwl_mvm_up(struct iwl_mvm *mvm)
 	if (ret)
 		goto error;
 
+<<<<<<< HEAD
 	/* Add all the PHY contexts */
 	chan = &mvm->hw->wiphy->bands[IEEE80211_BAND_2GHZ]->channels[0];
 	cfg80211_chandef_create(&chandef, chan, NL80211_CHAN_NO_HT);
@@ -484,6 +485,18 @@ int iwl_mvm_up(struct iwl_mvm *mvm)
 		if (ret)
 			goto error;
 	}
+=======
+	if (mvm->trans->ltr_enabled) {
+		struct iwl_ltr_config_cmd cmd = {
+			.flags = cpu_to_le32(LTR_CFG_FLAG_FEATURE_ENABLE),
+		};
+
+		WARN_ON(iwl_mvm_send_cmd_pdu(mvm, LTR_CONFIG, 0,
+					     sizeof(cmd), &cmd));
+	}
+
+	IWL_DEBUG_INFO(mvm, "RT uCode started.\n");
+>>>>>>> p9x
 
 	/* Initialize tx backoffs to the minimal possible */
 	iwl_mvm_tt_tx_backoff(mvm, 0);

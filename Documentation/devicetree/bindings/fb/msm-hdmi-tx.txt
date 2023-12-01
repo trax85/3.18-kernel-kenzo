@@ -46,12 +46,15 @@ Optional properties:
 - qcom,conti-splash-enabled: Enables the hdmi continuous splash screen feature.
   HDMI interface will remain powered on from LK to kernel with continuous
   display of bootup logo.
+<<<<<<< HEAD
 - qcom,pluggable: boolean to enable hotplug feature.
 - qcom,display-id: A string indicates the display ID for the controller.
 		   The possible values are:
 		   - "primary"
 		   - "secondary"
 		   - "tertiary"
+=======
+>>>>>>> p9x
 
 [Optional child nodes]: These nodes are for devices which are
 dependent on HDMI Tx controller. If HDMI Tx controller is disabled then
@@ -67,10 +70,15 @@ Example:
 		compatible = "qcom,hdmi-tx";
 		reg =	<0xfd922100 0x35C>,
 			<0xfd922500 0x7C>,
+<<<<<<< HEAD
 			<0xfc4b8000 0x60F0>,
 			<0xfe2a0000 0xFFF>;
 		reg-names = "core_physical", "phy_physical", "qfprom_physical",
 			"hdcp_physical";
+=======
+			<0xfc4b8000 0x60F0>;
+		reg-names = "core_physical", "phy_physical", "qfprom_physical";
+>>>>>>> p9x
 
 		hpd-gdsc-supply = <&gdsc_mdss>;
 		hpd-5v-supply = <&pm8941_mvs2>;
@@ -94,8 +102,11 @@ Example:
 		qcom,hdmi-tx-mux-sel = <&msmgpio 85 0>;
 
 		qcom,conditional-power-on;
+<<<<<<< HEAD
 		qcom,pluggable;
 		qcom,display-id = "secondary";
+=======
+>>>>>>> p9x
 
 		qcom,msm-hdmi-audio-rx {
 			compatible = "qcom,msm-hdmi-audio-codec-rx";

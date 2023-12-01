@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -27,6 +31,7 @@
 #include "spm_driver.h"
 
 #define VDD_DEFAULT 0xDEADF00D
+<<<<<<< HEAD
 #define SLP_CMD_BIT 17
 #define PC_MODE_BIT 16
 #define RET_MODE_BIT 15
@@ -41,6 +46,12 @@
 struct msm_spm_power_modes {
 	uint32_t mode;
 	uint32_t ctl;
+=======
+
+struct msm_spm_power_modes {
+	uint32_t mode;
+	uint32_t start_addr;
+>>>>>>> p9x
 };
 
 struct msm_spm_device {
@@ -53,12 +64,20 @@ struct msm_spm_device {
 	uint32_t cpu_vdd;
 	struct cpumask mask;
 	void __iomem *q2s_reg;
+<<<<<<< HEAD
+=======
+	void __iomem *c1_fsm_ctl_reg;
+>>>>>>> p9x
 	bool qchannel_ignore;
 	bool allow_rpm_hs;
 	bool use_spm_clk_gating;
 	bool use_qchannel_for_wfi;
+<<<<<<< HEAD
 	void __iomem *flush_base_addr;
 	void __iomem *slpreq_base_addr;
+=======
+	bool use_c1_exit_fsm_for_wfi;
+>>>>>>> p9x
 };
 
 struct msm_spm_vdd_info {
@@ -148,21 +167,54 @@ EXPORT_SYMBOL(msm_spm_set_vdd);
  * @cpu: core id
  * @return: Returns encoded PMIC data.
  */
+<<<<<<< HEAD
 int msm_spm_get_vdd(unsigned int cpu)
 {
+=======
+unsigned int msm_spm_get_vdd(unsigned int cpu)
+{
+	int ret;
+>>>>>>> p9x
 	struct msm_spm_device *dev = per_cpu(cpu_vctl_device, cpu);
 
 	if (!dev)
 		return -EPROBE_DEFER;
 
+<<<<<<< HEAD
 	return msm_spm_drv_get_vdd(&dev->reg_data) ? : -EINVAL;
 }
 EXPORT_SYMBOL(msm_spm_get_vdd);
 
+=======
+	ret = IS_ERR(dev);
+	if (ret)
+		return ret;
+
+	return dev->cpu_vdd;
+}
+EXPORT_SYMBOL(msm_spm_get_vdd);
+
+static void msm_config_c1_exit_fsm(struct msm_spm_device *dev, bool disable)
+{
+	uint32_t val = 0;
+
+	val = __raw_readl(dev->c1_fsm_ctl_reg);
+	if (disable)
+		val |= 0x1;
+	else
+		val &= ~0x1;
+	__raw_writel(val, dev->c1_fsm_ctl_reg);
+}
+
+>>>>>>> p9x
 static void msm_spm_config_q2s(struct msm_spm_device *dev, unsigned int mode)
 {
 	uint32_t spm_legacy_mode = 0;
 	uint32_t qchannel_ignore = 0;
+<<<<<<< HEAD
+=======
+	uint32_t c1_stagger_disable = 1;
+>>>>>>> p9x
 	uint32_t val = 0;
 
 	if (!dev->q2s_reg)
@@ -173,13 +225,20 @@ static void msm_spm_config_q2s(struct msm_spm_device *dev, unsigned int mode)
 	case MSM_SPM_MODE_CLOCK_GATING:
 		qchannel_ignore = !dev->use_qchannel_for_wfi;
 		spm_legacy_mode = 0;
+<<<<<<< HEAD
+=======
+		c1_stagger_disable = !dev->use_c1_exit_fsm_for_wfi;
+>>>>>>> p9x
 		break;
 	case MSM_SPM_MODE_RETENTION:
 		qchannel_ignore = 0;
 		spm_legacy_mode = 0;
 		break;
 	case MSM_SPM_MODE_GDHS:
+<<<<<<< HEAD
 	case MSM_SPM_MODE_STANDALONE_POWER_COLLAPSE:
+=======
+>>>>>>> p9x
 	case MSM_SPM_MODE_POWER_COLLAPSE:
 		qchannel_ignore = dev->qchannel_ignore;
 		spm_legacy_mode = 1;
@@ -189,6 +248,7 @@ static void msm_spm_config_q2s(struct msm_spm_device *dev, unsigned int mode)
 	}
 
 	val = spm_legacy_mode << 2 | qchannel_ignore << 1;
+<<<<<<< HEAD
 	__raw_writel(val, dev->q2s_reg);
 	mb();
 }
@@ -235,12 +295,26 @@ static void msm_spm_config_slpreq(struct msm_spm_device *dev,
 
 	val = (__raw_readl(dev->slpreq_base_addr) & ~BIT(4)) | val;
 	__raw_writel(val, dev->slpreq_base_addr);
+=======
+
+	if (dev->reg_data.reg_shadow[MSM_SPM_REG_SAW_SPM_CTL] & 0x01) {
+		msm_spm_drv_set_spm_enable(&dev->reg_data, false);
+		spm_raw_write(val, dev->q2s_reg);
+		msm_spm_drv_set_spm_enable(&dev->reg_data, true);
+	} else {
+		spm_raw_write(val, dev->q2s_reg);
+	}
+
+	if (dev->use_c1_exit_fsm_for_wfi)
+		msm_config_c1_exit_fsm(dev, c1_stagger_disable);
+>>>>>>> p9x
 }
 
 static int msm_spm_dev_set_low_power_mode(struct msm_spm_device *dev,
 		unsigned int mode, bool notify_rpm, bool set_spm_enable)
 {
 	uint32_t i;
+<<<<<<< HEAD
 	int ret = -EINVAL;
 	uint32_t ctl = 0;
 
@@ -248,6 +322,11 @@ static int msm_spm_dev_set_low_power_mode(struct msm_spm_device *dev,
 		pr_err("dev is NULL\n");
 		return -ENODEV;
 	}
+=======
+	uint32_t start_addr = 0;
+	int ret = -EINVAL;
+	bool pc_mode = false;
+>>>>>>> p9x
 
 	if (!dev->initialized)
 		return -ENXIO;
@@ -255,6 +334,13 @@ static int msm_spm_dev_set_low_power_mode(struct msm_spm_device *dev,
 	if (!dev->num_modes)
 		return 0;
 
+<<<<<<< HEAD
+=======
+	if ((mode == MSM_SPM_MODE_POWER_COLLAPSE)
+			|| (mode == MSM_SPM_MODE_GDHS))
+		pc_mode = true;
+
+>>>>>>> p9x
 	if (mode == MSM_SPM_MODE_DISABLED && set_spm_enable) {
 		ret = msm_spm_drv_set_spm_enable(&dev->reg_data, false);
 	} else {
@@ -264,6 +350,7 @@ static int msm_spm_dev_set_low_power_mode(struct msm_spm_device *dev,
 			if (dev->modes[i].mode != mode)
 				continue;
 
+<<<<<<< HEAD
 			ctl = dev->modes[i].ctl;
 			if (!dev->allow_rpm_hs && notify_rpm)
 				ctl &= ~BIT(SLP_CMD_BIT);
@@ -276,6 +363,19 @@ static int msm_spm_dev_set_low_power_mode(struct msm_spm_device *dev,
 	msm_spm_config_q2s(dev, mode);
 	msm_spm_config_hw_flush(dev, mode);
 	msm_spm_config_slpreq(dev, mode);
+=======
+			if (!dev->allow_rpm_hs && notify_rpm)
+				notify_rpm = false;
+
+			start_addr = dev->modes[i].start_addr;
+			break;
+		}
+		ret = msm_spm_drv_set_low_power_mode(&dev->reg_data,
+					start_addr, pc_mode, notify_rpm);
+	}
+
+	msm_spm_config_q2s(dev, mode);
+>>>>>>> p9x
 
 	return ret;
 }
@@ -305,8 +405,12 @@ static int msm_spm_dev_init(struct msm_spm_device *dev,
 		/* Default offset is 0 and gets updated as we write more
 		 * sequences into SPM
 		 */
+<<<<<<< HEAD
 		dev->modes[i].ctl = data->modes[i].ctl | ((offset & 0x1FF)
 						<< 4);
+=======
+		dev->modes[i].start_addr = offset;
+>>>>>>> p9x
 		ret = msm_spm_drv_write_seq_data(&dev->reg_data,
 						data->modes[i].cmd, &offset);
 		if (ret < 0)
@@ -348,8 +452,12 @@ int msm_spm_turn_on_cpu_rail(struct device_node *vctl_node,
 		 * bit[1] = qchannel_ignore = 1
 		 * bit[2] = spm_legacy_mode = 0
 		 */
+<<<<<<< HEAD
 		writel_relaxed(0x2, base);
 		mb();
+=======
+		spm_write_relaxed(0x2, base);
+>>>>>>> p9x
 		iounmap(base);
 	}
 
@@ -362,14 +470,22 @@ int msm_spm_turn_on_cpu_rail(struct device_node *vctl_node,
 
 	/* Set the CPU supply regulator voltage */
 	val = (val & 0xFF);
+<<<<<<< HEAD
 	writel_relaxed(val, base + vctl_offset);
 	mb();
+=======
+	spm_write_relaxed(val, base + vctl_offset);
+>>>>>>> p9x
 	udelay(timeout);
 
 	/* Enable the CPU supply regulator*/
 	val = 0x30080;
+<<<<<<< HEAD
 	writel_relaxed(val, base + vctl_offset);
 	mb();
+=======
+	spm_write_relaxed(val, base + vctl_offset);
+>>>>>>> p9x
 	udelay(timeout);
 
 	iounmap(base);
@@ -406,6 +522,7 @@ bool msm_spm_is_mode_avail(unsigned int mode)
 }
 
 /**
+<<<<<<< HEAD
  * msm_spm_is_avs_enabled() - Functions returns 1 if AVS is enabled and
  *			      0 if it is not.
  * @cpu: specifies cpu's avs should be read
@@ -536,6 +653,8 @@ int msm_spm_avs_clear_irq(unsigned int cpu, enum msm_spm_avs_irq irq)
 EXPORT_SYMBOL(msm_spm_avs_clear_irq);
 
 /**
+=======
+>>>>>>> p9x
  * msm_spm_set_low_power_mode() - Configure SPM start address for low power mode
  * @mode: SPM LPM mode to enter
  * @notify_rpm: Notify RPM in this mode
@@ -547,6 +666,7 @@ int msm_spm_set_low_power_mode(unsigned int mode, bool notify_rpm)
 }
 EXPORT_SYMBOL(msm_spm_set_low_power_mode);
 
+<<<<<<< HEAD
 void msm_spm_set_rpm_hs(bool allow_rpm_hs)
 {
 	struct msm_spm_device *dev = &__get_cpu_var(msm_cpu_spm_device);
@@ -561,6 +681,8 @@ int msm_spm_config_low_power_mode_addr(struct msm_spm_device *dev,
 	return msm_spm_dev_set_low_power_mode(dev, mode, notify_rpm, false);
 }
 
+=======
+>>>>>>> p9x
 /**
  * msm_spm_init(): Board initalization function
  * @data: platform specific SPM register configuration data
@@ -599,6 +721,15 @@ struct msm_spm_device *msm_spm_get_device_by_name(const char *name)
 	return ERR_PTR(-ENODEV);
 }
 
+<<<<<<< HEAD
+=======
+int msm_spm_config_low_power_mode_addr(struct msm_spm_device *dev,
+		unsigned int mode, bool notify_rpm)
+{
+	return msm_spm_dev_set_low_power_mode(dev, mode, notify_rpm, false);
+}
+
+>>>>>>> p9x
 int msm_spm_config_low_power_mode(struct msm_spm_device *dev,
 		unsigned int mode, bool notify_rpm)
 {
@@ -710,7 +841,10 @@ static int msm_spm_dev_probe(struct platform_device *pdev)
 	int cpu = 0;
 	int i = 0;
 	struct device_node *node = pdev->dev.of_node;
+<<<<<<< HEAD
 	struct device_node *n = NULL;
+=======
+>>>>>>> p9x
 	struct msm_spm_platform_data spm_data;
 	char *key = NULL;
 	uint32_t val = 0;
@@ -719,6 +853,10 @@ static int msm_spm_dev_probe(struct platform_device *pdev)
 	struct msm_spm_device *dev = NULL;
 	struct resource *res = NULL;
 	uint32_t mode_count = 0;
+<<<<<<< HEAD
+=======
+	bool spm_legacy_workaround = 0;
+>>>>>>> p9x
 
 	struct spm_of {
 		char *key;
@@ -752,10 +890,15 @@ static int msm_spm_dev_probe(struct platform_device *pdev)
 		{"qcom,saw2-spm-cmd-wfi", MSM_SPM_MODE_CLOCK_GATING},
 		{"qcom,saw2-spm-cmd-ret", MSM_SPM_MODE_RETENTION},
 		{"qcom,saw2-spm-cmd-gdhs", MSM_SPM_MODE_GDHS},
+<<<<<<< HEAD
 		{"qcom,saw2-spm-cmd-spc",
 				MSM_SPM_MODE_STANDALONE_POWER_COLLAPSE},
 		{"qcom,saw2-spm-cmd-pc", MSM_SPM_MODE_POWER_COLLAPSE},
 		{"qcom,saw2-spm-cmd-fpc", MSM_SPM_MODE_FASTPC},
+=======
+		{"qcom,saw2-spm-cmd-spc", MSM_SPM_MODE_POWER_COLLAPSE},
+		{"qcom,saw2-spm-cmd-pc", MSM_SPM_MODE_POWER_COLLAPSE},
+>>>>>>> p9x
 	};
 
 	dev = msm_spm_get_device(pdev);
@@ -798,16 +941,22 @@ static int msm_spm_dev_probe(struct platform_device *pdev)
 	}
 
 	spm_data.vctl_port = -1;
+<<<<<<< HEAD
 	spm_data.vctl_port_ub = -1;
+=======
+>>>>>>> p9x
 	spm_data.phase_port = -1;
 	spm_data.pfm_port = -1;
 
 	key = "qcom,vctl-port";
 	of_property_read_u32(node, key, &spm_data.vctl_port);
 
+<<<<<<< HEAD
 	key = "qcom,vctl-port-ub";
 	of_property_read_u32(node, key, &spm_data.vctl_port_ub);
 
+=======
+>>>>>>> p9x
 	key = "qcom,phase-port";
 	of_property_read_u32(node, key, &spm_data.phase_port);
 
@@ -815,7 +964,11 @@ static int msm_spm_dev_probe(struct platform_device *pdev)
 	of_property_read_u32(node, key, &spm_data.pfm_port);
 
 	/* Q2S (QChannel-2-SPM) register */
+<<<<<<< HEAD
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "q2s");
+=======
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+>>>>>>> p9x
 	if (res) {
 		dev->q2s_reg = devm_ioremap(&pdev->dev, res->start,
 						resource_size(res));
@@ -836,6 +989,7 @@ static int msm_spm_dev_probe(struct platform_device *pdev)
 	key = "qcom,use-qchannel-for-wfi";
 	dev->use_qchannel_for_wfi = of_property_read_bool(node, key);
 
+<<<<<<< HEAD
 	/* HW flush address */
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "hw-flush");
 	if (res) {
@@ -869,6 +1023,27 @@ static int msm_spm_dev_probe(struct platform_device *pdev)
 	 * SPM_LEGACY_MODE bit.
 	 */
 	msm_spm_config_q2s(dev, MSM_SPM_MODE_POWER_COLLAPSE);
+=======
+	key = "qcom,use-c1-exit-fsm-for-wfi";
+	dev->use_c1_exit_fsm_for_wfi = of_property_read_bool(node, key);
+
+	if (dev->use_c1_exit_fsm_for_wfi) {
+		/* QCHANNEL STANDBY FSM CTL register */
+		res = platform_get_resource(pdev, IORESOURCE_MEM, 2);
+		if (res) {
+			dev->c1_fsm_ctl_reg = devm_ioremap(&pdev->dev,
+						res->start,
+						resource_size(res));
+			if (!dev->c1_fsm_ctl_reg) {
+				pr_err("%s(): Unable to map C1 FSM register\n",
+					__func__);
+				ret = -EADDRNOTAVAIL;
+				goto fail;
+			}
+		}
+	}
+
+>>>>>>> p9x
 	msm_spm_drv_reg_init(&dev->reg_data, &spm_data);
 
 	for (i = 0; i < ARRAY_SIZE(spm_of_data); i++) {
@@ -879,6 +1054,7 @@ static int msm_spm_dev_probe(struct platform_device *pdev)
 				val);
 	}
 
+<<<<<<< HEAD
 	for_each_child_of_node(node, n) {
 		const char *name;
 		bool bit_set;
@@ -937,6 +1113,18 @@ static int msm_spm_dev_probe(struct platform_device *pdev)
 		ret = of_property_read_u32(n, "qcom,event_sync", &sync);
 		if (!ret)
 			modes[mode_count].ctl |= sync << EVENT_SYNC_BIT;
+=======
+	for (i = 0; i < ARRAY_SIZE(mode_of_data); i++) {
+		key = mode_of_data[i].key;
+		modes[mode_count].cmd =
+			(uint8_t *)of_get_property(node, key, &len);
+		if (!modes[mode_count].cmd)
+			continue;
+
+		modes[mode_count].mode = mode_of_data[i].id;
+		pr_debug("%s(): dev: %s cmd:%s, mode:%d\n", __func__,
+				dev->name, key, modes[mode_count].mode);
+>>>>>>> p9x
 
 		mode_count++;
 	}
@@ -961,6 +1149,7 @@ static int msm_spm_dev_probe(struct platform_device *pdev)
 
 	cpu = get_cpu_id(pdev->dev.of_node);
 
+<<<<<<< HEAD
 	/* For CPUs that are online, the SPM has to be programmed for
 	 * clockgating mode to ensure that it can use SPM for entering these
 	 * low power modes.
@@ -969,6 +1158,27 @@ static int msm_spm_dev_probe(struct platform_device *pdev)
 	if ((cpu >= 0) && (cpu < num_possible_cpus()) && (cpu_online(cpu)))
 		msm_spm_config_low_power_mode(dev, MSM_SPM_MODE_CLOCK_GATING,
 				false);
+=======
+	key = "qcom,use-spm-legacy-mode-workaround";
+	spm_legacy_workaround = of_property_read_bool(pdev->dev.of_node, key);
+
+	/* For CPUs that are online, the SPM has to be programmed for
+	 * clockgating mode to ensure that it can use SPM for entering
+	 * these low power modes.
+	 */
+	get_online_cpus();
+	if ((cpu >= 0) && (cpu < num_possible_cpus()) && (cpu_online(cpu)))
+		msm_spm_config_low_power_mode(dev,
+			MSM_SPM_MODE_CLOCK_GATING, false);
+	else if (spm_legacy_workaround)
+		/*
+		* At system boot, cpus and or clusters can remain in reset.
+		* CCI SPM will not be triggered unless SPM_LEGACY_MODE bit
+		* is set for the cluster in reset. Initialize q2s registers
+		* and set the SPM_LEGACY_MODE bit.
+		*/
+		msm_spm_config_q2s(dev, MSM_SPM_MODE_POWER_COLLAPSE);
+>>>>>>> p9x
 	put_online_cpus();
 	return ret;
 
@@ -979,7 +1189,12 @@ fail:
 			per_cpu(cpu_vctl_device, cpu) = ERR_PTR(ret);
 	}
 
+<<<<<<< HEAD
 	pr_err("%s: CPU%d SPM device probe failed: %d\n", __func__, cpu, ret);
+=======
+	pr_err("%s: CPU%d SPM device probe failed: %d\n", __func__,
+		cpu, ret);
+>>>>>>> p9x
 
 	return ret;
 }

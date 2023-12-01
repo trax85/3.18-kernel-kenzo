@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2015,2017 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -19,6 +23,7 @@
 #define FASTRPC_IOCTL_INVOKE  _IOWR('R', 1, struct fastrpc_ioctl_invoke)
 #define FASTRPC_IOCTL_MMAP    _IOWR('R', 2, struct fastrpc_ioctl_mmap)
 #define FASTRPC_IOCTL_MUNMAP  _IOWR('R', 3, struct fastrpc_ioctl_munmap)
+<<<<<<< HEAD
 #define FASTRPC_IOCTL_MMAP_64	_IOWR('R', 14, struct fastrpc_ioctl_mmap_64)
 #define FASTRPC_IOCTL_MUNMAP_64	_IOWR('R', 15, struct fastrpc_ioctl_munmap_64)
 #define FASTRPC_IOCTL_INVOKE_FD  _IOWR('R', 4, struct fastrpc_ioctl_invoke_fd)
@@ -28,6 +33,11 @@
 #define FASTRPC_IOCTL_CONTROL	_IOWR('R', 12, struct fastrpc_ioctl_control)
 
 #define FASTRPC_GLINK_GUID "fastrpcglink-apps-dsp"
+=======
+#define FASTRPC_IOCTL_INVOKE_FD  _IOWR('R', 4, struct fastrpc_ioctl_invoke_fd)
+#define FASTRPC_IOCTL_SETMODE    _IOWR('R', 5, uint32_t)
+#define FASTRPC_IOCTL_INIT       _IOWR('R', 6, struct fastrpc_ioctl_init)
+>>>>>>> p9x
 #define FASTRPC_SMD_GUID "fastrpcsmd-apps-dsp"
 #define DEVICE_NAME      "adsprpc-smd"
 
@@ -110,6 +120,7 @@ union remote_arg64 {
 #define remote_arg_t    union remote_arg
 
 struct remote_buf {
+<<<<<<< HEAD
 	void *pv;		/* buffer pointer */
 	size_t len;		/* length of buffer */
 };
@@ -117,6 +128,15 @@ struct remote_buf {
 union remote_arg {
 	struct remote_buf buf;	/* buffer info */
 	uint32_t h;		/* remote handle */
+=======
+	void *pv;
+	size_t len;
+};
+
+union remote_arg {
+	struct remote_buf     buf;
+	uint32_t h;
+>>>>>>> p9x
 };
 
 struct fastrpc_ioctl_invoke {
@@ -145,10 +165,13 @@ struct fastrpc_ioctl_munmap {
 	size_t size;		/* size */
 };
 
+<<<<<<< HEAD
 struct fastrpc_ioctl_munmap_64 {
 	uint64_t vaddrout;	/* address to unmap */
 	size_t size;		/* size */
 };
+=======
+>>>>>>> p9x
 
 struct fastrpc_ioctl_mmap {
 	int fd;				/* ion fd */
@@ -158,6 +181,7 @@ struct fastrpc_ioctl_mmap {
 	uintptr_t vaddrout;		/* dsps virtual address */
 };
 
+<<<<<<< HEAD
 struct fastrpc_ioctl_mmap_64 {
 	int fd;				/* ion fd */
 	uint32_t flags;			/* flags for dsp to map with */
@@ -191,6 +215,8 @@ struct fastrpc_ioctl_control {
 	};
 };
 
+=======
+>>>>>>> p9x
 struct smq_null_invoke {
 	uint64_t ctx;			/* invoke caller context */
 	uint32_t handle;	    /* handle to invoke */
@@ -226,7 +252,11 @@ struct smq_invoke_rsp {
 static inline struct smq_invoke_buf *smq_invoke_buf_start(remote_arg64_t *pra,
 							uint32_t sc)
 {
+<<<<<<< HEAD
 	uint32_t len = REMOTE_SCALARS_LENGTH(sc);
+=======
+	unsigned int len = REMOTE_SCALARS_LENGTH(sc);
+>>>>>>> p9x
 
 	return (struct smq_invoke_buf *)(&pra[len]);
 }
@@ -235,7 +265,10 @@ static inline struct smq_phy_page *smq_phy_page_start(uint32_t sc,
 						struct smq_invoke_buf *buf)
 {
 	uint32_t nTotal = REMOTE_SCALARS_INBUFS(sc)+REMOTE_SCALARS_OUTBUFS(sc);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return (struct smq_phy_page *)(&buf[nTotal]);
 }
 

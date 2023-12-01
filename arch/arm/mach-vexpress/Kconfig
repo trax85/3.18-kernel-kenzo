@@ -11,6 +11,10 @@ menuconfig ARCH_VEXPRESS
 	select HAVE_ARM_TWD if SMP
 	select HAVE_PATA_PLATFORM
 	select ICST
+<<<<<<< HEAD
+=======
+	select MIGHT_HAVE_CACHE_L2X0
+>>>>>>> p9x
 	select NO_IOPORT_MAP
 	select PLAT_VERSATILE
 	select POWER_RESET

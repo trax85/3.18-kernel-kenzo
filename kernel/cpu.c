@@ -20,8 +20,11 @@
 #include <linux/gfp.h>
 #include <linux/suspend.h>
 #include <linux/lockdep.h>
+<<<<<<< HEAD
 #include <linux/tick.h>
 #include <trace/events/power.h>
+=======
+>>>>>>> p9x
 
 #include <trace/events/sched.h>
 
@@ -69,7 +72,11 @@ static struct {
 	 * Also blocks the new readers during
 	 * an ongoing cpu hotplug operation.
 	 */
+<<<<<<< HEAD
 	atomic_t refcount;
+=======
+	int refcount;
+>>>>>>> p9x
 
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
 	struct lockdep_map dep_map;
@@ -78,6 +85,10 @@ static struct {
 	.active_writer = NULL,
 	.wq = __WAIT_QUEUE_HEAD_INITIALIZER(cpu_hotplug.wq),
 	.lock = __MUTEX_INITIALIZER(cpu_hotplug.lock),
+<<<<<<< HEAD
+=======
+	.refcount = 0,
+>>>>>>> p9x
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
 	.dep_map = {.name = "cpu_hotplug.lock" },
 #endif
@@ -85,12 +96,18 @@ static struct {
 
 /* Lockdep annotations for get/put_online_cpus() and cpu_hotplug_begin/end() */
 #define cpuhp_lock_acquire_read() lock_map_acquire_read(&cpu_hotplug.dep_map)
+<<<<<<< HEAD
 #define cpuhp_lock_acquire_tryread() \
 				  lock_map_acquire_tryread(&cpu_hotplug.dep_map)
 #define cpuhp_lock_acquire()      lock_map_acquire(&cpu_hotplug.dep_map)
 #define cpuhp_lock_release()      lock_map_release(&cpu_hotplug.dep_map)
 
 
+=======
+#define cpuhp_lock_acquire()      lock_map_acquire(&cpu_hotplug.dep_map)
+#define cpuhp_lock_release()      lock_map_release(&cpu_hotplug.dep_map)
+
+>>>>>>> p9x
 void get_online_cpus(void)
 {
 	might_sleep();
@@ -112,6 +129,7 @@ bool try_get_online_cpus(void)
 	cpuhp_lock_acquire_tryread();
 	atomic_inc(&cpu_hotplug.refcount);
 	mutex_unlock(&cpu_hotplug.lock);
+<<<<<<< HEAD
 	return true;
 }
 EXPORT_SYMBOL_GPL(try_get_online_cpus);
@@ -130,6 +148,8 @@ void put_online_cpus(void)
 	if (refcount <= 0 && waitqueue_active(&cpu_hotplug.wq))
 		wake_up(&cpu_hotplug.wq);
 
+=======
+>>>>>>> p9x
 	cpuhp_lock_release();
 
 }
@@ -164,6 +184,7 @@ void cpu_hotplug_begin(void)
 	cpu_hotplug.active_writer = current;
 	cpuhp_lock_acquire();
 
+	cpuhp_lock_acquire();
 	for (;;) {
 		mutex_lock(&cpu_hotplug.lock);
 		prepare_to_wait(&cpu_hotplug.wq, &wait, TASK_UNINTERRUPTIBLE);
@@ -236,8 +257,6 @@ static int cpu_notify(unsigned long val, void *v)
 	return __cpu_notify(val, v, -1, NULL);
 }
 
-#ifdef CONFIG_HOTPLUG_CPU
-
 static void cpu_notify_nofail(unsigned long val, void *v)
 {
 	BUG_ON(cpu_notify(val, v));
@@ -259,6 +278,11 @@ void __ref __unregister_cpu_notifier(struct notifier_block *nb)
 }
 EXPORT_SYMBOL(__unregister_cpu_notifier);
 
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_HOTPLUG_CPU
+>>>>>>> p9x
 /**
  * clear_tasks_mm_cpumask - Safely clear tasks' mm_cpumask for a CPU
  * @cpu: a CPU id
@@ -615,7 +639,11 @@ void __ref enable_nonboot_cpus(void)
 		error = _cpu_up(cpu, 1);
 		trace_suspend_resume(TPS("CPU_ON"), cpu, false);
 		if (!error) {
+<<<<<<< HEAD
 			pr_info("CPU%d is up\n", cpu);
+=======
+			printk(KERN_INFO "CPU%d is up\n", cpu);
+>>>>>>> p9x
 			cpu_device = get_cpu_device(cpu);
 			if (!cpu_device)
 				pr_err("%s: failed to get cpu%d device\n",

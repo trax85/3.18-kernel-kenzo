@@ -92,7 +92,11 @@ struct qseecom_load_img_req {
 	int32_t  ifd_data_fd; /* in */
 	char	 img_name[MAX_APP_NAME_SIZE]; /* in */
 	uint32_t app_arch; /* in */
+<<<<<<< HEAD
 	uint32_t app_id; /* out*/
+=======
+	int app_id; /* out*/
+>>>>>>> p9x
 };
 
 struct qseecom_set_sb_mem_param_req {
@@ -110,13 +114,27 @@ struct qseecom_qseos_version_req {
 };
 
 /*
+<<<<<<< HEAD
+=======
+ * struct qseecom_qsee_version_req - get qsee version
+ * @qsee_version - version number
+ */
+struct qseecom_qsee_version_req {
+	unsigned int qsee_version;
+};
+/*
+>>>>>>> p9x
  * struct qseecom_qseos_app_load_query - verify if app is loaded in qsee
  * @app_name[MAX_APP_NAME_SIZE]-  name of the app.
  * @app_id - app id.
  */
 struct qseecom_qseos_app_load_query {
 	char app_name[MAX_APP_NAME_SIZE]; /* in */
+<<<<<<< HEAD
 	uint32_t app_id; /* out */
+=======
+	int app_id; /* out */
+>>>>>>> p9x
 	uint32_t app_arch;
 };
 
@@ -251,6 +269,7 @@ struct qseecom_sg_list_buf_hdr_64bit {
 #define QSEECOM_SG_LIST_BUF_HDR_SZ_64BIT	\
 			sizeof(struct qseecom_sg_list_buf_hdr_64bit)
 
+<<<<<<< HEAD
 #define MAX_CE_PIPE_PAIR_PER_UNIT 3
 #define INVALID_CE_INFO_UNIT_NUM 0xffffffff
 
@@ -272,6 +291,8 @@ struct qseecom_ce_info_req {
 	struct qseecom_ce_pipe_entry ce_pipe_entry[MAX_CE_PIPE_PAIR_PER_UNIT];
 };
 
+=======
+>>>>>>> p9x
 #define SG_ENTRY_SZ		sizeof(struct qseecom_sg_entry)
 #define SG_ENTRY_SZ_64BIT	sizeof(struct qseecom_sg_entry_64bit)
 
@@ -373,6 +394,7 @@ extern long qseecom_ioctl(struct file *file,
 #define QSEECOM_IOCTL_SEND_MODFD_RESP_64 \
 	_IOWR(QSEECOM_IOC_MAGIC, 36, struct qseecom_send_modfd_listener_resp)
 
+<<<<<<< HEAD
 #define QSEECOM_IOCTL_GET_CE_PIPE_INFO \
 	_IOWR(QSEECOM_IOC_MAGIC, 40, struct qseecom_ce_info_req)
 
@@ -383,4 +405,8 @@ extern long qseecom_ioctl(struct file *file,
 	_IOWR(QSEECOM_IOC_MAGIC, 42, struct qseecom_ce_info_req)
 
 
+=======
+#define QSEECOM_IOCTL_GET_QSEE_VERSION_REQ \
+	_IOWR(QSEECOM_IOC_MAGIC, 37, struct qseecom_qsee_version_req)
+>>>>>>> p9x
 #endif /* _UAPI_QSEECOM_H_ */

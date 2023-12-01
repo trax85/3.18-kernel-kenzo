@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -13,13 +17,19 @@
 #ifndef __MSM_CLOCKS_8952_HWIO_H
 #define __MSM_CLOCKS_8952_HWIO_H
 
+<<<<<<< HEAD
 #define GPLL0_MODE			0x21000
+=======
+>>>>>>> p9x
 #define GPLL0_STATUS			0x2101C
 #define GPLL6_STATUS			0x3701C
 #define GPLL3_MODE			0x22000
 #define GPLL4_MODE			0x24000
 #define GPLL4_STATUS			0x24024
+<<<<<<< HEAD
 #define GX_DOMAIN_MISC			0x5B00C
+=======
+>>>>>>> p9x
 #define SYS_MM_NOC_AXI_CBCR		0x3D008
 #define BIMC_GFX_CBCR			0x59034
 #define MSS_CFG_AHB_CBCR		0x49000
@@ -106,7 +116,10 @@
 #define GFX_TCU_CBCR			0x12020
 #define JPEG_TBU_CBCR			0x12034
 #define SMMU_CFG_CBCR			0x12038
+<<<<<<< HEAD
 #define QDSS_DAP_CBCR			0x29084
+=======
+>>>>>>> p9x
 #define VFE_TBU_CBCR			0x1203C
 #define VFE1_TBU_CBCR			0x12090
 #define CPP_TBU_CBCR			0x12040
@@ -116,6 +129,10 @@
 #define GCC_DEBUG_CLK_CTL		0x74000
 #define CLOCK_FRQ_MEASURE_CTL		0x74004
 #define CLOCK_FRQ_MEASURE_STATUS	0x74008
+<<<<<<< HEAD
+=======
+#define GCC_SPARE3_REG			0x7E004
+>>>>>>> p9x
 #define GP1_CBCR			0x08000
 #define GP1_CMD_RCGR			0x08004
 #define GP1_CFG_RCGR			0x08008
@@ -204,7 +221,10 @@
 #define OXILI_GMEM_CBCR			0x59024
 #define OXILI_AHB_CBCR			0x59028
 #define OXILI_TIMER_CBCR		0x59040
+<<<<<<< HEAD
 #define OXILI_AON_CBCR			0x5904C
+=======
+>>>>>>> p9x
 #define CAMSS_TOP_AHB_CMD_RCGR		0x5A000
 #define BIMC_GPU_CBCR			0x59030
 #define GTCU_AHB_CBCR			0x12044
@@ -212,6 +232,7 @@
 #define SYSTEM_MM_NOC_CMD_RCGR		0x3D000
 #define USB_FS_BCR			0x3F000
 
+<<<<<<< HEAD
 #define APCS_CLOCK_SLEEP_ENA_VOTE	0x45008
 #define BYTE1_CMD_RCGR			0x4D0B0
 #define ESC1_CMD_RCGR			0x4D0A8
@@ -221,6 +242,8 @@
 #define MDSS_PCLK1_CBCR			0x4D0A4
 #define DCC_CBCR			0x77004
 
+=======
+>>>>>>> p9x
 #define RPM_MISC_CLK_TYPE		0x306b6c63
 #define RPM_BUS_CLK_TYPE		0x316b6c63
 #define RPM_MEM_CLK_TYPE		0x326b6c63
@@ -234,7 +257,10 @@
 #define SNOC_CLK_ID			0x1
 #define SYSMMNOC_CLK_ID			0x2
 #define BIMC_CLK_ID			0x0
+<<<<<<< HEAD
 #define BIMC_GPU_CLK_ID			0x2
+=======
+>>>>>>> p9x
 #define IPA_CLK_ID			0x0
 
 #define BUS_SCALING		0x2
@@ -271,6 +297,7 @@
 #define APCS_C1_PLL_CONFIG_CTL		0x00014
 #define APCS_C1_PLL_STATUS		0x0001C
 
+<<<<<<< HEAD
 
 #define CLKFLAG_WAKEUP_CYCLES		0x0
 #define CLKFLAG_SLEEP_CYCLES		0x0
@@ -440,4 +467,6 @@ int vdd_corner[] = {
 	RPM_REGULATOR_LEVEL_TURBO,		/* VDD_DIG_TURBO */
 	RPM_REGULATOR_LEVEL_BINNING,		/* VDD_DIG_SUPER_TUR */
 };
+=======
+>>>>>>> p9x
 #endif

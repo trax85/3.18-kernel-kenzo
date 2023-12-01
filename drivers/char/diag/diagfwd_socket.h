@@ -24,14 +24,18 @@
 #define PORT_TYPE_SERVER		0
 #define PORT_TYPE_CLIENT		1
 
+<<<<<<< HEAD
 #define PEPIPHERAL_AFTER_BOOT		0
 #define PEPIPHERAL_SSR_DOWN		1
 #define PEPIPHERAL_SSR_UP		2
 
+=======
+>>>>>>> p9x
 #define CNTL_CMD_NEW_SERVER		4
 #define CNTL_CMD_REMOVE_SERVER		5
 #define CNTL_CMD_REMOVE_CLIENT		6
 
+<<<<<<< HEAD
 enum {
 	SOCKET_MODEM,
 	SOCKET_ADSP,
@@ -41,6 +45,8 @@ enum {
 	NUM_SOCKET_SUBSYSTEMS,
 };
 
+=======
+>>>>>>> p9x
 struct diag_socket_info {
 	uint8_t peripheral;
 	uint8_t type;
@@ -87,7 +93,10 @@ struct diag_cntl_socket_info {
 	atomic_t data_ready;
 	struct workqueue_struct *wq;
 	struct work_struct read_work;
+<<<<<<< HEAD
 	struct work_struct init_work;
+=======
+>>>>>>> p9x
 	wait_queue_head_t read_wait_q;
 	struct socket *hdl;
 };

@@ -32,7 +32,10 @@
 #include <linux/random.h>
 #include <linux/hw_breakpoint.h>
 #include <linux/leds.h>
+<<<<<<< HEAD
 #include <linux/reboot.h>
+=======
+>>>>>>> p9x
 #include <linux/console.h>
 
 #include <asm/cacheflush.h>
@@ -43,8 +46,11 @@
 #include <asm/system_misc.h>
 #include <asm/mach/time.h>
 #include <asm/tls.h>
+<<<<<<< HEAD
 #include <asm/vdso.h>
 #include "reboot.h"
+=======
+>>>>>>> p9x
 
 #ifdef CONFIG_CC_STACKPROTECTOR
 #include <linux/stackprotector.h>
@@ -155,7 +161,11 @@ void _soft_restart(unsigned long addr, bool disable_l2)
 	BUG();
 }
 
+<<<<<<< HEAD
 void soft_restart(unsigned long addr)
+=======
+static void null_restart(enum reboot_mode reboot_mode, const char *cmd)
+>>>>>>> p9x
 {
 	_soft_restart(addr, num_online_cpus() == 1);
 }
@@ -166,7 +176,12 @@ void soft_restart(unsigned long addr)
 void (*pm_power_off)(void);
 EXPORT_SYMBOL(pm_power_off);
 
+<<<<<<< HEAD
 void (*arm_pm_restart)(enum reboot_mode reboot_mode, const char *cmd);
+=======
+void (*arm_pm_restart)(enum reboot_mode reboot_mode, const char *cmd) = null_restart;
+EXPORT_SYMBOL_GPL(arm_pm_restart);
+>>>>>>> p9x
 
 /*
  * This is our default idle handler.
@@ -216,6 +231,28 @@ void arch_cpu_idle_dead(void)
 #endif
 
 /*
+<<<<<<< HEAD
+=======
+ * Called from the core idle loop.
+ */
+void arch_cpu_idle(void)
+{
+	if (cpuidle_idle_call())
+		default_idle();
+}
+
+enum reboot_mode reboot_mode = REBOOT_HARD;
+
+static int __init reboot_setup(char *str)
+{
+	if ('s' == str[0])
+		reboot_mode = REBOOT_SOFT;
+	return 1;
+}
+__setup("reboot=", reboot_setup);
+
+/*
+>>>>>>> p9x
  * Called by kexec, immediately prior to machine_kexec().
  *
  * This must completely disable all secondary CPUs; simply causing those CPUs
@@ -246,7 +283,11 @@ void machine_shutdown(void)
  */
 void machine_halt(void)
 {
+<<<<<<< HEAD
 	local_irq_disable();
+=======
+	preempt_disable();
+>>>>>>> p9x
 	smp_send_stop();
 
 	local_irq_disable();
@@ -261,7 +302,11 @@ void machine_halt(void)
  */
 void machine_power_off(void)
 {
+<<<<<<< HEAD
 	local_irq_disable();
+=======
+	preempt_disable();
+>>>>>>> p9x
 	smp_send_stop();
 
 	if (pm_power_off)
@@ -281,18 +326,28 @@ void machine_power_off(void)
  */
 void machine_restart(char *cmd)
 {
+<<<<<<< HEAD
 	local_irq_disable();
 	smp_send_stop();
 
 
+=======
+	preempt_disable();
+	smp_send_stop();
+
+>>>>>>> p9x
 	/* Flush the console to make sure all the relevant messages make it
 	 * out to the console drivers */
 	arm_machine_flush_console();
 
+<<<<<<< HEAD
 	if (arm_pm_restart)
 		arm_pm_restart(reboot_mode, cmd);
 	else
 		do_kernel_restart(cmd);
+=======
+	arm_pm_restart(reboot_mode, cmd);
+>>>>>>> p9x
 
 	/* Give a grace period for failure to restart of 1s */
 	mdelay(1000);
@@ -313,12 +368,19 @@ static void show_data(unsigned long addr, int nbytes, const char *name)
 	u32	*p;
 
 	/*
+<<<<<<< HEAD
 	 * don't attempt to dump non-kernel addresses, values that are probably
 	 * just small negative numbers, or vmalloc addresses that may point to
 	 * memory-mapped peripherals
 	 */
 	if (addr < PAGE_OFFSET || addr > -256UL ||
 	    is_vmalloc_addr((void *)addr))
+=======
+	 * don't attempt to dump non-kernel addresses or
+	 * values that are probably just small negative numbers
+	 */
+	if (addr < PAGE_OFFSET || addr > -256UL)
+>>>>>>> p9x
 		return;
 
 	printk("\n%s: %#lx:\n", name, addr);
@@ -340,15 +402,30 @@ static void show_data(unsigned long addr, int nbytes, const char *name)
 		printk("%04lx ", (unsigned long)p & 0xffff);
 		for (j = 0; j < 8; j++) {
 			u32	data;
+<<<<<<< HEAD
+=======
+			/*
+			 * vmalloc addresses may point to
+			 * memory-mapped peripherals
+			 */
+>>>>>>> p9x
 			if (!virt_addr_valid(p) ||
 			    probe_kernel_address(p, data)) {
 				printk(" ********");
 			} else {
+<<<<<<< HEAD
 				printk(" %08x", data);
 			}
 			++p;
 		}
 		printk("\n");
+=======
+				printk(KERN_CONT " %08x", data);
+			}
+			++p;
+		}
+		printk(KERN_CONT "\n");
+>>>>>>> p9x
 	}
 }
 
@@ -639,6 +716,7 @@ int in_gate_area_no_mm(unsigned long addr)
 
 const char *arch_vma_name(struct vm_area_struct *vma)
 {
+<<<<<<< HEAD
 	return is_gate_vma(vma) ? "[vectors]" : NULL;
 }
 
@@ -673,11 +751,22 @@ static unsigned long sigpage_addr(const struct mm_struct *mm,
 	addr = first + (offset << PAGE_SHIFT);
 
 	return addr;
+=======
+	if (is_gate_vma(vma))
+		return "[vectors]";
+	else if (vma->vm_mm && vma->vm_start == vma->vm_mm->context.sigpage)
+		return "[sigpage]";
+	else if (vma == get_user_timers_vma(NULL))
+		return "[timers]";
+	else
+		return NULL;
+>>>>>>> p9x
 }
 
 static struct page *signal_page;
 extern struct page *get_signal_page(void);
 
+<<<<<<< HEAD
 static const struct vm_special_mapping sigpage_mapping = {
 	.name = "[sigpage]",
 	.pages = &signal_page,
@@ -691,23 +780,36 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
 	unsigned long addr;
 	unsigned long hint;
 	int ret = 0;
+=======
+int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
+{
+	struct mm_struct *mm = current->mm;
+	unsigned long addr;
+	int ret;
+>>>>>>> p9x
 
 	if (!signal_page)
 		signal_page = get_signal_page();
 	if (!signal_page)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	npages = 1; /* for sigpage */
 	npages += vdso_total_pages;
 
 	down_write(&mm->mmap_sem);
 	hint = sigpage_addr(mm, npages);
 	addr = get_unmapped_area(NULL, hint, npages << PAGE_SHIFT, 0, 0);
+=======
+	down_write(&mm->mmap_sem);
+	addr = get_unmapped_area(NULL, 0, PAGE_SIZE, 0, 0);
+>>>>>>> p9x
 	if (IS_ERR_VALUE(addr)) {
 		ret = addr;
 		goto up_fail;
 	}
 
+<<<<<<< HEAD
 	vma = _install_special_mapping(mm, addr, PAGE_SIZE,
 		VM_READ | VM_EXEC | VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC,
 		&sigpage_mapping);
@@ -724,6 +826,14 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
 	 * here.
 	 */
 	arm_install_vdso(mm, addr + PAGE_SIZE);
+=======
+	ret = install_special_mapping(mm, addr, PAGE_SIZE,
+		VM_READ | VM_EXEC | VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC,
+		&signal_page);
+
+	if (ret == 0)
+		mm->context.sigpage = addr;
+>>>>>>> p9x
 
  up_fail:
 	up_write(&mm->mmap_sem);

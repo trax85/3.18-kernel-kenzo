@@ -18,7 +18,12 @@ EXPORT_SYMBOL(unblock_signals);
 /*
  * OK, we're invoking a handler
  */
+<<<<<<< HEAD
 static void handle_signal(struct ksignal *ksig, struct pt_regs *regs)
+=======
+static void handle_signal(struct pt_regs *regs, unsigned long signr,
+			 struct k_sigaction *ka, struct siginfo *info)
+>>>>>>> p9x
 {
 	sigset_t *oldset = sigmask_to_save();
 	int singlestep = 0;
@@ -66,8 +71,14 @@ static void handle_signal(struct ksignal *ksig, struct pt_regs *regs)
 
 static int kern_do_signal(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	struct ksignal ksig;
 	int handled_sig = 0;
+=======
+	struct k_sigaction ka_copy;
+	struct siginfo info;
+	int sig, handled_sig = 0;
+>>>>>>> p9x
 
 	while (get_signal(&ksig)) {
 		handled_sig = 1;

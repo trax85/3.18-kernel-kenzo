@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 * Qualcomm MSM Camera SMMU
+=======
+* Qualcomm technologies inc. MSM Camera SMMU
+>>>>>>> p9x
 
 [Root level node]
 The complete set of context banks for camera are encapsulated under this
@@ -14,6 +18,7 @@ Required properties:
 [Second level nodes]
 Required properties:
 - compatible : one of:
+<<<<<<< HEAD
     - "qcom,msm-cam-smmu-cb" : For arm smmu iommu type.
     - "qcom,qsmmu-cam-cb" : For qsmmu iommu type .
 - iommus : Handle parsed by smmu driver. Number of entries will vary
@@ -35,3 +40,25 @@ Example:
       qcom,scratch-buf-support;
     }
   }
+=======
+    - "qcom,msm-cam-smmu"
+    - "qcom,msm-cam-smmu-cb"
+    - "qcom,qsmmu-cam-cb"
+- label - string describing iommu domain usage.
+
+Optional properties:
+- iommus : Handle parsed by smmu driver. Number of entries will vary
+  across targets.
+- qcom,secure-context : Property to distinguish between secure and
+  non secure context banks
+
+Example:
+qcom,cam_smmu {
+	compatible = "qcom,msm-cam-smmu";
+	msm_cam_smmu_cb1: msm_cam_smmu_cb1 {
+		compatible = "qcom,msm-cam-smmu-cb";
+		iommus = <&vfe_iommu 0>;
+		label = "vfe";
+	}
+}
+>>>>>>> p9x

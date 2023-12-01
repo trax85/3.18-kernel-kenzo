@@ -153,6 +153,10 @@ int copy_thread(unsigned long clone_flags, unsigned long sp,
 		childregs->orig_ax = -1;
 		childregs->cs = __KERNEL_CS | get_kernel_rpl();
 		childregs->flags = X86_EFLAGS_IF | X86_EFLAGS_FIXED;
+<<<<<<< HEAD
+=======
+		p->fpu_counter = 0;
+>>>>>>> p9x
 		p->thread.io_bitmap_ptr = NULL;
 		return 0;
 	}

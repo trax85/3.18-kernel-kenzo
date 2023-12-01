@@ -108,6 +108,7 @@
 #define MSR_TS_T	__MASK(MSR_TS_T_LG)	/*  Transaction Transactional */
 #define MSR_TS_MASK	(MSR_TS_T | MSR_TS_S)   /* Transaction State bits */
 #define MSR_TM_ACTIVE(x) (((x) & MSR_TS_MASK) != 0) /* Transaction active? */
+#define MSR_TM_RESV(x) (((x) & MSR_TS_MASK) == MSR_TS_MASK) /* Reserved */
 #define MSR_TM_TRANSACTIONAL(x)	(((x) & MSR_TS_MASK) == MSR_TS_T)
 #define MSR_TM_SUSPENDED(x)	(((x) & MSR_TS_MASK) == MSR_TS_S)
 
@@ -215,6 +216,7 @@
 #define SPRN_ACOP	0x1F	/* Available Coprocessor Register */
 #define SPRN_TFIAR	0x81	/* Transaction Failure Inst Addr   */
 #define SPRN_TEXASR	0x82	/* Transaction EXception & Summary */
+#define   TEXASR_FS	__MASK(63-36)	/* Transaction Failure Summary */
 #define SPRN_TEXASRU	0x83	/* ''	   ''	   ''	 Upper 32  */
 #define   TEXASR_FS	__MASK(63-36) /* TEXASR Failure Summary */
 #define SPRN_TFHAR	0x80	/* Transaction Failure Handler Addr */
@@ -274,6 +276,7 @@
 #define SPRN_HRMOR	0x139	/* Real mode offset register */
 #define SPRN_HSRR0	0x13A	/* Hypervisor Save/Restore 0 */
 #define SPRN_HSRR1	0x13B	/* Hypervisor Save/Restore 1 */
+<<<<<<< HEAD
 #define SPRN_IC		0x350	/* Virtual Instruction Count */
 #define SPRN_VTB	0x351	/* Virtual Time Base */
 #define SPRN_LDBAR	0x352	/* LD Base Address Register */
@@ -282,12 +285,19 @@
 #define SPRN_PMMAR	0x356	/* Power Management Memory Activity Register */
 #define SPRN_PMCR	0x374	/* Power Management Control Register */
 
+=======
+>>>>>>> p9x
 /* HFSCR and FSCR bit numbers are the same */
 #define FSCR_TAR_LG	8	/* Enable Target Address Register */
 #define FSCR_EBB_LG	7	/* Enable Event Based Branching */
 #define FSCR_TM_LG	5	/* Enable Transactional Memory */
+<<<<<<< HEAD
 #define FSCR_BHRB_LG	4	/* Enable Branch History Rolling Buffer*/
 #define FSCR_PM_LG	3	/* Enable prob/priv access to PMU SPRs */
+=======
+#define FSCR_PM_LG	4	/* Enable prob/priv access to PMU SPRs */
+#define FSCR_BHRB_LG	3	/* Enable Branch History Rolling Buffer*/
+>>>>>>> p9x
 #define FSCR_DSCR_LG	2	/* Enable Data Stream Control Register */
 #define FSCR_VECVSX_LG	1	/* Enable VMX/VSX  */
 #define FSCR_FP_LG	0	/* Enable Floating Point */
@@ -746,6 +756,7 @@
 #define   SIER_SDAR_VALID	0x0200000	/* SDAR contents valid */
 #define SPRN_SIAR	796
 #define SPRN_SDAR	797
+<<<<<<< HEAD
 #define SPRN_TACR	888
 #define SPRN_TCSCR	889
 #define SPRN_CSIGR	890
@@ -756,6 +767,8 @@
 #define MMCR0_USER_MASK	(MMCR0_FC | MMCR0_PMXE | MMCR0_PMAO)
 #define MMCR2_USER_MASK	0x4020100804020000UL /* (FC1P|FC2P|FC3P|FC4P|FC5P|FC6P) */
 #define SIER_USER_MASK	0x7fffffUL
+=======
+>>>>>>> p9x
 
 #define SPRN_PA6T_MMCR0 795
 #define   PA6T_MMCR0_EN0	0x0000000000000001UL
@@ -1230,9 +1243,13 @@ static inline unsigned long mfvtb (void)
 				"	.llong 0\n"			\
 				"	.llong 0\n"			\
 				".previous"				\
+<<<<<<< HEAD
 			: "=r" (rval) \
 			: "i" (CPU_FTR_CELL_TB_BUG), "i" (SPRN_TBRL) : "cr0"); \
 			rval;})
+=======
+			: "=r" (rval) : "i" (CPU_FTR_CELL_TB_BUG) : "cr0"); rval;})
+>>>>>>> p9x
 #else
 #define mftb()		({unsigned long rval;	\
 			asm volatile("mfspr %0, %1" : \

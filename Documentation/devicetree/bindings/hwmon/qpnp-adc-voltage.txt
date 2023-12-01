@@ -8,8 +8,12 @@ for the USR peripheral of the VADC.
 VADC node
 
 Required properties:
+<<<<<<< HEAD
 - compatible : should be "qcom,qpnp-vadc" for Voltage ADC device driver and
 		"qcom,qpnp-vadc-hc" for VADC_HC voltage ADC device driver.
+=======
+- compatible : should be "qcom,qpnp-vadc" for Voltage ADC driver.
+>>>>>>> p9x
 - reg : offset and length of the PMIC Aribter register map.
 - address-cells : Must be one.
 - size-cells : Must be zero.
@@ -35,6 +39,7 @@ Optional properties:
 - qcom,vadc-recalib-check: Add this property to check if recalibration required due to inaccuracy.
 - qcom,vadc-thermal-node : If present a thermal node is created and the channel is registered as
 			   part of the thermal sysfs which allows clients to use the thermal framework
+<<<<<<< HEAD
 			   to set temperature thresholds and receive notification when the temperature
 			   crosses a set threshold, read temperature and enable/set trip types supported
 			   by the thermal framework.
@@ -46,6 +51,11 @@ Optional properties:
 		    0 : The calibration values used for measurement are from a timer.
 		    1 : Forces a fresh measurement for calibration values at the same time
 			measurement is taken.
+=======
+			   to read temperature.
+- hkadc_ldo-supply : Add this property if VADC needs to perform a Software Vote for the HKADC.
+- hkadc_ok-supply : Add this property if the VADC needs to perform a Software vote for the HKADC VREG_OK.
+>>>>>>> p9x
 
 Client required property:
 - qcom,<consumer name>-vadc : The phandle to the corresponding vadc device.
@@ -57,15 +67,22 @@ Required properties:
 - label : Channel name used for sysfs entry.
 - reg : AMUX channel number.
 - qcom,decimation : Sampling rate to use for the individual channel measurement.
+<<<<<<< HEAD
 		    Select from following unsigned int for Voltage ADC device.
+=======
+		    Select from following unsigned int.
+>>>>>>> p9x
 		    0 : 512
 		    1 : 1K
 		    2 : 2K
 		    3 : 4K
+<<<<<<< HEAD
 		    Select from following unsigned int for VADC_HC voltage ADC device.
 		    0 : 256
 		    1 : 512
 		    2 : 1024
+=======
+>>>>>>> p9x
 - qcom,pre-div-channel-scaling : Pre-div used for the channel before the signal
 				 is being measured. Some of the AMUX channels
 				 support dividing the signal from a predetermined
@@ -119,7 +136,11 @@ Required properties:
 - qcom,fast-avg-setup : Average number of samples to be used for measurement. Fast averaging
 			provides the option to obtain a single measurement from the ADC that
 			is an average of multiple samples. The value selected is 2^(value)
+<<<<<<< HEAD
 			Select from the following unsigned int for Voltage ADC device.
+=======
+			Select from the following unsigned int.
+>>>>>>> p9x
 			0 : 1
 			1 : 2
 			2 : 4
@@ -129,12 +150,15 @@ Required properties:
 			6 : 64
 			7 : 128
 			8 : 256
+<<<<<<< HEAD
 			Select from the following unsigned int for VADC_HC ADC device.
 			0 : 1
 			1 : 2
 			2 : 4
 			3 : 8
 			4 : 16
+=======
+>>>>>>> p9x
 
 Example:
 	/* Main Node */

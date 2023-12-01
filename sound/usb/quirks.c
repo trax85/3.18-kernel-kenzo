@@ -158,6 +158,7 @@ static int create_fixed_stream_quirk(struct snd_usb_audio *chip,
 	stream = (fp->endpoint & USB_DIR_IN)
 		? SNDRV_PCM_STREAM_CAPTURE : SNDRV_PCM_STREAM_PLAYBACK;
 	err = snd_usb_add_audio_stream(chip, stream, fp);
+<<<<<<< HEAD
 	if (err < 0) {
 		list_del(&fp->list);
 		kfree(fp);
@@ -170,6 +171,14 @@ static int create_fixed_stream_quirk(struct snd_usb_audio *chip,
 		kfree(fp);
 		kfree(rate_table);
 		return -EINVAL;
+=======
+	if (err < 0)
+		goto error;
+	if (fp->iface != get_iface_desc(&iface->altsetting[0])->bInterfaceNumber ||
+	    fp->altset_idx >= iface->num_altsetting) {
+		err = -EINVAL;
+		goto error;
+>>>>>>> p9x
 	}
 	alts = &iface->altsetting[fp->altset_idx];
 	altsd = get_iface_desc(alts);
@@ -190,6 +199,12 @@ static int create_fixed_stream_quirk(struct snd_usb_audio *chip,
 	snd_usb_init_pitch(chip, fp->iface, alts, fp);
 	snd_usb_init_sample_rate(chip, fp->iface, alts, fp, fp->rate_max);
 	return 0;
+
+error:
+	list_del(&fp->list); /* unlink for avoiding double-free */
+	kfree(fp);
+	kfree(rate_table);
+	return err;
 }
 
 static int create_auto_pcm_quirk(struct snd_usb_audio *chip,
@@ -540,6 +555,7 @@ int snd_usb_create_quirk(struct snd_usb_audio *chip,
 		[QUIRK_MIDI_CME] = create_any_midi_quirk,
 		[QUIRK_MIDI_AKAI] = create_any_midi_quirk,
 		[QUIRK_MIDI_FTDI] = create_any_midi_quirk,
+		[QUIRK_MIDI_CH345] = create_any_midi_quirk,
 		[QUIRK_AUDIO_STANDARD_INTERFACE] = create_standard_audio_quirk,
 		[QUIRK_AUDIO_FIXED_ENDPOINT] = create_fixed_stream_quirk,
 		[QUIRK_AUDIO_EDIROL_UAXX] = create_uaxx_quirk,
@@ -1246,6 +1262,7 @@ void snd_usb_ctl_msg_quirk(struct usb_device *dev, unsigned int pipe,
 	/* Marantz/Denon devices with USB DAC functionality need a delay
 	 * after each class compliant request
 	 */
+<<<<<<< HEAD
 	if (is_marantz_denon_dac(USB_ID(le16_to_cpu(dev->descriptor.idVendor),
 					le16_to_cpu(dev->descriptor.idProduct)))
 	    && (requesttype & USB_TYPE_MASK) == USB_TYPE_CLASS)
@@ -1258,6 +1275,18 @@ void snd_usb_ctl_msg_quirk(struct usb_device *dev, unsigned int pipe,
 	    (le16_to_cpu(dev->descriptor.idProduct) == 0x00dd) &&
 	    (requesttype & USB_TYPE_MASK) == USB_TYPE_CLASS)
 		mdelay(1);
+=======
+	if ((le16_to_cpu(dev->descriptor.idVendor) == 0x154e) &&
+	    (requesttype & USB_TYPE_MASK) == USB_TYPE_CLASS) {
+
+		switch (le16_to_cpu(dev->descriptor.idProduct)) {
+		case 0x3005: /* Marantz HD-DAC1 */
+		case 0x3006: /* Marantz SA-14S1 */
+			mdelay(20);
+			break;
+		}
+	}
+>>>>>>> p9x
 }
 
 /*

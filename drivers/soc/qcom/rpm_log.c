@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2010-2011, 2013-2014, 2017, The Linux Foundation.
+=======
+/* Copyright (c) 2010-2011, 2013-2014, The Linux Foundation.
+>>>>>>> p9x
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -345,9 +349,14 @@ static int msm_rpm_log_probe(struct platform_device *pdev)
 			/* Remap the rpm-log pointer */
 			phys_ptr = ioremap_nocache(offset->start, SZ_4);
 			if (!phys_ptr) {
+<<<<<<< HEAD
 				pr_err("%s: Failed to ioremap address: %pa\n",
 						__func__, &offset->start);
 				kfree(pdata);
+=======
+				pr_err("%s: Failed to ioremap address: %x\n",
+						__func__, offset_addr);
+>>>>>>> p9x
 				return -ENODEV;
 			}
 			offset_addr = readl_relaxed(phys_ptr);

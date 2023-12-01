@@ -28,9 +28,12 @@
 #include <linux/delay.h>
 #include <linux/err.h>
 #include <linux/sched_clock.h>
+<<<<<<< HEAD
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
+=======
+>>>>>>> p9x
 
 #include <asm/mach/time.h>
 

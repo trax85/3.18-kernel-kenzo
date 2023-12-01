@@ -1659,9 +1659,15 @@ static noinline int btrfs_ioctl_snap_create_transid(struct file *file,
 
 		src_inode = file_inode(src.file);
 		if (src_inode->i_sb != file_inode(file)->i_sb) {
+<<<<<<< HEAD
 			btrfs_info(BTRFS_I(file_inode(file))->root->fs_info,
 				   "Snapshot src from another FS");
 			ret = -EXDEV;
+=======
+			printk(KERN_INFO "btrfs: Snapshot src from "
+			       "another FS\n");
+			ret = -EINVAL;
+>>>>>>> p9x
 		} else if (!inode_owner_or_capable(src_inode)) {
 			/*
 			 * Subvolume creation is not restricted, but snapshots
@@ -3384,6 +3390,64 @@ static int btrfs_clone(struct inode *src, struct inode *inode,
 	}
 
 	path->reada = 2;
+<<<<<<< HEAD
+=======
+
+	if (inode < src) {
+		mutex_lock_nested(&inode->i_mutex, I_MUTEX_PARENT);
+		mutex_lock_nested(&src->i_mutex, I_MUTEX_CHILD);
+	} else {
+		mutex_lock_nested(&src->i_mutex, I_MUTEX_PARENT);
+		mutex_lock_nested(&inode->i_mutex, I_MUTEX_CHILD);
+	}
+
+	/* determine range to clone */
+	ret = -EINVAL;
+	if (off + len > src->i_size || off + len < off)
+		goto out_unlock;
+	if (len == 0)
+		olen = len = src->i_size - off;
+	/* if we extend to eof, continue to block boundary */
+	if (off + len == src->i_size)
+		len = ALIGN(src->i_size, bs) - off;
+
+	if (len == 0) {
+		ret = 0;
+		goto out_unlock;
+	}
+
+	/* verify the end result is block aligned */
+	if (!IS_ALIGNED(off, bs) || !IS_ALIGNED(off + len, bs) ||
+	    !IS_ALIGNED(destoff, bs))
+		goto out_unlock;
+
+	if (destoff > inode->i_size) {
+		ret = btrfs_cont_expand(inode, inode->i_size, destoff);
+		if (ret)
+			goto out_unlock;
+	}
+
+	/* truncate page cache pages from target inode range */
+	truncate_inode_pages_range(&inode->i_data, destoff,
+				   PAGE_CACHE_ALIGN(destoff + len) - 1);
+
+	/* do any pending delalloc/csum calc on src, one way or
+	   another, and lock file content */
+	while (1) {
+		struct btrfs_ordered_extent *ordered;
+		lock_extent(&BTRFS_I(src)->io_tree, off, off + len - 1);
+		ordered = btrfs_lookup_first_ordered_extent(src, off + len - 1);
+		if (!ordered &&
+		    !test_range_bit(&BTRFS_I(src)->io_tree, off, off + len - 1,
+				    EXTENT_DELALLOC, 0, NULL))
+			break;
+		unlock_extent(&BTRFS_I(src)->io_tree, off, off + len - 1);
+		if (ordered)
+			btrfs_put_ordered_extent(ordered);
+		btrfs_wait_ordered_range(src, off, len);
+	}
+
+>>>>>>> p9x
 	/* clone data */
 	key.objectid = btrfs_ino(src);
 	key.type = BTRFS_EXTENT_DATA_KEY;
@@ -3964,6 +4028,14 @@ static long btrfs_ioctl_default_subvol(struct file *file, void __user *argp)
 		goto out;
 	}
 	if (!is_fstree(new_root->objectid)) {
+<<<<<<< HEAD
+=======
+		ret = -ENOENT;
+		goto out;
+	}
+
+	if (btrfs_root_refs(&new_root->root_item) == 0) {
+>>>>>>> p9x
 		ret = -ENOENT;
 		goto out;
 	}
@@ -4331,10 +4403,16 @@ static long btrfs_ioctl_dev_replace(struct btrfs_root *root, void __user *arg)
 
 	switch (p->cmd) {
 	case BTRFS_IOCTL_DEV_REPLACE_CMD_START:
+<<<<<<< HEAD
 		if (root->fs_info->sb->s_flags & MS_RDONLY) {
 			ret = -EROFS;
 			goto out;
 		}
+=======
+		if (root->fs_info->sb->s_flags & MS_RDONLY)
+			return -EROFS;
+
+>>>>>>> p9x
 		if (atomic_xchg(
 			&root->fs_info->mutually_exclusive_operation_running,
 			1)) {

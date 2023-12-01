@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2010-2014, 2016, 2018 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2010-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -26,6 +30,10 @@
 #include <linux/sysfs.h>
 #include <linux/device.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> p9x
 #include <soc/qcom/subsystem_restart.h>
 #include <soc/qcom/subsystem_notif.h>
 #include <soc/qcom/scm.h>
@@ -34,6 +42,7 @@
 #include <linux/qdsp6v2/apr.h>
 #include <linux/qdsp6v2/apr_tal.h>
 #include <linux/qdsp6v2/dsp_debug.h>
+<<<<<<< HEAD
 #include <linux/ipc_logging.h>
 
 #define SCM_Q6_NMI_CMD 0x1
@@ -42,6 +51,31 @@
 static struct apr_q6 q6;
 static struct apr_client client[APR_DEST_MAX][APR_CLIENT_MAX];
 static void *apr_pkt_ctx;
+=======
+#include <linux/ratelimit.h>
+#include <linux/io.h>
+
+#define LPASS_QDSP6SS_QDSP6SS_SAW2 0x0C2B0000
+#define LPM_REGISTER_TABLE_SIZE 3
+#define SCM_Q6_NMI_CMD 0x1
+
+struct lpass_spm_register_offset {
+	char name[80];
+	uint32_t offset;
+};
+
+static const struct lpass_spm_register_offset
+		register_table[LPM_REGISTER_TABLE_SIZE] = {
+	{"LPASS_QDSP6SS_SAW2_SPM_STS", 0xC},
+	{"LPASS_QDSP6SS_SAW2_SPM_CTL", 0x30},
+	{"LPASS_QDSP6SS_SAW2_SPM_STS2", 0x38},
+};
+
+static void __iomem *lpass_qdsp6ss_saw2;
+static struct apr_q6 q6;
+static struct apr_client client[APR_DEST_MAX][APR_CLIENT_MAX];
+
+>>>>>>> p9x
 static wait_queue_head_t dsp_wait;
 static wait_queue_head_t modem_wait;
 static bool is_modem_up;
@@ -53,6 +87,7 @@ struct apr_reset_work {
 	struct work_struct work;
 };
 
+<<<<<<< HEAD
 #define APR_PKT_INFO(x...) \
 do { \
 	if (apr_pkt_ctx) \
@@ -60,6 +95,8 @@ do { \
 } while (0)
 
 
+=======
+>>>>>>> p9x
 struct apr_svc_table {
 	char name[64];
 	int idx;
@@ -186,6 +223,44 @@ static struct apr_svc_table svc_tbl_voice[] = {
 	},
 };
 
+<<<<<<< HEAD
+=======
+static struct apr_func_dsp apr_dsp_func;
+static const char *apr_invalid = "invalid";
+
+static void log_spm_registers(void)
+{
+	int i = 0, *v_add;
+
+	if (lpass_qdsp6ss_saw2) {
+		pr_err("<--- Logging LPASS SPM registers --->");
+		for (i = 0; i < LPM_REGISTER_TABLE_SIZE; i++) {
+			v_add = lpass_qdsp6ss_saw2 + register_table[i].offset;
+			pr_err("%s : 0x%x\n", register_table[i].name,
+							ioread32(v_add));
+		}
+		pr_err("<---------------- END -------------->");
+	} else
+		pr_err("Failure in ioremap of LPASS SPM SAW2 register!\n");
+}
+
+const char *apr_get_adsp_subsys_name(void)
+{
+	if (apr_dsp_func.apr_get_adsp_subsys_name)
+		return apr_dsp_func.apr_get_adsp_subsys_name();
+	else
+		return apr_invalid;
+}
+
+enum apr_subsys_state apr_get_adsp_state(void)
+{
+	if (apr_dsp_func.apr_get_adsp_state)
+		return apr_dsp_func.apr_get_adsp_state();
+	else
+		return APR_SUBSYS_DOWN;
+}
+
+>>>>>>> p9x
 enum apr_subsys_state apr_get_modem_state(void)
 {
 	return atomic_read(&q6.modem_state);
@@ -230,11 +305,19 @@ int apr_wait_for_device_up(int dest_id)
 	if (dest_id == APR_DEST_MODEM)
 		rc = wait_event_interruptible_timeout(modem_wait,
 				    (apr_get_modem_state() == APR_SUBSYS_UP),
+<<<<<<< HEAD
 				    (1 * HZ));
 	else if (dest_id == APR_DEST_QDSP6)
 		rc = wait_event_interruptible_timeout(dsp_wait,
 				    (apr_get_q6_state() == APR_SUBSYS_UP),
 				    (1 * HZ));
+=======
+				     msecs_to_jiffies(1000));
+	else if (dest_id == APR_DEST_QDSP6)
+		rc = wait_event_interruptible_timeout(dsp_wait,
+				    (apr_get_q6_state() == APR_SUBSYS_UP),
+				     msecs_to_jiffies(1000));
+>>>>>>> p9x
 	else
 		pr_err("%s: unknown dest_id %d\n", __func__, dest_id);
 	/* returns left time */
@@ -276,25 +359,44 @@ int apr_send_pkt(void *handle, uint32_t *buf)
 	uint16_t dest_id;
 	uint16_t client_id;
 	uint16_t w_len;
+<<<<<<< HEAD
 	int rc;
 	unsigned long flags;
+=======
+	unsigned long flags;
+	static DEFINE_RATELIMIT_STATE(rl, HZ/2, 1);
+>>>>>>> p9x
 
 	if (!handle || !buf) {
 		pr_err("APR: Wrong parameters\n");
 		return -EINVAL;
 	}
 	if (svc->need_reset) {
+<<<<<<< HEAD
 		pr_err_ratelimited("apr: send_pkt service need reset\n");
+=======
+		if (__ratelimit(&rl))
+			pr_err("apr: send_pkt service need reset\n");
+>>>>>>> p9x
 		return -ENETRESET;
 	}
 
 	if ((svc->dest_id == APR_DEST_QDSP6) &&
 	    (apr_get_q6_state() != APR_SUBSYS_LOADED)) {
+<<<<<<< HEAD
 		pr_err_ratelimited("%s: Still dsp is not Up\n", __func__);
 		return -ENETRESET;
 	} else if ((svc->dest_id == APR_DEST_MODEM) &&
 		   (apr_get_modem_state() == APR_SUBSYS_DOWN)) {
 		pr_err_ratelimited("apr: Still Modem is not Up\n");
+=======
+		if (__ratelimit(&rl))
+			pr_err("%s: Still dsp is not Up\n", __func__);
+		return -ENETRESET;
+	} else if ((svc->dest_id == APR_DEST_MODEM) &&
+		   (apr_get_modem_state() == APR_SUBSYS_DOWN)) {
+		pr_err("apr: Still Modem is not Up\n");
+>>>>>>> p9x
 		return -ENETRESET;
 	}
 
@@ -304,7 +406,11 @@ int apr_send_pkt(void *handle, uint32_t *buf)
 	clnt = &client[dest_id][client_id];
 
 	if (!client[dest_id][client_id].handle) {
+<<<<<<< HEAD
 		pr_err_ratelimited("APR: Still service is not yet opened\n");
+=======
+		pr_err("APR: Still service is not yet opened\n");
+>>>>>>> p9x
 		spin_unlock_irqrestore(&svc->w_lock, flags);
 		return -EINVAL;
 	}
@@ -315,6 +421,7 @@ int apr_send_pkt(void *handle, uint32_t *buf)
 	hdr->dest_domain = svc->dest_domain;
 	hdr->dest_svc = svc->id;
 
+<<<<<<< HEAD
 	APR_PKT_INFO("Tx: dest_svc[%d], opcode[0x%X], size[%d]",
 			hdr->dest_svc, hdr->opcode, hdr->pkt_size);
 
@@ -361,6 +468,14 @@ int apr_pkt_config(void *handle, struct apr_pkt_cfg *cfg)
 
 	return apr_tal_rx_intents_config(clnt->handle,
 		cfg->intents.num_of_intents, cfg->intents.size);
+=======
+	w_len = apr_tal_write(clnt->handle, buf, hdr->pkt_size);
+	if (w_len != hdr->pkt_size)
+		pr_err("Unable to write APR pkt successfully: %d\n", w_len);
+	spin_unlock_irqrestore(&svc->w_lock, flags);
+
+	return w_len;
+>>>>>>> p9x
 }
 
 struct apr_svc *apr_register(char *dest, char *svc_name, apr_fn svc_fn,
@@ -375,7 +490,11 @@ struct apr_svc *apr_register(char *dest, char *svc_name, apr_fn svc_fn,
 	int temp_port = 0;
 	struct apr_svc *svc = NULL;
 	int rc = 0;
+<<<<<<< HEAD
 	bool can_open_channel = true;
+=======
+	static DEFINE_RATELIMIT_STATE(rl, HZ/2, 1);
+>>>>>>> p9x
 
 	if (!dest || !svc_name || !svc_fn)
 		return NULL;
@@ -383,11 +502,17 @@ struct apr_svc *apr_register(char *dest, char *svc_name, apr_fn svc_fn,
 	if (!strcmp(dest, "ADSP"))
 		domain_id = APR_DOMAIN_ADSP;
 	else if (!strcmp(dest, "MODEM")) {
+<<<<<<< HEAD
 		/* Don't request for SMD channels if destination is MODEM,
 		 * as these channels are no longer used and these clients
 		 * are to listen only for MODEM SSR events
 		 */
 		can_open_channel = false;
+=======
+		/* Register voice services if destination permits */
+		if (!apr_register_voice_svc())
+			goto done;
+>>>>>>> p9x
 		domain_id = APR_DOMAIN_MODEM;
 	} else {
 		pr_err("APR: wrong destination\n");
@@ -398,14 +523,23 @@ struct apr_svc *apr_register(char *dest, char *svc_name, apr_fn svc_fn,
 
 	if (dest_id == APR_DEST_QDSP6) {
 		if (apr_get_q6_state() != APR_SUBSYS_LOADED) {
+<<<<<<< HEAD
 			pr_err_ratelimited("%s: adsp not up\n", __func__);
+=======
+			if (__ratelimit(&rl))
+				pr_err("%s: adsp not up\n", __func__);
+>>>>>>> p9x
 			return NULL;
 		}
 		pr_debug("%s: adsp Up\n", __func__);
 	} else if (dest_id == APR_DEST_MODEM) {
 		if (apr_get_modem_state() == APR_SUBSYS_DOWN) {
 			if (is_modem_up) {
+<<<<<<< HEAD
 				pr_err_ratelimited("%s: modem shutdown due to SSR, ret",
+=======
+				pr_err("%s: modem shutdown due to SSR, ret",
+>>>>>>> p9x
 					__func__);
 				return NULL;
 			}
@@ -417,21 +551,40 @@ struct apr_svc *apr_register(char *dest, char *svc_name, apr_fn svc_fn,
 			}
 		}
 		pr_debug("%s: modem Up\n", __func__);
+<<<<<<< HEAD
 	}
 
 	if (apr_get_svc(svc_name, domain_id, &client_id, &svc_idx, &svc_id)) {
 		pr_err_ratelimited("%s: apr_get_svc failed\n", __func__);
+=======
+	} else {
+		pr_err("%s: Invalid destination id %d\n", __func__,
+				dest_id);
+		return NULL;
+	}
+
+	if (apr_get_svc(svc_name, domain_id, &client_id, &svc_idx, &svc_id)) {
+		pr_err("%s: apr_get_svc failed\n", __func__);
+>>>>>>> p9x
 		goto done;
 	}
 
 	clnt = &client[dest_id][client_id];
 	mutex_lock(&clnt->m_lock);
+<<<<<<< HEAD
 	if (!clnt->handle && can_open_channel) {
+=======
+	if (!clnt->handle) {
+>>>>>>> p9x
 		clnt->handle = apr_tal_open(client_id, dest_id,
 				APR_DL_SMD, apr_cb_func, NULL);
 		if (!clnt->handle) {
 			svc = NULL;
+<<<<<<< HEAD
 			pr_err_ratelimited("APR: Unable to open handle\n");
+=======
+			pr_err("APR: Unable to open handle\n");
+>>>>>>> p9x
 			mutex_unlock(&clnt->m_lock);
 			goto done;
 		}
@@ -442,15 +595,22 @@ struct apr_svc *apr_register(char *dest, char *svc_name, apr_fn svc_fn,
 	clnt->id = client_id;
 	if (svc->need_reset) {
 		mutex_unlock(&svc->m_lock);
+<<<<<<< HEAD
 		pr_err_ratelimited("APR: Service needs reset\n");
+=======
+		pr_err("APR: Service needs reset\n");
+>>>>>>> p9x
 		goto done;
 	}
 	svc->id = svc_id;
 	svc->dest_id = dest_id;
 	svc->client_id = client_id;
 	svc->dest_domain = domain_id;
+<<<<<<< HEAD
 	svc->pkt_owner = APR_PKT_OWNER_DRIVER;
 
+=======
+>>>>>>> p9x
 	if (src_port != 0xFFFFFFFF) {
 		temp_port = ((src_port >> 8) * 8) + (src_port & 0xFF);
 		pr_debug("port = %d t_port = %d\n", src_port, temp_port);
@@ -510,8 +670,11 @@ void apr_cb_func(void *buf, int len, void *priv)
 		return;
 	}
 	hdr = buf;
+<<<<<<< HEAD
 	APR_PKT_INFO("Rx: dest_svc[%d], opcode[0x%X], size[%d]",
 		     hdr->dest_svc, hdr->opcode, hdr->pkt_size);
+=======
+>>>>>>> p9x
 
 	ver = hdr->hdr_field;
 	ver = (ver & 0x000F);
@@ -531,12 +694,15 @@ void apr_cb_func(void *buf, int len, void *priv)
 		pr_err("APR: Wrong paket size\n");
 		return;
 	}
+<<<<<<< HEAD
 
 	if (hdr->pkt_size < hdr_size) {
 		pr_err("APR: Packet size less than header size\n");
 		return;
 	}
 
+=======
+>>>>>>> p9x
 	msg_type = hdr->hdr_field;
 	msg_type = (msg_type >> 0x08) & 0x0003;
 	if (msg_type >= APR_MSG_TYPE_MAX && msg_type != APR_BASIC_RSP_RESULT) {
@@ -583,7 +749,11 @@ void apr_cb_func(void *buf, int len, void *priv)
 	}
 
 	src = apr_get_data_src(hdr);
+<<<<<<< HEAD
 	if (src == APR_DEST_MAX)
+=======
+	if (src >= APR_DEST_MAX)
+>>>>>>> p9x
 		return;
 
 	pr_debug("src =%d clnt = %d\n", src, clnt);
@@ -614,8 +784,12 @@ void apr_cb_func(void *buf, int len, void *priv)
 
 	temp_port = ((data.dest_port >> 8) * 8) + (data.dest_port & 0xFF);
 	pr_debug("port = %d t_port = %d\n", data.src_port, temp_port);
+<<<<<<< HEAD
 	if (((temp_port >= 0) && (temp_port < APR_MAX_PORTS))
 		&& (c_svc->port_cnt && c_svc->port_fn[temp_port]))
+=======
+	if (c_svc->port_cnt && c_svc->port_fn[temp_port])
+>>>>>>> p9x
 		c_svc->port_fn[temp_port](&data,  c_svc->port_priv[temp_port]);
 	else if (c_svc->fn)
 		c_svc->fn(&data, c_svc->priv);
@@ -890,6 +1064,13 @@ static int lpass_notifier_cb(struct notifier_block *this, unsigned long code,
 		powered_on = true;
 		pr_debug("L-Notify: Bootup Completed\n");
 		break;
+<<<<<<< HEAD
+=======
+	case SUBSYS_SOC_RESET:
+		pr_debug("L-Notify: SoC Reset Initiated\n");
+		log_spm_registers();
+		break;
+>>>>>>> p9x
 	default:
 		pr_err("L-Notify: Generel: %lu\n", code);
 		break;
@@ -898,7 +1079,10 @@ static int lpass_notifier_cb(struct notifier_block *this, unsigned long code,
 }
 
 static struct notifier_block lnb = {
+<<<<<<< HEAD
 	.priority = 0,
+=======
+>>>>>>> p9x
 	.notifier_call = lpass_notifier_cb,
 };
 
@@ -925,11 +1109,146 @@ static struct notifier_block panic_nb = {
 	.notifier_call  = panic_handler,
 };
 
+<<<<<<< HEAD
 static int __init apr_init(void)
 {
 	int i, j, k;
 
 	for (i = 0; i < APR_DEST_MAX; i++)
+=======
+int apr_set_subsys_state(void)
+{
+	int ret = 0;
+	if (apr_dsp_func.apr_set_subsys_state) {
+		apr_dsp_func.apr_set_subsys_state();
+	} else {
+		pr_err("%s: invalid function ptr\n", __func__);
+		ret = -EINVAL;
+	}
+	return ret;
+}
+
+uint16_t apr_get_data_src(struct apr_hdr *hdr)
+{
+	u16 data_src = APR_DEST_MAX;
+	if (!hdr) {
+		pr_err("%s: Invalid param\n", __func__);
+		goto err;
+	}
+	if (apr_dsp_func.apr_get_data_src)
+		data_src = apr_dsp_func.apr_get_data_src(hdr);
+	else
+		pr_err("%s: Invalid function ptr\n", __func__);
+err:
+	return data_src;
+}
+
+int apr_get_dest_id(char *dest)
+{
+	int dest_id = APR_DEST_MAX;
+	if (!dest) {
+		pr_err("%s: Invalid params\n", __func__);
+		goto err;
+	}
+	if (apr_dsp_func.apr_get_dest_id)
+		dest_id = apr_dsp_func.apr_get_dest_id(dest);
+	else
+		pr_err("%s: Invalid func ptr\n", __func__);
+err:
+	return dest_id;
+}
+
+int subsys_notif_register(struct notifier_block *mod_notif,
+		struct notifier_block *lp_notif)
+{
+	int ret = 0;
+	if (apr_dsp_func.subsys_notif_register) {
+		apr_dsp_func.subsys_notif_register(mod_notif, lp_notif);
+	} else {
+		pr_err("%s: Invalid func ptr\n", __func__);
+		ret = -EINVAL;
+	}
+	return ret;
+}
+
+bool apr_register_voice_svc(void)
+{
+	bool voice_svc = false;
+	if (apr_dsp_func.apr_register_voice_svc)
+		voice_svc = apr_dsp_func.apr_register_voice_svc();
+	else
+		pr_err("%s: invalid func ptr\n", __func__);
+	return voice_svc;
+}
+
+uint16_t apr_get_reset_domain(uint16_t proc)
+{
+	u16 reset_domain = APR_DEST_MAX;
+	if (apr_dsp_func.apr_get_reset_domain)
+		reset_domain = apr_dsp_func.apr_get_reset_domain(proc);
+	else
+		pr_err("%s: invalid func ptr\n", __func__);
+	return reset_domain;
+}
+
+static void apr_cleanup(void)
+{
+	int i, j, k;
+	memset(&apr_dsp_func, 0, sizeof(apr_dsp_func));
+	if (apr_reset_workqueue)
+		destroy_workqueue(apr_reset_workqueue);
+	mutex_destroy(&q6.lock);
+	for (i = 0; i < APR_DEST_MAX; i++) {
+		for (j = 0; j < APR_CLIENT_MAX; j++) {
+			mutex_destroy(&client[i][j].m_lock);
+			for (k = 0; k < APR_SVC_MAX; k++)
+				mutex_destroy(&client[i][j].svc[k].m_lock);
+		}
+	}
+	/* Unmap LPASS SPM SAW2 register */
+	if (lpass_qdsp6ss_saw2)
+		iounmap(lpass_qdsp6ss_saw2);
+}
+
+static int apr_probe(struct platform_device *pdev)
+{
+	int i, j, k, ret;
+	const char *dsp_type = NULL;
+
+	ret = of_property_read_string(pdev->dev.of_node,
+		"qcom,apr-dest-type",
+		&dsp_type);
+	if (ret || !dsp_type) {
+		dev_err(&pdev->dev, "%s: Looking up %s property failed\n",
+		__func__, "qcom,apr-dest-type");
+		return -EINVAL;
+	}
+	if (!strcmp("ADSP", dsp_type)) {
+		dev_info(&pdev->dev, "%s: destination is ADSP\n", __func__);
+		ret = apr_get_v2_ops(&apr_dsp_func);
+		if (ret) {
+			dev_err(&pdev->dev, "%s error get adsp ops %d\n",
+					__func__, ret);
+			return ret;
+		}
+	} else if (!strcmp("MDSP", dsp_type)) {
+		dev_info(&pdev->dev, "%s: destination is modem\n", __func__);
+		ret = apr_get_v3_ops(&apr_dsp_func);
+		if (ret) {
+			dev_err(&pdev->dev, "%s: error get mdsp ops %d\n",
+					__func__, ret);
+			return ret;
+		}
+	} else if (!strcmp("Dynamic", dsp_type)) {
+		dev_info(&pdev->dev, "%s: using service registry\n", __func__);
+	} else {
+		dev_err(&pdev->dev, "%s: Invalid destination type\n",
+				__func__);
+		return -EINVAL;
+	}
+
+	for (i = 0; i < APR_DEST_MAX; i++) {
+>>>>>>> p9x
 		for (j = 0; j < APR_CLIENT_MAX; j++) {
 			mutex_init(&client[i][j].m_lock);
 			for (k = 0; k < APR_SVC_MAX; k++) {
@@ -937,6 +1256,7 @@ static int __init apr_init(void)
 				spin_lock_init(&client[i][j].svc[k].w_lock);
 			}
 		}
+<<<<<<< HEAD
 	apr_set_subsys_state();
 	mutex_init(&q6.lock);
 	apr_reset_workqueue = create_singlethread_workqueue("apr_driver");
@@ -962,3 +1282,59 @@ static int __init apr_late_init(void)
 	return ret;
 }
 late_initcall(apr_late_init);
+=======
+	}
+	mutex_init(&q6.lock);
+	apr_reset_workqueue = create_singlethread_workqueue("apr_driver");
+	if (!apr_reset_workqueue) {
+		pr_err("%s: work queue creation failed\n", __func__);
+		apr_cleanup();
+		return -ENOMEM;
+	}
+	ret = apr_set_subsys_state();
+	if (ret)
+		dev_err(&pdev->dev, "%s: apr_set_subsys_state failed ret = %d\n",
+				__func__, ret);
+	atomic_notifier_chain_register(&panic_notifier_list, &panic_nb);
+	init_waitqueue_head(&dsp_wait);
+	init_waitqueue_head(&modem_wait);
+	ret = subsys_notif_register(&mnb, &lnb);
+	if (ret) {
+		dev_err(&pdev->dev, "%s: subsys_notif_register failed ret = %d\n",
+				__func__, ret);
+	}
+
+	/* Remap lpass spm saw2 register */
+	lpass_qdsp6ss_saw2 = ioremap(LPASS_QDSP6SS_QDSP6SS_SAW2, 0x1000);
+	if (lpass_qdsp6ss_saw2 == NULL)
+		pr_err("ioremap failure for the lpass spm saw2 register\n");
+
+	return 0;
+}
+
+static int apr_remove(struct platform_device *pdev)
+{
+	apr_cleanup();
+	return 0;
+}
+
+static const struct of_device_id apr_machine_of_match[]  = {
+	{ .compatible = "qcom,msmapr-audio", },
+	{},
+};
+
+static struct platform_driver apr_driver = {
+	.probe = apr_probe,
+	.remove = apr_remove,
+	.driver = {
+		.name = "adsp_audio",
+		.owner = THIS_MODULE,
+		.of_match_table = apr_machine_of_match,
+	}
+};
+
+module_platform_driver(apr_driver);
+MODULE_DESCRIPTION("APR DRIVER");
+MODULE_LICENSE("GPL v2");
+MODULE_DEVICE_TABLE(of, apr_machine_of_match);
+>>>>>>> p9x

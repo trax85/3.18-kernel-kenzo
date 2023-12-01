@@ -13,7 +13,10 @@
 #include <linux/if_pppox.h>
 #include <linux/ppp_defs.h>
 #include <net/flow_keys.h>
+<<<<<<< HEAD
 #include <scsi/fc/fc_fcoe.h>
+=======
+>>>>>>> p9x
 #include <linux/net_map.h>
 
 /* copy saddr & daddr, possibly using 64bit load/store
@@ -92,7 +95,11 @@ again:
 		const struct iphdr *iph;
 		struct iphdr _iph;
 ip:
+<<<<<<< HEAD
 		iph = __skb_header_pointer(skb, nhoff, sizeof(_iph), data, hlen, &_iph);
+=======
+		iph = skb_header_pointer(skb, nhoff, sizeof(_iph), &_iph);
+>>>>>>> p9x
 		if (!iph || iph->ihl < 5)
 			return false;
 		nhoff += iph->ihl * 4;
@@ -213,9 +220,12 @@ ipv6:
 			return false;
 		}
 	}
+<<<<<<< HEAD
 	case htons(ETH_P_FCOE):
 		flow->thoff = (u16)(nhoff + FCOE_HEADER_LEN);
 		/* fall through */
+=======
+>>>>>>> p9x
 	default:
 		return false;
 	}
@@ -271,6 +281,19 @@ ipv6:
 
 	flow->n_proto = proto;
 	flow->ip_proto = ip_proto;
+<<<<<<< HEAD
+=======
+	poff = proto_ports_offset(ip_proto);
+	if (poff >= 0) {
+		__be32 *ports, _ports;
+
+		ports = skb_header_pointer(skb, nhoff + poff,
+					   sizeof(_ports), &_ports);
+		if (ports)
+			flow->ports = *ports;
+	}
+
+>>>>>>> p9x
 	flow->thoff = (u16) nhoff;
 
 	/* unless skb is set we don't need to record port info */

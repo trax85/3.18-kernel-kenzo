@@ -130,6 +130,7 @@ power7_enter_nap_mode:
 2:	IDLE_STATE_ENTER_SEQ(PPC_SLEEP)
 	/* No return */
 
+<<<<<<< HEAD
 _GLOBAL(power7_idle)
 	/* Now check if user or arch enabled NAP mode */
 	LOAD_REG_ADDRBASE(r3,powersave_nap)
@@ -227,6 +228,16 @@ END_FTR_SECTION_IFSET(CPU_FTR_HVMODE)
 	mtspr	SPRN_SRR1,r4
 	mtspr	SPRN_SRR0,r5
 	rfid
+=======
+	/* Magic NAP mode enter sequence */
+	std	r0,0(r1)
+	ptesync
+	ld	r0,0(r1)
+1:	cmpd	cr0,r0,r0
+	bne	1b
+	PPC_NAP
+	b	.
+>>>>>>> p9x
 
 _GLOBAL(power7_wakeup_loss)
 	ld	r1,PACAR1(r13)

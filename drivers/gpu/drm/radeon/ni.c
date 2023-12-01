@@ -1429,7 +1429,10 @@ void cayman_fence_ring_emit(struct radeon_device *rdev,
 void cayman_ring_ib_execute(struct radeon_device *rdev, struct radeon_ib *ib)
 {
 	struct radeon_ring *ring = &rdev->ring[ib->ring];
+<<<<<<< HEAD
 	unsigned vm_id = ib->vm ? ib->vm->ids[ib->ring].id : 0;
+=======
+>>>>>>> p9x
 	u32 cp_coher_cntl = PACKET3_FULL_CACHE_ENA | PACKET3_TC_ACTION_ENA |
 		PACKET3_SH_ACTION_ENA;
 
@@ -1459,7 +1462,28 @@ void cayman_ring_ib_execute(struct radeon_device *rdev, struct radeon_ib *ib)
 	radeon_ring_write(ring, PACKET3_ENGINE_ME | cp_coher_cntl);
 	radeon_ring_write(ring, 0xFFFFFFFF);
 	radeon_ring_write(ring, 0);
+<<<<<<< HEAD
 	radeon_ring_write(ring, (vm_id << 24) | 10); /* poll interval */
+=======
+	radeon_ring_write(ring, ((ib->vm ? ib->vm->id : 0) << 24) | 10); /* poll interval */
+}
+
+void cayman_uvd_semaphore_emit(struct radeon_device *rdev,
+			       struct radeon_ring *ring,
+			       struct radeon_semaphore *semaphore,
+			       bool emit_wait)
+{
+	uint64_t addr = semaphore->gpu_addr;
+
+	radeon_ring_write(ring, PACKET0(UVD_SEMA_ADDR_LOW, 0));
+	radeon_ring_write(ring, (addr >> 3) & 0x000FFFFF);
+
+	radeon_ring_write(ring, PACKET0(UVD_SEMA_ADDR_HIGH, 0));
+	radeon_ring_write(ring, (addr >> 23) & 0x000FFFFF);
+
+	radeon_ring_write(ring, PACKET0(UVD_SEMA_CMD, 0));
+	radeon_ring_write(ring, 0x80 | (emit_wait ? 1 : 0));
+>>>>>>> p9x
 }
 
 static void cayman_cp_enable(struct radeon_device *rdev, bool enable)
@@ -2010,10 +2034,31 @@ static int cayman_startup(struct radeon_device *rdev)
 	/* enable aspm */
 	evergreen_program_aspm(rdev);
 
+<<<<<<< HEAD
 	/* scratch needs to be initialized before MC */
 	r = r600_vram_scratch_init(rdev);
 	if (r)
 		return r;
+=======
+	evergreen_mc_program(rdev);
+
+	if (rdev->flags & RADEON_IS_IGP) {
+		if (!rdev->me_fw || !rdev->pfp_fw || !rdev->rlc_fw) {
+			r = ni_init_microcode(rdev);
+			if (r) {
+				DRM_ERROR("Failed to load firmware!\n");
+				return r;
+			}
+		}
+	} else {
+		if (!rdev->me_fw || !rdev->pfp_fw || !rdev->rlc_fw || !rdev->mc_fw) {
+			r = ni_init_microcode(rdev);
+			if (r) {
+				DRM_ERROR("Failed to load firmware!\n");
+				return r;
+			}
+		}
+>>>>>>> p9x
 
 	evergreen_mc_program(rdev);
 
@@ -2025,6 +2070,13 @@ static int cayman_startup(struct radeon_device *rdev)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	r = r600_vram_scratch_init(rdev);
+	if (r)
+		return r;
+
+>>>>>>> p9x
 	r = cayman_pcie_gart_enable(rdev);
 	if (r)
 		return r;
@@ -2228,7 +2280,11 @@ int cayman_suspend(struct radeon_device *rdev)
 	radeon_vm_manager_fini(rdev);
 	cayman_cp_enable(rdev, false);
 	cayman_dma_stop(rdev);
+<<<<<<< HEAD
 	uvd_v1_0_fini(rdev);
+=======
+	r600_uvd_stop(rdev);
+>>>>>>> p9x
 	radeon_uvd_suspend(rdev);
 	evergreen_irq_suspend(rdev);
 	radeon_wb_disable(rdev);
@@ -2394,7 +2450,11 @@ void cayman_fini(struct radeon_device *rdev)
 	radeon_vm_manager_fini(rdev);
 	radeon_ib_pool_fini(rdev);
 	radeon_irq_kms_fini(rdev);
+<<<<<<< HEAD
 	uvd_v1_0_fini(rdev);
+=======
+	r600_uvd_stop(rdev);
+>>>>>>> p9x
 	radeon_uvd_fini(rdev);
 	if (rdev->family == CHIP_ARUBA)
 		radeon_vce_fini(rdev);

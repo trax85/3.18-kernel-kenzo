@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2010-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2010-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -19,6 +23,7 @@ enum {
 	MSM_SPM_MODE_RETENTION,
 	MSM_SPM_MODE_GDHS,
 	MSM_SPM_MODE_POWER_COLLAPSE,
+<<<<<<< HEAD
 	MSM_SPM_MODE_STANDALONE_POWER_COLLAPSE,
 	MSM_SPM_MODE_FASTPC,
 	MSM_SPM_MODE_NR
@@ -39,6 +44,23 @@ void msm_spm_set_rpm_hs(bool allow_rpm_hs);
 int msm_spm_probe_done(void);
 int msm_spm_set_vdd(unsigned int cpu, unsigned int vlevel);
 int msm_spm_get_vdd(unsigned int cpu);
+=======
+	MSM_SPM_MODE_NR
+};
+
+struct msm_spm_device;
+struct device_node;
+
+#define spm_raw_write(v, a)	({ __raw_writel(v, a); __raw_readl(a); })
+#define spm_write_relaxed(v, c)	({ writel_relaxed(v, c); readl_relaxed(c); })
+
+#if defined(CONFIG_MSM_SPM)
+
+int msm_spm_set_low_power_mode(unsigned int mode, bool notify_rpm);
+int msm_spm_probe_done(void);
+int msm_spm_set_vdd(unsigned int cpu, unsigned int vlevel);
+unsigned int msm_spm_get_vdd(unsigned int cpu);
+>>>>>>> p9x
 int msm_spm_turn_on_cpu_rail(struct device_node *l2ccc_node,
 		unsigned int val, int cpu, int vctl_offset);
 struct msm_spm_device *msm_spm_get_device_by_name(const char *name);
@@ -49,6 +71,7 @@ int msm_spm_config_low_power_mode_addr(struct msm_spm_device *dev,
 int msm_spm_device_init(void);
 bool msm_spm_is_mode_avail(unsigned int mode);
 void msm_spm_dump_regs(unsigned int cpu);
+<<<<<<< HEAD
 int msm_spm_is_avs_enabled(unsigned int cpu);
 int msm_spm_avs_enable(unsigned int cpu);
 int msm_spm_avs_disable(unsigned int cpu);
@@ -58,6 +81,8 @@ int msm_spm_avs_enable_irq(unsigned int cpu, enum msm_spm_avs_irq irq);
 int msm_spm_avs_disable_irq(unsigned int cpu, enum msm_spm_avs_irq irq);
 int msm_spm_avs_clear_irq(unsigned int cpu, enum msm_spm_avs_irq irq);
 
+=======
+>>>>>>> p9x
 #if defined(CONFIG_MSM_L2_SPM)
 
 /* Public functions */
@@ -83,11 +108,14 @@ static inline int msm_spm_set_low_power_mode(unsigned int mode, bool notify_rpm)
 	return -ENOSYS;
 }
 
+<<<<<<< HEAD
 static inline void msm_spm_set_rpm_hs(bool allow_rpm_hs)
 {
 	return;
 }
 
+=======
+>>>>>>> p9x
 static inline int msm_spm_probe_done(void)
 {
 	return -ENOSYS;
@@ -98,7 +126,11 @@ static inline int msm_spm_set_vdd(unsigned int cpu, unsigned int vlevel)
 	return -ENOSYS;
 }
 
+<<<<<<< HEAD
 static inline int msm_spm_get_vdd(unsigned int cpu)
+=======
+static inline unsigned int msm_spm_get_vdd(unsigned int cpu)
+>>>>>>> p9x
 {
 	return 0;
 }
@@ -130,8 +162,13 @@ static inline int msm_spm_config_low_power_mode_addr(
 {
 	return -ENODEV;
 }
+<<<<<<< HEAD
 
 static inline struct msm_spm_device *msm_spm_get_device_by_name(const char *name)
+=======
+static inline struct msm_spm_device *msm_spm_get_device_by_name
+						(const char *name)
+>>>>>>> p9x
 {
 	return NULL;
 }
@@ -141,6 +178,7 @@ static inline bool msm_spm_is_mode_avail(unsigned int mode)
 	return false;
 }
 
+<<<<<<< HEAD
 static inline int msm_spm_avs_enable_irq(unsigned int cpu,
 		enum msm_spm_avs_irq irq)
 {
@@ -159,5 +197,7 @@ static inline int msm_spm_avs_clear_irq(unsigned int cpu,
 	return -ENOSYS;
 }
 
+=======
+>>>>>>> p9x
 #endif  /* defined (CONFIG_MSM_SPM) */
 #endif  /* __ARCH_ARM_MACH_MSM_SPM_H */

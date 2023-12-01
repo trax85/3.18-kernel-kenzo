@@ -17,6 +17,7 @@
 
 #include <asm/cmpxchg.h>
 #include <asm/barrier.h>
+<<<<<<< HEAD
 
 /*
  * atomic_$op() - $op integer to atomic variable
@@ -34,6 +35,8 @@
  *
  * Atomically $ops @i to @v. Does imply a full memory barrier.
  */
+=======
+>>>>>>> p9x
 
 #ifdef CONFIG_SMP
 
@@ -184,4 +187,45 @@ static inline int __atomic_add_unless(atomic_t *v, int a, int u)
 	return c;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * atomic_clear_mask - Atomically clear bits in atomic variable
+ * @mask: Mask of the bits to be cleared
+ * @v: pointer of type atomic_t
+ *
+ * Atomically clears the bits set in @mask from @v
+ */
+#ifndef atomic_clear_mask
+static inline void atomic_clear_mask(unsigned long mask, atomic_t *v)
+{
+	unsigned long flags;
+
+	mask = ~mask;
+	raw_local_irq_save(flags); /* Don't trace it in a irqsoff handler */
+	v->counter &= mask;
+	raw_local_irq_restore(flags);
+}
+#endif
+
+/**
+ * atomic_set_mask - Atomically set bits in atomic variable
+ * @mask: Mask of the bits to be set
+ * @v: pointer of type atomic_t
+ *
+ * Atomically sets the bits set in @mask in @v
+ */
+#ifndef atomic_set_mask
+static inline void atomic_set_mask(unsigned int mask, atomic_t *v)
+{
+	unsigned long flags;
+
+	raw_local_irq_save(flags); /* Don't trace it in a irqsoff handler */
+	v->counter |= mask;
+	raw_local_irq_restore(flags);
+}
+#endif
+
+#endif /* __KERNEL__ */
+>>>>>>> p9x
 #endif /* __ASM_GENERIC_ATOMIC_H */

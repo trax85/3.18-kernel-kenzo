@@ -93,8 +93,12 @@ static void icmpv6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 	if (type == ICMPV6_PKT_TOOBIG)
 		ip6_update_pmtu(skb, net, info, 0, 0, sock_net_uid(net, NULL));
 	else if (type == NDISC_REDIRECT)
+<<<<<<< HEAD
 		ip6_redirect(skb, net, skb->dev->ifindex, 0,
 			     sock_net_uid(net, NULL));
+=======
+		ip6_redirect(skb, net, 0, 0, sock_net_uid(net, NULL));
+>>>>>>> p9x
 
 	if (!(type & ICMPV6_INFOMSG_MASK))
 		if (icmp6->icmp6_type == ICMPV6_ECHO_REQUEST)
@@ -321,10 +325,15 @@ static void mip6_addr_swap(struct sk_buff *skb)
 static inline void mip6_addr_swap(struct sk_buff *skb) {}
 #endif
 
+<<<<<<< HEAD
 static struct dst_entry *icmpv6_route_lookup(struct net *net,
 					     struct sk_buff *skb,
 					     struct sock *sk,
 					     struct flowi6 *fl6)
+=======
+struct dst_entry *icmpv6_route_lookup(struct net *net, struct sk_buff *skb,
+				      struct sock *sk, struct flowi6 *fl6)
+>>>>>>> p9x
 {
 	struct dst_entry *dst, *dst2;
 	struct flowi6 fl2;
@@ -559,7 +568,10 @@ static void icmpv6_echo_reply(struct sk_buff *skb)
 	struct dst_entry *dst;
 	int err = 0;
 	int hlimit;
+<<<<<<< HEAD
 	u8 tclass;
+=======
+>>>>>>> p9x
 	u32 mark = IP6_REPLY_MARK(net, skb->mark);
 
 	saddr = &ipv6_hdr(skb)->daddr;
@@ -708,11 +720,30 @@ static int icmpv6_rcv(struct sk_buff *skb)
 	saddr = &ipv6_hdr(skb)->saddr;
 	daddr = &ipv6_hdr(skb)->daddr;
 
+<<<<<<< HEAD
 	if (skb_checksum_validate(skb, IPPROTO_ICMPV6, ip6_compute_pseudo)) {
 		LIMIT_NETDEBUG(KERN_DEBUG
 			       "ICMPv6 checksum failed [%pI6c > %pI6c]\n",
 			       saddr, daddr);
 		goto csum_error;
+=======
+	/* Perform checksum. */
+	switch (skb->ip_summed) {
+	case CHECKSUM_COMPLETE:
+		if (!csum_ipv6_magic(saddr, daddr, skb->len, IPPROTO_ICMPV6,
+				     skb->csum))
+			break;
+		/* fall through */
+	case CHECKSUM_NONE:
+		skb->csum = ~csum_unfold(csum_ipv6_magic(saddr, daddr, skb->len,
+					     IPPROTO_ICMPV6, 0));
+		if (__skb_checksum_complete(skb)) {
+			LIMIT_NETDEBUG(KERN_DEBUG
+				       "ICMPv6 checksum failed [%pI6c > %pI6c]\n",
+				       saddr, daddr);
+			goto csum_error;
+		}
+>>>>>>> p9x
 	}
 
 	if (!pskb_pull(skb, sizeof(*hdr)))

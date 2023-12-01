@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -13,7 +17,10 @@
 #ifndef _IPC_LOGGING_H
 #define _IPC_LOGGING_H
 
+<<<<<<< HEAD
 #include <linux/err.h>
+=======
+>>>>>>> p9x
 #include <linux/types.h>
 
 #define MAX_MSG_SIZE 255
@@ -72,6 +79,7 @@ void msg_encode_start(struct encode_context *ectxt, uint32_t type);
 int tsv_timestamp_write(struct encode_context *ectxt);
 
 /*
+<<<<<<< HEAD
  * tsv_qtimer_write: Writes the current QTimer timestamp count
  *
  * @ectxt: Context initialized by calling msg_encode_start()
@@ -79,6 +87,8 @@ int tsv_timestamp_write(struct encode_context *ectxt);
 int tsv_qtimer_write(struct encode_context *ectxt);
 
 /*
+=======
+>>>>>>> p9x
  * tsv_pointer_write: Writes a data pointer
  *
  * @ectxt:   Context initialized by calling msg_encode_start()
@@ -163,6 +173,7 @@ void tsv_timestamp_read(struct encode_context *ectxt,
 			struct decode_context *dctxt, const char *format);
 
 /*
+<<<<<<< HEAD
  * tsv_qtimer_read: Reads a QTimer timestamp
  *
  * @ectxt:  Context retrieved by reading from log space
@@ -173,6 +184,8 @@ void tsv_qtimer_read(struct encode_context *ectxt,
 		     struct decode_context *dctxt, const char *format);
 
 /*
+=======
+>>>>>>> p9x
  * tsv_pointer_read: Reads a data pointer
  *
  * @ectxt:  Context retrieved by reading from log space
@@ -237,9 +250,12 @@ static inline void msg_encode_start(struct encode_context *ectxt,
 static inline int tsv_timestamp_write(struct encode_context *ectxt)
 { return -EINVAL; }
 
+<<<<<<< HEAD
 static inline int tsv_qtimer_write(struct encode_context *ectxt)
 { return -EINVAL; }
 
+=======
+>>>>>>> p9x
 static inline int tsv_pointer_write(struct encode_context *ectxt, void *pointer)
 { return -EINVAL; }
 
@@ -265,9 +281,12 @@ static inline int ipc_log_extract(void *ilctxt, char *buff, int size)
 static inline void tsv_timestamp_read(struct encode_context *ectxt,
 			struct decode_context *dctxt, const char *format) { }
 
+<<<<<<< HEAD
 static inline void tsv_qtimer_read(struct encode_context *ectxt,
 			struct decode_context *dctxt, const char *format) { }
 
+=======
+>>>>>>> p9x
 static inline void tsv_pointer_read(struct encode_context *ectxt,
 		      struct decode_context *dctxt, const char *format) { }
 

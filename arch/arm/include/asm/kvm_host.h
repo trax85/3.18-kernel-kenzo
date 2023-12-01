@@ -42,6 +42,12 @@
 
 #include <kvm/arm_vgic.h>
 
+<<<<<<< HEAD
+=======
+#include <kvm/arm_vgic.h>
+
+struct kvm_vcpu;
+>>>>>>> p9x
 u32 *kvm_vcpu_reg(struct kvm_vcpu *vcpu, u8 reg_num, u32 mode);
 int __attribute_const__ kvm_target_cpu(void);
 int kvm_reset_vcpu(struct kvm_vcpu *vcpu);
@@ -233,10 +239,15 @@ static inline void vgic_arch_setup(const struct vgic_params *vgic)
 int kvm_perf_init(void);
 int kvm_perf_teardown(void);
 
+<<<<<<< HEAD
 static inline void kvm_arch_hardware_disable(void) {}
 static inline void kvm_arch_hardware_unsetup(void) {}
 static inline void kvm_arch_sync_events(struct kvm *kvm) {}
 static inline void kvm_arch_vcpu_uninit(struct kvm_vcpu *vcpu) {}
 static inline void kvm_arch_sched_in(struct kvm_vcpu *vcpu, int cpu) {}
+=======
+u64 kvm_arm_timer_get_reg(struct kvm_vcpu *, u64 regid);
+int kvm_arm_timer_set_reg(struct kvm_vcpu *, u64 regid, u64 value);
+>>>>>>> p9x
 
 #endif /* __ARM_KVM_HOST_H__ */

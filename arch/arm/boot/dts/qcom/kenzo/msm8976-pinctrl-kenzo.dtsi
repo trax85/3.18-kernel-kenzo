@@ -303,6 +303,7 @@
 			};
 		};
 
+<<<<<<< HEAD
 		pmx_sdc3_clk {
 			qcom,pins = <&gp 44>;
 			qcom,num-grp-pins = <1>;
@@ -366,6 +367,8 @@
 
 		};
 
+=======
+>>>>>>> p9x
 		pmx_mdss: pmx_mdss {
 			label = "mdss-pins";
 			qcom,pin-func = <0>;
@@ -972,6 +975,7 @@
 			};
 		};
 
+<<<<<<< HEAD
 		uicc-active {
 			qcom,pins = <&gp 49>, <&gp 50>;
 			qcom,num-grp-pins = <2>;
@@ -996,6 +1000,8 @@
 			};
 		};
 
+=======
+>>>>>>> p9x
 		pmx_qdsd_data1 {
 			qcom,pins = <&qdsd 3>;
 			qcom,num-grp-pins = <1>;

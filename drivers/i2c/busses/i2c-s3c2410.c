@@ -1279,11 +1279,17 @@ static int s3c24xx_i2c_resume_noirq(struct device *dev)
 	struct s3c24xx_i2c *i2c = platform_get_drvdata(pdev);
 	int ret;
 
+<<<<<<< HEAD
 	ret = clk_enable(i2c->clk);
 	if (ret)
 		return ret;
 	s3c24xx_i2c_init(i2c);
 	clk_disable(i2c->clk);
+=======
+	clk_prepare_enable(i2c->clk);
+	s3c24xx_i2c_init(i2c);
+	clk_disable_unprepare(i2c->clk);
+>>>>>>> p9x
 	i2c->suspended = 0;
 
 	return 0;

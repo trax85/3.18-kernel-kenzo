@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2010-2013, 2015-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2010-2013, 2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -14,7 +18,11 @@
 #define __MDSS_HDMI_CEC_H__
 
 #include "mdss_hdmi_util.h"
+<<<<<<< HEAD
 #include "mdss_cec_core.h"
+=======
+#include "mdss_cec_abstract.h"
+>>>>>>> p9x
 
 #define RETRANSMIT_MAX_NUM	5
 
@@ -49,7 +57,11 @@ int hdmi_cec_isr(void *cec_ctrl);
 
 /**
  * hdmi_cec_init() - Initialize the CEC hw module
+<<<<<<< HEAD
  * @init_data: data needed to initialize the cec hw module
+=======
+ * @init_data: data needed to initalize the cec hw module
+>>>>>>> p9x
  *
  * Return: pointer to cec hw modules data that needs to be passed when
  * calling cec hw modules API or error code.
@@ -66,6 +78,7 @@ void *hdmi_cec_init(struct hdmi_cec_init_data *init_data);
  * This API release all resources allocated.
  */
 void hdmi_cec_deinit(void *data);
+<<<<<<< HEAD
 
 /**
  * hdmi_cec_is_wakeup_en() - checks cec wakeup state
@@ -87,4 +100,6 @@ bool hdmi_cec_is_wakeup_en(void *cec_ctrl);
  * state.
  */
 void hdmi_cec_device_suspend(void *cec_ctrl, bool suspend);
+=======
+>>>>>>> p9x
 #endif /* __MDSS_HDMI_CEC_H__ */

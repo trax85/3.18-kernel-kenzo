@@ -486,7 +486,36 @@ int imx_drm_encoder_parse_of(struct drm_device *drm,
 
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(imx_drm_encoder_parse_of);
+=======
+EXPORT_SYMBOL_GPL(imx_drm_encoder_add_possible_crtcs);
+
+int imx_drm_encoder_get_mux_id(struct imx_drm_encoder *imx_drm_encoder,
+		struct drm_crtc *crtc)
+{
+	struct imx_drm_device *imxdrm = __imx_drm_device();
+	struct imx_drm_crtc *imx_crtc;
+	int i = 0;
+
+	mutex_lock(&imxdrm->mutex);
+
+	list_for_each_entry(imx_crtc, &imxdrm->crtc_list, list) {
+		if (imx_crtc->crtc == crtc)
+			goto found;
+		i++;
+	}
+
+	mutex_unlock(&imxdrm->mutex);
+
+	return -EINVAL;
+found:
+	mutex_unlock(&imxdrm->mutex);
+
+	return i;
+}
+EXPORT_SYMBOL_GPL(imx_drm_encoder_get_mux_id);
+>>>>>>> p9x
 
 /*
  * @node: device tree node containing encoder input ports

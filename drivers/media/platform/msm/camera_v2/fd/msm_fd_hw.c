@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -16,20 +20,34 @@
 #include <linux/of.h>
 #include <linux/platform_device.h>
 #include <linux/regulator/consumer.h>
+<<<<<<< HEAD
 #include <linux/spinlock.h>
 #include <linux/interrupt.h>
 #include <linux/iommu.h>
+=======
+#include <linux/msm_iommu_domains.h>
+#include <linux/spinlock.h>
+#include <linux/iommu.h>
+#include <linux/qcom_iommu.h>
+>>>>>>> p9x
 #include <linux/msm_ion.h>
 #include <linux/msm-bus.h>
 #include <linux/msm-bus-board.h>
 #include <media/videobuf2-core.h>
+<<<<<<< HEAD
 #include <linux/dma-buf.h>
 #include <linux/dma-mapping.h>
+=======
+
+>>>>>>> p9x
 #include "msm_fd_dev.h"
 #include "msm_fd_hw.h"
 #include "msm_fd_regs.h"
 #include "cam_smmu_api.h"
+<<<<<<< HEAD
 #include "msm_camera_io_util.h"
+=======
+>>>>>>> p9x
 
 /* After which revision misc irq for engine is needed */
 #define MSM_FD_MISC_IRQ_FROM_REV 0x10010000
@@ -38,6 +56,7 @@
 /* Face detection bus client name */
 #define MSM_FD_BUS_CLIENT_NAME "msm_face_detect"
 /* Face detection processing timeout in ms */
+<<<<<<< HEAD
 #define MSM_FD_PROCESSING_TIMEOUT_MS 150
 /* Face detection halt timeout in ms */
 #define MSM_FD_HALT_TIMEOUT_MS 100
@@ -56,6 +75,13 @@ enum msm_fd_dt_reg_setting_index {
 	MSM_FD_REG_MASK_IDX,
 	MSM_FD_REG_LAST_IDX
 };
+=======
+#define MSM_FD_PROCESSING_TIMEOUT_MS 500
+/* Face detection halt timeout in ms */
+#define MSM_FD_HALT_TIMEOUT_MS 100
+
+#define MSM_FD_SMMU_CB_NAME "camera_fd"
+>>>>>>> p9x
 
 /*
  * msm_fd_hw_read_reg - Fd read from register.
@@ -66,7 +92,11 @@ enum msm_fd_dt_reg_setting_index {
 static inline u32 msm_fd_hw_read_reg(struct msm_fd_device *fd,
 	enum msm_fd_mem_resources base_idx, u32 reg)
 {
+<<<<<<< HEAD
 	return msm_camera_io_r(fd->iomem_base[base_idx] + reg);
+=======
+	return readl_relaxed(fd->iomem_base[base_idx] + reg);
+>>>>>>> p9x
 }
 
 /*
@@ -79,7 +109,11 @@ static inline u32 msm_fd_hw_read_reg(struct msm_fd_device *fd,
 static inline void msm_fd_hw_write_reg(struct msm_fd_device *fd,
 	enum msm_fd_mem_resources base_idx, u32 reg, u32 value)
 {
+<<<<<<< HEAD
 	msm_camera_io_w(value, fd->iomem_base[base_idx] + reg);
+=======
+	writel_relaxed(value, fd->iomem_base[base_idx] + reg);
+>>>>>>> p9x
 }
 
 /*
@@ -493,6 +527,7 @@ static void msm_fd_hw_halt(struct msm_fd_device *fd)
 		if (!time)
 			dev_err(fd->dev, "Face detection halt timeout\n");
 
+<<<<<<< HEAD
 		/* Reset sequence after halt */
 		msm_fd_hw_write_reg(fd, MSM_FD_IOMEM_MISC, MSM_FD_MISC_SW_RESET,
 			MSM_FD_MISC_SW_RESET_SET);
@@ -501,6 +536,8 @@ static void msm_fd_hw_halt(struct msm_fd_device *fd)
 		msm_fd_hw_write_reg(fd, MSM_FD_IOMEM_MISC,
 			MSM_FD_MISC_SW_RESET, 0);
 		msm_fd_hw_write_reg(fd, MSM_FD_IOMEM_CORE, MSM_FD_CONTROL, 0);
+=======
+>>>>>>> p9x
 	}
 }
 
@@ -552,7 +589,11 @@ int msm_fd_hw_request_irq(struct platform_device *pdev,
 {
 	int ret;
 
+<<<<<<< HEAD
 	fd->irq = msm_camera_get_irq(pdev, "fd");
+=======
+	fd->irq_num = platform_get_irq(pdev, 0);
+>>>>>>> p9x
 	if (fd->irq_num < 0) {
 		dev_err(fd->dev, "Can not get fd core irq resource\n");
 		ret = -ENODEV;
@@ -561,6 +602,7 @@ int msm_fd_hw_request_irq(struct platform_device *pdev,
 
 	/* If vbif is shared we will need wrapper irq for releasing vbif */
 	if (msm_fd_hw_misc_irq_supported(fd)) {
+<<<<<<< HEAD
 		ret = msm_camera_register_irq(pdev,
 				fd->irq, msm_fd_hw_misc_irq,
 				IRQF_TRIGGER_RISING, "fd", fd);
@@ -574,13 +616,34 @@ int msm_fd_hw_request_irq(struct platform_device *pdev,
 				IRQF_TRIGGER_RISING, "fd", fd);
 		if (ret) {
 			dev_err(&pdev->dev, "Can not claim core IRQ\n");
+=======
+		ret = devm_request_irq(fd->dev, fd->irq_num,
+			msm_fd_hw_misc_irq, IRQF_TRIGGER_RISING,
+			dev_name(&pdev->dev), fd);
+		if (ret) {
+			dev_err(fd->dev, "Can not claim wrapper IRQ %d\n",
+				fd->irq_num);
+			goto error_irq;
+		}
+	} else {
+		ret = devm_request_irq(fd->dev, fd->irq_num,
+			msm_fd_hw_core_irq, IRQF_TRIGGER_RISING,
+			dev_name(fd->dev), fd);
+		if (ret) {
+			dev_err(&pdev->dev, "Can not claim core IRQ %d\n",
+				fd->irq_num);
+>>>>>>> p9x
 			goto error_irq;
 		}
 
 	}
 
 	fd->work_queue = alloc_workqueue(MSM_FD_WORQUEUE_NAME,
+<<<<<<< HEAD
 		WQ_HIGHPRI | WQ_UNBOUND, 0);
+=======
+		WQ_HIGHPRI | WQ_NON_REENTRANT | WQ_UNBOUND, 0);
+>>>>>>> p9x
 	if (!fd->work_queue) {
 		dev_err(fd->dev, "Can not register workqueue\n");
 		ret = -ENOMEM;
@@ -591,7 +654,11 @@ int msm_fd_hw_request_irq(struct platform_device *pdev,
 	return 0;
 
 error_alloc_workqueue:
+<<<<<<< HEAD
 	msm_camera_unregister_irq(pdev, fd->irq, fd);
+=======
+	devm_free_irq(fd->dev, fd->irq_num, fd);
+>>>>>>> p9x
 error_irq:
 	return ret;
 }
@@ -602,9 +669,16 @@ error_irq:
  */
 void msm_fd_hw_release_irq(struct msm_fd_device *fd)
 {
+<<<<<<< HEAD
 	if (fd->irq)
 		msm_camera_unregister_irq(fd->pdev, fd->irq, fd);
 
+=======
+	if (fd->irq_num >= 0) {
+		devm_free_irq(fd->dev, fd->irq_num, fd);
+		fd->irq_num = -1;
+	}
+>>>>>>> p9x
 	if (fd->work_queue) {
 		destroy_workqueue(fd->work_queue);
 		fd->work_queue = NULL;
@@ -612,6 +686,7 @@ void msm_fd_hw_release_irq(struct msm_fd_device *fd)
 }
 
 /*
+<<<<<<< HEAD
  * msm_fd_hw_set_dt_parms_by_name() - read DT params and write to registers.
  * @fd: Pointer to fd device.
  * @dt_prop_name: Name of the device tree property to read.
@@ -712,6 +787,61 @@ int msm_fd_hw_set_dt_parms(struct msm_fd_device *fd)
 		}
 	}
 	return rc;
+=======
+ * msm_fd_hw_vbif_register - Configure and enable vbif interface.
+ * @fd: Pointer to fd device.
+ */
+void msm_fd_hw_vbif_register(struct msm_fd_device *fd)
+{
+	msm_fd_hw_reg_set(fd, MSM_FD_IOMEM_VBIF,
+		MSM_FD_VBIF_CLKON, 0x1);
+
+	msm_fd_hw_write_reg(fd, MSM_FD_IOMEM_VBIF,
+		MSM_FD_VBIF_QOS_OVERRIDE_EN, 0x10001);
+
+	msm_fd_hw_write_reg(fd, MSM_FD_IOMEM_VBIF,
+		MSM_FD_VBIF_QOS_OVERRIDE_REQPRI, 0x1);
+
+	msm_fd_hw_write_reg(fd, MSM_FD_IOMEM_VBIF,
+		MSM_FD_VBIF_QOS_OVERRIDE_PRILVL, 0x1);
+
+	msm_fd_hw_write_reg(fd, MSM_FD_IOMEM_VBIF,
+		MSM_FD_VBIF_IN_RD_LIM_CONF0, 0x10);
+
+	msm_fd_hw_write_reg(fd, MSM_FD_IOMEM_VBIF,
+		MSM_FD_VBIF_IN_WR_LIM_CONF0, 0x10);
+
+	msm_fd_hw_write_reg(fd, MSM_FD_IOMEM_VBIF,
+		MSM_FD_VBIF_OUT_RD_LIM_CONF0, 0x10);
+
+	msm_fd_hw_write_reg(fd, MSM_FD_IOMEM_VBIF,
+		MSM_FD_VBIF_OUT_WR_LIM_CONF0, 0x10);
+
+	msm_fd_hw_write_reg(fd, MSM_FD_IOMEM_VBIF,
+		MSM_FD_VBIF_DDR_OUT_MAX_BURST, 0xF0F);
+
+	msm_fd_hw_write_reg(fd, MSM_FD_IOMEM_VBIF,
+		MSM_FD_VBIF_ARB_CTL, 0x30);
+
+	msm_fd_hw_write_reg(fd, MSM_FD_IOMEM_VBIF,
+		MSM_FD_VBIF_OUT_AXI_AMEMTYPE_CONF0, 0x02);
+
+	msm_fd_hw_write_reg(fd, MSM_FD_IOMEM_VBIF,
+		MSM_FD_VBIF_OUT_AXI_AOOO_EN, 0x10001);
+
+	msm_fd_hw_write_reg(fd, MSM_FD_IOMEM_VBIF,
+		MSM_FD_VBIF_ROUND_ROBIN_QOS_ARB, 0x03);
+}
+
+/*
+ * msm_fd_hw_vbif_unregister - Disable vbif interface.
+ * @fd: Pointer to fd device.
+ */
+void msm_fd_hw_vbif_unregister(struct msm_fd_device *fd)
+{
+	msm_fd_hw_write_reg(fd, MSM_FD_IOMEM_VBIF,
+		MSM_FD_VBIF_CLKON, 0x0);
+>>>>>>> p9x
 }
 
 /*
@@ -720,12 +850,30 @@ int msm_fd_hw_set_dt_parms(struct msm_fd_device *fd)
  */
 void msm_fd_hw_release_mem_resources(struct msm_fd_device *fd)
 {
+<<<<<<< HEAD
 	msm_camera_put_reg_base(fd->pdev,
 		fd->iomem_base[MSM_FD_IOMEM_MISC], "fd_misc", true);
 	msm_camera_put_reg_base(fd->pdev,
 		fd->iomem_base[MSM_FD_IOMEM_CORE], "fd_core", true);
 	msm_camera_put_reg_base(fd->pdev,
 		fd->iomem_base[MSM_FD_IOMEM_VBIF], "fd_vbif", false);
+=======
+	int i;
+
+	/* Prepare memory resources */
+	for (i = 0; i < MSM_FD_IOMEM_LAST; i++) {
+		if (fd->iomem_base[i]) {
+			iounmap(fd->iomem_base[i]);
+			fd->iomem_base[i] = NULL;
+		}
+		if (fd->ioarea[i]) {
+			release_mem_region(fd->res_mem[i]->start,
+				resource_size(fd->res_mem[i]));
+			fd->ioarea[i] = NULL;
+		}
+		fd->res_mem[i] = NULL;
+	}
+>>>>>>> p9x
 }
 
 /*
@@ -738,6 +886,7 @@ void msm_fd_hw_release_mem_resources(struct msm_fd_device *fd)
 int msm_fd_hw_get_mem_resources(struct platform_device *pdev,
 	struct msm_fd_device *fd)
 {
+<<<<<<< HEAD
 	int ret = 0;
 
 	/* Prepare memory resources */
@@ -773,10 +922,50 @@ fd_misc_base_failed:
 	msm_camera_put_reg_base(pdev,
 		fd->iomem_base[MSM_FD_IOMEM_CORE], "fd_core", true);
 fd_core_base_failed:
+=======
+	int i;
+	int ret = 0;
+
+	/* Prepare memory resources */
+	for (i = 0; i < MSM_FD_IOMEM_LAST; i++) {
+		/* Get resources */
+		fd->res_mem[i] = platform_get_resource(pdev,
+			IORESOURCE_MEM, i);
+		if (!fd->res_mem[i]) {
+			dev_err(fd->dev, "Fail get resource idx %d\n",
+				i);
+			ret = -ENODEV;
+			break;
+		}
+
+		fd->ioarea[i] = request_mem_region(fd->res_mem[i]->start,
+			resource_size(fd->res_mem[i]), fd->res_mem[i]->name);
+		if (!fd->ioarea[i]) {
+			dev_err(fd->dev, "%s can not request mem\n",
+				fd->res_mem[i]->name);
+			ret = -ENODEV;
+			break;
+		}
+
+		fd->iomem_base[i] = ioremap(fd->res_mem[i]->start,
+			resource_size(fd->res_mem[i]));
+		if (!fd->iomem_base[i]) {
+			dev_err(fd->dev, "%s can not remap region\n",
+				fd->res_mem[i]->name);
+			ret = -ENODEV;
+			break;
+		}
+	}
+
+	if (ret < 0)
+		msm_fd_hw_release_mem_resources(fd);
+
+>>>>>>> p9x
 	return ret;
 }
 
 /*
+<<<<<<< HEAD
  * msm_fd_hw_bus_request - Request bus for memory access.
  * @fd: Pointer to fd device.
  * @idx: Bus bandwidth array index described in device tree.
@@ -791,6 +980,89 @@ static int msm_fd_hw_bus_request(struct msm_fd_device *fd, unsigned int idx)
 		return -EINVAL;
 	}
 
+=======
+ * msm_fd_hw_get_clocks - Get fd clocks.
+ * @fd: Pointer to fd device.
+ *
+ * Read clock information from device tree and perform get clock.
+ */
+int msm_fd_hw_get_clocks(struct msm_fd_device *fd)
+{
+	const char *clk_name;
+	size_t cnt;
+	int clk_rates;
+	int i;
+	int ret;
+
+	cnt = of_property_count_strings(fd->dev->of_node, "clock-names");
+	if (cnt > MSM_FD_MAX_CLK_NUM) {
+		dev_err(fd->dev, "Exceed max number of clocks %zu\n", cnt);
+		return -EINVAL;
+	}
+
+	clk_rates = 0;
+	for (i = 0; i < cnt; i++) {
+		ret = of_property_read_string_index(fd->dev->of_node,
+			"clock-names", i, &clk_name);
+		if (ret < 0) {
+			dev_err(fd->dev, "Can not read clock name %d\n", i);
+			goto error;
+		}
+
+		fd->clk[i] = clk_get(fd->dev, clk_name);
+		if (IS_ERR(fd->clk[i])) {
+			ret = -ENOENT;
+			dev_err(fd->dev, "Error clock get %s\n", clk_name);
+			goto error;
+		}
+		dev_dbg(fd->dev, "Clock name idx %d %s\n", i, clk_name);
+	}
+	fd->clk_num = cnt;
+
+	cnt = 0;
+	for (clk_rates = 0; clk_rates < MSM_FD_MAX_CLK_RATES; clk_rates++) {
+		for (i = 0; i < fd->clk_num; i++) {
+			ret = of_property_read_u32_index(fd->dev->of_node,
+				"clock-rates", cnt++,
+				&fd->clk_rates[clk_rates][i]);
+			if (ret < 0)
+				break;
+			dev_dbg(fd->dev, "Clock rate idx %d idx %d value %d\n",
+				clk_rates, i, fd->clk_rates[clk_rates][i]);
+
+		}
+		if (ret < 0)
+			break;
+	}
+	fd->clk_rates_num = clk_rates;
+	if (fd->clk_rates_num == 0) {
+		ret = -ENOENT;
+		dev_err(fd->dev, "Can not get clock rates\n");
+		goto error;
+	}
+
+	return 0;
+error:
+	for (; i > 0; i--)
+		clk_put(fd->clk[i - 1]);
+
+	return ret;
+}
+
+/*
+ * msm_fd_hw_get_clocks - Put fd clocks.
+ * @fd: Pointer to fd device.
+ */
+int msm_fd_hw_put_clocks(struct msm_fd_device *fd)
+{
+	int i;
+
+	for (i = 0; i < fd->clk_num; i++) {
+		if (!IS_ERR_OR_NULL(fd->clk[i]))
+			clk_put(fd->clk[i]);
+		fd->clk_num = 0;
+	}
+>>>>>>> p9x
 	return 0;
 }
 
@@ -803,6 +1075,10 @@ static int msm_fd_hw_set_clock_rate_idx(struct msm_fd_device *fd,
 		unsigned int idx)
 {
 	int ret;
+<<<<<<< HEAD
+=======
+	long clk_rate;
+>>>>>>> p9x
 	int i;
 
 	if (idx >= fd->clk_rates_num) {
@@ -811,6 +1087,7 @@ static int msm_fd_hw_set_clock_rate_idx(struct msm_fd_device *fd,
 	}
 
 	for (i = 0; i < fd->clk_num; i++) {
+<<<<<<< HEAD
 		ret = msm_camera_clk_set_rate(&fd->pdev->dev,
 			fd->clk[i], fd->clk_rates[idx][i]);
 		if (ret < 0) {
@@ -818,11 +1095,172 @@ static int msm_fd_hw_set_clock_rate_idx(struct msm_fd_device *fd,
 				idx, i);
 			return -EINVAL;
 		}
+=======
+
+		clk_rate = clk_round_rate(fd->clk[i], fd->clk_rates[idx][i]);
+		if (clk_rate < 0) {
+			dev_dbg(fd->dev, "Clk raund rate fail skip %d\n", i);
+			continue;
+		}
+
+		ret = clk_set_rate(fd->clk[i], clk_rate);
+		if (ret < 0) {
+			dev_err(fd->dev, "Fail clock rate %ld\n", clk_rate);
+			return -EINVAL;
+		}
+		dev_dbg(fd->dev, "Clk rate %d-%ld idx %d\n", i, clk_rate, idx);
+	}
+
+	return 0;
+}
+/*
+ * msm_fd_hw_enable_clocks - Prepare and enable fd clocks.
+ * @fd: Pointer to fd device.
+ */
+static int msm_fd_hw_enable_clocks(struct msm_fd_device *fd)
+{
+	int i;
+	int ret;
+
+	for (i = 0; i < fd->clk_num; i++) {
+		ret = clk_prepare(fd->clk[i]);
+		if (ret < 0) {
+			dev_err(fd->dev, "clock prepare failed %d\n", i);
+			goto error;
+		}
+
+		ret = clk_enable(fd->clk[i]);
+		if (ret < 0) {
+			dev_err(fd->dev, "clock enable %d\n", i);
+			clk_unprepare(fd->clk[i]);
+			goto error;
+		}
+	}
+
+	return 0;
+error:
+	for (; i > 0; i--) {
+		clk_disable(fd->clk[i - 1]);
+		clk_unprepare(fd->clk[i - 1]);
+	}
+	return ret;
+}
+/*
+ * msm_fd_hw_disable_clocks - Disable fd clock.
+ * @fd: Pointer to fd device.
+ */
+static void msm_fd_hw_disable_clocks(struct msm_fd_device *fd)
+{
+	int i;
+
+	for (i = 0; i < fd->clk_num; i++) {
+		clk_disable(fd->clk[i]);
+		clk_unprepare(fd->clk[i]);
+	}
+}
+
+/*
+ * msm_fd_hw_get_bus - Get bus bandwidth.
+ * @fd: Pointer to fd device.
+ *
+ * Read bus bandwidth information from device tree.
+ */
+int msm_fd_hw_get_bus(struct msm_fd_device *fd)
+{
+	size_t cnt;
+	unsigned int ab;
+	unsigned int ib;
+	unsigned int idx;
+	int usecase;
+	int ret;
+
+	idx = MSM_FD_MAX_CLK_RATES;
+
+	fd->bus_vectors = kzalloc(sizeof(*fd->bus_vectors) * idx, GFP_KERNEL);
+	if (!fd->bus_vectors) {
+		dev_err(fd->dev, "No memory for bus vectors\n");
+		return -ENOMEM;
+	}
+
+	fd->bus_paths = kzalloc(sizeof(*fd->bus_paths) * idx, GFP_KERNEL);
+	if (!fd->bus_paths) {
+		dev_err(fd->dev, "No memory for bus paths\n");
+		kfree(fd->bus_vectors);
+		fd->bus_vectors = NULL;
+		return -ENOMEM;
+	}
+
+	cnt = 0;
+	for (usecase = 0; usecase < idx; usecase++) {
+		ret = of_property_read_u32_index(fd->dev->of_node,
+			"bus-bandwidth-vectors", cnt++, &ab);
+		if (ret < 0)
+			break;
+
+		ret = of_property_read_u32_index(fd->dev->of_node,
+			"bus-bandwidth-vectors", cnt++, &ib);
+		if (ret < 0)
+			break;
+
+		fd->bus_vectors[usecase].src = MSM_BUS_MASTER_VPU;
+		fd->bus_vectors[usecase].dst = MSM_BUS_SLAVE_EBI_CH0;
+		fd->bus_vectors[usecase].ab = ab;
+		fd->bus_vectors[usecase].ib = ib;
+
+		fd->bus_paths[usecase].num_paths = 1;
+		fd->bus_paths[usecase].vectors = &fd->bus_vectors[usecase];
+
+		dev_dbg(fd->dev, "Bus bandwidth idx %d ab %u ib %u\n",
+			usecase, ab, ib);
+	}
+
+	fd->bus_scale_data.usecase = fd->bus_paths;
+	fd->bus_scale_data.num_usecases = usecase;
+	fd->bus_scale_data.name = MSM_FD_BUS_CLIENT_NAME;
+
+	return 0;
+}
+
+/*
+ * msm_fd_hw_put_bus - Put bus bandwidth.
+ * @fd: Pointer to fd device.
+ */
+void msm_fd_hw_put_bus(struct msm_fd_device *fd)
+{
+	kfree(fd->bus_vectors);
+	fd->bus_vectors = NULL;
+
+	kfree(fd->bus_paths);
+	fd->bus_paths = NULL;
+
+	fd->bus_scale_data.num_usecases = 0;
+}
+/*
+ * msm_fd_hw_bus_request - Request bus for memory access.
+ * @fd: Pointer to fd device.
+ * @idx: Bus bandwidth array index described in device tree.
+ */
+static int msm_fd_hw_bus_request(struct msm_fd_device *fd, unsigned int idx)
+{
+	int ret;
+
+	fd->bus_client = msm_bus_scale_register_client(&fd->bus_scale_data);
+	if (!fd->bus_client) {
+		dev_err(fd->dev, "Fail to register bus client\n");
+		return -ENOENT;
+	}
+
+	ret = msm_bus_scale_client_update_request(fd->bus_client, idx);
+	if (ret < 0) {
+		dev_err(fd->dev, "Fail bus scale update %d\n", ret);
+		return -EINVAL;
+>>>>>>> p9x
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
  * msm_fd_hw_update_settings() - API to set clock rate and bus settings
  * @fd: Pointer to fd device.
@@ -859,6 +1297,18 @@ static int msm_fd_hw_update_settings(struct msm_fd_device *fd,
 
 end:
 	return ret;
+=======
+/*
+ * msm_fd_hw_bus_release - Release memory access bus.
+ * @fd: Pointer to fd device.
+ */
+static void msm_fd_hw_bus_release(struct msm_fd_device *fd)
+{
+	if (fd->bus_client) {
+		msm_bus_scale_unregister_client(fd->bus_client);
+		fd->bus_client = 0;
+	}
+>>>>>>> p9x
 }
 
 /*
@@ -876,9 +1326,13 @@ int msm_fd_hw_get(struct msm_fd_device *fd, unsigned int clock_rate_idx)
 	mutex_lock(&fd->lock);
 
 	if (fd->ref_count == 0) {
+<<<<<<< HEAD
 		ret =
 			msm_camera_regulator_enable(fd->vdd_info,
 				fd->num_reg, true);
+=======
+		ret = regulator_enable(fd->vdd);
+>>>>>>> p9x
 		if (ret < 0) {
 			dev_err(fd->dev, "Fail to enable vdd\n");
 			goto error;
@@ -889,6 +1343,7 @@ int msm_fd_hw_get(struct msm_fd_device *fd, unsigned int clock_rate_idx)
 			dev_err(fd->dev, "Fail bus request\n");
 			goto error_bus_request;
 		}
+<<<<<<< HEAD
 		ret = msm_fd_hw_set_clock_rate_idx(fd, clock_rate_idx);
 		if (ret < 0) {
 			dev_err(fd->dev, "Fail to set clock rate idx\n");
@@ -898,17 +1353,33 @@ int msm_fd_hw_get(struct msm_fd_device *fd, unsigned int clock_rate_idx)
 				fd->clk, fd->clk_num, true);
 		if (ret < 0) {
 			dev_err(fd->dev, "Fail clk enable request\n");
+=======
+
+		ret = msm_fd_hw_set_clock_rate_idx(fd, clock_rate_idx);
+		if (ret < 0) {
+			dev_err(fd->dev, "Fail to set clock index\n");
+			goto error_clocks;
+		}
+
+		ret = msm_fd_hw_enable_clocks(fd);
+		if (ret < 0) {
+			dev_err(fd->dev, "Fail to enable clocks\n");
+>>>>>>> p9x
 			goto error_clocks;
 		}
 
 		if (msm_fd_hw_misc_irq_supported(fd))
 			msm_fd_hw_misc_irq_enable(fd);
 
+<<<<<<< HEAD
 		ret = msm_fd_hw_set_dt_parms(fd);
 		if (ret < 0)
 			goto error_set_dt;
 
 		fd->clk_rate_idx = clock_rate_idx;
+=======
+		msm_fd_hw_vbif_register(fd);
+>>>>>>> p9x
 	}
 
 	fd->ref_count++;
@@ -916,6 +1387,7 @@ int msm_fd_hw_get(struct msm_fd_device *fd, unsigned int clock_rate_idx)
 
 	return 0;
 
+<<<<<<< HEAD
 error_set_dt:
 	if (msm_fd_hw_misc_irq_supported(fd))
 		msm_fd_hw_misc_irq_disable(fd);
@@ -924,6 +1396,12 @@ error_set_dt:
 error_clocks:
 error_bus_request:
 	msm_camera_regulator_enable(fd->vdd_info, fd->num_reg, false);
+=======
+error_clocks:
+	msm_fd_hw_bus_release(fd);
+error_bus_request:
+	regulator_disable(fd->vdd);
+>>>>>>> p9x
 error:
 	mutex_unlock(&fd->lock);
 	return ret;
@@ -947,11 +1425,18 @@ void msm_fd_hw_put(struct msm_fd_device *fd)
 		if (msm_fd_hw_misc_irq_supported(fd))
 			msm_fd_hw_misc_irq_disable(fd);
 
+<<<<<<< HEAD
 		/* vector index 0 is 0 ab and 0 ib */
 		msm_fd_hw_bus_request(fd, 0);
 		msm_camera_clk_enable(&fd->pdev->dev, fd->clk_info,
 				fd->clk, fd->clk_num, false);
 		msm_camera_regulator_enable(fd->vdd_info, fd->num_reg, false);
+=======
+		msm_fd_hw_vbif_unregister(fd);
+		msm_fd_hw_bus_release(fd);
+		msm_fd_hw_disable_clocks(fd);
+		regulator_disable(fd->vdd);
+>>>>>>> p9x
 	}
 	mutex_unlock(&fd->lock);
 }
@@ -965,7 +1450,11 @@ void msm_fd_hw_put(struct msm_fd_device *fd)
  */
 static int msm_fd_hw_attach_iommu(struct msm_fd_device *fd)
 {
+<<<<<<< HEAD
 	int ret = -EINVAL;
+=======
+	int ret;
+>>>>>>> p9x
 
 	mutex_lock(&fd->lock);
 
@@ -1045,7 +1534,11 @@ int msm_fd_hw_map_buffer(struct msm_fd_mem_pool *pool, int fd,
 	buf->fd = fd;
 	ret = cam_smmu_get_phy_addr(pool->fd_device->iommu_hdl,
 			buf->fd, CAM_SMMU_MAP_RW,
+<<<<<<< HEAD
 			&buf->addr, &buf->size);
+=======
+			&buf->addr, (size_t *)&buf->size);
+>>>>>>> p9x
 	if (ret < 0) {
 		pr_err("Error: cannot get phy addr\n");
 		return -ENOMEM;
@@ -1061,7 +1554,11 @@ void msm_fd_hw_unmap_buffer(struct msm_fd_buf_handle *buf)
 {
 	if (buf->size) {
 		cam_smmu_put_phy_addr(buf->pool->fd_device->iommu_hdl,
+<<<<<<< HEAD
 			buf->fd);
+=======
+		buf->fd);
+>>>>>>> p9x
 		msm_fd_hw_detach_iommu(buf->pool->fd_device);
 	}
 
@@ -1099,8 +1596,11 @@ static int msm_fd_hw_enable(struct msm_fd_device *fd,
 	msm_fd_hw_set_direction_angle(fd, buffer->settings.direction_index,
 		buffer->settings.angle_index);
 	msm_fd_hw_run(fd);
+<<<<<<< HEAD
 	if (fd->recovery_mode)
 		dev_err(fd->dev, "Scheduled buffer in recovery mode\n");
+=======
+>>>>>>> p9x
 	return 1;
 }
 
@@ -1129,6 +1629,28 @@ static int msm_fd_hw_try_enable(struct msm_fd_device *fd,
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * msm_fd_hw_remove_active_buffer - Remove active buffer from processing queue.
+ * @fd: Fd device.
+ */
+static int msm_fd_hw_remove_active_buffer(struct msm_fd_device *fd)
+{
+	struct msm_fd_buffer *buffer;
+	int active_removed = 0;
+
+	if (!list_empty(&fd->buf_queue)) {
+		buffer = list_first_entry(&fd->buf_queue,
+			struct msm_fd_buffer, list);
+		list_del(&buffer->list);
+		active_removed = 1;
+	}
+
+	return active_removed;
+}
+
+/*
+>>>>>>> p9x
  * msm_fd_hw_next_buffer - Get next buffer from fd device processing queue.
  * @fd: Fd device.
  */
@@ -1181,12 +1703,18 @@ void msm_fd_hw_remove_buffers_from_queue(struct msm_fd_device *fd,
 
 			if (atomic_read(&curr_buff->active))
 				active_buffer = curr_buff;
+<<<<<<< HEAD
 			else {
 				/* Do a Buffer done on all the other buffers */
 				vb2_buffer_done(&curr_buff->vb,
 					VB2_BUF_STATE_DONE);
 				list_del(&curr_buff->list);
 			}
+=======
+			else
+				list_del(&curr_buff->list);
+
+>>>>>>> p9x
 		}
 	}
 	spin_unlock(&fd->slock);
@@ -1196,10 +1724,13 @@ void msm_fd_hw_remove_buffers_from_queue(struct msm_fd_device *fd,
 		time = wait_for_completion_timeout(&active_buffer->completion,
 			msecs_to_jiffies(MSM_FD_PROCESSING_TIMEOUT_MS));
 		if (!time) {
+<<<<<<< HEAD
 			/* Do a vb2 buffer done since it timed out */
 			vb2_buffer_done(&active_buffer->vb, VB2_BUF_STATE_DONE);
 			/* Remove active buffer */
 			msm_fd_hw_get_active_buffer(fd);
+=======
+>>>>>>> p9x
 			/* Schedule if other buffers are present in device */
 			msm_fd_hw_schedule_next_buffer(fd);
 		}
@@ -1245,7 +1776,10 @@ struct msm_fd_buffer *msm_fd_hw_get_active_buffer(struct msm_fd_device *fd)
 	if (!list_empty(&fd->buf_queue)) {
 		buffer = list_first_entry(&fd->buf_queue,
 			struct msm_fd_buffer, list);
+<<<<<<< HEAD
 		list_del(&buffer->list);
+=======
+>>>>>>> p9x
 	}
 	spin_unlock(&fd->slock);
 
@@ -1269,8 +1803,11 @@ int msm_fd_hw_schedule_and_start(struct msm_fd_device *fd)
 
 	spin_unlock(&fd->slock);
 
+<<<<<<< HEAD
 	msm_fd_hw_update_settings(fd, buf);
 
+=======
+>>>>>>> p9x
 	return 0;
 }
 
@@ -1294,6 +1831,16 @@ int msm_fd_hw_schedule_next_buffer(struct msm_fd_device *fd)
 		return -EBUSY;
 	}
 
+<<<<<<< HEAD
+=======
+	ret = msm_fd_hw_remove_active_buffer(fd);
+	if (ret == 0) {
+		dev_err(fd->dev, "Active buffer is missing\n");
+		spin_unlock(&fd->slock);
+		return -EBUSY;
+	}
+
+>>>>>>> p9x
 	buf = msm_fd_hw_next_buffer(fd);
 	if (buf) {
 		ret = msm_fd_hw_try_enable(fd, buf, MSM_FD_DEVICE_RUNNING);
@@ -1304,6 +1851,7 @@ int msm_fd_hw_schedule_next_buffer(struct msm_fd_device *fd)
 		}
 	} else {
 		fd->state = MSM_FD_DEVICE_IDLE;
+<<<<<<< HEAD
 		if (fd->recovery_mode)
 			dev_err(fd->dev, "No Buffer in recovery mode.Device Idle\n");
 	}
@@ -1311,5 +1859,10 @@ int msm_fd_hw_schedule_next_buffer(struct msm_fd_device *fd)
 
 	msm_fd_hw_update_settings(fd, buf);
 
+=======
+	}
+	spin_unlock(&fd->slock);
+
+>>>>>>> p9x
 	return 0;
 }

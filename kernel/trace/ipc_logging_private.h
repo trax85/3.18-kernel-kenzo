@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -15,8 +19,13 @@
 
 #include <linux/ipc_logging.h>
 
+<<<<<<< HEAD
 #define IPC_LOG_VERSION 0x0003
 #define IPC_LOG_MAX_CONTEXT_NAME_LEN 32
+=======
+#define IPC_LOG_VERSION 0x0001
+#define IPC_LOG_MAX_CONTEXT_NAME_LEN 20
+>>>>>>> p9x
 
 /**
  * struct ipc_log_page_header - Individual log page header
@@ -133,7 +142,10 @@ enum {
 	TSV_TYPE_POINTER,
 	TSV_TYPE_INT32,
 	TSV_TYPE_BYTE_ARRAY,
+<<<<<<< HEAD
 	TSV_TYPE_QTIMER,
+=======
+>>>>>>> p9x
 };
 
 enum {

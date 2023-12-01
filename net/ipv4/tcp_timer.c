@@ -32,6 +32,13 @@ int sysctl_tcp_retries2 __read_mostly = TCP_RETR2;
 int sysctl_tcp_orphan_retries __read_mostly;
 int sysctl_tcp_thin_linear_timeouts __read_mostly;
 
+<<<<<<< HEAD
+=======
+static void tcp_write_timer(unsigned long);
+static void tcp_delack_timer(unsigned long);
+static void tcp_keepalive_timer(unsigned long data);
+
+>>>>>>> p9x
 /*Function to reset tcp_ack related sysctl on resetting master control */
 void set_tcp_default(void)
 {
@@ -39,9 +46,14 @@ void set_tcp_default(void)
 }
 
 /*sysctl handler for tcp_ack realted master control */
+<<<<<<< HEAD
 int tcp_proc_delayed_ack_control(struct ctl_table *table, int write,
 				 void __user *buffer, size_t *length,
 				 loff_t *ppos)
+=======
+int tcp_proc_delayed_ack_control(ctl_table *table, int write,
+			void __user *buffer, size_t *length, loff_t *ppos)
+>>>>>>> p9x
 {
 	int ret = proc_dointvec_minmax(table, write, buffer, length, ppos);
 
@@ -53,9 +65,14 @@ int tcp_proc_delayed_ack_control(struct ctl_table *table, int write,
 }
 
 /*sysctl handler for tcp_ack realted master control */
+<<<<<<< HEAD
 int tcp_use_userconfig_sysctl_handler(struct ctl_table *table, int write,
 				      void __user *buffer, size_t *length,
 				      loff_t *ppos)
+=======
+int tcp_use_userconfig_sysctl_handler(ctl_table *table, int write,
+			void __user *buffer, size_t *length, loff_t *ppos)
+>>>>>>> p9x
 {
 	int ret = proc_dointvec_minmax(table, write, buffer, length, ppos);
 

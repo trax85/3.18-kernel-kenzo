@@ -132,7 +132,11 @@ static int adf_eng_get_data(struct adf_overlay_engine *eng,
 					eng->ops->n_supported_formats));
 
 	mutex_lock(&dev->client_lock);
+<<<<<<< HEAD
 	ret = adf_obj_copy_custom_data_to_user(&eng->base, data.custom_data,
+=======
+	ret = adf_obj_copy_custom_data_to_user(&eng->base, arg->custom_data,
+>>>>>>> p9x
 			&data.custom_data_size);
 	mutex_unlock(&dev->client_lock);
 
@@ -144,7 +148,11 @@ static int adf_eng_get_data(struct adf_overlay_engine *eng,
 		goto done;
 	}
 
+<<<<<<< HEAD
 	if (supported_formats && copy_to_user(data.supported_formats,
+=======
+	if (supported_formats && copy_to_user(arg->supported_formats,
+>>>>>>> p9x
 			supported_formats,
 			n_supported_formats * sizeof(supported_formats[0])))
 		ret = -EFAULT;
@@ -220,6 +228,7 @@ static int adf_device_post_config(struct adf_device *dev,
 	int complete_fence_fd;
 	struct adf_buffer *bufs = NULL;
 	struct adf_interface **intfs = NULL;
+<<<<<<< HEAD
 	struct adf_post_config data;
 	size_t i;
 	void *custom_data = NULL;
@@ -228,37 +237,82 @@ static int adf_device_post_config(struct adf_device *dev,
 	if (copy_from_user(&data, arg, sizeof(data)))
 		return -EFAULT;
 
+=======
+	size_t n_intfs, n_bufs, i;
+	void *custom_data = NULL;
+	size_t custom_data_size;
+	int ret = 0;
+
+>>>>>>> p9x
 	complete_fence_fd = get_unused_fd();
 	if (complete_fence_fd < 0)
 		return complete_fence_fd;
 
+<<<<<<< HEAD
 	if (data.n_interfaces > ADF_MAX_INTERFACES) {
+=======
+	if (get_user(n_intfs, &arg->n_interfaces)) {
+		ret = -EFAULT;
+		goto err_get_user;
+	}
+
+	if (n_intfs > ADF_MAX_INTERFACES) {
+>>>>>>> p9x
 		ret = -EINVAL;
 		goto err_get_user;
 	}
 
+<<<<<<< HEAD
 	if (data.n_bufs > ADF_MAX_BUFFERS) {
+=======
+	if (get_user(n_bufs, &arg->n_bufs)) {
+		ret = -EFAULT;
+		goto err_get_user;
+	}
+
+	if (n_bufs > ADF_MAX_BUFFERS) {
+>>>>>>> p9x
 		ret = -EINVAL;
 		goto err_get_user;
 	}
 
+<<<<<<< HEAD
 	if (data.custom_data_size > ADF_MAX_CUSTOM_DATA_SIZE) {
+=======
+	if (get_user(custom_data_size, &arg->custom_data_size)) {
+		ret = -EFAULT;
+		goto err_get_user;
+	}
+
+	if (custom_data_size > ADF_MAX_CUSTOM_DATA_SIZE) {
+>>>>>>> p9x
 		ret = -EINVAL;
 		goto err_get_user;
 	}
 
+<<<<<<< HEAD
 	if (data.n_interfaces) {
 		intfs = kmalloc(sizeof(intfs[0]) * data.n_interfaces,
 			GFP_KERNEL);
+=======
+	if (n_intfs) {
+		intfs = kmalloc(sizeof(intfs[0]) * n_intfs, GFP_KERNEL);
+>>>>>>> p9x
 		if (!intfs) {
 			ret = -ENOMEM;
 			goto err_get_user;
 		}
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < data.n_interfaces; i++) {
 		u32 intf_id;
 		if (get_user(intf_id, &data.interfaces[i])) {
+=======
+	for (i = 0; i < n_intfs; i++) {
+		u32 intf_id;
+		if (get_user(intf_id, &arg->interfaces[i])) {
+>>>>>>> p9x
 			ret = -EFAULT;
 			goto err_get_user;
 		}
@@ -270,31 +324,51 @@ static int adf_device_post_config(struct adf_device *dev,
 		}
 	}
 
+<<<<<<< HEAD
 	if (data.n_bufs) {
 		bufs = kzalloc(sizeof(bufs[0]) * data.n_bufs, GFP_KERNEL);
+=======
+	if (n_bufs) {
+		bufs = kzalloc(sizeof(bufs[0]) * n_bufs, GFP_KERNEL);
+>>>>>>> p9x
 		if (!bufs) {
 			ret = -ENOMEM;
 			goto err_get_user;
 		}
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < data.n_bufs; i++) {
 		ret = adf_buffer_import(dev, &data.bufs[i], &bufs[i]);
+=======
+	for (i = 0; i < n_bufs; i++) {
+		ret = adf_buffer_import(dev, &arg->bufs[i], &bufs[i]);
+>>>>>>> p9x
 		if (ret < 0) {
 			memset(&bufs[i], 0, sizeof(bufs[i]));
 			goto err_import;
 		}
 	}
 
+<<<<<<< HEAD
 	if (data.custom_data_size) {
 		custom_data = kzalloc(data.custom_data_size, GFP_KERNEL);
+=======
+	if (custom_data_size) {
+		custom_data = kzalloc(custom_data_size, GFP_KERNEL);
+>>>>>>> p9x
 		if (!custom_data) {
 			ret = -ENOMEM;
 			goto err_import;
 		}
 
+<<<<<<< HEAD
 		if (copy_from_user(custom_data, data.custom_data,
 				data.custom_data_size)) {
+=======
+		if (copy_from_user(custom_data, arg->custom_data,
+				custom_data_size)) {
+>>>>>>> p9x
 			ret = -EFAULT;
 			goto err_import;
 		}
@@ -305,8 +379,13 @@ static int adf_device_post_config(struct adf_device *dev,
 		goto err_import;
 	}
 
+<<<<<<< HEAD
 	complete_fence = adf_device_post_nocopy(dev, intfs, data.n_interfaces,
 			bufs, data.n_bufs, custom_data, data.custom_data_size);
+=======
+	complete_fence = adf_device_post_nocopy(dev, intfs, n_intfs, bufs,
+			n_bufs, custom_data, custom_data_size);
+>>>>>>> p9x
 	if (IS_ERR(complete_fence)) {
 		ret = PTR_ERR(complete_fence);
 		goto err_import;
@@ -316,7 +395,11 @@ static int adf_device_post_config(struct adf_device *dev,
 	return 0;
 
 err_import:
+<<<<<<< HEAD
 	for (i = 0; i < data.n_bufs; i++)
+=======
+	for (i = 0; i < n_bufs; i++)
+>>>>>>> p9x
 		adf_buffer_cleanup(&bufs[i]);
 
 err_get_user:
@@ -470,19 +553,31 @@ static int adf_device_get_data(struct adf_device *dev,
 			data.n_allowed_attachments);
 
 	mutex_lock(&dev->client_lock);
+<<<<<<< HEAD
 	ret = adf_obj_copy_custom_data_to_user(&dev->base, data.custom_data,
+=======
+	ret = adf_obj_copy_custom_data_to_user(&dev->base, arg->custom_data,
+>>>>>>> p9x
 			&data.custom_data_size);
 	mutex_unlock(&dev->client_lock);
 
 	if (ret < 0)
 		goto done;
 
+<<<<<<< HEAD
 	ret = adf_copy_attachment_list_to_user(data.attachments,
+=======
+	ret = adf_copy_attachment_list_to_user(arg->attachments,
+>>>>>>> p9x
 			data.n_attachments, attach, n_attach);
 	if (ret < 0)
 		goto done;
 
+<<<<<<< HEAD
 	ret = adf_copy_attachment_list_to_user(data.allowed_attachments,
+=======
+	ret = adf_copy_attachment_list_to_user(arg->allowed_attachments,
+>>>>>>> p9x
 			data.n_allowed_attachments, allowed_attach,
 			n_allowed_attach);
 	if (ret < 0)
@@ -581,7 +676,11 @@ static int adf_intf_get_data(struct adf_interface *intf,
 	data.n_available_modes = intf->n_modes;
 	read_unlock_irqrestore(&intf->hotplug_modelist_lock, flags);
 
+<<<<<<< HEAD
 	if (copy_to_user(data.available_modes, modelist, modelist_size)) {
+=======
+	if (copy_to_user(arg->available_modes, modelist, modelist_size)) {
+>>>>>>> p9x
 		ret = -EFAULT;
 		goto done;
 	}
@@ -590,7 +689,11 @@ static int adf_intf_get_data(struct adf_interface *intf,
 	memcpy(&data.current_mode, &intf->current_mode,
 			sizeof(intf->current_mode));
 
+<<<<<<< HEAD
 	ret = adf_obj_copy_custom_data_to_user(&intf->base, data.custom_data,
+=======
+	ret = adf_obj_copy_custom_data_to_user(&intf->base, arg->custom_data,
+>>>>>>> p9x
 			&data.custom_data_size);
 done:
 	mutex_unlock(&dev->client_lock);

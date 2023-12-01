@@ -373,6 +373,16 @@ ENTRY(vector_swi)
 	ct_user_exit
 	get_thread_info tsk
 
+#ifdef CONFIG_ALIGNMENT_TRAP
+	ldr	ip, __cr_alignment
+	ldr	ip, [ip]
+	mcr	p15, 0, ip, c1, c0		@ update control register
+#endif
+
+	enable_irq
+	ct_user_exit
+	get_thread_info tsk
+
 	/*
 	 * Get the system call number.
 	 */
@@ -389,6 +399,12 @@ ENTRY(vector_swi)
  USER(	ldreq	r10, [lr, #-4]		)	@ get SWI instruction
 #else
  USER(	ldr	r10, [lr, #-4]		)	@ get SWI instruction
+<<<<<<< HEAD
+=======
+#endif
+#ifdef CONFIG_CPU_ENDIAN_BE8
+	rev	r10, r10			@ little endian instruction
+>>>>>>> p9x
 #endif
  ARM_BE8(rev	r10, r10)			@ little endian instruction
 
@@ -408,8 +424,11 @@ ENTRY(vector_swi)
  USER(	ldr	scno, [lr, #-4]		)	@ get SWI instruction
 #endif
 
+<<<<<<< HEAD
 	uaccess_disable tbl
 
+=======
+>>>>>>> p9x
 	adr	tbl, sys_call_table		@ load syscall table pointer
 
 #if defined(CONFIG_OABI_COMPAT)

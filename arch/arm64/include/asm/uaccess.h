@@ -128,6 +128,7 @@ static inline void set_fs(mm_segment_t fs)
 
 #define access_ok(type, addr, size)	__range_ok(addr, size)
 #define user_addr_max			get_fs
+<<<<<<< HEAD
 
 /*
  * User access enabling/disabling.
@@ -237,6 +238,8 @@ static inline void uaccess_enable_not_uao(void)
 {
 	__uaccess_enable(ARM64_ALT_PAN_NOT_UAO);
 }
+=======
+>>>>>>> p9x
 
 /*
  * The "__xxx" versions of the user access functions do not verify the address
@@ -391,6 +394,7 @@ extern unsigned long __must_check __arch_copy_to_user(void __user *to, const voi
 extern unsigned long __must_check __copy_in_user(void __user *to, const void __user *from, unsigned long n);
 extern unsigned long __must_check __clear_user(void __user *addr, unsigned long n);
 
+<<<<<<< HEAD
 static inline unsigned long __must_check __copy_from_user(void *to, const void __user *from, unsigned long n)
 {
 	check_object_size(to, n, false);
@@ -403,6 +407,8 @@ static inline unsigned long __must_check __copy_to_user(void __user *to, const v
 	return __arch_copy_to_user(to, from, n);
 }
 
+=======
+>>>>>>> p9x
 static inline unsigned long __must_check copy_from_user(void *to, const void __user *from, unsigned long n)
 {
 	if (access_ok(VERIFY_READ, from, n)) {
@@ -443,6 +449,7 @@ extern long strncpy_from_user(char *dest, const char __user *src, long count);
 
 extern __must_check long strlen_user(const char __user *str);
 extern __must_check long strnlen_user(const char __user *str, long n);
+<<<<<<< HEAD
 
 #else	/* __ASSEMBLY__ */
 
@@ -516,5 +523,7 @@ alternative_else_nop_endif
 	.endm
 
 #endif	/* __ASSEMBLY__ */
+=======
+>>>>>>> p9x
 
 #endif /* __ASM_UACCESS_H */

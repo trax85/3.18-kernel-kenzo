@@ -26,9 +26,12 @@
 
 #include <uapi/linux/mmc/mmc.h>
 
+<<<<<<< HEAD
 extern const u8 tuning_blk_pattern_4bit[MMC_TUNING_BLK_PATTERN_4BIT_SIZE];
 extern const u8 tuning_blk_pattern_8bit[MMC_TUNING_BLK_PATTERN_8BIT_SIZE];
 
+=======
+>>>>>>> p9x
 /* class 11 */
 #define MMC_CMDQ_TASK_MGMT       48  /* ac   [31:0] task ID     R1b */
 #define DISCARD_QUEUE		0x1
@@ -224,7 +227,10 @@ struct _mmc_csd {
  */
 
 #define EXT_CSD_CMDQ			15	/* R/W */
+<<<<<<< HEAD
 #define EXT_CSD_BARRIER_CTRL		31      /* R/W */
+=======
+>>>>>>> p9x
 #define EXT_CSD_FLUSH_CACHE		32      /* W */
 #define EXT_CSD_CACHE_CTRL		33      /* R/W */
 #define EXT_CSD_POWER_OFF_NOTIFICATION	34	/* R/W */
@@ -277,7 +283,11 @@ struct _mmc_csd {
 #define EXT_CSD_PWR_CL_200_360		237	/* RO */
 #define EXT_CSD_PWR_CL_DDR_52_195	238	/* RO */
 #define EXT_CSD_PWR_CL_DDR_52_360	239	/* RO */
+<<<<<<< HEAD
 #define EXT_CSD_CACHE_FLUSH_POLICY	240	/* RO */
+=======
+#define EXT_CSD_CORRECTLY_PRG_SECTORS_NUM 242	/* RO, 4 bytes */
+>>>>>>> p9x
 #define EXT_CSD_BKOPS_STATUS		246	/* RO */
 #define EXT_CSD_POWER_OFF_LONG_TIME	247	/* RO */
 #define EXT_CSD_GENERIC_CMD6_TIME	248	/* RO */
@@ -286,10 +296,15 @@ struct _mmc_csd {
 #define EXT_CSD_FW_VERSION		254	/* RO */
 #define EXT_CSD_CMDQ_DEPTH		307	/* RO */
 #define EXT_CSD_CMDQ_SUPPORT		308	/* RO */
+<<<<<<< HEAD
 #define EXT_CSD_BARRIER_SUPPORT		486	/* RO */
 #define EXT_CSD_PRE_EOL_INFO		267	/* RO */
 #define EXT_CSD_DEVICE_LIFE_TIME_EST_TYP_A	268	/* RO */
 #define EXT_CSD_DEVICE_LIFE_TIME_EST_TYP_B	269	/* RO */
+=======
+#define EXT_CSD_LIFE_TIME_EST_TYP_A	268	/* RO */
+#define EXT_CSD_LIFE_TIME_EST_TYP_B	269	/* RO */
+>>>>>>> p9x
 #define EXT_CSD_TAG_UNIT_SIZE		498	/* RO */
 #define EXT_CSD_DATA_TAG_SUPPORT	499	/* RO */
 #define EXT_CSD_MAX_PACKED_WRITES	500	/* RO */
@@ -301,7 +316,14 @@ struct _mmc_csd {
  * EXT_CSD field definitions
  */
 
+<<<<<<< HEAD
 #define EXT_CSD_WR_REL_PARAM_EN			(1<<2)
+=======
+#define EXT_CSD_BKOPS_EN_MANUAL_EN	BIT(0)
+#define EXT_CSD_BKOPS_EN_AUTO_EN	BIT(1)
+
+#define EXT_CSD_WR_REL_PARAM_EN		(1<<2)
+>>>>>>> p9x
 #define EXT_CSD_WR_REL_PARAM_EN_RPMB_REL_WR	(1<<4)
 
 #define EXT_CSD_BOOT_WP_B_PWR_WP_DIS	(0x40)
@@ -321,10 +343,16 @@ struct _mmc_csd {
 #define EXT_CSD_CMD_SET_SECURE		(1<<1)
 #define EXT_CSD_CMD_SET_CPSECURE	(1<<2)
 
+<<<<<<< HEAD
 #define EXT_CSD_CARD_TYPE_HS_26	(1<<0)	/* Card can run at 26MHz */
 #define EXT_CSD_CARD_TYPE_HS_52	(1<<1)	/* Card can run at 52MHz */
 #define EXT_CSD_CARD_TYPE_HS	(EXT_CSD_CARD_TYPE_HS_26 | \
 				 EXT_CSD_CARD_TYPE_HS_52)
+=======
+#define EXT_CSD_CARD_TYPE_26	(1<<0)	/* Card can run at 26MHz */
+#define EXT_CSD_CARD_TYPE_52	(1<<1)	/* Card can run at 52MHz */
+#define EXT_CSD_CARD_TYPE_MASK	0xFF	/* Mask out reserved bits */
+>>>>>>> p9x
 #define EXT_CSD_CARD_TYPE_DDR_1_8V  (1<<2)   /* Card can run at 52MHz */
 					     /* DDR mode @1.8V or 3V I/O */
 #define EXT_CSD_CARD_TYPE_DDR_1_2V  (1<<3)   /* Card can run at 52MHz */
@@ -334,13 +362,25 @@ struct _mmc_csd {
 #define EXT_CSD_CARD_TYPE_HS200_1_8V	(1<<4)	/* Card can run at 200MHz */
 #define EXT_CSD_CARD_TYPE_HS200_1_2V	(1<<5)	/* Card can run at 200MHz */
 						/* SDR mode @1.2V I/O */
+<<<<<<< HEAD
 #define EXT_CSD_CARD_TYPE_HS200		(EXT_CSD_CARD_TYPE_HS200_1_8V | \
 					 EXT_CSD_CARD_TYPE_HS200_1_2V)
 #define EXT_CSD_CARD_TYPE_HS400_1_8V	(1<<6)	/* Card can run at 200MHz DDR, 1.8V */
 #define EXT_CSD_CARD_TYPE_HS400_1_2V	(1<<7)	/* Card can run at 200MHz DDR, 1.2V */
 #define EXT_CSD_CARD_TYPE_HS400		(EXT_CSD_CARD_TYPE_HS400_1_8V | \
 					 EXT_CSD_CARD_TYPE_HS400_1_2V)
+=======
+#define EXT_CSD_CARD_TYPE_HS200		(EXT_CSD_CARD_TYPE_SDR_1_8V  \
+					| EXT_CSD_CARD_TYPE_SDR_1_2V)
+#define EXT_CSD_CARD_TYPE_HS400_1_8V	(1<<6)	/* Card can run at 200MHz */
+							/* DDR mode @1.8V I/O */
+#define EXT_CSD_CARD_TYPE_HS400_1_2V	(1<<7)	/* Card can run at 200MHz */
+							/* DDR mode @1.2V I/O */
+#define EXT_CSD_CARD_TYPE_HS400		(EXT_CSD_CARD_TYPE_HS400_1_8V  \
+					| EXT_CSD_CARD_TYPE_HS400_1_2V)
+>>>>>>> p9x
 
+#define EXT_CSD_ENHANCED_STROBE	(1 << 0)
 #define EXT_CSD_BUS_WIDTH_1	0	/* Card is in 1 bit mode */
 #define EXT_CSD_BUS_WIDTH_4	1	/* Card is in 4 bit mode */
 #define EXT_CSD_BUS_WIDTH_8	2	/* Card is in 8 bit mode */

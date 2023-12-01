@@ -1390,10 +1390,20 @@ void facility_unavailable_exception(struct pt_regs *regs)
 	if (status == FSCR_DSCR_LG) {
 		/* User is acessing the DSCR.  Set the inherit bit and allow
 		 * the user to set it directly in future by setting via the
+<<<<<<< HEAD
 		 * FSCR DSCR bit.  We always leave HFSCR DSCR set.
 		 */
 		current->thread.dscr_inherit = 1;
 		mtspr(SPRN_FSCR, value | FSCR_DSCR);
+=======
+		 * H/FSCR DSCR bit.
+		 */
+		current->thread.dscr_inherit = 1;
+		if (hv)
+			mtspr(SPRN_HFSCR, value | HFSCR_DSCR);
+		else
+			mtspr(SPRN_FSCR,  value | FSCR_DSCR);
+>>>>>>> p9x
 		return;
 	}
 
@@ -1405,9 +1415,14 @@ void facility_unavailable_exception(struct pt_regs *regs)
 	if (!arch_irq_disabled_regs(regs))
 		local_irq_enable();
 
+<<<<<<< HEAD
 	pr_err_ratelimited(
 		"%sFacility '%s' unavailable, exception at 0x%lx, MSR=%lx\n",
 		hv ? "Hypervisor " : "", facility, regs->nip, regs->msr);
+=======
+	pr_err("%sFacility '%s' unavailable, exception at 0x%lx, MSR=%lx\n",
+	       hv ? "Hypervisor " : "", facility, regs->nip, regs->msr);
+>>>>>>> p9x
 
 	if (user_mode(regs)) {
 		_exception(SIGILL, regs, ILL_ILLOPC, regs->nip);

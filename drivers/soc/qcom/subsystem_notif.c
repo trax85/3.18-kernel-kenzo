@@ -157,8 +157,13 @@ int subsys_notif_queue_notification(void *subsys_handle,
 	if (!subsys)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	/*if (notif_type < 0 || notif_type >= SUBSYS_NOTIF_TYPE_COUNT)
 		return -EINVAL;*/
+=======
+	if (notif_type < 0 || notif_type >= SUBSYS_NOTIF_TYPE_COUNT)
+		return -EINVAL;
+>>>>>>> p9x
 
 		ret = srcu_notifier_call_chain(
 			&subsys->subsys_notif_rcvr_list, notif_type,

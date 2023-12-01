@@ -35,5 +35,8 @@ struct ashmem_pin {
 #define ASHMEM_GET_PIN_STATUS	_IO(__ASHMEMIOC, 9)
 #define ASHMEM_PURGE_ALL_CACHES	_IO(__ASHMEMIOC, 10)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 #endif /* _UAPI_LINUX_ASHMEM_H */

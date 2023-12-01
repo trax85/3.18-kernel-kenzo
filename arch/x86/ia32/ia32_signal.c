@@ -34,6 +34,11 @@
 #include <asm/sys_ia32.h>
 #include <asm/smap.h>
 
+<<<<<<< HEAD
+=======
+#define FIX_EFLAGS	__FIX_EFLAGS
+
+>>>>>>> p9x
 int copy_siginfo_to_user32(compat_siginfo_t __user *to, const siginfo_t *from)
 {
 	int err = 0;

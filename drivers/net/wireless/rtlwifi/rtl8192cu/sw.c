@@ -78,7 +78,11 @@ static int rtl92cu_init_sw_vars(struct ieee80211_hw *hw)
 	if (IS_VENDOR_UMC_A_CUT(rtlpriv->rtlhal.version) &&
 	    !IS_92C_SERIAL(rtlpriv->rtlhal.version)) {
 		rtlpriv->cfg->fw_name = "rtlwifi/rtl8192cufw_A.bin";
+<<<<<<< HEAD
 	} else if (IS_81XXC_VENDOR_UMC_B_CUT(rtlpriv->rtlhal.version)) {
+=======
+	} else if (IS_81xxC_VENDOR_UMC_B_CUT(rtlpriv->rtlhal.version)) {
+>>>>>>> p9x
 		rtlpriv->cfg->fw_name = "rtlwifi/rtl8192cufw_B.bin";
 	} else {
 		rtlpriv->cfg->fw_name = "rtlwifi/rtl8192cufw_TMSC.bin";
@@ -323,6 +327,10 @@ static struct usb_device_id rtl8192c_usb_ids[] = {
 	{RTL_USB_DEVICE(0x07b8, 0x8188, rtl92cu_hal_cfg)}, /*Abocom - Abocom*/
 	{RTL_USB_DEVICE(0x07b8, 0x8189, rtl92cu_hal_cfg)}, /*Funai - Abocom*/
 	{RTL_USB_DEVICE(0x0846, 0x9041, rtl92cu_hal_cfg)}, /*NetGear WNA1000M*/
+<<<<<<< HEAD
+=======
+	{RTL_USB_DEVICE(0x0846, 0x9043, rtl92cu_hal_cfg)}, /*NG WNA1000Mv2*/
+>>>>>>> p9x
 	{RTL_USB_DEVICE(0x0b05, 0x17ba, rtl92cu_hal_cfg)}, /*ASUS-Edimax*/
 	{RTL_USB_DEVICE(0x0bda, 0x5088, rtl92cu_hal_cfg)}, /*Thinkware-CC&C*/
 	{RTL_USB_DEVICE(0x0df6, 0x0052, rtl92cu_hal_cfg)}, /*Sitecom - Edimax*/

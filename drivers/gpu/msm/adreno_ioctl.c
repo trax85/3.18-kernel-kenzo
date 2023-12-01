@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2002,2007-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2002,2007-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -14,7 +18,10 @@
 #include <linux/ioctl.h>
 #include "kgsl_device.h"
 #include "adreno.h"
+<<<<<<< HEAD
 #include "adreno_a5xx.h"
+=======
+>>>>>>> p9x
 
 long adreno_ioctl_perfcounter_get(struct kgsl_device_private *dev_priv,
 	unsigned int cmd, void *data)
@@ -80,6 +87,7 @@ static long adreno_ioctl_perfcounter_read(struct kgsl_device_private *dev_priv,
 		read->count);
 }
 
+<<<<<<< HEAD
 static long adreno_ioctl_preemption_counters_query(
 		struct kgsl_device_private *dev_priv,
 		unsigned int cmd, void *data)
@@ -113,11 +121,17 @@ static long adreno_ioctl_preemption_counters_query(
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 long adreno_ioctl_helper(struct kgsl_device_private *dev_priv,
 		unsigned int cmd, unsigned long arg,
 		const struct kgsl_ioctl *cmds, int len)
 {
+<<<<<<< HEAD
 	unsigned char data[128] = { 0 };
+=======
+	unsigned char data[128];
+>>>>>>> p9x
 	long ret;
 	int i;
 
@@ -156,8 +170,11 @@ static struct kgsl_ioctl adreno_ioctl_funcs[] = {
 	{ IOCTL_KGSL_PERFCOUNTER_PUT, adreno_ioctl_perfcounter_put },
 	{ IOCTL_KGSL_PERFCOUNTER_QUERY, adreno_ioctl_perfcounter_query },
 	{ IOCTL_KGSL_PERFCOUNTER_READ, adreno_ioctl_perfcounter_read },
+<<<<<<< HEAD
 	{ IOCTL_KGSL_PREEMPTIONCOUNTER_QUERY,
 		adreno_ioctl_preemption_counters_query },
+=======
+>>>>>>> p9x
 };
 
 long adreno_ioctl(struct kgsl_device_private *dev_priv,

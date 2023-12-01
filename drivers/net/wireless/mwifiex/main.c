@@ -326,8 +326,12 @@ process_start:
 	} while (true);
 
 	spin_lock_irqsave(&adapter->main_proc_lock, flags);
+<<<<<<< HEAD
 	if (!adapter->delay_main_work &&
 	    (adapter->int_status || IS_CARD_RX_RCVD(adapter))) {
+=======
+	if ((adapter->int_status) || IS_CARD_RX_RCVD(adapter)) {
+>>>>>>> p9x
 		spin_unlock_irqrestore(&adapter->main_proc_lock, flags);
 		goto process_start;
 	}
@@ -453,7 +457,10 @@ static void mwifiex_fw_dpc(const struct firmware *firmware, void *context)
 					NL80211_IFTYPE_STATION, NULL, NULL);
 	if (IS_ERR(wdev)) {
 		dev_err(adapter->dev, "cannot create default STA interface\n");
+<<<<<<< HEAD
 		rtnl_unlock();
+=======
+>>>>>>> p9x
 		goto err_add_intf;
 	}
 	rtnl_unlock();

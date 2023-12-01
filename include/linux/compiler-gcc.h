@@ -5,9 +5,15 @@
 /*
  * Common definitions for all gcc versions go here.
  */
+<<<<<<< HEAD
 #define GCC_VERSION (__GNUC__ * 10000		\
 		     + __GNUC_MINOR__ * 100	\
 		     + __GNUC_PATCHLEVEL__)
+=======
+#define GCC_VERSION (__GNUC__ * 10000 \
+		   + __GNUC_MINOR__ * 100 \
+		   + __GNUC_PATCHLEVEL__)
+>>>>>>> p9x
 
 /* Optimization barrier */
 
@@ -57,6 +63,9 @@
 #define OPTIMIZER_HIDE_VAR(var)						\
 	__asm__ ("" : "=r" (var) : "0" (var))
 
+/* Make the optimizer believe the variable can be manipulated arbitrarily. */
+#define OPTIMIZER_HIDE_VAR(var) __asm__ ("" : "=r" (var) : "0" (var))
+
 #ifdef __CHECKER__
 #define __must_be_array(a)	0
 #else
@@ -80,6 +89,7 @@
 #define __inline	__inline	notrace
 #endif
 
+<<<<<<< HEAD
 #define __always_inline	inline __attribute__((always_inline))
 #define  noinline	__attribute__((noinline))
 
@@ -87,6 +97,12 @@
 #define __packed	__attribute__((packed))
 #define __weak		__attribute__((weak))
 #define __alias(symbol)	__attribute__((alias(#symbol)))
+=======
+#define __deprecated			__attribute__((deprecated))
+#define __packed			__attribute__((packed))
+#define __weak				__attribute__((weak))
+#define __alias(symbol)		__attribute__((alias(#symbol)))
+>>>>>>> p9x
 
 /*
  * it doesn't make sense on ARM (currently the only user of __naked)
@@ -206,11 +222,38 @@
 
 #if GCC_VERSION >= 40600
 /*
+<<<<<<< HEAD
  * Tell the optimizer that something else uses this function or variable.
+=======
+ * When used with Link Time Optimization, gcc can optimize away C functions or
+ * variables which are referenced only from assembly code.  __visible tells the
+ * optimizer that something else uses this function or variable, thus preventing
+ * this.
+>>>>>>> p9x
  */
 #define __visible	__attribute__((externally_visible))
 #endif
 
+<<<<<<< HEAD
+=======
+
+#if GCC_VERSION >= 40900 && !defined(__CHECKER__)
+/*
+ * __assume_aligned(n, k): Tell the optimizer that the returned
+ * pointer can be assumed to be k modulo n. The second argument is
+ * optional (default 0), so we use a variadic macro to make the
+ * shorthand.
+ *
+ * Beware: Do not apply this to functions which may return
+ * ERR_PTRs. Also, it is probably unwise to apply it to functions
+ * returning extra information in the low bits (but in that case the
+ * compiler should see some alignment anyway, when the return value is
+ * massaged by 'flags = ptr & 3; ptr &= ~3;').
+ */
+#define __assume_aligned(a, ...) __attribute__((__assume_aligned__(a, ## __VA_ARGS__)))
+#endif
+
+>>>>>>> p9x
 /*
  * GCC 'asm goto' miscompiles certain code sequences:
  *
@@ -232,6 +275,7 @@
 #endif
 #endif /* CONFIG_ARCH_USE_BUILTIN_BSWAP */
 
+<<<<<<< HEAD
 #if GCC_VERSION >= 50000
 #define KASAN_ABI_VERSION 4
 #elif GCC_VERSION >= 40902
@@ -247,6 +291,8 @@
 #define __no_sanitize_address __attribute__((no_sanitize_address))
 #endif
 
+=======
+>>>>>>> p9x
 #endif	/* gcc version >= 40000 specific checks */
 
 #if !defined(__noclone)

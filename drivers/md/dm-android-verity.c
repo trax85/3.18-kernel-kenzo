@@ -13,7 +13,10 @@
  */
 
 #include <linux/buffer_head.h>
+<<<<<<< HEAD
 #include <linux/debugfs.h>
+=======
+>>>>>>> p9x
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/device-mapper.h>
@@ -43,6 +46,7 @@
 
 static char verifiedbootstate[VERITY_COMMANDLINE_PARAM_LENGTH];
 static char veritymode[VERITY_COMMANDLINE_PARAM_LENGTH];
+<<<<<<< HEAD
 static char veritykeyid[VERITY_DEFAULT_KEY_ID_LENGTH];
 static char buildvariant[BUILD_VARIANT];
 
@@ -66,6 +70,9 @@ static struct target_type android_verity_target = {
 };
 
 #ifndef MODULE
+=======
+
+>>>>>>> p9x
 static int __init verified_boot_state_param(char *line)
 {
 	strlcpy(verifiedbootstate, line, sizeof(verifiedbootstate));
@@ -82,6 +89,7 @@ static int __init verity_mode_param(char *line)
 
 __setup("androidboot.veritymode=", verity_mode_param);
 
+<<<<<<< HEAD
 static int __init verity_keyid_param(char *line)
 {
 	strlcpy(veritykeyid, line, sizeof(veritykeyid));
@@ -125,6 +133,8 @@ static inline bool is_unlocked(void)
 	return !strncmp(verifiedbootstate, unlocked, sizeof(unlocked));
 }
 
+=======
+>>>>>>> p9x
 static int table_extract_mpi_array(struct public_key_signature *pks,
 				const void *data, size_t len)
 {
@@ -141,7 +151,11 @@ static int table_extract_mpi_array(struct public_key_signature *pks,
 }
 
 static struct public_key_signature *table_make_digest(
+<<<<<<< HEAD
 						enum hash_algo hash,
+=======
+						enum pkey_hash_algo hash,
+>>>>>>> p9x
 						const void *table,
 						unsigned long table_len)
 {
@@ -154,7 +168,11 @@ static struct public_key_signature *table_make_digest(
 	/* Allocate the hashing algorithm we're going to need and find out how
 	 * big the hash operational data will be.
 	 */
+<<<<<<< HEAD
 	tfm = crypto_alloc_shash(hash_algo_name[hash], 0, 0);
+=======
+	tfm = crypto_alloc_shash(pkey_hash_algo[hash], 0, 0);
+>>>>>>> p9x
 	if (IS_ERR(tfm))
 		return ERR_CAST(tfm);
 
@@ -209,7 +227,11 @@ static int read_block_dev(struct bio_read *payload, struct block_device *bdev,
 	}
 
 	bio->bi_bdev = bdev;
+<<<<<<< HEAD
 	bio->bi_iter.bi_sector = offset;
+=======
+	bio->bi_sector = offset;
+>>>>>>> p9x
 
 	payload->page_io = kzalloc(sizeof(struct page *) *
 		payload->number_of_pages, GFP_KERNEL);
@@ -275,7 +297,14 @@ static inline int validate_fec_header(struct fec_header *header, u64 offset)
 		le32_to_cpu(header->version) != FEC_VERSION ||
 		le32_to_cpu(header->size) != sizeof(struct fec_header) ||
 		le32_to_cpu(header->roots) == 0 ||
+<<<<<<< HEAD
 		le32_to_cpu(header->roots) >= FEC_RSM)
+=======
+		le32_to_cpu(header->roots) >= FEC_RSM ||
+		offset < le32_to_cpu(header->fec_size) ||
+		offset - le32_to_cpu(header->fec_size) !=
+		le64_to_cpu(header->inp_size))
+>>>>>>> p9x
 		return -EINVAL;
 
 	return 0;
@@ -291,7 +320,11 @@ static int extract_fec_header(dev_t dev, struct fec_header *fec,
 
 	bdev = blkdev_get_by_dev(dev, FMODE_READ, NULL);
 
+<<<<<<< HEAD
 	if (IS_ERR_OR_NULL(bdev)) {
+=======
+	if (IS_ERR(bdev)) {
+>>>>>>> p9x
 		DMERR("bdev get error");
 		return PTR_ERR(bdev);
 	}
@@ -352,6 +385,7 @@ static void find_metadata_offset(struct fec_header *fec,
 		*metadata_offset = device_size - VERITY_METADATA_SIZE;
 }
 
+<<<<<<< HEAD
 static int find_size(dev_t dev, u64 *device_size)
 {
 	struct block_device *bdev;
@@ -402,6 +436,14 @@ static int extract_metadata(dev_t dev, struct fec_header *fec,
 {
 	struct block_device *bdev;
 	struct android_metadata_header *header;
+=======
+static struct android_metadata *extract_metadata(dev_t dev,
+				struct fec_header *fec)
+{
+	struct block_device *bdev;
+	struct android_metadata_header *header;
+	struct android_metadata *uninitialized_var(metadata);
+>>>>>>> p9x
 	int i;
 	u32 table_length, copy_length, offset;
 	u64 metadata_offset;
@@ -410,9 +452,15 @@ static int extract_metadata(dev_t dev, struct fec_header *fec,
 
 	bdev = blkdev_get_by_dev(dev, FMODE_READ, NULL);
 
+<<<<<<< HEAD
 	if (IS_ERR_OR_NULL(bdev)) {
 		DMERR("blkdev_get_by_dev failed");
 		return -ENODEV;
+=======
+	if (IS_ERR(bdev)) {
+		DMERR("blkdev_get_by_dev failed");
+		return ERR_CAST(bdev);
+>>>>>>> p9x
 	}
 
 	find_metadata_offset(fec, bdev, &metadata_offset);
@@ -430,6 +478,10 @@ static int extract_metadata(dev_t dev, struct fec_header *fec,
 		(1 << SECTOR_SHIFT), VERITY_METADATA_SIZE);
 	if (err) {
 		DMERR("Error while reading verity metadata");
+<<<<<<< HEAD
+=======
+		metadata = ERR_PTR(err);
+>>>>>>> p9x
 		goto blkdev_release;
 	}
 
@@ -448,6 +500,7 @@ static int extract_metadata(dev_t dev, struct fec_header *fec,
 		le32_to_cpu(header->protocol_version),
 		le32_to_cpu(header->table_length));
 
+<<<<<<< HEAD
 	err = verify_header(header);
 
 	if (err == VERITY_STATE_DISABLE) {
@@ -465,16 +518,25 @@ static int extract_metadata(dev_t dev, struct fec_header *fec,
 
 	*metadata = kzalloc(sizeof(**metadata), GFP_KERNEL);
 	if (!*metadata) {
+=======
+	metadata = kzalloc(sizeof(*metadata), GFP_KERNEL);
+	if (!metadata) {
+>>>>>>> p9x
 		DMERR("kzalloc for metadata failed");
 		err = -ENOMEM;
 		goto free_header;
 	}
 
+<<<<<<< HEAD
 	(*metadata)->header = header;
+=======
+	metadata->header = header;
+>>>>>>> p9x
 	table_length = le32_to_cpu(header->table_length);
 
 	if (table_length == 0 ||
 		table_length > (VERITY_METADATA_SIZE -
+<<<<<<< HEAD
 			sizeof(struct android_metadata_header))) {
 		DMERR("table_length too long");
 		err = -EINVAL;
@@ -484,6 +546,14 @@ static int extract_metadata(dev_t dev, struct fec_header *fec,
 	(*metadata)->verity_table = kzalloc(table_length + 1, GFP_KERNEL);
 
 	if (!(*metadata)->verity_table) {
+=======
+			sizeof(struct android_metadata_header)))
+		goto free_metadata;
+
+	metadata->verity_table = kzalloc(table_length + 1, GFP_KERNEL);
+
+	if (!metadata->verity_table) {
+>>>>>>> p9x
 		DMERR("kzalloc verity_table failed");
 		err = -ENOMEM;
 		goto free_metadata;
@@ -491,15 +561,23 @@ static int extract_metadata(dev_t dev, struct fec_header *fec,
 
 	if (sizeof(struct android_metadata_header) +
 			table_length <= PAGE_SIZE) {
+<<<<<<< HEAD
 		memcpy((*metadata)->verity_table,
 			page_address(payload.page_io[0])
+=======
+		memcpy(metadata->verity_table, page_address(payload.page_io[0])
+>>>>>>> p9x
 			+ sizeof(struct android_metadata_header),
 			table_length);
 	} else {
 		copy_length = PAGE_SIZE -
 			sizeof(struct android_metadata_header);
+<<<<<<< HEAD
 		memcpy((*metadata)->verity_table,
 			page_address(payload.page_io[0])
+=======
+		memcpy(metadata->verity_table, page_address(payload.page_io[0])
+>>>>>>> p9x
 			+ sizeof(struct android_metadata_header),
 			copy_length);
 		table_length -= copy_length;
@@ -507,13 +585,21 @@ static int extract_metadata(dev_t dev, struct fec_header *fec,
 		i = 1;
 		while (table_length != 0) {
 			if (table_length > PAGE_SIZE) {
+<<<<<<< HEAD
 				memcpy((*metadata)->verity_table + offset,
+=======
+				memcpy(metadata->verity_table + offset,
+>>>>>>> p9x
 					page_address(payload.page_io[i]),
 					PAGE_SIZE);
 				offset += PAGE_SIZE;
 				table_length -= PAGE_SIZE;
 			} else {
+<<<<<<< HEAD
 				memcpy((*metadata)->verity_table + offset,
+=======
+				memcpy(metadata->verity_table + offset,
+>>>>>>> p9x
 					page_address(payload.page_io[i]),
 					table_length);
 				table_length = 0;
@@ -521,6 +607,7 @@ static int extract_metadata(dev_t dev, struct fec_header *fec,
 			i++;
 		}
 	}
+<<<<<<< HEAD
 	(*metadata)->verity_table[table_length] = '\0';
 
 	DMINFO("verity_table: %s", (*metadata)->verity_table);
@@ -530,14 +617,33 @@ free_metadata:
 	kfree(*metadata);
 free_header:
 	kfree(header);
+=======
+	metadata->verity_table[table_length] = '\0';
+
+	goto free_payload;
+
+free_metadata:
+	kfree(metadata);
+free_header:
+	kfree(header);
+	metadata = ERR_PTR(err);
+>>>>>>> p9x
 free_payload:
 	for (i = 0; i < payload.number_of_pages; i++)
 		if (payload.page_io[i])
 			__free_page(payload.page_io[i]);
 	kfree(payload.page_io);
+<<<<<<< HEAD
 blkdev_release:
 	blkdev_put(bdev, FMODE_READ);
 	return err;
+=======
+
+	DMINFO("verity_table: %s", metadata->verity_table);
+blkdev_release:
+	blkdev_put(bdev, FMODE_READ);
+	return metadata;
+>>>>>>> p9x
 }
 
 /* helper functions to extract properties from dts */
@@ -555,6 +661,22 @@ const char *find_dt_value(const char *name)
 	return value;
 }
 
+<<<<<<< HEAD
+=======
+static bool is_unlocked(void)
+{
+	static const char unlocked[]  = "orange";
+	static const char verified_boot_prop[] = "verifiedbootstate";
+	const char *value;
+
+	value = find_dt_value(verified_boot_prop);
+	if (!value)
+		value = verifiedbootstate;
+
+	return !strncmp(value, unlocked, sizeof(unlocked) - 1);
+}
+
+>>>>>>> p9x
 static int verity_mode(void)
 {
 	static const char enforcing[] = "enforcing";
@@ -570,6 +692,37 @@ static int verity_mode(void)
 	return DM_VERITY_MODE_EIO;
 }
 
+<<<<<<< HEAD
+=======
+static int verify_header(struct android_metadata_header *header)
+{
+	int retval = -EINVAL;
+
+	if (is_unlocked() && le32_to_cpu(header->magic_number) ==
+		VERITY_METADATA_MAGIC_DISABLE) {
+		retval = VERITY_STATE_DISABLE;
+		return retval;
+	}
+
+	if (!(le32_to_cpu(header->magic_number) ==
+		VERITY_METADATA_MAGIC_NUMBER) ||
+		(le32_to_cpu(header->magic_number) ==
+		VERITY_METADATA_MAGIC_DISABLE)) {
+		DMERR("Incorrect magic number");
+		return retval;
+	}
+
+	if (le32_to_cpu(header->protocol_version) !=
+		VERITY_METADATA_VERSION) {
+		DMERR("Unsupported version %u",
+			le32_to_cpu(header->protocol_version));
+		return retval;
+	}
+
+	return 0;
+}
+
+>>>>>>> p9x
 static int verify_verity_signature(char *key_id,
 		struct android_metadata *metadata)
 {
@@ -588,7 +741,11 @@ static int verify_verity_signature(char *key_id,
 
 	key = key_ref_to_ptr(key_ref);
 
+<<<<<<< HEAD
 	pks = table_make_digest(HASH_ALGO_SHA256,
+=======
+	pks = table_make_digest(PKEY_HASH_SHA256,
+>>>>>>> p9x
 			(const void *)metadata->verity_table,
 			le32_to_cpu(metadata->header->table_length));
 
@@ -632,6 +789,7 @@ static inline bool test_mult_overflow(sector_t a, u32 b)
 	return a > r;
 }
 
+<<<<<<< HEAD
 static int add_as_linear_device(struct dm_target *ti, char *dev)
 {
 	/*Move to linear mapping defines*/
@@ -682,6 +840,8 @@ static int create_linear_device(struct dm_target *ti, dev_t dev,
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 /*
  * Target parameters:
  *	<key id>	Key id of the public key in the system keyring.
@@ -693,19 +853,32 @@ static int create_linear_device(struct dm_target *ti, dev_t dev,
 static int android_verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
 {
 	dev_t uninitialized_var(dev);
+<<<<<<< HEAD
 	struct android_metadata *metadata = NULL;
 	int err = 0, i, mode;
 	char *key_id, *table_ptr, dummy, *target_device,
+=======
+	struct android_metadata *uninitialized_var(metadata);
+	int err = 0, i, mode;
+	char *key_id, *table_ptr, dummy,
+>>>>>>> p9x
 	*verity_table_args[VERITY_TABLE_ARGS + 2 + VERITY_TABLE_OPT_FEC_ARGS];
 	/* One for specifying number of opt args and one for mode */
 	sector_t data_sectors;
 	u32 data_block_size;
+<<<<<<< HEAD
 	unsigned int no_of_args = VERITY_TABLE_ARGS + 2 + VERITY_TABLE_OPT_FEC_ARGS;
 	struct fec_header uninitialized_var(fec);
+=======
+	unsigned int major, minor,
+	no_of_args = VERITY_TABLE_ARGS + 2 + VERITY_TABLE_OPT_FEC_ARGS;
+	struct fec_header fec;
+>>>>>>> p9x
 	struct fec_ecc_metadata uninitialized_var(ecc);
 	char buf[FEC_ARG_LENGTH], *buf_ptr;
 	unsigned long long tmpll;
 
+<<<<<<< HEAD
 	if (argc == 1) {
 		/* Use the default keyid */
 		if (default_verity_key_id())
@@ -718,11 +891,15 @@ static int android_verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
 	} else if (argc == 2)
 		key_id = argv[1];
 	else {
+=======
+	if (argc != 2) {
+>>>>>>> p9x
 		DMERR("Incorrect number of arguments");
 		handle_error();
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	target_device = argv[0];
 
 	dev = name_to_dev_t(target_device);
@@ -750,6 +927,22 @@ static int android_verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
 	strreplace(key_id, '#', ' ');
 
 	DMINFO("key:%s dev:%s", key_id, target_device);
+=======
+	/* should come as one of the arguments for the verity target */
+	key_id = argv[0];
+	strreplace(argv[0], '#', ' ');
+
+	if (sscanf(argv[1], "%u:%u%c", &major, &minor, &dummy) == 2) {
+		dev = MKDEV(major, minor);
+		if (MAJOR(dev) != major || MINOR(dev) != minor) {
+			DMERR("Incorrect bdev major minor number");
+			handle_error();
+			return -EOVERFLOW;
+		}
+	}
+
+	DMINFO("key:%s dev:%s", argv[0], argv[1]);
+>>>>>>> p9x
 
 	if (extract_fec_header(dev, &fec, &ecc)) {
 		DMERR("Error while extracting fec header");
@@ -757,6 +950,7 @@ static int android_verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	err = extract_metadata(dev, &fec, &metadata, &verity_enabled);
 
 	if (err) {
@@ -780,6 +974,35 @@ static int android_verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
 		} else
 			DMINFO("Signature verification success");
 	}
+=======
+	metadata = extract_metadata(dev, &fec);
+
+	if (IS_ERR(metadata)) {
+		DMERR("Error while extracting metadata");
+		handle_error();
+		return -EINVAL;
+	}
+
+	err = verify_header(metadata->header);
+
+	if (err == VERITY_STATE_DISABLE) {
+		DMERR("Mounting root with verity disabled");
+		return -EINVAL;
+	} else if (err) {
+		DMERR("Verity header handle error");
+		handle_error();
+		goto free_metadata;
+	}
+
+	err = verify_verity_signature(key_id, metadata);
+
+	if (err) {
+		DMERR("Signature verification failed");
+		handle_error();
+		goto free_metadata;
+	} else
+		DMINFO("Signature verification success");
+>>>>>>> p9x
 
 	table_ptr = metadata->verity_table;
 
@@ -835,6 +1058,7 @@ static int android_verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
 	/* update target length */
 	ti->len = data_sectors;
 
+<<<<<<< HEAD
 	/* Setup linear target and free */
 	if (!verity_enabled) {
 		err = add_as_linear_device(ti, target_device);
@@ -844,12 +1068,18 @@ static int android_verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
 	/*substitute data_dev and hash_dev*/
 	verity_table_args[1] = target_device;
 	verity_table_args[2] = target_device;
+=======
+	/*substitute data_dev and hash_dev*/
+	verity_table_args[1] = argv[1];
+	verity_table_args[2] = argv[1];
+>>>>>>> p9x
 
 	mode = verity_mode();
 
 	if (ecc.valid && IS_BUILTIN(CONFIG_DM_VERITY_FEC)) {
 		if (mode) {
 			err = snprintf(buf, FEC_ARG_LENGTH,
+<<<<<<< HEAD
 				"%u %s " VERITY_TABLE_OPT_FEC_FORMAT,
 				1 + VERITY_TABLE_OPT_FEC_ARGS,
 				mode == DM_VERITY_MODE_RESTART ?
@@ -864,6 +1094,19 @@ static int android_verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
 				VERITY_TABLE_OPT_FEC_ARGS, target_device,
 				ecc.start / FEC_BLOCK_SIZE, ecc.blocks,
 				ecc.roots);
+=======
+			"%u %s " VERITY_TABLE_OPT_FEC_FORMAT,
+			1 + VERITY_TABLE_OPT_FEC_ARGS,
+			mode == DM_VERITY_MODE_RESTART ?
+			VERITY_TABLE_OPT_RESTART : VERITY_TABLE_OPT_LOGGING,
+			argv[1], ecc.start / FEC_BLOCK_SIZE, ecc.blocks,
+			ecc.roots);
+		} else {
+			err = snprintf(buf, FEC_ARG_LENGTH,
+			"%u " VERITY_TABLE_OPT_FEC_FORMAT,
+			VERITY_TABLE_OPT_FEC_ARGS, argv[1],
+			ecc.start / FEC_BLOCK_SIZE, ecc.blocks, ecc.roots);
+>>>>>>> p9x
 		}
 	} else if (mode) {
 		err = snprintf(buf, FEC_ARG_LENGTH,
@@ -891,6 +1134,7 @@ static int android_verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
 
 	err = verity_ctr(ti, no_of_args, verity_table_args);
 
+<<<<<<< HEAD
 	if (err)
 		DMERR("android-verity failed to mount as verity target");
 	else {
@@ -903,19 +1147,45 @@ free_metadata:
 		kfree(metadata->header);
 		kfree(metadata->verity_table);
 	}
+=======
+free_metadata:
+	kfree(metadata->header);
+	kfree(metadata->verity_table);
+>>>>>>> p9x
 	kfree(metadata);
 	return err;
 }
 
+<<<<<<< HEAD
 static int __init dm_android_verity_init(void)
 {
 	int r;
 	struct dentry *file;
+=======
+static struct target_type android_verity_target = {
+	.name			= "android-verity",
+	.version		= {1, 0, 0},
+	.module			= THIS_MODULE,
+	.ctr			= android_verity_ctr,
+	.dtr			= verity_dtr,
+	.map			= verity_map,
+	.status			= verity_status,
+	.ioctl			= verity_ioctl,
+	.merge			= verity_merge,
+	.iterate_devices	= verity_iterate_devices,
+	.io_hints		= verity_io_hints,
+};
+
+static int __init dm_android_verity_init(void)
+{
+	int r;
+>>>>>>> p9x
 
 	r = dm_register_target(&android_verity_target);
 	if (r < 0)
 		DMERR("register failed %d", r);
 
+<<<<<<< HEAD
 	/* Tracks the status of the last added target */
 	debug_dir = debugfs_create_dir("android_verity", NULL);
 
@@ -945,14 +1215,19 @@ static int __init dm_android_verity_init(void)
 	}
 
 end:
+=======
+>>>>>>> p9x
 	return r;
 }
 
 static void __exit dm_android_verity_exit(void)
 {
+<<<<<<< HEAD
 	if (!IS_ERR_OR_NULL(debug_dir))
 		debugfs_remove_recursive(debug_dir);
 
+=======
+>>>>>>> p9x
 	dm_unregister_target(&android_verity_target);
 }
 

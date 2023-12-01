@@ -61,8 +61,13 @@ static inline int __must_check PTR_ERR_OR_ZERO(__force const void *ptr)
 		return 0;
 }
 
+<<<<<<< HEAD
 /* Deprecated */
 #define PTR_RET(p) PTR_ERR_OR_ZERO(p)
+=======
+/* for backport */
+#define PTR_ERR_OR_ZERO(p) PTR_RET(p)
+>>>>>>> p9x
 
 #endif
 

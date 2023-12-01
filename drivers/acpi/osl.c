@@ -212,6 +212,10 @@ static void __init acpi_reserve_resources(void)
 		acpi_request_region(&acpi_gbl_FADT.xgpe1_block,
 			       acpi_gbl_FADT.gpe1_block_length, "ACPI GPE1_BLK");
 }
+<<<<<<< HEAD
+=======
+fs_initcall_sync(acpi_reserve_resources);
+>>>>>>> p9x
 
 void acpi_os_printf(const char *fmt, ...)
 {

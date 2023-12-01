@@ -572,6 +572,7 @@ static const struct dmi_system_id video_vendor_dmi_table[] __initconst = {
 		},
 	},
 	{
+<<<<<<< HEAD
 		.callback = video_set_backlight_video_vendor,
 		.ident = "Acer Aspire 5741",
 		.matches = {
@@ -580,6 +581,8 @@ static const struct dmi_system_id video_vendor_dmi_table[] __initconst = {
 		},
 	},
 	{
+=======
+>>>>>>> p9x
 		/*
 		 * Note no video_set_backlight_video_vendor, we must use the
 		 * acer interface, as there is no native backlight interface.
@@ -1877,7 +1880,11 @@ static acpi_status __init acer_wmi_get_handle_cb(acpi_handle ah, u32 level,
 	if (!strcmp(ctx, "SENR")) {
 		if (acpi_bus_get_device(ah, &dev))
 			return AE_OK;
+<<<<<<< HEAD
 		if (!strcmp(ACER_WMID_ACCEL_HID, acpi_device_hid(dev)))
+=======
+		if (strcmp(ACER_WMID_ACCEL_HID, acpi_device_hid(dev)))
+>>>>>>> p9x
 			return AE_OK;
 	} else
 		return AE_OK;
@@ -1898,8 +1905,7 @@ static int __init acer_wmi_get_handle(const char *name, const char *prop,
 	handle = NULL;
 	status = acpi_get_devices(prop, acer_wmi_get_handle_cb,
 					(void *)name, &handle);
-
-	if (ACPI_SUCCESS(status)) {
+	if (ACPI_SUCCESS(status) && handle) {
 		*ah = handle;
 		return 0;
 	} else {
@@ -2288,8 +2294,13 @@ static int __init acer_wmi_init(void)
 		if (err)
 			return err;
 		err = acer_wmi_accel_setup();
+<<<<<<< HEAD
 		if (err)
 			return err;
+=======
+		if (err && err != -ENODEV)
+			pr_warn("Cannot enable accelerometer\n");
+>>>>>>> p9x
 	}
 
 	err = platform_driver_register(&acer_platform_driver);

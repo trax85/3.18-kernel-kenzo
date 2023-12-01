@@ -1,5 +1,9 @@
 
+<<<<<<< HEAD
 /* Copyright (c) 2007-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2007-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -139,6 +143,7 @@ int mdss_irq_dispatch(u32 hw_ndx, int irq, void *ptr)
 	return rc;
 }
 
+<<<<<<< HEAD
 void mdss_enable_irq_wake(struct mdss_hw *hw)
 {
 	unsigned long irq_flags;
@@ -217,12 +222,17 @@ static bool check_display(char *param_string)
 	return display_disable;
 }
 
+=======
+>>>>>>> p9x
 struct mdss_util_intf mdss_util = {
 	.register_irq = mdss_register_irq,
 	.enable_irq = mdss_enable_irq,
 	.disable_irq = mdss_disable_irq,
+<<<<<<< HEAD
 	.enable_wake_irq = mdss_enable_irq_wake,
 	.disable_wake_irq = mdss_disable_irq_wake,
+=======
+>>>>>>> p9x
 	.disable_irq_nosync = mdss_disable_irq_nosync,
 	.irq_dispatch = mdss_irq_dispatch,
 	.get_iommu_domain = NULL,
@@ -232,9 +242,13 @@ struct mdss_util_intf mdss_util = {
 	.bus_scale_set_quota = NULL,
 	.panel_intf_type = NULL,
 	.panel_intf_status = NULL,
+<<<<<<< HEAD
 	.mdp_probe_done = false,
 	.param_check = check_display,
 	.display_disabled = false
+=======
+	.mdp_probe_done = false
+>>>>>>> p9x
 };
 
 struct mdss_util_intf *mdss_get_util_intf()
@@ -242,6 +256,7 @@ struct mdss_util_intf *mdss_get_util_intf()
 	return &mdss_util;
 }
 EXPORT_SYMBOL(mdss_get_util_intf);
+<<<<<<< HEAD
 
 /* This routine should only be called from interrupt context */
 bool mdss_get_irq_enable_state(struct mdss_hw *hw)
@@ -254,3 +269,5 @@ bool mdss_get_irq_enable_state(struct mdss_hw *hw)
 
 	return is_irq_enabled;
 }
+=======
+>>>>>>> p9x

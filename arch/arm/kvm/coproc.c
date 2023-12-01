@@ -275,9 +275,15 @@ static const struct coproc_reg cp15_regs[] = {
 	{ CRn( 0), CRm( 0), Op1( 2), Op2( 0), is32,
 			NULL, reset_unknown, c0_CSSELR },
 
+<<<<<<< HEAD
 	/* ACTLR: trapped by HCR.TAC bit. */
 	{ CRn( 1), CRm( 0), Op1( 0), Op2( 1), is32,
 			access_actlr, reset_actlr, c1_ACTLR },
+=======
+	/* TTBR0/TTBR1: swapped by interrupt.S. */
+	{ CRm64( 2), Op1( 0), is64, NULL, reset_unknown64, c2_TTBR0 },
+	{ CRm64( 2), Op1( 1), is64, NULL, reset_unknown64, c2_TTBR1 },
+>>>>>>> p9x
 
 	/* CPACR: swapped by interrupt.S. */
 	{ CRn( 1), CRm( 0), Op1( 0), Op2( 2), is32,
@@ -312,7 +318,11 @@ static const struct coproc_reg cp15_regs[] = {
 	{ CRn( 6), CRm( 0), Op1( 0), Op2( 0), is32,
 			access_vm_reg, reset_unknown, c6_DFAR },
 	{ CRn( 6), CRm( 0), Op1( 0), Op2( 2), is32,
+<<<<<<< HEAD
 			access_vm_reg, reset_unknown, c6_IFAR },
+=======
+			NULL, reset_unknown, c6_IFAR },
+>>>>>>> p9x
 
 	/* PAR swapped by interrupt.S */
 	{ CRm64( 7), Op1( 0), is64, NULL, reset_unknown64, c7_PAR },

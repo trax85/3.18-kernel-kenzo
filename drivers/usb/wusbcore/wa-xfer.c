@@ -1960,6 +1960,7 @@ int wa_urb_dequeue(struct wahc *wa, struct urb *urb, int status)
 	pr_debug("%s: DEQUEUE xfer id 0x%08X\n", __func__, wa_xfer_id(xfer));
 	rpipe = xfer->ep->hcpriv;
 	if (rpipe == NULL) {
+<<<<<<< HEAD
 		pr_debug("%s: xfer %p id 0x%08X has no RPIPE.  %s",
 			__func__, xfer, wa_xfer_id(xfer),
 			"Probably already aborted.\n" );
@@ -1974,6 +1975,11 @@ int wa_urb_dequeue(struct wahc *wa, struct urb *urb, int status)
 		pr_debug("%s: xfer %p id 0x%08X already done.\n", __func__,
 			xfer, wa_xfer_id(xfer));
 		result = -ENOENT;
+=======
+		pr_debug("%s: xfer id 0x%08X has no RPIPE.  %s",
+			__func__, wa_xfer_id(xfer),
+			"Probably already aborted.\n" );
+>>>>>>> p9x
 		goto out_unlock;
 	}
 	/* Check the delayed list -> if there, release and complete */
@@ -2819,6 +2825,37 @@ static void wa_dti_cb(struct urb *urb)
 			dev_err(dev, "DTI Error: unexpected EP state = %d\n",
 				wa->dti_state);
 		}
+<<<<<<< HEAD
+=======
+		xfer_result = wa->xfer_result;
+		if (xfer_result->hdr.bLength != sizeof(*xfer_result)) {
+			dev_err(dev, "DTI Error: xfer result--"
+				"bad header length %u\n",
+				xfer_result->hdr.bLength);
+			break;
+		}
+		if (xfer_result->hdr.bNotifyType != WA_XFER_RESULT) {
+			dev_err(dev, "DTI Error: xfer result--"
+				"bad header type 0x%02x\n",
+				xfer_result->hdr.bNotifyType);
+			break;
+		}
+		usb_status = xfer_result->bTransferStatus & 0x3f;
+		if (usb_status == WA_XFER_STATUS_NOT_FOUND)
+			/* taken care of already */
+			break;
+		xfer_id = xfer_result->dwTransferID;
+		xfer = wa_xfer_get_by_id(wa, xfer_id);
+		if (xfer == NULL) {
+			/* FIXME: transaction might have been cancelled */
+			dev_err(dev, "DTI Error: xfer result--"
+				"unknown xfer 0x%08x (status 0x%02x)\n",
+				xfer_id, usb_status);
+			break;
+		}
+		wa_xfer_result_chew(wa, xfer);
+		wa_xfer_put(xfer);
+>>>>>>> p9x
 		break;
 	case -ENOENT:		/* (we killed the URB)...so, no broadcast */
 	case -ESHUTDOWN:	/* going away! */

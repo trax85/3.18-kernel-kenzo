@@ -349,14 +349,27 @@ static int af9035_i2c_master_xfer(struct i2c_adapter *adap,
 			ret = af9035_rd_regs(d, reg, &msg[1].buf[0],
 					msg[1].len);
 		} else {
+<<<<<<< HEAD
 			/* I2C write + read */
+=======
+			/* I2C */
+>>>>>>> p9x
 			u8 buf[MAX_XFER_SIZE];
 			struct usb_req req = { CMD_I2C_RD, 0, 5 + msg[0].len,
 					buf, msg[1].len, msg[1].buf };
 
+<<<<<<< HEAD
 			if (state->chip_type == 0x9306) {
 				req.cmd = CMD_GENERIC_I2C_RD;
 				req.wlen = 3 + msg[0].len;
+=======
+			if (5 + msg[0].len > sizeof(buf)) {
+				dev_warn(&d->udev->dev,
+					 "%s: i2c xfer: len=%d is too big!\n",
+					 KBUILD_MODNAME, msg[0].len);
+				ret = -EOPNOTSUPP;
+				goto unlock;
+>>>>>>> p9x
 			}
 			req.mbox |= ((msg[0].addr & 0x80)  >>  3);
 
@@ -394,16 +407,30 @@ static int af9035_i2c_master_xfer(struct i2c_adapter *adap,
 							         msg[0].len - 3)
 					        : -EOPNOTSUPP;
 		} else {
+<<<<<<< HEAD
 			/* I2C write */
+=======
+			/* I2C */
+>>>>>>> p9x
 			u8 buf[MAX_XFER_SIZE];
 			struct usb_req req = { CMD_I2C_WR, 0, 5 + msg[0].len,
 					buf, 0, NULL };
 
+<<<<<<< HEAD
 			if (state->chip_type == 0x9306) {
 				req.cmd = CMD_GENERIC_I2C_WR;
 				req.wlen = 3 + msg[0].len;
 			}
 
+=======
+			if (5 + msg[0].len > sizeof(buf)) {
+				dev_warn(&d->udev->dev,
+					 "%s: i2c xfer: len=%d is too big!\n",
+					 KBUILD_MODNAME, msg[0].len);
+				ret = -EOPNOTSUPP;
+				goto unlock;
+			}
+>>>>>>> p9x
 			req.mbox |= ((msg[0].addr & 0x80)  >>  3);
 			buf[0] = msg[0].len;
 			if (state->chip_type == 0x9306) {
@@ -456,6 +483,7 @@ static int af9035_i2c_master_xfer(struct i2c_adapter *adap,
 		ret = -EOPNOTSUPP;
 	}
 
+unlock:
 	mutex_unlock(&d->i2c_mutex);
 
 	if (ret < 0)
@@ -2052,16 +2080,23 @@ static const struct usb_device_id af9035_id_table[] = {
 		&it930x_props, "ITE 9303 Generic", NULL) },
 	/* XXX: that same ID [0ccd:0099] is used by af9015 driver too */
 	{ DVB_USB_DEVICE(USB_VID_TERRATEC, 0x0099,
+<<<<<<< HEAD
 		&af9035_props, "TerraTec Cinergy T Stick Dual RC (rev. 2)",
 		NULL) },
+=======
+		&af9035_props, "TerraTec Cinergy T Stick Dual RC (rev. 2)", NULL) },
+>>>>>>> p9x
 	{ DVB_USB_DEVICE(USB_VID_LEADTEK, 0x6a05,
 		&af9035_props, "Leadtek WinFast DTV Dongle Dual", NULL) },
 	{ DVB_USB_DEVICE(USB_VID_HAUPPAUGE, 0xf900,
 		&af9035_props, "Hauppauge WinTV-MiniStick 2", NULL) },
+<<<<<<< HEAD
 	{ DVB_USB_DEVICE(USB_VID_PCTV, USB_PID_PCTV_78E,
 		&af9035_props, "PCTV AndroiDTV (78e)", RC_MAP_IT913X_V1) },
 	{ DVB_USB_DEVICE(USB_VID_PCTV, USB_PID_PCTV_79E,
 		&af9035_props, "PCTV microStick (79e)", RC_MAP_IT913X_V2) },
+=======
+>>>>>>> p9x
 	{ }
 };
 MODULE_DEVICE_TABLE(usb, af9035_id_table);

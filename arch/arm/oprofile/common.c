@@ -33,6 +33,7 @@ static struct op_perf_name {
 	char *perf_name;
 	char *op_name;
 } op_perf_name_map[] = {
+<<<<<<< HEAD
 	{ "armv5_xscale1",	"arm/xscale1"	},
 	{ "armv5_xscale2",	"arm/xscale2"	},
 	{ "armv6_1136",		"arm/armv6"	},
@@ -41,6 +42,18 @@ static struct op_perf_name {
 	{ "armv6_11mpcore",	"arm/mpcore"	},
 	{ "armv7_cortex_a8",	"arm/armv7"	},
 	{ "armv7_cortex_a9",	"arm/armv7-ca9"	},
+=======
+	{ "xscale1",		"arm/xscale1"	},
+	{ "xscale1",		"arm/xscale2"	},
+	{ "v6",			"arm/armv6"	},
+	{ "v6mpcore",		"arm/mpcore"	},
+	{ "ARMv7 Cortex-A5",	"arm/armv7"	},
+	{ "ARMv7 Cortex-A8",	"arm/armv7"	},
+	{ "ARMv7 Cortex-A9",	"arm/armv7-ca9"	},
+	{ "ARMv7 Scorpion",	"arm/armv7-scorpion"	},
+	{ "ARMv7 Scorpion-MP",	"arm/armv7-scorpionmp"	},
+	{ "ARMv7 Krait",	"arm/armv7-krait"	},
+>>>>>>> p9x
 };
 
 char *op_name_from_perf_id(void)

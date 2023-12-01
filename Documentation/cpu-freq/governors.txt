@@ -302,6 +302,7 @@ boostpulse_duration: Length of time to hold CPU speed at hispeed_freq
 on a write to boostpulse, before allowing speed to drop according to
 load as usual.  Default is 80000 uS.
 
+<<<<<<< HEAD
 align_windows: If non-zero, align governor timer window to fire at
 multiples of number of jiffies timer_rate converts to.
 
@@ -346,6 +347,8 @@ if enable_prediction is set. If only f_pred but not f_prev picked
 policy->max, max_freq_hysteresis period is not started/extended.
 use_sched_load must be turned on before enabling this feature.
 Default is zero.
+=======
+>>>>>>> p9x
 
 3. The Governor Interface in the CPUfreq Core
 =============================================

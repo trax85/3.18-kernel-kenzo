@@ -23,6 +23,7 @@ Optional properties:
 - qcom,bypass-spm: Boolean flag which indicates that voltage control should not
 		    be managed by an SPM.  Instead, the voltage should be
 		    controlled via SPMI.
+<<<<<<< HEAD
 - qcom,max-voltage-step:  Maximum single voltage step size in microvolts.
 - qcom,recal-mask: Bit mask of the APSS clusters to recalibrate after each
 		    voltage change.  Bit 0 corresponds to the first cluster,
@@ -34,6 +35,8 @@ Optional structure:
 	voltage limits.
 - The AVS child node must contain these properties defined in regulator.txt:
 	regulator-name, regulator-min-microvolt, regulator-max-microvolt.
+=======
+>>>>>>> p9x
 
 All properties specified within the core regulator framework can also be used.
 These bindings can be found in regulator.txt.
@@ -50,12 +53,15 @@ Example:
 				reg = <0x1700 0x100>;
 				regulator-min-microvolt = <900000>;
 				regulator-max-microvolt = <1275000>;
+<<<<<<< HEAD
 
 				avs-limit-regulator {
 					regulator-name = "8226_s2_avs_limit";
 					regulator-min-microvolt = <900000>;
 					regulator-max-microvolt = <1275000>;
 				}
+=======
+>>>>>>> p9x
 			};
 		};
 	};

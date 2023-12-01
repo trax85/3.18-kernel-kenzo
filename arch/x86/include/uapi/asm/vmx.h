@@ -116,6 +116,11 @@
 	{ EXIT_REASON_INVALID_STATE,         "INVALID_STATE" }, \
 	{ EXIT_REASON_INVD,                  "INVD" }, \
 	{ EXIT_REASON_INVVPID,               "INVVPID" }, \
+<<<<<<< HEAD
 	{ EXIT_REASON_INVPCID,               "INVPCID" }
+=======
+	{ EXIT_REASON_INVPCID,               "INVPCID" }, \
+	{ EXIT_REASON_PREEMPTION_TIMER,      "PREEMPTION_TIMER" }
+>>>>>>> p9x
 
 #endif /* _UAPIVMX_H */

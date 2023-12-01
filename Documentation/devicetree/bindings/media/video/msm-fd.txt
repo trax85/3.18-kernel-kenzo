@@ -18,7 +18,11 @@ Required properties:
     - "fd_vbif" - FD VBIF hardware register set.
 - interrupts: should contain the fd interrupts. From fd cores with
   revisions 0x10010000 and higher, power collapse sequence is required.
+<<<<<<< HEAD
   Face detection misc irq is needed to perform power collapse.
+=======
+  Face detection wrapper irq is needed to perform power collapse.
+>>>>>>> p9x
 - interrupt-names: should specify relevant names to each interrupts
   property defined.
 - vdd-supply: phandle to GDSC regulator controlling face detection hw.
@@ -34,11 +38,16 @@ Optional properties:
   property defined.
   If we want to have different operating clock frequencies we can define
   rate levels. They should be defined in incremental order.
+<<<<<<< HEAD
 - qcom,bus-bandwidth-vectors: Specifies instant and average bus bandwidth
+=======
+- bus-bandwidth-vectors: Specifies instant and average bus bandwidth
+>>>>>>> p9x
   vectors per clock rate.
   Each of entries contains:
   - ab. Average bus bandwidth (Bps).
   - ib. Instantaneous bus bandwidth (Bps).
+<<<<<<< HEAD
 - mmagic-vdd-supply: phandle to GDSC regulator controlling mmagic.
 - camss-vdd-supply: phandle to GDSC regulator controlling camss.
 - qcom,fd-core-reg-settings: relative address offsets and value pairs for
@@ -52,6 +61,10 @@ Optional properties:
   Format: <reg_addr_offset reg_value reg_mask>
 
 Example:
+=======
+
+Example revisions 0x10000000..0x10010000:
+>>>>>>> p9x
 
     qcom,fd@fd878000 {
         compatible = "qcom,face-detection";
@@ -61,6 +74,7 @@ Example:
         reg-names = "fd_core", "fd_misc", "fd_vbif";
         interrupts = <0 316 0>;
         interrupt-names = "fd";
+<<<<<<< HEAD
         mmagic-vdd-supply = <&gdsc_mmagic_camss>;
         camss-vdd-supply = <&gdsc_camss_top>;
         vdd-supply = <&gdsc_fd>;
@@ -97,3 +111,45 @@ Example:
             <0x24 0x2 0x3>;
         qcom,fd-core-reg-settings = <0x8 0x20 0xffffffff>;
     };
+=======
+        vdd-supply = <&gdsc_fd>;
+        clocks = <&clock_mmss clk_fd_core_clk>,
+                 <&clock_mmss clk_fd_core_uar_clk>,
+                 <&clock_mmss clk_fd_axi_clk>,
+                 <&clock_mmss clk_fd_ahb_clk>;
+        clock-names = "fd_core_clk", "fd_core_uar_clk",
+                      "fd_axi_clk", "fd_ahb_clk";
+        clock-rates = <60000000 60000000 75000000 40000000>,
+			<200000000 200000000 150000000 40000000>,
+			<400000000 400000000 333000000 80000000>;
+	bus-bandwidth-vectors = <13000000 26000000>,
+				<45000000 90000000>,
+				<90000000 180000000>;
+    };
+
+Example revision 0x10010000 and above:
+
+    qcom,fd@fd878000 {
+        compatible = "qcom,face-detection";
+        reg = <0xfd878000 0x800>,
+              <0xfd87c000 0x800>,
+              <0xfd860000 0x1000>;
+        reg-names = "fd_core", "fd_misc", "fd_vbif";
+        interrupts = <0 316 0>;
+        interrupt-names = "fd";
+        vdd-supply = <&gdsc_fd>;
+        clocks = <&clock_mmss clk_fd_core_clk>,
+	         <&clock_mmss clk_fd_core_uar_clk>,
+	         <&clock_mmss clk_fd_axi_clk>,
+	         <&clock_mmss clk_fd_ahb_clk>;
+        clock-names = "fd_core_clk", "fd_core_uar_clk",
+                      "fd_axi_clk", "fd_ahb_clk";
+        clock-rates = <60000000 60000000 75000000 40000000>,
+                      <200000000 200000000 150000000 40000000>,
+                      <400000000 400000000 333000000 80000000>;
+	bus-bandwidth-vectors = <13000000 26000000>,
+				<45000000 90000000>,
+				<90000000 180000000>;
+   };
+
+>>>>>>> p9x

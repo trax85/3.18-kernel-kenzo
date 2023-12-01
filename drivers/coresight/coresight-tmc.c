@@ -525,7 +525,12 @@ static void tmc_etr_fill_usb_bam_data(struct tmc_drvdata *drvdata)
 {
 	struct tmc_etr_bam_data *bamdata = drvdata->bamdata;
 
+<<<<<<< HEAD
 	get_qdss_bam_connection_info(&bamdata->dest,
+=======
+	get_bam2bam_connection_info(usb_bam_get_qdss_idx(0),
+				    &bamdata->dest,
+>>>>>>> p9x
 				    &bamdata->dest_pipe_idx,
 				    &bamdata->src_pipe_idx,
 				    &bamdata->desc_fifo,
@@ -2354,10 +2359,22 @@ static int tmc_probe(struct platform_device *pdev)
 	struct coresight_cti_data *ctidata;
 	struct coresight_desc *desc;
 
+<<<<<<< HEAD
 	pdata = of_get_coresight_platform_data(dev, pdev->dev.of_node);
 	if (IS_ERR(pdata))
 		return PTR_ERR(pdata);
 	pdev->dev.platform_data = pdata;
+=======
+	if (coresight_fuse_access_disabled())
+		return -EPERM;
+
+	if (pdev->dev.of_node) {
+		pdata = of_get_coresight_platform_data(dev, pdev->dev.of_node);
+		if (IS_ERR(pdata))
+			return PTR_ERR(pdata);
+		pdev->dev.platform_data = pdata;
+	}
+>>>>>>> p9x
 
 	drvdata = devm_kzalloc(dev, sizeof(*drvdata), GFP_KERNEL);
 	if (!drvdata)
@@ -2393,11 +2410,14 @@ static int tmc_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	if (!coresight_authstatus_enabled(drvdata->base)) {
 		clk_disable_unprepare(drvdata->clk);
 		return -EPERM;
 	}
 
+=======
+>>>>>>> p9x
 	drvdata->force_reg_dump = of_property_read_bool
 				  (pdev->dev.of_node,
 				  "qcom,force-reg-dump");
@@ -2406,6 +2426,7 @@ static int tmc_probe(struct platform_device *pdev)
 	drvdata->config_type = BMVAL(devid, 6, 7);
 
 	if (drvdata->config_type == TMC_CONFIG_TYPE_ETR) {
+<<<<<<< HEAD
 		ret = of_property_read_u32(pdev->dev.of_node,
 					   "qcom,memory-size",
 					   &drvdata->size);
@@ -2414,6 +2435,18 @@ static int tmc_probe(struct platform_device *pdev)
 			return ret;
 		}
 		drvdata->mem_size = drvdata->size;
+=======
+		if (pdev->dev.of_node) {
+			ret = of_property_read_u32(pdev->dev.of_node,
+						   "qcom,memory-size",
+						   &drvdata->size);
+			if (ret) {
+				clk_disable_unprepare(drvdata->clk);
+				return ret;
+			}
+			drvdata->mem_size = drvdata->size;
+		}
+>>>>>>> p9x
 	} else {
 		drvdata->size = tmc_readl(drvdata, TMC_RSZ) * BYTES_PER_WORD;
 	}
@@ -2422,6 +2455,7 @@ static int tmc_probe(struct platform_device *pdev)
 
 	if (drvdata->config_type == TMC_CONFIG_TYPE_ETR) {
 		drvdata->out_mode = TMC_ETR_OUT_MODE_MEM;
+<<<<<<< HEAD
 		drvdata->sg_enable = of_property_read_bool(pdev->dev.of_node,
 							   "qcom,sg-enable");
 
@@ -2435,6 +2469,24 @@ static int tmc_probe(struct platform_device *pdev)
 		drvdata->byte_cntr_present = !of_property_read_bool
 					     (pdev->dev.of_node,
 					     "qcom,byte-cntr-absent");
+=======
+		if (pdev->dev.of_node) {
+			drvdata->sg_enable = of_property_read_bool
+					     (pdev->dev.of_node,
+					     "qcom,sg-enable");
+
+			if (drvdata->sg_enable)
+				drvdata->memtype = TMC_ETR_MEM_TYPE_SG;
+			else
+				drvdata->memtype = TMC_ETR_MEM_TYPE_CONTIG;
+
+			drvdata->mem_type = drvdata->memtype;
+
+			drvdata->byte_cntr_present = !of_property_read_bool
+						     (pdev->dev.of_node,
+						     "qcom,byte-cntr-absent");
+		}
+>>>>>>> p9x
 		ret = tmc_etr_byte_cntr_init(pdev, drvdata);
 		if (ret)
 			goto err0;
@@ -2525,6 +2577,7 @@ static int tmc_probe(struct platform_device *pdev)
 	}
 	count++;
 
+<<<<<<< HEAD
 	ctidata = of_get_coresight_cti_data(dev, pdev->dev.of_node);
 	if (IS_ERR(ctidata)) {
 		dev_err(dev, "invalid cti data\n");
@@ -2543,6 +2596,28 @@ static int tmc_probe(struct platform_device *pdev)
 	drvdata->notify = of_property_read_bool(pdev->dev.of_node,
 						"qcom,tmc-flush-powerdown");
 
+=======
+	if (pdev->dev.of_node) {
+		ctidata = of_get_coresight_cti_data(dev, pdev->dev.of_node);
+		if (IS_ERR(ctidata)) {
+			dev_err(dev, "invalid cti data\n");
+		} else if (ctidata && ctidata->nr_ctis == 2) {
+			drvdata->cti_flush = coresight_cti_get(
+							ctidata->names[0]);
+			if (IS_ERR(drvdata->cti_flush))
+				dev_err(dev, "failed to get flush cti\n");
+
+			drvdata->cti_reset = coresight_cti_get(
+							ctidata->names[1]);
+			if (IS_ERR(drvdata->cti_reset))
+				dev_err(dev, "failed to get reset cti\n");
+		}
+
+		drvdata->notify = of_property_read_bool(pdev->dev.of_node,
+						"qcom,tmc-flush-powerdown");
+
+	}
+>>>>>>> p9x
 
 	desc = devm_kzalloc(dev, sizeof(*desc), GFP_KERNEL);
 	if (!desc) {

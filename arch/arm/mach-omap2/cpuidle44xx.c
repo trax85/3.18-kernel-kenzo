@@ -83,7 +83,10 @@ static int omap_enter_idle_coupled(struct cpuidle_device *dev,
 			int index)
 {
 	struct idle_statedata *cx = state_ptr + index;
+<<<<<<< HEAD
 	u32 mpuss_can_lose_context = 0;
+=======
+>>>>>>> p9x
 	int cpu_id = smp_processor_id();
 
 	/*
@@ -109,9 +112,12 @@ static int omap_enter_idle_coupled(struct cpuidle_device *dev,
 		}
 	}
 
+<<<<<<< HEAD
 	mpuss_can_lose_context = (cx->mpu_state == PWRDM_POWER_RET) &&
 				 (cx->mpu_logic_state == PWRDM_POWER_OFF);
 
+=======
+>>>>>>> p9x
 	clockevents_notify(CLOCK_EVT_NOTIFY_BROADCAST_ENTER, &cpu_id);
 
 	/*
@@ -128,8 +134,14 @@ static int omap_enter_idle_coupled(struct cpuidle_device *dev,
 		 * Call idle CPU cluster PM enter notifier chain
 		 * to save GIC and wakeupgen context.
 		 */
+<<<<<<< HEAD
 		if (mpuss_can_lose_context)
 			cpu_cluster_pm_enter(0);
+=======
+		if ((cx->mpu_state == PWRDM_POWER_RET) &&
+			(cx->mpu_logic_state == PWRDM_POWER_OFF))
+				cpu_cluster_pm_enter(0);
+>>>>>>> p9x
 	}
 
 	omap4_enter_lowpower(dev->cpu, cx->cpu_state);
@@ -166,7 +178,12 @@ static int omap_enter_idle_coupled(struct cpuidle_device *dev,
 	 * Call idle CPU cluster PM exit notifier chain
 	 * to restore GIC and wakeupgen context.
 	 */
+<<<<<<< HEAD
 	if (dev->cpu == 0 && mpuss_can_lose_context)
+=======
+	if ((cx->mpu_state == PWRDM_POWER_RET) &&
+		(cx->mpu_logic_state == PWRDM_POWER_OFF))
+>>>>>>> p9x
 		cpu_cluster_pm_exit(0);
 
 	clockevents_notify(CLOCK_EVT_NOTIFY_BROADCAST_EXIT, &cpu_id);

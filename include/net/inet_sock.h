@@ -88,11 +88,16 @@ struct inet_request_sock {
 				acked	   : 1,
 				no_srccheck: 1;
 	kmemcheck_bitfield_end(flags);
+<<<<<<< HEAD
 	union {
 		struct ip_options_rcu	*opt;
 		struct sk_buff		*pktopts;
 	};
 	u32                     ir_mark;
+=======
+	u32                     ir_mark;
+	struct ip_options_rcu	*opt;
+>>>>>>> p9x
 };
 
 static inline struct inet_request_sock *inet_rsk(const struct request_sock *sk)
@@ -102,11 +107,18 @@ static inline struct inet_request_sock *inet_rsk(const struct request_sock *sk)
 
 static inline u32 inet_request_mark(struct sock *sk, struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	if (!sk->sk_mark && sock_net(sk)->ipv4.sysctl_tcp_fwmark_accept) {
 		return skb->mark;
 	} else {
 		return sk->sk_mark;
 	}
+=======
+	if (!sk->sk_mark && sock_net(sk)->ipv4.sysctl_tcp_fwmark_accept)
+		return skb->mark;
+
+	return sk->sk_mark;
+>>>>>>> p9x
 }
 
 struct inet_cork {

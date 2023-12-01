@@ -288,6 +288,10 @@ static struct ctl_table kern_table[] = {
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec,
 	},
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_SCHED_HMP
+>>>>>>> p9x
 	{
 		.procname	= "sched_wake_to_idle",
 		.data		= &sysctl_sched_wake_to_idle,
@@ -295,6 +299,10 @@ static struct ctl_table kern_table[] = {
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec,
 	},
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> p9x
 	{
 		.procname	= "sched_wakeup_load_threshold",
 		.data		= &sysctl_sched_wakeup_load_threshold,
@@ -319,9 +327,57 @@ static struct ctl_table kern_table[] = {
 		.proc_handler	= proc_dointvec_minmax,
 		.extra1		= &zero,
 	},
+<<<<<<< HEAD
 #endif
 #ifdef CONFIG_SCHED_HMP
 	{
+=======
+	{
+		.procname       = "sched_migration_fixup",
+		.data           = &sysctl_sched_migration_fixup,
+		.maxlen         = sizeof(unsigned int),
+		.mode           = 0644,
+		.proc_handler   = sched_window_update_handler,
+	},
+	{
+		.procname       = "sched_freq_account_wait_time",
+		.data           = &sysctl_sched_freq_account_wait_time,
+		.maxlen         = sizeof(unsigned int),
+		.mode           = 0644,
+		.proc_handler   = sched_window_update_handler,
+	},
+	{
+		.procname       = "sched_heavy_task",
+		.data           = &sysctl_sched_heavy_task_pct,
+		.maxlen         = sizeof(unsigned int),
+		.mode           = 0644,
+		.proc_handler   = sched_hmp_proc_update_handler,
+	},
+#endif
+#ifdef CONFIG_SCHED_HMP
+	{
+		.procname       = "sched_account_wait_time",
+		.data           = &sysctl_sched_account_wait_time,
+		.maxlen         = sizeof(unsigned int),
+		.mode           = 0644,
+		.proc_handler   = sched_window_update_handler,
+	},
+	{
+		.procname       = "sched_enable_colocation",
+		.data           = &sysctl_sched_enable_colocation,
+		.maxlen         = sizeof(unsigned int),
+		.mode           = 0644,
+		.proc_handler   = proc_dointvec,
+	},
+	{
+		.procname       = "sched_enable_thread_grouping",
+		.data           = &sysctl_sched_enable_thread_grouping,
+		.maxlen         = sizeof(unsigned int),
+		.mode           = 0644,
+		.proc_handler   = proc_dointvec,
+	},
+	{
+>>>>>>> p9x
 		.procname       = "sched_cpu_high_irqload",
 		.data           = &sysctl_sched_cpu_high_irqload,
 		.maxlen         = sizeof(unsigned int),
@@ -342,7 +398,10 @@ static struct ctl_table kern_table[] = {
 		.mode           = 0644,
 		.proc_handler   = sched_window_update_handler,
 	},
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_QHMP
+=======
+>>>>>>> p9x
 	{
 		.procname	= "sched_small_task",
 		.data		= &sysctl_sched_small_task_pct,
@@ -358,6 +417,7 @@ static struct ctl_table kern_table[] = {
 		.proc_handler   = sched_hmp_proc_update_handler,
 	},
 	{
+<<<<<<< HEAD
 		.procname	= "sched_restrict_tasks_spread",
 		.data		= &sysctl_sched_restrict_tasks_spread,
 		.maxlen		= sizeof(unsigned int),
@@ -400,6 +460,8 @@ static struct ctl_table kern_table[] = {
 #endif
 #endif
 	{
+=======
+>>>>>>> p9x
 		.procname	= "sched_spill_load",
 		.data		= &sysctl_sched_spill_load_pct,
 		.maxlen		= sizeof(unsigned int),
@@ -436,12 +498,37 @@ static struct ctl_table kern_table[] = {
 		.proc_handler	= sched_hmp_proc_update_handler,
 	},
 	{
+<<<<<<< HEAD
+=======
+		.procname	= "sched_grp_upmigrate",
+		.data		= &sysctl_sched_grp_upmigrate_pct,
+		.maxlen		= sizeof(unsigned int),
+		.mode		= 0644,
+		.proc_handler	= sched_hmp_proc_update_handler,
+	},
+	{
+		.procname	= "sched_grp_downmigrate",
+		.data		= &sysctl_sched_grp_downmigrate_pct,
+		.maxlen		= sizeof(unsigned int),
+		.mode		= 0644,
+		.proc_handler	= sched_hmp_proc_update_handler,
+	},
+	{
+		.procname	= "sched_grp_task_active_windows",
+		.data		= &sysctl_sched_grp_task_active_windows,
+		.maxlen		= sizeof(unsigned int),
+		.mode		= 0644,
+		.proc_handler	= sched_hmp_proc_update_handler,
+	},
+	{
+>>>>>>> p9x
 		.procname	= "sched_init_task_load",
 		.data		= &sysctl_sched_init_task_load_pct,
 		.maxlen		= sizeof(unsigned int),
 		.mode		= 0644,
 		.proc_handler	= sched_hmp_proc_update_handler,
 	},
+<<<<<<< HEAD
 #ifndef CONFIG_SCHED_QHMP
 	{
 		.procname	= "sched_select_prev_cpu_us",
@@ -524,12 +611,20 @@ static struct ctl_table kern_table[] = {
 	{
 		.procname	= "sched_freq_aggregate_threshold",
 		.data		= &sysctl_sched_freq_aggregate_threshold_pct,
+=======
+	{
+		.procname	= "sched_power_band_limit",
+		.data		= &sysctl_sched_powerband_limit_pct,
+>>>>>>> p9x
 		.maxlen		= sizeof(unsigned int),
 		.mode		= 0644,
 		.proc_handler	= sched_hmp_proc_update_handler,
 	},
+<<<<<<< HEAD
 #endif
 #endif
+=======
+>>>>>>> p9x
 	{
 		.procname	= "sched_boost",
 		.data		= &sysctl_sched_boost,
@@ -537,6 +632,27 @@ static struct ctl_table kern_table[] = {
 		.mode		= 0644,
 		.proc_handler	= sched_boost_handler,
 	},
+<<<<<<< HEAD
+=======
+	{
+		.procname	= "sched_enable_power_aware",
+		.data		= &sysctl_sched_enable_power_aware,
+		.maxlen		= sizeof(unsigned int),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec_minmax,
+		.extra1		= &zero,
+		.extra2		= &one,
+	},
+	{
+		.procname	= "power_aware_timer_migration",
+		.data		= &sysctl_power_aware_timer_migration,
+		.maxlen		= sizeof(unsigned int),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec_minmax,
+		.extra1		= &zero,
+		.extra2		= &one,
+	},
+>>>>>>> p9x
 #endif	/* CONFIG_SCHED_HMP */
 #ifdef CONFIG_SCHED_DEBUG
 	{
@@ -699,7 +815,10 @@ static struct ctl_table kern_table[] = {
 	},
 #endif
 #ifdef CONFIG_SCHEDSTATS
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_QHMP
+=======
+>>>>>>> p9x
 	{
 		.procname	= "sched_latency_panic_threshold_us",
 		.data		= &sysctl_sched_latency_panic_threshold,
@@ -720,7 +839,10 @@ static struct ctl_table kern_table[] = {
 		.proc_handler	= sched_max_latency_sysctl,
 	},
 #endif
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> p9x
 #ifdef CONFIG_PROVE_LOCKING
 	{
 		.procname	= "prove_locking",
@@ -1399,6 +1521,7 @@ static struct ctl_table kern_table[] = {
 		.proc_handler	= proc_dointvec,
 	},
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_MMAP_RND_BITS
 	{
 		.procname	= "mmap_rnd_bits",
@@ -1408,6 +1531,23 @@ static struct ctl_table kern_table[] = {
 		.proc_handler	= proc_dointvec_minmax,
 		.extra1		= &mmap_rnd_bits_min,
 		.extra2		= &mmap_rnd_bits_max,
+=======
+#if defined(CONFIG_ARM) || defined(CONFIG_ARM64)
+	{
+		.procname	= "boot_reason",
+		.data		= &boot_reason,
+		.maxlen		= sizeof(int),
+		.mode		= 0444,
+		.proc_handler	= proc_dointvec,
+	},
+
+	{
+		.procname	= "cold_boot",
+		.data		= &cold_boot,
+		.maxlen		= sizeof(int),
+		.mode		= 0444,
+		.proc_handler	= proc_dointvec,
+>>>>>>> p9x
 	},
 #endif
 	{ }
@@ -1808,6 +1948,7 @@ static struct ctl_table vm_table[] = {
 		.mode		= 0644,
 		.proc_handler	= proc_doulongvec_minmax,
 	},
+<<<<<<< HEAD
 #ifdef CONFIG_SWAP
 	{
 		.procname	= "swap_ratio",
@@ -1824,6 +1965,8 @@ static struct ctl_table vm_table[] = {
 		.proc_handler	= proc_dointvec_minmax,
 	},
 #endif
+=======
+>>>>>>> p9x
 #ifdef CONFIG_HAVE_ARCH_MMAP_RND_BITS
 	{
 		.procname	= "mmap_rnd_bits",
@@ -2667,6 +2810,7 @@ static int __do_proc_doulongvec_minmax(void *data, struct ctl_table *table, int 
 				break;
 			if (neg)
 				continue;
+			val = convmul * val / convdiv;
 			if ((min && val < *min) || (max && val > *max))
 				continue;
 			*i = val;

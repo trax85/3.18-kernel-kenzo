@@ -192,6 +192,7 @@ void ftrace_likely_update(struct ftrace_branch_data *f, int val, int expect);
 
 #include <uapi/linux/types.h>
 
+<<<<<<< HEAD
 #define __READ_ONCE_SIZE						\
 ({									\
 	switch (size) {							\
@@ -232,6 +233,22 @@ void __read_once_size_nocheck(const volatile void *p, void *res, int size)
 }
 #endif
 
+=======
+static __always_inline void __read_once_size(const volatile void *p, void *res, int size)
+{
+	switch (size) {
+	case 1: *(__u8 *)res = *(volatile __u8 *)p; break;
+	case 2: *(__u16 *)res = *(volatile __u16 *)p; break;
+	case 4: *(__u32 *)res = *(volatile __u32 *)p; break;
+	case 8: *(__u64 *)res = *(volatile __u64 *)p; break;
+	default:
+		barrier();
+		__builtin_memcpy((void *)res, (const void *)p, size);
+		barrier();
+	}
+}
+
+>>>>>>> p9x
 static __always_inline void __write_once_size(volatile void *p, void *res, int size)
 {
 	switch (size) {
@@ -268,6 +285,7 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
  * required ordering.
  */
 
+<<<<<<< HEAD
 #define __READ_ONCE(x, check)						\
 ({									\
 	union { typeof(x) __val; char __c[1]; } __u;			\
@@ -284,6 +302,10 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
  * to hide memory access from KASAN.
  */
 #define READ_ONCE_NOCHECK(x) __READ_ONCE(x, 0)
+=======
+#define READ_ONCE(x) \
+	({ union { typeof(x) __val; char __c[1]; } __u; __read_once_size(&(x), __u.__c, sizeof(x)); __u.__val; })
+>>>>>>> p9x
 
 #define WRITE_ONCE(x, val) \
 	({ typeof(x) __val = (val); __write_once_size(&(x), &__val, sizeof(__val)); __val; })
@@ -405,6 +427,14 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
 #ifndef __visible
 #define __visible
 #endif
+
+/*
+ * Assume alignment of return value.
+ */
+#ifndef __assume_aligned
+#define __assume_aligned(a, ...)
+#endif
+
 
 /* Are two types/vars the same type (ignoring qualifiers)? */
 #ifndef __same_type

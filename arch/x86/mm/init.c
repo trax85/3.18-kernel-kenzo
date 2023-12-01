@@ -580,7 +580,10 @@ void __init init_mem_mapping(void)
  * devmem_is_allowed() checks to see if /dev/mem access to a certain address
  * is valid. The argument is a physical page number.
  *
+<<<<<<< HEAD
  *
+=======
+>>>>>>> p9x
  * On x86, access has to be given to the first megabyte of RAM because that
  * area traditionally contains BIOS code and data regions used by X, dosemu,
  * and similar apps. Since they map the entire memory range, the whole range

@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2013-2014, 2016-2017 The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -38,7 +42,10 @@ struct rmnet_logical_ep_conf_s {
 	uint8_t refcount;
 	uint8_t rmnet_mode;
 	uint8_t mux_id;
+<<<<<<< HEAD
 	struct timespec flush_time;
+=======
+>>>>>>> p9x
 	struct net_device *egress_dev;
 };
 

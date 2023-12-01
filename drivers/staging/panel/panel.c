@@ -457,7 +457,11 @@ MODULE_PARM_DESC(keypad_enabled, "Deprecated option, use keypad_type instead");
 static int lcd_type = -1;
 module_param(lcd_type, int, 0000);
 MODULE_PARM_DESC(lcd_type,
+<<<<<<< HEAD
 		 "LCD type: 0=none, 1=old //, 2=serial ks0074, 3=hantronix //, 4=nexcom //, 5=compiled-in");
+=======
+		"LCD type: 0=none, 1=compiled-in, 2=old, 3=serial ks0074, 4=hantronix, 5=nexcom");
+>>>>>>> p9x
 
 static int lcd_proto = -1;
 module_param(lcd_proto, int, 0000);

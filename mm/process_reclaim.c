@@ -30,7 +30,11 @@ static void swap_fn(struct work_struct *work);
 DECLARE_WORK(swap_work, swap_fn);
 
 /* User knob to enable/disable process reclaim feature */
+<<<<<<< HEAD
 static int enable_process_reclaim;
+=======
+static int enable_process_reclaim = 1;
+>>>>>>> p9x
 module_param_named(enable_process_reclaim, enable_process_reclaim, int,
 	S_IRUGO | S_IWUSR);
 
@@ -43,8 +47,14 @@ module_param_named(reclaim_avg_efficiency, reclaim_avg_efficiency,
 			int, S_IRUGO);
 
 /* The vmpressure region where process reclaim operates */
+<<<<<<< HEAD
 static unsigned long pressure_min = 50;
 static unsigned long pressure_max = 90;
+=======
+static unsigned long pressure_min = 40;
+static unsigned long pressure_max = 85;
+static unsigned long pressure = 0;
+>>>>>>> p9x
 module_param_named(pressure_min, pressure_min, ulong, S_IRUGO | S_IWUSR);
 module_param_named(pressure_max, pressure_max, ulong, S_IRUGO | S_IWUSR);
 
@@ -204,7 +214,11 @@ static void swap_fn(struct work_struct *work)
 
 		if (efficiency < swap_opt_eff) {
 			if (++monitor_eff == swap_eff_win) {
+<<<<<<< HEAD
 				atomic_set(&skip_reclaim, swap_eff_win);
+=======
+				atomic_set(&skip_reclaim, swap_eff_win + 1);
+>>>>>>> p9x
 				monitor_eff = 0;
 			}
 		} else {
@@ -220,7 +234,11 @@ static void swap_fn(struct work_struct *work)
 static int vmpressure_notifier(struct notifier_block *nb,
 			unsigned long action, void *data)
 {
+<<<<<<< HEAD
 	unsigned long pressure = action;
+=======
+	pressure = action;
+>>>>>>> p9x
 
 	if (!enable_process_reclaim)
 		return 0;
@@ -228,7 +246,11 @@ static int vmpressure_notifier(struct notifier_block *nb,
 	if (!current_is_kswapd())
 		return 0;
 
+<<<<<<< HEAD
 	if (0 <= atomic_dec_if_positive(&skip_reclaim))
+=======
+	if (!atomic_dec_and_test(&skip_reclaim))
+>>>>>>> p9x
 		return 0;
 
 	if ((pressure >= pressure_min) && (pressure < pressure_max))

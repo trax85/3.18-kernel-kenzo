@@ -12,6 +12,7 @@ config MMC_CLKGATE
 
 	  If unsure, say N.
 
+<<<<<<< HEAD
 config MMC_RING_BUFFER
 	bool "MMC_RING_BUFFER"
 	depends on MMC
@@ -23,6 +24,8 @@ config MMC_RING_BUFFER
 
 	  If unsure, say N.
 
+=======
+>>>>>>> p9x
 config MMC_EMBEDDED_SDIO
 	boolean "MMC embedded SDIO device support (EXPERIMENTAL)"
 	help

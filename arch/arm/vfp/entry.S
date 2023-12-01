@@ -25,7 +25,15 @@
 @  IRQs enabled.
 @
 ENTRY(do_vfp)
+<<<<<<< HEAD
 	inc_preempt_count r10, r4
+=======
+#ifdef CONFIG_PREEMPT_COUNT
+	ldr	r4, [r10, #TI_PREEMPT]	@ get preempt count
+	add	r11, r4, #1		@ increment it
+	str	r11, [r10, #TI_PREEMPT]
+#endif
+>>>>>>> p9x
  	ldr	r4, .LCvfp
 	ldr	r11, [r10, #TI_CPU]	@ CPU number
 	add	r10, r10, #TI_VFPSTATE	@ r10 = workspace

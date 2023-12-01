@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -14,6 +18,7 @@
 #ifndef _ADRENO_A5XX_H_
 #define _ADRENO_A5XX_H_
 
+<<<<<<< HEAD
 #include "a5xx_reg.h"
 
 #define A5XX_IRQ_FLAGS \
@@ -55,6 +60,13 @@
 #define A5XX_CP_CTXRECORD_SIZE_IN_BYTES     0x10000
 /* Size of the preemption counter block (in bytes) */
 #define A5XX_CP_CTXRECORD_PREEMPTION_COUNTER_SIZE   (16 * 4)
+=======
+#define A5XX_CP_CTXRECORD_MAGIC_REF     0x27C4BAFCUL
+/* Size of each CP preemption record */
+#define A5XX_CP_CTXRECORD_SIZE_IN_BYTES     0x100000
+/* Size of ctx_rec_PRCNT below */
+#define A5XX_CP_CTXRECORD_PREEMPTION_COUNTER_SIZE_IN_DWORDS       16
+>>>>>>> p9x
 
 /**
  * struct a5xx_cp_preemption_record - CP context record for
@@ -100,6 +112,7 @@ struct a5xx_cp_smmu_info {
 	uint32_t  magic;
 	uint32_t  _pad4;
 	uint64_t  ttbr0;
+<<<<<<< HEAD
 	uint32_t  asid;
 	uint32_t  context_idr;
 };
@@ -249,4 +262,9 @@ unsigned int a5xx_preemption_pre_ibsubmit(
 
 void a5xx_preempt_callback(struct adreno_device *adreno_dev, int bit);
 
+=======
+	uint32_t  context_idr;
+};
+
+>>>>>>> p9x
 #endif

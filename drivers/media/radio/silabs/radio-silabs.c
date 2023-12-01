@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -138,7 +142,10 @@ struct silabs_fm_device {
 	u8 rds_fifo_cnt; /* 0 - 25 */
 	struct silabs_af_info af_info1;
 	struct silabs_af_info af_info2;
+<<<<<<< HEAD
 	struct silabs_srch_list_compl srch_list;
+=======
+>>>>>>> p9x
 };
 
 static int silabs_fm_request_irq(struct silabs_fm_device *radio);
@@ -682,6 +689,7 @@ static int set_property(struct silabs_fm_device *radio, u16 prop, u16 value)
 	return retval;
 }
 
+<<<<<<< HEAD
 static void update_search_list(struct silabs_fm_device *radio, int freq)
 {
 	int temp_freq = freq;
@@ -696,6 +704,8 @@ static void update_search_list(struct silabs_fm_device *radio, int freq)
 	radio->srch_list.num_stations_found++;
 }
 
+=======
+>>>>>>> p9x
 static void silabs_scan(struct work_struct *work)
 {
 	struct silabs_fm_device *radio;
@@ -704,8 +714,11 @@ static void silabs_scan(struct work_struct *work)
 	u8 bltf;
 	u32 temp_freq_khz;
 	int retval = 0;
+<<<<<<< HEAD
 	struct kfifo *data_b;
 	int len = 0;
+=======
+>>>>>>> p9x
 
 	FMDBG("+%s, getting radio handle from work struct\n", __func__);
 	radio = container_of(work, struct silabs_fm_device, work_scan.work);
@@ -737,10 +750,14 @@ static void silabs_scan(struct work_struct *work)
 		/* If scan is cancelled or FM is not ON, break */
 		if (radio->is_search_cancelled == true) {
 			FMDBG("%s: scan cancelled\n", __func__);
+<<<<<<< HEAD
 			if (radio->g_search_mode == SCAN_FOR_STRONG)
 				goto seek_tune_fail;
 			else
 				goto seek_cancelled;
+=======
+			goto seek_cancelled;
+>>>>>>> p9x
 		} else if (radio->mode != FM_RECV) {
 			FMDERR("%s: FM is not in proper state\n", __func__);
 			return;
@@ -783,7 +800,11 @@ static void silabs_scan(struct work_struct *work)
 		mutex_unlock(&radio->lock);
 		FMDBG("In %s, freq is %d\n", __func__, temp_freq_khz);
 
+<<<<<<< HEAD
 		if ((valid) && (radio->g_search_mode == SCAN)) {
+=======
+		if (valid) {
+>>>>>>> p9x
 			FMDBG("val bit set, posting SILABS_EVT_TUNE_SUCC\n");
 			silabs_fm_q_event(radio, SILABS_EVT_TUNE_SUCC);
 		}
@@ -798,15 +819,20 @@ static void silabs_scan(struct work_struct *work)
 		 */
 		if (radio->is_search_cancelled == true) {
 			FMDBG("%s: scan cancelled\n", __func__);
+<<<<<<< HEAD
 			if (radio->g_search_mode == SCAN_FOR_STRONG)
 				goto seek_tune_fail;
 			else
 				goto seek_cancelled;
+=======
+			goto seek_cancelled;
+>>>>>>> p9x
 		} else if (radio->mode != FM_RECV) {
 			FMDERR("%s: FM is not in proper state\n", __func__);
 			return;
 		}
 
+<<<<<<< HEAD
 		if (radio->g_search_mode == SCAN) {
 			/* sleep for dwell period */
 			msleep(radio->dwell_time_sec * 1000);
@@ -827,6 +853,15 @@ seek_tune_fail:
 				&radio->buf_lock[SILABS_FM_BUF_SRCH_LIST]);
 		silabs_fm_q_event(radio, SILABS_EVT_NEW_SRCH_LIST);
 	}
+=======
+		/* sleep for dwell period */
+		msleep(radio->dwell_time_sec * 1000);
+
+		/* need to queue the event when the seek completes */
+		silabs_fm_q_event(radio, SILABS_EVT_SCAN_NEXT);
+	}
+seek_tune_fail:
+>>>>>>> p9x
 	/* tune to original frequency */
 	retval = tune(radio, current_freq_khz);
 	if (retval < 0)
@@ -1316,6 +1351,7 @@ static int set_hard_mute(struct silabs_fm_device *radio, bool val)
 	return retval;
 }
 
+<<<<<<< HEAD
 static int set_mute_mode(struct silabs_fm_device *radio, u16 val)
 {
 	int retval = 0;
@@ -1327,6 +1363,8 @@ static int set_mute_mode(struct silabs_fm_device *radio, u16 val)
 			__func__, retval);
 	return retval;
 }
+=======
+>>>>>>> p9x
 static int get_rssi(struct silabs_fm_device *radio, u8 *prssi)
 {
 	int retval = 0;
@@ -1357,7 +1395,11 @@ static bool is_valid_freq(struct silabs_fm_device *radio, u32 freq)
 {
 	u32 band_low_limit = radio->recv_conf.band_low_limit * TUNE_STEP_SIZE;
 	u32 band_high_limit = radio->recv_conf.band_high_limit * TUNE_STEP_SIZE;
+<<<<<<< HEAD
 	u8 spacing = 0;
+=======
+	u8 spacing;
+>>>>>>> p9x
 
 	if (radio->recv_conf.ch_spacing == 0)
 		spacing = CH_SPACING_200;
@@ -1365,8 +1407,11 @@ static bool is_valid_freq(struct silabs_fm_device *radio, u32 freq)
 		spacing = CH_SPACING_100;
 	else if (radio->recv_conf.ch_spacing == 2)
 		spacing = CH_SPACING_50;
+<<<<<<< HEAD
 	else
 		return false;
+=======
+>>>>>>> p9x
 
 	if ((freq >= band_low_limit) &&
 		(freq <= band_high_limit) &&
@@ -2304,7 +2349,10 @@ static void silabs_interrupts_handler(struct silabs_fm_device *radio)
 				__func__);
 			silabs_fm_q_event(radio, SILABS_EVT_TUNE_SUCC);
 			radio->seek_tune_status = NO_SEEK_TUNE_PENDING;
+<<<<<<< HEAD
 			radio->is_af_tune_in_progress = false;
+=======
+>>>>>>> p9x
 		} else if (radio->seek_tune_status == SEEK_PENDING) {
 			FMDBG("%s: posting SILABS_EVT_SEEK_COMPLETE event\n",
 				__func__);
@@ -2892,6 +2940,7 @@ static int silabs_fm_vidioc_s_ctrl(struct file *file, void *priv,
 	}
 
 	switch (ctrl->id) {
+<<<<<<< HEAD
 	case V4L2_CID_AUDIO_MUTE:
 		if ((ctrl->value >= 0) && (ctrl->value <= 3)) {
 			set_mute_mode(radio, ctrl->value);
@@ -2902,6 +2951,8 @@ static int silabs_fm_vidioc_s_ctrl(struct file *file, void *priv,
 			goto end;
 		}
 		break;
+=======
+>>>>>>> p9x
 	case V4L2_CID_PRIVATE_SILABS_STATE:
 		/* check if already on */
 		if (ctrl->value == FM_RECV) {
@@ -3156,9 +3207,12 @@ static int silabs_fm_vidioc_s_ctrl(struct file *file, void *priv,
 		if ((ctrl->value >= 0) || (ctrl->value <= MAX_AF_WAIT_SEC))
 			radio->af_wait_timer = ctrl->value;
 		break;
+<<<<<<< HEAD
 	case V4L2_CID_PRIVATE_SILABS_SRCH_CNT:
 		retval = 0;
 		break;
+=======
+>>>>>>> p9x
 	default:
 		retval = -EINVAL;
 		break;
@@ -3413,7 +3467,11 @@ static int silabs_fm_vidioc_s_hw_freq_seek(struct file *file, void *priv,
 
 	radio->is_search_cancelled = false;
 
+<<<<<<< HEAD
 	if (radio->g_search_mode == SEEK) {
+=======
+	if (radio->g_search_mode == 0) {
+>>>>>>> p9x
 		/* seek */
 		FMDBG("starting seek\n");
 
@@ -3421,6 +3479,7 @@ static int silabs_fm_vidioc_s_hw_freq_seek(struct file *file, void *priv,
 
 		retval = silabs_seek(radio, dir, WRAP_ENABLE);
 
+<<<<<<< HEAD
 	} else if ((radio->g_search_mode == SCAN) ||
 			(radio->g_search_mode == SCAN_FOR_STRONG)) {
 		/* scan */
@@ -3431,6 +3490,12 @@ static int silabs_fm_vidioc_s_hw_freq_seek(struct file *file, void *priv,
 		} else {
 			FMDBG("starting scan\n");
 		}
+=======
+	} else if (radio->g_search_mode == 1) {
+		/* scan */
+		FMDBG("starting scan\n");
+
+>>>>>>> p9x
 		silabs_search(radio, START_SCAN);
 
 	} else {

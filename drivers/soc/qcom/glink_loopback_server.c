@@ -19,6 +19,7 @@
 #include <soc/qcom/glink.h>
 #include <soc/qcom/tracer_pkt.h>
 #include "glink_loopback_commands.h"
+<<<<<<< HEAD
 
 
 /* Number of internal IPC Logging log pages */
@@ -36,6 +37,44 @@ static void *glink_lbsrv_log_ctx;
 #define LBSRV_ERR(x...) do {                              \
 	pr_err("<LBSRV> " x); \
 	GLINK_LBSRV_IPC_LOG_STR("<LBSRV> " x);  \
+=======
+#include "glink_private.h"
+
+enum {
+	INFO_MASK = 1U << 0,
+	DEBUG_MASK = 1U << 1,
+	PERF_MASK = 1U << 2,
+};
+
+static int glink_lbsrv_debug_mask;
+module_param_named(debug_mask, glink_lbsrv_debug_mask,
+		   int, S_IRUGO | S_IWUSR | S_IWGRP);
+
+#define LBSRV_PERF(fmt, args...) do {	\
+	if (glink_lbsrv_debug_mask & PERF_MASK) \
+		GLINK_IPC_LOG_STR("<LBSRV> " fmt, args); \
+} while (0)
+
+#define LBSRV_INFO(x...) do { \
+	if (glink_lbsrv_debug_mask & INFO_MASK) \
+		GLINK_INFO("<LBSRV> " x); \
+} while (0)
+
+#define LBSRV_INFO_PERF(fmt, args...) do {	\
+	if (glink_lbsrv_debug_mask & (INFO_MASK | PERF_MASK)) \
+		GLINK_IPC_LOG_STR("<LBSRV> " fmt, args); \
+} while (0)
+
+#define LBSRV_DBG(x...) do { \
+	if (glink_lbsrv_debug_mask & DEBUG_MASK) \
+		GLINK_IPC_LOG_STR("<LBSRV> " x); \
+} while (0)
+
+#define LBSRV_ERR(x...) do {                              \
+	if (!(glink_lbsrv_debug_mask & PERF_MASK)) \
+		pr_err("<LBSRV> " x); \
+	GLINK_IPC_LOG_STR("<LBSRV> " x);  \
+>>>>>>> p9x
 } while (0)
 
 enum ch_type {
@@ -140,7 +179,10 @@ static struct ctl_ch_info ctl_ch_tbl[] = {
 	{"LOOPBACK_CTL_APSS", "mpss", "smem"},
 	{"LOOPBACK_CTL_APSS", "lpass", "smem"},
 	{"LOOPBACK_CTL_APSS", "dsps", "smem"},
+<<<<<<< HEAD
 	{"LOOPBACK_CTL_APSS", "spss", "mailbox"},
+=======
+>>>>>>> p9x
 };
 
 static DEFINE_MUTEX(ctl_ch_list_lock);
@@ -726,11 +768,19 @@ void glink_lpbsrv_notify_rx(void *handle, const void *priv,
 	struct rx_work_info *tmp_work_info;
 	struct ch_info *rx_ch_info = (struct ch_info *)priv;
 
+<<<<<<< HEAD
 	LBSRV_INFO(
 		"%s:%s:%s %s: end (Success) RX priv[%p] data[%p] size[%zu]\n",
 		rx_ch_info->transport, rx_ch_info->edge, rx_ch_info->name,
 		__func__, pkt_priv, (char *)ptr, size);
 	tmp_work_info = kzalloc(sizeof(struct rx_work_info), GFP_ATOMIC);
+=======
+	LBSRV_INFO_PERF(
+		"%s:%s:%s %s: end (Success) RX priv[%p] data[%p] size[%zu]\n",
+		rx_ch_info->transport, rx_ch_info->edge, rx_ch_info->name,
+		__func__, pkt_priv, (char *)ptr, size);
+	tmp_work_info = kzalloc(sizeof(struct rx_work_info), GFP_KERNEL);
+>>>>>>> p9x
 	if (!tmp_work_info) {
 		LBSRV_ERR("%s:%s:%s %s: Error allocating rx_work\n",
 				rx_ch_info->transport, rx_ch_info->edge,
@@ -758,7 +808,11 @@ void glink_lpbsrv_notify_rxv(void *handle, const void *priv,
 	LBSRV_INFO("%s:%s:%s %s: priv[%p] data[%p] size[%zu]\n",
 		   rx_ch_info->transport, rx_ch_info->edge, rx_ch_info->name,
 		   __func__, pkt_priv, (char *)ptr, size);
+<<<<<<< HEAD
 	tmp_work_info = kzalloc(sizeof(struct rx_work_info), GFP_ATOMIC);
+=======
+	tmp_work_info = kzalloc(sizeof(struct rx_work_info), GFP_KERNEL);
+>>>>>>> p9x
 	if (!tmp_work_info) {
 		LBSRV_ERR("%s:%s:%s %s: Error allocating rx_work\n",
 				rx_ch_info->transport, rx_ch_info->edge,
@@ -783,12 +837,20 @@ void glink_lpbsrv_notify_rx_tp(void *handle, const void *priv,
 	struct rx_work_info *tmp_work_info;
 	struct ch_info *rx_ch_info = (struct ch_info *)priv;
 
+<<<<<<< HEAD
 	LBSRV_INFO(
+=======
+	LBSRV_INFO_PERF(
+>>>>>>> p9x
 		"%s:%s:%s %s: end (Success) RX priv[%p] data[%p] size[%zu]\n",
 		rx_ch_info->transport, rx_ch_info->edge, rx_ch_info->name,
 		__func__, pkt_priv, (char *)ptr, size);
 	tracer_pkt_log_event((void *)ptr, LOOPBACK_SRV_RX);
+<<<<<<< HEAD
 	tmp_work_info = kmalloc(sizeof(struct rx_work_info), GFP_ATOMIC);
+=======
+	tmp_work_info = kmalloc(sizeof(struct rx_work_info), GFP_KERNEL);
+>>>>>>> p9x
 	if (!tmp_work_info) {
 		LBSRV_ERR("%s:%s:%s %s: Error allocating rx_work\n",
 				rx_ch_info->transport, rx_ch_info->edge,
@@ -810,7 +872,11 @@ void glink_lpbsrv_notify_tx_done(void *handle, const void *priv,
 				 const void *pkt_priv, const void *ptr)
 {
 	struct ch_info *tx_done_ch_info = (struct ch_info *)priv;
+<<<<<<< HEAD
 	LBSRV_INFO("%s:%s:%s %s: end (Success) TX_DONE ptr[%p]\n",
+=======
+	LBSRV_INFO_PERF("%s:%s:%s %s: end (Success) TX_DONE ptr[%p]\n",
+>>>>>>> p9x
 			tx_done_ch_info->transport, tx_done_ch_info->edge,
 			tx_done_ch_info->name, __func__, ptr);
 
@@ -1129,7 +1195,11 @@ static void glink_lbsrv_tx_worker(struct work_struct *work)
 	uint32_t delay_ms;
 	uint32_t flags;
 
+<<<<<<< HEAD
 	LBSRV_INFO("%s:%s:%s %s: start TX data[%p] size[%zu]\n",
+=======
+	LBSRV_INFO_PERF("%s:%s:%s %s: start TX data[%p] size[%zu]\n",
+>>>>>>> p9x
 		   tmp_ch_info->transport, tmp_ch_info->edge, tmp_ch_info->name,
 		   __func__, tmp_work_info->data, tmp_work_info->size);
 	while (1) {
@@ -1264,11 +1334,14 @@ static int glink_loopback_server_init(void)
 	int ret;
 	struct ch_info *tmp_ch_info;
 
+<<<<<<< HEAD
 	glink_lbsrv_log_ctx = ipc_log_context_create(GLINK_LBSRV_NUM_LOG_PAGES,
 							"glink_lbsrv", 0);
 	if (!glink_lbsrv_log_ctx)
 		pr_err("%s: unable to create log context\n", __func__);
 
+=======
+>>>>>>> p9x
 	glink_lbsrv_wq = create_singlethread_workqueue("glink_lbsrv");
 	if (!glink_lbsrv_wq) {
 		LBSRV_ERR("%s: Error creating glink_lbsrv_wq\n", __func__);

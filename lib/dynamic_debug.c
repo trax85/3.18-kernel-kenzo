@@ -1033,7 +1033,11 @@ static int __init dynamic_debug_init(void)
 	cmdline = kstrdup(saved_command_line, GFP_KERNEL);
 	if (cmdline) {
 		parse_args("dyndbg params", cmdline, NULL,
+<<<<<<< HEAD
 			   0, 0, 0, NULL, &ddebug_dyndbg_boot_param_cb);
+=======
+			   0, 0, 0, &ddebug_dyndbg_boot_param_cb);
+>>>>>>> p9x
 		kfree(cmdline);
 	} else
 		pr_err("Failed to parse boot args for dyndbg params\n");

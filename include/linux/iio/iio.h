@@ -256,9 +256,13 @@ static inline bool iio_channel_has_info(const struct iio_chan_spec *chan,
 	enum iio_chan_info_enum type)
 {
 	return (chan->info_mask_separate & BIT(type)) |
+<<<<<<< HEAD
 		(chan->info_mask_shared_by_type & BIT(type)) |
 		(chan->info_mask_shared_by_dir & BIT(type)) |
 		(chan->info_mask_shared_by_all & BIT(type));
+=======
+	       (chan->info_mask_shared_by_type & BIT(type));
+>>>>>>> p9x
 }
 
 #define IIO_CHAN_SOFT_TIMESTAMP(_si) {					\

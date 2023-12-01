@@ -38,8 +38,11 @@ __cmpxchg(volatile void *ptr, unsigned long expected, unsigned long new)
 	  "ir"(expected),
 	  "r"(new)	/* can't be "ir". scond can't take LIMM for "b" */
 	: "cc", "memory"); /* so that gcc knows memory is being written here */
+<<<<<<< HEAD
 
 	smp_mb();
+=======
+>>>>>>> p9x
 
 	return prev;
 }

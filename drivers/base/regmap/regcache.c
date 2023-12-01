@@ -659,7 +659,10 @@ static int regcache_sync_block_raw_flush(struct regmap *map, const void **data,
 }
 
 static int regcache_sync_block_raw_multi_reg(struct regmap *map, void *block,
+<<<<<<< HEAD
 					unsigned long *cache_present,
+=======
+>>>>>>> p9x
 					unsigned int block_base,
 					unsigned int start,
 					unsigned int end)
@@ -679,7 +682,11 @@ static int regcache_sync_block_raw_multi_reg(struct regmap *map, void *block,
 		regtmp = block_base + (i * map->reg_stride);
 
 		/* skip registers that are not defined/available */
+<<<<<<< HEAD
 		if (!regcache_reg_present(cache_present, i))
+=======
+		if (!regcache_reg_present(map, regtmp))
+>>>>>>> p9x
 			continue;
 
 		val = regcache_get_val(map, block, i);
@@ -755,11 +762,18 @@ int regcache_sync_block(struct regmap *map, void *block,
 {
 	if (regmap_can_raw_write(map) && map->can_multi_write)
 		return regcache_sync_block_raw_multi_reg(map, block,
+<<<<<<< HEAD
 							 cache_present,
 							 block_base, start,
 							 end);
 	else if (regmap_can_raw_write(map) && !map->use_single_rw)
 		return regcache_sync_block_raw(map, block, cache_present,
+=======
+							 block_base, start,
+							 end);
+	else if (regmap_can_raw_write(map) && !map->use_single_rw)
+		return regcache_sync_block_raw(map, block,
+>>>>>>> p9x
 					       block_base, start, end);
 	else
 		return regcache_sync_block_single(map, block, cache_present,

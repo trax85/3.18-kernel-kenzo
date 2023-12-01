@@ -1903,6 +1903,7 @@ static int ims_pcu_init_application_mode(struct ims_pcu *pcu)
 
 	/* Device appears to be operable, complete initialization */
 	pcu->device_no = atomic_inc_return(&device_no);
+<<<<<<< HEAD
 
 	/*
 	 * PCU-B devices, both GEN_1 and GEN_2 do not have OFN sensor
@@ -1913,6 +1914,8 @@ static int ims_pcu_init_application_mode(struct ims_pcu *pcu)
 		if (error)
 			return error;
 	}
+=======
+>>>>>>> p9x
 
 	error = ims_pcu_setup_backlight(pcu);
 	if (error)

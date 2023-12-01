@@ -390,9 +390,15 @@ void xen_blkbk_unmap_purged_grants(struct work_struct *work);
 static inline void blkif_get_x86_32_req(struct blkif_request *dst,
 					struct blkif_x86_32_request *src)
 {
+<<<<<<< HEAD
 	int i, n = BLKIF_MAX_SEGMENTS_PER_REQUEST, j;
 	dst->operation = src->operation;
 	switch (src->operation) {
+=======
+	int i, n = BLKIF_MAX_SEGMENTS_PER_REQUEST;
+	dst->operation = ACCESS_ONCE(src->operation);
+	switch (dst->operation) {
+>>>>>>> p9x
 	case BLKIF_OP_READ:
 	case BLKIF_OP_WRITE:
 	case BLKIF_OP_WRITE_BARRIER:
@@ -438,9 +444,15 @@ static inline void blkif_get_x86_32_req(struct blkif_request *dst,
 static inline void blkif_get_x86_64_req(struct blkif_request *dst,
 					struct blkif_x86_64_request *src)
 {
+<<<<<<< HEAD
 	int i, n = BLKIF_MAX_SEGMENTS_PER_REQUEST, j;
 	dst->operation = src->operation;
 	switch (src->operation) {
+=======
+	int i, n = BLKIF_MAX_SEGMENTS_PER_REQUEST;
+	dst->operation = ACCESS_ONCE(src->operation);
+	switch (dst->operation) {
+>>>>>>> p9x
 	case BLKIF_OP_READ:
 	case BLKIF_OP_WRITE:
 	case BLKIF_OP_WRITE_BARRIER:

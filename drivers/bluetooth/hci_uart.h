@@ -53,6 +53,8 @@
 
 #include <linux/interrupt.h>
 
+#include <linux/interrupt.h>
+
 struct hci_uart;
 
 struct hci_uart_proto {

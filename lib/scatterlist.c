@@ -255,7 +255,11 @@ int __sg_alloc_table(struct sg_table *table, unsigned int nents,
 
 	if (nents == 0)
 		return -EINVAL;
+<<<<<<< HEAD
 #ifndef CONFIG_ARCH_HAS_SG_CHAIN
+=======
+#ifndef ARCH_HAS_SG_CHAIN
+>>>>>>> p9x
 	if (WARN_ON_ONCE(nents > max_ents))
 		return -EINVAL;
 #endif

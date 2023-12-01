@@ -1,6 +1,10 @@
 /* drivers/gpio/gpio-msm-smp2p.c
  *
+<<<<<<< HEAD
  * Copyright (c) 2013-2014, 2016 The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -475,10 +479,18 @@ static void msm_summary_irq_handler(struct smp2p_chip_dev *chip,
 static void smp2p_add_irq_domain(struct smp2p_chip_dev *chip,
 	struct device_node *node)
 {
+<<<<<<< HEAD
 	int irq_base;
 
 	/* map GPIO pins to interrupts */
 	chip->irq_domain = irq_domain_add_linear(node, SMP2P_BITS_PER_ENTRY,
+=======
+	int ret;
+	int irq_base;
+
+	/* map GPIO pins to interrupts */
+	chip->irq_domain = irq_domain_add_linear(node, 0,
+>>>>>>> p9x
 			&smp2p_irq_domain_ops, chip);
 	if (!chip->irq_domain) {
 		SMP2P_ERR("%s: unable to create interrupt domain '%s':%d\n",
@@ -496,14 +508,29 @@ static void smp2p_add_irq_domain(struct smp2p_chip_dev *chip,
 	}
 
 	/* map the allocated irqs to gpios */
+<<<<<<< HEAD
 	irq_domain_associate_many(chip->irq_domain, irq_base, 0,
 				  SMP2P_BITS_PER_ENTRY);
+=======
+	ret = irq_domain_associate_many(chip->irq_domain, irq_base, 0,
+							SMP2P_BITS_PER_ENTRY);
+	if (ret < 0) {
+		SMP2P_ERR("map virt irqs failed:%d name:%s pid:%d\n", ret,
+						chip->name, chip->remote_pid);
+		goto irq_map_fail;
+	}
+>>>>>>> p9x
 
 	chip->irq_base = irq_base;
 	SMP2P_DBG("create mapping:%d naem:%s pid:%d\n", chip->irq_base,
 						chip->name, chip->remote_pid);
 	return;
 
+<<<<<<< HEAD
+=======
+irq_map_fail:
+	irq_free_descs(irq_base, SMP2P_BITS_PER_ENTRY);
+>>>>>>> p9x
 irq_alloc_fail:
 	irq_domain_remove(chip->irq_domain);
 domain_fail:
@@ -720,7 +747,13 @@ static int smp2p_gpio_probe(struct platform_device *pdev)
 
 	return 0;
 error:
+<<<<<<< HEAD
 	gpiochip_remove(&chip->gpio);
+=======
+	if (gpiochip_remove(&chip->gpio))
+		SMP2P_ERR("%s: unable to Remove GPIO '%s'\n",
+				__func__, chip->name);
+>>>>>>> p9x
 
 fail:
 	kfree(chip);

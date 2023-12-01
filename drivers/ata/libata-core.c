@@ -4229,6 +4229,7 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
 	{ "PIONEER DVD-RW  DVR-212D",	NULL,	ATA_HORKAGE_NOSETXFER },
 	{ "PIONEER DVD-RW  DVR-216D",	NULL,	ATA_HORKAGE_NOSETXFER },
 
+<<<<<<< HEAD
 	/* Crucial BX100 SSD 500GB has broken LPM support */
 	{ "CT500BX100SSD1",		NULL,	ATA_HORKAGE_NOLPM },
 
@@ -4298,6 +4299,8 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
 	{ "SAMSUNG*MZ7KM*",		NULL,	ATA_HORKAGE_ZERO_AFTER_TRIM, },
 	{ "ST[1248][0248]0[FH]*",	NULL,	ATA_HORKAGE_ZERO_AFTER_TRIM, },
 
+=======
+>>>>>>> p9x
 	/* devices that don't properly handle TRIM commands */
 	{ "SuperSSpeed S238*",		NULL,	ATA_HORKAGE_NOTRIM, },
 
@@ -4812,10 +4815,14 @@ static struct ata_queued_cmd *ata_qc_new(struct ata_port *ap)
 		return NULL;
 
 	for (i = 0, tag = ap->last_tag + 1; i < max_queue; i++, tag++) {
+<<<<<<< HEAD
 		if (ap->flags & ATA_FLAG_LOWTAG)
 			tag = i;
 		else
 			tag = tag < max_queue ? tag : 0;
+=======
+		tag = tag < max_queue ? tag : 0;
+>>>>>>> p9x
 
 		/* the last tag is reserved for internal command. */
 		if (tag == ATA_TAG_INTERNAL)

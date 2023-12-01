@@ -248,7 +248,10 @@ static int x509_key_preparse(struct key_preparsed_payload *prep)
 {
 	struct asymmetric_key_ids *kids;
 	struct x509_certificate *cert;
+<<<<<<< HEAD
 	const char *q;
+=======
+>>>>>>> p9x
 	size_t srlen, sulen;
 	char *desc = NULL, *p;
 	int ret;
@@ -283,7 +286,18 @@ static int x509_key_preparse(struct key_preparsed_payload *prep)
 		 pkey_algo_name[cert->sig.pkey_algo],
 		 hash_algo_name[cert->sig.pkey_hash_algo]);
 
+<<<<<<< HEAD
 	cert->pub->algo = pkey_algo[cert->pub->pkey_algo];
+=======
+	if (!cert->fingerprint || !cert->authority) {
+		pr_warn("Cert for '%s' must have SubjKeyId and AuthKeyId extensions\n",
+			cert->subject);
+		ret = -EKEYREJECTED;
+		goto error_free_cert;
+	}
+
+	cert->pub->algo = x509_public_key_algorithms[cert->pkey_algo];
+>>>>>>> p9x
 	cert->pub->id_type = PKEY_ID_X509;
 
 	/* Check the signature on the key if it appears to be self-signed */

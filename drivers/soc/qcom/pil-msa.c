@@ -23,9 +23,13 @@
 #include <linux/of.h>
 #include <linux/regulator/consumer.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
 #include <linux/highmem.h>
 #include <soc/qcom/scm.h>
 #include <soc/qcom/secure_buffer.h>
+=======
+#include <soc/qcom/scm.h>
+>>>>>>> p9x
 
 #include "peripheral-loader.h"
 #include "pil-q6v5.h"
@@ -170,6 +174,7 @@ static int pil_mss_enable_clks(struct q6v5_data *drv)
 	ret = clk_prepare_enable(drv->gpll0_mss_clk);
 	if (ret)
 		goto err_gpll0_mss_clk;
+<<<<<<< HEAD
 	ret = clk_prepare_enable(drv->snoc_axi_clk);
 	if (ret)
 		goto err_snoc_axi_clk;
@@ -181,6 +186,11 @@ err_mnoc_axi_clk:
 	clk_disable_unprepare(drv->snoc_axi_clk);
 err_snoc_axi_clk:
 	clk_disable_unprepare(drv->gpll0_mss_clk);
+=======
+
+	return 0;
+
+>>>>>>> p9x
 err_gpll0_mss_clk:
 	clk_disable_unprepare(drv->rom_clk);
 err_rom_clk:
@@ -193,8 +203,11 @@ err_ahb_clk:
 
 static void pil_mss_disable_clks(struct q6v5_data *drv)
 {
+<<<<<<< HEAD
 	clk_disable_unprepare(drv->mnoc_axi_clk);
 	clk_disable_unprepare(drv->snoc_axi_clk);
+=======
+>>>>>>> p9x
 	clk_disable_unprepare(drv->gpll0_mss_clk);
 	clk_disable_unprepare(drv->rom_clk);
 	clk_disable_unprepare(drv->axi_clk);
@@ -238,11 +251,18 @@ static int pil_msa_wait_for_mba_ready(struct q6v5_data *drv)
 	struct device *dev = drv->desc.dev;
 	int ret;
 	u32 status;
+<<<<<<< HEAD
 	u64 val = is_timeout_disabled() ? 0 : pbl_mba_boot_timeout_ms * 1000;
 
 	/* Wait for PBL completion. */
 	ret = readl_poll_timeout(drv->rmb_base + RMB_PBL_STATUS, status,
 				 status != 0, POLL_INTERVAL_US, val);
+=======
+
+	/* Wait for PBL completion. */
+	ret = readl_poll_timeout(drv->rmb_base + RMB_PBL_STATUS, status,
+		status != 0, POLL_INTERVAL_US, pbl_mba_boot_timeout_ms * 1000);
+>>>>>>> p9x
 	if (ret) {
 		dev_err(dev, "PBL boot timed out\n");
 		return ret;
@@ -254,7 +274,11 @@ static int pil_msa_wait_for_mba_ready(struct q6v5_data *drv)
 
 	/* Wait for MBA completion. */
 	ret = readl_poll_timeout(drv->rmb_base + RMB_MBA_STATUS, status,
+<<<<<<< HEAD
 				status != 0, POLL_INTERVAL_US, val);
+=======
+		status != 0, POLL_INTERVAL_US, pbl_mba_boot_timeout_ms * 1000);
+>>>>>>> p9x
 	if (ret) {
 		dev_err(dev, "MBA boot timed out\n");
 		return ret;
@@ -317,16 +341,25 @@ int __pil_mss_deinit_image(struct pil_desc *pil, bool err_path)
 	struct modem_data *drv = dev_get_drvdata(pil->dev);
 	struct q6v5_data *q6_drv = container_of(pil, struct q6v5_data, desc);
 	int ret = 0;
+<<<<<<< HEAD
 	struct device *dma_dev = drv->mba_mem_dev_fixed ?: &drv->mba_mem_dev;
 	s32 status;
 	u64 val = is_timeout_disabled() ? 0 : pbl_mba_boot_timeout_ms * 1000;
+=======
+	s32 status;
+>>>>>>> p9x
 
 	if (err_path) {
 		writel_relaxed(CMD_PILFAIL_NFY_MBA,
 				drv->rmb_base + RMB_MBA_COMMAND);
 		ret = readl_poll_timeout(drv->rmb_base + RMB_MBA_STATUS, status,
+<<<<<<< HEAD
 				status == STATUS_MBA_UNLOCKED || status < 0,
 				POLL_INTERVAL_US, val);
+=======
+			status == STATUS_MBA_UNLOCKED || status < 0,
+			POLL_INTERVAL_US, pbl_mba_boot_timeout_ms * 1000);
+>>>>>>> p9x
 		if (ret)
 			dev_err(pil->dev, "MBA region unlock timed out\n");
 		else if (status < 0)
@@ -339,6 +372,7 @@ int __pil_mss_deinit_image(struct pil_desc *pil, bool err_path)
 	if (q6_drv->ahb_clk_vote)
 		clk_disable_unprepare(q6_drv->ahb_clk);
 
+<<<<<<< HEAD
 	/* In case of any failure where reclaiming MBA and DP memory
 	 * could not happen, free the memory here */
 	if (drv->q6->mba_dp_virt) {
@@ -351,6 +385,22 @@ int __pil_mss_deinit_image(struct pil_desc *pil, bool err_path)
 		drv->q6->mba_dp_virt = NULL;
 	}
 
+=======
+	/* In case of any failure where reclaim MBA memory
+	 * could not happen, free the memory here */
+	if (drv->q6->mba_virt) {
+		dma_free_attrs(&drv->mba_mem_dev, drv->q6->mba_size,
+				drv->q6->mba_virt, drv->q6->mba_phys,
+				&drv->attrs_dma);
+		drv->q6->mba_virt = NULL;
+	}
+	if (drv->q6->dp_virt) {
+		dma_free_attrs(&drv->mba_mem_dev, drv->q6->dp_size,
+				drv->q6->dp_virt, drv->q6->dp_phys,
+				&drv->attrs_dma);
+		drv->q6->dp_virt = NULL;
+	}
+>>>>>>> p9x
 	return ret;
 }
 
@@ -445,8 +495,13 @@ static int pil_mss_reset(struct pil_desc *pil)
 	phys_addr_t start_addr = pil_get_entry_addr(pil);
 	int ret;
 
+<<<<<<< HEAD
 	if (drv->mba_dp_phys)
 		start_addr = drv->mba_dp_phys;
+=======
+	if (drv->mba_phys)
+		start_addr = drv->mba_phys;
+>>>>>>> p9x
 
 	/*
 	 * Bring subsystem out of reset and enable required
@@ -482,8 +537,13 @@ static int pil_mss_reset(struct pil_desc *pil)
 	}
 
 	/* Program DP Address */
+<<<<<<< HEAD
 	if (drv->dp_size) {
 		writel_relaxed(start_addr + SZ_1M, drv->rmb_base +
+=======
+	if (drv->dp_virt) {
+		writel_relaxed(drv->dp_phys, drv->rmb_base +
+>>>>>>> p9x
 			       RMB_PMI_CODE_START);
 		writel_relaxed(drv->dp_size, drv->rmb_base +
 			       RMB_PMI_CODE_LENGTH);
@@ -532,6 +592,7 @@ int pil_mss_reset_load_mba(struct pil_desc *pil)
 	char fw_name[10] = "mba.mbn";
 	char *dp_name = "msadp";
 	char *fw_name_p;
+<<<<<<< HEAD
 	void *mba_dp_virt;
 	dma_addr_t mba_dp_phys, mba_dp_phys_end;
 	int ret;
@@ -539,6 +600,15 @@ int pil_mss_reset_load_mba(struct pil_desc *pil)
 	struct device *dma_dev = md->mba_mem_dev_fixed ?: &md->mba_mem_dev;
 
 	fw_name_p = drv->non_elf_image ? fw_name_legacy : fw_name;
+=======
+	void *mba_virt;
+	dma_addr_t mba_phys, mba_phys_end;
+	int ret, count;
+	const u8 *data;
+
+	fw_name_p = drv->non_elf_image ? fw_name_legacy : fw_name;
+	/* Load and authenticate mba image */
+>>>>>>> p9x
 	ret = request_firmware(&fw, fw_name_p, pil->dev);
 	if (ret) {
 		dev_err(pil->dev, "Failed to locate %s\n",
@@ -546,10 +616,34 @@ int pil_mss_reset_load_mba(struct pil_desc *pil)
 		return ret;
 	}
 
+<<<<<<< HEAD
+=======
+	drv->mba_size = SZ_1M;
+	md->mba_mem_dev.coherent_dma_mask =
+		DMA_BIT_MASK(sizeof(dma_addr_t) * 8);
+	init_dma_attrs(&md->attrs_dma);
+	dma_set_attr(DMA_ATTR_STRONGLY_ORDERED, &md->attrs_dma);
+	mba_virt = dma_alloc_attrs(&md->mba_mem_dev, drv->mba_size,
+			&mba_phys, GFP_KERNEL, &md->attrs_dma);
+	if (!mba_virt) {
+		dev_err(pil->dev, "MBA metadata buffer allocation failed\n");
+		ret = -ENOMEM;
+		goto err_dma_alloc;
+	}
+
+	drv->mba_phys = mba_phys;
+	drv->mba_virt = mba_virt;
+	mba_phys_end = mba_phys + drv->mba_size;
+
+	dev_info(pil->dev, "MBA: loading from %pa to %pa\n", &mba_phys,
+								&mba_phys_end);
+	/* Load the MBA image into memory */
+>>>>>>> p9x
 	data = fw ? fw->data : NULL;
 	if (!data) {
 		dev_err(pil->dev, "MBA data is NULL\n");
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		goto err_invalid_fw;
 	}
 
@@ -562,6 +656,27 @@ int pil_mss_reset_load_mba(struct pil_desc *pil)
 	ret = request_firmware(&dp_fw, dp_name, pil->dev);
 	if (ret) {
 		dev_warn(pil->dev, "Debug policy not present - %s. Continue.\n",
+=======
+		goto err_mba_data;
+	}
+	count = fw->size;
+	if (count <= SZ_1M) {
+		/* Ensures memcpy is done for max 1MB fw size */
+		memcpy(mba_virt, data, count);
+	} else {
+		dev_err(pil->dev, "%s fw image loading into memory is failed due to fw size overflow\n",
+			__func__);
+		ret = -EINVAL;
+		goto err_mba_data;
+	}
+	wmb();
+
+	/* Load modem debug policy */
+	ret = request_firmware(&dp_fw, dp_name, pil->dev);
+	if (ret) {
+		drv->dp_virt = NULL;
+		dev_warn(pil->dev, "MBA: Debug policy not present - %s\n",
+>>>>>>> p9x
 						dp_name);
 	} else {
 		if (!dp_fw || !dp_fw->data) {
@@ -569,6 +684,7 @@ int pil_mss_reset_load_mba(struct pil_desc *pil)
 			ret = -ENOMEM;
 			goto err_invalid_fw;
 		}
+<<<<<<< HEAD
 		drv->dp_size = dp_fw->size;
 		drv->mba_dp_size += drv->dp_size;
 		drv->mba_dp_size = ALIGN(drv->mba_dp_size, SZ_4K);
@@ -610,10 +726,28 @@ int pil_mss_reset_load_mba(struct pil_desc *pil)
 	/* Load the DP image into memory */
 	if (drv->mba_dp_size > SZ_1M) {
 		memcpy(mba_dp_virt + SZ_1M, dp_fw->data, dp_fw->size);
+=======
+		mba_virt = dma_alloc_attrs(&md->mba_mem_dev, dp_fw->size,
+			&mba_phys, GFP_KERNEL, &md->attrs_dma);
+		if (!mba_virt) {
+			dev_err(pil->dev, "MBA: DP metadata buffer allocation failed\n");
+			ret = -ENOMEM;
+			goto err_invalid_fw;
+		}
+		drv->dp_size = dp_fw->size;
+		drv->dp_phys = mba_phys;
+		drv->dp_virt = mba_virt;
+		mba_phys_end = mba_phys + drv->dp_size;
+		dev_info(pil->dev, "MBA: DP loading from %pa to %pa\n",
+						 &mba_phys, &mba_phys_end);
+
+		memcpy(mba_virt, dp_fw->data, dp_fw->size);
+>>>>>>> p9x
 		/* Ensure memcpy is done before powering up modem */
 		wmb();
 	}
 
+<<<<<<< HEAD
 	if (pil->subsys_vmid > 0) {
 		ret = pil_assign_mem_to_subsys(pil, drv->mba_dp_phys,
 							drv->mba_dp_size);
@@ -623,19 +757,26 @@ int pil_mss_reset_load_mba(struct pil_desc *pil)
 		}
 	}
 
+=======
+>>>>>>> p9x
 	ret = pil_mss_reset(pil);
 	if (ret) {
 		dev_err(pil->dev, "MBA boot failed.\n");
 		goto err_mss_reset;
 	}
 
+<<<<<<< HEAD
 	if (dp_fw)
+=======
+	if (drv->dp_virt)
+>>>>>>> p9x
 		release_firmware(dp_fw);
 	release_firmware(fw);
 
 	return 0;
 
 err_mss_reset:
+<<<<<<< HEAD
 	if (pil->subsys_vmid > 0)
 		pil_assign_mem_to_linux(pil, drv->mba_dp_phys,
 							drv->mba_dp_size);
@@ -647,17 +788,37 @@ err_invalid_fw:
 		release_firmware(dp_fw);
 	release_firmware(fw);
 	drv->mba_dp_virt = NULL;
+=======
+	if (drv->dp_virt)
+		dma_free_attrs(&md->mba_mem_dev,  dp_fw->size, drv->dp_virt,
+				drv->dp_phys, &md->attrs_dma);
+err_invalid_fw:
+	if (dp_fw)
+		release_firmware(dp_fw);
+err_mba_data:
+	dma_free_attrs(&md->mba_mem_dev, drv->mba_size, drv->mba_virt,
+				drv->mba_phys, &md->attrs_dma);
+	drv->mba_virt = NULL;
+	drv->dp_virt = NULL;
+err_dma_alloc:
+	release_firmware(fw);
+>>>>>>> p9x
 	return ret;
 }
 
 static int pil_msa_auth_modem_mdt(struct pil_desc *pil, const u8 *metadata,
+<<<<<<< HEAD
 		size_t size, phys_addr_t phy_addr, size_t phy_sz)
+=======
+					size_t size)
+>>>>>>> p9x
 {
 	struct modem_data *drv = dev_get_drvdata(pil->dev);
 	void *mdata_virt;
 	dma_addr_t mdata_phys;
 	s32 status;
 	int ret;
+<<<<<<< HEAD
 	struct device *dma_dev = drv->mba_mem_dev_fixed ?: &drv->mba_mem_dev;
 	u64 val = is_timeout_disabled() ? 0 : modem_auth_timeout_ms * 1000;
 	DEFINE_DMA_ATTRS(attrs);
@@ -672,6 +833,18 @@ static int pil_msa_auth_modem_mdt(struct pil_desc *pil, const u8 *metadata,
 	if (!mdata_virt) {
 		dev_err(pil->dev, "%s MBA metadata buffer allocation %zx bytes failed\n",
 			 __func__, size);
+=======
+	DEFINE_DMA_ATTRS(attrs);
+
+	drv->mba_mem_dev.coherent_dma_mask =
+		DMA_BIT_MASK(sizeof(dma_addr_t) * 8);
+	dma_set_attr(DMA_ATTR_STRONGLY_ORDERED, &attrs);
+	/* Make metadata physically contiguous and 4K aligned. */
+	mdata_virt = dma_alloc_attrs(&drv->mba_mem_dev, size, &mdata_phys,
+					GFP_KERNEL, &attrs);
+	if (!mdata_virt) {
+		dev_err(pil->dev, "MBA metadata buffer allocation failed\n");
+>>>>>>> p9x
 		ret = -ENOMEM;
 		goto fail;
 	}
@@ -679,6 +852,7 @@ static int pil_msa_auth_modem_mdt(struct pil_desc *pil, const u8 *metadata,
 	/* wmb() ensures copy completes prior to starting authentication. */
 	wmb();
 
+<<<<<<< HEAD
 	if (pil->subsys_vmid > 0) {
 		/**
 		  * In case of modem ssr, we need to assign memory back to linux.
@@ -703,6 +877,8 @@ static int pil_msa_auth_modem_mdt(struct pil_desc *pil, const u8 *metadata,
 		}
 	}
 
+=======
+>>>>>>> p9x
 	/* Initialize length counter to 0 */
 	writel_relaxed(0, drv->rmb_base + RMB_PMI_CODE_LENGTH);
 
@@ -710,8 +886,13 @@ static int pil_msa_auth_modem_mdt(struct pil_desc *pil, const u8 *metadata,
 	writel_relaxed(mdata_phys, drv->rmb_base + RMB_PMI_META_DATA);
 	writel_relaxed(CMD_META_DATA_READY, drv->rmb_base + RMB_MBA_COMMAND);
 	ret = readl_poll_timeout(drv->rmb_base + RMB_MBA_STATUS, status,
+<<<<<<< HEAD
 			status == STATUS_META_DATA_AUTH_SUCCESS || status < 0,
 			POLL_INTERVAL_US, val);
+=======
+		status == STATUS_META_DATA_AUTH_SUCCESS || status < 0,
+		POLL_INTERVAL_US, modem_auth_timeout_ms * 1000);
+>>>>>>> p9x
 	if (ret) {
 		dev_err(pil->dev, "MBA authentication of headers timed out\n");
 	} else if (status < 0) {
@@ -720,10 +901,14 @@ static int pil_msa_auth_modem_mdt(struct pil_desc *pil, const u8 *metadata,
 		ret = -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (pil->subsys_vmid > 0)
 		pil_assign_mem_to_linux(pil, mdata_phys, ALIGN(size, SZ_4K));
 
 	dma_free_attrs(dma_dev, size, mdata_virt, mdata_phys, &attrs);
+=======
+	dma_free_attrs(&drv->mba_mem_dev, size, mdata_virt, mdata_phys, &attrs);
+>>>>>>> p9x
 
 	if (!ret)
 		return ret;
@@ -732,6 +917,7 @@ fail:
 	modem_log_rmb_regs(drv->rmb_base);
 	if (drv->q6) {
 		pil_mss_shutdown(pil);
+<<<<<<< HEAD
 		if (pil->subsys_vmid > 0)
 			pil_assign_mem_to_linux(pil, drv->q6->mba_dp_phys,
 						drv->q6->mba_dp_size);
@@ -740,13 +926,29 @@ fail:
 				&drv->attrs_dma);
 		drv->q6->mba_dp_virt = NULL;
 
+=======
+		dma_free_attrs(&drv->mba_mem_dev, drv->q6->mba_size,
+				drv->q6->mba_virt, drv->q6->mba_phys,
+				&drv->attrs_dma);
+		drv->q6->mba_virt = NULL;
+		if (drv->q6->dp_virt) {
+			dma_free_attrs(&drv->mba_mem_dev, drv->q6->dp_size,
+				drv->q6->dp_virt, drv->q6->dp_phys,
+				&drv->attrs_dma);
+			drv->q6->dp_virt = NULL;
+		}
+>>>>>>> p9x
 	}
 	return ret;
 }
 
 static int pil_msa_mss_reset_mba_load_auth_mdt(struct pil_desc *pil,
+<<<<<<< HEAD
 		const u8 *metadata, size_t size,
 		phys_addr_t modem_reg, size_t sz_modem_reg)
+=======
+				  const u8 *metadata, size_t size)
+>>>>>>> p9x
 {
 	int ret;
 
@@ -754,8 +956,12 @@ static int pil_msa_mss_reset_mba_load_auth_mdt(struct pil_desc *pil,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	return pil_msa_auth_modem_mdt(pil, metadata, size,
 			modem_reg, sz_modem_reg);
+=======
+	return pil_msa_auth_modem_mdt(pil, metadata, size);
+>>>>>>> p9x
 }
 
 static int pil_msa_mba_verify_blob(struct pil_desc *pil, phys_addr_t phy_addr,
@@ -789,6 +995,7 @@ static int pil_msa_mba_auth(struct pil_desc *pil)
 	struct modem_data *drv = dev_get_drvdata(pil->dev);
 	struct q6v5_data *q6_drv = container_of(pil, struct q6v5_data, desc);
 	int ret;
+<<<<<<< HEAD
 	struct device *dma_dev = drv->mba_mem_dev_fixed ?: &drv->mba_mem_dev;
 	s32 status;
 	u64 val = is_timeout_disabled() ? 0 : modem_auth_timeout_ms * 1000;
@@ -796,6 +1003,14 @@ static int pil_msa_mba_auth(struct pil_desc *pil)
 	/* Wait for all segments to be authenticated or an error to occur */
 	ret = readl_poll_timeout(drv->rmb_base + RMB_MBA_STATUS, status,
 		status == STATUS_AUTH_COMPLETE || status < 0, 50, val);
+=======
+	s32 status;
+
+	/* Wait for all segments to be authenticated or an error to occur */
+	ret = readl_poll_timeout(drv->rmb_base + RMB_MBA_STATUS, status,
+			status == STATUS_AUTH_COMPLETE || status < 0,
+			50, modem_auth_timeout_ms * 1000);
+>>>>>>> p9x
 	if (ret) {
 		dev_err(pil->dev, "MBA authentication of image timed out\n");
 	} else if (status < 0) {
@@ -804,6 +1019,7 @@ static int pil_msa_mba_auth(struct pil_desc *pil)
 	}
 
 	if (drv->q6) {
+<<<<<<< HEAD
 		if (drv->q6->mba_dp_virt) {
 			/* Reclaim MBA and DP (if allocated) memory. */
 			if (pil->subsys_vmid > 0)
@@ -815,6 +1031,22 @@ static int pil_msa_mba_auth(struct pil_desc *pil)
 				&drv->attrs_dma);
 
 			drv->q6->mba_dp_virt = NULL;
+=======
+		if (drv->q6->mba_virt) {
+			/* Reclaim MBA memory. */
+			dma_free_attrs(&drv->mba_mem_dev, drv->q6->mba_size,
+					drv->q6->mba_virt, drv->q6->mba_phys,
+					&drv->attrs_dma);
+			drv->q6->mba_virt = NULL;
+		}
+
+		if (drv->q6->dp_virt) {
+			/* Reclaim Modem DP memory. */
+			dma_free_attrs(&drv->mba_mem_dev, drv->q6->dp_size,
+					drv->q6->dp_virt, drv->q6->dp_phys,
+					&drv->attrs_dma);
+			drv->q6->dp_virt = NULL;
+>>>>>>> p9x
 		}
 	}
 	if (ret)

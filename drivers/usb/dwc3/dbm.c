@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -12,6 +16,7 @@
  *
  */
 
+<<<<<<< HEAD
 #include <linux/platform_device.h>
 #include <linux/of.h>
 #include <linux/module.h>
@@ -607,12 +612,31 @@ static struct platform_driver msm_dbm_driver = {
 };
 
 module_platform_driver(msm_dbm_driver);
+=======
+#include <linux/err.h>
+#include <linux/of.h>
+
+#include "dbm.h"
+
+struct dbm_manager {
+	struct list_head	dbm_list;
+};
+
+static struct dbm_manager dbm_manager = {
+	.dbm_list = LIST_HEAD_INIT(dbm_manager.dbm_list)
+};
+
+>>>>>>> p9x
 
 static struct dbm *of_usb_find_dbm(struct device_node *node)
 {
 	struct dbm  *dbm;
 
+<<<<<<< HEAD
 	list_for_each_entry(dbm, &dbm_list, head) {
+=======
+	list_for_each_entry(dbm, &dbm_manager.dbm_list, head) {
+>>>>>>> p9x
 		if (node != dbm->dev->of_node)
 			continue;
 		return dbm;
@@ -620,7 +644,12 @@ static struct dbm *of_usb_find_dbm(struct device_node *node)
 	return ERR_PTR(-ENODEV);
 }
 
+<<<<<<< HEAD
 struct dbm *usb_get_dbm_by_phandle(struct device *dev, const char *phandle)
+=======
+struct dbm *usb_get_dbm_by_phandle(struct device *dev,
+	const char *phandle, u8 index)
+>>>>>>> p9x
 {
 	struct device_node *node;
 
@@ -629,7 +658,11 @@ struct dbm *usb_get_dbm_by_phandle(struct device *dev, const char *phandle)
 		return ERR_PTR(-EINVAL);
 	}
 
+<<<<<<< HEAD
 	node = of_parse_phandle(dev->of_node, phandle, 0);
+=======
+	node = of_parse_phandle(dev->of_node, phandle, index);
+>>>>>>> p9x
 	if (!node) {
 		dev_dbg(dev, "failed to get %s phandle in %s node\n", phandle,
 			dev->of_node->full_name);
@@ -638,6 +671,20 @@ struct dbm *usb_get_dbm_by_phandle(struct device *dev, const char *phandle)
 
 	return of_usb_find_dbm(node);
 }
+<<<<<<< HEAD
 
 MODULE_DESCRIPTION("MSM USB DBM driver");
 MODULE_LICENSE("GPL v2");
+=======
+EXPORT_SYMBOL(usb_get_dbm_by_phandle);
+
+
+int usb_add_dbm(struct dbm *x)
+{
+	list_add_tail(&x->head, &dbm_manager.dbm_list);
+	return 0;
+}
+EXPORT_SYMBOL(usb_add_dbm);
+
+
+>>>>>>> p9x

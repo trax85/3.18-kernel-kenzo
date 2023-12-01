@@ -381,6 +381,10 @@ int msm_bus_dbg_rec_transaction(const struct msm_bus_client_handle *pdata,
 			rt_mutex_unlock(&msm_bus_dbg_cllist_lock);
 			return -EINVAL;
 		}
+<<<<<<< HEAD
+=======
+		pr_debug("\n%s setting up debugfs %s", __func__, pdata->name);
+>>>>>>> p9x
 		cldata->file = debugfs_create_file(pdata->name, S_IRUGO,
 				clients, (void *)pdata, &client_data_fops);
 	}
@@ -580,7 +584,11 @@ static ssize_t  msm_bus_dbg_update_request_write(struct file *file,
 			cldata = cldata;
 			strsep(&chid, " ");
 			if (chid) {
+<<<<<<< HEAD
 				ret = kstrtoul(chid, 10, &index);
+=======
+				ret = strict_strtoul(chid, 10, &index);
+>>>>>>> p9x
 				if (ret) {
 					MSM_BUS_DBG("Index conversion"
 						" failed\n");

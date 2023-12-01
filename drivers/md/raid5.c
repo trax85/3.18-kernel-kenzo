@@ -61,14 +61,20 @@
 #include "raid0.h"
 #include "bitmap.h"
 
+<<<<<<< HEAD
 #define cpu_to_group(cpu) cpu_to_node(cpu)
 #define ANY_GROUP NUMA_NO_NODE
 
+=======
+>>>>>>> p9x
 static bool devices_handle_discard_safely = false;
 module_param(devices_handle_discard_safely, bool, 0644);
 MODULE_PARM_DESC(devices_handle_discard_safely,
 		 "Set to Y if all devices in each array reliably return zeroes on reads from discarded regions");
+<<<<<<< HEAD
 static struct workqueue_struct *raid5_wq;
+=======
+>>>>>>> p9x
 /*
  * Stripe cache
  */
@@ -871,7 +877,11 @@ static void ops_run_io(struct stripe_head *sh, struct stripe_head_state *s)
 			bi->bi_vcnt = 1;
 			bi->bi_io_vec[0].bv_len = STRIPE_SIZE;
 			bi->bi_io_vec[0].bv_offset = 0;
+<<<<<<< HEAD
 			bi->bi_iter.bi_size = STRIPE_SIZE;
+=======
+			bi->bi_size = STRIPE_SIZE;
+>>>>>>> p9x
 			/*
 			 * If this is discard request, set bi_vcnt 0. We don't
 			 * want to confuse SCSI because SCSI will replace payload
@@ -918,7 +928,11 @@ static void ops_run_io(struct stripe_head *sh, struct stripe_head_state *s)
 			rbi->bi_vcnt = 1;
 			rbi->bi_io_vec[0].bv_len = STRIPE_SIZE;
 			rbi->bi_io_vec[0].bv_offset = 0;
+<<<<<<< HEAD
 			rbi->bi_iter.bi_size = STRIPE_SIZE;
+=======
+			rbi->bi_size = STRIPE_SIZE;
+>>>>>>> p9x
 			/*
 			 * If this is discard request, set bi_vcnt 0. We don't
 			 * want to confuse SCSI because SCSI will replace payload
@@ -2921,12 +2935,17 @@ static int fetch_block(struct stripe_head *sh, struct stripe_head_state *s,
 	     (sh->raid_conf->level <= 5 && s->failed && fdev[0]->towrite &&
 	      (!test_bit(R5_Insync, &dev->flags) || test_bit(STRIPE_PREREAD_ACTIVE, &sh->state)) &&
 	      !test_bit(R5_OVERWRITE, &fdev[0]->flags)) ||
+<<<<<<< HEAD
 	     ((sh->raid_conf->level == 6 ||
 	       sh->sector >= sh->raid_conf->mddev->recovery_cp)
 	      && s->failed && s->to_write &&
 	      (s->to_write - s->non_overwrite <
 	       sh->raid_conf->raid_disks - sh->raid_conf->max_degraded) &&
 	      (!test_bit(R5_Insync, &dev->flags) || test_bit(STRIPE_PREREAD_ACTIVE, &sh->state))))) {
+=======
+	     ((sh->raid_conf->level == 6 || sh->sector >= sh->raid_conf->mddev->recovery_cp)
+	      && s->failed && s->to_write))) {
+>>>>>>> p9x
 		/* we would like to get this block, possibly by computing it,
 		 * otherwise read it if the backing disk is insync
 		 */
@@ -3078,9 +3097,15 @@ static void handle_stripe_clean_event(struct r5conf *conf,
 		 * no updated data, so remove it from hash list and the stripe
 		 * will be reinitialized
 		 */
+<<<<<<< HEAD
 		spin_lock_irq(conf->hash_locks + hash);
 		remove_hash(sh);
 		spin_unlock_irq(conf->hash_locks + hash);
+=======
+		spin_lock_irq(&conf->device_lock);
+		remove_hash(sh);
+		spin_unlock_irq(&conf->device_lock);
+>>>>>>> p9x
 		if (test_bit(STRIPE_SYNC_REQUESTED, &sh->state))
 			set_bit(STRIPE_HANDLE, &sh->state);
 

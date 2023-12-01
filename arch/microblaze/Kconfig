@@ -2,6 +2,7 @@ config MICROBLAZE
 	def_bool y
 	select ARCH_MIGHT_HAVE_PC_PARPORT
 	select ARCH_WANT_IPC_PARSE_VERSION
+<<<<<<< HEAD
 	select ARCH_WANT_OPTIONAL_GPIOLIB
 	select BUILDTIME_EXTABLE_SORT
 	select CLKSRC_OF
@@ -11,6 +12,11 @@ config MICROBLAZE
 	select GENERIC_CLOCKEVENTS
 	select GENERIC_CPU_DEVICES
 	select GENERIC_IDLE_POLL_SETUP
+=======
+	select HAVE_DEBUG_KMEMLEAK
+	select IRQ_DOMAIN
+	select VIRT_TO_BUS
+>>>>>>> p9x
 	select GENERIC_IRQ_PROBE
 	select GENERIC_IRQ_SHOW
 	select GENERIC_PCI_IOMAP
@@ -28,10 +34,14 @@ config MICROBLAZE
 	select HAVE_OPROFILE
 	select IRQ_DOMAIN
 	select MODULES_USE_ELF_RELA
+<<<<<<< HEAD
 	select OF
 	select OF_EARLY_FLATTREE
 	select TRACING_SUPPORT
 	select VIRT_TO_BUS
+=======
+	select CLONE_BACKWARDS3
+>>>>>>> p9x
 
 config SWAP
 	def_bool n

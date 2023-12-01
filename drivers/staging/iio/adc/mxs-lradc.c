@@ -802,6 +802,16 @@ static int mxs_lradc_read_single(struct iio_dev *iio_dev, int chan, int *val)
 	struct mxs_lradc *lradc = iio_priv(iio_dev);
 	int ret;
 
+<<<<<<< HEAD
+=======
+	if (m != IIO_CHAN_INFO_RAW)
+		return -EINVAL;
+
+	/* Check for invalid channel */
+	if (chan->channel > LRADC_MAX_TOTAL_CHANS)
+		return -EINVAL;
+
+>>>>>>> p9x
 	/*
 	 * See if there is no buffered operation in progess. If there is, simply
 	 * bail out. This can be improved to support both buffered and raw IO at

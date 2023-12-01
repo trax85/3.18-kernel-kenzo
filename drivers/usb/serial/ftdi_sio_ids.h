@@ -560,9 +560,13 @@
 /*
  * NovaTech product ids (FTDI_VID)
  */
+<<<<<<< HEAD
 #define FTDI_NT_ORIONLXM_PID		0x7c90	/* OrionLXm Substation Automation Platform */
 #define FTDI_NT_ORIONLX_PLUS_PID	0x7c91	/* OrionLX+ Substation Automation Platform */
 #define FTDI_NT_ORION_IO_PID		0x7c92	/* Orion I/O */
+=======
+#define FTDI_NT_ORIONLXM_PID	0x7c90	/* OrionLXm Substation Automation Platform */
+>>>>>>> p9x
 
 /*
  * Synapse Wireless product ids (FTDI_VID)
@@ -570,6 +574,17 @@
  */
 #define FTDI_SYNAPSE_SS200_PID 0x9090 /* SS200 - SNAP Stick 200 */
 
+<<<<<<< HEAD
+=======
+/*
+ * CustomWare / ShipModul NMEA multiplexers product ids (FTDI_VID)
+ */
+#define FTDI_CUSTOMWARE_MINIPLEX_PID	0xfd48	/* MiniPlex first generation NMEA Multiplexer */
+#define FTDI_CUSTOMWARE_MINIPLEX2_PID	0xfd49	/* MiniPlex-USB and MiniPlex-2 series */
+#define FTDI_CUSTOMWARE_MINIPLEX2WI_PID	0xfd4a	/* MiniPlex-2Wi */
+#define FTDI_CUSTOMWARE_MINIPLEX3_PID	0xfd4b	/* MiniPlex-3 series */
+
+>>>>>>> p9x
 
 /********************************/
 /** third-party VID/PID combos **/
@@ -609,6 +624,13 @@
  */
 #define RATOC_VENDOR_ID		0x0584
 #define RATOC_PRODUCT_ID_USB60F	0xb020
+#define RATOC_PRODUCT_ID_SCU18	0xb03a
+
+/*
+ * Infineon Technologies
+ */
+#define INFINEON_VID		0x058b
+#define INFINEON_TRIBOARD_PID	0x0028 /* DAS JTAG TriBoard TC1798 V1.0 */
 
 /*
  * Infineon Technologies
@@ -1444,6 +1466,7 @@
  * ekey biometric systems GmbH (http://ekey.net/)
  */
 #define FTDI_EKEY_CONV_USB_PID		0xCB08	/* Converter USB */
+<<<<<<< HEAD
 
 /*
  * GE Healthcare devices
@@ -1470,3 +1493,5 @@
 #define CHETCO_SEASMART_DISPLAY_PID	0xA5AD /* SeaSmart NMEA2000 Display */
 #define CHETCO_SEASMART_LITE_PID	0xA5AE /* SeaSmart Lite USB Adapter */
 #define CHETCO_SEASMART_ANALOG_PID	0xA5AF /* SeaSmart Analog Adapter */
+=======
+>>>>>>> p9x

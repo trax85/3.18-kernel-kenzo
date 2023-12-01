@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2016, 2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -45,8 +49,11 @@
 static int sockets_enabled;
 static struct proto msm_ipc_proto;
 static const struct proto_ops msm_ipc_proto_ops;
+<<<<<<< HEAD
 static RAW_NOTIFIER_HEAD(ipcrtr_af_init_chain);
 static DEFINE_MUTEX(ipcrtr_af_init_lock);
+=======
+>>>>>>> p9x
 
 static struct sk_buff_head *msm_ipc_router_build_msg(unsigned int num_sect,
 					  struct iovec const *msg_sect,
@@ -150,12 +157,16 @@ static int msm_ipc_router_extract_msg(struct msghdr *m,
 	hdr = &(pkt->hdr);
 	if (addr && (hdr->type == IPC_ROUTER_CTRL_CMD_RESUME_TX)) {
 		temp = skb_peek(pkt->pkt_fragment_q);
+<<<<<<< HEAD
 		if (!temp || !temp->data) {
 			IPC_RTR_ERR("%s: Invalid skb\n", __func__);
 			return -EINVAL;
 		}
 		ctl_msg = (union rr_control_msg *)(temp->data);
 		memset(addr, 0x0, sizeof(*addr));
+=======
+		ctl_msg = (union rr_control_msg *)(temp->data);
+>>>>>>> p9x
 		addr->family = AF_MSM_IPC;
 		addr->address.addrtype = MSM_IPC_ADDR_ID;
 		addr->address.addr.port_addr.node_id = ctl_msg->cli.node_id;
@@ -164,7 +175,10 @@ static int msm_ipc_router_extract_msg(struct msghdr *m,
 		return offset;
 	}
 	if (addr && (hdr->type == IPC_ROUTER_CTRL_CMD_DATA)) {
+<<<<<<< HEAD
 		memset(addr, 0x0, sizeof(*addr));
+=======
+>>>>>>> p9x
 		addr->family = AF_MSM_IPC;
 		addr->address.addrtype = MSM_IPC_ADDR_ID;
 		addr->address.addr.port_addr.node_id = hdr->src_node_id;
@@ -216,7 +230,11 @@ static int msm_ipc_router_create(struct net *net,
 	sock->ops = &msm_ipc_proto_ops;
 	sock_init_data(sock, sk);
 	sk->sk_data_ready = NULL;
+<<<<<<< HEAD
 	sk->sk_write_space = ipc_router_dummy_write_space;
+=======
+	sk->sk_write_space = NULL;
+>>>>>>> p9x
 	sk->sk_rcvtimeo = DEFAULT_RCV_TIMEO;
 	sk->sk_sndtimeo = DEFAULT_SND_TIMEO;
 
@@ -582,6 +600,7 @@ static int msm_ipc_router_close(struct socket *sock)
 	return ret;
 }
 
+<<<<<<< HEAD
 /**
  * register_ipcrtr_af_init_notifier() - Register for ipc router socket
  *				address family initialization callback
@@ -624,6 +643,8 @@ int unregister_ipcrtr_af_init_notifier(struct notifier_block *nb)
 }
 EXPORT_SYMBOL(unregister_ipcrtr_af_init_notifier);
 
+=======
+>>>>>>> p9x
 static const struct net_proto_family msm_ipc_family_ops = {
 	.owner		= THIS_MODULE,
 	.family		= AF_MSM_IPC,
@@ -683,11 +704,15 @@ int msm_ipc_router_init_sockets(void)
 		goto out_init_sockets;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&ipcrtr_af_init_lock);
 	sockets_enabled = 1;
 	raw_notifier_call_chain(&ipcrtr_af_init_chain,
 				IPCRTR_AF_INIT, NULL);
 	mutex_unlock(&ipcrtr_af_init_lock);
+=======
+	sockets_enabled = 1;
+>>>>>>> p9x
 out_init_sockets:
 	return ret;
 }
@@ -697,6 +722,7 @@ void msm_ipc_router_exit_sockets(void)
 	if (!sockets_enabled)
 		return;
 
+<<<<<<< HEAD
 	sock_unregister(msm_ipc_family_ops.family);
 	proto_unregister(&msm_ipc_proto);
 	mutex_lock(&ipcrtr_af_init_lock);
@@ -704,4 +730,9 @@ void msm_ipc_router_exit_sockets(void)
 	raw_notifier_call_chain(&ipcrtr_af_init_chain,
 				IPCRTR_AF_DEINIT, NULL);
 	mutex_unlock(&ipcrtr_af_init_lock);
+=======
+	sockets_enabled = 0;
+	sock_unregister(msm_ipc_family_ops.family);
+	proto_unregister(&msm_ipc_proto);
+>>>>>>> p9x
 }

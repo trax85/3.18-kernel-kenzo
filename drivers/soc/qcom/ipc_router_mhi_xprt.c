@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -22,7 +26,11 @@
 #include <linux/sched.h>
 #include <linux/skbuff.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/spinlock.h>
+=======
+
+>>>>>>> p9x
 
 static int ipc_router_mhi_xprt_debug_mask;
 module_param_named(debug_mask, ipc_router_mhi_xprt_debug_mask,
@@ -39,6 +47,7 @@ if (ipc_router_mhi_xprt_debug_mask) \
 #define IPC_ROUTER_MHI_XPRT_NUM_TRBS 10
 
 /**
+<<<<<<< HEAD
  * ipc_router_mhi_addr_map - Struct for virtual address to IPC Router
  *				packet mapping.
  * @list_node: Address mapping list node used by mhi transport map list.
@@ -52,6 +61,8 @@ struct ipc_router_mhi_addr_map {
 };
 
 /**
+=======
+>>>>>>> p9x
  * ipc_router_mhi_channel - MHI Channel related information
  * @out_chan_id: Out channel ID for use by IPC ROUTER enumerated in MHI driver.
  * @out_handle: MHI Output channel handle.
@@ -62,6 +73,10 @@ struct ipc_router_mhi_addr_map {
  * @state_lock: Lock to protect access to the state information.
  * @out_chan_enabled: State of the outgoing channel.
  * @in_chan_enabled: State of the incoming channel.
+<<<<<<< HEAD
+=======
+ * @bytes_to_tx: Remaining bytes to be transmitted in a packet.
+>>>>>>> p9x
  * @bytes_to_rx: Remaining bytes to be received in a packet.
  * @in_skbq_lock: Lock to protect access to the input skbs queue.
  * @in_skbq: Queue containing the input buffers.
@@ -81,6 +96,10 @@ struct ipc_router_mhi_channel {
 	struct mutex state_lock;
 	bool out_chan_enabled;
 	bool in_chan_enabled;
+<<<<<<< HEAD
+=======
+	int bytes_to_tx;
+>>>>>>> p9x
 	int bytes_to_rx;
 
 	struct mutex in_skbq_lock;
@@ -104,12 +123,15 @@ struct ipc_router_mhi_channel {
  *			by IPC Router.
  * @xprt_version: IPC Router header version supported by this XPRT.
  * @xprt_option: XPRT specific options to be handled by IPC Router.
+<<<<<<< HEAD
  * @tx_addr_map_list_lock: The lock to protect the address mapping list for TX
  *			operations.
  * @tx_addr_map_list: Virtual address mapping list for TX operations.
  * @rx_addr_map_list_lock: The lock to protect the address mapping list for RX
  *			operations.
  * @rx_addr_map_list: Virtual address mapping list for RX operations.
+=======
+>>>>>>> p9x
  */
 struct ipc_router_mhi_xprt {
 	struct list_head list;
@@ -123,20 +145,32 @@ struct ipc_router_mhi_xprt {
 	struct completion sft_close_complete;
 	unsigned xprt_version;
 	unsigned xprt_option;
+<<<<<<< HEAD
 	spinlock_t tx_addr_map_list_lock;
 	struct list_head tx_addr_map_list;
 	spinlock_t rx_addr_map_list_lock;
 	struct list_head rx_addr_map_list;
+=======
+>>>>>>> p9x
 };
 
 struct ipc_router_mhi_xprt_work {
 	struct ipc_router_mhi_xprt *mhi_xprtp;
 	enum MHI_CLIENT_CHANNEL chan_id;
+<<<<<<< HEAD
 };
 
 static void mhi_xprt_read_data(struct work_struct *work);
 static void mhi_xprt_enable_event(struct ipc_router_mhi_xprt_work *xprt_work);
 static void mhi_xprt_disable_event(struct ipc_router_mhi_xprt_work *xprt_work);
+=======
+	struct work_struct work;
+};
+
+static void mhi_xprt_read_data(struct work_struct *work);
+static void mhi_xprt_enable_event(struct work_struct *work);
+static void mhi_xprt_disable_event(struct work_struct *work);
+>>>>>>> p9x
 
 /**
  * ipc_router_mhi_xprt_config - Config. Info. of each MHI XPRT
@@ -159,6 +193,7 @@ static DEFINE_MUTEX(mhi_xprt_list_lock_lha1);
 static LIST_HEAD(mhi_xprt_list);
 
 /*
+<<<<<<< HEAD
  * ipc_router_mhi_release_pkt() - Release a cloned IPC Router packet
  * @ref: Reference to the kref object in the IPC Router packet.
  */
@@ -240,6 +275,8 @@ int ipc_router_mhi_xprt_add_addr_map(struct list_head *addr_map_list,
 }
 
 /*
+=======
+>>>>>>> p9x
  * mhi_xprt_queue_in_buffers() - Queue input buffers
  * @mhi_xprtp: MHI XPRT in which the input buffer has to be queued.
  * @num_trbs: Number of buffers to be queued.
@@ -251,8 +288,14 @@ int mhi_xprt_queue_in_buffers(struct ipc_router_mhi_xprt *mhi_xprtp,
 {
 	int i;
 	struct sk_buff *skb;
+<<<<<<< HEAD
 	uint32_t buf_size = mhi_xprtp->ch_hndl.max_packet_size;
 	int rc_val = 0;
+=======
+	dma_addr_t dma_addr;
+	uint32_t buf_size = mhi_xprtp->ch_hndl.max_packet_size;
+	enum MHI_STATUS rc_val = MHI_STATUS_SUCCESS;
+>>>>>>> p9x
 
 	for (i = 0; i < num_trbs; i++) {
 		skb = alloc_skb(buf_size, GFP_KERNEL);
@@ -261,21 +304,40 @@ int mhi_xprt_queue_in_buffers(struct ipc_router_mhi_xprt *mhi_xprtp,
 				    __func__, (i + 1));
 			break;
 		}
+<<<<<<< HEAD
 		if (ipc_router_mhi_xprt_add_addr_map(
 					&mhi_xprtp->rx_addr_map_list,
 					&mhi_xprtp->rx_addr_map_list_lock, NULL,
 					skb->data) < 0) {
 			IPC_RTR_ERR("%s: Could not map %d SKB address\n",
 					__func__, (i + 1));
+=======
+		dma_addr = dma_map_single(NULL, skb->data,
+				buf_size, DMA_BIDIRECTIONAL);
+		if (dma_mapping_error(NULL, dma_addr)) {
+			IPC_RTR_ERR("%s: Failed to map DMA for SKB # %d\n",
+				    __func__, (i + 1));
+			kfree_skb(skb);
+>>>>>>> p9x
 			break;
 		}
 		mutex_lock(&mhi_xprtp->ch_hndl.in_skbq_lock);
 		rc_val = mhi_queue_xfer(mhi_xprtp->ch_hndl.in_handle,
+<<<<<<< HEAD
 					skb->data, buf_size, MHI_EOT);
 		if (rc_val) {
 			mutex_unlock(&mhi_xprtp->ch_hndl.in_skbq_lock);
 			IPC_RTR_ERR("%s: Failed to queue TRB # %d into MHI\n",
 				    __func__, (i + 1));
+=======
+					 dma_addr, buf_size, MHI_EOT);
+		if (rc_val != MHI_STATUS_SUCCESS) {
+			mutex_unlock(&mhi_xprtp->ch_hndl.in_skbq_lock);
+			IPC_RTR_ERR("%s: Failed to queue TRB # %d into MHI\n",
+				    __func__, (i + 1));
+			dma_unmap_single(NULL, dma_addr,
+					 buf_size, DMA_TO_DEVICE);
+>>>>>>> p9x
 			kfree_skb(skb);
 			break;
 		}
@@ -286,6 +348,7 @@ int mhi_xprt_queue_in_buffers(struct ipc_router_mhi_xprt *mhi_xprtp,
 }
 
 /**
+<<<<<<< HEAD
 * ipc_router_mhi_set_xprt_version() - Set the IPC Router version in transport
 * @xprt:      Reference to the transport structure.
 * @version:   The version to be set in transport.
@@ -302,6 +365,8 @@ static void ipc_router_mhi_set_xprt_version(struct msm_ipc_router_xprt *xprt,
 }
 
 /**
+=======
+>>>>>>> p9x
  * ipc_router_mhi_get_xprt_version() - Get IPC Router header version
  *				       supported by the XPRT
  * @xprt: XPRT for which the version information is required.
@@ -365,11 +430,19 @@ static int ipc_router_mhi_write_avail(struct msm_ipc_router_xprt *xprt)
  *          standard Linux error codes on failure.
  */
 static int ipc_router_mhi_write_skb(struct ipc_router_mhi_xprt *mhi_xprtp,
+<<<<<<< HEAD
 				    struct sk_buff *skb, struct rr_packet *pkt)
+=======
+				    struct sk_buff *skb)
+>>>>>>> p9x
 {
 	size_t sz_to_write = 0;
 	size_t offset = 0;
 	int rc;
+<<<<<<< HEAD
+=======
+	dma_addr_t dma_addr;
+>>>>>>> p9x
 
 	while (offset < skb->len) {
 		wait_event(mhi_xprtp->write_wait_q,
@@ -385,6 +458,7 @@ static int ipc_router_mhi_write_skb(struct ipc_router_mhi_xprt *mhi_xprtp,
 
 		sz_to_write = min((size_t)(skb->len - offset),
 				(size_t)IPC_ROUTER_MHI_XPRT_MAX_PKT_SIZE);
+<<<<<<< HEAD
 		if (ipc_router_mhi_xprt_add_addr_map(
 					&mhi_xprtp->tx_addr_map_list,
 					&mhi_xprtp->tx_addr_map_list_lock, pkt,
@@ -400,10 +474,31 @@ static int ipc_router_mhi_write_skb(struct ipc_router_mhi_xprt *mhi_xprtp,
 		if (rc) {
 			mutex_unlock(&mhi_xprtp->ch_hndl.state_lock);
 			IPC_RTR_ERR("%s: Error queueing mhi_xfer 0x%zx\n",
+=======
+		dma_addr = dma_map_single(NULL, skb->data + offset,
+					  sz_to_write, DMA_TO_DEVICE);
+		if (dma_mapping_error(NULL, dma_addr)) {
+			mutex_unlock(&mhi_xprtp->ch_hndl.state_lock);
+			IPC_RTR_ERR("%s: Failed to map DMA 0x%x\n",
+				    __func__, sz_to_write);
+			return -ENOMEM;
+		}
+		rc = mhi_queue_xfer(mhi_xprtp->ch_hndl.out_handle,
+				     dma_addr, sz_to_write, MHI_EOT | MHI_EOB);
+		if (rc != 0) {
+			mutex_unlock(&mhi_xprtp->ch_hndl.state_lock);
+			dma_unmap_single(NULL, dma_addr, sz_to_write,
+					 DMA_TO_DEVICE);
+			IPC_RTR_ERR("%s: Error queueing mhi_xfer 0x%x\n",
+>>>>>>> p9x
 				    __func__, sz_to_write);
 			return -EFAULT;
 		} else {
 			offset += sz_to_write;
+<<<<<<< HEAD
+=======
+			mhi_xprtp->ch_hndl.bytes_to_tx += sz_to_write;
+>>>>>>> p9x
 		}
 		mutex_unlock(&mhi_xprtp->ch_hndl.state_lock);
 	}
@@ -423,7 +518,10 @@ static int ipc_router_mhi_write(void *data,
 {
 	struct rr_packet *pkt = (struct rr_packet *)data;
 	struct sk_buff *ipc_rtr_pkt;
+<<<<<<< HEAD
 	struct rr_packet *cloned_pkt;
+=======
+>>>>>>> p9x
 	int rc;
 	struct ipc_router_mhi_xprt *mhi_xprtp =
 		container_of(xprt, struct ipc_router_mhi_xprt, xprt);
@@ -434,6 +532,7 @@ static int ipc_router_mhi_write(void *data,
 	if (!len || pkt->length != len)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	cloned_pkt = clone_pkt(pkt);
 	if (!cloned_pkt) {
 		pr_err("%s: Error in cloning packet while tx\n", __func__);
@@ -443,6 +542,11 @@ static int ipc_router_mhi_write(void *data,
 	skb_queue_walk(cloned_pkt->pkt_fragment_q, ipc_rtr_pkt) {
 		rc = ipc_router_mhi_write_skb(mhi_xprtp, ipc_rtr_pkt,
 						cloned_pkt);
+=======
+	D("%s: Ready to write %d bytes\n", __func__, len);
+	skb_queue_walk(pkt->pkt_fragment_q, ipc_rtr_pkt) {
+		rc = ipc_router_mhi_write_skb(mhi_xprtp, ipc_rtr_pkt);
+>>>>>>> p9x
 		if (rc < 0) {
 			IPC_RTR_ERR("%s: Error writing SKB %d\n",
 				    __func__, rc);
@@ -450,7 +554,11 @@ static int ipc_router_mhi_write(void *data,
 		}
 	}
 
+<<<<<<< HEAD
 	kref_put(&cloned_pkt->ref, ipc_router_mhi_release_pkt);
+=======
+	wait_event(mhi_xprtp->write_wait_q, !mhi_xprtp->ch_hndl.bytes_to_tx);
+>>>>>>> p9x
 	if (rc < 0)
 		return rc;
 	else
@@ -468,7 +576,11 @@ static int ipc_router_mhi_write(void *data,
  */
 static void mhi_xprt_read_data(struct work_struct *work)
 {
+<<<<<<< HEAD
 	void *data_addr;
+=======
+	dma_addr_t data_addr;
+>>>>>>> p9x
 	ssize_t data_sz;
 	void *skb_data;
 	struct sk_buff *skb;
@@ -492,6 +604,7 @@ static void mhi_xprt_read_data(struct work_struct *work)
 
 	while (1) {
 		rc = mhi_poll_inbound(mhi_xprtp->ch_hndl.in_handle, &result);
+<<<<<<< HEAD
 		if (rc || !result.buf_addr || !result.bytes_xferd) {
 			if (rc != -ENODATA)
 				IPC_RTR_ERR("%s: Poll failed %s:%d:%p:%u\n",
@@ -501,6 +614,17 @@ static void mhi_xprt_read_data(struct work_struct *work)
 			break;
 		}
 		data_addr = result.buf_addr;
+=======
+		if (rc || !result.payload_buf || !result.bytes_xferd) {
+			if (rc != MHI_STATUS_RING_EMPTY)
+				IPC_RTR_ERR("%s: Poll failed %s:%d:%p:%zu\n",
+					__func__, mhi_xprtp->xprt_name, rc,
+					(void *)result.payload_buf,
+					result.bytes_xferd);
+			break;
+		}
+		data_addr = result.payload_buf;
+>>>>>>> p9x
 		data_sz = result.bytes_xferd;
 
 		/* Create a new rr_packet, if first fragment */
@@ -514,6 +638,7 @@ static void mhi_xprt_read_data(struct work_struct *work)
 			D("%s: Allocated rr_packet\n", __func__);
 		}
 
+<<<<<<< HEAD
 		skb_data = ipc_router_mhi_xprt_find_addr_map(
 					&mhi_xprtp->rx_addr_map_list,
 					&mhi_xprtp->rx_addr_map_list_lock,
@@ -521,6 +646,10 @@ static void mhi_xprt_read_data(struct work_struct *work)
 
 		if (!skb_data)
 			continue;
+=======
+		skb_data = dma_to_virt(NULL, data_addr);
+		dma_unmap_single(NULL, data_addr, data_sz, DMA_BIDIRECTIONAL);
+>>>>>>> p9x
 		mutex_lock(&mhi_xprtp->ch_hndl.in_skbq_lock);
 		skb_queue_walk(&mhi_xprtp->ch_hndl.in_skbq, skb) {
 			if (skb->data == skb_data) {
@@ -573,6 +702,11 @@ static int ipc_router_mhi_close(struct msm_ipc_router_xprt *xprt)
 	mhi_xprtp->ch_hndl.in_chan_enabled = false;
 	mutex_unlock(&mhi_xprtp->ch_hndl.state_lock);
 	flush_workqueue(mhi_xprtp->wq);
+<<<<<<< HEAD
+=======
+	mhi_close_channel(mhi_xprtp->ch_hndl.in_handle);
+	mhi_close_channel(mhi_xprtp->ch_hndl.out_handle);
+>>>>>>> p9x
 	return 0;
 }
 
@@ -597,18 +731,32 @@ static void mhi_xprt_sft_close_done(struct msm_ipc_router_xprt *xprt)
  *
  * This work is scheduled when the MHI link to the peripheral is up.
  */
+<<<<<<< HEAD
 static void mhi_xprt_enable_event(struct ipc_router_mhi_xprt_work *xprt_work)
 {
+=======
+static void mhi_xprt_enable_event(struct work_struct *work)
+{
+	struct ipc_router_mhi_xprt_work *xprt_work =
+		container_of(work, struct ipc_router_mhi_xprt_work, work);
+>>>>>>> p9x
 	struct ipc_router_mhi_xprt *mhi_xprtp = xprt_work->mhi_xprtp;
 	int rc;
 	bool notify = false;
 
 	if (xprt_work->chan_id == mhi_xprtp->ch_hndl.out_chan_id) {
 		rc = mhi_open_channel(mhi_xprtp->ch_hndl.out_handle);
+<<<<<<< HEAD
 		if (rc) {
 			IPC_RTR_ERR("%s Failed to open chan 0x%x, rc %d\n",
 				__func__, mhi_xprtp->ch_hndl.out_chan_id, rc);
 			return;
+=======
+		if (rc != MHI_STATUS_SUCCESS) {
+			IPC_RTR_ERR("%s Failed to open chan 0x%x, rc %d\n",
+				__func__, mhi_xprtp->ch_hndl.out_chan_id, rc);
+			goto out_enable_event;
+>>>>>>> p9x
 		}
 		mutex_lock(&mhi_xprtp->ch_hndl.state_lock);
 		mhi_xprtp->ch_hndl.out_chan_enabled = true;
@@ -617,10 +765,17 @@ static void mhi_xprt_enable_event(struct ipc_router_mhi_xprt_work *xprt_work)
 		mutex_unlock(&mhi_xprtp->ch_hndl.state_lock);
 	} else if (xprt_work->chan_id == mhi_xprtp->ch_hndl.in_chan_id) {
 		rc = mhi_open_channel(mhi_xprtp->ch_hndl.in_handle);
+<<<<<<< HEAD
 		if (rc) {
 			IPC_RTR_ERR("%s Failed to open chan 0x%x, rc %d\n",
 				__func__, mhi_xprtp->ch_hndl.in_chan_id, rc);
 			return;
+=======
+		if (rc != MHI_STATUS_SUCCESS) {
+			IPC_RTR_ERR("%s Failed to open chan 0x%x, rc %d\n",
+				__func__, mhi_xprtp->ch_hndl.in_chan_id, rc);
+			goto out_enable_event;
+>>>>>>> p9x
 		}
 		mutex_lock(&mhi_xprtp->ch_hndl.state_lock);
 		mhi_xprtp->ch_hndl.in_chan_enabled = true;
@@ -638,11 +793,19 @@ static void mhi_xprt_enable_event(struct ipc_router_mhi_xprt_work *xprt_work)
 	}
 
 	if (xprt_work->chan_id != mhi_xprtp->ch_hndl.in_chan_id)
+<<<<<<< HEAD
 		return;
 
 	rc = mhi_xprt_queue_in_buffers(mhi_xprtp, mhi_xprtp->ch_hndl.num_trbs);
 	if (rc > 0)
 		return;
+=======
+		goto out_enable_event;
+
+	rc = mhi_xprt_queue_in_buffers(mhi_xprtp, mhi_xprtp->ch_hndl.num_trbs);
+	if (rc > 0)
+		goto out_enable_event;
+>>>>>>> p9x
 
 	IPC_RTR_ERR("%s: Could not queue one TRB atleast\n", __func__);
 	mutex_lock(&mhi_xprtp->ch_hndl.state_lock);
@@ -651,6 +814,12 @@ static void mhi_xprt_enable_event(struct ipc_router_mhi_xprt_work *xprt_work)
 	if (notify)
 		msm_ipc_router_xprt_notify(&mhi_xprtp->xprt,
 				   IPC_ROUTER_XPRT_EVENT_CLOSE, NULL);
+<<<<<<< HEAD
+=======
+	mhi_close_channel(mhi_xprtp->ch_hndl.in_handle);
+out_enable_event:
+	kfree(xprt_work);
+>>>>>>> p9x
 }
 
 /**
@@ -659,8 +828,15 @@ static void mhi_xprt_enable_event(struct ipc_router_mhi_xprt_work *xprt_work)
  *
  * This work is scheduled when the MHI link to the peripheral is down.
  */
+<<<<<<< HEAD
 static void mhi_xprt_disable_event(struct ipc_router_mhi_xprt_work *xprt_work)
 {
+=======
+static void mhi_xprt_disable_event(struct work_struct *work)
+{
+	struct ipc_router_mhi_xprt_work *xprt_work =
+		container_of(work, struct ipc_router_mhi_xprt_work, work);
+>>>>>>> p9x
 	struct ipc_router_mhi_xprt *mhi_xprtp = xprt_work->mhi_xprtp;
 	bool notify = false;
 
@@ -671,6 +847,10 @@ static void mhi_xprt_disable_event(struct ipc_router_mhi_xprt_work *xprt_work)
 		mhi_xprtp->ch_hndl.out_chan_enabled = false;
 		mutex_unlock(&mhi_xprtp->ch_hndl.state_lock);
 		wake_up(&mhi_xprtp->write_wait_q);
+<<<<<<< HEAD
+=======
+		mhi_close_channel(mhi_xprtp->ch_hndl.out_handle);
+>>>>>>> p9x
 	} else if (xprt_work->chan_id == mhi_xprtp->ch_hndl.in_chan_id) {
 		mutex_lock(&mhi_xprtp->ch_hndl.state_lock);
 		notify = mhi_xprtp->ch_hndl.out_chan_enabled &&
@@ -680,6 +860,10 @@ static void mhi_xprt_disable_event(struct ipc_router_mhi_xprt_work *xprt_work)
 		/* Queue a read work to remove any partially read packets */
 		queue_work(mhi_xprtp->wq, &mhi_xprtp->read_work);
 		flush_workqueue(mhi_xprtp->wq);
+<<<<<<< HEAD
+=======
+		mhi_close_channel(mhi_xprtp->ch_hndl.in_handle);
+>>>>>>> p9x
 	}
 
 	if (notify) {
@@ -690,6 +874,10 @@ static void mhi_xprt_disable_event(struct ipc_router_mhi_xprt_work *xprt_work)
 		  __func__, mhi_xprtp->xprt.name);
 		wait_for_completion(&mhi_xprtp->sft_close_complete);
 	}
+<<<<<<< HEAD
+=======
+	kfree(xprt_work);
+>>>>>>> p9x
 }
 
 /**
@@ -702,6 +890,7 @@ static void mhi_xprt_disable_event(struct ipc_router_mhi_xprt_work *xprt_work)
 static void mhi_xprt_xfer_event(struct mhi_cb_info *cb_info)
 {
 	struct ipc_router_mhi_xprt *mhi_xprtp;
+<<<<<<< HEAD
 	void *out_addr;
 
 	mhi_xprtp = (struct ipc_router_mhi_xprt *)(cb_info->result->user_data);
@@ -712,6 +901,18 @@ static void mhi_xprt_xfer_event(struct mhi_cb_info *cb_info)
 					&mhi_xprtp->tx_addr_map_list_lock,
 					out_addr);
 		wake_up(&mhi_xprtp->write_wait_q);
+=======
+
+	mhi_xprtp = (struct ipc_router_mhi_xprt *)(cb_info->result->user_data);
+	if (cb_info->chan == mhi_xprtp->ch_hndl.out_chan_id) {
+		dma_unmap_single(NULL, (dma_addr_t)cb_info->result->payload_buf,
+				cb_info->result->bytes_xferd, DMA_TO_DEVICE);
+		mutex_lock(&mhi_xprtp->ch_hndl.state_lock);
+		mhi_xprtp->ch_hndl.bytes_to_tx -= cb_info->result->bytes_xferd;
+		if (!mhi_xprtp->ch_hndl.bytes_to_tx)
+			wake_up(&mhi_xprtp->write_wait_q);
+		mutex_unlock(&mhi_xprtp->ch_hndl.state_lock);
+>>>>>>> p9x
 	} else if (cb_info->chan == mhi_xprtp->ch_hndl.in_chan_id) {
 		queue_work(mhi_xprtp->wq, &mhi_xprtp->read_work);
 	} else {
@@ -730,7 +931,11 @@ static void mhi_xprt_xfer_event(struct mhi_cb_info *cb_info)
 static void ipc_router_mhi_xprt_cb(struct mhi_cb_info *cb_info)
 {
 	struct ipc_router_mhi_xprt *mhi_xprtp;
+<<<<<<< HEAD
 	struct ipc_router_mhi_xprt_work xprt_work;
+=======
+	struct ipc_router_mhi_xprt_work *xprt_work;
+>>>>>>> p9x
 
 	if (cb_info->result == NULL) {
 		IPC_RTR_ERR("%s: Result not available in cb_info\n", __func__);
@@ -738,6 +943,7 @@ static void ipc_router_mhi_xprt_cb(struct mhi_cb_info *cb_info)
 	}
 
 	mhi_xprtp = (struct ipc_router_mhi_xprt *)(cb_info->result->user_data);
+<<<<<<< HEAD
 	xprt_work.mhi_xprtp = mhi_xprtp;
 	xprt_work.chan_id = cb_info->chan;
 	switch (cb_info->cb_reason) {
@@ -748,6 +954,25 @@ static void ipc_router_mhi_xprt_cb(struct mhi_cb_info *cb_info)
 		break;
 	case MHI_CB_MHI_ENABLED:
 		mhi_xprt_enable_event(&xprt_work);
+=======
+	switch (cb_info->cb_reason) {
+	case MHI_CB_MHI_ENABLED:
+	case MHI_CB_MHI_DISABLED:
+		xprt_work = kmalloc(sizeof(*xprt_work), GFP_KERNEL);
+		if (!xprt_work) {
+			IPC_RTR_ERR("%s: Couldn't handle %d event on %s\n",
+				__func__, cb_info->cb_reason,
+				mhi_xprtp->xprt_name);
+			return;
+		}
+		xprt_work->mhi_xprtp = mhi_xprtp;
+		xprt_work->chan_id = cb_info->chan;
+		if (cb_info->cb_reason == MHI_CB_MHI_ENABLED)
+			INIT_WORK(&xprt_work->work, mhi_xprt_enable_event);
+		else
+			INIT_WORK(&xprt_work->work, mhi_xprt_disable_event);
+		queue_work(mhi_xprtp->wq, &xprt_work->work);
+>>>>>>> p9x
 		break;
 	case MHI_CB_XFER:
 		mhi_xprt_xfer_event(cb_info);
@@ -768,6 +993,7 @@ static void ipc_router_mhi_xprt_cb(struct mhi_cb_info *cb_info)
  * This function is called when a new XPRT is added.
  */
 static int ipc_router_mhi_driver_register(
+<<<<<<< HEAD
 		struct ipc_router_mhi_xprt *mhi_xprtp, struct device *dev)
 {
 	int rc;
@@ -799,6 +1025,30 @@ static int ipc_router_mhi_driver_register(
 		mhi_deregister_channel(mhi_xprtp->ch_hndl.out_handle);
 		IPC_RTR_ERR("%s: Error %d registering in_chan for %s\n",
 			    __func__, rc, mhi_xprtp->xprt_name);
+=======
+		struct ipc_router_mhi_xprt *mhi_xprtp)
+{
+	enum MHI_STATUS rc_status;
+
+	rc_status = mhi_register_channel(&mhi_xprtp->ch_hndl.out_handle,
+				mhi_xprtp->ch_hndl.out_chan_id, 0,
+				&mhi_xprtp->ch_hndl.out_clnt_info,
+				(void *)mhi_xprtp);
+	if (rc_status != MHI_STATUS_SUCCESS) {
+		IPC_RTR_ERR("%s: Error %d registering out_chan for %s\n",
+			    __func__, rc_status, mhi_xprtp->xprt_name);
+		return -EFAULT;
+	}
+
+	rc_status = mhi_register_channel(&mhi_xprtp->ch_hndl.in_handle,
+				mhi_xprtp->ch_hndl.in_chan_id, 0,
+				&mhi_xprtp->ch_hndl.in_clnt_info,
+				(void *)mhi_xprtp);
+	if (rc_status != MHI_STATUS_SUCCESS) {
+		mhi_deregister_channel(mhi_xprtp->ch_hndl.out_handle);
+		IPC_RTR_ERR("%s: Error %d registering in_chan for %s\n",
+			    __func__, rc_status, mhi_xprtp->xprt_name);
+>>>>>>> p9x
 		return -EFAULT;
 	}
 	return 0;
@@ -815,8 +1065,12 @@ static int ipc_router_mhi_driver_register(
  * the MHI XPRT configurations from device tree.
  */
 static int ipc_router_mhi_config_init(
+<<<<<<< HEAD
 			struct ipc_router_mhi_xprt_config *mhi_xprt_config,
 			struct device *dev)
+=======
+	struct ipc_router_mhi_xprt_config *mhi_xprt_config)
+>>>>>>> p9x
 {
 	struct ipc_router_mhi_xprt *mhi_xprtp;
 	char wq_name[XPRT_NAME_LEN];
@@ -849,7 +1103,10 @@ static int ipc_router_mhi_config_init(
 	mhi_xprtp->xprt.link_id = mhi_xprt_config->link_id;
 	mhi_xprtp->xprt.name = mhi_xprtp->xprt_name;
 	mhi_xprtp->xprt.get_version = ipc_router_mhi_get_xprt_version;
+<<<<<<< HEAD
 	mhi_xprtp->xprt.set_version = ipc_router_mhi_set_xprt_version;
+=======
+>>>>>>> p9x
 	mhi_xprtp->xprt.get_option = ipc_router_mhi_get_xprt_option;
 	mhi_xprtp->xprt.read_avail = NULL;
 	mhi_xprtp->xprt.read = NULL;
@@ -870,12 +1127,17 @@ static int ipc_router_mhi_config_init(
 	mhi_xprtp->ch_hndl.max_packet_size = IPC_ROUTER_MHI_XPRT_MAX_PKT_SIZE;
 	mhi_xprtp->ch_hndl.num_trbs = IPC_ROUTER_MHI_XPRT_NUM_TRBS;
 	mhi_xprtp->ch_hndl.mhi_xprtp = mhi_xprtp;
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&mhi_xprtp->tx_addr_map_list);
 	spin_lock_init(&mhi_xprtp->tx_addr_map_list_lock);
 	INIT_LIST_HEAD(&mhi_xprtp->rx_addr_map_list);
 	spin_lock_init(&mhi_xprtp->rx_addr_map_list_lock);
 
 	rc = ipc_router_mhi_driver_register(mhi_xprtp, dev);
+=======
+
+	rc = ipc_router_mhi_driver_register(mhi_xprtp);
+>>>>>>> p9x
 	return rc;
 }
 
@@ -959,7 +1221,11 @@ static int ipc_router_mhi_xprt_probe(struct platform_device *pdev)
 			return rc;
 		}
 
+<<<<<<< HEAD
 		rc = ipc_router_mhi_config_init(&mhi_xprt_config, &pdev->dev);
+=======
+		rc = ipc_router_mhi_config_init(&mhi_xprt_config);
+>>>>>>> p9x
 		if (rc) {
 			IPC_RTR_ERR("%s: init failed\n", __func__);
 			return rc;

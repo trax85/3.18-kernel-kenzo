@@ -2973,12 +2973,15 @@ static void nand_set_defaults(struct nand_chip *chip, int busw)
 	if (!chip->select_chip)
 		chip->select_chip = nand_select_chip;
 
+<<<<<<< HEAD
 	/* set for ONFI nand */
 	if (!chip->onfi_set_features)
 		chip->onfi_set_features = nand_onfi_set_features;
 	if (!chip->onfi_get_features)
 		chip->onfi_get_features = nand_onfi_get_features;
 
+=======
+>>>>>>> p9x
 	/* If called twice, pointers that depend on busw may need to be reset */
 	if (!chip->read_byte || chip->read_byte == nand_read_byte)
 		chip->read_byte = busw ? nand_read_byte16 : nand_read_byte;
@@ -2990,8 +2993,11 @@ static void nand_set_defaults(struct nand_chip *chip, int busw)
 		chip->block_markbad = nand_default_block_markbad;
 	if (!chip->write_buf || chip->write_buf == nand_write_buf)
 		chip->write_buf = busw ? nand_write_buf16 : nand_write_buf;
+<<<<<<< HEAD
 	if (!chip->write_byte || chip->write_byte == nand_write_byte)
 		chip->write_byte = busw ? nand_write_byte16 : nand_write_byte;
+=======
+>>>>>>> p9x
 	if (!chip->read_buf || chip->read_buf == nand_read_buf)
 		chip->read_buf = busw ? nand_read_buf16 : nand_read_buf;
 	if (!chip->scan_bbt)
@@ -3183,6 +3189,28 @@ static int nand_flash_detect_onfi(struct mtd_info *mtd, struct nand_chip *chip,
 	sanitize_string(p->model, sizeof(p->model));
 	if (!mtd->name)
 		mtd->name = p->model;
+<<<<<<< HEAD
+=======
+
+	mtd->writesize = le32_to_cpu(p->byte_per_page);
+
+	/*
+	 * pages_per_block and blocks_per_lun may not be a power-of-2 size
+	 * (don't ask me who thought of this...). MTD assumes that these
+	 * dimensions will be power-of-2, so just truncate the remaining area.
+	 */
+	mtd->erasesize = 1 << (fls(le32_to_cpu(p->pages_per_block)) - 1);
+	mtd->erasesize *= mtd->writesize;
+
+	mtd->oobsize = le16_to_cpu(p->spare_bytes_per_page);
+
+	/* See erasesize comment */
+	chip->chipsize = 1 << (fls(le32_to_cpu(p->blocks_per_lun)) - 1);
+	chip->chipsize *= (uint64_t)mtd->erasesize * p->lun_count;
+	*busw = 0;
+	if (le16_to_cpu(p->features) & 1)
+		*busw = NAND_BUSWIDTH_16;
+>>>>>>> p9x
 
 	mtd->writesize = le32_to_cpu(p->byte_per_page);
 

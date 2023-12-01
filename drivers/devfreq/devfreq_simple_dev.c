@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -61,6 +65,7 @@ static void find_freq(struct devfreq_dev_profile *p, unsigned long *freq,
 static int dev_target(struct device *dev, unsigned long *freq, u32 flags)
 {
 	struct dev_data *d = dev_get_drvdata(dev);
+<<<<<<< HEAD
 	unsigned long rfreq;
 
 	find_freq(&d->profile, freq, flags);
@@ -73,6 +78,11 @@ static int dev_target(struct device *dev, unsigned long *freq, u32 flags)
 	}
 
 	return clk_set_rate(d->clk, rfreq);
+=======
+
+	find_freq(&d->profile, freq, flags);
+	return clk_set_rate(d->clk, *freq * 1000);
+>>>>>>> p9x
 }
 
 static int dev_get_cur_freq(struct device *dev, unsigned long *freq)
@@ -155,6 +165,7 @@ static int devfreq_clock_probe(struct platform_device *pdev)
 	if (of_property_read_string(dev->of_node, "governor", &gov_name))
 		gov_name = "performance";
 
+<<<<<<< HEAD
 	if (of_property_read_bool(dev->of_node, "qcom,prepare-clk")) {
 		ret = clk_prepare(d->clk);
 		if (ret)
@@ -172,6 +183,14 @@ add_err:
 	if (of_property_read_bool(dev->of_node, "qcom,prepare-clk"))
 		clk_unprepare(d->clk);
 	return ret;
+=======
+
+	d->df = devfreq_add_device(dev, p, gov_name, NULL);
+	if (IS_ERR(d->df))
+		return PTR_ERR(d->df);
+
+	return 0;
+>>>>>>> p9x
 }
 
 static int devfreq_clock_remove(struct platform_device *pdev)

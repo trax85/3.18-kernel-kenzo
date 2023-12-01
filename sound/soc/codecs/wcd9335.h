@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -25,7 +29,11 @@
 #define TASHA_SB_PGD_PORT_RX_BASE   0x40
 #define TASHA_SB_PGD_PORT_TX_BASE   0x50
 
+<<<<<<< HEAD
 #define TASHA_ZDET_SUPPORTED true
+=======
+#define TASHA_ZDET_SUPPORTED false
+>>>>>>> p9x
 /* z value defined in milliohm */
 #define TASHA_ZDET_VAL_32	32000
 #define TASHA_ZDET_VAL_400	400000
@@ -40,7 +48,10 @@
 #define WCD9335_DMIC_CLK_DIV_6  0x3
 #define WCD9335_DMIC_CLK_DIV_8  0x4
 #define WCD9335_DMIC_CLK_DIV_16  0x5
+<<<<<<< HEAD
 #define WCD9335_DMIC_CLK_DRIVE_DEFAULT 0x02
+=======
+>>>>>>> p9x
 
 #define WCD9335_ANC_DMIC_X2_FULL_RATE 1
 #define WCD9335_ANC_DMIC_X2_HALF_RATE 0
@@ -141,6 +152,7 @@ extern void *tasha_get_afe_config(struct snd_soc_codec *codec,
 				  enum afe_config_type config_type);
 extern int tasha_cdc_mclk_enable(struct snd_soc_codec *codec, int enable,
 				 bool dapm);
+<<<<<<< HEAD
 extern int tasha_cdc_mclk_tx_enable(struct snd_soc_codec *codec, int enable,
 				    bool dapm);
 extern int tasha_enable_efuse_sensing(struct snd_soc_codec *codec);
@@ -152,14 +164,34 @@ extern void tasha_mbhc_zdet_gpio_ctrl(
 		struct snd_soc_codec *codec);
 extern int tasha_codec_info_create_codec_entry(struct snd_info_entry *,
 					       struct snd_soc_codec *);
+=======
+extern int tasha_mbhc_hs_detect(struct snd_soc_codec *codec,
+				struct wcd_mbhc_config *mbhc_cfg);
+extern void tasha_mbhc_hs_detect_exit(struct snd_soc_codec *codec);
+extern int tasha_enable_efuse_sensing(struct snd_soc_codec *codec);
+extern void tasha_mbhc_zdet_gpio_ctrl(
+		int (*zdet_gpio_cb)(struct snd_soc_codec *codec, bool high),
+		struct snd_soc_codec *codec);
+extern enum codec_variant tasha_codec_ver(void);
+>>>>>>> p9x
 extern void tasha_event_register(
 	int (*machine_event_cb)(struct snd_soc_codec *codec,
 				enum wcd9335_codec_event),
 	struct snd_soc_codec *codec);
+<<<<<<< HEAD
 extern int tasha_codec_enable_standalone_micbias(struct snd_soc_codec *codec,
 						 int micb_num,
 						 bool enable);
 extern int tasha_set_spkr_mode(struct snd_soc_codec *codec, int mode);
 extern int tasha_set_spkr_gain_offset(struct snd_soc_codec *codec, int offset);
 extern enum codec_variant tasha_codec_ver(void);
+=======
+extern int tasha_codec_info_create_codec_entry(struct snd_info_entry *,
+					       struct snd_soc_codec *);
+extern int tasha_codec_enable_standalone_micbias(struct snd_soc_codec *codec,
+						int micb_num,
+						bool enable);
+extern int tasha_set_spkr_mode(struct snd_soc_codec *codec, int mode);
+extern int tasha_set_spkr_gain_offset(struct snd_soc_codec *codec, int offset);
+>>>>>>> p9x
 #endif

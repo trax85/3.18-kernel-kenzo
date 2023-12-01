@@ -1,7 +1,11 @@
 /*
  * Device tree based initialization code for reserved memory.
  *
+<<<<<<< HEAD
  * Copyright (c) 2013, 2015 The Linux Foundation. All Rights Reserved.
+=======
+ * Copyright (c) 2013, The Linux Foundation. All Rights Reserved.
+>>>>>>> p9x
  * Copyright (c) 2013,2014 Samsung Electronics Co., Ltd.
  *		http://www.samsung.com
  * Author: Marek Szyprowski <m.szyprowski@samsung.com>
@@ -20,11 +24,17 @@
 #include <linux/mm.h>
 #include <linux/sizes.h>
 #include <linux/of_reserved_mem.h>
+<<<<<<< HEAD
 #include <linux/sort.h>
 
 #define MAX_RESERVED_REGIONS	16
 static struct reserved_mem reserved_mem[MAX_RESERVED_REGIONS];
 static struct reserved_mem sorted_reserved_mem[MAX_RESERVED_REGIONS] __initdata;
+=======
+
+#define MAX_RESERVED_REGIONS	16
+static struct reserved_mem reserved_mem[MAX_RESERVED_REGIONS];
+>>>>>>> p9x
 static int reserved_mem_count;
 
 #if defined(CONFIG_HAVE_MEMBLOCK)
@@ -33,13 +43,20 @@ int __init __weak early_init_dt_alloc_reserved_memory_arch(phys_addr_t size,
 	phys_addr_t align, phys_addr_t start, phys_addr_t end, bool nomap,
 	phys_addr_t *res_base)
 {
+<<<<<<< HEAD
 	phys_addr_t base;
+=======
+>>>>>>> p9x
 	/*
 	 * We use __memblock_alloc_base() because memblock_alloc_base()
 	 * panic()s on allocation failure.
 	 */
+<<<<<<< HEAD
 	end = !end ? MEMBLOCK_ALLOC_ANYWHERE : end;
 	base = __memblock_alloc_base(size, align, end);
+=======
+	phys_addr_t base = __memblock_alloc_base(size, align, end);
+>>>>>>> p9x
 	if (!base)
 		return -ENOMEM;
 
@@ -127,10 +144,13 @@ static int __init __reserved_mem_alloc_size(unsigned long node,
 		align = dt_mem_next_cell(dt_root_addr_cells, &prop);
 	}
 
+<<<<<<< HEAD
 	/* Need adjust the alignment to satisfy the CMA requirement */
 	if (IS_ENABLED(CONFIG_CMA) && of_flat_dt_is_compatible(node, "shared-dma-pool"))
 		align = max(align, (phys_addr_t)PAGE_SIZE << max(MAX_ORDER - 1, pageblock_order));
 
+=======
+>>>>>>> p9x
 	prop = of_get_flat_dt_prop(node, "alloc-ranges", &len);
 	if (prop) {
 
@@ -150,7 +170,11 @@ static int __init __reserved_mem_alloc_size(unsigned long node,
 			ret = early_init_dt_alloc_reserved_memory_arch(size,
 					align, start, end, nomap, &base);
 			if (ret == 0) {
+<<<<<<< HEAD
 				pr_info("Reserved memory: allocated memory for '%s' node: base %pa, size %ld MiB\n",
+=======
+				pr_debug("Reserved memory: allocated memory for '%s' node: base %pa, size %ld MiB\n",
+>>>>>>> p9x
 					uname, &base,
 					(unsigned long)size / SZ_1M);
 				break;
@@ -162,7 +186,11 @@ static int __init __reserved_mem_alloc_size(unsigned long node,
 		ret = early_init_dt_alloc_reserved_memory_arch(size, align,
 							0, 0, nomap, &base);
 		if (ret == 0)
+<<<<<<< HEAD
 			pr_info("Reserved memory: allocated memory for '%s' node: base %pa, size %ld MiB\n",
+=======
+			pr_debug("Reserved memory: allocated memory for '%s' node: base %pa, size %ld MiB\n",
+>>>>>>> p9x
 				uname, &base, (unsigned long)size / SZ_1M);
 	}
 
@@ -178,6 +206,7 @@ static int __init __reserved_mem_alloc_size(unsigned long node,
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct of_device_id __rmem_of_table_sentinel
 	__used __section(__reservedmem_of_table_end);
 
@@ -248,12 +277,15 @@ static void __init __rmem_check_for_overlap(void)
 	}
 }
 
+=======
+>>>>>>> p9x
 /**
  * fdt_init_reserved_mem - allocate and init all saved reserved memory regions
  */
 void __init fdt_init_reserved_mem(void)
 {
 	int i;
+<<<<<<< HEAD
 
 	/* check for overlapping reserved regions */
 	__rmem_check_for_overlap();
@@ -346,3 +378,15 @@ void of_reserved_mem_device_release(struct device *dev)
 	rmem->ops->device_release(rmem, dev);
 }
 EXPORT_SYMBOL_GPL(of_reserved_mem_device_release);
+=======
+	for (i = 0; i < reserved_mem_count; i++) {
+		struct reserved_mem *rmem = &reserved_mem[i];
+		unsigned long node = rmem->fdt_node;
+		int err = 0;
+
+		if (rmem->size == 0)
+			err = __reserved_mem_alloc_size(node, rmem->name,
+						 &rmem->base, &rmem->size);
+	}
+}
+>>>>>>> p9x

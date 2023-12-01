@@ -32,7 +32,10 @@
 #include <linux/io.h>
 #include <linux/module.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
 #include <linux/memblock.h>
+=======
+>>>>>>> p9x
 
 #include <asm/setup.h>
 #include <asm/mach-types.h>

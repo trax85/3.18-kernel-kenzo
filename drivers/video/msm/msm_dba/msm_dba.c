@@ -20,7 +20,10 @@
 #include <linux/i2c.h>
 #include <linux/slab.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 #include <video/msm_dba.h>
 #include "msm_dba_internal.h"
 
@@ -58,6 +61,10 @@ void *msm_dba_register_client(struct msm_dba_reg_info *info,
 
 	client = kzalloc(sizeof(*client), GFP_KERNEL);
 	if (!client) {
+<<<<<<< HEAD
+=======
+		pr_err("%s: Not enough Memory\n", __func__);
+>>>>>>> p9x
 		mutex_unlock(&register_mutex);
 		return ERR_PTR(-ENOMEM);
 	}
@@ -70,7 +77,11 @@ void *msm_dba_register_client(struct msm_dba_reg_info *info,
 	client->cb = info->cb;
 	client->cb_data = info->cb_data;
 
+<<<<<<< HEAD
 	mutex_lock_nested(&device->dev_mutex, SINGLE_DEPTH_NESTING);
+=======
+	mutex_lock(&device->dev_mutex);
+>>>>>>> p9x
 	list_add(&client->list, &device->client_list);
 	*ops = device->client_ops;
 	mutex_unlock(&device->dev_mutex);
@@ -127,7 +138,11 @@ int msm_dba_deregister_client(void *client)
 		}
 	}
 
+<<<<<<< HEAD
 	mutex_lock_nested(&handle->dev->dev_mutex, SINGLE_DEPTH_NESTING);
+=======
+	mutex_lock(&handle->dev->dev_mutex);
+>>>>>>> p9x
 
 	list_for_each_safe(position, tmp, &handle->dev->client_list) {
 

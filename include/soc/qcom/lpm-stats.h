@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -17,6 +21,7 @@
 
 struct lpm_stats;
 
+<<<<<<< HEAD
 #define MAX_STR_LEN 256
 
 struct lifo_stats {
@@ -40,6 +45,8 @@ struct lpm_stats {
 
 
 
+=======
+>>>>>>> p9x
 #ifdef CONFIG_MSM_IDLE_STATS
 struct lpm_stats *lpm_stats_config_level(const char *name,
 	const char **levels, int num_levels, struct lpm_stats *parent,
@@ -47,8 +54,13 @@ struct lpm_stats *lpm_stats_config_level(const char *name,
 void lpm_stats_cluster_enter(struct lpm_stats *stats, uint32_t index);
 void lpm_stats_cluster_exit(struct lpm_stats *stats, uint32_t index,
 				bool success);
+<<<<<<< HEAD
 void lpm_stats_cpu_enter(uint32_t index, uint64_t time);
 void lpm_stats_cpu_exit(uint32_t index, uint64_t time, bool success);
+=======
+void lpm_stats_cpu_enter(uint32_t index);
+void lpm_stats_cpu_exit(uint32_t index, bool success);
+>>>>>>> p9x
 void lpm_stats_suspend_enter(void);
 void lpm_stats_suspend_exit(void);
 #else
@@ -71,13 +83,21 @@ static inline void lpm_stats_cluster_exit(struct lpm_stats *stats,
 	return;
 }
 
+<<<<<<< HEAD
 static inline void lpm_stats_cpu_enter(uint32_t index, uint64_t time)
+=======
+static inline void lpm_stats_cpu_enter(uint32_t index)
+>>>>>>> p9x
 {
 	return;
 }
 
+<<<<<<< HEAD
 static inline void lpm_stats_cpu_exit(uint32_t index, bool success,
 							uint64_t time)
+=======
+static inline void lpm_stats_cpu_exit(uint32_t index, bool success)
+>>>>>>> p9x
 {
 	return;
 }

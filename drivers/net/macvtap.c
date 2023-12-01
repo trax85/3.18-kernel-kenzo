@@ -637,6 +637,32 @@ static void macvtap_skb_to_vnet_hdr(const struct sk_buff *skb,
 	} /* else everything is zero */
 }
 
+<<<<<<< HEAD
+=======
+static unsigned long iov_pages(const struct iovec *iv, int offset,
+			       unsigned long nr_segs)
+{
+	unsigned long seg, base;
+	int pages = 0, len, size;
+
+	while (nr_segs && (offset >= iv->iov_len)) {
+		offset -= iv->iov_len;
+		++iv;
+		--nr_segs;
+	}
+
+	for (seg = 0; seg < nr_segs; seg++) {
+		base = (unsigned long)iv[seg].iov_base + offset;
+		len = iv[seg].iov_len - offset;
+		size = ((base & ~PAGE_MASK) + len + ~PAGE_MASK) >> PAGE_SHIFT;
+		pages += size;
+		offset = 0;
+	}
+
+	return pages;
+}
+
+>>>>>>> p9x
 /* Neighbour code has some assumptions on HH_DATA_MOD alignment */
 #define MACVTAP_RESERVE HH_DATA_OFF(ETH_HLEN)
 
@@ -657,7 +683,7 @@ static ssize_t macvtap_get_user(struct macvtap_queue *q, struct msghdr *m,
 	size_t linear;
 
 	if (q->flags & IFF_VNET_HDR) {
-		vnet_hdr_len = q->vnet_hdr_sz;
+		vnet_hdr_len = ACCESS_ONCE(q->vnet_hdr_sz);
 
 		err = -EINVAL;
 		if (len < vnet_hdr_len)
@@ -790,7 +816,7 @@ static ssize_t macvtap_put_user(struct macvtap_queue *q,
 
 	if (q->flags & IFF_VNET_HDR) {
 		struct virtio_net_hdr vnet_hdr;
-		vnet_hdr_len = q->vnet_hdr_sz;
+		vnet_hdr_len = ACCESS_ONCE(q->vnet_hdr_sz);
 		if ((len -= vnet_hdr_len) < 0)
 			return -EINVAL;
 
@@ -889,7 +915,11 @@ static ssize_t macvtap_aio_read(struct kiocb *iocb, const struct iovec *iv,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	ret = macvtap_do_read(q, iv, len, file->f_flags & O_NONBLOCK);
+=======
+	ret = macvtap_do_read(q, iocb, iv, len, file->f_flags & O_NONBLOCK);
+>>>>>>> p9x
 	ret = min_t(ssize_t, ret, len);
 	if (ret > 0)
 		iocb->ki_pos = ret;

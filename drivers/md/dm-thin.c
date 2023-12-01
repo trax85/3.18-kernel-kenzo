@@ -561,8 +561,15 @@ static void remap_and_issue(struct thin_c *tc, struct bio *bio,
 struct dm_thin_new_mapping {
 	struct list_head list;
 
+<<<<<<< HEAD
 	bool pass_discard:1;
 	bool definitely_not_shared:1;
+=======
+	unsigned quiesced:1;
+	unsigned prepared:1;
+	unsigned pass_discard:1;
+	unsigned definitely_not_shared:1;
+>>>>>>> p9x
 
 	/*
 	 * Track quiescing, copying and zeroing preparation actions.  When this
@@ -700,7 +707,13 @@ static void process_prepared_mapping(struct dm_thin_new_mapping *m)
 	 */
 	r = dm_thin_insert_block(tc->td, m->virt_block, m->data_block);
 	if (r) {
+<<<<<<< HEAD
 		metadata_operation_failed(pool, "dm_thin_insert_block", r);
+=======
+		DMERR_LIMIT("%s: dm_thin_insert_block() failed: error = %d",
+			    dm_device_name(pool->pool_md), r);
+		set_pool_mode(pool, PM_READ_ONLY);
+>>>>>>> p9x
 		cell_error(pool, m->cell);
 		goto out;
 	}
@@ -865,6 +878,7 @@ static void schedule_copy(struct thin_c *tc, dm_block_t virt_block,
 	m->virt_block = virt_block;
 	m->data_block = data_dest;
 	m->cell = cell;
+<<<<<<< HEAD
 
 	/*
 	 * quiesce action + copy action + an extra reference held for the
@@ -872,6 +886,8 @@ static void schedule_copy(struct thin_c *tc, dm_block_t virt_block,
 	 * partial zero).
 	 */
 	atomic_set(&m->prepare_actions, 3);
+=======
+>>>>>>> p9x
 
 	if (!dm_deferred_set_add_work(pool->shared_read_ds, &m->list))
 		complete_mapping_preparation(m); /* already quiesced */
@@ -945,7 +961,12 @@ static void schedule_zero(struct thin_c *tc, dm_block_t virt_block,
 	struct pool *pool = tc->pool;
 	struct dm_thin_new_mapping *m = get_next_mapping(pool);
 
+<<<<<<< HEAD
 	atomic_set(&m->prepare_actions, 1); /* no need to quiesce */
+=======
+	m->quiesced = 1;
+	m->prepared = 0;
+>>>>>>> p9x
 	m->tc = tc;
 	m->virt_block = virt_block;
 	m->data_block = data_block;
@@ -1632,10 +1653,17 @@ static void process_thin_deferred_bios(struct thin_c *tc)
 		 * prepared mappings to process.
 		 */
 		if (ensure_next_mapping(pool)) {
+<<<<<<< HEAD
 			spin_lock_irqsave(&tc->lock, flags);
 			bio_list_add(&tc->deferred_bio_list, bio);
 			bio_list_merge(&tc->deferred_bio_list, &bios);
 			spin_unlock_irqrestore(&tc->lock, flags);
+=======
+			spin_lock_irqsave(&pool->lock, flags);
+			bio_list_add(&pool->deferred_bios, bio);
+			bio_list_merge(&pool->deferred_bios, &bios);
+			spin_unlock_irqrestore(&pool->lock, flags);
+>>>>>>> p9x
 			break;
 		}
 
@@ -2861,7 +2889,10 @@ static void pool_postsuspend(struct dm_target *ti)
 	struct pool *pool = pt->pool;
 
 	cancel_delayed_work_sync(&pool->waker);
+<<<<<<< HEAD
 	cancel_delayed_work_sync(&pool->no_space_timeout);
+=======
+>>>>>>> p9x
 	flush_workqueue(pool->wq);
 	(void) commit(pool);
 }
@@ -3037,7 +3068,11 @@ static int pool_message(struct dm_target *ti, unsigned argc, char **argv)
 	struct pool_c *pt = ti->private;
 	struct pool *pool = pt->pool;
 
+<<<<<<< HEAD
 	if (get_pool_mode(pool) >= PM_OUT_OF_METADATA_SPACE) {
+=======
+	if (get_pool_mode(pool) >= PM_READ_ONLY) {
+>>>>>>> p9x
 		DMERR("%s: unable to service pool target messages in READ_ONLY or FAIL mode",
 		      dm_device_name(pool->pool_md));
 		return -EINVAL;

@@ -28,7 +28,11 @@ static unsigned long __count_nat_entries(struct f2fs_sb_info *sbi)
 
 static unsigned long __count_free_nids(struct f2fs_sb_info *sbi)
 {
+<<<<<<< HEAD
 	long count = NM_I(sbi)->nid_cnt[FREE_NID] - MAX_FREE_NIDS;
+=======
+	long count = NM_I(sbi)->nid_cnt[FREE_NID_LIST] - MAX_FREE_NIDS;
+>>>>>>> p9x
 
 	return count > 0 ? count : 0;
 }
@@ -39,7 +43,11 @@ static unsigned long __count_extent_cache(struct f2fs_sb_info *sbi)
 				atomic_read(&sbi->total_ext_node);
 }
 
+<<<<<<< HEAD
 unsigned long f2fs_shrink_count(struct shrinker *shrink,
+=======
+int f2fs_shrink_count(struct shrinker *shrink,
+>>>>>>> p9x
 				struct shrink_control *sc)
 {
 	struct f2fs_sb_info *sbi;
@@ -75,7 +83,11 @@ unsigned long f2fs_shrink_count(struct shrinker *shrink,
 	return count;
 }
 
+<<<<<<< HEAD
 unsigned long f2fs_shrink_scan(struct shrinker *shrink,
+=======
+int f2fs_shrink_scan(struct shrinker *shrink,
+>>>>>>> p9x
 				struct shrink_control *sc)
 {
 	unsigned long nr = sc->nr_to_scan;
@@ -109,11 +121,19 @@ unsigned long f2fs_shrink_scan(struct shrinker *shrink,
 
 		/* shrink clean nat cache entries */
 		if (freed < nr)
+<<<<<<< HEAD
 			freed += f2fs_try_to_free_nats(sbi, nr - freed);
 
 		/* shrink free nids cache entries */
 		if (freed < nr)
 			freed += f2fs_try_to_free_nids(sbi, nr - freed);
+=======
+			freed += try_to_free_nats(sbi, nr - freed);
+
+		/* shrink free nids cache entries */
+		if (freed < nr)
+			freed += try_to_free_nids(sbi, nr - freed);
+>>>>>>> p9x
 
 		spin_lock(&f2fs_list_lock);
 		p = p->next;
@@ -123,7 +143,11 @@ unsigned long f2fs_shrink_scan(struct shrinker *shrink,
 			break;
 	}
 	spin_unlock(&f2fs_list_lock);
+<<<<<<< HEAD
 	return freed;
+=======
+	return f2fs_shrink_count(NULL, NULL);
+>>>>>>> p9x
 }
 
 void f2fs_join_shrinker(struct f2fs_sb_info *sbi)

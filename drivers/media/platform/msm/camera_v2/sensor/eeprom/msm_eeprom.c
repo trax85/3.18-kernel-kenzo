@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2016 XiaoMi, Inc.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -22,10 +27,52 @@
 #define CDBG(fmt, args...) pr_debug(fmt, ##args)
 
 DEFINE_MSM_MUTEX(msm_eeprom_mutex);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MACH_XIAOMI_HYDROGEN
+#define HYDROGEN_BACK_MODULE_ID_OFFSET 0x1
+#define HYDROGEN_BACK_MODULE_ID_OFILM 0x07
+#define HYDROGEN_BACK_MODULE_ID_QTEC  0x06
+#define HYDROGEN_BACK_MODULE_OFILM "ov16880"
+#define HYDROGEN_BACK_MODULE_QTEC "ov16880_qtec"
+#define HYDROGEN_BACK_MODULE_OFILM_S5K3P3 "s5k3p3sm"
+#define HYDROGEN_BACK_SENSOR_EEPROM_NAME "dw9763"
+#define HYDROGEN_BACK_OFILM_SID_OFFSET 0x0C
+#define HYDROGEN_BAKC_OFILM_SID_S5K3P3 0x07
+#define HYDROGEN_BACK_OFILM_SID_OV16880 0x08
+
+#define HYDROGEN_FRONT_MODULE_ID_OFFSET_1 2
+#define HYDROGEN_FRONT_MODULE_ID_OFFSET_2 25
+#define HYDROGEN_FRONT_MODULE_ID_OFFSET_3 48
+#define HYDROGEN_FRONT_MODULE_ID_OFILM 0x07
+#define HYDROGEN_FRONT_MODULE_ID_QTEC  0x06
+#define HYDROGEN_FRONT_MODULE_OFILM "s5k5e8_ofilm"
+#define HYDROGEN_FRONT_MODULE_QTEC "s5k5e8_qtec"
+#define HYDROGEN_FRONT_SENSOR_EEPROM_NAME "s5k5e8"
+
+static int hydrogen_set_back_sensor_name;
+static char hydrogen_back_sensor_name[32];
+static int hydrogen_set_front_sensor_name;
+static char hydrogen_front_sensor_name[32];
+#endif
+
+>>>>>>> p9x
 #ifdef CONFIG_COMPAT
 static struct v4l2_file_operations msm_eeprom_v4l2_subdev_fops;
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MACH_XIAOMI_KENZO
+uint8_t g_s5k3p3_otp_module_id = 0;
+uint8_t g_s5k3p3_otp_vcm_id = 0;
+uint8_t g_ov16880_otp_module_id = 0;
+uint8_t g_ov5670_otp_module_id = 0;
+uint8_t g_s5k5e8_otp_month = 0;
+uint8_t g_s5k5e8_otp_day = 0;
+uint8_t g_s5k5e8_otp_lens_id = 0;
+#endif
+>>>>>>> p9x
 /**
   * msm_get_read_mem_size - Get the total size for allocation
   * @eeprom_map_array:	mem map
@@ -89,6 +136,111 @@ static int msm_eeprom_verify_sum(const char *mem, uint32_t size, uint32_t sum)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MACH_XIAOMI_HYDROGEN
+static void set_hydrogen_back_sensor_name(struct msm_eeprom_ctrl_t *e_ctrl,
+		char *mapdata)
+{
+	uint8_t *memptr;
+
+	if (hydrogen_set_back_sensor_name)
+		return;
+
+	memptr = mapdata;
+
+	if (memptr[HYDROGEN_BACK_MODULE_ID_OFFSET] == HYDROGEN_BACK_MODULE_ID_OFILM) {
+		pr_err("SID = 0x%x\n", memptr[HYDROGEN_BACK_OFILM_SID_OFFSET]);
+		if (memptr[HYDROGEN_BACK_OFILM_SID_OFFSET] == HYDROGEN_BACK_OFILM_SID_OV16880)
+			strcpy(hydrogen_back_sensor_name, HYDROGEN_BACK_MODULE_OFILM);
+		else if (memptr[HYDROGEN_BACK_OFILM_SID_OFFSET] == HYDROGEN_BAKC_OFILM_SID_S5K3P3) {
+			strcpy(hydrogen_back_sensor_name, HYDROGEN_BACK_MODULE_OFILM_S5K3P3);
+		}
+		hydrogen_set_back_sensor_name = 1;
+		pr_err("hydrogen back sensor name = %s, line = %d\n", hydrogen_back_sensor_name, __LINE__);
+		return;
+	} else if (memptr[HYDROGEN_BACK_MODULE_ID_OFFSET] == HYDROGEN_BACK_MODULE_ID_QTEC) {
+		strcpy(hydrogen_back_sensor_name, HYDROGEN_BACK_MODULE_QTEC);
+		hydrogen_set_back_sensor_name = 1;
+		pr_err("hydrogen back sensor name = %s, line = %d\n", hydrogen_back_sensor_name, __LINE__);
+		return;
+	} else {
+		pr_err("hydrogen back sensor name not match!\n");
+	}
+}
+
+int hydrogen_get_back_sensor_name(char *sensor_name)
+{
+	if (hydrogen_set_back_sensor_name) {
+		strcpy(sensor_name, hydrogen_back_sensor_name);
+		return 0;
+	} else
+		return -EINVAL;
+}
+EXPORT_SYMBOL(hydrogen_get_back_sensor_name);
+
+static void set_hydrogen_front_sensor_name(struct msm_eeprom_ctrl_t *e_ctrl,
+	char *mapdata)
+{
+	uint8_t *memptr;
+
+	if (hydrogen_set_front_sensor_name)
+		return;
+
+	memptr = mapdata;
+
+	if ((memptr[HYDROGEN_FRONT_MODULE_ID_OFFSET_1] == HYDROGEN_FRONT_MODULE_ID_OFILM) ||
+		(memptr[HYDROGEN_FRONT_MODULE_ID_OFFSET_2] == HYDROGEN_FRONT_MODULE_ID_OFILM) ||
+		(memptr[HYDROGEN_FRONT_MODULE_ID_OFFSET_3] == HYDROGEN_FRONT_MODULE_ID_OFILM)) {
+		strcpy(hydrogen_front_sensor_name, HYDROGEN_FRONT_MODULE_OFILM);
+		hydrogen_set_front_sensor_name = 1;
+		pr_err("hydrogen front sensor name = %s, line = %d\n", hydrogen_front_sensor_name, __LINE__);
+		return;
+	} else if ((memptr[HYDROGEN_FRONT_MODULE_ID_OFFSET_1] == HYDROGEN_FRONT_MODULE_ID_QTEC) ||
+		(memptr[HYDROGEN_FRONT_MODULE_ID_OFFSET_2] == HYDROGEN_FRONT_MODULE_ID_QTEC) ||
+		(memptr[HYDROGEN_FRONT_MODULE_ID_OFFSET_3] == HYDROGEN_FRONT_MODULE_ID_QTEC)) {
+		strcpy(hydrogen_front_sensor_name, HYDROGEN_FRONT_MODULE_QTEC);
+		hydrogen_set_front_sensor_name = 1;
+		pr_err("hydrogen front sensor name = %s, line = %d\n", hydrogen_front_sensor_name, __LINE__);
+		return;
+	} else {
+		pr_err("hydrogen front sensor name not match!\n");
+		return;
+	}
+}
+
+int hydrogen_get_front_sensor_name(char *sensor_name)
+{
+	if (hydrogen_set_front_sensor_name) {
+		strcpy(sensor_name, hydrogen_front_sensor_name);
+		return 0;
+	} else
+		return -EINVAL;
+}
+EXPORT_SYMBOL(hydrogen_get_front_sensor_name);
+
+static void hydrogen_set_sensor_name(struct msm_eeprom_ctrl_t *e_ctrl, char *mapdata)
+{
+	struct msm_eeprom_board_info *eb_info;
+
+	eb_info = e_ctrl->eboard_info;
+
+	if (e_ctrl->eboard_info->eeprom_name == NULL || mapdata == NULL)
+		return;
+
+	if (!strncmp(eb_info->eeprom_name, HYDROGEN_BACK_SENSOR_EEPROM_NAME,
+				strlen(HYDROGEN_BACK_SENSOR_EEPROM_NAME))) {
+		set_hydrogen_back_sensor_name(e_ctrl, mapdata);
+	} else if (!strncmp(eb_info->eeprom_name, HYDROGEN_FRONT_SENSOR_EEPROM_NAME,
+				strlen(HYDROGEN_FRONT_SENSOR_EEPROM_NAME))) {
+		set_hydrogen_front_sensor_name(e_ctrl, mapdata);
+	} else {
+		pr_err("hydrogen sensor name check failed\n");
+	}
+}
+#endif
+
+>>>>>>> p9x
 /**
   * msm_eeprom_match_crc - verify multiple regions using crc
   * @data:	data block to be verified
@@ -194,8 +346,13 @@ static int read_eeprom_memory(struct msm_eeprom_ctrl_t *e_ctrl,
 			e_ctrl->i2c_client.addr_type = emap[j].poll.addr_t;
 			rc = e_ctrl->i2c_client.i2c_func_tbl->i2c_poll(
 				&(e_ctrl->i2c_client), emap[j].poll.addr,
+<<<<<<< HEAD
 				emap[j].poll.data, emap[j].poll.data_t,
 				emap[j].poll.delay);
+=======
+				emap[j].poll.data, emap[j].poll.data_t);
+				msleep(emap[j].poll.delay);
+>>>>>>> p9x
 			if (rc < 0) {
 				pr_err("%s: poll failed\n", __func__);
 				return rc;
@@ -224,6 +381,12 @@ static int read_eeprom_memory(struct msm_eeprom_ctrl_t *e_ctrl,
 			}
 		}
 	}
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MACH_XIAOMI_HYDROGEN
+	hydrogen_set_sensor_name(e_ctrl, block->mapdata);
+#endif
+>>>>>>> p9x
 	return rc;
 }
 /**
@@ -380,8 +543,13 @@ static int eeprom_parse_memory_map(struct msm_eeprom_ctrl_t *e_ctrl,
 					&(e_ctrl->i2c_client),
 					eeprom_map->mem_settings[i].reg_addr,
 					eeprom_map->mem_settings[i].reg_data,
+<<<<<<< HEAD
 					eeprom_map->mem_settings[i].data_type,
 					eeprom_map->mem_settings[i].delay);
+=======
+					eeprom_map->mem_settings[i].data_type);
+				msleep(eeprom_map->mem_settings[i].delay);
+>>>>>>> p9x
 				if (rc < 0) {
 					pr_err("%s: poll failed\n",
 						__func__);
@@ -562,6 +730,10 @@ static int eeprom_init_config(struct msm_eeprom_ctrl_t *e_ctrl,
 	rc = eeprom_parse_memory_map(e_ctrl, memory_map_arr);
 	if (rc < 0) {
 		pr_err("%s::%d memory map parse failed\n", __func__, __LINE__);
+<<<<<<< HEAD
+=======
+		goto free_mem;
+>>>>>>> p9x
 	}
 
 	rc = msm_camera_power_down(power_info, e_ctrl->eeprom_device_type,
@@ -569,6 +741,10 @@ static int eeprom_init_config(struct msm_eeprom_ctrl_t *e_ctrl,
 	if (rc < 0) {
 		pr_err("%s:%d Power down failed rc %d\n",
 			__func__, __LINE__, rc);
+<<<<<<< HEAD
+=======
+		goto free_mem;
+>>>>>>> p9x
 	}
 
 free_mem:
@@ -632,13 +808,22 @@ static int msm_eeprom_config(struct msm_eeprom_ctrl_t *e_ctrl,
 		cdata->is_supported = e_ctrl->is_supported;
 		length = strlen(e_ctrl->eboard_info->eeprom_name) + 1;
 		if (length > MAX_EEPROM_NAME) {
+<<<<<<< HEAD
 			pr_err("%s:%d invalid eeprom_name length %d\n",
+=======
+			pr_err("%s:%d invalid eeprom name length %d\n",
+>>>>>>> p9x
 				__func__, __LINE__, (int)length);
 			rc = -EINVAL;
 			break;
 		}
 		memcpy(cdata->cfg.eeprom_name,
+<<<<<<< HEAD
 			e_ctrl->eboard_info->eeprom_name, length);
+=======
+			e_ctrl->eboard_info->eeprom_name,
+			sizeof(cdata->cfg.eeprom_name));
+>>>>>>> p9x
 		break;
 	case CFG_EEPROM_GET_CAL_DATA:
 		CDBG("%s E CFG_EEPROM_GET_CAL_DATA\n", __func__);
@@ -768,6 +953,18 @@ static int msm_eeprom_close(struct v4l2_subdev *sd,
 	return rc;
 }
 
+<<<<<<< HEAD
+=======
+static struct msm_cam_clk_info cam_8960_clk_info[] = {
+	[SENSOR_CAM_MCLK] = {"cam_clk", 24000000},
+};
+
+static struct msm_cam_clk_info cam_8974_clk_info[] = {
+	[SENSOR_CAM_MCLK] = {"cam_src_clk", 19200000},
+	[SENSOR_CAM_CLK] = {"cam_clk", 0},
+};
+
+>>>>>>> p9x
 static const struct v4l2_subdev_internal_ops msm_eeprom_internal_ops = {
 	.open = msm_eeprom_open,
 	.close = msm_eeprom_close,
@@ -786,6 +983,11 @@ static int msm_eeprom_i2c_probe(struct i2c_client *client,
 {
 	int rc = 0;
 	struct msm_eeprom_ctrl_t *e_ctrl = NULL;
+<<<<<<< HEAD
+=======
+	struct msm_camera_power_ctrl_t *power_info = NULL;
+
+>>>>>>> p9x
 	CDBG("%s E\n", __func__);
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
@@ -795,8 +997,14 @@ static int msm_eeprom_i2c_probe(struct i2c_client *client,
 
 	e_ctrl = kzalloc(sizeof(*e_ctrl), GFP_KERNEL);
 	if (!e_ctrl) {
+<<<<<<< HEAD
 		pr_err("%s:%d kzalloc failed\n", __func__, __LINE__);
 		return -ENOMEM;
+=======
+		rc = -ENOMEM;
+		pr_err("%s:%d kzalloc failed\n", __func__, __LINE__);
+		return rc;
+>>>>>>> p9x
 	}
 	e_ctrl->eeprom_v4l2_subdev_ops = &msm_eeprom_subdev_ops;
 	e_ctrl->eeprom_mutex = &msm_eeprom_mutex;
@@ -807,6 +1015,10 @@ static int msm_eeprom_i2c_probe(struct i2c_client *client,
 		rc = -EINVAL;
 		goto ectrl_free;
 	}
+<<<<<<< HEAD
+=======
+	power_info = &e_ctrl->eboard_info->power_info;
+>>>>>>> p9x
 	e_ctrl->i2c_client.client = client;
 	e_ctrl->cal_data.mapdata = NULL;
 	e_ctrl->cal_data.map = NULL;
@@ -820,6 +1032,7 @@ static int msm_eeprom_i2c_probe(struct i2c_client *client,
 	if (e_ctrl->eboard_info->i2c_slaveaddr != 0)
 		e_ctrl->i2c_client.client->addr =
 			e_ctrl->eboard_info->i2c_slaveaddr;
+<<<<<<< HEAD
 
 	/*Get clocks information*/
 	rc = msm_camera_i2c_dev_get_clk_info(
@@ -831,6 +1044,11 @@ static int msm_eeprom_i2c_probe(struct i2c_client *client,
 		pr_err("failed: msm_camera_get_clk_info rc %d", rc);
 		goto ectrl_free;
 	}
+=======
+	power_info->clk_info = cam_8960_clk_info;
+	power_info->clk_info_size = ARRAY_SIZE(cam_8960_clk_info);
+	power_info->dev = &client->dev;
+>>>>>>> p9x
 
 	/*IMPLEMENT READING PART*/
 	/* Initialize sub device */
@@ -858,6 +1076,10 @@ static int msm_eeprom_i2c_remove(struct i2c_client *client)
 {
 	struct v4l2_subdev *sd = i2c_get_clientdata(client);
 	struct msm_eeprom_ctrl_t  *e_ctrl;
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 	if (!sd) {
 		pr_err("%s: Subdevice is NULL\n", __func__);
 		return 0;
@@ -869,6 +1091,7 @@ static int msm_eeprom_i2c_remove(struct i2c_client *client)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	if (!e_ctrl->eboard_info) {
 		pr_err("%s: eboard_info is NULL\n", __func__);
 		return 0;
@@ -879,6 +1102,8 @@ static int msm_eeprom_i2c_remove(struct i2c_client *client)
 		&e_ctrl->eboard_info->power_info.clk_ptr,
 		e_ctrl->eboard_info->power_info.clk_info_size);
 
+=======
+>>>>>>> p9x
 	kfree(e_ctrl->cal_data.mapdata);
 	kfree(e_ctrl->cal_data.map);
 	if (e_ctrl->eboard_info) {
@@ -961,6 +1186,11 @@ static int msm_eeprom_get_dt_data(struct msm_eeprom_ctrl_t *e_ctrl)
 			spi_client->spi_master->dev.of_node;
 	else if (e_ctrl->eeprom_device_type == MSM_CAMERA_PLATFORM_DEVICE)
 		of_node = e_ctrl->pdev->dev.of_node;
+<<<<<<< HEAD
+=======
+	else if (e_ctrl->eeprom_device_type == MSM_CAMERA_I2C_DEVICE)
+		of_node = e_ctrl->i2c_client.client->dev.of_node;
+>>>>>>> p9x
 
 	if (!of_node) {
 		pr_err("%s: %d of_node is NULL\n", __func__ , __LINE__);
@@ -1126,6 +1356,7 @@ static int msm_eeprom_spi_setup(struct spi_device *spi)
 		CDBG("%s MM data miss:%d\n", __func__, __LINE__);
 
 	power_info = &eb_info->power_info;
+<<<<<<< HEAD
 	power_info->dev = &spi->dev;
 
 	/*Get clocks information*/
@@ -1138,6 +1369,12 @@ static int msm_eeprom_spi_setup(struct spi_device *spi)
 		pr_err("failed: msm_camera_get_clk_info rc %d", rc);
 		goto board_free;
 	}
+=======
+
+	power_info->clk_info = cam_8974_clk_info;
+	power_info->clk_info_size = ARRAY_SIZE(cam_8974_clk_info);
+	power_info->dev = &spi->dev;
+>>>>>>> p9x
 
 	rc = msm_eeprom_get_dt_data(e_ctrl);
 	if (rc < 0)
@@ -1216,11 +1453,14 @@ power_down:
 	msm_camera_power_down(power_info, e_ctrl->eeprom_device_type,
 		&e_ctrl->i2c_client);
 caldata_free:
+<<<<<<< HEAD
 	msm_camera_i2c_dev_put_clk_info(
 		&e_ctrl->i2c_client.spi_client->spi_master->dev,
 		&e_ctrl->eboard_info->power_info.clk_info,
 		&e_ctrl->eboard_info->power_info.clk_ptr,
 		e_ctrl->eboard_info->power_info.clk_info_size);
+=======
+>>>>>>> p9x
 	kfree(e_ctrl->cal_data.mapdata);
 	kfree(e_ctrl->cal_data.map);
 board_free:
@@ -1267,6 +1507,7 @@ static int msm_eeprom_spi_remove(struct spi_device *sdev)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	if (!e_ctrl->eboard_info) {
 		pr_err("%s: eboard_info is NULL\n", __func__);
 		return 0;
@@ -1277,6 +1518,8 @@ static int msm_eeprom_spi_remove(struct spi_device *sdev)
 		&e_ctrl->eboard_info->power_info.clk_ptr,
 		e_ctrl->eboard_info->power_info.clk_info_size);
 
+=======
+>>>>>>> p9x
 	kfree(e_ctrl->i2c_client.spi_client);
 	kfree(e_ctrl->cal_data.mapdata);
 	kfree(e_ctrl->cal_data.map);
@@ -1497,13 +1740,24 @@ static int msm_eeprom_config32(struct msm_eeprom_ctrl_t *e_ctrl,
 		cdata->is_supported = e_ctrl->is_supported;
 		length = strlen(e_ctrl->eboard_info->eeprom_name) + 1;
 		if (length > MAX_EEPROM_NAME) {
+<<<<<<< HEAD
 			pr_err("%s:%d invalid eeprom_name length %d\n",
+=======
+			pr_err("%s:%d invalid eeprom name length %d\n",
+>>>>>>> p9x
 				__func__, __LINE__, (int)length);
 			rc = -EINVAL;
 			break;
 		}
+<<<<<<< HEAD
 		memcpy(cdata->cfg.eeprom_name,
 			e_ctrl->eboard_info->eeprom_name, length);
+=======
+
+		memcpy(cdata->cfg.eeprom_name,
+			e_ctrl->eboard_info->eeprom_name,
+			sizeof(cdata->cfg.eeprom_name));
+>>>>>>> p9x
 		break;
 	case CFG_EEPROM_GET_CAL_DATA:
 		CDBG("%s E CFG_EEPROM_GET_CAL_DATA\n", __func__);
@@ -1576,6 +1830,63 @@ static long msm_eeprom_subdev_fops_ioctl32(struct file *file, unsigned int cmd,
 
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MACH_XIAOMI_KENZO
+static void s5k3p3_set_otp_module_id(struct msm_eeprom_ctrl_t *e_ctrl)
+{
+	if (e_ctrl->cal_data.mapdata[0] == 1) {
+		g_s5k3p3_otp_module_id = (uint8_t)(e_ctrl->cal_data.mapdata[11]);
+		if (g_s5k3p3_otp_module_id != 0x02) {
+			g_s5k3p3_otp_module_id = (uint8_t)(e_ctrl->cal_data.mapdata[2]);
+			if(g_s5k3p3_otp_module_id == 0x0f || g_s5k3p3_otp_module_id == 0x11 || g_s5k3p3_otp_module_id == 0x10)
+				g_s5k3p3_otp_vcm_id = (uint8_t)(e_ctrl->cal_data.mapdata[6]);
+		}
+	}
+}
+
+static void ov16880_set_otp_module_id(struct msm_eeprom_ctrl_t *e_ctrl)
+{
+	if (e_ctrl->cal_data.mapdata[0] == 1) {
+		g_ov16880_otp_module_id = (uint8_t)(e_ctrl->cal_data.mapdata[4]);
+		if (g_ov16880_otp_module_id != 0x01)
+			g_ov16880_otp_module_id = (uint8_t)(e_ctrl->cal_data.mapdata[12]);
+	}
+}
+
+static void ov5670_set_otp_module_id(struct msm_eeprom_ctrl_t *e_ctrl)
+{
+	uint8_t mid = (uint8_t)(e_ctrl->cal_data.mapdata[0]);
+	uint8_t group_index = -1;
+
+	if ((mid & 0xC0) == 0x40)
+		group_index = 0;
+	else if ((mid & 0x30) == 0x10)
+		group_index = 1;
+	else if ((mid & 0x0C) == 0x04)
+		group_index = 2;
+
+	if (group_index == -1)
+	{
+		pr_err("%s: Invalid ov5670 group index\n", __func__);
+		return;
+	}
+
+	g_ov5670_otp_module_id = (uint8_t)(e_ctrl->cal_data.mapdata[5 * group_index + 1]);
+}
+
+static void s5k5e8_set_otp_module_id(struct msm_eeprom_ctrl_t *e_ctrl)
+{
+	if (e_ctrl->cal_data.mapdata[0] == 1)
+	{
+		g_s5k5e8_otp_month = (uint8_t)(e_ctrl->cal_data.mapdata[3]);
+		g_s5k5e8_otp_day = (uint8_t)(e_ctrl->cal_data.mapdata[4]);
+		g_s5k5e8_otp_lens_id = (uint8_t)(e_ctrl->cal_data.mapdata[5]);
+	}
+}
+#endif
+
+>>>>>>> p9x
 static int msm_eeprom_platform_probe(struct platform_device *pdev)
 {
 	int rc = 0;
@@ -1604,8 +1915,12 @@ static int msm_eeprom_platform_probe(struct platform_device *pdev)
 	e_ctrl->is_supported = 0;
 	if (!of_node) {
 		pr_err("%s dev.of_node NULL\n", __func__);
+<<<<<<< HEAD
 		rc = -EINVAL;
 		goto ectrl_free;
+=======
+		return -EINVAL;
+>>>>>>> p9x
 	}
 
 	/* Set platform device handle */
@@ -1617,8 +1932,12 @@ static int msm_eeprom_platform_probe(struct platform_device *pdev)
 		struct msm_camera_cci_client), GFP_KERNEL);
 	if (!e_ctrl->i2c_client.cci_client) {
 		pr_err("%s failed no memory\n", __func__);
+<<<<<<< HEAD
 		rc = -ENOMEM;
 		goto ectrl_free;
+=======
+		return -ENOMEM;
+>>>>>>> p9x
 	}
 
 	e_ctrl->eboard_info = kzalloc(sizeof(
@@ -1635,6 +1954,7 @@ static int msm_eeprom_platform_probe(struct platform_device *pdev)
 	cci_client->cci_subdev = msm_cci_get_subdev();
 	cci_client->retries = 3;
 	cci_client->id_map = 0;
+<<<<<<< HEAD
 	power_info->dev = &pdev->dev;
 
 	/*Get clocks information*/
@@ -1646,6 +1966,12 @@ static int msm_eeprom_platform_probe(struct platform_device *pdev)
 		pr_err("failed: msm_camera_get_clk_info rc %d", rc);
 		goto board_free;
 	}
+=======
+
+	power_info->clk_info = cam_8974_clk_info;
+	power_info->clk_info_size = ARRAY_SIZE(cam_8974_clk_info);
+	power_info->dev = &pdev->dev;
+>>>>>>> p9x
 
 	rc = of_property_read_u32(of_node, "cell-index",
 		&pdev->id);
@@ -1675,7 +2001,11 @@ static int msm_eeprom_platform_probe(struct platform_device *pdev)
 	}
 
 	rc = msm_eeprom_get_dt_data(e_ctrl);
+<<<<<<< HEAD
 	if (rc < 0)
+=======
+	if (rc)
+>>>>>>> p9x
 		goto board_free;
 
 	if (e_ctrl->userspace_probe == 0) {
@@ -1724,6 +2054,10 @@ static int msm_eeprom_platform_probe(struct platform_device *pdev)
 		for (j = 0; j < e_ctrl->cal_data.num_data; j++)
 			CDBG("memory_data[%d] = 0x%X\n", j,
 				e_ctrl->cal_data.mapdata[j]);
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 #ifdef CONFIG_MACH_XIAOMI_KENZO
 		if (eb_info->eeprom_name != NULL)
 		{
@@ -1743,6 +2077,10 @@ static int msm_eeprom_platform_probe(struct platform_device *pdev)
 			}
 		}
 #endif
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 		e_ctrl->is_supported |= msm_eeprom_match_crc(&e_ctrl->cal_data);
 
 		rc = msm_camera_power_down(power_info,
@@ -1768,7 +2106,11 @@ static int msm_eeprom_platform_probe(struct platform_device *pdev)
 	msm_sd_register(&e_ctrl->msm_sd);
 
 #ifdef CONFIG_COMPAT
+<<<<<<< HEAD
 	msm_cam_copy_v4l2_subdev_fops(&msm_eeprom_v4l2_subdev_fops);
+=======
+	msm_eeprom_v4l2_subdev_fops = v4l2_subdev_fops;
+>>>>>>> p9x
 	msm_eeprom_v4l2_subdev_fops.compat_ioctl32 =
 		msm_eeprom_subdev_fops_ioctl32;
 	e_ctrl->msm_sd.sd.devnode->fops = &msm_eeprom_v4l2_subdev_fops;
@@ -1788,7 +2130,10 @@ board_free:
 	kfree(e_ctrl->eboard_info);
 cciclient_free:
 	kfree(e_ctrl->i2c_client.cci_client);
+<<<<<<< HEAD
 ectrl_free:
+=======
+>>>>>>> p9x
 	kfree(e_ctrl);
 	return rc;
 }
@@ -1808,6 +2153,7 @@ static int msm_eeprom_platform_remove(struct platform_device *pdev)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	if (!e_ctrl->eboard_info) {
 		pr_err("%s: eboard_info is NULL\n", __func__);
 		return 0;
@@ -1817,6 +2163,8 @@ static int msm_eeprom_platform_remove(struct platform_device *pdev)
 		&e_ctrl->eboard_info->power_info.clk_ptr,
 		e_ctrl->eboard_info->power_info.clk_info_size);
 
+=======
+>>>>>>> p9x
 	kfree(e_ctrl->i2c_client.cci_client);
 	kfree(e_ctrl->cal_data.mapdata);
 	kfree(e_ctrl->cal_data.map);
@@ -1835,13 +2183,26 @@ static const struct of_device_id msm_eeprom_dt_match[] = {
 
 MODULE_DEVICE_TABLE(of, msm_eeprom_dt_match);
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id msm_eeprom_i2c_dt_match[] = {
+	{ .compatible = "qcom,eeprom" },
+	{ }
+};
+
+MODULE_DEVICE_TABLE(of, msm_eeprom_i2c_dt_match);
+
+>>>>>>> p9x
 static struct platform_driver msm_eeprom_platform_driver = {
 	.driver = {
 		.name = "qcom,eeprom",
 		.owner = THIS_MODULE,
 		.of_match_table = msm_eeprom_dt_match,
 	},
+<<<<<<< HEAD
 	.probe = msm_eeprom_platform_probe,
+=======
+>>>>>>> p9x
 	.remove = msm_eeprom_platform_remove,
 };
 
@@ -1856,6 +2217,11 @@ static struct i2c_driver msm_eeprom_i2c_driver = {
 	.remove = msm_eeprom_i2c_remove,
 	.driver = {
 		.name = "msm_eeprom",
+<<<<<<< HEAD
+=======
+		.owner = THIS_MODULE,
+		.of_match_table = msm_eeprom_i2c_dt_match,
+>>>>>>> p9x
 	},
 };
 
@@ -1873,7 +2239,12 @@ static int __init msm_eeprom_init_module(void)
 {
 	int rc = 0;
 	CDBG("%s E\n", __func__);
+<<<<<<< HEAD
 	rc = platform_driver_register(&msm_eeprom_platform_driver);
+=======
+	rc = platform_driver_probe(&msm_eeprom_platform_driver,
+		msm_eeprom_platform_probe);
+>>>>>>> p9x
 	CDBG("%s:%d platform rc %d\n", __func__, __LINE__, rc);
 	rc = spi_register_driver(&msm_eeprom_spi_driver);
 	CDBG("%s:%d spi rc %d\n", __func__, __LINE__, rc);

@@ -61,6 +61,17 @@ static struct device s3c2443_dev = {
 	.bus		= &s3c2443_subsys,
 };
 
+<<<<<<< HEAD
+=======
+void s3c2443_restart(enum reboot_mode mode, const char *cmd)
+{
+	if (mode == REBOOT_SOFT)
+		soft_restart(0);
+
+	__raw_writel(S3C2443_SWRST_RESET, S3C2443_SWRST);
+}
+
+>>>>>>> p9x
 int __init s3c2443_init(void)
 {
 	printk("S3C2443: Initialising architecture\n");

@@ -11,11 +11,17 @@ Required properties:
   - qcom,msm_bus,num_cases: Depends on the use cases for bus scaling
   - qcom,msm_bus,active-only: Boolean flag for context of request (actve/dual)
   - qcom,msm_bus,num_paths: The paths for source and destination ports
+<<<<<<< HEAD
   - qcom,ce-device: Device number. Device number is encoded with the following:
 		bit 3-0   device type:	0 for full disk encryption(fde)
 					1 for per file encrption(pfe)
 		bit 7-4   unit number within the device type.
 
+=======
+  - qcom,msm_bus,vectors: Vectors for bus topology.
+  - qcom,ce-device: Device number.
+  - qcom,ce-opp-freq: indicates the CE operating frequency in Hz, changes from target to target.
+>>>>>>> p9x
 
 Optional properties:
   - qcom,ce-hw-shared : optional, indicates if the hardware is shared between EE.
@@ -30,6 +36,7 @@ Optional properties:
   - qcom,support-core-clk-only : optional, indicates if the HW supports single crypto core clk.
   - qcom,bsm-ee : optional, indicate the BAM EE value, changes from target to target.Default value is 1 if not specified.
 
+<<<<<<< HEAD
   - qcom,ce-opp-freq: optional, indicates the CE operating frequency in Hz,
 	changes from target to target. If not specified, by default the
 	frequency is set as 100MHZ.
@@ -39,6 +46,8 @@ Optional properties:
 	required. For other targets such as fsm, they do not perform
 	bus scaling. It is not required for those targets.
 
+=======
+>>>>>>> p9x
 Example:
 
         qcom,qcrypto@fd444000 {

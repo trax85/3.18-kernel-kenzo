@@ -53,6 +53,7 @@
 #endif
 
 #ifndef __ASSEMBLY__
+<<<<<<< HEAD
 
 static inline void set_tls(unsigned long val)
 {
@@ -96,6 +97,8 @@ static inline void set_tls(unsigned long val)
 	}
 }
 
+=======
+>>>>>>> p9x
 static inline unsigned long get_tpuser(void)
 {
 	unsigned long reg = 0;
@@ -105,6 +108,7 @@ static inline unsigned long get_tpuser(void)
 
 	return reg;
 }
+<<<<<<< HEAD
 
 static inline void set_tpuser(unsigned long val)
 {
@@ -123,5 +127,7 @@ static inline void flush_tls(void)
 	set_tpuser(0);
 }
 
+=======
+>>>>>>> p9x
 #endif
 #endif	/* __ASMARM_TLS_H */

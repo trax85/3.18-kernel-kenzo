@@ -66,6 +66,7 @@
 #define   L310_STNDBY_MODE_EN		(1 << 0)
 
 /* Registers shifts and masks */
+#define L2X0_CACHE_ID_REV_MASK		(0x3f)
 #define L2X0_CACHE_ID_PART_MASK		(0xf << 6)
 #define L2X0_CACHE_ID_PART_L210		(1 << 6)
 #define L2X0_CACHE_ID_PART_L220		(2 << 6)
@@ -102,6 +103,7 @@
 #define L2X0_AUX_CTRL_TAG_LATENCY_SHIFT		6
 #define L2X0_AUX_CTRL_TAG_LATENCY_MASK		(7 << 6)
 #define L2X0_AUX_CTRL_DIRTY_LATENCY_SHIFT	9
+<<<<<<< HEAD
 #define L2X0_AUX_CTRL_DIRTY_LATENCY_MASK	(7 << 9)
 #define L2X0_AUX_CTRL_ASSOC_SHIFT		13
 #define L2X0_AUX_CTRL_ASSOC_MASK		(15 << 13)
@@ -127,6 +129,20 @@
 #define L310_AUX_CTRL_DATA_PREFETCH		BIT(28)
 #define L310_AUX_CTRL_INSTR_PREFETCH		BIT(29)
 #define L310_AUX_CTRL_EARLY_BRESP		BIT(30)	/* R2P0+ */
+=======
+#define L2X0_AUX_CTRL_DIRTY_LATENCY_MASK	(0x7 << 9)
+#define L2X0_AUX_CTRL_ASSOCIATIVITY_SHIFT	16
+#define L2X0_AUX_CTRL_WAY_SIZE_SHIFT		17
+#define L2X0_AUX_CTRL_WAY_SIZE_MASK		(0x7 << 17)
+#define L2X0_AUX_CTRL_EVNT_MON_BUS_EN_SHIFT	20
+#define L2X0_AUX_CTRL_SHARE_OVERRIDE_SHIFT	22
+#define L2X0_AUX_CTRL_L2_FORCE_NWA_SHIFT	23
+#define L2X0_AUX_CTRL_NS_LOCKDOWN_SHIFT		26
+#define L2X0_AUX_CTRL_NS_INT_CTRL_SHIFT		27
+#define L2X0_AUX_CTRL_DATA_PREFETCH_SHIFT	28
+#define L2X0_AUX_CTRL_INSTR_PREFETCH_SHIFT	29
+#define L2X0_AUX_CTRL_EARLY_BRESP_SHIFT		30
+>>>>>>> p9x
 
 #define L310_LATENCY_CTRL_SETUP(n)		((n) << 0)
 #define L310_LATENCY_CTRL_RD(n)			((n) << 4)
@@ -146,7 +162,17 @@
 
 #define L2X0_WAY_SIZE_SHIFT		3
 
+#define L2X0_PREFETCH_CTRL_OFFSET_SHIFT		0
+#define L2X0_PREFETCH_CTRL_WRAP8_INC_SHIFT	23
+#define L2X0_PREFETCH_CTRL_WRAP8_SHIFT		30
+
+#define REV_PL310_R2P0				4
+
 #ifndef __ASSEMBLY__
+extern void __iomem *l2x0_base;
+extern void l2cc_suspend(void);
+extern void l2cc_resume(void);
+extern void l2x0_cache_sync(void);
 extern void __init l2x0_init(void __iomem *base, u32 aux_val, u32 aux_mask);
 #if defined(CONFIG_CACHE_L2X0) && defined(CONFIG_OF)
 extern int l2x0_of_init(u32 aux_val, u32 aux_mask);

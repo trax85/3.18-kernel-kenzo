@@ -35,8 +35,13 @@ struct cpu_pstate_pwr {
 struct cpu_pwr_stats {
 	int cpu;
 	long temp;
+<<<<<<< HEAD
 	struct cpu_pstate_pwr *ptable;
 	bool throttling;
+=======
+	bool throttling;
+	struct cpu_pstate_pwr *ptable;
+>>>>>>> p9x
 	int len;
 };
 
@@ -44,8 +49,11 @@ extern int register_cpu(struct cpu *cpu, int num);
 extern struct device *get_cpu_device(unsigned cpu);
 extern bool cpu_is_hotpluggable(unsigned cpu);
 extern bool arch_match_cpu_phys_id(int cpu, u64 phys_id);
+<<<<<<< HEAD
 extern bool arch_find_n_match_cpu_physical_id(struct device_node *cpun,
 					      int cpu, unsigned int *thread);
+=======
+>>>>>>> p9x
 
 extern int cpu_add_dev_attr(struct device_attribute *attr);
 extern void cpu_remove_dev_attr(struct device_attribute *attr);
@@ -133,6 +141,7 @@ enum {
 		{ .notifier_call = fn, .priority = pri };	\
 	register_cpu_notifier(&fn##_nb);			\
 }
+<<<<<<< HEAD
 
 #define __cpu_notifier(fn, pri) {				\
 	static struct notifier_block fn##_nb =			\
@@ -150,11 +159,27 @@ extern int __register_cpu_notifier(struct notifier_block *nb);
 extern void unregister_cpu_notifier(struct notifier_block *nb);
 extern void __unregister_cpu_notifier(struct notifier_block *nb);
 #else
+=======
+>>>>>>> p9x
 
-#ifndef MODULE
+#define __cpu_notifier(fn, pri) {				\
+	static struct notifier_block fn##_nb __cpuinitdata =	\
+		{ .notifier_call = fn, .priority = pri };	\
+	__register_cpu_notifier(&fn##_nb);			\
+}
 extern int register_cpu_notifier(struct notifier_block *nb);
 extern int __register_cpu_notifier(struct notifier_block *nb);
+<<<<<<< HEAD
 #else
+=======
+extern void unregister_cpu_notifier(struct notifier_block *nb);
+extern void __unregister_cpu_notifier(struct notifier_block *nb);
+
+#else /* #if defined(CONFIG_HOTPLUG_CPU) || !defined(MODULE) */
+#define cpu_notifier(fn, pri)    do { (void)(fn); } while (0)
+#define __cpu_notifier(fn, pri)    do { (void)(fn); } while (0)
+
+>>>>>>> p9x
 static inline int register_cpu_notifier(struct notifier_block *nb)
 {
 	return 0;
@@ -164,7 +189,10 @@ static inline int __register_cpu_notifier(struct notifier_block *nb)
 {
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> p9x
 
 static inline void unregister_cpu_notifier(struct notifier_block *nb)
 {
@@ -223,10 +251,13 @@ static inline void cpu_notifier_register_done(void)
 {
 }
 
+<<<<<<< HEAD
 static inline void smpboot_thread_init(void)
 {
 }
 
+=======
+>>>>>>> p9x
 #endif /* CONFIG_SMP */
 extern struct bus_type cpu_subsys;
 
@@ -277,7 +308,10 @@ static inline void enable_nonboot_cpus(void) {}
 
 struct cpu_pwr_stats *get_cpu_pwr_stats(void);
 void trigger_cpu_pwr_stats_calc(void);
+<<<<<<< HEAD
 int register_cpu_pwr_stats_ready_notifier(struct notifier_block *nb);
+=======
+>>>>>>> p9x
 
 enum cpuhp_state {
 	CPUHP_OFFLINE,
@@ -287,6 +321,7 @@ enum cpuhp_state {
 void cpu_startup_entry(enum cpuhp_state state);
 
 void cpu_idle_poll_ctrl(bool enable);
+void per_cpu_idle_poll_ctrl(int cpu, bool enable);
 
 void arch_cpu_idle(void);
 void arch_cpu_idle_prepare(void);

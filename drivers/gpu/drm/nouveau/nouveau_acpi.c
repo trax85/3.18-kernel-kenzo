@@ -378,7 +378,11 @@ bool nouveau_acpi_rom_supported(struct device *dev)
 	acpi_status status;
 	acpi_handle dhandle, rom_handle;
 
+<<<<<<< HEAD
 	dhandle = ACPI_HANDLE(dev);
+=======
+	dhandle = DEVICE_ACPI_HANDLE(&pdev->dev);
+>>>>>>> p9x
 	if (!dhandle)
 		return false;
 

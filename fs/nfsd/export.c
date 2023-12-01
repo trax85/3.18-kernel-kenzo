@@ -602,6 +602,7 @@ static int svc_export_parse(struct cache_detail *cd, char *mesg, int mlen)
 		if (err)
 			goto out4;
 		/*
+<<<<<<< HEAD
 		 * No point caching this if it would immediately expire.
 		 * Also, this protects exportfs's dummy export from the
 		 * anon_uid/anon_gid checks:
@@ -609,18 +610,26 @@ static int svc_export_parse(struct cache_detail *cd, char *mesg, int mlen)
 		if (exp.h.expiry_time < seconds_since_boot())
 			goto out4;
 		/*
+=======
+>>>>>>> p9x
 		 * For some reason exportfs has been passing down an
 		 * invalid (-1) uid & gid on the "dummy" export which it
 		 * uses to test export support.  To make sure exportfs
 		 * sees errors from check_export we therefore need to
 		 * delay these checks till after check_export:
 		 */
+<<<<<<< HEAD
 		err = -EINVAL;
+=======
+>>>>>>> p9x
 		if (!uid_valid(exp.ex_anon_uid))
 			goto out4;
 		if (!gid_valid(exp.ex_anon_gid))
 			goto out4;
+<<<<<<< HEAD
 		err = 0;
+=======
+>>>>>>> p9x
 	}
 
 	expp = svc_export_lookup(&exp);

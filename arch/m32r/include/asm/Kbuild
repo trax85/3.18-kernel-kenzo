@@ -2,8 +2,11 @@
 generic-y += clkdev.h
 generic-y += cputime.h
 generic-y += exec.h
+<<<<<<< HEAD
 generic-y += hash.h
 generic-y += irq_work.h
+=======
+>>>>>>> p9x
 generic-y += mcs_spinlock.h
 generic-y += module.h
 generic-y += preempt.h

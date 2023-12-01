@@ -38,7 +38,10 @@
 #include <linux/mtd/physmap.h>
 #include <linux/usb/gpio_vbus.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
 #include <linux/regulator/fixed.h>
+=======
+>>>>>>> p9x
 #include <linux/regulator/max1586.h>
 #include <linux/slab.h>
 #include <linux/i2c/pxa-i2c.h>

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2002,2007-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2002,2007-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -27,6 +31,7 @@ static const struct adreno_gpu_core adreno_gpulist[] = {
 		.busy_mask = 0x7FFFFFFE,
 	},
 	{
+<<<<<<< HEAD
 		.gpurev = ADRENO_REV_A306A,
 		.core = 3,
 		.major = 0,
@@ -39,6 +44,8 @@ static const struct adreno_gpu_core adreno_gpulist[] = {
 		.busy_mask = 0x7FFFFFFE,
 	},
 	{
+=======
+>>>>>>> p9x
 		.gpurev = ADRENO_REV_A304,
 		.core = 3,
 		.major = 0,
@@ -151,10 +158,15 @@ static const struct adreno_gpu_core adreno_gpulist[] = {
 		.core = 5,
 		.major = 3,
 		.minor = 0,
+<<<<<<< HEAD
 		.patchid = 1,
 		.features = ADRENO_GPMU | ADRENO_SPTP_PC | ADRENO_LM |
 			ADRENO_PREEMPTION | ADRENO_64BIT |
 			ADRENO_CONTENT_PROTECTION,
+=======
+		.patchid = ANY_ID,
+		.features = ADRENO_GPMU | ADRENO_SPTP_PC | ADRENO_LM,
+>>>>>>> p9x
 		.pm4fw_name = "a530_pm4.fw",
 		.pfpfw_name = "a530_pfp.fw",
 		.zap_name = "a530_zap",
@@ -164,12 +176,16 @@ static const struct adreno_gpu_core adreno_gpulist[] = {
 		.gpmufw_name = "a530_gpmu.fw2",
 		.gpmu_major = 1,
 		.gpmu_minor = 0,
+<<<<<<< HEAD
 		.busy_mask = 0xFFFFFFFE,
+=======
+>>>>>>> p9x
 		.lm_major = 3,
 		.lm_minor = 0,
 		.gpmu_tsens = 0x00060007,
 		.max_power = 5448,
 		.regfw_name = "a530v2_seq.fw2",
+<<<<<<< HEAD
 	},
 	{
 		.gpurev = ADRENO_REV_A530,
@@ -224,6 +240,8 @@ static const struct adreno_gpu_core adreno_gpulist[] = {
 		.gpudev = &adreno_a5xx_gpudev,
 		.gmem_size = (SZ_128K + SZ_8K),
 		.num_protected_regs = 0x20,
+=======
+>>>>>>> p9x
 		.busy_mask = 0xFFFFFFFE,
 	},
 	{
@@ -239,6 +257,7 @@ static const struct adreno_gpu_core adreno_gpulist[] = {
 		.num_protected_regs = 0x20,
 		.busy_mask = 0xFFFFFFFE,
 	},
+<<<<<<< HEAD
 	{
 		.gpurev = ADRENO_REV_A540,
 		.core = 5,
@@ -261,4 +280,6 @@ static const struct adreno_gpu_core adreno_gpulist[] = {
 		.gpmu_tsens = 0x000C000D,
 		.max_power = 5448,
 	},
+=======
+>>>>>>> p9x
 };

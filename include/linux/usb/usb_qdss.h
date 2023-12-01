@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2013, 2017 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -49,7 +53,11 @@ void usb_qdss_close(struct usb_qdss_ch *ch);
 int usb_qdss_alloc_req(struct usb_qdss_ch *ch, int n_write, int n_read);
 void usb_qdss_free_req(struct usb_qdss_ch *ch);
 int usb_qdss_read(struct usb_qdss_ch *ch, struct qdss_request *d_req);
+<<<<<<< HEAD
 int usb_qdss_data_write(struct usb_qdss_ch *ch, struct qdss_request *d_req);
+=======
+int usb_qdss_write(struct usb_qdss_ch *ch, struct qdss_request *d_req);
+>>>>>>> p9x
 int usb_qdss_ctrl_write(struct usb_qdss_ch *ch, struct qdss_request *d_req);
 int usb_qdss_ctrl_read(struct usb_qdss_ch *ch, struct qdss_request *d_req);
 #else

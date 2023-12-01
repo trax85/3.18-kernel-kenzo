@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -14,6 +18,7 @@
 #ifndef _ADRENO_A4XX_H_
 #define _ADRENO_A4XX_H_
 
+<<<<<<< HEAD
 #include "a4xx_reg.h"
 
 #define A4XX_IRQ_FLAGS \
@@ -56,6 +61,8 @@ void a4xx_preemption_schedule(struct adreno_device *adreno_dev);
 
 int a4xx_preemption_init(struct adreno_device *adreno_dev);
 
+=======
+>>>>>>> p9x
 void a4xx_snapshot(struct adreno_device *adreno_dev,
 		struct kgsl_snapshot *snapshot);
 

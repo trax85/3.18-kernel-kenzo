@@ -41,6 +41,7 @@ void dbs_check_cpu(struct dbs_data *dbs_data, int cpu)
 	unsigned int ignore_nice;
 	unsigned int j;
 
+<<<<<<< HEAD
 	if (dbs_data->cdata->governor == GOV_ONDEMAND) {
 		struct od_cpu_dbs_info_s *od_dbs_info =
 				dbs_data->cdata->get_cpu_dbs_info_s(cpu);
@@ -59,6 +60,12 @@ void dbs_check_cpu(struct dbs_data *dbs_data, int cpu)
 		sampling_rate = cs_tuners->sampling_rate;
 		ignore_nice = cs_tuners->ignore_nice_load;
 	}
+=======
+	if (dbs_data->cdata->governor == GOV_ONDEMAND)
+		ignore_nice = od_tuners->ignore_nice_load;
+	else
+		ignore_nice = cs_tuners->ignore_nice_load;
+>>>>>>> p9x
 
 	policy = cdbs->cur_policy;
 
@@ -85,6 +92,9 @@ void dbs_check_cpu(struct dbs_data *dbs_data, int cpu)
 		wall_time = (unsigned int)
 			(cur_wall_time - j_cdbs->prev_cpu_wall);
 		j_cdbs->prev_cpu_wall = cur_wall_time;
+
+		if (cur_idle_time < j_cdbs->prev_cpu_idle)
+			cur_idle_time = j_cdbs->prev_cpu_idle;
 
 		idle_time = (unsigned int)
 			(cur_idle_time - j_cdbs->prev_cpu_idle);
@@ -141,6 +151,7 @@ void dbs_check_cpu(struct dbs_data *dbs_data, int cpu)
 			     j_cdbs->prev_load)) {
 			load = j_cdbs->prev_load;
 
+<<<<<<< HEAD
 			/*
 			 * Perform a destructive copy, to ensure that we copy
 			 * the previous load only once, upon the first wake-up
@@ -152,6 +163,8 @@ void dbs_check_cpu(struct dbs_data *dbs_data, int cpu)
 			j_cdbs->prev_load = load;
 		}
 
+=======
+>>>>>>> p9x
 		if (load > max_load)
 			max_load = load;
 	}

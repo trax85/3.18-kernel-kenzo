@@ -321,23 +321,14 @@ int filemap_flush(struct address_space *mapping)
 }
 EXPORT_SYMBOL(filemap_flush);
 
-/**
- * filemap_fdatawait_range - wait for writeback to complete
- * @mapping:		address space structure to wait for
- * @start_byte:		offset in bytes where the range starts
- * @end_byte:		offset in bytes where the range ends (inclusive)
- *
- * Walk the list of under-writeback pages of the given address space
- * in the given range and wait for all of them.
- */
-int filemap_fdatawait_range(struct address_space *mapping, loff_t start_byte,
-			    loff_t end_byte)
+static int __filemap_fdatawait_range(struct address_space *mapping,
+				     loff_t start_byte, loff_t end_byte)
 {
 	pgoff_t index = start_byte >> PAGE_CACHE_SHIFT;
 	pgoff_t end = end_byte >> PAGE_CACHE_SHIFT;
 	struct pagevec pvec;
 	int nr_pages;
-	int ret2, ret = 0;
+	int ret = 0;
 
 	if (end_byte < start_byte)
 		goto out;
@@ -362,6 +353,29 @@ int filemap_fdatawait_range(struct address_space *mapping, loff_t start_byte,
 		cond_resched();
 	}
 out:
+	return ret;
+}
+
+/**
+ * filemap_fdatawait_range - wait for writeback to complete
+ * @mapping:		address space structure to wait for
+ * @start_byte:		offset in bytes where the range starts
+ * @end_byte:		offset in bytes where the range ends (inclusive)
+ *
+ * Walk the list of under-writeback pages of the given address space
+ * in the given range and wait for all of them.  Check error status of
+ * the address space and return it.
+ *
+ * Since the error status of the address space is cleared by this function,
+ * callers are responsible for checking the return value and handling and/or
+ * reporting the error.
+ */
+int filemap_fdatawait_range(struct address_space *mapping, loff_t start_byte,
+			    loff_t end_byte)
+{
+	int ret, ret2;
+
+	ret = __filemap_fdatawait_range(mapping, start_byte, end_byte);
 	ret2 = filemap_check_errors(mapping);
 	if (!ret)
 		ret = ret2;
@@ -371,11 +385,38 @@ out:
 EXPORT_SYMBOL(filemap_fdatawait_range);
 
 /**
+ * filemap_fdatawait_keep_errors - wait for writeback without clearing errors
+ * @mapping: address space structure to wait for
+ *
+ * Walk the list of under-writeback pages of the given address space
+ * and wait for all of them.  Unlike filemap_fdatawait(), this function
+ * does not clear error status of the address space.
+ *
+ * Use this function if callers don't handle errors themselves.  Expected
+ * call sites are system-wide / filesystem-wide data flushers: e.g. sync(2),
+ * fsfreeze(8)
+ */
+void filemap_fdatawait_keep_errors(struct address_space *mapping)
+{
+	loff_t i_size = i_size_read(mapping->host);
+
+	if (i_size == 0)
+		return;
+
+	__filemap_fdatawait_range(mapping, 0, i_size - 1);
+}
+
+/**
  * filemap_fdatawait - wait for all under-writeback pages to complete
  * @mapping: address space structure to wait for
  *
  * Walk the list of under-writeback pages of the given address space
- * and wait for all of them.
+ * and wait for all of them.  Check error status of the address space
+ * and return it.
+ *
+ * Since the error status of the address space is cleared by this function,
+ * callers are responsible for checking the return value and handling and/or
+ * reporting the error.
  */
 int filemap_fdatawait(struct address_space *mapping)
 {
@@ -872,6 +913,49 @@ int __lock_page_or_retry(struct page *page, struct mm_struct *mm,
  * @mapping: mapping
  * @index: index
  * @max_scan: maximum range to search
+<<<<<<< HEAD
+=======
+ *
+ * Search the set [index, min(index+max_scan-1, MAX_INDEX)] for the
+ * lowest indexed hole.
+ *
+ * Returns: the index of the hole if found, otherwise returns an index
+ * outside of the set specified (in which case 'return - index >=
+ * max_scan' will be true). In rare cases of index wrap-around, 0 will
+ * be returned.
+ *
+ * page_cache_next_hole may be called under rcu_read_lock. However,
+ * like radix_tree_gang_lookup, this will not atomically search a
+ * snapshot of the tree at a single point in time. For example, if a
+ * hole is created at index 5, then subsequently a hole is created at
+ * index 10, page_cache_next_hole covering both indexes may return 10
+ * if called under rcu_read_lock.
+ */
+pgoff_t page_cache_next_hole(struct address_space *mapping,
+                             pgoff_t index, unsigned long max_scan)
+{
+        unsigned long i;
+
+        for (i = 0; i < max_scan; i++) {
+                struct page *page;
+
+                page = radix_tree_lookup(&mapping->page_tree, index);
+                if (!page || radix_tree_exceptional_entry(page))
+                        break;
+                index++;
+                if (index == 0)
+                        break;
+        }
+
+        return index;
+}
+EXPORT_SYMBOL(page_cache_next_hole);
+
+/**
+ * find_get_page - find and get a page reference
+ * @mapping: the address_space to search
+ * @offset: the page index
+>>>>>>> p9x
  *
  * Search the set [index, min(index+max_scan-1, MAX_INDEX)] for the
  * lowest indexed hole.
@@ -1488,6 +1572,8 @@ static ssize_t do_generic_file_read(struct file *filp, loff_t *ppos,
 	unsigned int prev_offset;
 	int error = 0;
 
+	trace_mm_filemap_do_generic_file_read(filp, *ppos, desc->count, 1);
+
 	index = *ppos >> PAGE_CACHE_SHIFT;
 	prev_index = ra->prev_pos >> PAGE_CACHE_SHIFT;
 	prev_offset = ra->prev_pos & (PAGE_CACHE_SIZE-1);
@@ -1502,6 +1588,11 @@ static ssize_t do_generic_file_read(struct file *filp, loff_t *ppos,
 
 		cond_resched();
 find_page:
+		if (fatal_signal_pending(current)) {
+			error = -EINTR;
+			goto out;
+		}
+
 		page = find_get_page(mapping, index);
 		if (!page) {
 			page_cache_sync_readahead(mapping,
@@ -2458,6 +2549,30 @@ struct page *grab_cache_page_write_begin(struct address_space *mapping,
 	if (page)
 		wait_for_stable_page(page);
 
+<<<<<<< HEAD
+=======
+retry:
+	page = __page_cache_alloc(gfp_mask & ~gfp_notmask);
+	if (!page)
+		return NULL;
+
+	if (is_cma_pageblock(page)) {
+		__free_page(page);
+		gfp_notmask |= __GFP_MOVABLE;
+		goto retry;
+	}
+
+	status = add_to_page_cache_lru(page, mapping, index,
+						GFP_KERNEL & ~gfp_notmask);
+	if (unlikely(status)) {
+		page_cache_release(page);
+		if (status == -EEXIST)
+			goto repeat;
+		return NULL;
+	}
+found:
+	wait_for_stable_page(page);
+>>>>>>> p9x
 	return page;
 }
 EXPORT_SYMBOL(grab_cache_page_write_begin);
@@ -2470,6 +2585,8 @@ ssize_t generic_perform_write(struct file *file,
 	long status = 0;
 	ssize_t written = 0;
 	unsigned int flags = 0;
+
+	trace_mm_filemap_generic_perform_write(file, pos, iov_iter_count(i), 0);
 
 	/*
 	 * Copies from kernel address space cannot fail (NFSD is a big user).
@@ -2550,7 +2667,31 @@ again:
 
 	return written ? written : status;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(generic_perform_write);
+=======
+
+ssize_t
+generic_file_buffered_write(struct kiocb *iocb, const struct iovec *iov,
+		unsigned long nr_segs, loff_t pos, loff_t *ppos,
+		size_t count, ssize_t written)
+{
+	struct file *file = iocb->ki_filp;
+	ssize_t status;
+	struct iov_iter i;
+
+	iov_iter_init(&i, iov, nr_segs, count, written);
+	status = generic_perform_write(file, &i, pos);
+
+	if (likely(status >= 0)) {
+		written += status;
+		*ppos = pos + status;
+  	}
+
+	return written ? written : status;
+}
+EXPORT_SYMBOL(generic_file_buffered_write);
+>>>>>>> p9x
 
 /**
  * __generic_file_write_iter - write data to a file

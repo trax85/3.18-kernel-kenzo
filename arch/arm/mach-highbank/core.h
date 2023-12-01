@@ -3,6 +3,10 @@
 
 #include <linux/reboot.h>
 
+<<<<<<< HEAD
+=======
+extern void highbank_set_cpu_jump(int cpu, void *jump_addr);
+>>>>>>> p9x
 extern void highbank_restart(enum reboot_mode, const char *);
 extern void __iomem *scu_base_addr;
 

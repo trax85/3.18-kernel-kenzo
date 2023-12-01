@@ -360,7 +360,19 @@ struct usb_bus {
 					 * the ep queue on a short transfer
 					 * with the URB_SHORT_NOT_OK flag set.
 					 */
+<<<<<<< HEAD
 	unsigned no_sg_constraint:1;	/* no sg constraint */
+=======
+	unsigned hnp_support:1;		/* OTG: HNP is supported on OTG port */
+	unsigned quick_hnp:1;		/* OTG: Indiacates if hnp is required
+					   irrespective of host_request flag
+					 */
+	unsigned otg_vbus_off:1;	/* OTG: OTG test device feature bit that
+					 * tells A-device to turn off VBUS after
+					 * B-device is disconnected.
+					 */
+	struct delayed_work hnp_polling;/* OTG: HNP polling work */
+>>>>>>> p9x
 	unsigned sg_tablesize;		/* 0 or largest number of sg list entries */
 
 	int devnum_next;		/* Next open device number in
@@ -1487,7 +1499,11 @@ struct urb {
 	usb_complete_t complete;	/* (in) completion routine */
 	struct usb_iso_packet_descriptor iso_frame_desc[0];
 					/* (in) ISO ONLY */
+<<<<<<< HEAD
 	void *priv_data;                /* (in) additional private data */
+=======
+	void *priv_data;		/* (in) additional private data */
+>>>>>>> p9x
 };
 
 /* ----------------------------------------------------------------------- */
@@ -1885,11 +1901,23 @@ static inline int usb_translate_errors(int error_code)
 #define USB_DEVICE_REMOVE	0x0002
 #define USB_BUS_ADD		0x0003
 #define USB_BUS_REMOVE		0x0004
+<<<<<<< HEAD
 #define USB_BUS_DIED		0x0005
 extern void usb_register_notify(struct notifier_block *nb);
 extern void usb_unregister_notify(struct notifier_block *nb);
 extern void usb_register_atomic_notify(struct notifier_block *nb);
 extern void usb_unregister_atomic_notify(struct notifier_block *nb);
+=======
+#define USB_DEVICE_CONFIG	0x0005
+
+#ifdef CONFIG_USB
+extern void usb_register_notify(struct notifier_block *nb);
+extern void usb_unregister_notify(struct notifier_block *nb);
+#else
+static inline void usb_register_notify(struct notifier_block *nb) {}
+static inline void usb_unregister_notify(struct notifier_block *nb) {}
+#endif
+>>>>>>> p9x
 
 /* debugfs stuff */
 extern struct dentry *usb_debug_root;

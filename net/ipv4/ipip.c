@@ -175,13 +175,25 @@ static int ipip_err(struct sk_buff *skb, u32 info)
 	}
 
 	if (type == ICMP_DEST_UNREACH && code == ICMP_FRAG_NEEDED) {
+<<<<<<< HEAD
 		ipv4_update_pmtu(skb, net, info, t->parms.link, 0,
 				 iph->protocol, 0);
+=======
+		ipv4_update_pmtu(skb, dev_net(skb->dev), info,
+				 t->parms.link, 0, IPPROTO_IPIP, 0);
+		err = 0;
+>>>>>>> p9x
 		goto out;
 	}
 
 	if (type == ICMP_REDIRECT) {
+<<<<<<< HEAD
 		ipv4_redirect(skb, net, t->parms.link, 0, iph->protocol, 0);
+=======
+		ipv4_redirect(skb, dev_net(skb->dev), t->parms.link, 0,
+			      IPPROTO_IPIP, 0);
+		err = 0;
+>>>>>>> p9x
 		goto out;
 	}
 
@@ -221,9 +233,13 @@ static int ipip_rcv(struct sk_buff *skb)
 	if (tunnel) {
 		if (!xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb))
 			goto drop;
+<<<<<<< HEAD
 		if (iptunnel_pull_header(skb, 0, tpi.proto))
 			goto drop;
 		return ip_tunnel_rcv(tunnel, skb, &tpi, log_ecn_error);
+=======
+		return ip_tunnel_rcv(tunnel, skb, &tpi, 0, log_ecn_error);
+>>>>>>> p9x
 	}
 
 	return -1;

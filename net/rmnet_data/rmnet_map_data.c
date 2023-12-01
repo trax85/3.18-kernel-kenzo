@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -102,6 +106,15 @@ struct rmnet_map_header_s *rmnet_map_add_map_header(struct sk_buff *skb,
 	if (padding == 0)
 		goto done;
 
+<<<<<<< HEAD
+=======
+	if ((skb->dev->features & NETIF_F_GSO) &&
+	    skb_is_nonlinear(skb) && unlikely((padding != 0))) {
+		LOGE("pad:%d required for non linear skb", padding);
+		BUG();
+	}
+
+>>>>>>> p9x
 	if (skb_tailroom(skb) < padding)
 		return 0;
 
@@ -136,6 +149,10 @@ struct sk_buff *rmnet_map_deaggregate(struct sk_buff *skb,
 	struct sk_buff *skbn;
 	struct rmnet_map_header_s *maph;
 	uint32_t packet_len;
+<<<<<<< HEAD
+=======
+	uint8_t ip_byte;
+>>>>>>> p9x
 
 	if (skb->len == 0)
 		return 0;
@@ -170,6 +187,17 @@ struct sk_buff *rmnet_map_deaggregate(struct sk_buff *skb,
 		return 0;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Sanity check */
+	ip_byte = (skbn->data[4]) & 0xF0;
+	if (!RMNET_MAP_GET_CD_BIT(skbn) && ip_byte != 0x40 && ip_byte != 0x60) {
+		LOGM("Unknown IP type: 0x%02X", ip_byte);
+		rmnet_kfree_skb(skbn, RMNET_STATS_SKBFREE_DEAGG_UNKOWN_IP_TYP);
+		return 0;
+	}
+
+>>>>>>> p9x
 	return skbn;
 }
 
@@ -322,7 +350,12 @@ new_packet:
 
 schedule:
 	if (config->agg_state != RMNET_MAP_TXFER_SCHEDULED) {
+<<<<<<< HEAD
 		work = kmalloc(sizeof(*work), GFP_ATOMIC);
+=======
+		work = (struct agg_work *)
+			kmalloc(sizeof(struct agg_work), GFP_ATOMIC);
+>>>>>>> p9x
 		if (!work) {
 			LOGE("Failed to allocate work item for packet %s",
 			     "transfer. DATA PATH LIKELY BROKEN!");

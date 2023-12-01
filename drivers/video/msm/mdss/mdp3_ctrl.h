@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2014, 2016-2018 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -18,7 +22,10 @@
 #include <linux/mutex.h>
 #include <linux/completion.h>
 #include <linux/timer.h>
+<<<<<<< HEAD
 #include <linux/kthread.h>
+=======
+>>>>>>> p9x
 
 #include "mdp3.h"
 #include "mdp3_dma.h"
@@ -36,9 +43,12 @@ struct mdp3_buffer_queue {
 	int pop_idx;
 };
 
+<<<<<<< HEAD
 /* struct mdp3_session_data is MDP3 fb private data */
 #define mfd_to_mdp3_data(mfd)	(mfd->mdp.private1)
 
+=======
+>>>>>>> p9x
 struct mdp3_session_data {
 	struct mutex lock;
 	int status;
@@ -48,18 +58,27 @@ struct mdp3_session_data {
 	struct msm_fb_data_type *mfd;
 	ktime_t vsync_time;
 	struct timer_list vsync_timer;
+<<<<<<< HEAD
 	struct kernfs_node *vsync_event_sd;
 	struct kernfs_node *bl_event_sd;
+=======
+	int vsync_period;
+	struct sysfs_dirent *vsync_event_sd;
+>>>>>>> p9x
 	struct mdp_overlay overlay;
 	struct mdp_overlay req_overlay;
 	struct mdp3_buffer_queue bufq_in;
 	struct mdp3_buffer_queue bufq_out;
 	struct work_struct clk_off_work;
+<<<<<<< HEAD
 
 	struct kthread_work dma_done_work;
 	struct kthread_worker worker;
 	struct task_struct *thread;
 
+=======
+	struct work_struct dma_done_work;
+>>>>>>> p9x
 	atomic_t dma_done_cnt;
 	int histo_status;
 	struct mutex histo_lock;
@@ -72,6 +91,7 @@ struct mdp3_session_data {
 	int vsync_enabled;
 	atomic_t vsync_countdown; /* Used to count down  */
 	bool in_splash_screen;
+<<<<<<< HEAD
 	bool esd_recovery;
 	int dyn_pu_state; /* dynamic partial update status */
 	u32 bl_events;
@@ -101,5 +121,16 @@ int mdp3_get_ion_client(struct msm_fb_data_type *mfd);
 int config_secure_display(struct mdp3_session_data *mdp3_session);
 void mdp3_flush_dma_done(struct mdp3_session_data *mdp3_session);
 void mdp3_vsync_retire_signal(struct msm_fb_data_type *mfd, int val);
+=======
+	int dyn_pu_state; /* dynamic partial update status */
+	bool esd_recovery;
+
+	bool dma_active;
+	struct completion dma_completion;
+	int (*wait_for_dma_done)(struct mdp3_session_data *session);
+};
+
+int mdp3_ctrl_init(struct msm_fb_data_type *mfd);
+>>>>>>> p9x
 
 #endif /* MDP3_CTRL_H */

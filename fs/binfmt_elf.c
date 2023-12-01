@@ -684,16 +684,16 @@ static int load_elf_binary(struct linux_binprm *bprm)
 			 */
 			would_dump(bprm, interpreter);
 
-			retval = kernel_read(interpreter, 0, bprm->buf,
-					     BINPRM_BUF_SIZE);
-			if (retval != BINPRM_BUF_SIZE) {
+			/* Get the exec headers */
+			retval = kernel_read(interpreter, 0,
+					     (void *)&loc->interp_elf_ex,
+					     sizeof(loc->interp_elf_ex));
+			if (retval != sizeof(loc->interp_elf_ex)) {
 				if (retval >= 0)
 					retval = -EIO;
 				goto out_free_dentry;
 			}
 
-			/* Get the exec headers */
-			loc->interp_elf_ex = *((struct elfhdr *)bprm->buf);
 			break;
 		}
 		elf_ppnt++;
@@ -802,8 +802,17 @@ static int load_elf_binary(struct linux_binprm *bprm)
 			 * follow the loader, and is not movable.  */
 			load_bias = ELF_ET_DYN_BASE - vaddr;
 			if (current->flags & PF_RANDOMIZE)
+<<<<<<< HEAD
 				load_bias += arch_mmap_rnd();
 			load_bias = ELF_PAGESTART(load_bias);
+=======
+				load_bias = 0;
+			else
+				load_bias = ELF_PAGESTART(ELF_ET_DYN_BASE - vaddr);
+#else
+			load_bias = ELF_PAGESTART(ELF_ET_DYN_BASE - vaddr);
+#endif
+>>>>>>> p9x
 			total_size = total_mapping_size(elf_phdata,
 							loc->elf_ex.e_phnum);
 			if (!total_size) {
@@ -1693,7 +1702,11 @@ static int write_note_info(struct elf_note_info *info,
 		if (first && !writenote(&info->auxv, cprm))
 			return 0;
 		if (first && info->files.data &&
+<<<<<<< HEAD
 				!writenote(&info->files, cprm))
+=======
+				!writenote(&info->files, file, foffset))
+>>>>>>> p9x
 			return 0;
 
 		for (i = 1; i < info->thread_notes; ++i)
@@ -2018,7 +2031,11 @@ static int elf_core_dump(struct coredump_params *cprm)
 	int segs;
 	struct vm_area_struct *vma, *gate_vma;
 	struct elfhdr *elf = NULL;
+<<<<<<< HEAD
 	loff_t offset = 0, dataoff;
+=======
+	loff_t offset = 0, dataoff, foffset;
+>>>>>>> p9x
 	struct elf_note_info info = { };
 	struct elf_phdr *phdr4note = NULL;
 	struct elf_shdr *shdr4extnum = NULL;

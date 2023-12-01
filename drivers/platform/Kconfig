@@ -3,8 +3,14 @@ source "drivers/platform/x86/Kconfig"
 endif
 source "drivers/platform/goldfish/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/platform/chrome/Kconfig"
 
 if ARCH_MSM
 source "drivers/platform/msm/Kconfig"
+=======
+if ARCH_MSM
+source "drivers/platform/msm/Kconfig"
+source "drivers/platform/xiaomi/Kconfig"
+>>>>>>> p9x
 endif

@@ -1,6 +1,7 @@
 config ARM64
 	def_bool y
 	select ARCH_HAS_ATOMIC64_DEC_IF_POSITIVE
+<<<<<<< HEAD
 	select ARCH_HAS_ELF_RANDOMIZE
 	select ARCH_HAS_SG_CHAIN
 	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
@@ -19,14 +20,34 @@ config ARM64
 	select ARM_GIC_V3
 	select ARM_GIC_V3_ITS if PCI_MSI
 	select BUILDTIME_EXTABLE_SORT
+=======
+	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
+	select ARCH_SUPPORTS_ATOMIC_RMW
+	select ARCH_USE_CMPXCHG_LOCKREF
+	select ARCH_WANT_OPTIONAL_GPIOLIB
+	select ARCH_WANT_COMPAT_IPC_PARSE_VERSION
+	select ARCH_WANT_FRAME_POINTERS
+	select ARM64_CPU_SUSPEND
+	select ARM_AMBA
+	select ARM_ARCH_TIMER
+	select ARM_GIC
+	select BUILDTIME_EXTABLE_SORT
+	select AUDIT_ARCH_COMPAT_GENERIC
+>>>>>>> p9x
 	select CLONE_BACKWARDS
 	select COMMON_CLK if !ARCH_MSM
 	select CPU_PM if (SUSPEND || CPU_IDLE)
 	select DCACHE_WORD_ACCESS
+<<<<<<< HEAD
 	select GENERIC_ALLOCATOR
 	select EDAC_SUPPORT
 	select GENERIC_CLOCKEVENTS
 	select GENERIC_CLOCKEVENTS_BROADCAST
+=======
+	select EDAC_SUPPORT
+	select GENERIC_CLOCKEVENTS
+	select GENERIC_CLOCKEVENTS_BROADCAST if SMP
+>>>>>>> p9x
 	select GENERIC_CPU_AUTOPROBE
 	select GENERIC_EARLY_IOREMAP
 	select GENERIC_IOMAP
@@ -39,20 +60,31 @@ config ARM64
 	select GENERIC_TIME_VSYSCALL
 	select HANDLE_DOMAIN_IRQ
 	select HARDIRQS_SW_RESEND
+<<<<<<< HEAD
 	select HAVE_ALIGNED_STRUCT_PAGE if SLUB
 	select HAVE_ARCH_AUDITSYSCALL
 	select HAVE_ARCH_HARDENED_USERCOPY
 	select HAVE_ARCH_JUMP_LABEL
 	select HAVE_ARCH_KASAN if SPARSEMEM_VMEMMAP && !(ARM64_16K_PAGES && ARM64_VA_BITS_48)
+=======
+	select HAVE_ARCH_JUMP_LABEL
+>>>>>>> p9x
 	select HAVE_ARCH_KGDB
 	select HAVE_ARCH_MMAP_RND_BITS
 	select HAVE_ARCH_MMAP_RND_COMPAT_BITS if COMPAT
 	select HAVE_ARCH_SECCOMP_FILTER
+<<<<<<< HEAD
 	select HAVE_ARCH_TRACEHOOK
 	select HAVE_BPF_JIT
 	select HAVE_C_RECORDMCOUNT
 	select HAVE_CC_STACKPROTECTOR
 	select HAVE_CMPXCHG_DOUBLE
+=======
+	select HAVE_ARCH_AUDITSYSCALL
+	select HAVE_ARCH_TRACEHOOK
+	select HAVE_C_RECORDMCOUNT
+	select HAVE_CC_STACKPROTECTOR
+>>>>>>> p9x
 	select HAVE_DEBUG_BUGVERBOSE
 	select HAVE_DEBUG_KMEMLEAK
 	select HAVE_DMA_API_DEBUG
@@ -64,15 +96,24 @@ config ARM64
 	select HAVE_FUNCTION_TRACER
 	select HAVE_FUNCTION_GRAPH_TRACER
 	select HAVE_GENERIC_DMA_COHERENT
+<<<<<<< HEAD
 	select HAVE_HW_BREAKPOINT if PERF_EVENTS
+=======
+>>>>>>> p9x
 	select HAVE_IRQ_TIME_ACCOUNTING
 	select HAVE_MEMBLOCK
 	select HAVE_PATA_PLATFORM
 	select HAVE_PERF_EVENTS
+<<<<<<< HEAD
 	select HAVE_PERF_REGS
 	select HAVE_PERF_USER_STACK_DUMP
 	select HAVE_RCU_TABLE_FREE
 	select HAVE_SYSCALL_TRACEPOINTS
+=======
+	select HAVE_SYSCALL_TRACEPOINTS
+	select HAVE_PERF_REGS
+	select HAVE_PERF_USER_STACK_DUMP
+>>>>>>> p9x
 	select IRQ_DOMAIN
 	select MODULES_USE_ELF_RELA
 	select NO_BOOTMEM
@@ -84,8 +125,11 @@ config ARM64
 	select POWER_SUPPLY
 	select SPARSE_IRQ
 	select SYSCTL_EXCEPTION_TRACE
+<<<<<<< HEAD
 	select HAVE_CONTEXT_TRACKING
 	select THREAD_INFO_IN_TASK
+=======
+>>>>>>> p9x
 	select MSM_JTAGV8 if CORESIGHT_ETMV4
 	help
 	  ARM 64-bit (AArch64) Linux support.
@@ -99,6 +143,7 @@ config ARCH_PHYS_ADDR_T_64BIT
 config MMU
 	def_bool y
 
+<<<<<<< HEAD
 config ARCH_MMAP_RND_BITS_MIN
        default 14 if ARM64_64K_PAGES
        default 16 if ARM64_16K_PAGES
@@ -128,6 +173,31 @@ config ARCH_MMAP_RND_COMPAT_BITS_MAX
 
 config NO_IOPORT_MAP
 	def_bool y if !PCI
+
+config ILLEGAL_POINTER_VALUE
+	hex
+	default 0xdead000000000000
+=======
+config NO_IOPORT_MAP
+	def_bool y
+>>>>>>> p9x
+
+config ARCH_MMAP_RND_BITS_MIN
+       default 14 if ARM64_64K_PAGES
+       default 18
+
+# max bits determined by the following formula:
+#  VA_BITS - PAGE_SHIFT - 3
+#  VA_BITS is always 39
+config ARCH_MMAP_RND_BITS_MAX
+       default 20 if ARM64_64K_PAGES
+       default 24
+
+config ARCH_MMAP_RND_COMPAT_BITS_MIN
+       default 11
+
+config ARCH_MMAP_RND_COMPAT_BITS_MAX
+       default 16
 
 config ILLEGAL_POINTER_VALUE
 	hex
@@ -163,9 +233,12 @@ config GENERIC_CALIBRATE_DELAY
 	def_bool y
 
 config ZONE_DMA
+<<<<<<< HEAD
 	def_bool y
 
 config HAVE_GENERIC_RCU_GUP
+=======
+>>>>>>> p9x
 	def_bool y
 
 config ARCH_DMA_ADDR_T_64BIT
@@ -203,9 +276,12 @@ config ARM64_DMA_IOMMU_ALIGNMENT
 
 endif
 
+<<<<<<< HEAD
 config SMP
 	def_bool y
 
+=======
+>>>>>>> p9x
 config SWIOTLB
 	def_bool y
 
@@ -215,6 +291,7 @@ config IOMMU_HELPER
 config KERNEL_MODE_NEON
 	def_bool y
 
+<<<<<<< HEAD
 config FIX_EARLYCON_MEM
 	def_bool y
 
@@ -252,6 +329,18 @@ config MSM_GVM_QUIN
 		This should work on 64bit machine.
 		If you don't know what to do here, say N.
 
+=======
+config ARCH_HAS_CPUFREQ
+	bool
+	help
+	  Internal node to signify that the ARCH has CPUFREQ support
+	  and that the relevant menu configurations are displayed for
+	  it.
+
+config FIX_EARLYCON_MEM
+	def_bool y
+
+>>>>>>> p9x
 source "init/Kconfig"
 
 source "kernel/Kconfig.freezer"
@@ -273,11 +362,14 @@ config ARCH_VEXPRESS
 	  This enables support for the ARMv8 software model (Versatile
 	  Express).
 
+<<<<<<< HEAD
 config ARCH_XGENE
 	bool "AppliedMicro X-Gene SOC Family"
 	help
 	  This enables support for AppliedMicro X-Gene SOC Family
 
+=======
+>>>>>>> p9x
 config ARCH_MSM
 	bool "Qualcomm Platforms"
 	select ARCH_REQUIRE_GPIOLIB
@@ -287,12 +379,20 @@ config ARCH_MSM
 	select MSM_IRQ
 	select PINCTRL
 	select SOC_BUS
+<<<<<<< HEAD
 	select PM_OPP
 	select PCI
+=======
+	select PCI
+	select ARCH_HAS_CPUFREQ
+	select CPU_FREQ_MSM
+	select PM_OPP
+>>>>>>> p9x
 	select PM_DEVFREQ
 	select MSM_DEVFREQ_DEVBW
 	select MSM_BIMC_BWMON
 	select MSMCCI_HWMON
+<<<<<<< HEAD
 	select MSM_M4M_HWMON
 	select DEVFREQ_GOV_MSM_BW_HWMON
 	select DEVFREQ_GOV_MSM_CACHE_HWMON
@@ -302,12 +402,18 @@ config ARCH_MSM
 	select CPU_FREQ_MSM
 	select ARM_MEMLAT_MON
 	select DEVFREQ_GOV_MEMLAT
+=======
+	select DEVFREQ_GOV_MSM_BW_HWMON
+	select DEVFREQ_GOV_MSM_CACHE_HWMON
+	select DEVFREQ_SIMPLE_DEV
+>>>>>>> p9x
 	help
 	  This enables support for the ARMv8 based Qualcomm chipsets.
 
 config ARCH_MSM8916
 	bool "Enable Support for Qualcomm MSM8916"
 	depends on ARCH_MSM
+<<<<<<< HEAD
 	help
 	  This enables support for the MSM8916 chipset. If you don't
 	  know what to do here, say N
@@ -369,6 +475,19 @@ config ARCH_MSMCOBALT
 	help
 	  This enables support for the MSMCOBALT chipset. If you do not
 	  wish to build a kernel that runs on this chipset, say 'N' here.
+=======
+	select RCU_BOOST if DEBUG_KMEMLEAK
+	help
+	  This enables support for the MSM8916 chipset. If you dont
+	  know what do here, say N
+
+config ARCH_MSM8994
+	bool "Enable Support for Qualcomm MSM8994"
+	depends on ARCH_MSM
+	help
+	  This enables support for the MSM8994 chipset. If you dont
+	  know what do here, say N
+>>>>>>> p9x
 
 config ARCH_MSM8994_V1_TLBI_WA
 	bool "Enable MSM8994 v1 TLBI workaround"
@@ -379,6 +498,30 @@ config ARCH_MSM8994_V1_TLBI_WA
 	  [39:38] bits of VA are tied to zero and due to which TLBI
 	  operations with VA or ASID will not work.
 
+<<<<<<< HEAD
+=======
+config MSM8994_V1_PMUIRQ_WA
+	bool "Enable MSM8994 v1 PMU-CTI IRQ workaround"
+	depends on ARCH_MSM8994 && CORESIGHT_CTI
+	help
+	  This enables support for the MSM8994 v1 PMU-CTI IRQ workaround.
+	  This workaround is required for MSM8994 V1 revision where the
+	  percpu PMU interrupt is incorrectly connected to the corresponding
+	  CPUs in the other cluster.
+
+config ARCH_MSM8992
+	bool "Enable Support for Qualcomm MSM8992"
+	depends on ARCH_MSM
+	help
+	  Enable kernel support for the MSM8992 chipset. If you don't
+	  know what this is, you can safely say 'N' here.
+
+config ARCH_XGENE
+	bool "AppliedMicro X-Gene SOC Family"
+	help
+	  This enables support for AppliedMicro X-Gene SOC Family
+
+>>>>>>> p9x
 endmenu
 
 menu "Bus support"
@@ -387,6 +530,7 @@ config ARM_AMBA
 	bool
 
 config PCI
+<<<<<<< HEAD
 	bool "PCI support"
 	help
 	  This feature enables support for PCI bus system. If you say Y
@@ -406,10 +550,29 @@ source "drivers/pci/Kconfig"
 source "drivers/pci/pcie/Kconfig"
 source "drivers/pci/hotplug/Kconfig"
 
+=======
+       bool "PCI support"
+       help
+         Find out whether you have a PCI motherboard. PCI is the name of a
+         bus system, i.e. the way the CPU talks to the other stuff inside
+         your box. Other bus systems are ISA, EISA, MicroChannel (MCA) or
+         VESA. If you have PCI, say Y, otherwise N.
+
+config PCI_DOMAINS
+       bool
+       depends on PCI
+
+config PCI_SYSCALL
+       def_bool PCI
+
+source "drivers/pci/Kconfig"
+source "drivers/pci/pcie/Kconfig"
+>>>>>>> p9x
 endmenu
 
 menu "Kernel Features"
 
+<<<<<<< HEAD
 menu "ARM errata workarounds via the alternatives framework"
 
 config ARM64_ERRATUM_826319
@@ -549,6 +712,26 @@ config ARM64_4K_PAGES
 	bool "4KB"
 	help
 	  This feature enables 4KB pages support.
+=======
+config ARM64_DCACHE_DISABLE
+	bool "Disable CPU Data Caches"
+	help
+	  Disable CPU data cache usage by setting the SCTLR[C] bit during
+	  kernel initialization. This will result in a considerable
+	  performance impact, but may be useful in certain situations.
+
+	  If you are not sure what to do, select 'N' here.
+
+config ARM64_ICACHE_DISABLE
+	bool "Disable CPU Instruction Caches"
+	help
+	  Disable CPU instruction cache usage by setting the SCTLR[I]
+	  bit during kernel initialization. This will result in a
+	  considerable performance impact, but may be useful in certain
+	  situations.
+
+	  If you are not sure what to do, select 'N' here.
+>>>>>>> p9x
 
 config ARM64_64K_PAGES
 	bool "64KB"
@@ -558,7 +741,81 @@ config ARM64_64K_PAGES
 	  look-up. AArch32 emulation is not available when this feature
 	  is enabled.
 
+<<<<<<< HEAD
 endchoice
+=======
+config CPU_BIG_ENDIAN
+       bool "Build big-endian kernel"
+       help
+         Say Y if you plan on running a kernel in big-endian mode.
+
+config ARM64_ERRATUM_845719
+	bool "Cortex-A53: 845719: a load might read incorrect data"
+	depends on COMPAT
+	default y
+	help
+	  This option adds an alternative code sequence to work around ARM
+	  erratum 845719 on Cortex-A53 parts up to r0p4.
+
+	  When running a compat (AArch32) userspace on an affected Cortex-A53
+	  part, a load at EL0 from a virtual address that matches the bottom 32
+	  bits of the virtual address used by a recent load at (AArch64) EL1
+	  might return incorrect data.
+
+	  The workaround is to write the contextidr_el1 register on exception
+	  return to a 32-bit task.
+	  Please note that this does not necessarily enable the workaround,
+	  as it depends on the alternative framework, which will only patch
+	  the kernel if an affected CPU is detected.
+
+	  If unsure, say Y.
+
+config ARM64_A57_ERRATA_832075
+	bool "ARMv8 A57 Errata 832075"
+	help
+	  This Erratum explains the problem that a Cortex-A57 might deadlock
+	  when WB exclusive load/store instructions are mixed with device loads.
+	  An interrupt will break the deadlock.
+	  This erratum requires a particular sequence of the code:
+	  a) A pair of exclusive load and exclusive store instructions.
+	  The exclusive store is to write-back memory location.
+	  b) A branch instruction has a source register which is the same as
+	  the destination register of the older exclusive store.
+	  c) Following the branch instruction, there are six or more loads
+	  to device memory locations
+
+config ARM64_SEV_IN_LOCK_UNLOCK
+	bool "Add explicit SEV in the spinlock unlock code path"
+	def_bool ARCH_MSM8994
+	help
+	  In certain unexplained cases, the stlr alone might not wakeup
+	  the processor waiting in WFE on a spinlock.
+	  Add an explicity dsb and SEV in write_unlock, read_unlock
+	  and spin_unlock to ensure that the core waiting on the lock
+	  wakes up from WFE.
+
+config ARM64_STLR_NEEDS_BARRIER
+	bool "Store-Release operations require explicit barriers"
+	def_bool ARCH_MSMTHULIUM
+	help
+	  Some early samples of MSMTHULIUM SoCs require that an explicit barrier
+	  be executed prior to any Store-Release operation (STLR) to comform to
+	  ARM memory ordering requirements. If you are building the kernel to
+	  work on one of these early designs, select 'Y' here.
+
+	  For production kernels, you should say 'N' here.
+
+config SMP
+	bool "Symmetric Multi-Processing"
+	help
+	  This enables support for systems with more than one CPU.  If
+	  you say N here, the kernel will run on single and
+	  multiprocessor machines, but will use only one CPU of a
+	  multiprocessor machine. If you say Y here, the kernel will run
+	  on many, but not all, single processor machines. On a single
+	  processor machine, the kernel will run faster if you say N
+	  here.
+>>>>>>> p9x
 
 config ARM64_DCACHE_DISABLE
 	bool "Disable CPU Data Caches"
@@ -692,13 +949,42 @@ config SCHED_SMT
 	  MultiThreading at a cost of slightly increased overhead in some
 	  places. If unsure say N here.
 
+config SCHED_MC
+	bool "Multi-core scheduler support"
+	depends on SMP
+	help
+	  Multi-core scheduler support improves the CPU scheduler's decision
+	  making when dealing with multi-core CPU chips at a cost of slightly
+	  increased overhead in some places. If unsure say N here.
+
+config SCHED_SMT
+	bool "SMT scheduler support"
+	depends on SMP
+	help
+	  Improves the CPU scheduler's decision making when dealing with
+	  MultiThreading at a cost of slightly increased overhead in some
+	  places. If unsure say N here.
+
+config ARCH_WANTS_CTXSW_LOGGING
+	bool "Enable logging in context switch"
+	depends on SMP
+	help
+	  Logs critical context switch latencies. If unsure say N here.
+
 config NR_CPUS
+<<<<<<< HEAD
 	int "Maximum number of CPUs (2-64)"
+=======
+	int "Maximum number of CPUs (2-32)"
+	range 2 32
+	depends on SMP
+>>>>>>> p9x
 	# These have to remain sorted largest to smallest
 	default "8"
 
 config HOTPLUG_CPU
 	bool "Support for hot-pluggable CPUs"
+<<<<<<< HEAD
 	help
 	  Say Y here to experiment with turning CPUs off and on.  CPUs
 	  can be controlled through /sys/devices/system/cpu.
@@ -716,12 +1002,41 @@ config ARCH_NR_GPIO
 
           If unsure, leave the default value.
 
+=======
+	depends on SMP
+	help
+	  Say Y here to experiment with turning CPUs off and on.  CPUs
+	  can be controlled through /sys/devices/system/cpu.
+>>>>>>> p9x
 
 source kernel/Kconfig.preempt
 
-config HZ
-	int
-	default 100
+config SWP_EMULATE
+	bool "Emulate SWP/SWPB instructions"
+	help
+	  ARMv6 architecture deprecates use of the SWP/SWPB instructions. ARMv8
+	  oblosetes the use of SWP/SWPB instructions. ARMv7 multiprocessing
+	  extensions introduce the ability to disable these instructions,
+	  triggering an undefined instruction exception when executed. Say Y
+	  here to enable software emulation of these instructions for userspace
+	  (not kernel) using LDREX/STREX. Also creates /proc/cpu/swp_emulation
+	  for statistics.
+
+	  In some older versions of glibc [<=2.8] SWP is used during futex
+	  trylock() operations with the assumption that the code will not
+	  be preempted. This invalid assumption may be more likely to fail
+	  with SWP emulation enabled, leading to deadlock of the user
+	  application.
+
+	  NOTE: when accessing uncached shared regions, LDREX/STREX rely
+	  on an external transaction monitoring block called a global
+	  monitor to maintain update atomicity. If your system does not
+	  implement a global monitor, this option can cause programs that
+	  perform SWP operations to uncached memory to deadlock.
+
+	  If unsure, say Y.
+
+source kernel/Kconfig.hz
 
 config ARCH_HAS_HOLES_MEMORYMODEL
 	def_bool y if SPARSEMEM
@@ -767,6 +1082,7 @@ config PERF_EVENTS_RESET_PMU_DEBUGFS
 		If you want to reset PMU and PMU related internal Perf variables
 		via debugfs then say Y.
 
+<<<<<<< HEAD
 config ARM64_REG_REBALANCE_ON_CTX_SW
 	bool "Rebalance registers during context switches."
 	def_bool ARCH_MSM8996
@@ -774,6 +1090,8 @@ config ARM64_REG_REBALANCE_ON_CTX_SW
 	 Forcefully re-balance register rename pools on context switches for
 	 improved performance on some devices.
 
+=======
+>>>>>>> p9x
 config SYS_SUPPORTS_HUGETLBFS
 	def_bool y
 
@@ -789,7 +1107,62 @@ config HAVE_ARCH_TRANSPARENT_HUGEPAGE
 config ARCH_HAS_CACHE_LINE_SIZE
 	def_bool y
 
+<<<<<<< HEAD
+=======
+config ARMV7_COMPAT
+	bool "Kernel support for ARMv7 applications"
+	depends on COMPAT
+	select SWP_EMULATE
+	help
+	 This option enables features that allow that ran on an ARMv7 or older
+	 processor to continue functioning.
+
+	 If you want to execute ARMv7 applications, say Y
+
+config ARMV7_COMPAT_CPUINFO
+	bool "Report backwards compatible cpu features in /proc/cpuinfo"
+	depends on ARMV7_COMPAT
+	default y
+	help
+	 This option makes /proc/cpuinfo list CPU features that an ARMv7 or
+	 earlier kernel would report, but are not optional on an ARMv8 or later
+	 processor.
+
+	 If you want to execute ARMv7 applications, say Y
+
+>>>>>>> p9x
 source "mm/Kconfig"
+source "arch/arm64/mm/Kconfig"
+
+config XEN_DOM0
+	def_bool y
+	depends on XEN
+
+config XEN
+	bool "Xen guest support on ARM64 (EXPERIMENTAL)"
+	depends on ARM64 && OF
+	select SWIOTLB_XEN
+	help
+	  Say Y if you want to run Linux in a Virtual Machine on Xen on ARM64.
+
+config FORCE_MAX_ZONEORDER
+	int
+	default "14" if (ARM64_64K_PAGES && TRANSPARENT_HUGEPAGE)
+	default "11"
+
+config SECCOMP
+	bool "Enable seccomp to safely compute untrusted bytecode"
+	---help---
+	  This kernel feature is useful for number crunching applications
+	  that may need to compute untrusted bytecode during their
+	  execution. By using pipes or other transports made available to
+	  the process as file descriptors supporting the read/write
+	  syscalls, it's possible to isolate those applications in
+	  their own address space using seccomp. Once seccomp is
+	  enabled via prctl(PR_SET_SECCOMP), it cannot be disabled
+	  and the task is only allowed to execute a few safe syscalls
+	  defined by each seccomp mode.
+
 
 config SECCOMP
 	bool "Enable seccomp to safely compute untrusted bytecode"
@@ -1002,6 +1375,7 @@ config CMDLINE_FORCE
 	  command-line options your boot loader passes to the kernel.
 endchoice
 
+<<<<<<< HEAD
 config EFI_STUB
 	bool
 
@@ -1022,6 +1396,8 @@ config EFI
 	  allow the kernel to be booted as an EFI application. This
 	  is only useful on systems that have UEFI firmware.
 
+=======
+>>>>>>> p9x
 config BUILD_ARM64_APPENDED_DTB_IMAGE
 	bool "Build a concatenated Image.gz/dtb by default"
 	depends on OF
@@ -1035,6 +1411,7 @@ config BUILD_ARM64_APPENDED_DTB_IMAGE_NAMES
 	depends on BUILD_ARM64_APPENDED_DTB_IMAGE
 	help
 	  Space separated list of names of dtbs to append when
+<<<<<<< HEAD
 	  building a concatenated Image.gz-dtb
 
 choice
@@ -1072,6 +1449,22 @@ config DMI
 	  This option is only useful on systems that have UEFI firmware.
 	  However, even with this option, the resultant kernel should
 	  continue to boot on existing non-UEFI platforms.
+=======
+	  building a concatenated Image.gz-dtb.
+
+config EFI
+	bool "UEFI runtime support"
+	depends on OF && !CPU_BIG_ENDIAN
+	select LIBFDT
+	select UCS2_STRING
+	select EFI_PARAMS_FROM_FDT
+	help
+	  This option provides support for runtime services provided
+	  by UEFI firmware (such as non-volatile variables, realtime
+          clock, and platform reset). A UEFI stub is also provided to
+	  allow the kernel to be booted as an EFI application. This
+	  is only useful on systems that have UEFI firmware.
+>>>>>>> p9x
 
 endmenu
 
@@ -1137,6 +1530,28 @@ config ARM64_ERRATUM_843419
 	  use of veneers.
 
 	  If unsure, say Y.
+
+endmenu
+
+menu "Power management options"
+
+source "kernel/power/Kconfig"
+
+config ARCH_SUSPEND_POSSIBLE
+	def_bool y
+
+config ARM64_CPU_SUSPEND
+	def_bool PM_SLEEP
+
+endmenu
+
+menu "CPU Power Management"
+
+if ARCH_HAS_CPUFREQ
+source "drivers/cpufreq/Kconfig"
+endif
+
+source "drivers/cpuidle/Kconfig"
 
 endmenu
 

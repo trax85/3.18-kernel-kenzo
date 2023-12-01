@@ -937,7 +937,11 @@ void __ref kmemleak_alloc_percpu(const void __percpu *ptr, size_t size,
 	if (kmemleak_enabled && ptr && !IS_ERR(ptr))
 		for_each_possible_cpu(cpu)
 			create_object((unsigned long)per_cpu_ptr(ptr, cpu),
+<<<<<<< HEAD
 				      size, 0, gfp);
+=======
+				      size, 0, GFP_KERNEL);
+>>>>>>> p9x
 	else if (kmemleak_early_log)
 		log_early(KMEMLEAK_ALLOC_PERCPU, ptr, size, 0);
 }
@@ -1837,9 +1841,14 @@ void __init kmemleak_init(void)
 	int i;
 	unsigned long flags;
 
+	kmemleak_early_log = 0;
+
 #ifdef CONFIG_DEBUG_KMEMLEAK_DEFAULT_OFF
 	if (!kmemleak_skip_disable) {
+<<<<<<< HEAD
 		kmemleak_early_log = 0;
+=======
+>>>>>>> p9x
 		kmemleak_disable();
 		return;
 	}
@@ -1857,7 +1866,10 @@ void __init kmemleak_init(void)
 
 	/* the kernel is still in UP mode, so disabling the IRQs is enough */
 	local_irq_save(flags);
+<<<<<<< HEAD
 	kmemleak_early_log = 0;
+=======
+>>>>>>> p9x
 	if (kmemleak_error) {
 		local_irq_restore(flags);
 		return;

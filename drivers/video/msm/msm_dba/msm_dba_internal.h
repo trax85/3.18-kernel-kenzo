@@ -294,7 +294,11 @@ int msm_dba_helper_register_irq(struct msm_dba_device_info *dev,
  * @enable: enable/disable
  *
  * Helper function to enable HDCP monitoring. This should be called only if irq
+<<<<<<< HEAD
  * is handled through msm dba helper functions.
+=======
+ * is handled throught msm dba helper functions.
+>>>>>>> p9x
  */
 int msm_dba_register_hdcp_monitor(struct msm_dba_device_info *dev, bool enable);
 

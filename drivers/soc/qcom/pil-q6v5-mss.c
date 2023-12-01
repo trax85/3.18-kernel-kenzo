@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -14,7 +18,10 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
+=======
+>>>>>>> p9x
 #include <linux/io.h>
 #include <linux/iopoll.h>
 #include <linux/ioport.h>
@@ -39,7 +46,11 @@
 
 #define MAX_VDD_MSS_UV		1150000
 #define PROXY_TIMEOUT_MS	10000
+<<<<<<< HEAD
 #define MAX_SSR_REASON_LEN	130U
+=======
+#define MAX_SSR_REASON_LEN	81U
+>>>>>>> p9x
 #define STOP_ACK_TIMEOUT_MS	1000
 
 #define subsys_to_drv(d) container_of(d, struct modem_data, subsys_desc)
@@ -70,7 +81,10 @@ static void log_modem_sfr(void)
 static void restart_modem(struct modem_data *drv)
 {
 	log_modem_sfr();
+<<<<<<< HEAD
 	drv->ignore_errors = true;
+=======
+>>>>>>> p9x
 	subsystem_restart_dev(drv->subsys);
 }
 
@@ -79,7 +93,11 @@ static irqreturn_t modem_err_fatal_intr_handler(int irq, void *dev_id)
 	struct modem_data *drv = subsys_to_drv(dev_id);
 
 	/* Ignore if we're the one that set the force stop GPIO */
+<<<<<<< HEAD
 	if (drv->crash_shutdown)
+=======
+	if (drv->crash_shutdown || subsys_get_crash_status(drv->subsys))
+>>>>>>> p9x
 		return IRQ_HANDLED;
 
 	pr_err("Fatal error on the modem.\n");
@@ -137,9 +155,14 @@ static int modem_powerup(const struct subsys_desc *subsys)
 	 * run concurrently with the watchdog bite error handler, making it safe
 	 * to unset the flag below.
 	 */
+<<<<<<< HEAD
 	reinit_completion(&drv->stop_ack);
 	drv->subsys_desc.ramdump_disable = 0;
 	drv->ignore_errors = false;
+=======
+	INIT_COMPLETION(drv->stop_ack);
+	drv->subsys_desc.ramdump_disable = 0;
+>>>>>>> p9x
 	drv->q6->desc.fw_name = subsys->fw_name;
 	return pil_boot(&drv->q6->desc);
 }
@@ -186,7 +209,12 @@ static int modem_ramdump(int enable, const struct subsys_desc *subsys)
 static irqreturn_t modem_wdog_bite_intr_handler(int irq, void *dev_id)
 {
 	struct modem_data *drv = subsys_to_drv(dev_id);
+<<<<<<< HEAD
 	if (drv->ignore_errors)
+=======
+
+	if (subsys_get_crash_status(drv->subsys))
+>>>>>>> p9x
 		return IRQ_HANDLED;
 
 	pr_err("Watchdog bite received from modem software!\n");
@@ -215,14 +243,20 @@ static int pil_subsys_init(struct modem_data *drv,
 	drv->subsys_desc.stop_ack_handler = modem_stop_ack_intr_handler;
 	drv->subsys_desc.wdog_bite_handler = modem_wdog_bite_intr_handler;
 
+<<<<<<< HEAD
 	drv->q6->desc.modem_ssr = false;
+=======
+>>>>>>> p9x
 	drv->subsys = subsys_register(&drv->subsys_desc);
 	if (IS_ERR(drv->subsys)) {
 		ret = PTR_ERR(drv->subsys);
 		goto err_subsys;
 	}
 
+<<<<<<< HEAD
 	drv->q6->desc.subsys_dev = drv->subsys;
+=======
+>>>>>>> p9x
 	drv->ramdump_dev = create_ramdump_device("modem", &pdev->dev);
 	if (!drv->ramdump_dev) {
 		pr_err("%s: Unable to create a modem ramdump device.\n",
@@ -249,7 +283,11 @@ static int pil_mss_loadable_init(struct modem_data *drv,
 	int ret;
 
 	q6 = pil_q6v5_init(pdev);
+<<<<<<< HEAD
 	if (IS_ERR_OR_NULL(q6))
+=======
+	if (IS_ERR(q6))
+>>>>>>> p9x
 		return PTR_ERR(q6);
 	drv->q6 = q6;
 	drv->xo = q6->xo;
@@ -265,7 +303,11 @@ static int pil_mss_loadable_init(struct modem_data *drv,
 	if (q6->self_auth) {
 		res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
 						    "rmb_base");
+<<<<<<< HEAD
 		q6->rmb_base = devm_ioremap_resource(&pdev->dev, res);
+=======
+		q6->rmb_base = devm_request_and_ioremap(&pdev->dev, res);
+>>>>>>> p9x
 		if (!q6->rmb_base)
 			return -ENOMEM;
 		drv->rmb_base = q6->rmb_base;
@@ -279,7 +321,11 @@ static int pil_mss_loadable_init(struct modem_data *drv,
 		q6->restart_reg_sec = true;
 	}
 
+<<<<<<< HEAD
 	q6->restart_reg = devm_ioremap_resource(&pdev->dev, res);
+=======
+	q6->restart_reg = devm_request_and_ioremap(&pdev->dev, res);
+>>>>>>> p9x
 	if (!q6->restart_reg)
 		return -ENOMEM;
 
@@ -343,6 +389,7 @@ static int pil_mss_loadable_init(struct modem_data *drv,
 			"qcom,active-clock-names", "gpll0_mss_clk") >= 0)
 		q6->gpll0_mss_clk = devm_clk_get(&pdev->dev, "gpll0_mss_clk");
 
+<<<<<<< HEAD
 	if (of_property_match_string(pdev->dev.of_node,
 			"qcom,active-clock-names", "snoc_axi_clk") >= 0)
 		q6->snoc_axi_clk = devm_clk_get(&pdev->dev, "snoc_axi_clk");
@@ -351,6 +398,8 @@ static int pil_mss_loadable_init(struct modem_data *drv,
 			"qcom,active-clock-names", "mnoc_axi_clk") >= 0)
 		q6->mnoc_axi_clk = devm_clk_get(&pdev->dev, "mnoc_axi_clk");
 
+=======
+>>>>>>> p9x
 	ret = pil_desc_init(q6_desc);
 
 	return ret;
@@ -377,11 +426,14 @@ static int pil_mss_driver_probe(struct platform_device *pdev)
 	}
 	init_completion(&drv->stop_ack);
 
+<<<<<<< HEAD
 	/* Probe the MBA mem device if present */
 	ret = of_platform_populate(pdev->dev.of_node, NULL, NULL, &pdev->dev);
 	if (ret)
 		return ret;
 
+=======
+>>>>>>> p9x
 	return pil_subsys_init(drv, pdev);
 }
 
@@ -395,6 +447,7 @@ static int pil_mss_driver_exit(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pil_mba_mem_driver_probe(struct platform_device *pdev)
 {
 	struct modem_data *drv;
@@ -422,6 +475,8 @@ static struct platform_driver pil_mba_mem_driver = {
 	},
 };
 
+=======
+>>>>>>> p9x
 static struct of_device_id mss_match_table[] = {
 	{ .compatible = "qcom,pil-q6v5-mss" },
 	{ .compatible = "qcom,pil-q6v55-mss" },
@@ -441,12 +496,16 @@ static struct platform_driver pil_mss_driver = {
 
 static int __init pil_mss_init(void)
 {
+<<<<<<< HEAD
 	int ret;
 
 	ret = platform_driver_register(&pil_mba_mem_driver);
 	if (!ret)
 		ret = platform_driver_register(&pil_mss_driver);
 	return ret;
+=======
+	return platform_driver_register(&pil_mss_driver);
+>>>>>>> p9x
 }
 module_init(pil_mss_init);
 

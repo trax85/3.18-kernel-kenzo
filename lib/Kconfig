@@ -509,6 +509,7 @@ config OID_REGISTRY
 config UCS2_STRING
         tristate
 
+<<<<<<< HEAD
 source "lib/fonts/Kconfig"
 
 #
@@ -518,6 +519,8 @@ source "lib/fonts/Kconfig"
 config ARCH_HAS_SG_CHAIN
 	def_bool n
 
+=======
+>>>>>>> p9x
 config QMI_ENCDEC
 	bool "QMI Encode/Decode Library"
 	help

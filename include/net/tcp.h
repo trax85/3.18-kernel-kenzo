@@ -276,9 +276,13 @@ extern int sysctl_tcp_thin_dupack;
 extern int sysctl_tcp_early_retrans;
 extern int sysctl_tcp_limit_output_bytes;
 extern int sysctl_tcp_challenge_ack_limit;
+<<<<<<< HEAD
 extern unsigned int sysctl_tcp_notsent_lowat;
 extern int sysctl_tcp_min_tso_segs;
 extern int sysctl_tcp_autocorking;
+=======
+extern int sysctl_tcp_min_tso_segs;
+>>>>>>> p9x
 extern int sysctl_tcp_default_init_rwnd;
 
 extern atomic_long_t tcp_memory_allocated;
@@ -387,7 +391,16 @@ extern int tcp_use_userconfig_sysctl_handler(struct ctl_table *, int,
 extern int tcp_proc_delayed_ack_control(struct ctl_table *, int,
 				void __user *, size_t *, loff_t *);
 
+<<<<<<< HEAD
 void tcp_enter_quickack_mode(struct sock *sk, unsigned int max_quickacks);
+=======
+/* sysctl master controller */
+extern int tcp_use_userconfig_sysctl_handler(struct ctl_table *, int,
+				void __user *, size_t *, loff_t *);
+extern int tcp_proc_delayed_ack_control(struct ctl_table *, int,
+				void __user *, size_t *, loff_t *);
+
+>>>>>>> p9x
 static inline void tcp_dec_quickack_mode(struct sock *sk,
 					 const unsigned int pkts)
 {
@@ -460,6 +473,7 @@ const u8 *tcp_parse_md5sig_option(const struct tcphdr *th);
  *	TCP v4 functions exported for the inet6 API
  */
 
+<<<<<<< HEAD
 void tcp_v4_send_check(struct sock *sk, struct sk_buff *skb);
 void tcp_v4_mtu_reduced(struct sock *sk);
 int tcp_v4_conn_request(struct sock *sk, struct sk_buff *skb);
@@ -476,6 +490,25 @@ struct sk_buff *tcp_make_synack(struct sock *sk, struct dst_entry *dst,
 				struct request_sock *req,
 				struct tcp_fastopen_cookie *foc);
 int tcp_disconnect(struct sock *sk, int flags);
+=======
+extern void tcp_v4_send_check(struct sock *sk, struct sk_buff *skb);
+void tcp_v4_mtu_reduced(struct sock *sk);
+extern int tcp_v4_conn_request(struct sock *sk, struct sk_buff *skb);
+extern struct sock * tcp_create_openreq_child(struct sock *sk,
+					      struct request_sock *req,
+					      struct sk_buff *skb);
+extern struct sock * tcp_v4_syn_recv_sock(struct sock *sk, struct sk_buff *skb,
+					  struct request_sock *req,
+					  struct dst_entry *dst);
+extern int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb);
+extern int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr,
+			  int addr_len);
+extern int tcp_connect(struct sock *sk);
+extern struct sk_buff * tcp_make_synack(struct sock *sk, struct dst_entry *dst,
+					struct request_sock *req,
+					struct tcp_fastopen_cookie *foc);
+extern int tcp_disconnect(struct sock *sk, int flags);
+>>>>>>> p9x
 
 void tcp_finish_connect(struct sock *sk, struct sk_buff *skb);
 int tcp_send_rcvq(struct sock *sk, struct msghdr *msg, size_t size);
@@ -1086,7 +1119,11 @@ static inline void tcp_prequeue_init(struct tcp_sock *tp)
 	skb_queue_head_init(&tp->ucopy.prequeue);
 }
 
+<<<<<<< HEAD
 bool tcp_prequeue(struct sock *sk, struct sk_buff *skb);
+=======
+extern bool tcp_prequeue(struct sock *sk, struct sk_buff *skb);
+>>>>>>> p9x
 int tcp_filter(struct sock *sk, struct sk_buff *skb);
 
 #undef STATE_TRACE
@@ -1101,6 +1138,8 @@ static const char *statename[]={
 void tcp_set_state(struct sock *sk, int state);
 
 void tcp_done(struct sock *sk);
+
+int tcp_abort(struct sock *sk, int err);
 
 int tcp_abort(struct sock *sk, int err);
 
@@ -1626,6 +1665,8 @@ static inline bool tcp_stream_memory_free(const struct sock *sk)
 	return notsent_bytes < tcp_notsent_lowat(tp);
 }
 
+extern int tcp_nuke_addr(struct net *net, struct sockaddr *addr);
+
 #ifdef CONFIG_PROC_FS
 int tcp4_proc_init(void);
 void tcp4_proc_exit(void);
@@ -1719,6 +1760,16 @@ static inline struct ip_options_rcu *tcp_v4_save_options(struct sk_buff *skb)
 		}
 	}
 	return dopt;
+}
+
+/* At how many jiffies into the future should the RTO fire? */
+static inline s32 tcp_rto_delta(const struct sock *sk)
+{
+	const struct sk_buff *skb = tcp_write_queue_head(sk);
+	const u32 rto = inet_csk(sk)->icsk_rto;
+	const u32 rto_time_stamp = TCP_SKB_CB(skb)->when + rto;
+
+	return (s32)(rto_time_stamp - tcp_time_stamp);
 }
 
 #endif	/* _TCP_H */

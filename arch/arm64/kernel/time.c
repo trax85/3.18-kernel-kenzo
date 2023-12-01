@@ -60,6 +60,10 @@ unsigned long profile_pc(struct pt_regs *regs)
 	return frame.pc;
 }
 EXPORT_SYMBOL(profile_pc);
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> p9x
 
 void __init time_init(void)
 {

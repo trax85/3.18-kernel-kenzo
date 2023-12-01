@@ -207,7 +207,11 @@ static int bpf_jit_build_body(struct bpf_prog *fp, u32 *image,
 			}
 			PPC_DIVWU(r_A, r_A, r_X);
 			break;
+<<<<<<< HEAD
 		case BPF_ALU | BPF_DIV | BPF_K: /* A /= K */
+=======
+		case BPF_S_ALU_DIV_K: /* A /= K */
+>>>>>>> p9x
 			if (K == 1)
 				break;
 			PPC_LI32(r_scratch1, K);

@@ -1713,14 +1713,22 @@ EXPORT_SYMBOL(dquot_claim_space_nodirty);
  */
 void dquot_reclaim_space_nodirty(struct inode *inode, qsize_t number)
 {
+<<<<<<< HEAD
 	int cnt, index;
+=======
+	int cnt;
+>>>>>>> p9x
 
 	if (!dquot_active(inode)) {
 		inode_reclaim_rsv_space(inode, number);
 		return;
 	}
 
+<<<<<<< HEAD
 	index = srcu_read_lock(&dquot_srcu);
+=======
+	down_read(&sb_dqopt(inode->i_sb)->dqptr_sem);
+>>>>>>> p9x
 	spin_lock(&dq_data_lock);
 	/* Claim reserved quotas to allocated quotas */
 	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
@@ -1732,7 +1740,11 @@ void dquot_reclaim_space_nodirty(struct inode *inode, qsize_t number)
 	inode_reclaim_rsv_space(inode, number);
 	spin_unlock(&dq_data_lock);
 	mark_all_dquot_dirty(inode->i_dquot);
+<<<<<<< HEAD
 	srcu_read_unlock(&dquot_srcu, index);
+=======
+	up_read(&sb_dqopt(inode->i_sb)->dqptr_sem);
+>>>>>>> p9x
 	return;
 }
 EXPORT_SYMBOL(dquot_reclaim_space_nodirty);

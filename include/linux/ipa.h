@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -18,6 +22,7 @@
 #include <linux/types.h>
 #include <linux/msm-sps.h>
 #include <linux/if_ether.h>
+<<<<<<< HEAD
 #include "linux/msm_gsi.h"
 
 #define IPA_APPS_MAX_BW_IN_MBPS 700
@@ -29,6 +34,10 @@ enum ipa_transport_type {
 	IPA_TRANSPORT_TYPE_SPS,
 	IPA_TRANSPORT_TYPE_GSI
 };
+=======
+
+#define IPA_APPS_MAX_BW_IN_MBPS 200
+>>>>>>> p9x
 
 /**
  * enum ipa_nat_en_type - NAT setting type in IPA end-point
@@ -40,6 +49,7 @@ enum ipa_nat_en_type {
 };
 
 /**
+<<<<<<< HEAD
  * enum ipa_ipv6ct_en_type - IPv6CT setting type in IPA end-point
  */
 enum ipa_ipv6ct_en_type {
@@ -48,6 +58,8 @@ enum ipa_ipv6ct_en_type {
 };
 
 /**
+=======
+>>>>>>> p9x
  * enum ipa_mode_type - mode setting type in IPA end-point
  * @BASIC: basic mode
  * @ENABLE_FRAMING_HDLC: not currently supported
@@ -88,8 +100,13 @@ enum ipa_aggr_type {
  * enum ipa_aggr_mode - global aggregation mode
  */
 enum ipa_aggr_mode {
+<<<<<<< HEAD
 	IPA_MBIM_AGGR,
 	IPA_QCNCM_AGGR,
+=======
+	IPA_MBIM,
+	IPA_QCNCM,
+>>>>>>> p9x
 };
 
 /**
@@ -104,7 +121,11 @@ enum ipa_dp_evt_type {
 };
 
 /**
+<<<<<<< HEAD
  * enum hdr_total_len_or_pad_type - type of value held by TOTAL_LEN_OR_PAD
+=======
+ * enum hdr_total_len_or_pad_type - type vof alue held by TOTAL_LEN_OR_PAD
+>>>>>>> p9x
  * field in header configuration register.
  * @IPA_HDR_PAD: field is used as padding length
  * @IPA_HDR_TOTAL_LEN: field is used as total length
@@ -125,6 +146,7 @@ struct ipa_ep_cfg_nat {
 };
 
 /**
+<<<<<<< HEAD
  * struct ipa_ep_cfg_conn_track - IPv6 Connection tracking configuration in
  *	IPA end-point
  * @conn_track_en: Defines speculative conn_track action, means if specific
@@ -138,6 +160,8 @@ struct ipa_ep_cfg_conn_track {
 };
 
 /**
+=======
+>>>>>>> p9x
  * struct ipa_ep_cfg_hdr - header configuration in IPA end-point
  *
  * @hdr_len:Header length in bytes to be added/removed. Assuming
@@ -202,10 +226,16 @@ struct ipa_ep_cfg_hdr {
  *	byte alignment). Valid for Output Pipes only (IPA Producer).
  * @hdr_total_len_or_pad_offset: Offset to length field containing either
  *	total length or pad length, per hdr_total_len_or_pad config
+<<<<<<< HEAD
  * @hdr_payload_len_inc_padding: 0-IPA_ENDP_INIT_HDR_n's
  *	HDR_OFST_PKT_SIZE does
  *	not includes padding bytes size, payload_len = packet length,
  *	1-IPA_ENDP_INIT_HDR_n's HDR_OFST_PKT_SIZE includes
+=======
+ * @hdr_payload_len_inc_padding: 0-IPA_ENDP_INIT_HDR_n’s HDR_OFST_PKT_SIZE does
+ *	not includes padding bytes size, payload_len = packet length,
+ *	1-IPA_ENDP_INIT_HDR_n’s HDR_OFST_PKT_SIZE includes
+>>>>>>> p9x
  *	padding bytes size, payload_len = packet length + padding
  * @hdr_total_len_or_pad: field is used as PAD length ot as Total length
  *	(header + packet + padding)
@@ -260,6 +290,7 @@ struct ipa_ep_cfg_mode {
  *			aggregation closure. Valid for Output Pipes only (IPA
  *			Producer). EOF affects only Pipes configured for
  *			generic aggregation.
+<<<<<<< HEAD
  * @aggr_hard_byte_limit_en: If set to 1, byte-limit aggregation for this
  *			pipe will apply a hard-limit behavior which will not
  *			allow frames to be closed with more than byte-limit
@@ -274,6 +305,8 @@ struct ipa_ep_cfg_mode {
  *			aggregation closure. Valid for Output Pipes only (IPA
  *			Producer). EOF affects only Pipes configured for generic
  *			aggregation.
+=======
+>>>>>>> p9x
  */
 struct ipa_ep_cfg_aggr {
 	enum ipa_aggr_en_type aggr_en;
@@ -281,8 +314,11 @@ struct ipa_ep_cfg_aggr {
 	u32 aggr_byte_limit;
 	u32 aggr_time_limit;
 	u32 aggr_pkt_limit;
+<<<<<<< HEAD
 	u32 aggr_hard_byte_limit_en;
 	bool aggr_sw_eof_active;
+=======
+>>>>>>> p9x
 };
 
 /**
@@ -312,7 +348,11 @@ struct ipa_ep_cfg_holb {
 /**
  * struct ipa_ep_cfg_deaggr - deaggregation configuration in IPA end-point
  * @deaggr_hdr_len: Deaggregation Header length in bytes. Valid only for Input
+<<<<<<< HEAD
  *	Pipes, which are configured for 'Generic' deaggregation.
+=======
+ *	Pipes, which are configured for ’Generic’ deaggregation.
+>>>>>>> p9x
  * @packet_offset_valid: - 0: PACKET_OFFSET is not used, 1: PACKET_OFFSET is
  *	used.
  * @packet_offset_location: Location of packet offset field, which specifies
@@ -360,16 +400,22 @@ enum ipa_cs_offload {
  *	checksum meta info header (4 bytes) starts (UL). Values are 0-15, which
  *	mean 0 - 60 byte checksum header offset. Valid for input
  *	pipes only (IPA consumer)
+<<<<<<< HEAD
  * @gen_qmb_master_sel: Select bit for ENDP GEN-QMB master. This is used to
  *	separate DDR & PCIe transactions in-order to limit them as
  *	a group (using MAX_WRITES/READS limiation). Valid for input and
  *	output pipes (IPA consumer+producer)
+=======
+>>>>>>> p9x
  */
 struct ipa_ep_cfg_cfg {
 	bool frag_offload_en;
 	enum ipa_cs_offload cs_offload_en;
 	u8 cs_metadata_hdr_offset;
+<<<<<<< HEAD
 	u8 gen_qmb_master_sel;
+=======
+>>>>>>> p9x
 };
 
 /**
@@ -393,6 +439,7 @@ struct ipa_ep_cfg_metadata {
 };
 
 /**
+<<<<<<< HEAD
  * struct ipa_ep_cfg_seq - HPS/DPS sequencer type configuration in IPA end-point
  * @set_dynamic:  0 - HPS/DPS seq type is configured statically,
  *		   1 - HPS/DPS seq type is set to seq_type
@@ -407,6 +454,10 @@ struct ipa_ep_cfg_seq {
  * struct ipa_ep_cfg - configuration of IPA end-point
  * @nat:		NAT parameters
  * @conn_track:		IPv6CT parameters
+=======
+ * struct ipa_ep_cfg - configuration of IPA end-point
+ * @nat:		NAT parmeters
+>>>>>>> p9x
  * @hdr:		Header parameters
  * @hdr_ext:		Extended header parameters
  * @mode:		Mode parameters
@@ -416,11 +467,17 @@ struct ipa_ep_cfg_seq {
  * @cfg:		Configuration register data
  * @metadata_mask:	Hdr metadata mask
  * @meta:		Meta Data
+<<<<<<< HEAD
  * @seq:		HPS/DPS sequencers configuration
  */
 struct ipa_ep_cfg {
 	struct ipa_ep_cfg_nat nat;
 	struct ipa_ep_cfg_conn_track conn_track;
+=======
+ */
+struct ipa_ep_cfg {
+	struct ipa_ep_cfg_nat nat;
+>>>>>>> p9x
 	struct ipa_ep_cfg_hdr hdr;
 	struct ipa_ep_cfg_hdr_ext hdr_ext;
 	struct ipa_ep_cfg_mode mode;
@@ -430,7 +487,10 @@ struct ipa_ep_cfg {
 	struct ipa_ep_cfg_cfg cfg;
 	struct ipa_ep_cfg_metadata_mask metadata_mask;
 	struct ipa_ep_cfg_metadata meta;
+<<<<<<< HEAD
 	struct ipa_ep_cfg_seq seq;
+=======
+>>>>>>> p9x
 };
 
 /**
@@ -454,6 +514,7 @@ typedef void (*ipa_notify_cb)(void *priv, enum ipa_dp_evt_type evt,
 		       unsigned long data);
 
 /**
+<<<<<<< HEAD
  * enum ipa_wdi_meter_evt_type - type of event client callback is
  * for AP+STA mode metering
  * @IPA_GET_WDI_SAP_STATS: get IPA_stats betwen SAP and STA -
@@ -503,6 +564,8 @@ typedef void (*ipa_wdi_meter_notifier_cb)(enum ipa_wdi_meter_evt_type evt,
 		       void *data);
 
 /**
+=======
+>>>>>>> p9x
  * struct ipa_connect_params - low-level client connect input parameters. Either
  * client allocates the data and desc FIFO and specifies that in data+desc OR
  * specifies sizes and pipe_mem pref and IPA does the allocation.
@@ -596,11 +659,15 @@ struct ipa_ext_intf {
  * in system-BAM mode
  * @ipa_ep_cfg:	IPA EP configuration
  * @client:	the type of client who "owns" the EP
+<<<<<<< HEAD
  * @desc_fifo_sz: size of desc FIFO. This number is used to allocate the desc
  *		fifo for BAM. For GSI, this size is used by IPA driver as a
  *		baseline to calculate the GSI ring size in the following way:
  *		For PROD pipes, GSI ring is 4 * desc_fifo_sz.
 		For PROD pipes, GSI ring is 2 * desc_fifo_sz.
+=======
+ * @desc_fifo_sz:	size of desc FIFO
+>>>>>>> p9x
  * @priv:	callback cookie
  * @notify:	callback
  *		priv - callback cookie
@@ -623,10 +690,20 @@ struct ipa_sys_connect_params {
 
 /**
  * struct ipa_tx_meta - meta-data for the TX packet
+<<<<<<< HEAD
+=======
+ * @mbim_stream_id:	the stream ID used in NDP signature
+ * @mbim_stream_id_valid:	 is above field valid?
+>>>>>>> p9x
  * @dma_address: dma mapped address of TX packet
  * @dma_address_valid: is above field valid?
  */
 struct ipa_tx_meta {
+<<<<<<< HEAD
+=======
+	u8 mbim_stream_id;
+	bool mbim_stream_id_valid;
+>>>>>>> p9x
 	u8 pkt_init_dst_ep;
 	bool pkt_init_dst_ep_valid;
 	bool pkt_init_dst_ep_remote;
@@ -806,6 +883,7 @@ struct ipa_rx_data {
 	dma_addr_t dma_addr;
 };
 
+<<<<<<< HEAD
 /**
  * enum ipa_irq_type - IPA Interrupt Type
  * Used to register handlers for IPA interrupts
@@ -814,6 +892,10 @@ struct ipa_rx_data {
  */
 enum ipa_irq_type {
 	IPA_BAD_SNOC_ACCESS_IRQ,
+=======
+enum ipa_irq_type {
+	IPA_BAD_SNOC_ACCESS_IRQ = 0,
+>>>>>>> p9x
 	IPA_EOT_COAL_IRQ,
 	IPA_UC_IRQ_0,
 	IPA_UC_IRQ_1,
@@ -829,10 +911,16 @@ enum ipa_irq_type {
 	IPA_TX_ERR_IRQ,
 	IPA_STEP_MODE_IRQ,
 	IPA_PROC_ERR_IRQ,
+<<<<<<< HEAD
 	IPA_TX_SUSPEND_IRQ,
 	IPA_TX_HOLB_DROP_IRQ,
 	IPA_BAM_IDLE_IRQ,
 	IPA_BAM_GSI_IDLE_IRQ = IPA_BAM_IDLE_IRQ,
+=======
+	IPA_TX_SUSPEND_IRQ = 16,
+	IPA_TX_HOLB_DROP_IRQ = 17,
+
+>>>>>>> p9x
 	IPA_IRQ_MAX
 };
 
@@ -913,6 +1001,7 @@ struct IpaHwRingStats_t {
  * @num_bam_int_handled : Number of Bam Interrupts handled by FW
  * @num_db : Number of times the doorbell was rung
  * @num_unexpected_db : Number of unexpected doorbells
+<<<<<<< HEAD
  * @num_pkts_in_dis_uninit_state : number of completions we
  *		received in disabled or uninitialized state
  * @num_ic_inj_vdev_change : Number of times the Imm Cmd is
@@ -920,6 +1009,8 @@ struct IpaHwRingStats_t {
  * @num_ic_inj_fw_desc_change : Number of times the Imm Cmd is
  *		injected due to fw_desc change
  * @num_qmb_int_handled : Number of QMB interrupts handled
+=======
+>>>>>>> p9x
 */
 struct IpaHwStatsWDIRxInfoData_t {
 	u32 max_outstanding_pkts;
@@ -931,9 +1022,12 @@ struct IpaHwStatsWDIRxInfoData_t {
 	u32 num_db;
 	u32 num_unexpected_db;
 	u32 num_pkts_in_dis_uninit_state;
+<<<<<<< HEAD
 	u32 num_ic_inj_vdev_change;
 	u32 num_ic_inj_fw_desc_change;
 	u32 num_qmb_int_handled;
+=======
+>>>>>>> p9x
 	u32 reserved1;
 	u32 reserved2;
 } __packed;
@@ -950,7 +1044,11 @@ struct IpaHwStatsWDIRxInfoData_t {
  * @num_db : Number of times the doorbell was rung
  * @num_unexpected_db : Number of unexpected doorbells
  * @num_bam_int_handled : Number of Bam Interrupts handled by FW
+<<<<<<< HEAD
  * @num_bam_int_in_non_running_state : Number of Bam interrupts while not in
+=======
+ * @num_bam_int_in_non_runnning_state : Number of Bam interrupts while not in
+>>>>>>> p9x
  * Running state
  * @num_qmb_int_handled : Number of QMB interrupts handled
 */
@@ -986,23 +1084,29 @@ struct IpaHwStatsWDIInfoData_t {
  * Rx buffers)
  * @rdy_ring_size: size of the Rx ring in bytes
  * @rdy_ring_rp_pa: physical address of the location through which IPA uc is
+<<<<<<< HEAD
  * reading (WDI-1.0)
  * @rdy_comp_ring_base_pa: physical address of the base of the Rx completion
  * ring (WDI-2.0)
  * @rdy_comp_ring_wp_pa: physical address of the location through which IPA
  * uc is writing (WDI-2.0)
  * @rdy_comp_ring_size: size of the Rx_completion ring in bytes
+=======
+>>>>>>> p9x
  * expected to communicate about the Read pointer into the Rx Ring
  */
 struct ipa_wdi_ul_params {
 	phys_addr_t rdy_ring_base_pa;
 	u32 rdy_ring_size;
 	phys_addr_t rdy_ring_rp_pa;
+<<<<<<< HEAD
 	phys_addr_t rdy_comp_ring_base_pa;
 	phys_addr_t rdy_comp_ring_wp_pa;
 	u32 rdy_comp_ring_size;
 	u32 *rdy_ring_rp_va;
 	u32 *rdy_comp_ring_wp_va;
+=======
+>>>>>>> p9x
 };
 
 /**
@@ -1016,9 +1120,12 @@ struct ipa_wdi_ul_params_smmu {
 	struct sg_table rdy_ring;
 	u32 rdy_ring_size;
 	phys_addr_t rdy_ring_rp_pa;
+<<<<<<< HEAD
 	struct sg_table rdy_comp_ring;
 	phys_addr_t rdy_comp_ring_wp_pa;
 	u32 rdy_comp_ring_size;
+=======
+>>>>>>> p9x
 };
 
 /**
@@ -1068,7 +1175,10 @@ struct ipa_wdi_dl_params_smmu {
  * @ul_smmu: WDI_RX configuration info when WLAN uses SMMU
  * @dl_smmu: WDI_TX configuration info when WLAN uses SMMU
  * @smmu_enabled: true if WLAN uses SMMU
+<<<<<<< HEAD
  * @ipa_wdi_meter_notifier_cb: Get WDI stats and quato info
+=======
+>>>>>>> p9x
  */
 struct ipa_wdi_in_params {
 	struct ipa_sys_connect_params sys;
@@ -1079,9 +1189,12 @@ struct ipa_wdi_in_params {
 		struct ipa_wdi_dl_params_smmu dl_smmu;
 	} u;
 	bool smmu_enabled;
+<<<<<<< HEAD
 #ifdef IPA_WAN_MSG_IPv6_ADDR_GW_LEN
 	ipa_wdi_meter_notifier_cb wdi_notify;
 #endif
+=======
+>>>>>>> p9x
 };
 
 /**
@@ -1135,6 +1248,7 @@ struct ipa_wdi_buffer_info {
 };
 
 /**
+<<<<<<< HEAD
  * struct ipa_gsi_ep_config - IPA GSI endpoint configurations
  *
  * @ipa_ep_num: IPA EP pipe number
@@ -1162,6 +1276,106 @@ struct ipa_tz_unlock_reg_info {
 };
 
 #if defined CONFIG_IPA || defined CONFIG_IPA3
+=======
+ * struct odu_bridge_params - parameters for odu bridge initialization API
+ *
+ * @netdev_name: network interface name
+ * @priv: private data that will be supplied to client's callback
+ * @tx_dp_notify: callback for handling SKB. the following event are supported:
+ *	IPA_WRITE_DONE:	will be called after client called to odu_bridge_tx_dp()
+ *			Client is expected to free the skb.
+ *	IPA_RECEIVE:	will be called for delivering skb to APPS.
+ *			Client is expected to deliver the skb to network stack.
+ * @send_dl_skb: callback for sending skb on downlink direction to adapter.
+ *		Client is expected to free the skb.
+ * @device_ethaddr: device Ethernet address in network order.
+ * @ipa_desc_size: IPA Sys Pipe Desc Size
+ */
+struct odu_bridge_params {
+	const char *netdev_name;
+	void *priv;
+	ipa_notify_cb tx_dp_notify;
+	int (*send_dl_skb)(void *priv, struct sk_buff *skb);
+	u8 device_ethaddr[ETH_ALEN];
+	u32 ipa_desc_size;
+};
+
+/**
+ * enum ipa_mhi_event_type - event type for mhi callback
+ *
+ * @IPA_MHI_EVENT_READY: IPA MHI is ready and IPA uC is loaded. After getting
+ *	this event MHI client is expected to call to ipa_mhi_start() API
+ * @IPA_MHI_EVENT_DATA_AVAILABLE: downlink data available on MHI channel
+ */
+enum ipa_mhi_event_type {
+	IPA_MHI_EVENT_READY,
+	IPA_MHI_EVENT_DATA_AVAILABLE,
+	IPA_MHI_EVENT_MAX,
+};
+
+typedef void (*mhi_client_cb)(void *priv, enum ipa_mhi_event_type event,
+	unsigned long data);
+
+/**
+ * struct ipa_mhi_msi_info - parameters for MSI (Message Signaled Interrupts)
+ * @addr_low: MSI lower base physical address
+ * @addr_hi: MSI higher base physical address
+ * @data: Data Pattern to use when generating the MSI
+ * @mask: Mask indicating number of messages assigned by the host to device
+ *
+ * msi value is written according to this formula:
+ *	((data & ~mask) | (mmio.msiVec & mask))
+ */
+struct ipa_mhi_msi_info {
+	u32 addr_low;
+	u32 addr_hi;
+	u32 data;
+	u32 mask;
+};
+
+/**
+ * struct ipa_mhi_init_params - parameters for IPA MHI initialization API
+ *
+ * @msi: MSI (Message Signaled Interrupts) parameters
+ * @mmio_addr: MHI MMIO physical address
+ * @first_ch_idx: First channel ID for hardware accelerated channels.
+ * @first_er_idx: First event ring ID for hardware accelerated channels.
+ * @notify: client callback
+ * @priv: client private data to be provided in client callback
+ */
+struct ipa_mhi_init_params {
+	struct ipa_mhi_msi_info msi;
+	u32 mmio_addr;
+	u32 first_ch_idx;
+	u32 first_er_idx;
+	mhi_client_cb notify;
+	void *priv;
+};
+
+/**
+ * struct ipa_mhi_start_params - parameters for IPA MHI start API
+ *
+ * @host_ctrl_addr: Base address of MHI control data structures
+ * @host_data_addr: Base address of MHI data buffers
+ */
+struct ipa_mhi_start_params {
+	u32 host_ctrl_addr;
+	u32 host_data_addr;
+};
+
+/**
+ * struct ipa_mhi_connect_params - parameters for IPA MHI channel connect API
+ *
+ * @sys: IPA EP configuration info
+ * @channel_id: MHI channel id
+ */
+struct ipa_mhi_connect_params {
+	struct ipa_sys_connect_params sys;
+	u8 channel_id;
+};
+
+#ifdef CONFIG_IPA
+>>>>>>> p9x
 
 /*
  * Connect / Disconnect
@@ -1181,11 +1395,14 @@ int ipa_reset_endpoint(u32 clnt_hdl);
 int ipa_clear_endpoint_delay(u32 clnt_hdl);
 
 /*
+<<<<<<< HEAD
  * Disable ep
  */
 int ipa_disable_endpoint(u32 clnt_hdl);
 
 /*
+=======
+>>>>>>> p9x
  * Configuration
  */
 int ipa_cfg_ep(u32 clnt_hdl, const struct ipa_ep_cfg *ipa_ep_cfg);
@@ -1223,13 +1440,20 @@ int ipa_cfg_ep_ctrl(u32 clnt_hdl, const struct ipa_ep_cfg_ctrl *ep_ctrl);
  */
 int ipa_add_hdr(struct ipa_ioc_add_hdr *hdrs);
 
+<<<<<<< HEAD
 int ipa_add_hdr_usr(struct ipa_ioc_add_hdr *hdrs, bool user_only);
 
+=======
+>>>>>>> p9x
 int ipa_del_hdr(struct ipa_ioc_del_hdr *hdls);
 
 int ipa_commit_hdr(void);
 
+<<<<<<< HEAD
 int ipa_reset_hdr(bool user_only);
+=======
+int ipa_reset_hdr(void);
+>>>>>>> p9x
 
 int ipa_get_hdr(struct ipa_ioc_get_hdr *lookup);
 
@@ -1240,8 +1464,12 @@ int ipa_copy_hdr(struct ipa_ioc_copy_hdr *copy);
 /*
  * Header Processing Context
  */
+<<<<<<< HEAD
 int ipa_add_hdr_proc_ctx(struct ipa_ioc_add_hdr_proc_ctx *proc_ctxs,
 							bool user_only);
+=======
+int ipa_add_hdr_proc_ctx(struct ipa_ioc_add_hdr_proc_ctx *proc_ctxs);
+>>>>>>> p9x
 
 int ipa_del_hdr_proc_ctx(struct ipa_ioc_del_hdr_proc_ctx *hdls);
 
@@ -1250,13 +1478,20 @@ int ipa_del_hdr_proc_ctx(struct ipa_ioc_del_hdr_proc_ctx *hdls);
  */
 int ipa_add_rt_rule(struct ipa_ioc_add_rt_rule *rules);
 
+<<<<<<< HEAD
 int ipa_add_rt_rule_usr(struct ipa_ioc_add_rt_rule *rules, bool user_only);
 
+=======
+>>>>>>> p9x
 int ipa_del_rt_rule(struct ipa_ioc_del_rt_rule *hdls);
 
 int ipa_commit_rt(enum ipa_ip_type ip);
 
+<<<<<<< HEAD
 int ipa_reset_rt(enum ipa_ip_type ip, bool user_only);
+=======
+int ipa_reset_rt(enum ipa_ip_type ip);
+>>>>>>> p9x
 
 int ipa_get_rt_tbl(struct ipa_ioc_get_rt_tbl *lookup);
 
@@ -1271,15 +1506,22 @@ int ipa_mdfy_rt_rule(struct ipa_ioc_mdfy_rt_rule *rules);
  */
 int ipa_add_flt_rule(struct ipa_ioc_add_flt_rule *rules);
 
+<<<<<<< HEAD
 int ipa_add_flt_rule_usr(struct ipa_ioc_add_flt_rule *rules, bool user_only);
 
+=======
+>>>>>>> p9x
 int ipa_del_flt_rule(struct ipa_ioc_del_flt_rule *hdls);
 
 int ipa_mdfy_flt_rule(struct ipa_ioc_mdfy_flt_rule *rules);
 
 int ipa_commit_flt(enum ipa_ip_type ip);
 
+<<<<<<< HEAD
 int ipa_reset_flt(enum ipa_ip_type ip, bool user_only);
+=======
+int ipa_reset_flt(enum ipa_ip_type ip);
+>>>>>>> p9x
 
 /*
  * NAT
@@ -1351,9 +1593,12 @@ int ipa_resume_wdi_pipe(u32 clnt_hdl);
 int ipa_suspend_wdi_pipe(u32 clnt_hdl);
 int ipa_get_wdi_stats(struct IpaHwStatsWDIInfoData_t *stats);
 u16 ipa_get_smem_restr_bytes(void);
+<<<<<<< HEAD
 int ipa_broadcast_wdi_quota_reach_ind(uint32_t fid,
 		uint64_t num_bytes);
 
+=======
+>>>>>>> p9x
 /*
  * To retrieve doorbell physical address of
  * wlan pipes
@@ -1366,10 +1611,13 @@ int ipa_uc_wdi_get_dbpa(struct ipa_wdi_db_params *out);
  * if uC not ready only, register callback
  */
 int ipa_uc_reg_rdyCB(struct ipa_wdi_uc_ready_params *param);
+<<<<<<< HEAD
 /*
  * To de-register uC ready callback
  */
 int ipa_uc_dereg_rdyCB(void);
+=======
+>>>>>>> p9x
 
 int ipa_create_wdi_mapping(u32 num_buffers, struct ipa_wdi_buffer_info *info);
 int ipa_release_wdi_mapping(u32 num_buffers, struct ipa_wdi_buffer_info *info);
@@ -1436,6 +1684,23 @@ enum ipacm_client_enum ipa_get_client(int pipe_idx);
 bool ipa_get_client_uplink(int pipe_idx);
 
 /*
+<<<<<<< HEAD
+=======
+ * ODU bridge
+ */
+
+int odu_bridge_init(struct odu_bridge_params *params);
+
+int odu_bridge_connect(void);
+
+int odu_bridge_disconnect(void);
+
+int odu_bridge_tx_dp(struct sk_buff *skb, struct ipa_tx_meta *metadata);
+
+int odu_bridge_cleanup(void);
+
+/*
+>>>>>>> p9x
  * IPADMA
  */
 int ipa_dma_init(void);
@@ -1444,9 +1709,15 @@ int ipa_dma_enable(void);
 
 int ipa_dma_disable(void);
 
+<<<<<<< HEAD
 int ipa_dma_sync_memcpy(u64 dest, u64 src, int len);
 
 int ipa_dma_async_memcpy(u64 dest, u64 src, int len,
+=======
+int ipa_dma_sync_memcpy(phys_addr_t dest, phys_addr_t src, int len);
+
+int ipa_dma_async_memcpy(phys_addr_t dest, phys_addr_t src, int len,
+>>>>>>> p9x
 			void (*user_cb)(void *user1), void *user_param);
 
 int ipa_dma_uc_memcpy(phys_addr_t dest, phys_addr_t src, int len);
@@ -1454,6 +1725,26 @@ int ipa_dma_uc_memcpy(phys_addr_t dest, phys_addr_t src, int len);
 void ipa_dma_destroy(void);
 
 /*
+<<<<<<< HEAD
+=======
+ * MHI
+ */
+int ipa_mhi_init(struct ipa_mhi_init_params *params);
+
+int ipa_mhi_start(struct ipa_mhi_start_params *params);
+
+int ipa_mhi_connect_pipe(struct ipa_mhi_connect_params *in, u32 *clnt_hdl);
+
+int ipa_mhi_disconnect_pipe(u32 clnt_hdl);
+
+int ipa_mhi_suspend(bool force);
+
+int ipa_mhi_resume(void);
+
+int ipa_mhi_destroy(void);
+
+/*
+>>>>>>> p9x
  * mux id
  */
 int ipa_write_qmap_id(struct ipa_ioc_write_qmapid *param_in);
@@ -1468,13 +1759,21 @@ int ipa_add_interrupt_handler(enum ipa_irq_type interrupt,
 
 int ipa_remove_interrupt_handler(enum ipa_irq_type interrupt);
 
+<<<<<<< HEAD
 int ipa_restore_suspend_handler(void);
 
+=======
+>>>>>>> p9x
 /*
  * Miscellaneous
  */
 void ipa_bam_reg_dump(void);
 
+<<<<<<< HEAD
+=======
+bool ipa_emb_ul_pipes_empty(void);
+
+>>>>>>> p9x
 int ipa_get_ep_mapping(enum ipa_client_type client);
 
 bool ipa_is_ready(void);
@@ -1491,14 +1790,18 @@ enum ipa_client_type ipa_get_client_mapping(int pipe_idx);
 enum ipa_rm_resource_name ipa_get_rm_resource_from_ep(int pipe_idx);
 
 bool ipa_get_modem_cfg_emb_pipe_flt(void);
+<<<<<<< HEAD
 
 enum ipa_transport_type ipa_get_transport_type(void);
 
+=======
+>>>>>>> p9x
 struct device *ipa_get_dma_dev(void);
 struct iommu_domain *ipa_get_smmu_domain(void);
 
 int ipa_disable_apps_wan_cons_deaggr(uint32_t agg_size, uint32_t agg_count);
 
+<<<<<<< HEAD
 const struct ipa_gsi_ep_config *ipa_get_gsi_ep_info
 	(enum ipa_client_type client);
 
@@ -1544,6 +1847,9 @@ int ipa_register_ipa_ready_cb(void (*ipa_ready_cb)(void *user_data),
 int ipa_tz_unlock_reg(struct ipa_tz_unlock_reg_info *reg_info, u16 num_regs);
 
 #else /* (CONFIG_IPA || CONFIG_IPA3) */
+=======
+#else /* CONFIG_IPA */
+>>>>>>> p9x
 
 /*
  * Connect / Disconnect
@@ -1576,6 +1882,7 @@ static inline int ipa_clear_endpoint_delay(u32 clnt_hdl)
 }
 
 /*
+<<<<<<< HEAD
  * Disable ep
  */
 static inline int ipa_disable_endpoint(u32 clnt_hdl)
@@ -1584,6 +1891,8 @@ static inline int ipa_disable_endpoint(u32 clnt_hdl)
 }
 
 /*
+=======
+>>>>>>> p9x
  * Configuration
  */
 static inline int ipa_cfg_ep(u32 clnt_hdl,
@@ -1666,12 +1975,15 @@ static inline int ipa_add_hdr(struct ipa_ioc_add_hdr *hdrs)
 	return -EPERM;
 }
 
+<<<<<<< HEAD
 static inline int ipa_add_hdr_usr(struct ipa_ioc_add_hdr *hdrs,
 				bool user_only)
 {
 	return -EPERM;
 }
 
+=======
+>>>>>>> p9x
 static inline int ipa_del_hdr(struct ipa_ioc_del_hdr *hdls)
 {
 	return -EPERM;
@@ -1682,7 +1994,11 @@ static inline int ipa_commit_hdr(void)
 	return -EPERM;
 }
 
+<<<<<<< HEAD
 static inline int ipa_reset_hdr(bool user_only)
+=======
+static inline int ipa_reset_hdr(void)
+>>>>>>> p9x
 {
 	return -EPERM;
 }
@@ -1706,8 +2022,12 @@ static inline int ipa_copy_hdr(struct ipa_ioc_copy_hdr *copy)
  * Header Processing Context
  */
 static inline int ipa_add_hdr_proc_ctx(
+<<<<<<< HEAD
 				struct ipa_ioc_add_hdr_proc_ctx *proc_ctxs,
 				bool user_only)
+=======
+				struct ipa_ioc_add_hdr_proc_ctx *proc_ctxs)
+>>>>>>> p9x
 {
 	return -EPERM;
 }
@@ -1724,12 +2044,15 @@ static inline int ipa_add_rt_rule(struct ipa_ioc_add_rt_rule *rules)
 	return -EPERM;
 }
 
+<<<<<<< HEAD
 static inline int ipa_add_rt_rule_usr(struct ipa_ioc_add_rt_rule *rules,
 					bool user_only)
 {
 	return -EPERM;
 }
 
+=======
+>>>>>>> p9x
 static inline int ipa_del_rt_rule(struct ipa_ioc_del_rt_rule *hdls)
 {
 	return -EPERM;
@@ -1740,7 +2063,11 @@ static inline int ipa_commit_rt(enum ipa_ip_type ip)
 	return -EPERM;
 }
 
+<<<<<<< HEAD
 static inline int ipa_reset_rt(enum ipa_ip_type ip, bool user_only)
+=======
+static inline int ipa_reset_rt(enum ipa_ip_type ip)
+>>>>>>> p9x
 {
 	return -EPERM;
 }
@@ -1773,12 +2100,15 @@ static inline int ipa_add_flt_rule(struct ipa_ioc_add_flt_rule *rules)
 	return -EPERM;
 }
 
+<<<<<<< HEAD
 static inline int ipa_add_flt_rule_usr(struct ipa_ioc_add_flt_rule *rules,
 					bool user_only)
 {
 	return -EPERM;
 }
 
+=======
+>>>>>>> p9x
 static inline int ipa_del_flt_rule(struct ipa_ioc_del_flt_rule *hdls)
 {
 	return -EPERM;
@@ -1794,7 +2124,11 @@ static inline int ipa_commit_flt(enum ipa_ip_type ip)
 	return -EPERM;
 }
 
+<<<<<<< HEAD
 static inline int ipa_reset_flt(enum ipa_ip_type ip, bool user_only)
+=======
+static inline int ipa_reset_flt(enum ipa_ip_type ip)
+>>>>>>> p9x
 {
 	return -EPERM;
 }
@@ -1960,12 +2294,15 @@ static inline int ipa_suspend_wdi_pipe(u32 clnt_hdl)
 	return -EPERM;
 }
 
+<<<<<<< HEAD
 static inline int ipa_broadcast_wdi_quota_reach_ind(uint32_t fid,
 		uint64_t num_bytes)
 {
 	return -EPERM;
 }
 
+=======
+>>>>>>> p9x
 static inline int ipa_uc_wdi_get_dbpa(
 	struct ipa_wdi_db_params *out)
 {
@@ -1978,11 +2315,14 @@ static inline int ipa_uc_reg_rdyCB(
 	return -EPERM;
 }
 
+<<<<<<< HEAD
 static inline int ipa_uc_dereg_rdyCB(void)
 {
 	return -EPERM;
 }
 
+=======
+>>>>>>> p9x
 
 /*
  * Resource manager
@@ -2107,7 +2447,10 @@ static inline int teth_bridge_connect(struct teth_bridge_connect_params
 static inline void ipa_set_client(int index, enum ipacm_client_enum client,
 	bool uplink)
 {
+<<<<<<< HEAD
 	return;
+=======
+>>>>>>> p9x
 }
 
 static inline enum ipacm_client_enum ipa_get_client(int pipe_idx)
@@ -2120,6 +2463,39 @@ static inline bool ipa_get_client_uplink(int pipe_idx)
 	return -EPERM;
 }
 
+<<<<<<< HEAD
+=======
+
+/*
+ * ODU bridge
+ */
+static inline int odu_bridge_init(struct odu_bridge_params *params)
+{
+	return -EPERM;
+}
+
+static inline int odu_bridge_disconnect(void)
+{
+	return -EPERM;
+}
+
+static inline int odu_bridge_connect(void)
+{
+	return -EPERM;
+}
+
+static inline int odu_bridge_tx_dp(struct sk_buff *skb,
+						struct ipa_tx_meta *metadata)
+{
+	return -EPERM;
+}
+
+static inline int odu_bridge_cleanup(void)
+{
+	return -EPERM;
+}
+
+>>>>>>> p9x
 /*
  * IPADMA
  */
@@ -2162,6 +2538,48 @@ static inline void ipa_dma_destroy(void)
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * MHI
+ */
+static inline int ipa_mhi_init(struct ipa_mhi_init_params *params)
+{
+	return -EPERM;
+}
+
+static inline int ipa_mhi_start(struct ipa_mhi_start_params *params)
+{
+	return -EPERM;
+}
+
+static inline int ipa_mhi_connect_pipe(struct ipa_mhi_connect_params *in,
+	u32 *clnt_hdl)
+{
+	return -EPERM;
+}
+
+static inline int ipa_mhi_disconnect_pipe(u32 clnt_hdl)
+{
+	return -EPERM;
+}
+
+static inline int ipa_mhi_suspend(bool force)
+{
+	return -EPERM;
+}
+
+static inline int ipa_mhi_resume(void)
+{
+	return -EPERM;
+}
+
+static inline int ipa_mhi_destroy(void)
+{
+	return -EPERM;
+}
+
+/*
+>>>>>>> p9x
  * mux id
  */
 static inline int ipa_write_qmap_id(struct ipa_ioc_write_qmapid *param_in)
@@ -2185,11 +2603,14 @@ static inline int ipa_remove_interrupt_handler(enum ipa_irq_type interrupt)
 	return -EPERM;
 }
 
+<<<<<<< HEAD
 static inline int ipa_restore_suspend_handler(void)
 {
 	return -EPERM;
 }
 
+=======
+>>>>>>> p9x
 /*
  * Miscellaneous
  */
@@ -2198,6 +2619,14 @@ static inline void ipa_bam_reg_dump(void)
 	return;
 }
 
+<<<<<<< HEAD
+=======
+static inline bool ipa_emb_ul_pipes_empty(void)
+{
+	return false;
+}
+
+>>>>>>> p9x
 static inline int ipa_get_wdi_stats(struct IpaHwStatsWDIInfoData_t *stats)
 {
 	return -EPERM;
@@ -2247,11 +2676,14 @@ static inline bool ipa_get_modem_cfg_emb_pipe_flt(void)
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static inline enum ipa_transport_type ipa_get_transport_type(void)
 {
 	return -EFAULT;
 }
 
+=======
+>>>>>>> p9x
 static inline struct device *ipa_get_dma_dev(void)
 {
 	return NULL;
@@ -2278,6 +2710,7 @@ static inline int ipa_disable_apps_wan_cons_deaggr(void)
 {
 	return -EINVAL;
 }
+<<<<<<< HEAD
 
 static inline const struct ipa_gsi_ep_config *ipa_get_gsi_ep_info
 	(int ipa_ep_idx)
@@ -2304,5 +2737,8 @@ static inline int ipa_tz_unlock_reg(struct ipa_tz_unlock_reg_info *reg_info,
 }
 
 #endif /* (CONFIG_IPA || CONFIG_IPA3) */
+=======
+#endif /* CONFIG_IPA*/
+>>>>>>> p9x
 
 #endif /* _IPA_H_ */

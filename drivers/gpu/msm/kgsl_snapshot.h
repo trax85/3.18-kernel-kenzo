@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015,2017, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -46,26 +50,43 @@ struct kgsl_snapshot_section_header {
 #define KGSL_SNAPSHOT_SECTION_OS           0x0101
 #define KGSL_SNAPSHOT_SECTION_REGS         0x0201
 #define KGSL_SNAPSHOT_SECTION_RB           0x0301
+<<<<<<< HEAD
 #define KGSL_SNAPSHOT_SECTION_RB_V2        0x0302
 #define KGSL_SNAPSHOT_SECTION_IB           0x0401
 #define KGSL_SNAPSHOT_SECTION_IB_V2        0x0402
+=======
+#define KGSL_SNAPSHOT_SECTION_IB           0x0401
+>>>>>>> p9x
 #define KGSL_SNAPSHOT_SECTION_INDEXED_REGS 0x0501
 #define KGSL_SNAPSHOT_SECTION_ISTORE       0x0801
 #define KGSL_SNAPSHOT_SECTION_DEBUG        0x0901
 #define KGSL_SNAPSHOT_SECTION_DEBUGBUS     0x0A01
 #define KGSL_SNAPSHOT_SECTION_GPU_OBJECT   0x0B01
+<<<<<<< HEAD
 #define KGSL_SNAPSHOT_SECTION_GPU_OBJECT_V2 0x0B02
 #define KGSL_SNAPSHOT_SECTION_MEMLIST      0x0E01
 #define KGSL_SNAPSHOT_SECTION_MEMLIST_V2   0x0E02
+=======
+#define KGSL_SNAPSHOT_SECTION_MEMLIST      0x0E01
+>>>>>>> p9x
 #define KGSL_SNAPSHOT_SECTION_SHADER       0x1201
 
 #define KGSL_SNAPSHOT_SECTION_END          0xFFFF
 
 /* OS sub-section header */
 #define KGSL_SNAPSHOT_OS_LINUX             0x0001
+<<<<<<< HEAD
 #define KGSL_SNAPSHOT_OS_LINUX_V3          0x00000202
 
 /* Linux OS specific information */
+=======
+
+/* Linux OS specific information */
+
+#define SNAPSHOT_STATE_HUNG 0
+#define SNAPSHOT_STATE_RUNNING 1
+
+>>>>>>> p9x
 struct kgsl_snapshot_linux {
 	int osid;                   /* subsection OS identifier */
 	int state;		    /* 1 if the thread is running, 0 for hung */
@@ -84,6 +105,7 @@ struct kgsl_snapshot_linux {
 	unsigned char comm[16];	    /* Name of the process that owns the PT */
 } __packed;
 
+<<<<<<< HEAD
 struct kgsl_snapshot_linux_v2 {
 	int osid;                   /* subsection OS identifier */
 	__u32 seconds;		    /* Unix timestamp for the snapshot */
@@ -101,6 +123,8 @@ struct kgsl_snapshot_linux_v2 {
 	unsigned char comm[16];	    /* Name of the process that owns the PT */
 } __packed;
 
+=======
+>>>>>>> p9x
 /*
  * This structure contains a record of an active context.
  * These are appended one after another in the OS section below
@@ -113,12 +137,15 @@ struct kgsl_snapshot_linux_context {
 	__u32 timestamp_retired;	/* The last timestamp retired by HW */
 };
 
+<<<<<<< HEAD
 struct kgsl_snapshot_linux_context_v2 {
 	__u32 id;			/* The context ID */
 	__u32 timestamp_queued;		/* The last queued timestamp */
 	__u32 timestamp_consumed;	/* The last timestamp consumed by HW */
 	__u32 timestamp_retired;	/* The last timestamp retired by HW */
 };
+=======
+>>>>>>> p9x
 /* Ringbuffer sub-section header */
 struct kgsl_snapshot_rb {
 	int start;  /* dword at the start of the dump */
@@ -131,6 +158,7 @@ struct kgsl_snapshot_rb {
 	__u32 timestamp_retired; /* The last timestamp retired by HW */
 } __packed;
 
+<<<<<<< HEAD
 struct kgsl_snapshot_rb_v2 {
 	int start;  /* dword at the start of the dump */
 	int end;    /* dword at the end of the dump */
@@ -145,6 +173,8 @@ struct kgsl_snapshot_rb_v2 {
 } __packed;
 
 
+=======
+>>>>>>> p9x
 /* Replay or Memory list section, both sections have same header */
 struct kgsl_snapshot_replay_mem_list {
 	/*
@@ -156,6 +186,7 @@ struct kgsl_snapshot_replay_mem_list {
 	__u32 ptbase;
 } __packed;
 
+<<<<<<< HEAD
 /* Replay or Memory list section, both sections have same header */
 struct kgsl_snapshot_mem_list_v2 {
 	/*
@@ -168,6 +199,8 @@ struct kgsl_snapshot_mem_list_v2 {
 } __packed;
 
 
+=======
+>>>>>>> p9x
 /* Indirect buffer sub-section header */
 struct kgsl_snapshot_ib {
 	__u32 gpuaddr; /* GPU address of the the IB */
@@ -175,6 +208,7 @@ struct kgsl_snapshot_ib {
 	int size;    /* Size of the IB */
 } __packed;
 
+<<<<<<< HEAD
 /* Indirect buffer sub-section header (v2) */
 struct kgsl_snapshot_ib_v2 {
 	__u64 gpuaddr; /* GPU address of the the IB */
@@ -183,6 +217,8 @@ struct kgsl_snapshot_ib_v2 {
 } __packed;
 
 
+=======
+>>>>>>> p9x
 /* Register sub-section header */
 struct kgsl_snapshot_regs {
 	__u32 count; /* Number of register pairs in the section */
@@ -248,6 +284,7 @@ struct kgsl_snapshot_gpu_object {
 	int size;    /* Size of the object (in dwords) */
 };
 
+<<<<<<< HEAD
 struct kgsl_snapshot_gpu_object_v2 {
 	int type;      /* Type of GPU object */
 	__u64 gpuaddr; /* GPU address of the the object */
@@ -255,6 +292,8 @@ struct kgsl_snapshot_gpu_object_v2 {
 	__u64 size;    /* Size of the object (in dwords) */
 } __packed;
 
+=======
+>>>>>>> p9x
 void kgsl_snapshot_push_object(struct kgsl_process_private *process,
 	uint64_t gpuaddr, uint64_t dwords);
 #endif

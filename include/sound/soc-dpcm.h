@@ -13,6 +13,7 @@
 
 #include <linux/slab.h>
 #include <linux/list.h>
+#include <linux/slab.h>
 #include <sound/pcm.h>
 
 struct snd_soc_pcm_runtime;
@@ -165,5 +166,30 @@ static inline void dpcm_path_put(struct snd_soc_dapm_widget_list **list)
 	kfree(*list);
 }
 
+
+int dpcm_path_get(struct snd_soc_pcm_runtime *fe,
+	int stream, struct snd_soc_dapm_widget_list **list_);
+int dpcm_process_paths(struct snd_soc_pcm_runtime *fe,
+	int stream, struct snd_soc_dapm_widget_list **list, int new);
+int dpcm_be_dai_startup(struct snd_soc_pcm_runtime *fe, int stream);
+int dpcm_be_dai_shutdown(struct snd_soc_pcm_runtime *fe, int stream);
+void dpcm_be_disconnect(struct snd_soc_pcm_runtime *fe, int stream);
+void dpcm_clear_pending_state(struct snd_soc_pcm_runtime *fe, int stream);
+int dpcm_be_dai_hw_free(struct snd_soc_pcm_runtime *fe, int stream);
+int dpcm_be_dai_hw_params(struct snd_soc_pcm_runtime *fe, int tream);
+int dpcm_fe_dai_hw_params_be(struct snd_soc_pcm_runtime *fe,
+	struct snd_soc_pcm_runtime *be, struct snd_pcm_hw_params *hw_params,
+							    int stream);
+int dpcm_be_dai_trigger(struct snd_soc_pcm_runtime *fe, int stream, int cmd);
+int dpcm_be_dai_prepare(struct snd_soc_pcm_runtime *fe, int stream);
+int dpcm_fe_dai_prepare_be(struct snd_soc_pcm_runtime *fe,
+		struct snd_soc_pcm_runtime *be, int stream);
+int dpcm_dapm_stream_event(struct snd_soc_pcm_runtime *fe,
+	int dir, int event);
+
+static inline void dpcm_path_put(struct snd_soc_dapm_widget_list **list)
+{
+	kfree(*list);
+}
 
 #endif

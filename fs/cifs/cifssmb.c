@@ -1436,8 +1436,11 @@ cifs_readv_discard(struct TCP_Server_Info *server, struct mid_q_entry *mid)
 
 	length = discard_remaining_data(server);
 	dequeue_mid(mid, rdata->result);
+<<<<<<< HEAD
 	mid->resp_buf = server->smallbuf;
 	server->smallbuf = NULL;
+=======
+>>>>>>> p9x
 	return length;
 }
 
@@ -1469,6 +1472,7 @@ cifs_readv_receive(struct TCP_Server_Info *server, struct mid_q_entry *mid)
 		return length;
 	server->total_read += length;
 
+<<<<<<< HEAD
 	if (server->ops->is_session_expired &&
 	    server->ops->is_session_expired(buf)) {
 		cifs_reconnect(server);
@@ -1476,6 +1480,8 @@ cifs_readv_receive(struct TCP_Server_Info *server, struct mid_q_entry *mid)
 		return -1;
 	}
 
+=======
+>>>>>>> p9x
 	if (server->ops->is_status_pending &&
 	    server->ops->is_status_pending(buf, server, 0)) {
 		discard_remaining_data(server);

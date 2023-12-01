@@ -797,7 +797,11 @@ void truncate_setsize(struct inode *inode, loff_t newsize)
 	i_size_write(inode, newsize);
 	if (newsize > oldsize)
 		pagecache_isize_extended(inode, oldsize, newsize);
+<<<<<<< HEAD
 	truncate_pagecache(inode, newsize);
+=======
+	truncate_pagecache(inode, oldsize, newsize);
+>>>>>>> p9x
 }
 EXPORT_SYMBOL(truncate_setsize);
 

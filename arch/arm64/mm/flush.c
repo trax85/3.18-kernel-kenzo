@@ -64,12 +64,23 @@ void copy_to_user_page(struct vm_area_struct *vma, struct page *page,
 	memcpy(dst, src, len);
 	flush_ptrace_access(vma, page, uaddr, dst, len);
 	preempt_enable();
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> p9x
 }
 
 void __sync_icache_dcache(pte_t pte, unsigned long addr)
 {
 	struct page *page = pte_page(pte);
 
+<<<<<<< HEAD
+=======
+	/* no flushing needed for anonymous pages */
+	if (!page_mapping(page))
+		return;
+
+>>>>>>> p9x
 	if (!test_and_set_bit(PG_dcache_clean, &page->flags)) {
 		__flush_dcache_area(page_address(page),
 				PAGE_SIZE << compound_order(page));

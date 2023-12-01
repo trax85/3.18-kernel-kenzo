@@ -34,6 +34,9 @@ obj-$(CONFIG_NUMA)		+= numa.o numa_$(BITS).o
 obj-$(CONFIG_AMD_NUMA)		+= amdtopology.o
 obj-$(CONFIG_ACPI_NUMA)		+= srat.o
 obj-$(CONFIG_NUMA_EMU)		+= numa_emulation.o
+<<<<<<< HEAD
 
 obj-$(CONFIG_MEMTEST)		+= memtest.o
 obj-$(CONFIG_X86_INTEL_MPX)	+= mpx.o
+=======
+>>>>>>> p9x

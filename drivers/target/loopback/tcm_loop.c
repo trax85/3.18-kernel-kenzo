@@ -186,10 +186,14 @@ static void tcm_loop_submission_work(struct work_struct *work)
 		set_host_byte(sc, DID_NO_CONNECT);
 		goto out_done;
 	}
+<<<<<<< HEAD
 	if (tl_tpg->tl_transport_status == TCM_TRANSPORT_OFFLINE) {
 		set_host_byte(sc, DID_TRANSPORT_DISRUPTED);
 		goto out_done;
 	}
+=======
+
+>>>>>>> p9x
 	tl_nexus = tl_tpg->tl_nexus;
 	if (!tl_nexus) {
 		scmd_printk(KERN_ERR, sc, "TCM_Loop I_T Nexus"
@@ -281,6 +285,11 @@ static int tcm_loop_issue_tmr(struct tcm_loop_tpg *tl_tpg,
 	int ret = TMR_FUNCTION_FAILED, rc;
 
 	/*
+	 * Locate the tl_tpg and se_tpg pointers from TargetID in sc->device->id
+	 */
+	tl_tpg = &tl_hba->tl_hba_tpgs[sc->device->id];
+	se_tpg = &tl_tpg->tl_se_tpg;
+	/*
 	 * Locate the tl_nexus and se_sess pointers
 	 */
 	tl_nexus = tl_tpg->tl_nexus;
@@ -289,6 +298,10 @@ static int tcm_loop_issue_tmr(struct tcm_loop_tpg *tl_tpg,
 				" active I_T Nexus\n");
 		return ret;
 	}
+<<<<<<< HEAD
+=======
+	se_sess = tl_nexus->se_sess;
+>>>>>>> p9x
 
 	tl_cmd = kmem_cache_zalloc(tcm_loop_cmd_cache, GFP_KERNEL);
 	if (!tl_cmd) {
@@ -937,7 +950,12 @@ static int tcm_loop_port_link(
 				struct tcm_loop_tpg, tl_se_tpg);
 	struct tcm_loop_hba *tl_hba = tl_tpg->tl_hba;
 
+<<<<<<< HEAD
 	atomic_inc_mb(&tl_tpg->tl_tpg_port_count);
+=======
+	atomic_inc(&tl_tpg->tl_tpg_port_count);
+	smp_mb__after_atomic();
+>>>>>>> p9x
 	/*
 	 * Add Linux/SCSI struct scsi_device by HCTL
 	 */
@@ -971,7 +989,12 @@ static void tcm_loop_port_unlink(
 	scsi_remove_device(sd);
 	scsi_device_put(sd);
 
+<<<<<<< HEAD
 	atomic_dec_mb(&tl_tpg->tl_tpg_port_count);
+=======
+	atomic_dec(&tl_tpg->tl_tpg_port_count);
+	smp_mb__after_atomic();
+>>>>>>> p9x
 
 	pr_debug("TCM_Loop_ConfigFS: Port Unlink Successful\n");
 }

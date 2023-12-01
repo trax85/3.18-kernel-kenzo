@@ -886,8 +886,13 @@ exec_clkcmp(struct nv50_disp_priv *priv, int head, int id, u32 pclk, u32 *conf)
 			break;
 	}
 
+<<<<<<< HEAD
 	if (or == 8)
 		return NULL;
+=======
+	if (outp == 8)
+		return conf;
+>>>>>>> p9x
 
 	outp = exec_lookup(priv, head, or, ctrl, &data, &ver, &hdr, &cnt, &len, &info1);
 	if (!outp)

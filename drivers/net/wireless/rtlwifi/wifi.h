@@ -2395,7 +2395,10 @@ struct dig_t {
 	u8 cur_ccasate;
 	u8 large_fa_hit;
 	u8 dig_dynamic_min;
+<<<<<<< HEAD
 	u8 dig_dynamic_min_1;
+=======
+>>>>>>> p9x
 	u8 forbidden_igi;
 	u8 dig_state;
 	u8 dig_highpwrstate;
@@ -2427,10 +2430,129 @@ struct rtl_global_var {
 	spinlock_t glb_list_lock;
 };
 
+<<<<<<< HEAD
 struct rtl_btc_info {
 	u8 bt_type;
 	u8 btcoexist;
 	u8 ant_num;
+=======
+struct rtl_priv {
+	struct ieee80211_hw *hw;
+	struct completion firmware_loading_complete;
+	struct list_head list;
+	struct rtl_priv *buddy_priv;
+	struct rtl_global_var *glb_var;
+	struct rtl_dualmac_easy_concurrent_ctl easy_concurrent_ctl;
+	struct rtl_dmsp_ctl dmsp_ctl;
+	struct rtl_locks locks;
+	struct rtl_works works;
+	struct rtl_mac mac80211;
+	struct rtl_hal rtlhal;
+	struct rtl_regulatory regd;
+	struct rtl_rfkill rfkill;
+	struct rtl_io io;
+	struct rtl_phy phy;
+	struct rtl_dm dm;
+	struct rtl_security sec;
+	struct rtl_efuse efuse;
+
+	struct rtl_ps_ctl psc;
+	struct rate_adaptive ra;
+	struct wireless_stats stats;
+	struct rt_link_detect link_info;
+	struct false_alarm_statistics falsealm_cnt;
+
+	struct rtl_rate_priv *rate_priv;
+
+	/* sta entry list for ap adhoc or mesh */
+	struct list_head entry_list;
+
+	struct rtl_debug dbg;
+	int max_fw_size;
+
+	/*
+	 *hal_cfg : for diff cards
+	 *intf_ops : for diff interrface usb/pcie
+	 */
+	struct rtl_hal_cfg *cfg;
+	struct rtl_intf_ops *intf_ops;
+
+	/*this var will be set by set_bit,
+	   and was used to indicate status of
+	   interface or hardware */
+	unsigned long status;
+
+	/* tables for dm */
+	struct dig_t dm_digtable;
+	struct ps_t dm_pstable;
+
+	u32 reg_874;
+	u32 reg_c70;
+	u32 reg_85c;
+	u32 reg_a74;
+	bool reg_init;	/* true if regs saved */
+	bool bt_operation_on;
+	__le32 *usb_data;
+	int usb_data_index;
+	bool initialized;
+	bool enter_ps;	/* true when entering PS */
+	u8 rate_mask[5];
+
+	/*This must be the last item so
+	   that it points to the data allocated
+	   beyond  this structure like:
+	   rtl_pci_priv or rtl_usb_priv */
+	u8 priv[0] __aligned(sizeof(void *));
+};
+
+#define rtl_priv(hw)		(((struct rtl_priv *)(hw)->priv))
+#define rtl_mac(rtlpriv)	(&((rtlpriv)->mac80211))
+#define rtl_hal(rtlpriv)	(&((rtlpriv)->rtlhal))
+#define rtl_efuse(rtlpriv)	(&((rtlpriv)->efuse))
+#define rtl_psc(rtlpriv)	(&((rtlpriv)->psc))
+
+
+/***************************************
+    Bluetooth Co-existence Related
+****************************************/
+
+enum bt_ant_num {
+	ANT_X2 = 0,
+	ANT_X1 = 1,
+};
+
+enum bt_co_type {
+	BT_2WIRE = 0,
+	BT_ISSC_3WIRE = 1,
+	BT_ACCEL = 2,
+	BT_CSR_BC4 = 3,
+	BT_CSR_BC8 = 4,
+	BT_RTL8756 = 5,
+	BT_RTL8723A = 6,
+};
+
+enum bt_cur_state {
+	BT_OFF = 0,
+	BT_ON = 1,
+};
+
+enum bt_service_type {
+	BT_SCO = 0,
+	BT_A2DP = 1,
+	BT_HID = 2,
+	BT_HID_IDLE = 3,
+	BT_SCAN = 4,
+	BT_IDLE = 5,
+	BT_OTHER_ACTION = 6,
+	BT_BUSY = 7,
+	BT_OTHERBUSY = 8,
+	BT_PAN = 9,
+};
+
+enum bt_radio_shared {
+	BT_RADIO_SHARED = 0,
+	BT_RADIO_INDIVIDUAL = 1,
+>>>>>>> p9x
 };
 
 struct bt_coexist_info {

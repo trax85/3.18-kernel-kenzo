@@ -247,7 +247,11 @@ static __init int sel_netport_init(void)
 		sel_netport_hash[iter].size = 0;
 	}
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return ret;
+>>>>>>> p9x
 }
 
 __initcall(sel_netport_init);

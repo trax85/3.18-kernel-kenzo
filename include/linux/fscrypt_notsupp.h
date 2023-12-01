@@ -3,16 +3,21 @@
  *
  * This stubs out the fscrypt functions for filesystems configured without
  * encryption support.
+<<<<<<< HEAD
  *
  * Do not include this file directly. Use fscrypt.h instead!
  */
 #ifndef _LINUX_FSCRYPT_H
 #error "Incorrect include of linux/fscrypt_notsupp.h!"
 #endif
+=======
+ */
+>>>>>>> p9x
 
 #ifndef _LINUX_FSCRYPT_NOTSUPP_H
 #define _LINUX_FSCRYPT_NOTSUPP_H
 
+<<<<<<< HEAD
 static inline bool fscrypt_has_encryption_key(const struct inode *inode)
 {
 	return false;
@@ -28,6 +33,11 @@ static inline void fscrypt_enqueue_decrypt_work(struct work_struct *work)
 {
 }
 
+=======
+#include <linux/fscrypt_common.h>
+
+/* crypto.c */
+>>>>>>> p9x
 static inline struct fscrypt_ctx *fscrypt_get_ctx(const struct inode *inode,
 						  gfp_t gfp_flags)
 {
@@ -56,17 +66,33 @@ static inline int fscrypt_decrypt_page(const struct inode *inode,
 	return -EOPNOTSUPP;
 }
 
+<<<<<<< HEAD
 static inline struct page *fscrypt_control_page(struct page *page)
 {
 	WARN_ON_ONCE(1);
 	return ERR_PTR(-EINVAL);
 }
+=======
+>>>>>>> p9x
 
 static inline void fscrypt_restore_control_page(struct page *page)
 {
 	return;
 }
 
+<<<<<<< HEAD
+=======
+static inline void fscrypt_set_d_op(struct dentry *dentry)
+{
+	return;
+}
+
+static inline void fscrypt_set_encrypted_dentry(struct dentry *dentry)
+{
+	return;
+}
+
+>>>>>>> p9x
 /* policy.c */
 static inline int fscrypt_ioctl_set_policy(struct file *filp,
 					   const void __user *arg)
@@ -98,7 +124,12 @@ static inline int fscrypt_get_encryption_info(struct inode *inode)
 	return -EOPNOTSUPP;
 }
 
+<<<<<<< HEAD
 static inline void fscrypt_put_encryption_info(struct inode *inode)
+=======
+static inline void fscrypt_put_encryption_info(struct inode *inode,
+					       struct fscrypt_info *ci)
+>>>>>>> p9x
 {
 	return;
 }
@@ -108,7 +139,11 @@ static inline int fscrypt_setup_filename(struct inode *dir,
 					 const struct qstr *iname,
 					 int lookup, struct fscrypt_name *fname)
 {
+<<<<<<< HEAD
 	if (IS_ENCRYPTED(dir))
+=======
+	if (dir->i_sb->s_cop->is_encrypted(dir))
+>>>>>>> p9x
 		return -EOPNOTSUPP;
 
 	memset(fname, 0, sizeof(struct fscrypt_name));
@@ -123,8 +158,21 @@ static inline void fscrypt_free_filename(struct fscrypt_name *fname)
 	return;
 }
 
+<<<<<<< HEAD
 static inline int fscrypt_fname_alloc_buffer(const struct inode *inode,
 					     u32 max_encrypted_len,
+=======
+static inline u32 fscrypt_fname_encrypted_size(const struct inode *inode,
+					       u32 ilen)
+{
+	/* never happens */
+	WARN_ON(1);
+	return 0;
+}
+
+static inline int fscrypt_fname_alloc_buffer(const struct inode *inode,
+					     u32 ilen,
+>>>>>>> p9x
 					     struct fscrypt_str *crypto_str)
 {
 	return -EOPNOTSUPP;
@@ -143,6 +191,16 @@ static inline int fscrypt_fname_disk_to_usr(struct inode *inode,
 	return -EOPNOTSUPP;
 }
 
+<<<<<<< HEAD
+=======
+static inline int fscrypt_fname_usr_to_disk(struct inode *inode,
+					    const struct qstr *iname,
+					    struct fscrypt_str *oname)
+{
+	return -EOPNOTSUPP;
+}
+
+>>>>>>> p9x
 static inline bool fscrypt_match_name(const struct fscrypt_name *fname,
 				      const u8 *de_name, u32 de_name_len)
 {
@@ -153,6 +211,7 @@ static inline bool fscrypt_match_name(const struct fscrypt_name *fname,
 }
 
 /* bio.c */
+<<<<<<< HEAD
 static inline void fscrypt_decrypt_bio(struct bio *bio)
 {
 }
@@ -160,6 +219,12 @@ static inline void fscrypt_decrypt_bio(struct bio *bio)
 static inline void fscrypt_enqueue_decrypt_bio(struct fscrypt_ctx *ctx,
 					       struct bio *bio)
 {
+=======
+static inline void fscrypt_decrypt_bio_pages(struct fscrypt_ctx *ctx,
+					     struct bio *bio)
+{
+	return;
+>>>>>>> p9x
 }
 
 static inline void fscrypt_pullback_bio_page(struct page **page, bool restore)
@@ -173,6 +238,7 @@ static inline int fscrypt_zeroout_range(const struct inode *inode, pgoff_t lblk,
 	return -EOPNOTSUPP;
 }
 
+<<<<<<< HEAD
 /* hooks.c */
 
 static inline int fscrypt_file_open(struct inode *inode, struct file *filp)
@@ -227,4 +293,6 @@ static inline void *fscrypt_get_symlink(struct inode *inode,
 	return ERR_PTR(-EOPNOTSUPP);
 }
 
+=======
+>>>>>>> p9x
 #endif	/* _LINUX_FSCRYPT_NOTSUPP_H */

@@ -164,8 +164,13 @@ static void release_pages_by_pfn(const u32 pfns[], unsigned int num)
 	/* Find pfns pointing at start of each page, get pages and free them. */
 	for (i = 0; i < num; i += VIRTIO_BALLOON_PAGES_PER_PAGE) {
 		struct page *page = balloon_pfn_to_page(pfns[i]);
+<<<<<<< HEAD
 		adjust_managed_page_count(page, 1);
 		put_page(page); /* balloon reference */
+=======
+		balloon_page_free(page);
+		adjust_managed_page_count(page, 1);
+>>>>>>> p9x
 	}
 }
 

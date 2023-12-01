@@ -431,7 +431,11 @@ qla2x00_sysfs_write_optrom_ctl(struct file *filp, struct kobject *kobj,
 		}
 
 		ha->optrom_region_start = start;
+<<<<<<< HEAD
 		ha->optrom_region_size = size;
+=======
+		ha->optrom_region_size = start + size;
+>>>>>>> p9x
 
 		ha->optrom_state = QLA_SREADING;
 		ha->optrom_buffer = vmalloc(ha->optrom_region_size);
@@ -504,7 +508,11 @@ qla2x00_sysfs_write_optrom_ctl(struct file *filp, struct kobject *kobj,
 		}
 
 		ha->optrom_region_start = start;
+<<<<<<< HEAD
 		ha->optrom_region_size = size;
+=======
+		ha->optrom_region_size = start + size;
+>>>>>>> p9x
 
 		ha->optrom_state = QLA_SWRITING;
 		ha->optrom_buffer = vmalloc(ha->optrom_region_size);

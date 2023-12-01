@@ -11,5 +11,10 @@ mpq-dmx-hw-plugin-$(CONFIG_QSEECOM) += mpq_sdmx.o
 
 mpq-dmx-hw-plugin-$(CONFIG_DVB_MPQ_TSPP1) += mpq_dmx_plugin_tspp_v1.o
 
+<<<<<<< HEAD
+=======
+mpq-dmx-hw-plugin-$(CONFIG_DVB_MPQ_TSPP2) += mpq_dmx_plugin_tspp_v2.o
+
+>>>>>>> p9x
 mpq-dmx-hw-plugin-$(CONFIG_DVB_MPQ_SW) += mpq_dmx_plugin_sw.o
 

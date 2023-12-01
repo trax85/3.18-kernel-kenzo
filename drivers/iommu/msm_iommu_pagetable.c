@@ -208,7 +208,10 @@ static u32 *make_second_level(struct msm_iommu_pt *pt, u32 *fl_pte,
 				u32 *fl_pte_shadow)
 {
 	u32 *sl;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	sl = (u32 *) __get_free_pages(GFP_ATOMIC,
 			get_order(SZ_4K));
 
@@ -219,7 +222,12 @@ static u32 *make_second_level(struct msm_iommu_pt *pt, u32 *fl_pte,
 	memset(sl, 0, SZ_4K);
 	clean_pte(sl, sl + NUM_SL_PTE + GUARD_PTE, pt->redirect);
 
+<<<<<<< HEAD
 	*fl_pte = ((((int)__pa(sl)) & FL_BASE_MASK) | FL_TYPE_TABLE);
+=======
+	*fl_pte = ((((int)__pa(sl)) & FL_BASE_MASK) | \
+			FL_TYPE_TABLE);
+>>>>>>> p9x
 	*fl_pte_shadow = *fl_pte & ~0x1FF;
 
 	clean_pte(fl_pte, fl_pte + 1, pt->redirect);
@@ -277,7 +285,10 @@ static inline int fl_16m(u32 *fl_pte, phys_addr_t pa, int pgprot)
 {
 	int i;
 	int ret = 0;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	for (i = 0; i < 16; i++)
 		if (*(fl_pte+i)) {
 			ret = -EBUSY;

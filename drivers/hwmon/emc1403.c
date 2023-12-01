@@ -159,10 +159,22 @@ static ssize_t store_hyst(struct device *dev,
 	if (retval < 0)
 		goto fail;
 
+<<<<<<< HEAD
 	hyst = limit * 1000 - val;
 	hyst = clamp_val(DIV_ROUND_CLOSEST(hyst, 1000), 0, 255);
 	retval = regmap_write(regmap, 0x21, hyst);
 	if (retval == 0)
+=======
+	hyst = retval * 1000 - val;
+	hyst = DIV_ROUND_CLOSEST(hyst, 1000);
+	if (hyst < 0 || hyst > 255) {
+		retval = -ERANGE;
+		goto fail;
+	}
+
+	retval = i2c_smbus_write_byte_data(client, 0x21, hyst);
+	if (retval == 0) {
+>>>>>>> p9x
 		retval = count;
 fail:
 	mutex_unlock(&data->mutex);

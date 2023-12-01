@@ -36,6 +36,7 @@
 #include <linux/types.h>
 #include <linux/sched.h>
 
+<<<<<<< HEAD
 struct ib_addr {
 	union {
 		__u8		uib_addr8[16];
@@ -87,6 +88,8 @@ struct sockaddr_ib {
 	__u64			sib_scope_id;
 };
 
+=======
+>>>>>>> p9x
 /*
  * The IB interfaces that use write() as bi-directional ioctl() are
  * fundamentally unsafe, since there are lots of ways to trigger "write()"

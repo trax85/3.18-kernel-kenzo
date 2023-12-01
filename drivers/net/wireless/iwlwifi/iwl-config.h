@@ -239,6 +239,7 @@ struct iwl_pwr_tx_backoff {
  * @led_mode: 0=blinking, 1=On(RF On)/Off(RF Off)
  * @rx_with_siso_diversity: 1x1 device with rx antenna diversity
  * @internal_wimax_coex: internal wifi/wimax combo device
+<<<<<<< HEAD
  * @high_temp: Is this NIC is designated to be in high temperature.
  * @host_interrupt_operation_mode: device needs host interrupt operation
  *	mode set
@@ -246,6 +247,11 @@ struct iwl_pwr_tx_backoff {
  * @nvm_hw_section_num: the ID of the HW NVM section
  * @pwr_tx_backoffs: translation table between power limits and backoffs
  * @max_rx_agg_size: max RX aggregation size of the ADDBA request/response
+=======
+ * @temp_offset_v2: support v2 of temperature offset calibration
+ * @host_interrupt_operation_mode: device needs host interrupt operation
+ *	mode set
+>>>>>>> p9x
  *
  * We enable the driver to be backward compatible wrt. hardware features.
  * API differences in uCode shouldn't be handled here but through TLVs
@@ -275,6 +281,7 @@ struct iwl_cfg {
 	enum iwl_led_mode led_mode;
 	const bool rx_with_siso_diversity;
 	const bool internal_wimax_coex;
+<<<<<<< HEAD
 	const bool host_interrupt_operation_mode;
 	bool high_temp;
 	bool d0i3;
@@ -285,6 +292,10 @@ struct iwl_cfg {
 	const char *default_nvm_file;
 	unsigned int max_rx_agg_size;
 	bool disable_dummy_notification;
+=======
+	const bool temp_offset_v2;
+	const bool host_interrupt_operation_mode;
+>>>>>>> p9x
 };
 
 /*
@@ -336,12 +347,16 @@ extern const struct iwl_cfg iwl135_bgn_cfg;
 #endif /* CONFIG_IWLDVM */
 #if IS_ENABLED(CONFIG_IWLMVM)
 extern const struct iwl_cfg iwl7260_2ac_cfg;
+<<<<<<< HEAD
 extern const struct iwl_cfg iwl7260_2ac_cfg_high_temp;
+=======
+>>>>>>> p9x
 extern const struct iwl_cfg iwl7260_2n_cfg;
 extern const struct iwl_cfg iwl7260_n_cfg;
 extern const struct iwl_cfg iwl3160_2ac_cfg;
 extern const struct iwl_cfg iwl3160_2n_cfg;
 extern const struct iwl_cfg iwl3160_n_cfg;
+<<<<<<< HEAD
 extern const struct iwl_cfg iwl3165_2ac_cfg;
 extern const struct iwl_cfg iwl7265_2ac_cfg;
 extern const struct iwl_cfg iwl7265_2n_cfg;
@@ -353,5 +368,7 @@ extern const struct iwl_cfg iwl8260_2n_cfg;
 extern const struct iwl_cfg iwl8260_2ac_cfg;
 extern const struct iwl_cfg iwl8260_2ac_sdio_cfg;
 #endif /* CONFIG_IWLMVM */
+=======
+>>>>>>> p9x
 
 #endif /* __IWL_CONFIG_H__ */

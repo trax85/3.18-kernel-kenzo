@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -19,10 +23,18 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/qdsp6v2/apr.h>
+<<<<<<< HEAD
 #include <soc/qcom/smd.h>
 #include <sound/q6core.h>
 #include <sound/audio_cal_utils.h>
 #include <sound/adsp_err.h>
+=======
+#include <linux/ratelimit.h>
+#include <soc/qcom/smd.h>
+#include <soc/qcom/ocmem.h>
+#include <sound/q6core.h>
+#include <sound/audio_cal_utils.h>
+>>>>>>> p9x
 
 #define TIMEOUT_MS 1000
 /*
@@ -32,6 +44,7 @@
  */
 #define Q6_READY_TIMEOUT_MS 100
 
+<<<<<<< HEAD
 enum {
 	META_CAL,
 	CUST_TOP_CAL,
@@ -49,29 +62,44 @@ struct q6core_avcs_ver_info {
 	struct avcs_fwk_ver_info avcs_fwk_ver_info;
 };
 
+=======
+>>>>>>> p9x
 struct q6core_str {
 	struct apr_svc *core_handle_q;
 	wait_queue_head_t bus_bw_req_wait;
 	wait_queue_head_t cmd_req_wait;
+<<<<<<< HEAD
 	wait_queue_head_t avcs_fwk_ver_req_wait;
+=======
+>>>>>>> p9x
 	u32 bus_bw_resp_received;
 	enum cmd_flags {
 		FLAG_NONE,
 		FLAG_CMDRSP_LICENSE_RESULT,
 		FLAG_AVCS_GET_VERSIONS_RESULT,
 	} cmd_resp_received_flag;
+<<<<<<< HEAD
 	u32 avcs_fwk_ver_resp_received;
 	struct mutex cmd_lock;
 	struct mutex ver_lock;
+=======
+	struct mutex cmd_lock;
+>>>>>>> p9x
 	union {
 		struct avcs_cmdrsp_get_license_validation_result
 						cmdrsp_license_result;
 	} cmd_resp_payload;
+<<<<<<< HEAD
 	u32 param;
 	struct cal_type_data *cal_data[CORE_MAX_CAL];
 	uint32_t mem_map_cal_handle;
 	int32_t adsp_status;
 	struct q6core_avcs_ver_info q6core_avcs_ver_info;
+=======
+	struct avcs_cmd_rsp_get_low_power_segments_info_t lp_ocm_payload;
+	u32 param;
+	struct cal_type_data *cal_data;
+>>>>>>> p9x
 	u32 q6_core_avs_version;
 };
 
@@ -87,6 +115,11 @@ static struct generic_get_data_ *generic_get_data;
 static int32_t aprv2_core_fn_q(struct apr_client_data *data, void *priv)
 {
 	uint32_t *payload1;
+<<<<<<< HEAD
+=======
+	uint32_t nseg;
+	int i, j;
+>>>>>>> p9x
 
 	if (data == NULL) {
 		pr_err("%s: data argument is null\n", __func__);
@@ -111,6 +144,7 @@ static int32_t aprv2_core_fn_q(struct apr_client_data *data, void *priv)
 
 		switch (payload1[0]) {
 
+<<<<<<< HEAD
 		case AVCS_CMD_SHARED_MEM_UNMAP_REGIONS:
 			pr_debug("%s: Cmd = AVCS_CMD_SHARED_MEM_UNMAP_REGIONS status[0x%x]\n",
 				__func__, payload1[1]);
@@ -147,6 +181,11 @@ static int32_t aprv2_core_fn_q(struct apr_client_data *data, void *priv)
 					VER_QUERY_UNSUPPORTED;
 			q6core_lcl.avcs_fwk_ver_resp_received = 1;
 			wake_up(&q6core_lcl.avcs_fwk_ver_req_wait);
+=======
+		case AVCS_CMD_GET_LOW_POWER_SEGMENTS_INFO:
+			pr_info("%s: Cmd = AVCS_CMD_GET_LOW_POWER_SEGMENTS_INFO status[0x%x]\n",
+				__func__, payload1[1]);
+>>>>>>> p9x
 			break;
 		default:
 			pr_err("%s: Invalid cmd rsp[0x%x][0x%x] opcode %d\n",
@@ -157,6 +196,35 @@ static int32_t aprv2_core_fn_q(struct apr_client_data *data, void *priv)
 		break;
 	}
 
+<<<<<<< HEAD
+=======
+	case AVCS_CMDRSP_GET_LOW_POWER_SEGMENTS_INFO:
+		payload1 = data->payload;
+		pr_info("%s: cmd = AVCS_CMDRSP_GET_LOW_POWER_SEGMENTS_INFO num_segments = 0x%x\n",
+					__func__, payload1[0]);
+		nseg = payload1[0];
+		q6core_lcl.lp_ocm_payload.num_segments = nseg;
+		q6core_lcl.lp_ocm_payload.bandwidth = payload1[1];
+		for (i = 0, j = 2; i < nseg; i++) {
+			q6core_lcl.lp_ocm_payload.mem_segment[i].type =
+					(payload1[j] & 0xffff);
+			q6core_lcl.lp_ocm_payload.mem_segment[i].category =
+					((payload1[j++] >> 16) & 0xffff);
+			q6core_lcl.lp_ocm_payload.mem_segment[i].size =
+					payload1[j++];
+			q6core_lcl.lp_ocm_payload.
+				mem_segment[i].start_address_lsw =
+				payload1[j++];
+			q6core_lcl.lp_ocm_payload.
+				mem_segment[i].start_address_msw =
+				payload1[j++];
+		}
+
+		q6core_lcl.bus_bw_resp_received = 1;
+		wake_up(&q6core_lcl.bus_bw_req_wait);
+		break;
+
+>>>>>>> p9x
 	case RESET_EVENTS:{
 		pr_debug("%s: Reset event received in Core service\n",
 			__func__);
@@ -164,6 +232,7 @@ static int32_t aprv2_core_fn_q(struct apr_client_data *data, void *priv)
 		q6core_lcl.core_handle_q = NULL;
 		break;
 	}
+<<<<<<< HEAD
 	case AVCS_CMDRSP_SHARED_MEM_MAP_REGIONS:
 		payload1 = data->payload;
 		pr_debug("%s: AVCS_CMDRSP_SHARED_MEM_MAP_REGIONS handle %d\n",
@@ -172,6 +241,9 @@ static int32_t aprv2_core_fn_q(struct apr_client_data *data, void *priv)
 		q6core_lcl.bus_bw_resp_received = 1;
 		wake_up(&q6core_lcl.bus_bw_req_wait);
 		break;
+=======
+
+>>>>>>> p9x
 	case AVCS_CMDRSP_ADSP_EVENT_GET_STATE:
 		payload1 = data->payload;
 		q6core_lcl.param = payload1[0];
@@ -196,10 +268,13 @@ static int32_t aprv2_core_fn_q(struct apr_client_data *data, void *priv)
 			q6core_lcl.q6_core_avs_version = Q6_SUBSYS_AVS2_7;
 			pr_debug("%s: Received ADSP version as 2.7\n",
 							 __func__);
+<<<<<<< HEAD
 		} else if (AVCS_CMDRSP_Q6_ID_2_8 == payload1[3]) {
 			q6core_lcl.q6_core_avs_version = Q6_SUBSYS_AVS2_8;
 			pr_info("%s: Received ADSP version as 2.8\n",
 							 __func__);
+=======
+>>>>>>> p9x
 		} else {
 			pr_err("%s: ADSP version is neither 2.6 nor 2.7\n",
 							 __func__);
@@ -217,6 +292,7 @@ static int32_t aprv2_core_fn_q(struct apr_client_data *data, void *priv)
 		q6core_lcl.cmd_resp_received_flag = FLAG_CMDRSP_LICENSE_RESULT;
 		wake_up(&q6core_lcl.cmd_req_wait);
 		break;
+<<<<<<< HEAD
 	case AVCS_CMDRSP_GET_FWK_VERSION:
 		pr_debug("%s: Received AVCS_CMDRSP_GET_FWK_VERSION\n",
 			 __func__);
@@ -224,6 +300,8 @@ static int32_t aprv2_core_fn_q(struct apr_client_data *data, void *priv)
 		q6core_lcl.avcs_fwk_ver_resp_received = 1;
 		wake_up(&q6core_lcl.avcs_fwk_ver_req_wait);
 		break;
+=======
+>>>>>>> p9x
 	default:
 		pr_err("%s: Message id from adsp core svc: 0x%x\n",
 			__func__, data->opcode);
@@ -241,16 +319,25 @@ static int32_t aprv2_core_fn_q(struct apr_client_data *data, void *priv)
 		}
 		break;
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return 0;
 }
 
 void ocm_core_open(void)
 {
+<<<<<<< HEAD
+=======
+	static DEFINE_RATELIMIT_STATE(rl, HZ/2, 1);
+
+>>>>>>> p9x
 	if (q6core_lcl.core_handle_q == NULL)
 		q6core_lcl.core_handle_q = apr_register("ADSP", "CORE",
 					aprv2_core_fn_q, 0xFFFFFFFF, NULL);
 	pr_debug("%s: Open_q %pK\n", __func__, q6core_lcl.core_handle_q);
+<<<<<<< HEAD
 	if (q6core_lcl.core_handle_q == NULL)
 		pr_err_ratelimited("%s: Unable to register CORE\n", __func__);
 }
@@ -375,31 +462,76 @@ EXPORT_SYMBOL(q6core_get_avcs_fwk_ver_info);
 int32_t core_set_license(uint32_t key, uint32_t module_id)
 {
 	struct avcs_cmd_set_license *cmd_setl = NULL;
+=======
+	if (q6core_lcl.core_handle_q == NULL) {
+			if (__ratelimit(&rl))
+				pr_err("%s: Unable to register CORE\n",
+					__func__);
+	}
+}
+
+int32_t core_set_license(uint32_t key, uint32_t module_id)
+{
+	struct avcs_cmd_set_license *cmd_setl = NULL;
+	struct audio_cal_info_metainfo *metainfo = NULL;
+>>>>>>> p9x
 	struct cal_block_data *cal_block = NULL;
 	int rc = 0, packet_size = 0;
 
 	pr_debug("%s: key:0x%x, id:0x%x\n", __func__, key, module_id);
 
 	mutex_lock(&(q6core_lcl.cmd_lock));
+<<<<<<< HEAD
 	if (q6core_lcl.cal_data[META_CAL] == NULL) {
+=======
+	if (q6core_lcl.cal_data == NULL) {
+>>>>>>> p9x
 		pr_err("%s: cal_data not initialized yet!!\n", __func__);
 		rc = -EINVAL;
 		goto cmd_unlock;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&((q6core_lcl.cal_data[META_CAL])->lock));
 	cal_block = cal_utils_get_cal_block_by_key(
 				q6core_lcl.cal_data[META_CAL], key);
 	if (cal_block == NULL ||
 		cal_block->cal_data.kvaddr == NULL ||
 		cal_block->cal_data.size <= 0) {
+=======
+	mutex_lock(&((q6core_lcl.cal_data)->lock));
+	cal_block = cal_utils_get_only_cal_block(q6core_lcl.cal_data);
+	if (cal_block == NULL || cal_block->cal_data.kvaddr == NULL ||
+					cal_block->cal_data.size <= 0) {
+>>>>>>> p9x
 		pr_err("%s: Invalid cal block to send", __func__);
 		rc = -EINVAL;
 		goto cal_data_unlock;
 	}
+<<<<<<< HEAD
 
 	packet_size = sizeof(struct avcs_cmd_set_license) +
 					cal_block->cal_data.size;
+=======
+	metainfo = (struct audio_cal_info_metainfo *)cal_block->cal_info;
+	if (metainfo == NULL) {
+		pr_err("%s: No metainfo!!!", __func__);
+		rc = -EINVAL;
+		goto cal_data_unlock;
+	}
+	if (metainfo->nKey != key) {
+		pr_err("%s: metainfo key mismatch!!! found:%x, needed:%x\n",
+				__func__, metainfo->nKey, key);
+		rc = -EINVAL;
+		goto cal_data_unlock;
+	} else if (key == 0) {
+		pr_err("%s: metainfo key is %d a invalid key", __func__, key);
+		goto cal_data_unlock;
+	}
+
+	packet_size = sizeof(struct avcs_cmd_set_license) +
+						cal_block->cal_data.size;
+>>>>>>> p9x
 	/*round up total packet_size to next 4 byte boundary*/
 	packet_size = ((packet_size + 0x3)>>2)<<2;
 
@@ -429,11 +561,18 @@ int32_t core_set_license(uint32_t key, uint32_t module_id)
 	cmd_setl->overwrite = 1;
 	cmd_setl->size = cal_block->cal_data.size;
 	memcpy((uint8_t *)cmd_setl + sizeof(struct avcs_cmd_set_license),
+<<<<<<< HEAD
 		cal_block->cal_data.kvaddr,
 		cal_block->cal_data.size);
 	pr_info("%s: Set license opcode=0x%x, id =0x%x, size = %d\n",
 			__func__, cmd_setl->hdr.opcode,
 			cmd_setl->id, cmd_setl->size);
+=======
+			cal_block->cal_data.kvaddr, cal_block->cal_data.size);
+	pr_info("%s: Set license opcode=0x%x ,key=0x%x, id =0x%x, size = %d\n",
+			__func__, cmd_setl->hdr.opcode,
+			metainfo->nKey, cmd_setl->id, cmd_setl->size);
+>>>>>>> p9x
 	rc = apr_send_pkt(q6core_lcl.core_handle_q, (uint32_t *)cmd_setl);
 	if (rc < 0)
 		pr_err("%s: SET_LICENSE failed op[0x%x]rc[%d]\n",
@@ -442,7 +581,11 @@ int32_t core_set_license(uint32_t key, uint32_t module_id)
 fail_cmd:
 	kfree(cmd_setl);
 cal_data_unlock:
+<<<<<<< HEAD
 	mutex_unlock(&((q6core_lcl.cal_data[META_CAL])->lock));
+=======
+	mutex_unlock(&((q6core_lcl.cal_data)->lock));
+>>>>>>> p9x
 cmd_unlock:
 	mutex_unlock(&(q6core_lcl.cmd_lock));
 
@@ -503,11 +646,18 @@ fail_cmd:
 
 enum q6_subsys_image q6core_get_avs_version(void)
 {
+<<<<<<< HEAD
 	if (q6core_lcl.q6_core_avs_version == 0)
 		core_get_adsp_ver();
 	return q6core_lcl.q6_core_avs_version;
 }
 
+=======
+	return q6core_lcl.q6_core_avs_version;
+}
+
+
+>>>>>>> p9x
 int32_t core_get_license_status(uint32_t module_id)
 {
 	struct avcs_cmd_get_license_validation_result get_lvr_cmd;
@@ -569,6 +719,11 @@ uint32_t core_set_dolby_manufacturer_id(int manufacturer_id)
 {
 	struct adsp_dolby_manufacturer_id payload;
 	int rc = 0;
+<<<<<<< HEAD
+=======
+	static DEFINE_RATELIMIT_STATE(rl, HZ/2, 1);
+
+>>>>>>> p9x
 	pr_debug("%s: manufacturer_id :%d\n", __func__, manufacturer_id);
 	mutex_lock(&(q6core_lcl.cmd_lock));
 	ocm_core_open();
@@ -587,19 +742,79 @@ uint32_t core_set_dolby_manufacturer_id(int manufacturer_id)
 			payload.hdr.opcode, payload.manufacturer_id);
 		rc = apr_send_pkt(q6core_lcl.core_handle_q,
 						(uint32_t *)&payload);
+<<<<<<< HEAD
 		if (rc < 0)
 			pr_err("%s: SET_DOLBY_MANUFACTURER_ID failed op[0x%x]rc[%d]\n",
 				__func__, payload.hdr.opcode, rc);
+=======
+		if (rc < 0) {
+			if (__ratelimit(&rl))
+				pr_err("%s: SET_DOLBY_MANUFACTURER_ID failed op[0x%x]rc[%d]\n",
+					__func__, payload.hdr.opcode, rc);
+		}
+>>>>>>> p9x
 	}
 	mutex_unlock(&(q6core_lcl.cmd_lock));
 	return rc;
 }
 
+<<<<<<< HEAD
 /*
  * q6core_is_adsp_ready - get adsp state
  *
  * Return:  true on adsp state is up or false.
  */
+=======
+int core_get_low_power_segments(
+		struct avcs_cmd_rsp_get_low_power_segments_info_t **lp_memseg)
+{
+	struct avcs_cmd_get_low_power_segments_info lp_ocm_cmd;
+	int ret = 0;
+
+	pr_debug("%s:", __func__);
+
+	ocm_core_open();
+	if (q6core_lcl.core_handle_q == NULL) {
+		pr_info("%s: apr registration for CORE failed\n", __func__);
+		return -ENODEV;
+	}
+
+
+	lp_ocm_cmd.hdr.hdr_field = APR_HDR_FIELD(APR_MSG_TYPE_SEQ_CMD,
+				APR_HDR_LEN(APR_HDR_SIZE), APR_PKT_VER);
+	lp_ocm_cmd.hdr.pkt_size =
+		sizeof(struct avcs_cmd_get_low_power_segments_info);
+
+	lp_ocm_cmd.hdr.src_port = 0;
+	lp_ocm_cmd.hdr.dest_port = 0;
+	lp_ocm_cmd.hdr.token = 0;
+	lp_ocm_cmd.hdr.opcode = AVCS_CMD_GET_LOW_POWER_SEGMENTS_INFO;
+
+
+	ret = apr_send_pkt(q6core_lcl.core_handle_q, (uint32_t *) &lp_ocm_cmd);
+	if (ret < 0) {
+		pr_err("%s: CORE low power segment request failed %d\n",
+			__func__, ret);
+		goto fail_cmd;
+	}
+
+	ret = wait_event_timeout(q6core_lcl.bus_bw_req_wait,
+				(q6core_lcl.bus_bw_resp_received == 1),
+				msecs_to_jiffies(TIMEOUT_MS));
+	if (!ret) {
+		pr_err("%s: wait_event timeout for GET_LOW_POWER_SEGMENTS\n",
+				__func__);
+		ret = -ETIME;
+		goto fail_cmd;
+	}
+
+	*lp_memseg = &q6core_lcl.lp_ocm_payload;
+	return 0;
+
+fail_cmd:
+	return ret;
+}
+>>>>>>> p9x
 
 bool q6core_is_adsp_ready(void)
 {
@@ -618,7 +833,11 @@ bool q6core_is_adsp_ready(void)
 	q6core_lcl.bus_bw_resp_received = 0;
 	rc = apr_send_pkt(q6core_lcl.core_handle_q, (uint32_t *)&hdr);
 	if (rc < 0) {
+<<<<<<< HEAD
 		pr_err_ratelimited("%s: Get ADSP state APR packet send event %d\n",
+=======
+		pr_err("%s: Get ADSP state APR packet send event %d\n",
+>>>>>>> p9x
 			__func__, rc);
 		goto bail;
 	}
@@ -635,6 +854,7 @@ bail:
 	pr_debug("%s: leave, rc %d, adsp ready %d\n", __func__, rc, ret);
 	return ret;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(q6core_is_adsp_ready);
 
 static int q6core_map_memory_regions(phys_addr_t *buf_add, uint32_t mempool_id,
@@ -917,10 +1137,13 @@ static int get_cal_type_index(int32_t cal_type)
 	}
 	return ret;
 }
+=======
+>>>>>>> p9x
 
 static int q6core_alloc_cal(int32_t cal_type,
 			    size_t data_size, void *data)
 {
+<<<<<<< HEAD
 	int ret = 0;
 	int cal_index;
 
@@ -941,12 +1164,20 @@ static int q6core_alloc_cal(int32_t cal_type,
 		goto done;
 	}
 done:
+=======
+	int ret = cal_utils_alloc_cal(data_size, data,
+				      q6core_lcl.cal_data, 0, NULL);
+	if (ret < 0)
+		pr_err("%s: cal_utils_alloc_block failed, ret = %d, cal type = %d!\n",
+			__func__, ret, cal_type);
+>>>>>>> p9x
 	return ret;
 }
 
 static int q6core_dealloc_cal(int32_t cal_type,
 			      size_t data_size, void *data)
 {
+<<<<<<< HEAD
 	int ret = 0;
 	int cal_index;
 
@@ -967,12 +1198,20 @@ static int q6core_dealloc_cal(int32_t cal_type,
 		goto done;
 	}
 done:
+=======
+	int ret = cal_utils_dealloc_cal(data_size, data,
+					q6core_lcl.cal_data);
+	if (ret < 0)
+		pr_err("%s: cal_utils_dealloc_block failed, ret = %d, cal type = %d!\n",
+			__func__, ret, cal_type);
+>>>>>>> p9x
 	return ret;
 }
 
 static int q6core_set_cal(int32_t cal_type,
 	size_t data_size, void *data)
 {
+<<<<<<< HEAD
 	int ret = 0;
 	int cal_index;
 
@@ -996,6 +1235,13 @@ static int q6core_set_cal(int32_t cal_type,
 	if (cal_index == CUST_TOP_CAL)
 		ret = q6core_send_custom_topologies();
 done:
+=======
+	int ret = cal_utils_set_cal(data_size, data,
+				    q6core_lcl.cal_data, 0, NULL);
+	if (ret < 0)
+		pr_err("%s: cal_utils_set_cal failed, ret = %d, cal type = %d!\n",
+		__func__, ret, cal_type);
+>>>>>>> p9x
 	return ret;
 }
 
@@ -1003,14 +1249,19 @@ static void q6core_delete_cal_data(void)
 {
 	pr_debug("%s:\n", __func__);
 
+<<<<<<< HEAD
 	cal_utils_destroy_cal_types(CORE_MAX_CAL, q6core_lcl.cal_data);
 	return;
+=======
+	cal_utils_destroy_cal_types(1, &q6core_lcl.cal_data);
+>>>>>>> p9x
 }
 
 
 static int q6core_init_cal_data(void)
 {
 	int ret = 0;
+<<<<<<< HEAD
 	struct cal_type_info    cal_type_info[] = {
 		{{AUDIO_CORE_METAINFO_CAL_TYPE,
 		{q6core_alloc_cal, q6core_dealloc_cal, NULL,
@@ -1026,6 +1277,18 @@ static int q6core_init_cal_data(void)
 
 	ret = cal_utils_create_cal_types(CORE_MAX_CAL,
 		q6core_lcl.cal_data, cal_type_info);
+=======
+	struct cal_type_info    cal_type_info = {
+		{AUDIO_CORE_METAINFO_CAL_TYPE,
+		{q6core_alloc_cal, q6core_dealloc_cal, NULL,
+		q6core_set_cal, NULL, NULL} },
+		{NULL, NULL, cal_utils_match_buf_num}
+	};
+	pr_debug("%s:\n", __func__);
+
+	ret = cal_utils_create_cal_types(1, &q6core_lcl.cal_data,
+		&cal_type_info);
+>>>>>>> p9x
 	if (ret < 0) {
 		pr_err("%s: could not create cal type!\n",
 			__func__);
@@ -1040,6 +1303,7 @@ err:
 
 static int __init core_init(void)
 {
+<<<<<<< HEAD
 	memset(&q6core_lcl, 0, sizeof(struct q6core_str));
 	init_waitqueue_head(&q6core_lcl.bus_bw_req_wait);
 	init_waitqueue_head(&q6core_lcl.cmd_req_wait);
@@ -1050,6 +1314,18 @@ static int __init core_init(void)
 
 	q6core_init_cal_data();
 
+=======
+	init_waitqueue_head(&q6core_lcl.bus_bw_req_wait);
+	q6core_lcl.bus_bw_resp_received = 0;
+
+	q6core_lcl.core_handle_q = NULL;
+
+	init_waitqueue_head(&q6core_lcl.cmd_req_wait);
+	q6core_lcl.cmd_resp_received_flag = FLAG_NONE;
+	mutex_init(&q6core_lcl.cmd_lock);
+
+	q6core_init_cal_data();
+>>>>>>> p9x
 	return 0;
 }
 module_init(core_init);
@@ -1057,7 +1333,10 @@ module_init(core_init);
 static void __exit core_exit(void)
 {
 	mutex_destroy(&q6core_lcl.cmd_lock);
+<<<<<<< HEAD
 	mutex_destroy(&q6core_lcl.ver_lock);
+=======
+>>>>>>> p9x
 	q6core_delete_cal_data();
 }
 module_exit(core_exit);

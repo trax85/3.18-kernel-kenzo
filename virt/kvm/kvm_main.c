@@ -109,8 +109,33 @@ static bool largepages_enabled = true;
 
 bool kvm_is_reserved_pfn(pfn_t pfn)
 {
+<<<<<<< HEAD
 	if (pfn_valid(pfn))
 		return PageReserved(pfn_to_page(pfn));
+=======
+	if (pfn_valid(pfn)) {
+		int reserved;
+		struct page *tail = pfn_to_page(pfn);
+		struct page *head = compound_head(tail);
+		reserved = PageReserved(head);
+		if (head != tail) {
+			/*
+			 * "head" is not a dangling pointer
+			 * (compound_head takes care of that)
+			 * but the hugepage may have been splitted
+			 * from under us (and we may not hold a
+			 * reference count on the head page so it can
+			 * be reused before we run PageReferenced), so
+			 * we've to check PageTail before returning
+			 * what we just read.
+			 */
+			smp_rmb();
+			if (PageTail(tail))
+				return reserved;
+		}
+		return PageReserved(tail);
+	}
+>>>>>>> p9x
 
 	return true;
 }
@@ -474,6 +499,7 @@ static struct kvm *kvm_create_vm(unsigned long type)
 
 	r = kvm_arch_init_vm(kvm, type);
 	if (r)
+<<<<<<< HEAD
 		goto out_err_no_disable;
 
 	r = hardware_enable_all();
@@ -484,12 +510,23 @@ static struct kvm *kvm_create_vm(unsigned long type)
 	INIT_HLIST_HEAD(&kvm->mask_notifier_list);
 #endif
 #ifdef CONFIG_HAVE_KVM_IRQFD
+=======
+		goto out_err_nodisable;
+
+	r = hardware_enable_all();
+	if (r)
+		goto out_err_nodisable;
+
+#ifdef CONFIG_HAVE_KVM_IRQCHIP
+	INIT_HLIST_HEAD(&kvm->mask_notifier_list);
+>>>>>>> p9x
 	INIT_HLIST_HEAD(&kvm->irq_ack_notifier_list);
 #endif
 
 	BUILD_BUG_ON(KVM_MEM_SLOTS_NUM > SHRT_MAX);
 
 	r = -ENOMEM;
+<<<<<<< HEAD
 	kvm->memslots = kvm_kvzalloc(sizeof(struct kvm_memslots));
 	if (!kvm->memslots)
 		goto out_err_no_srcu;
@@ -505,6 +542,14 @@ static struct kvm *kvm_create_vm(unsigned long type)
 		goto out_err_no_srcu;
 	if (init_srcu_struct(&kvm->irq_srcu))
 		goto out_err_no_irq_srcu;
+=======
+	kvm->memslots = kzalloc(sizeof(struct kvm_memslots), GFP_KERNEL);
+	if (!kvm->memslots)
+		goto out_err_nosrcu;
+	kvm_init_memslots_id(kvm);
+	if (init_srcu_struct(&kvm->srcu))
+		goto out_err_nosrcu;
+>>>>>>> p9x
 	for (i = 0; i < KVM_NR_BUSES; i++) {
 		kvm->buses[i] = kzalloc(sizeof(struct kvm_io_bus),
 					GFP_KERNEL);
@@ -3006,6 +3051,7 @@ int kvm_io_bus_write_cookie(struct kvm *kvm, enum kvm_bus bus_idx, gpa_t addr,
 	bus = srcu_dereference(kvm->buses[bus_idx], &kvm->srcu);
 	if (!bus)
 		return -ENOMEM;
+<<<<<<< HEAD
 
 	/* First try the device referenced by cookie. */
 	if ((cookie >= 0) && (cookie < bus->dev_count) &&
@@ -3027,6 +3073,9 @@ static int __kvm_io_bus_read(struct kvm_io_bus *bus, struct kvm_io_range *range,
 	int idx;
 
 	idx = kvm_io_bus_get_first_dev(bus, range->addr, range->len);
+=======
+	idx = kvm_io_bus_get_first_dev(bus, addr, len);
+>>>>>>> p9x
 	if (idx < 0)
 		return -EOPNOTSUPP;
 
@@ -3058,8 +3107,23 @@ int kvm_io_bus_read(struct kvm *kvm, enum kvm_bus bus_idx, gpa_t addr,
 	bus = srcu_dereference(kvm->buses[bus_idx], &kvm->srcu);
 	if (!bus)
 		return -ENOMEM;
+<<<<<<< HEAD
 	r = __kvm_io_bus_read(bus, &range, val);
 	return r < 0 ? r : 0;
+=======
+	idx = kvm_io_bus_get_first_dev(bus, addr, len);
+	if (idx < 0)
+		return -EOPNOTSUPP;
+
+	while (idx < bus->dev_count &&
+		kvm_io_bus_sort_cmp(&range, &bus->range[idx]) == 0) {
+		if (!kvm_iodevice_read(bus->range[idx].dev, addr, len, val))
+			return 0;
+		idx++;
+	}
+
+	return -EOPNOTSUPP;
+>>>>>>> p9x
 }
 
 

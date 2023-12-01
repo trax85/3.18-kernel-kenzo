@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Google, Inc.
+ * Copyright (C) 2016 XiaoMi, Inc.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -48,37 +49,65 @@ static inline size_t buffer_start(struct persistent_ram_zone *prz)
 	return atomic_read(&prz->buffer->start);
 }
 
+static DEFINE_RAW_SPINLOCK(buffer_lock);
+
 /* increase and wrap the start pointer, returning the old value */
+<<<<<<< HEAD
 static size_t buffer_start_add_atomic(struct persistent_ram_zone *prz, size_t a)
+=======
+static size_t buffer_start_add(struct persistent_ram_zone *prz, size_t a)
+>>>>>>> p9x
 {
 	int old;
 	int new;
+	unsigned long flags;
 
+<<<<<<< HEAD
 	do {
 		old = atomic_read(&prz->buffer->start);
 		new = old + a;
 		while (unlikely(new >= prz->buffer_size))
 			new -= prz->buffer_size;
 	} while (atomic_cmpxchg(&prz->buffer->start, old, new) != old);
+=======
+	raw_spin_lock_irqsave(&buffer_lock, flags);
+
+	old = atomic_read(&prz->buffer->start);
+	new = old + a;
+	while (unlikely(new >= prz->buffer_size))
+		new -= prz->buffer_size;
+	atomic_set(&prz->buffer->start, new);
+
+	raw_spin_unlock_irqrestore(&buffer_lock, flags);
+>>>>>>> p9x
 
 	return old;
 }
 
 /* increase the size counter until it hits the max size */
+<<<<<<< HEAD
 static void buffer_size_add_atomic(struct persistent_ram_zone *prz, size_t a)
+=======
+static void buffer_size_add(struct persistent_ram_zone *prz, size_t a)
+>>>>>>> p9x
 {
 	size_t old;
 	size_t new;
+	unsigned long flags;
 
-	if (atomic_read(&prz->buffer->size) == prz->buffer_size)
-		return;
+	raw_spin_lock_irqsave(&buffer_lock, flags);
 
-	do {
-		old = atomic_read(&prz->buffer->size);
-		new = old + a;
-		if (new > prz->buffer_size)
-			new = prz->buffer_size;
-	} while (atomic_cmpxchg(&prz->buffer->size, old, new) != old);
+	old = atomic_read(&prz->buffer->size);
+	if (old == prz->buffer_size)
+		goto exit;
+
+	new = old + a;
+	if (new > prz->buffer_size)
+		new = prz->buffer_size;
+	atomic_set(&prz->buffer->size, new);
+
+exit:
+	raw_spin_unlock_irqrestore(&buffer_lock, flags);
 }
 
 /* increase and wrap the start pointer, returning the old value */
@@ -302,7 +331,7 @@ static void notrace persistent_ram_update(struct persistent_ram_zone *prz,
 	const void *s, unsigned int start, unsigned int count)
 {
 	struct persistent_ram_buffer *buffer = prz->buffer;
-	memcpy(buffer->data + start, s, count);
+	memcpy_toio(buffer->data + start, s, count);
 	persistent_ram_update_ecc(prz, start, count);
 }
 
@@ -335,8 +364,8 @@ void persistent_ram_save_old(struct persistent_ram_zone *prz)
 	}
 
 	prz->old_log_size = size;
-	memcpy(prz->old_log, &buffer->data[start], size - start);
-	memcpy(prz->old_log + size - start, &buffer->data[0], start);
+	memcpy_fromio(prz->old_log, &buffer->data[start], size - start);
+	memcpy_fromio(prz->old_log + size - start, &buffer->data[0], start);
 }
 
 int notrace persistent_ram_write(struct persistent_ram_zone *prz,
@@ -476,19 +505,25 @@ static void *persistent_ram_iomap(phys_addr_t start, size_t size,
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	buffer_start_add = buffer_start_add_locked;
 	buffer_size_add = buffer_size_add_locked;
 
+=======
+>>>>>>> p9x
 	if (memtype)
 		va = ioremap(start, size);
 	else
 		va = ioremap_wc(start, size);
 
+<<<<<<< HEAD
 	/*
 	 * Since request_mem_region() and ioremap() are byte-granularity
 	 * there is no need handle anything special like we do when the
 	 * vmap() case in persistent_ram_vmap() above.
 	 */
+=======
+>>>>>>> p9x
 	return va;
 }
 
@@ -526,11 +561,19 @@ static int persistent_ram_post_init(struct persistent_ram_zone *prz, u32 sig,
 
 	sig ^= PERSISTENT_RAM_SIG;
 	if (prz->buffer->sig != sig) {
+<<<<<<< HEAD
 			pr_err("persistent_ram: no valid data in buffer"
 				" (sig = 0x%08x)\n", prz->buffer->sig);
 			pr_err("persistent_ram: but still dump last kmsg!!!!!!!!!!!!!!!\n");
 			prz->buffer->sig = sig;
 		}
+=======
+		pr_err("persistent_ram: no valid data in buffer"
+			" (sig = 0x%08x)\n", prz->buffer->sig);
+		pr_err("persistent_ram: but still dump last kmsg!!!!!!!!!!!!!!!\n");
+		prz->buffer->sig = sig;
+	}
+>>>>>>> p9x
 
 	if (prz->buffer->sig == sig) {
 		if (buffer_size(prz) == 0) {
@@ -543,8 +586,14 @@ static int persistent_ram_post_init(struct persistent_ram_zone *prz, u32 sig,
 			pr_info("found existing invalid buffer, size %zu, start %zu\n",
 				buffer_size(prz), buffer_start(prz));
 		else {
+<<<<<<< HEAD
 			pr_info("found existing buffer, size %zu, start %zu\n",
 				 buffer_size(prz), buffer_start(prz));
+=======
+			pr_info("persistent_ram: found existing buffer,"
+				" size %zu, start %zu\n",
+			       buffer_size(prz), buffer_start(prz));
+>>>>>>> p9x
 			persistent_ram_save_old(prz);
 			return 0;
 		}
@@ -581,7 +630,11 @@ void persistent_ram_free(struct persistent_ram_zone *prz)
 
 struct persistent_ram_zone *persistent_ram_new(phys_addr_t start, size_t size,
 			u32 sig, struct persistent_ram_ecc_info *ecc_info,
+<<<<<<< HEAD
 			unsigned int memtype, u32 flags)
+=======
+			unsigned int memtype)
+>>>>>>> p9x
 {
 	struct persistent_ram_zone *prz;
 	int ret = -ENOMEM;
@@ -592,10 +645,13 @@ struct persistent_ram_zone *persistent_ram_new(phys_addr_t start, size_t size,
 		goto err;
 	}
 
+<<<<<<< HEAD
 	/* Initialize general buffer state. */
 	raw_spin_lock_init(&prz->buffer_lock);
 	prz->flags = flags;
 
+=======
+>>>>>>> p9x
 	ret = persistent_ram_buffer_map(start, size, prz, memtype);
 	if (ret)
 		goto err;

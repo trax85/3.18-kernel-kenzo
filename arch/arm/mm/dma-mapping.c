@@ -57,7 +57,11 @@ static void __dma_page_cpu_to_dev(struct page *, unsigned long,
 		size_t, enum dma_data_direction);
 static void __dma_page_dev_to_cpu(struct page *, unsigned long,
 		size_t, enum dma_data_direction);
+static void *
+__dma_alloc_remap(struct page *page, size_t size, gfp_t gfp, pgprot_t prot,
+	const void *caller);
 
+<<<<<<< HEAD
 static void *
 __dma_alloc_remap(struct page *page, size_t size, gfp_t gfp, pgprot_t prot,
 		const void *caller);
@@ -73,6 +77,11 @@ static void *arm_dma_remap(struct device *dev, void *cpu_addr,
 static void arm_dma_unremap(struct device *dev, void *remapped_addr,
 				size_t size);
 
+=======
+static void __dma_free_remap(void *cpu_addr, size_t size, bool no_warn);
+
+static inline pgprot_t __get_dma_pgprot(struct dma_attrs *attrs, pgprot_t prot);
+>>>>>>> p9x
 /**
  * arm_dma_map_page - map a portion of a page for streaming DMA
  * @dev: valid struct device pointer, or NULL for ISA and EISA-like devices
@@ -140,6 +149,40 @@ static void arm_dma_sync_single_for_device(struct device *dev,
 	unsigned int offset = handle & (PAGE_SIZE - 1);
 	struct page *page = pfn_to_page(dma_to_pfn(dev, handle-offset));
 	__dma_page_cpu_to_dev(page, offset, size, dir);
+}
+
+static void *arm_dma_remap(struct device *dev, void *cpu_addr,
+			dma_addr_t handle, size_t size,
+			struct dma_attrs *attrs)
+{
+	struct page *page = pfn_to_page(dma_to_pfn(dev, handle));
+	pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL);
+	unsigned long offset = handle & ~PAGE_MASK;
+
+	size = PAGE_ALIGN(size + offset);
+	return __dma_alloc_remap(page, size, GFP_KERNEL, prot,
+					__builtin_return_address(0)) + offset;
+
+}
+
+static void arm_dma_unremap(struct device *dev, void *remapped_addr,
+				size_t size)
+{
+	unsigned int flags = VM_ARM_DMA_CONSISTENT | VM_USERMAP;
+	struct vm_struct *area;
+
+	size = PAGE_ALIGN(size);
+	remapped_addr = (void *)((unsigned long)remapped_addr & PAGE_MASK);
+
+	area = find_vm_area(remapped_addr);
+	if (!area || (area->flags & flags) != flags) {
+		WARN(1, "trying to free invalid coherent area: %p\n",
+				remapped_addr);
+		return;
+	}
+	vunmap(remapped_addr);
+	flush_tlb_kernel_range((unsigned long)remapped_addr,
+				(unsigned long)(remapped_addr + size));
 }
 
 struct dma_map_ops arm_dma_ops = {
@@ -331,8 +374,20 @@ __dma_alloc_remap(struct page *page, size_t size, gfp_t gfp, pgprot_t prot,
 
 static void __dma_free_remap(void *cpu_addr, size_t size, bool no_warn)
 {
+<<<<<<< HEAD
 	dma_common_free_remap(cpu_addr, size,
 			VM_ARM_DMA_CONSISTENT | VM_USERMAP, no_warn);
+=======
+	unsigned int flags = VM_ARM_DMA_CONSISTENT | VM_USERMAP;
+	struct vm_struct *area = find_vm_area(cpu_addr);
+	if (!area || (area->flags & flags) != flags) {
+		WARN(!no_warn, "trying to free invalid coherent area: %p\n",
+				cpu_addr);
+		return;
+	}
+	unmap_kernel_range((unsigned long)cpu_addr, size);
+	vunmap(cpu_addr);
+>>>>>>> p9x
 }
 
 #define DEFAULT_DMA_COHERENT_POOL_SIZE	SZ_256K
@@ -367,6 +422,10 @@ void __init init_dma_coherent_pool_size(unsigned long size)
  */
 static int __init atomic_pool_init(void)
 {
+<<<<<<< HEAD
+=======
+	struct dma_pool *pool = &atomic_pool;
+>>>>>>> p9x
 	pgprot_t prot = pgprot_dmacoherent(PAGE_KERNEL);
 	gfp_t gfp = GFP_KERNEL | GFP_DMA;
 	struct page *page;
@@ -376,9 +435,19 @@ static int __init atomic_pool_init(void)
 	if (!atomic_pool)
 		goto out;
 
+<<<<<<< HEAD
 	if (IS_ENABLED(CONFIG_DMA_CMA))
 		ptr = __alloc_from_contiguous(NULL, atomic_pool_size, prot,
 				&page, atomic_pool_init, NULL);
+=======
+	pages = kzalloc(nr_pages * sizeof(struct page *), GFP_KERNEL);
+	if (!pages)
+		goto no_pages;
+
+	if (IS_ENABLED(CONFIG_CMA))
+		ptr = __alloc_from_contiguous(NULL, pool->size, prot, &page,
+					      atomic_pool_init, NULL);
+>>>>>>> p9x
 	else
 		ptr = __alloc_remap_buffer(NULL, atomic_pool_size, gfp, prot,
 					   &page, atomic_pool_init);
@@ -472,6 +541,9 @@ void __init dma_contiguous_remap(void)
 			if (pmd_bad(*pmd))
 				pmd_clear(pmd);
 		}
+
+		flush_tlb_kernel_range(__phys_to_virt(start),
+				       __phys_to_virt(end));
 
 		flush_tlb_kernel_range(__phys_to_virt(start),
 				       __phys_to_virt(end));
@@ -579,15 +651,21 @@ static void *__alloc_from_contiguous(struct device *dev, size_t size,
 {
 	unsigned long order = get_order(size);
 	size_t count = size >> PAGE_SHIFT;
+	unsigned long pfn;
 	struct page *page;
 	void *ptr;
 	bool no_kernel_mapping = dma_get_attr(DMA_ATTR_NO_KERNEL_MAPPING,
 							attrs);
 
-	page = dma_alloc_from_contiguous(dev, count, order);
-	if (!page)
+	pfn = dma_alloc_from_contiguous(dev, count, order);
+	if (!pfn)
 		return NULL;
 
+<<<<<<< HEAD
+=======
+	page = pfn_to_page(pfn);
+
+>>>>>>> p9x
 	/*
 	 * skip completely if we neither need to zero nor sync.
 	 */
@@ -611,7 +689,11 @@ static void *__alloc_from_contiguous(struct device *dev, size_t size,
 			ptr = __dma_alloc_remap(page, size, GFP_KERNEL, prot,
 						caller);
 			if (!ptr) {
+<<<<<<< HEAD
 				dma_release_from_contiguous(dev, page, count);
+=======
+				dma_release_from_contiguous(dev, pfn, count);
+>>>>>>> p9x
 				return NULL;
 			}
 		}
@@ -629,8 +711,13 @@ static void __free_from_contiguous(struct device *dev, struct page *page,
 	if (PageHighMem(page))
 		__dma_free_remap(cpu_addr, size, true);
 	else
+<<<<<<< HEAD
 		__dma_remap(page, size, pgprot_kernel, false);
 	dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT);
+=======
+		__dma_remap(page, size, PAGE_KERNEL, false);
+	dma_release_from_contiguous(dev, page_to_pfn(page), size >> PAGE_SHIFT);
+>>>>>>> p9x
 }
 
 static inline pgprot_t __get_dma_pgprot(struct dma_attrs *attrs, pgprot_t prot)
@@ -840,7 +927,11 @@ static void __arm_dma_free(struct device *dev, size_t size, void *cpu_addr,
 		__dma_free_buffer(page, size);
 	} else if (__free_from_pool(cpu_addr, size)) {
 		return;
+<<<<<<< HEAD
 	} else if (!dev_get_cma_area(dev)) {
+=======
+	} else if (!IS_ENABLED(CONFIG_CMA)) {
+>>>>>>> p9x
 		__dma_free_remap(cpu_addr, size, false);
 		__dma_free_buffer(page, size);
 	} else {
@@ -1249,11 +1340,17 @@ static struct page **__iommu_alloc_buffer(struct device *dev, size_t size,
 	{
 		unsigned long order = get_order(size);
 		struct page *page;
+		unsigned long pfn;
 
-		page = dma_alloc_from_contiguous(dev, count, order);
-		if (!page)
+		pfn = dma_alloc_from_contiguous(dev, count, order);
+		if (!pfn)
 			goto error;
 
+<<<<<<< HEAD
+=======
+		page = pfn_to_page(pfn);
+
+>>>>>>> p9x
 		__dma_clear_buffer(page, size, NULL);
 
 		for (i = 0; i < count; i++)
@@ -1308,7 +1405,7 @@ static int __iommu_free_buffer(struct device *dev, struct page **pages,
 	int i;
 
 	if (dma_get_attr(DMA_ATTR_FORCE_CONTIGUOUS, attrs)) {
-		dma_release_from_contiguous(dev, pages[0], count);
+		dma_release_from_contiguous(dev, page_to_pfn(pages[0]), count);
 	} else {
 		for (i = 0; i < count; i++)
 			if (pages[i])
@@ -1498,11 +1595,18 @@ static int arm_iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
 	unsigned long uaddr = vma->vm_start;
 	unsigned long usize = vma->vm_end - vma->vm_start;
 	struct page **pages = __iommu_get_pages(cpu_addr, attrs);
+	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
+	unsigned long off = vma->vm_pgoff;
 
 	vma->vm_page_prot = __get_dma_pgprot(attrs, vma->vm_page_prot);
 
 	if (!pages)
 		return -ENXIO;
+
+	if (off >= nr_pages || (usize >> PAGE_SHIFT) > nr_pages - off)
+		return -ENXIO;
+
+	pages += off;
 
 	do {
 		int ret = vm_insert_page(vma, uaddr, *pages++);
@@ -1720,12 +1824,15 @@ int arm_iommu_map_sg(struct device *dev, struct scatterlist *sg,
 		total_length += s->length;
 
 	iova = __alloc_iova(mapping, total_length);
+<<<<<<< HEAD
 
 	if (iova == DMA_ERROR_CODE) {
 		dev_err(dev, "Couldn't allocate iova for sg %p\n", sg);
 		return 0;
 	}
 
+=======
+>>>>>>> p9x
 	ret = iommu_map_sg(mapping->domain, iova, sg, nents, prot);
 	if (ret != total_length) {
 		__free_iova(mapping, iova, total_length);

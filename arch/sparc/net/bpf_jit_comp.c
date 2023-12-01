@@ -482,7 +482,11 @@ void bpf_jit_compile(struct bpf_prog *fp)
 			case BPF_ALU | BPF_MUL | BPF_K:	/* A *= K */
 				emit_alu_K(MUL, K);
 				break;
+<<<<<<< HEAD
 			case BPF_ALU | BPF_DIV | BPF_K:	/* A /= K with K != 0*/
+=======
+			case BPF_S_ALU_DIV_K:	/* A /= K with K != 0*/
+>>>>>>> p9x
 				if (K == 1)
 					break;
 				emit_write_y(G0);

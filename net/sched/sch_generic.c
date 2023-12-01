@@ -969,7 +969,11 @@ void psched_ratecfg_precompute(struct psched_ratecfg *r,
 {
 	memset(r, 0, sizeof(*r));
 	r->overhead = conf->overhead;
+<<<<<<< HEAD
 	r->rate_bytes_ps = max_t(u64, conf->rate, rate64);
+=======
+	r->rate_bps = (u64)conf->rate << 3;
+>>>>>>> p9x
 	r->linklayer = (conf->linklayer & TC_LINKLAYER_MASK);
 	r->mult = 1;
 	/*

@@ -13,7 +13,10 @@
 #include <linux/gfp.h>
 #include <linux/slab.h>
 #include <linux/percpu.h>
+<<<<<<< HEAD
 #include <linux/acpi.h>
+=======
+>>>>>>> p9x
 #include <linux/of.h>
 #include <linux/cpufeature.h>
 
@@ -180,6 +183,7 @@ static struct attribute_group crash_note_cpu_attr_group = {
 #endif
 
 #ifdef CONFIG_SCHED_HMP
+<<<<<<< HEAD
 
 static ssize_t show_sched_static_cpu_pwr_cost(struct device *dev,
 				struct device_attribute *attr, char *buf)
@@ -273,6 +277,8 @@ static struct attribute_group sched_hmp_cpu_attr_group = {
 #endif /* CONFIG_SCHED_HMP */
 
 #ifdef CONFIG_SCHED_QHMP
+=======
+>>>>>>> p9x
 static ssize_t show_sched_mostly_idle_load(struct device *dev,
 		 struct device_attribute *attr, char *buf)
 {
@@ -426,6 +432,7 @@ static DEVICE_ATTR(sched_mostly_idle_nr_run, 0664,
 static DEVICE_ATTR(sched_prefer_idle, 0664,
 		show_sched_prefer_idle, store_sched_prefer_idle);
 
+<<<<<<< HEAD
 static struct attribute *qhmp_sched_cpu_attrs[] = {
 	&dev_attr_sched_mostly_idle_load.attr,
 	&dev_attr_sched_mostly_idle_nr_run.attr,
@@ -492,6 +499,9 @@ static const struct attribute_group *hotplugable_cpu_attr_groups[] = {
 	&uevent_suppress_cpu_attr_group,
 	NULL
 };
+=======
+#endif	/* CONFIG_SCHED_HMP */
+>>>>>>> p9x
 
 /*
  * Print cpu online, possible, present, and system maps
@@ -587,6 +597,10 @@ static void cpu_device_release(struct device *dev)
 	 */
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_HAVE_CPU_AUTOPROBE
+>>>>>>> p9x
 #ifdef CONFIG_GENERIC_CPU_AUTOPROBE
 static ssize_t print_cpu_modalias(struct device *dev,
 				  struct device_attribute *attr,
@@ -609,6 +623,12 @@ static ssize_t print_cpu_modalias(struct device *dev,
 	buf[n++] = '\n';
 	return n;
 }
+<<<<<<< HEAD
+=======
+#else
+#define print_cpu_modalias	arch_print_cpu_modalias
+#endif
+>>>>>>> p9x
 
 static int cpu_uevent(struct device *dev, struct kobj_uevent_env *env)
 {
@@ -639,10 +659,15 @@ int register_cpu(struct cpu *cpu, int num)
 	cpu->dev.id = num;
 	cpu->dev.bus = &cpu_subsys;
 	cpu->dev.release = cpu_device_release;
+<<<<<<< HEAD
 	cpu->dev.offline_disabled = !cpu->hotpluggable;
 	cpu->dev.offline = !cpu_online(num);
 	cpu->dev.of_node = of_get_cpu_node(num, NULL);
 #ifdef CONFIG_GENERIC_CPU_AUTOPROBE
+=======
+	cpu->dev.of_node = of_get_cpu_node(num, NULL);
+#ifdef CONFIG_HAVE_CPU_AUTOPROBE
+>>>>>>> p9x
 	cpu->dev.bus->uevent = cpu_uevent;
 #endif
 	cpu->dev.groups = common_cpu_attr_groups;
@@ -654,6 +679,32 @@ int register_cpu(struct cpu *cpu, int num)
 	if (!error)
 		register_cpu_under_node(num, cpu_to_node(num));
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_KEXEC
+	if (!error)
+		error = device_create_file(&cpu->dev, &dev_attr_crash_notes);
+	if (!error)
+		error = device_create_file(&cpu->dev,
+					   &dev_attr_crash_notes_size);
+#endif
+
+#ifdef CONFIG_SCHED_HMP
+	if (!error)
+		error = device_create_file(&cpu->dev,
+					 &dev_attr_sched_mostly_idle_load);
+	if (!error)
+		error = device_create_file(&cpu->dev,
+					 &dev_attr_sched_mostly_idle_nr_run);
+	if (!error)
+		error = device_create_file(&cpu->dev,
+					 &dev_attr_sched_mostly_idle_freq);
+	if (!error)
+		error = device_create_file(&cpu->dev,
+					 &dev_attr_sched_prefer_idle);
+#endif
+
+>>>>>>> p9x
 	return error;
 }
 
@@ -666,6 +717,7 @@ struct device *get_cpu_device(unsigned cpu)
 }
 EXPORT_SYMBOL_GPL(get_cpu_device);
 
+<<<<<<< HEAD
 static void device_create_release(struct device *dev)
 {
 	kfree(dev);
@@ -721,6 +773,9 @@ struct device *cpu_device_create(struct device *parent, void *drvdata,
 EXPORT_SYMBOL_GPL(cpu_device_create);
 
 #ifdef CONFIG_GENERIC_CPU_AUTOPROBE
+=======
+#ifdef CONFIG_HAVE_CPU_AUTOPROBE
+>>>>>>> p9x
 static DEVICE_ATTR(modalias, 0444, print_cpu_modalias, NULL);
 #endif
 
@@ -734,7 +789,11 @@ static struct attribute *cpu_root_attrs[] = {
 	&cpu_attrs[2].attr.attr,
 	&dev_attr_kernel_max.attr,
 	&dev_attr_offline.attr,
+<<<<<<< HEAD
 #ifdef CONFIG_GENERIC_CPU_AUTOPROBE
+=======
+#ifdef CONFIG_HAVE_CPU_AUTOPROBE
+>>>>>>> p9x
 	&dev_attr_modalias.attr,
 #endif
 	NULL

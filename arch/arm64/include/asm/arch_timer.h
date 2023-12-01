@@ -27,6 +27,7 @@
 
 #include <clocksource/arm_arch_timer.h>
 
+<<<<<<< HEAD
 /*
  * These register accessors are marked inline so the compiler can
  * nicely work out which register we want, and chuck away the rest of
@@ -34,6 +35,9 @@
  */
 static __always_inline
 void arch_timer_reg_write_cp15(int access, enum arch_timer_reg reg, u32 val)
+=======
+static inline void arch_timer_reg_write_cp15(int access, int reg, u32 val)
+>>>>>>> p9x
 {
 	if (access == ARCH_TIMER_PHYS_ACCESS) {
 		switch (reg) {
@@ -58,8 +62,12 @@ void arch_timer_reg_write_cp15(int access, enum arch_timer_reg reg, u32 val)
 	isb();
 }
 
+<<<<<<< HEAD
 static __always_inline
 u32 arch_timer_reg_read_cp15(int access, enum arch_timer_reg reg)
+=======
+static inline u32 arch_timer_reg_read_cp15(int access, int reg)
+>>>>>>> p9x
 {
 	u32 val;
 
@@ -105,6 +113,23 @@ static inline void arch_timer_set_cntkctl(u32 cntkctl)
 	asm volatile("msr	cntkctl_el1, %0" : : "r" (cntkctl));
 }
 
+<<<<<<< HEAD
+=======
+static inline void arch_timer_evtstrm_enable(int divider)
+{
+	u32 cntkctl = arch_timer_get_cntkctl();
+	cntkctl &= ~ARCH_TIMER_EVT_TRIGGER_MASK;
+	/* Set the divider and enable virtual event stream */
+	cntkctl |= (divider << ARCH_TIMER_EVT_TRIGGER_SHIFT)
+			| ARCH_TIMER_VIRT_EVT_EN;
+	arch_timer_set_cntkctl(cntkctl);
+	elf_hwcap |= HWCAP_EVTSTRM;
+#ifdef CONFIG_COMPAT
+	compat_elf_hwcap |= COMPAT_HWCAP_EVTSTRM;
+#endif
+}
+
+>>>>>>> p9x
 static inline u64 arch_counter_get_cntvct_cp15(void)
 {
 	u64 cval;

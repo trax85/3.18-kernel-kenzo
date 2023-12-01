@@ -50,6 +50,7 @@ int HYPERVISOR_physdev_op(int cmd, void *arg);
 int HYPERVISOR_vcpu_op(int cmd, int vcpuid, void *extra_args);
 int HYPERVISOR_tmem_op(void *arg);
 int HYPERVISOR_multicall(struct multicall_entry *calls, uint32_t nr);
+<<<<<<< HEAD
 
 static inline int
 HYPERVISOR_suspend(unsigned long start_info_mfn)
@@ -59,6 +60,8 @@ HYPERVISOR_suspend(unsigned long start_info_mfn)
 	/* start_info_mfn is unused on ARM */
 	return HYPERVISOR_sched_op(SCHEDOP_shutdown, &r);
 }
+=======
+>>>>>>> p9x
 
 static inline void
 MULTI_update_va_mapping(struct multicall_entry *mcl, unsigned long va,

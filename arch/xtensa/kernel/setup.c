@@ -123,10 +123,17 @@ __tagtable(BP_TAG_MEMORY, parse_tag_mem);
 
 static int __init parse_tag_initrd(const bp_tag_t* tag)
 {
+<<<<<<< HEAD
 	struct bp_meminfo *mi = (struct bp_meminfo *)(tag->data);
 
 	initrd_start = (unsigned long)__va(mi->start);
 	initrd_end = (unsigned long)__va(mi->end);
+=======
+	meminfo_t* mi;
+	mi = (meminfo_t*)(tag->data);
+	initrd_start = __va(mi->start);
+	initrd_end = __va(mi->end);
+>>>>>>> p9x
 
 	return 0;
 }
@@ -145,6 +152,16 @@ static int __init parse_tag_fdt(const bp_tag_t *tag)
 
 __tagtable(BP_TAG_FDT, parse_tag_fdt);
 
+<<<<<<< HEAD
+=======
+void __init early_init_dt_setup_initrd_arch(u64 start, u64 end)
+{
+	initrd_start = (void *)__va(start);
+	initrd_end = (void *)__va(end);
+	initrd_below_start_ok = 1;
+}
+
+>>>>>>> p9x
 #endif /* CONFIG_OF */
 
 static int __init parse_tag_cmdline(const bp_tag_t* tag)

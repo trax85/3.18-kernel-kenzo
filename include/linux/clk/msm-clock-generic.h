@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -81,11 +85,14 @@ struct mux_clk {
 	u32		mask;
 	u32		shift;
 	u32		en_mask;
+<<<<<<< HEAD
 	/*
 	 * Set post divider for debug mux in order to divide the clock
 	 * by post_div + 1.
 	 */
 	u32		post_div;
+=======
+>>>>>>> p9x
 	int		low_power_sel;
 	void		*priv;
 
@@ -128,8 +135,11 @@ struct div_data {
 	 * Skip odd dividers since the hardware may not support them.
 	 */
 	bool skip_odd_div;
+<<<<<<< HEAD
 	bool skip_even_div;
 	bool allow_div_one;
+=======
+>>>>>>> p9x
 	unsigned int cached_div;
 };
 
@@ -243,6 +253,7 @@ struct mux_div_ops {
 /*
  * struct mux_div_clk - combined mux/divider clock
  * @priv
+<<<<<<< HEAD
 		parameters needed by ops
  * @safe_freq
 		when switching rates from A to B, the mux div clock will
@@ -267,6 +278,32 @@ struct mux_div_ops {
  * @force_enable_md
 		Set if the mux-div needs to be force enabled/disabled during
 		clk_enable/disable.
+=======
+ *		parameters needed by ops
+ * @safe_freq
+ *		when switching rates from A to B, the mux div clock will
+ *		instead switch from A -> safe_freq -> B. This allows the
+ *		mux_div clock to change rates while enabled, even if this
+ *		behavior is not supported by the parent clocks.
+ *
+ *		If changing the rate of parent A also causes the rate of
+ *		parent B to change, then safe_freq must be defined.
+ *
+ *		safe_freq is expected to have a source clock which is always
+ *		on and runs at only one rate.
+ *
+ * @safe_freqs
+ *		list of safe frequencies which should be considered while
+ *		switching from A->safe_freq->B.
+ * @safe_num
+ *		Number of safe frequencies.
+ * @parents
+ *		list of parents and mux indicies
+ * @ops
+ *		function pointers for hw specific operations
+ * @src_sel
+ *		the mux index which will be used if the clock is enabled.
+>>>>>>> p9x
  */
 
 struct mux_div_clk {
@@ -298,8 +335,11 @@ struct mux_div_clk {
 	unsigned long			safe_freq;
 	unsigned long                   *safe_freqs;
 	int                             safe_num;
+<<<<<<< HEAD
 	bool				try_get_rate;
 	bool				force_enable_md;
+=======
+>>>>>>> p9x
 };
 
 static inline struct mux_div_clk *to_mux_div_clk(struct clk *clk)

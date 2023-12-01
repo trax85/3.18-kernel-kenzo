@@ -576,6 +576,23 @@ void __init acpi_subsystem_init(void)
 		 */
 		regulator_has_full_constraints();
 	}
+<<<<<<< HEAD
+=======
+
+	/*
+	 * If the system is using ACPI then we can be reasonably
+	 * confident that any regulators are managed by the firmware
+	 * so tell the regulator core it has everything it needs to
+	 * know.
+	 */
+	regulator_has_full_constraints();
+
+	return;
+
+      error0:
+	disable_acpi();
+	return;
+>>>>>>> p9x
 }
 
 static int __init acpi_bus_init(void)

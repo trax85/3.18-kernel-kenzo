@@ -452,6 +452,7 @@
 			reg = <0x10020000 0x20000>;
 			ranges;
 
+<<<<<<< HEAD
 			fb: fb@10021000 {
 				compatible = "fsl,imx27-fb", "fsl,imx21-fb";
 				interrupts = <61>;
@@ -460,6 +461,14 @@
 					 <&clks IMX27_CLK_LCDC_AHB_GATE>,
 					 <&clks IMX27_CLK_PER3_GATE>;
 				clock-names = "ipg", "ahb", "per";
+=======
+			fec: ethernet@1002b000 {
+				compatible = "fsl,imx27-fec";
+				reg = <0x1002b000 0x1000>;
+				interrupts = <50>;
+				clocks = <&clks 48>, <&clks 67>, <&clks 0>;
+				clock-names = "ipg", "ahb", "ptp";
+>>>>>>> p9x
 				status = "disabled";
 			};
 

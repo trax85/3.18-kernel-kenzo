@@ -912,6 +912,10 @@ vfs_kern_mount(struct file_system_type *type, int flags, const char *name, void 
 	if (!mnt)
 		return ERR_PTR(-ENOMEM);
 
+<<<<<<< HEAD
+=======
+	mnt->mnt.data = NULL;
+>>>>>>> p9x
 	if (type->alloc_mnt_data) {
 		mnt->mnt.data = type->alloc_mnt_data();
 		if (!mnt->mnt.data) {
@@ -925,7 +929,11 @@ vfs_kern_mount(struct file_system_type *type, int flags, const char *name, void 
 
 	root = mount_fs(type, flags, name, &mnt->mnt, data);
 	if (IS_ERR(root)) {
+<<<<<<< HEAD
 		mnt_free_id(mnt);
+=======
+		kfree(mnt->mnt.data);
+>>>>>>> p9x
 		free_vfsmnt(mnt);
 		return ERR_CAST(root);
 	}
@@ -971,8 +979,12 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
 			goto out_free;
 	}
 
+<<<<<<< HEAD
 	mnt->mnt.mnt_flags = old->mnt.mnt_flags;
 	mnt->mnt.mnt_flags &= ~(MNT_WRITE_HOLD|MNT_MARKED|MNT_INTERNAL);
+=======
+	mnt->mnt.mnt_flags = old->mnt.mnt_flags & ~(MNT_WRITE_HOLD|MNT_MARKED);
+>>>>>>> p9x
 	/* Don't allow unprivileged users to change mount flags */
 	if (flag & CL_UNPRIVILEGED) {
 		mnt->mnt.mnt_flags |= MNT_LOCK_ATIME;
@@ -989,10 +1001,13 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
 		if (mnt->mnt.mnt_flags & MNT_NOEXEC)
 			mnt->mnt.mnt_flags |= MNT_LOCK_NOEXEC;
 	}
+<<<<<<< HEAD
 
 	/* Don't allow unprivileged users to reveal what is under a mount */
 	if ((flag & CL_UNPRIVILEGED) && list_empty(&old->mnt_expire))
 		mnt->mnt.mnt_flags |= MNT_LOCKED;
+=======
+>>>>>>> p9x
 
 	atomic_inc(&sb->s_active);
 	mnt->mnt.mnt_sb = sb;
@@ -1028,7 +1043,11 @@ static struct mount *clone_mnt(struct mount *old, struct dentry *root,
 	return mnt;
 
  out_free:
+<<<<<<< HEAD
 	mnt_free_id(mnt);
+=======
+	kfree(mnt->mnt.data);
+>>>>>>> p9x
 	free_vfsmnt(mnt);
 	return ERR_PTR(err);
 }
@@ -1597,8 +1616,11 @@ SYSCALL_DEFINE2(umount, char __user *, name, int, flags)
 		goto dput_and_out;
 	if (!check_mnt(mnt))
 		goto dput_and_out;
+<<<<<<< HEAD
 	if (mnt->mnt.mnt_flags & MNT_LOCKED) /* Check optimistically */
 		goto dput_and_out;
+=======
+>>>>>>> p9x
 	retval = -EPERM;
 	if (flags & MNT_FORCE && !capable(CAP_SYS_ADMIN))
 		goto dput_and_out;
@@ -1900,13 +1922,21 @@ static int attach_recursive_mnt(struct mount *source_mnt,
 		if (err)
 			goto out;
 		err = propagate_mnt(dest_mnt, dest_mp, source_mnt, &tree_list);
+<<<<<<< HEAD
 		lock_mount_hash();
+=======
+		br_write_lock(&vfsmount_lock);
+>>>>>>> p9x
 		if (err)
 			goto out_cleanup_ids;
 		for (p = source_mnt; p; p = next_mnt(p, source_mnt))
 			set_mnt_shared(p);
 	} else {
+<<<<<<< HEAD
 		lock_mount_hash();
+=======
+		br_write_lock(&vfsmount_lock);
+>>>>>>> p9x
 	}
 	if (parent_path) {
 		detach_mnt(source_mnt, parent_path);
@@ -1929,11 +1959,19 @@ static int attach_recursive_mnt(struct mount *source_mnt,
 	return 0;
 
  out_cleanup_ids:
+<<<<<<< HEAD
 	while (!hlist_empty(&tree_list)) {
 		child = hlist_entry(tree_list.first, struct mount, mnt_hash);
 		umount_tree(child, UMOUNT_SYNC);
 	}
 	unlock_mount_hash();
+=======
+	while (!list_empty(&tree_list)) {
+		child = list_first_entry(&tree_list, struct mount, mnt_hash);
+		umount_tree(child, 0);
+	}
+	br_write_unlock(&vfsmount_lock);
+>>>>>>> p9x
 	cleanup_group_ids(source_mnt, NULL);
  out:
 	return err;
@@ -2198,6 +2236,7 @@ static int do_remount(struct path *path, int flags, int mnt_flags,
 	else {
 		err = do_remount_sb2(path->mnt, sb, flags, data, 0);
 		namespace_lock();
+<<<<<<< HEAD
 		lock_mount_hash();
 		propagate_remount(mnt);
 		unlock_mount_hash();
@@ -2205,6 +2244,15 @@ static int do_remount(struct path *path, int flags, int mnt_flags,
 	}
 	if (!err) {
 		lock_mount_hash();
+=======
+		br_write_lock(&vfsmount_lock);
+		propagate_remount(mnt);
+		br_write_unlock(&vfsmount_lock);
+		namespace_unlock();
+	}
+	if (!err) {
+		br_write_lock(&vfsmount_lock);
+>>>>>>> p9x
 		mnt_flags |= mnt->mnt.mnt_flags & ~MNT_USER_SETTABLE_MASK;
 		mnt->mnt.mnt_flags = mnt_flags;
 		touch_mnt_namespace(mnt->mnt_ns);
@@ -2393,12 +2441,15 @@ static int do_new_mount(struct path *path, const char *fstype, int flags,
 		if (!(type->fs_flags & FS_USERNS_DEV_MOUNT)) {
 			flags |= MS_NODEV;
 			mnt_flags |= MNT_NODEV | MNT_LOCK_NODEV;
+<<<<<<< HEAD
 		}
 		if (type->fs_flags & FS_USERNS_VISIBLE) {
 			if (!fs_fully_visible(type, &mnt_flags)) {
 				put_filesystem(type);
 				return -EPERM;
 			}
+=======
+>>>>>>> p9x
 		}
 	}
 

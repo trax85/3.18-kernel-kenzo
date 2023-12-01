@@ -43,6 +43,7 @@
 #include <soc/qcom/scm.h>
 #include <linux/platform_device.h>
 #include <linux/wakelock.h>
+<<<<<<< HEAD
 #include <linux/input.h>
 #include <linux/display_state.h>
 
@@ -54,14 +55,19 @@
 #include <linux/init.h>
 #endif
 
+=======
+>>>>>>> p9x
 #define FPC1020_RESET_LOW_US 1000
 #define FPC1020_RESET_HIGH1_US 100
 #define FPC1020_RESET_HIGH2_US 1250
 #define FPC_TTW_HOLD_TIME 1000
 
+<<<<<<< HEAD
 #ifdef CONFIG_MSM_HOTPLUG
 extern void msm_hotplug_resume_timeout(void);
 #endif
+=======
+>>>>>>> p9x
 
 struct vreg_config {
 	char *name;
@@ -82,7 +88,10 @@ struct fpc1020_data {
 	int rst_gpio;
 	struct mutex lock;
 	bool wakeup_enabled;
+<<<<<<< HEAD
 	struct input_dev *input_dev;
+=======
+>>>>>>> p9x
 };
 
 unsigned int kenzo_fpsensor = 1;
@@ -253,6 +262,7 @@ static const struct attribute_group attribute_group = {
 	.attrs = attributes,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_MSM_HOTPLUG
 static void __cpuinit msm_hotplug_resume_call(struct work_struct *msm_hotplug_resume_call_work)
 {
@@ -291,6 +301,8 @@ exit:
 	return ret;
 }
 
+=======
+>>>>>>> p9x
 static irqreturn_t fpc1020_irq_handler(int irq, void *handle)
 {
 	struct fpc1020_data *fpc1020 = handle;
@@ -302,6 +314,7 @@ static irqreturn_t fpc1020_irq_handler(int irq, void *handle)
 
 	if (fpc1020->wakeup_enabled) {
 		wake_lock_timeout(&fpc1020->ttw_wl, msecs_to_jiffies(FPC_TTW_HOLD_TIME));
+<<<<<<< HEAD
 #ifdef CONFIG_MSM_HOTPLUG
 		if (msm_enabled && msm_hotplug_scr_suspended &&
 		   !msm_hotplug_fingerprint_called) {
@@ -309,10 +322,13 @@ static irqreturn_t fpc1020_irq_handler(int irq, void *handle)
 			schedule_work(&msm_hotplug_resume_call_work);
 		}
 #endif
+=======
+>>>>>>> p9x
 	}
 
 	sysfs_notify(&fpc1020->dev->kobj, NULL, dev_attr_irq.attr.name);
 
+<<<<<<< HEAD
 /* On touch the fp sensor, boost the cpu even if screen is on */
 #ifdef CONFIG_MSM_HOTPLUG
 	if (fp_bigcore_boost) {
@@ -337,6 +353,8 @@ static irqreturn_t fpc1020_irq_handler(int irq, void *handle)
 	}
 #endif
 
+=======
+>>>>>>> p9x
 	return IRQ_HANDLED;
 }
 
@@ -415,11 +433,14 @@ static int fpc1020_probe(struct platform_device* pdev)
 		goto exit;
 
 	fpc1020->wakeup_enabled = false;
+<<<<<<< HEAD
 
 	rc = fpc1020_input_init(fpc1020);
 	if (rc)
 		goto exit;
 
+=======
+>>>>>>> p9x
 	irqf = IRQF_TRIGGER_RISING | IRQF_ONESHOT;
 	if (of_property_read_bool(dev->of_node, "fpc,enable-wakeup")) {
 		irqf |= IRQF_NO_SUSPEND;
@@ -458,9 +479,12 @@ static int fpc1020_remove(struct platform_device* pdev)
 {
 	struct fpc1020_data *fpc1020 = dev_get_drvdata(&pdev->dev);
 
+<<<<<<< HEAD
 	if (fpc1020->input_dev != NULL)
 		input_free_device(fpc1020->input_dev);
 
+=======
+>>>>>>> p9x
 	sysfs_remove_group(&fpc1020->dev->kobj, &attribute_group);
 	mutex_destroy(&fpc1020->lock);
 	wake_lock_destroy(&fpc1020->ttw_wl);

@@ -60,9 +60,28 @@ static int s3c64xx_cpufreq_set_target(struct cpufreq_policy *policy,
 	unsigned int old_freq, new_freq;
 	int ret;
 
+<<<<<<< HEAD
 	old_freq = clk_get_rate(policy->clk) / 1000;
 	new_freq = s3c64xx_freq_table[index].frequency;
 	dvfs = &s3c64xx_dvfs_table[s3c64xx_freq_table[index].driver_data];
+=======
+	ret = cpufreq_frequency_table_target(policy, s3c64xx_freq_table,
+					     target_freq, relation, &i);
+	if (ret != 0)
+		return ret;
+
+	freqs.old = clk_get_rate(armclk) / 1000;
+	freqs.new = s3c64xx_freq_table[i].frequency;
+	freqs.flags = 0;
+	dvfs = &s3c64xx_dvfs_table[s3c64xx_freq_table[i].driver_data];
+
+	if (freqs.old == freqs.new)
+		return 0;
+
+	pr_debug("Transition %d-%dkHz\n", freqs.old, freqs.new);
+
+	cpufreq_notify_transition(policy, &freqs, CPUFREQ_PRECHANGE);
+>>>>>>> p9x
 
 #ifdef CONFIG_REGULATOR
 	if (vddarm && new_freq > old_freq) {
@@ -212,10 +231,17 @@ static int s3c64xx_cpufreq_driver_init(struct cpufreq_policy *policy)
 }
 
 static struct cpufreq_driver s3c64xx_cpufreq_driver = {
+<<<<<<< HEAD
 	.flags		= CPUFREQ_NEED_INITIAL_FREQ_CHECK,
 	.verify		= cpufreq_generic_frequency_table_verify,
 	.target_index	= s3c64xx_cpufreq_set_target,
 	.get		= cpufreq_generic_get,
+=======
+	.flags          = 0,
+	.verify		= s3c64xx_cpufreq_verify_speed,
+	.target		= s3c64xx_cpufreq_set_target,
+	.get		= s3c64xx_cpufreq_get_speed,
+>>>>>>> p9x
 	.init		= s3c64xx_cpufreq_driver_init,
 	.name		= "s3c",
 };

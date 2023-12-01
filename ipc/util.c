@@ -139,6 +139,11 @@ device_initcall(ipc_init);
  */
 void ipc_init_ids(struct ipc_ids *ids)
 {
+<<<<<<< HEAD
+=======
+	init_rwsem(&ids->rwsem);
+
+>>>>>>> p9x
 	ids->in_use = 0;
 	ids->seq = 0;
 	ids->next_id = -1;
@@ -180,6 +185,7 @@ void __init ipc_init_proc_interface(const char *path, const char *header,
 #endif
 
 /**
+<<<<<<< HEAD
  * ipc_findkey	- find a key in an ipc identifier set
  * @ids: ipc identifier set
  * @key: key to find
@@ -188,6 +194,16 @@ void __init ipc_init_proc_interface(const char *path, const char *header,
  * otherwise. If key is found ipc points to the owning ipc structure
  *
  * Called with ipc_ids.rwsem held.
+=======
+ *	ipc_findkey	-	find a key in an ipc identifier set	
+ *	@ids: Identifier set
+ *	@key: The key to find
+ *	
+ *	Requires ipc_ids.rwsem locked.
+ *	Returns the LOCKED pointer to the ipc structure if found or NULL
+ *	if not.
+ *	If key is found ipc points to the owning ipc structure
+>>>>>>> p9x
  */
 static struct kern_ipc_perm *ipc_findkey(struct ipc_ids *ids, key_t key)
 {
@@ -218,7 +234,11 @@ static struct kern_ipc_perm *ipc_findkey(struct ipc_ids *ids, key_t key)
  * ipc_get_maxid - get the last assigned id
  * @ids: ipc identifier set
  *
+<<<<<<< HEAD
  * Called with ipc_ids.rwsem held.
+=======
+ *	Called with ipc_ids.rwsem held.
+>>>>>>> p9x
  */
 int ipc_get_maxid(struct ipc_ids *ids)
 {
@@ -255,9 +275,15 @@ int ipc_get_maxid(struct ipc_ids *ids)
  * is returned. The 'new' entry is returned in a locked state on success.
  * On failure the entry is not locked and a negative err-code is returned.
  *
+<<<<<<< HEAD
  * Called with writer ipc_ids.rwsem held.
  */
 int ipc_addid(struct ipc_ids *ids, struct kern_ipc_perm *new, int size)
+=======
+ *	Called with writer ipc_ids.rwsem held.
+ */
+int ipc_addid(struct ipc_ids* ids, struct kern_ipc_perm* new, int size)
+>>>>>>> p9x
 {
 	kuid_t euid;
 	kgid_t egid;
@@ -340,7 +366,11 @@ static int ipcget_new(struct ipc_namespace *ns, struct ipc_ids *ids,
  *
  * On success, the ipc id is returned.
  *
+<<<<<<< HEAD
  * It is called with ipc_ids.rwsem and ipcp->lock held.
+=======
+ *	It is called with ipc_ids.rwsem and ipcp->lock held.
+>>>>>>> p9x
  */
 static int ipc_check_perms(struct ipc_namespace *ns,
 			   struct kern_ipc_perm *ipcp,
@@ -422,8 +452,13 @@ static int ipcget_public(struct ipc_namespace *ns, struct ipc_ids *ids,
  * @ids: ipc identifier set
  * @ipcp: ipc perm structure containing the identifier to remove
  *
+<<<<<<< HEAD
  * ipc_ids.rwsem (as a writer) and the spinlock for this ID are held
  * before this function is called, and remain locked on the exit.
+=======
+ *	ipc_ids.rwsem (as a writer) and the spinlock for this ID are held
+ *	before this function is called, and remain locked on the exit.
+>>>>>>> p9x
  */
 void ipc_rmid(struct ipc_ids *ids, struct kern_ipc_perm *ipcp)
 {
@@ -611,8 +646,13 @@ struct kern_ipc_perm *ipc_obtain_object(struct ipc_ids *ids, int id)
 }
 
 /**
+<<<<<<< HEAD
  * ipc_lock - lock an ipc structure without rwsem held
  * @ids: ipc identifier set
+=======
+ * ipc_lock - Lock an ipc structure without rwsem held
+ * @ids: IPC identifier set
+>>>>>>> p9x
  * @id: ipc id to look for
  *
  * Look for an id in the ipc ids idr and lock the associated ipc object.
@@ -708,7 +748,11 @@ int ipc_update_perm(struct ipc64_perm *in, struct kern_ipc_perm *out)
 
 /**
  * ipcctl_pre_down_nolock - retrieve an ipc and check permissions for some IPC_XXX cmd
+<<<<<<< HEAD
  * @ns:  ipc namespace
+=======
+ * @ns:  the ipc namespace
+>>>>>>> p9x
  * @ids:  the table of ids where to look for the ipc
  * @id:   the id of the ipc to retrieve
  * @cmd:  the cmd to check

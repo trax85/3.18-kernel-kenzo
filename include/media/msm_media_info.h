@@ -9,10 +9,13 @@
 #define MSM_MEDIA_ROUNDUP(__sz, __r) (((__sz) + ((__r) - 1)) / (__r))
 #endif
 
+<<<<<<< HEAD
 #ifndef MSM_MEDIA_MAX
 #define MSM_MEDIA_MAX(__a, __b) ((__a) > (__b)?(__a):(__b))
 #endif
 
+=======
+>>>>>>> p9x
 enum color_fmts {
 	/* Venus NV12:
 	 * YUV 4:2:0 image with a plane of 8 bit Y samples followed
@@ -47,8 +50,12 @@ enum color_fmts {
 	 * UV_Scanlines: Height/2 aligned to 16
 	 * Extradata: Arbitrary (software-imposed) padding
 	 * Total size = align((Y_Stride * Y_Scanlines
+<<<<<<< HEAD
 	 *          + UV_Stride * UV_Scanlines
 	 *          + max(Extradata, Y_Stride * 8), 4096)
+=======
+	 *          + UV_Stride * UV_Scanlines + Extradata), 4096)
+>>>>>>> p9x
 	 */
 	COLOR_FMT_NV12,
 
@@ -85,8 +92,12 @@ enum color_fmts {
 	 * UV_Scanlines: Height/2 aligned to 16
 	 * Extradata: Arbitrary (software-imposed) padding
 	 * Total size = align((Y_Stride * Y_Scanlines
+<<<<<<< HEAD
 	 *          + UV_Stride * UV_Scanlines
 	 *          + max(Extradata, Y_Stride * 8), 4096)
+=======
+	 *          + UV_Stride * UV_Scanlines + Extradata), 4096)
+>>>>>>> p9x
 	 */
 	COLOR_FMT_NV21,
 	/* Venus NV12_MVTB:
@@ -232,8 +243,12 @@ enum color_fmts {
 	 * Extradata = 8k
 	 *
 	 * Total size = align( Y_UBWC_Plane_size + UV_UBWC_Plane_size +
+<<<<<<< HEAD
 	 *           Y_Meta_Plane_size + UV_Meta_Plane_size
 	 *           + max(Extradata, Y_Stride * 48), 4096)
+=======
+	 *           Y_Meta_Plane_size + UV_Meta_Plane_size + Extradata, 4096)
+>>>>>>> p9x
 	 */
 	COLOR_FMT_NV12_UBWC,
 	/* Venus NV12 10-bit UBWC:
@@ -319,6 +334,7 @@ enum color_fmts {
 	 * UV_Meta_Scanlines = align(roundup(Height, UV_TileHeight), 16)
 	 * UV_Meta_Plane_size = align(UV_Meta_Stride * UV_Meta_Scanlines, 4096)
 	 * Extradata = 8k
+<<<<<<< HEAD
 	 *
 	 * Total size = align(Y_UBWC_Plane_size + UV_UBWC_Plane_size +
 	 *           Y_Meta_Plane_size + UV_Meta_Plane_size
@@ -399,6 +415,10 @@ enum color_fmts {
 	 *		Extradata, 4096)
 	 */
 	COLOR_FMT_RGBA8888_UBWC,
+=======
+	 */
+	COLOR_FMT_NV12_BPP10_UBWC,
+>>>>>>> p9x
 };
 
 static inline unsigned int VENUS_EXTRADATA_SIZE(int width, int height)
@@ -408,9 +428,15 @@ static inline unsigned int VENUS_EXTRADATA_SIZE(int width, int height)
 
 	/*
 	 * In the future, calculate the size based on the w/h but just
+<<<<<<< HEAD
 	 * hardcode it for now since 16K satisfies all current usecases.
 	 */
 	return 16 * 1024;
+=======
+	 * hardcode it for now since 8K satisfies all current usecases.
+	 */
+	return 8 * 1024;
+>>>>>>> p9x
 }
 
 static inline unsigned int VENUS_Y_STRIDE(int color_fmt, int width)
@@ -428,9 +454,14 @@ static inline unsigned int VENUS_Y_STRIDE(int color_fmt, int width)
 		stride = MSM_MEDIA_ALIGN(width, alignment);
 		break;
 	case COLOR_FMT_NV12_BPP10_UBWC:
+<<<<<<< HEAD
 		alignment = 256;
 		stride = MSM_MEDIA_ALIGN(width, 192);
 		stride = MSM_MEDIA_ALIGN(stride * 4/3, alignment);
+=======
+		alignment = 128;
+		stride = MSM_MEDIA_ALIGN(width * 4/3, alignment);
+>>>>>>> p9x
 		break;
 	default:
 		break;
@@ -454,9 +485,14 @@ static inline unsigned int VENUS_UV_STRIDE(int color_fmt, int width)
 		stride = MSM_MEDIA_ALIGN(width, alignment);
 		break;
 	case COLOR_FMT_NV12_BPP10_UBWC:
+<<<<<<< HEAD
 		alignment = 256;
 		stride = MSM_MEDIA_ALIGN(width, 192);
 		stride = MSM_MEDIA_ALIGN(stride * 4/3, alignment);
+=======
+		alignment = 128;
+		stride = MSM_MEDIA_ALIGN(width * 4/3, alignment);
+>>>>>>> p9x
 		break;
 	default:
 		break;
@@ -476,6 +512,7 @@ static inline unsigned int VENUS_Y_SCANLINES(int color_fmt, int height)
 	case COLOR_FMT_NV12:
 	case COLOR_FMT_NV12_MVTB:
 	case COLOR_FMT_NV12_UBWC:
+<<<<<<< HEAD
 		alignment = 32;
 		break;
 	case COLOR_FMT_NV12_BPP10_UBWC:
@@ -485,6 +522,15 @@ static inline unsigned int VENUS_Y_SCANLINES(int color_fmt, int height)
 		return 0;
 	}
 	sclines = MSM_MEDIA_ALIGN(height, alignment);
+=======
+	case COLOR_FMT_NV12_BPP10_UBWC:
+		alignment = 32;
+		sclines = MSM_MEDIA_ALIGN(height, alignment);
+		break;
+	default:
+		break;
+	}
+>>>>>>> p9x
 invalid_input:
 	return sclines;
 }
@@ -499,6 +545,7 @@ static inline unsigned int VENUS_UV_SCANLINES(int color_fmt, int height)
 	case COLOR_FMT_NV21:
 	case COLOR_FMT_NV12:
 	case COLOR_FMT_NV12_MVTB:
+<<<<<<< HEAD
 	case COLOR_FMT_NV12_BPP10_UBWC:
 		alignment = 16;
 		break;
@@ -511,6 +558,16 @@ static inline unsigned int VENUS_UV_SCANLINES(int color_fmt, int height)
 
 	sclines = MSM_MEDIA_ALIGN(height / 2, alignment);
 
+=======
+	case COLOR_FMT_NV12_UBWC:
+	case COLOR_FMT_NV12_BPP10_UBWC:
+		alignment = 16;
+		sclines = MSM_MEDIA_ALIGN(((height + 1) >> 1), alignment);
+		break;
+	default:
+		break;
+	}
+>>>>>>> p9x
 invalid_input:
 	return sclines;
 }
@@ -583,7 +640,11 @@ static inline unsigned int VENUS_UV_META_STRIDE(int color_fmt, int width)
 		goto invalid_input;
 	}
 
+<<<<<<< HEAD
 	uv_meta_stride = MSM_MEDIA_ROUNDUP(width / 2, uv_tile_width);
+=======
+	uv_meta_stride = MSM_MEDIA_ROUNDUP(width, uv_tile_width);
+>>>>>>> p9x
 	uv_meta_stride = MSM_MEDIA_ALIGN(uv_meta_stride, 64);
 
 invalid_input:
@@ -608,13 +669,18 @@ static inline unsigned int VENUS_UV_META_SCANLINES(int color_fmt, int height)
 		goto invalid_input;
 	}
 
+<<<<<<< HEAD
 	uv_meta_scanlines = MSM_MEDIA_ROUNDUP(height / 2, uv_tile_height);
+=======
+	uv_meta_scanlines = MSM_MEDIA_ROUNDUP(height, uv_tile_height);
+>>>>>>> p9x
 	uv_meta_scanlines = MSM_MEDIA_ALIGN(uv_meta_scanlines, 16);
 
 invalid_input:
 	return uv_meta_scanlines;
 }
 
+<<<<<<< HEAD
 static inline unsigned int VENUS_RGB_STRIDE(int color_fmt, int width)
 {
 	unsigned int alignment = 0, stride = 0;
@@ -706,6 +772,8 @@ invalid_input:
 	return rgb_meta_scanlines;
 }
 
+=======
+>>>>>>> p9x
 static inline unsigned int VENUS_BUFFER_SIZE(
 	int color_fmt, int width, int height)
 {
@@ -717,9 +785,12 @@ static inline unsigned int VENUS_BUFFER_SIZE(
 	unsigned int y_meta_stride = 0, y_meta_scanlines = 0;
 	unsigned int uv_meta_stride = 0, uv_meta_scanlines = 0;
 	unsigned int y_meta_plane = 0, uv_meta_plane = 0;
+<<<<<<< HEAD
 	unsigned int rgb_stride = 0, rgb_scanlines = 0;
 	unsigned int rgb_plane = 0, rgb_ubwc_plane = 0, rgb_meta_plane = 0;
 	unsigned int rgb_meta_stride = 0, rgb_meta_scanlines = 0;
+=======
+>>>>>>> p9x
 
 	if (!width || !height)
 		goto invalid_input;
@@ -728,17 +799,24 @@ static inline unsigned int VENUS_BUFFER_SIZE(
 	uv_stride = VENUS_UV_STRIDE(color_fmt, width);
 	y_sclines = VENUS_Y_SCANLINES(color_fmt, height);
 	uv_sclines = VENUS_UV_SCANLINES(color_fmt, height);
+<<<<<<< HEAD
 	rgb_stride = VENUS_RGB_STRIDE(color_fmt, width);
 	rgb_scanlines = VENUS_RGB_SCANLINES(color_fmt, height);
 
+=======
+>>>>>>> p9x
 	switch (color_fmt) {
 	case COLOR_FMT_NV21:
 	case COLOR_FMT_NV12:
 		uv_alignment = 4096;
 		y_plane = y_stride * y_sclines;
 		uv_plane = uv_stride * uv_sclines + uv_alignment;
+<<<<<<< HEAD
 		size = y_plane + uv_plane +
 				MSM_MEDIA_MAX(extra_size, 8 * y_stride);
+=======
+		size = y_plane + uv_plane + extra_size;
+>>>>>>> p9x
 		size = MSM_MEDIA_ALIGN(size, 4096);
 		break;
 	case COLOR_FMT_NV12_MVTB:
@@ -763,6 +841,7 @@ static inline unsigned int VENUS_BUFFER_SIZE(
 					uv_meta_scanlines, 4096);
 
 		size = y_ubwc_plane + uv_ubwc_plane + y_meta_plane +
+<<<<<<< HEAD
 			uv_meta_plane +
 			MSM_MEDIA_MAX(extra_size + 8192, 48 * y_stride);
 		size = MSM_MEDIA_ALIGN(size, 4096);
@@ -781,6 +860,9 @@ static inline unsigned int VENUS_BUFFER_SIZE(
 		rgb_meta_plane = MSM_MEDIA_ALIGN(rgb_meta_stride *
 					rgb_meta_scanlines, 4096);
 		size = rgb_ubwc_plane + rgb_meta_plane;
+=======
+				uv_meta_plane + extra_size;
+>>>>>>> p9x
 		size = MSM_MEDIA_ALIGN(size, 4096);
 		break;
 	default:

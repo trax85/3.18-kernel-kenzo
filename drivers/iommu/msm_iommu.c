@@ -19,7 +19,10 @@
 #include <linux/export.h>
 #include <linux/iommu.h>
 #include <linux/qcom_iommu.h>
+<<<<<<< HEAD
 #include <asm/sections.h>
+=======
+>>>>>>> p9x
 
 static DEFINE_MUTEX(iommu_list_lock);
 static LIST_HEAD(iommu_list);
@@ -49,6 +52,7 @@ struct bus_type msm_iommu_sec_bus_type = {
 	.name = "msm_iommu_sec_bus",
 };
 
+<<<<<<< HEAD
 struct bus_type iommu_non_sec_bus_type = {
 	.name = "msm_iommu_non_sec_bus",
 };
@@ -246,6 +250,104 @@ u32 msm_iommu_get_mair1(void)
 	return MAIR1_VALUE;
 }
 
+=======
+void msm_set_iommu_access_ops(struct iommu_access_ops *ops)
+{
+	iommu_access_ops = ops;
+}
+
+struct iommu_access_ops *msm_get_iommu_access_ops()
+{
+	BUG_ON(iommu_access_ops == NULL);
+	return iommu_access_ops;
+}
+EXPORT_SYMBOL(msm_get_iommu_access_ops);
+
+void msm_iommu_add_drv(struct msm_iommu_drvdata *drv)
+{
+	mutex_lock(&iommu_list_lock);
+	list_add(&drv->list, &iommu_list);
+	mutex_unlock(&iommu_list_lock);
+}
+
+void msm_iommu_remove_drv(struct msm_iommu_drvdata *drv)
+{
+	mutex_lock(&iommu_list_lock);
+	list_del(&drv->list);
+	mutex_unlock(&iommu_list_lock);
+}
+
+static int find_iommu_ctx(struct device *dev, void *data)
+{
+	struct msm_iommu_ctx_drvdata *c;
+
+	c = dev_get_drvdata(dev);
+	if (!c || !c->name)
+		return 0;
+
+	return !strcmp(data, c->name);
+}
+
+static struct device *find_context(struct device *dev, const char *name)
+{
+	return device_find_child(dev, (void *)name, find_iommu_ctx);
+}
+
+struct device *msm_iommu_get_ctx(const char *ctx_name)
+{
+	struct msm_iommu_drvdata *drv;
+	struct device *dev = NULL;
+
+	mutex_lock(&iommu_list_lock);
+	list_for_each_entry(drv, &iommu_list, list) {
+		dev = find_context(drv->dev, ctx_name);
+		if (dev)
+			break;
+	}
+	mutex_unlock(&iommu_list_lock);
+
+	put_device(dev);
+
+	if (!dev || !dev_get_drvdata(dev)) {
+		pr_debug("Could not find context <%s>\n", ctx_name);
+		dev = ERR_PTR(-EPROBE_DEFER);
+	}
+
+	return dev;
+}
+EXPORT_SYMBOL(msm_iommu_get_ctx);
+
+/*
+ * Selecting NMRR, PRRR, MAIR0 and MAIR1 for SMMU has a dependency on
+ * the SMMU page table formate and a CPU mode. To simplify that, refer
+ * the table below.
+ *
+ *		+-----------+-------------+------+
+ *		| ARM       | ARM_LPAE    | ARM64|
+ * +------------+-----------+-------------+------+
+ * | SMMUv7S    | RCP15_PRRR| PRRR        | PRRR |
+ * |            | RCP15_NMRR| NMRR        | NMRR |
+ * +------------+-----------+-------------+------+
+ * | SMMUv7L    | MAIR0     | RCP15_MAIR0 | MAIR0|
+ * |            | MAIR1     | RCP15_MAIR1 | MAIR1|
+ * +------------+-----------+-------------+------+
+ * | SMMUv8L    | MAIR0     | RCP15_MAIR0 | MAIR0|
+ * |            | MAIR1     | RCP15_MAIR1 | MAIR1|
+ * +------------+-----------+-------------+------+
+ */
+
+#ifdef CONFIG_ARM64
+u32 msm_iommu_get_mair0(void)
+{
+	return MAIR0_VALUE;
+}
+
+u32 msm_iommu_get_mair1(void)
+{
+	return MAIR1_VALUE;
+}
+
+>>>>>>> p9x
 u32 msm_iommu_get_prrr(void)
 {
 	return PRRR_VALUE;

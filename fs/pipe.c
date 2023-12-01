@@ -122,6 +122,106 @@ void pipe_wait(struct pipe_inode_info *pipe)
 	pipe_lock(pipe);
 }
 
+<<<<<<< HEAD
+=======
+static int
+pipe_iov_copy_from_user(void *addr, int *offset, struct iovec *iov,
+			size_t *remaining, int atomic)
+{
+	unsigned long copy;
+
+	while (*remaining > 0) {
+		while (!iov->iov_len)
+			iov++;
+		copy = min_t(unsigned long, *remaining, iov->iov_len);
+
+		if (atomic) {
+			if (__copy_from_user_inatomic(addr + *offset,
+						      iov->iov_base, copy))
+				return -EFAULT;
+		} else {
+			if (copy_from_user(addr + *offset,
+					   iov->iov_base, copy))
+				return -EFAULT;
+		}
+		*offset += copy;
+		*remaining -= copy;
+		iov->iov_base += copy;
+		iov->iov_len -= copy;
+	}
+	return 0;
+}
+
+static int
+pipe_iov_copy_to_user(struct iovec *iov, void *addr, int *offset,
+		      size_t *remaining, int atomic)
+{
+	unsigned long copy;
+
+	while (*remaining > 0) {
+		while (!iov->iov_len)
+			iov++;
+		copy = min_t(unsigned long, *remaining, iov->iov_len);
+
+		if (atomic) {
+			if (__copy_to_user_inatomic(iov->iov_base,
+						    addr + *offset, copy))
+				return -EFAULT;
+		} else {
+			if (copy_to_user(iov->iov_base,
+					 addr + *offset, copy))
+				return -EFAULT;
+		}
+		*offset += copy;
+		*remaining -= copy;
+		iov->iov_base += copy;
+		iov->iov_len -= copy;
+	}
+	return 0;
+}
+
+/*
+ * Attempt to pre-fault in the user memory, so we can use atomic copies.
+ * Returns the number of bytes not faulted in.
+ */
+static int iov_fault_in_pages_write(struct iovec *iov, unsigned long len)
+{
+	while (!iov->iov_len)
+		iov++;
+
+	while (len > 0) {
+		unsigned long this_len;
+
+		this_len = min_t(unsigned long, len, iov->iov_len);
+		if (fault_in_pages_writeable(iov->iov_base, this_len))
+			break;
+
+		len -= this_len;
+		iov++;
+	}
+
+	return len;
+}
+
+/*
+ * Pre-fault in the user memory, so we can use atomic copies.
+ */
+static void iov_fault_in_pages_read(struct iovec *iov, unsigned long len)
+{
+	while (!iov->iov_len)
+		iov++;
+
+	while (len > 0) {
+		unsigned long this_len;
+
+		this_len = min_t(unsigned long, len, iov->iov_len);
+		fault_in_pages_readable(iov->iov_base, this_len);
+		len -= this_len;
+		iov++;
+	}
+}
+
+>>>>>>> p9x
 static void anon_pipe_buf_release(struct pipe_inode_info *pipe,
 				  struct pipe_buffer *buf)
 {
@@ -254,9 +354,16 @@ pipe_read(struct kiocb *iocb, struct iov_iter *to)
 			int curbuf = pipe->curbuf;
 			struct pipe_buffer *buf = pipe->bufs + curbuf;
 			const struct pipe_buf_operations *ops = buf->ops;
+<<<<<<< HEAD
 			size_t chars = buf->len;
 			size_t written;
 			int error;
+=======
+			void *addr;
+			size_t chars = buf->len, remaining;
+			int error, atomic;
+			int offset;
+>>>>>>> p9x
 
 			if (chars > total_len)
 				chars = total_len;
@@ -268,8 +375,27 @@ pipe_read(struct kiocb *iocb, struct iov_iter *to)
 				break;
 			}
 
+<<<<<<< HEAD
 			written = copy_page_to_iter(buf->page, buf->offset, chars, to);
 			if (unlikely(written < chars)) {
+=======
+			atomic = !iov_fault_in_pages_write(iov, chars);
+			remaining = chars;
+			offset = buf->offset;
+redo:
+			addr = ops->map(pipe, buf, atomic);
+			error = pipe_iov_copy_to_user(iov, addr, &offset,
+						      &remaining, atomic);
+			ops->unmap(pipe, buf, addr);
+			if (unlikely(error)) {
+				/*
+				 * Just retry with the slow path if we failed.
+				 */
+				if (atomic) {
+					atomic = 0;
+					goto redo;
+				}
+>>>>>>> p9x
 				if (!ret)
 					ret = -EFAULT;
 				break;
@@ -373,6 +499,7 @@ pipe_write(struct kiocb *iocb, struct iov_iter *from)
 		int offset = buf->offset + buf->len;
 
 		if (ops->can_merge && offset + chars <= PAGE_SIZE) {
+<<<<<<< HEAD
 			int error = ops->confirm(pipe, buf);
 			if (error)
 				goto out;
@@ -380,6 +507,29 @@ pipe_write(struct kiocb *iocb, struct iov_iter *from)
 			ret = copy_page_from_iter(buf->page, offset, chars, from);
 			if (unlikely(ret < chars)) {
 				error = -EFAULT;
+=======
+			int error, atomic = 1;
+			void *addr;
+			size_t remaining = chars;
+
+			error = ops->confirm(pipe, buf);
+			if (error)
+				goto out;
+
+			iov_fault_in_pages_read(iov, chars);
+redo1:
+			addr = ops->map(pipe, buf, atomic);
+			error = pipe_iov_copy_from_user(addr, &offset, iov,
+							&remaining, atomic);
+			ops->unmap(pipe, buf, addr);
+			ret = error;
+			do_wakeup = 1;
+			if (error) {
+				if (atomic) {
+					atomic = 0;
+					goto redo1;
+				}
+>>>>>>> p9x
 				goto out;
 			}
 			do_wakeup = 1;
@@ -404,7 +554,14 @@ pipe_write(struct kiocb *iocb, struct iov_iter *from)
 			int newbuf = (pipe->curbuf + bufs) & (pipe->buffers-1);
 			struct pipe_buffer *buf = pipe->bufs + newbuf;
 			struct page *page = pipe->tmp_page;
+<<<<<<< HEAD
 			int copied;
+=======
+			char *src;
+			int error, atomic = 1;
+			int offset = 0;
+			size_t remaining;
+>>>>>>> p9x
 
 			if (!page) {
 				page = alloc_page(GFP_HIGHUSER);
@@ -420,8 +577,35 @@ pipe_write(struct kiocb *iocb, struct iov_iter *from)
 			 * FIXME! Is this really true?
 			 */
 			do_wakeup = 1;
+<<<<<<< HEAD
 			copied = copy_page_from_iter(page, 0, PAGE_SIZE, from);
 			if (unlikely(copied < PAGE_SIZE && iov_iter_count(from))) {
+=======
+			chars = PAGE_SIZE;
+			if (chars > total_len)
+				chars = total_len;
+
+			iov_fault_in_pages_read(iov, chars);
+			remaining = chars;
+redo2:
+			if (atomic)
+				src = kmap_atomic(page);
+			else
+				src = kmap(page);
+
+			error = pipe_iov_copy_from_user(src, &offset, iov,
+							&remaining, atomic);
+			if (atomic)
+				kunmap_atomic(src);
+			else
+				kunmap(page);
+
+			if (unlikely(error)) {
+				if (atomic) {
+					atomic = 0;
+					goto redo2;
+				}
+>>>>>>> p9x
 				if (!ret)
 					ret = -EFAULT;
 				break;
@@ -618,9 +802,12 @@ struct pipe_inode_info *alloc_pipe_info(void)
 		unsigned long pipe_bufs = PIPE_DEF_BUFFERS;
 		struct user_struct *user = get_current_user();
 
+<<<<<<< HEAD
 		if (pipe_bufs * PAGE_SIZE > pipe_max_size && !capable(CAP_SYS_RESOURCE))
 			pipe_bufs = pipe_max_size >> PAGE_SHIFT;
 
+=======
+>>>>>>> p9x
 		if (!too_many_pipe_buffers_hard(user)) {
 			if (too_many_pipe_buffers_soft(user))
 				pipe_bufs = 1;

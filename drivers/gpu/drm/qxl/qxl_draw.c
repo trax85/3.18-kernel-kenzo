@@ -135,7 +135,18 @@ static int qxl_palette_create_1bit(struct qxl_bo *palette_bo,
 	static uint64_t unique; /* we make no attempt to actually set this
 				 * correctly globaly, since that would require
 				 * tracking all of our palettes. */
+<<<<<<< HEAD
 	ret = qxl_bo_kmap(palette_bo, (void **)&pal);
+=======
+
+	ret = qxl_alloc_bo_reserved(qdev,
+				    sizeof(struct qxl_palette) + sizeof(uint32_t) * 2,
+				    palette_bo);
+
+	ret = qxl_bo_kmap(*palette_bo, (void **)&pal);
+	if (ret)
+		return ret;
+>>>>>>> p9x
 	pal->num_ents = 2;
 	pal->unique = unique++;
 	if (visual == FB_VISUAL_TRUECOLOR || visual == FB_VISUAL_DIRECTCOLOR) {

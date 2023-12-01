@@ -1404,10 +1404,19 @@ static int cti_probe(struct platform_device *pdev)
 	if (coresight_fuse_access_disabled())
 		return -EPERM;
 
+<<<<<<< HEAD
 	pdata = of_get_coresight_platform_data(dev, pdev->dev.of_node);
 	if (IS_ERR(pdata))
 		return PTR_ERR(pdata);
 	pdev->dev.platform_data = pdata;
+=======
+	if (pdev->dev.of_node) {
+		pdata = of_get_coresight_platform_data(dev, pdev->dev.of_node);
+		if (IS_ERR(pdata))
+			return PTR_ERR(pdata);
+		pdev->dev.platform_data = pdata;
+	}
+>>>>>>> p9x
 
 	drvdata = devm_kzalloc(dev, sizeof(*drvdata), GFP_KERNEL);
 	if (!drvdata)
@@ -1442,12 +1451,23 @@ static int cti_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	drvdata->gpio_trigin->trig = -1;
+<<<<<<< HEAD
 	ret = of_property_read_u32(pdev->dev.of_node,
 				   "qcom,cti-gpio-trigin", &trig);
 	if (!ret)
 		drvdata->gpio_trigin->trig = trig;
 	else if (ret != -EINVAL)
 		return ret;
+=======
+	if (pdev->dev.of_node) {
+		ret = of_property_read_u32(pdev->dev.of_node,
+					   "qcom,cti-gpio-trigin", &trig);
+		if (!ret)
+			drvdata->gpio_trigin->trig = trig;
+		else if (ret != -EINVAL)
+			return ret;
+	}
+>>>>>>> p9x
 
 	drvdata->gpio_trigout = devm_kzalloc(dev, sizeof(struct cti_pctrl),
 					     GFP_KERNEL);
@@ -1455,12 +1475,23 @@ static int cti_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	drvdata->gpio_trigout->trig = -1;
+<<<<<<< HEAD
 	ret = of_property_read_u32(pdev->dev.of_node,
 				   "qcom,cti-gpio-trigout", &trig);
 	if (!ret)
 		drvdata->gpio_trigout->trig = trig;
 	else if (ret != -EINVAL)
 		return ret;
+=======
+	if (pdev->dev.of_node) {
+		ret = of_property_read_u32(pdev->dev.of_node,
+					   "qcom,cti-gpio-trigout", &trig);
+		if (!ret)
+			drvdata->gpio_trigout->trig = trig;
+		else if (ret != -EINVAL)
+			return ret;
+	}
+>>>>>>> p9x
 
 	drvdata->cpu = -1;
 	cpu_phandle = of_get_property(pdev->dev.of_node, "coresight-cti-cpu",
@@ -1484,7 +1515,11 @@ static int cti_probe(struct platform_device *pdev)
 		}
 	}
 
+<<<<<<< HEAD
 	if (!cti_save_disable)
+=======
+	if (pdev->dev.of_node && !cti_save_disable)
+>>>>>>> p9x
 		drvdata->cti_save = of_property_read_bool(pdev->dev.of_node,
 							  "qcom,cti-save");
 	if (drvdata->cti_save) {

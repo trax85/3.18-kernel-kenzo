@@ -5,7 +5,11 @@
  * Copyright (C) 2008 by David Brownell
  * Copyright (C) 2008 by Nokia Corporation
  * Copyright (C) 2009 by Samsung Electronics
+<<<<<<< HEAD:drivers/usb/gadget/function/f_acm.c
  * Copyright (c) 2011, 2014, 2017 The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2011, 2014-2015 The Linux Foundation. All rights reserved.
+>>>>>>> p9x:drivers/usb/gadget/f_acm.c
  * Author: Michal Nazarewicz (mina86@mina86.com)
  *
  * This software is distributed under the terms of the GNU General
@@ -550,8 +554,12 @@ static int acm_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 
 	} else if (intf == acm->data_id) {
 		if (acm->port.in->driver_data) {
+<<<<<<< HEAD:drivers/usb/gadget/function/f_acm.c
 			dev_dbg(&cdev->gadget->dev,
 				"reset acm ttyGS%d\n", acm->port_num);
+=======
+			DBG(cdev, "reset acm ttyGS%d\n", acm->port_num);
+>>>>>>> p9x:drivers/usb/gadget/f_acm.c
 			acm_port_disconnect(acm);
 		}
 		if (!acm->port.in->desc || !acm->port.out->desc) {
@@ -579,7 +587,11 @@ static void acm_disable(struct usb_function *f)
 	struct f_acm	*acm = func_to_acm(f);
 	struct usb_composite_dev *cdev = f->config->cdev;
 
+<<<<<<< HEAD:drivers/usb/gadget/function/f_acm.c
 	dev_dbg(&cdev->gadget->dev, "acm ttyGS%d deactivated\n", acm->port_num);
+=======
+	DBG(cdev, "acm ttyGS%d deactivated\n", acm->port_num);
+>>>>>>> p9x:drivers/usb/gadget/f_acm.c
 	acm_port_disconnect(acm);
 	usb_ep_disable(acm->notify);
 	acm->notify->driver_data = NULL;
@@ -646,13 +658,20 @@ static int acm_notify_serial_state(struct f_acm *acm)
 {
 	struct usb_composite_dev *cdev = acm->port.func.config->cdev;
 	int			status;
+	__le16			serial_state;
 
 	spin_lock(&acm->lock);
 	if (acm->notify_req) {
+<<<<<<< HEAD:drivers/usb/gadget/function/f_acm.c
 		dev_dbg(&cdev->gadget->dev, "acm ttyGS%d serial state %04x\n",
 			acm->port_num, acm->serial_state);
+=======
+		DBG(cdev, "acm ttyGS%d serial state %04x\n",
+				acm->port_num, acm->serial_state);
+		serial_state = cpu_to_le16(acm->serial_state);
+>>>>>>> p9x:drivers/usb/gadget/f_acm.c
 		status = acm_cdc_notify(acm, USB_CDC_NOTIFY_SERIAL_STATE,
-				0, &acm->serial_state, sizeof(acm->serial_state));
+				0, &serial_state, sizeof(acm->serial_state));
 	} else {
 		acm->pending = true;
 		status = 0;

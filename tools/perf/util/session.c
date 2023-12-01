@@ -530,11 +530,15 @@ int perf_session_queue_event(struct perf_session *s, union perf_event *event,
 	if (!timestamp || timestamp == ~0ULL)
 		return -ETIME;
 
+<<<<<<< HEAD
 	if (timestamp < oe->last_flush) {
 		pr_oe_time(timestamp,      "out of order event\n");
 		pr_oe_time(oe->last_flush, "last flush, last_flush_type %d\n",
 			   oe->last_flush_type);
 
+=======
+	if (timestamp < s->ordered_samples.last_flush) {
+>>>>>>> p9x
 		s->stats.nr_unordered_events++;
 	}
 
@@ -1063,7 +1067,10 @@ static void perf_session__warn_about_errors(const struct perf_session *session,
 			    "Do you have a KVM guest running and not using 'perf kvm'?\n",
 			    session->stats.nr_unprocessable_samples);
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	if (session->stats.nr_unordered_events != 0)
 		ui__warning("%u out of order events recorded.\n", session->stats.nr_unordered_events);
 }

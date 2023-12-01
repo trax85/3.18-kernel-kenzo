@@ -117,11 +117,17 @@ static int snd_rawmidi_ioctl_status_x32(struct snd_rawmidi_file *rfile,
 	int err;
 	struct snd_rawmidi_status status;
 
+<<<<<<< HEAD
+=======
+	if (rfile->output == NULL)
+		return -EINVAL;
+>>>>>>> p9x
 	if (get_user(status.stream, &src->stream))
 		return -EFAULT;
 
 	switch (status.stream) {
 	case SNDRV_RAWMIDI_STREAM_OUTPUT:
+<<<<<<< HEAD
 		if (!rfile->output)
 			return -EINVAL;
 		err = snd_rawmidi_output_status(rfile->output, &status);
@@ -129,6 +135,11 @@ static int snd_rawmidi_ioctl_status_x32(struct snd_rawmidi_file *rfile,
 	case SNDRV_RAWMIDI_STREAM_INPUT:
 		if (!rfile->input)
 			return -EINVAL;
+=======
+		err = snd_rawmidi_output_status(rfile->output, &status);
+		break;
+	case SNDRV_RAWMIDI_STREAM_INPUT:
+>>>>>>> p9x
 		err = snd_rawmidi_input_status(rfile->input, &status);
 		break;
 	default:

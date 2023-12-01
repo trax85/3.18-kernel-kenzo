@@ -28,6 +28,7 @@ static acpi_handle tpm_ppi_handle;
 static acpi_status ppi_callback(acpi_handle handle, u32 level, void *context,
 				void **return_value)
 {
+<<<<<<< HEAD
 	union acpi_object *obj;
 
 	if (!acpi_check_dsm(handle, tpm_ppi_uuid, TPM_PPI_REVISION_ID,
@@ -47,6 +48,20 @@ static acpi_status ppi_callback(acpi_handle handle, u32 level, void *context,
 	*return_value = handle;
 
 	return AE_CTRL_TERMINATE;
+=======
+	acpi_status status = AE_OK;
+	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
+
+	if (ACPI_SUCCESS(acpi_get_name(handle, ACPI_FULL_PATHNAME, &buffer))) {
+		if (strstr(buffer.pointer, context) != NULL) {
+			*return_value = handle;
+			status = AE_CTRL_TERMINATE;
+		}
+		kfree(buffer.pointer);
+	}
+
+	return status;
+>>>>>>> p9x
 }
 
 static inline union acpi_object *
@@ -109,22 +124,37 @@ static ssize_t tpm_store_ppi_request(struct device *dev,
 	 * is updated with function index from SUBREQ to SUBREQ2 since PPI
 	 * version 1.1
 	 */
+<<<<<<< HEAD
 	if (acpi_check_dsm(tpm_ppi_handle, tpm_ppi_uuid, TPM_PPI_REVISION_ID,
 			   1 << TPM_PPI_FN_SUBREQ2))
 		func = TPM_PPI_FN_SUBREQ2;
 
+=======
+	if (strcmp(version, "1.1") < 0)
+		params[2].integer.value = TPM_PPI_FN_SUBREQ;
+	else
+		params[2].integer.value = TPM_PPI_FN_SUBREQ2;
+>>>>>>> p9x
 	/*
 	 * PPI spec defines params[3].type as ACPI_TYPE_PACKAGE. Some BIOS
 	 * accept buffer/string/integer type, but some BIOS accept buffer/
 	 * string/package type. For PPI version 1.0 and 1.1, use buffer type
 	 * for compatibility, and use package type since 1.2 according to spec.
 	 */
+<<<<<<< HEAD
 	if (strcmp(tpm_ppi_version, "1.2") < 0) {
 		if (sscanf(buf, "%d", &req) != 1)
 			return -EINVAL;
 		argv4.type = ACPI_TYPE_BUFFER;
 		argv4.buffer.length = sizeof(req);
 		argv4.buffer.pointer = (u8 *)&req;
+=======
+	if (strcmp(version, "1.2") < 0) {
+		params[3].type = ACPI_TYPE_BUFFER;
+		params[3].buffer.length = sizeof(req);
+		sscanf(buf, "%d", &req);
+		params[3].buffer.pointer = (char *)&req;
+>>>>>>> p9x
 	} else {
 		tmp.type = ACPI_TYPE_INTEGER;
 		if (sscanf(buf, "%llu", &tmp.integer.value) != 1)
@@ -171,6 +201,7 @@ static ssize_t tpm_show_ppi_transition_action(struct device *dev,
 	 * (e.g. Capella with PPI 1.0) need integer/string/buffer type, so for
 	 * compatibility, define params[3].type as buffer, if PPI version < 1.2
 	 */
+<<<<<<< HEAD
 	if (strcmp(tpm_ppi_version, "1.2") < 0)
 		obj = &tmp;
 	obj = tpm_eval_dsm(TPM_PPI_FN_GETACT, ACPI_TYPE_INTEGER, obj);
@@ -179,6 +210,12 @@ static ssize_t tpm_show_ppi_transition_action(struct device *dev,
 	} else {
 		ret = obj->integer.value;
 		ACPI_FREE(obj);
+=======
+	if (strcmp(version, "1.2") < 0) {
+		params[3].type = ACPI_TYPE_BUFFER;
+		params[3].buffer.length =  0;
+		params[3].buffer.pointer = NULL;
+>>>>>>> p9x
 	}
 
 	if (ret < ARRAY_SIZE(info) - 1)
@@ -264,8 +301,23 @@ static ssize_t show_ppi_operations(char *buf, u32 start, u32 end)
 		"User not required",
 	};
 
+<<<<<<< HEAD
 	if (!acpi_check_dsm(tpm_ppi_handle, tpm_ppi_uuid, TPM_PPI_REVISION_ID,
 			    1 << TPM_PPI_FN_GETOPR))
+=======
+	status = acpi_evaluate_object_typed(handle, "_DSM", &input, &output,
+					 ACPI_TYPE_STRING);
+	if (ACPI_FAILURE(status))
+		return -ENOMEM;
+
+	strlcpy(version,
+		((union acpi_object *)output.pointer)->string.pointer,
+		PPI_VERSION_LEN + 1);
+	kfree(output.pointer);
+	output.length = ACPI_ALLOCATE_BUFFER;
+	output.pointer = NULL;
+	if (strcmp(version, "1.2") < 0)
+>>>>>>> p9x
 		return -EPERM;
 
 	tmp.integer.type = ACPI_TYPE_INTEGER;

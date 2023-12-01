@@ -34,6 +34,7 @@ struct outer_cache_fns {
 #endif
 	void (*resume)(void);
 
+<<<<<<< HEAD
 	/* This is an ARM L2C thing */
 	void (*write_sec)(unsigned long, unsigned);
 };
@@ -46,6 +47,12 @@ extern struct outer_cache_fns outer_cache;
  * @start: starting physical address, inclusive
  * @end: end physical address, exclusive
  */
+=======
+extern struct outer_cache_fns outer_cache;
+
+#ifdef CONFIG_OUTER_CACHE
+
+>>>>>>> p9x
 static inline void outer_inv_range(phys_addr_t start, phys_addr_t end)
 {
 	if (outer_cache.inv_range)

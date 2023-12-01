@@ -347,8 +347,21 @@ static void xen_evtchn_mask_all(void)
 {
 	unsigned int evtchn;
 
+<<<<<<< HEAD:drivers/xen/events/events_base.c
 	for (evtchn = 0; evtchn < xen_evtchn_nr_channels(); evtchn++)
 		mask_evtchn(evtchn);
+=======
+	/* By default all event channels notify CPU#0. */
+	list_for_each_entry(info, &xen_irq_list_head, list) {
+		struct irq_desc *desc = irq_to_desc(info->irq);
+		cpumask_copy(desc->irq_data.affinity, cpumask_of(0));
+	}
+#endif
+
+	for_each_possible_cpu(i)
+		memset(per_cpu(cpu_evtchn_mask, i),
+		       (i == 0) ? ~0 : 0, NR_EVENT_CHANNELS/8);
+>>>>>>> p9x:drivers/xen/events.c
 }
 
 /**
@@ -1303,6 +1316,7 @@ void rebind_evtchn_irq(int evtchn, int irq)
 /* Rebind an evtchn so that it gets delivered to a specific cpu */
 static int rebind_irq_to_cpu(unsigned irq, unsigned tcpu)
 {
+	struct shared_info *s = HYPERVISOR_shared_info;
 	struct evtchn_bind_vcpu bind_vcpu;
 	int evtchn = evtchn_from_irq(irq);
 	int masked;
@@ -1325,7 +1339,11 @@ static int rebind_irq_to_cpu(unsigned irq, unsigned tcpu)
 	 * Mask the event while changing the VCPU binding to prevent
 	 * it being delivered on an unexpected VCPU.
 	 */
+<<<<<<< HEAD:drivers/xen/events/events_base.c
 	masked = test_and_set_mask(evtchn);
+=======
+	masked = sync_test_and_set_bit(evtchn, BM(s->evtchn_mask));
+>>>>>>> p9x:drivers/xen/events.c
 
 	/*
 	 * If this fails, it usually just indicates that we're dealing with a

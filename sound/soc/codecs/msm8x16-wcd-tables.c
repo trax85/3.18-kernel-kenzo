@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -258,8 +262,11 @@ const u8 msm8x16_wcd_reg_readable[MSM8X16_WCD_CACHE_SIZE] = {
 		[MSM8X16_WCD_A_DIGITAL_SEC_ACCESS] = 1,
 		[MSM8X16_WCD_A_DIGITAL_PERPH_RESET_CTL3] = 1,
 		[MSM8X16_WCD_A_ANALOG_SEC_ACCESS] = 1,
+<<<<<<< HEAD
 		[MSM8X16_WCD_A_ANALOG_RX_LO_EN_CTL] = 1,
 		[MSM8X16_WCD_A_ANALOG_RX_LO_DAC_CTL] = 1,
+=======
+>>>>>>> p9x
 };
 
 const u8 msm8x16_wcd_reg_readonly[MSM8X16_WCD_CACHE_SIZE] = {
@@ -313,6 +320,10 @@ const u8 msm8x16_wcd_reg_readonly[MSM8X16_WCD_CACHE_SIZE] = {
 		[MSM8X16_WCD_A_DIGITAL_CDC_DIG_CLK_CTL] = 1,
 		/* To detect cajon codec */
 		[MSM8X16_WCD_A_ANALOG_NCP_FBCTRL] = 1,
+<<<<<<< HEAD
+=======
+		[MSM8X16_WCD_A_ANALOG_BOOST_TEST1_1] = 1,
+>>>>>>> p9x
 		[MSM8X16_WCD_A_ANALOG_MBHC_DET_CTL_1] = 1,
 };
 
@@ -546,10 +557,13 @@ const u8 msm8x16_wcd_reset_reg_defaults[MSM8X16_WCD_CACHE_SIZE] = {
 			MSM8X16_WCD_A_ANALOG_RX_HPH_STATUS__POR,
 		[MSM8X16_WCD_A_ANALOG_RX_EAR_STATUS] =
 			MSM8X16_WCD_A_ANALOG_RX_EAR_STATUS__POR,
+<<<<<<< HEAD
 		[MSM8X16_WCD_A_ANALOG_RX_LO_DAC_CTL] =
 			MSM8X16_WCD_A_ANALOG_RX_LO_DAC_CTL__POR,
 		[MSM8X16_WCD_A_ANALOG_RX_LO_EN_CTL] =
 			MSM8X16_WCD_A_ANALOG_RX_RX_LO_EN_CTL__POR,
+=======
+>>>>>>> p9x
 		[MSM8X16_WCD_A_ANALOG_SPKR_DAC_CTL] =
 			MSM8X16_WCD_A_ANALOG_SPKR_DAC_CTL__POR,
 		[MSM8X16_WCD_A_ANALOG_SPKR_DRV_CLIP_DET] =

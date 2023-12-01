@@ -1199,7 +1199,11 @@ void vmw_resource_unreserve(struct vmw_resource *res,
 	if (switch_backup)
 		res->backup_offset = new_backup_offset;
 
+<<<<<<< HEAD
 	if (!res->func->may_evict || res->id == -1 || res->pin_count)
+=======
+	if (!res->func->may_evict || res->id == -1)
+>>>>>>> p9x
 		return;
 
 	write_lock(&dev_priv->resource_lock);

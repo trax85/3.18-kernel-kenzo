@@ -557,7 +557,11 @@ static inline void ftrace_disable_daemon(void) { }
 static inline void ftrace_enable_daemon(void) { }
 static inline void ftrace_release_mod(struct module *mod) {}
 static inline void ftrace_module_init(struct module *mod) {}
+<<<<<<< HEAD
 static inline __init int register_ftrace_command(struct ftrace_func_command *cmd)
+=======
+static inline int register_ftrace_command(struct ftrace_func_command *cmd)
+>>>>>>> p9x
 {
 	return -EINVAL;
 }

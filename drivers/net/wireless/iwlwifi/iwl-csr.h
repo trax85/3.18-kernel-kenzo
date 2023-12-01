@@ -520,6 +520,7 @@ enum {
 #define IWL_HOST_INT_TIMEOUT_DEF	(0x40)
 #define IWL_HOST_INT_TIMEOUT_MIN	(0x0)
 #define IWL_HOST_INT_OPER_MODE		BIT(31)
+<<<<<<< HEAD
 
 /*****************************************************************************
  *                        7000/3000 series SHR DTS addresses                 *
@@ -539,5 +540,7 @@ enum dtd_diode_reg {
 	DTS_DIODE_REG_FLAGS_PASS_ONCE_POS	= 7,
 	DTS_DIODE_REG_FLAGS_PASS_ONCE		= 0x00000080, /* bits [7:7] */
 };
+=======
+>>>>>>> p9x
 
 #endif /* !__iwl_csr_h__ */

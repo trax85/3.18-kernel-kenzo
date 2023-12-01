@@ -21,7 +21,10 @@
 #include <linux/phy/phy.h>
 #include <linux/idr.h>
 #include <linux/pm_runtime.h>
+<<<<<<< HEAD
 #include <linux/regulator/consumer.h>
+=======
+>>>>>>> p9x
 
 static struct class *phy_class;
 static DEFINE_MUTEX(phy_provider_mutex);
@@ -51,9 +54,13 @@ static void devm_phy_consume(struct device *dev, void *res)
 
 static int devm_phy_match(struct device *dev, void *res, void *match_data)
 {
+<<<<<<< HEAD
 	struct phy **phy = res;
 
 	return *phy == match_data;
+=======
+	return res == match_data;
+>>>>>>> p9x
 }
 
 static struct phy *phy_lookup(struct device *device, const char *port)
@@ -89,15 +96,21 @@ static struct phy *phy_lookup(struct device *device, const char *port)
 static struct phy_provider *of_phy_provider_lookup(struct device_node *node)
 {
 	struct phy_provider *phy_provider;
+<<<<<<< HEAD
 	struct device_node *child;
+=======
+>>>>>>> p9x
 
 	list_for_each_entry(phy_provider, &phy_provider_list, list) {
 		if (phy_provider->dev->of_node == node)
 			return phy_provider;
+<<<<<<< HEAD
 
 		for_each_child_of_node(phy_provider->dev->of_node, child)
 			if (child == node)
 				return phy_provider;
+=======
+>>>>>>> p9x
 	}
 
 	return ERR_PTR(-EPROBE_DEFER);
@@ -179,7 +192,10 @@ int phy_init(struct phy *phy)
 	ret = phy_pm_runtime_get_sync(phy);
 	if (ret < 0 && ret != -ENOTSUPP)
 		return ret;
+<<<<<<< HEAD
 	ret = 0; /* Override possible ret == -ENOTSUPP */
+=======
+>>>>>>> p9x
 
 	mutex_lock(&phy->mutex);
 	if (phy->init_count == 0 && phy->ops->init) {
@@ -188,6 +204,11 @@ int phy_init(struct phy *phy)
 			dev_err(&phy->dev, "phy init failed --> %d\n", ret);
 			goto out;
 		}
+<<<<<<< HEAD
+=======
+	} else {
+		ret = 0; /* Override possible ret == -ENOTSUPP */
+>>>>>>> p9x
 	}
 	++phy->init_count;
 
@@ -208,7 +229,10 @@ int phy_exit(struct phy *phy)
 	ret = phy_pm_runtime_get_sync(phy);
 	if (ret < 0 && ret != -ENOTSUPP)
 		return ret;
+<<<<<<< HEAD
 	ret = 0; /* Override possible ret == -ENOTSUPP */
+=======
+>>>>>>> p9x
 
 	mutex_lock(&phy->mutex);
 	if (phy->init_count == 1 && phy->ops->exit) {
@@ -229,6 +253,7 @@ EXPORT_SYMBOL_GPL(phy_exit);
 
 int phy_power_on(struct phy *phy)
 {
+<<<<<<< HEAD
 	int ret = 0;
 
 	if (!phy)
@@ -245,19 +270,37 @@ int phy_power_on(struct phy *phy)
 		goto err_pm_sync;
 
 	ret = 0; /* Override possible ret == -ENOTSUPP */
+=======
+	int ret;
+
+	if (!phy)
+		return 0;
+
+	ret = phy_pm_runtime_get_sync(phy);
+	if (ret < 0 && ret != -ENOTSUPP)
+		return ret;
+>>>>>>> p9x
 
 	mutex_lock(&phy->mutex);
 	if (phy->power_count == 0 && phy->ops->power_on) {
 		ret = phy->ops->power_on(phy);
 		if (ret < 0) {
 			dev_err(&phy->dev, "phy poweron failed --> %d\n", ret);
+<<<<<<< HEAD
 			goto err_pwr_on;
 		}
+=======
+			goto out;
+		}
+	} else {
+		ret = 0; /* Override possible ret == -ENOTSUPP */
+>>>>>>> p9x
 	}
 	++phy->power_count;
 	mutex_unlock(&phy->mutex);
 	return 0;
 
+<<<<<<< HEAD
 err_pwr_on:
 	mutex_unlock(&phy->mutex);
 	phy_pm_runtime_put_sync(phy);
@@ -265,6 +308,12 @@ err_pm_sync:
 	if (phy->pwr)
 		regulator_disable(phy->pwr);
 out:
+=======
+out:
+	mutex_unlock(&phy->mutex);
+	phy_pm_runtime_put_sync(phy);
+
+>>>>>>> p9x
 	return ret;
 }
 EXPORT_SYMBOL_GPL(phy_power_on);
@@ -289,9 +338,12 @@ int phy_power_off(struct phy *phy)
 	mutex_unlock(&phy->mutex);
 	phy_pm_runtime_put(phy);
 
+<<<<<<< HEAD
 	if (phy->pwr)
 		regulator_disable(phy->pwr);
 
+=======
+>>>>>>> p9x
 	return 0;
 }
 EXPORT_SYMBOL_GPL(phy_power_off);
@@ -319,10 +371,13 @@ static struct phy *_of_phy_get(struct device_node *np, int index)
 	if (ret)
 		return ERR_PTR(-ENODEV);
 
+<<<<<<< HEAD
 	/* This phy type handled by the usb-phy subsystem for now */
 	if (of_device_is_compatible(args.np, "usb-nop-xceiv"))
 		return ERR_PTR(-ENODEV);
 
+=======
+>>>>>>> p9x
 	mutex_lock(&phy_provider_mutex);
 	phy_provider = of_phy_provider_lookup(args.np);
 	if (IS_ERR(phy_provider) || !try_module_get(phy_provider->owner)) {
@@ -621,6 +676,7 @@ struct phy *phy_create(struct device *dev, struct device_node *node,
 		goto free_phy;
 	}
 
+<<<<<<< HEAD
 	/* phy-supply */
 	phy->pwr = regulator_get_optional(dev, "phy");
 	if (IS_ERR(phy->pwr)) {
@@ -631,6 +687,8 @@ struct phy *phy_create(struct device *dev, struct device_node *node,
 		phy->pwr = NULL;
 	}
 
+=======
+>>>>>>> p9x
 	device_initialize(&phy->dev);
 	mutex_init(&phy->mutex);
 
@@ -657,12 +715,17 @@ struct phy *phy_create(struct device *dev, struct device_node *node,
 	return phy;
 
 put_dev:
+<<<<<<< HEAD
 	put_device(&phy->dev);  /* calls phy_release() which frees resources */
 	return ERR_PTR(ret);
 
 free_ida:
 	ida_simple_remove(&phy_ida, phy->id);
 
+=======
+	put_device(&phy->dev);
+	ida_remove(&phy_ida, phy->id);
+>>>>>>> p9x
 free_phy:
 	kfree(phy);
 	return ERR_PTR(ret);
@@ -848,8 +911,12 @@ static void phy_release(struct device *dev)
 
 	phy = to_phy(dev);
 	dev_vdbg(dev, "releasing '%s'\n", dev_name(dev));
+<<<<<<< HEAD
 	regulator_put(phy->pwr);
 	ida_simple_remove(&phy_ida, phy->id);
+=======
+	ida_remove(&phy_ida, phy->id);
+>>>>>>> p9x
 	kfree(phy);
 }
 

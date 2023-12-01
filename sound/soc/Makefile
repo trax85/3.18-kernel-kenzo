@@ -18,7 +18,11 @@ obj-$(CONFIG_SND_SOC)	+= davinci/
 obj-$(CONFIG_SND_SOC)	+= dwc/
 obj-$(CONFIG_SND_SOC)	+= fsl/
 obj-$(CONFIG_SND_SOC)	+= jz4740/
+<<<<<<< HEAD
 obj-$(CONFIG_SND_SOC)	+= intel/
+=======
+obj-$(CONFIG_SND_SOC)	+= mid-x86/
+>>>>>>> p9x
 obj-$(CONFIG_SND_SOC)	+= msm/
 obj-$(CONFIG_SND_SOC)	+= mxs/
 obj-$(CONFIG_SND_SOC)	+= nuc900/

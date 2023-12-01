@@ -1277,13 +1277,18 @@ update_time:
  */
 #define UDF_MAX_ICB_NESTING 1024
 
+<<<<<<< HEAD
 static int udf_read_inode(struct inode *inode, bool hidden_inode)
+=======
+static void __udf_read_inode(struct inode *inode)
+>>>>>>> p9x
 {
 	struct buffer_head *bh = NULL;
 	struct fileEntry *fe;
 	struct extendedFileEntry *efe;
 	uint16_t ident;
 	struct udf_inode_info *iinfo = UDF_I(inode);
+<<<<<<< HEAD
 	struct udf_sb_info *sbi = UDF_SB(inode->i_sb);
 	struct kernel_lb_addr *iloc = &iinfo->i_location;
 	unsigned int link_count;
@@ -1298,7 +1303,11 @@ reread:
 			  iloc->logicalBlockNum, iloc->partitionReferenceNum);
 		return -EIO;
 	}
+=======
+	unsigned int indirections = 0;
+>>>>>>> p9x
 
+reread:
 	/*
 	 * Set defaults, but the inode is still incomplete!
 	 * Note: get_new_inode() sets the following on a new inode:
@@ -1339,6 +1348,10 @@ reread:
 			loc = lelb_to_cpu(ie->indirectICB.extLocation);
 
 			if (ie->indirectICB.extLength) {
+<<<<<<< HEAD
+=======
+				brelse(bh);
+>>>>>>> p9x
 				brelse(ibh);
 				memcpy(&iinfo->i_location, &loc,
 				       sizeof(struct kernel_lb_addr));
@@ -1347,9 +1360,15 @@ reread:
 						"too many ICBs in ICB hierarchy"
 						" (max %d supported)\n",
 						UDF_MAX_ICB_NESTING);
+<<<<<<< HEAD
 					goto out;
 				}
 				brelse(bh);
+=======
+					make_bad_inode(inode);
+					return;
+				}
+>>>>>>> p9x
 				goto reread;
 			}
 		}
@@ -1514,6 +1533,16 @@ reread:
 		if (inode->i_size > bs - udf_file_entry_alloc_offset(inode))
 			goto out;
 	}
+
+	/*
+	 * Sanity check length of allocation descriptors and extended attrs to
+	 * avoid integer overflows
+	 */
+	if (iinfo->i_lenEAttr > inode->i_sb->s_blocksize || iinfo->i_lenAlloc > inode->i_sb->s_blocksize)
+		return;
+	/* Now do exact checks */
+	if (udf_file_entry_alloc_offset(inode) + iinfo->i_lenAlloc > inode->i_sb->s_blocksize)
+		return;
 
 	switch (fe->icbTag.fileType) {
 	case ICBTAG_FILE_TYPE_DIRECTORY:

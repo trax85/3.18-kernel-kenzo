@@ -46,7 +46,10 @@ static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE(PL2303_VENDOR_ID, PL2303_PRODUCT_ID_HCR331) },
 	{ USB_DEVICE(PL2303_VENDOR_ID, PL2303_PRODUCT_ID_MOTOROLA) },
 	{ USB_DEVICE(PL2303_VENDOR_ID, PL2303_PRODUCT_ID_ZTEK) },
+<<<<<<< HEAD
 	{ USB_DEVICE(PL2303_VENDOR_ID, PL2303_PRODUCT_ID_TB) },
+=======
+>>>>>>> p9x
 	{ USB_DEVICE(IODATA_VENDOR_ID, IODATA_PRODUCT_ID) },
 	{ USB_DEVICE(IODATA_VENDOR_ID, IODATA_PRODUCT_ID_RSAQ5) },
 	{ USB_DEVICE(ATEN_VENDOR_ID, ATEN_PRODUCT_ID) },
@@ -62,12 +65,18 @@ static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE(DCU10_VENDOR_ID, DCU10_PRODUCT_ID) },
 	{ USB_DEVICE(SITECOM_VENDOR_ID, SITECOM_PRODUCT_ID) },
 	{ USB_DEVICE(ALCATEL_VENDOR_ID, ALCATEL_PRODUCT_ID) },
+<<<<<<< HEAD
 	{ USB_DEVICE(SIEMENS_VENDOR_ID, SIEMENS_PRODUCT_ID_SX1),
 		.driver_info = PL2303_QUIRK_UART_STATE_IDX0 },
 	{ USB_DEVICE(SIEMENS_VENDOR_ID, SIEMENS_PRODUCT_ID_X65),
 		.driver_info = PL2303_QUIRK_UART_STATE_IDX0 },
 	{ USB_DEVICE(SIEMENS_VENDOR_ID, SIEMENS_PRODUCT_ID_X75),
 		.driver_info = PL2303_QUIRK_UART_STATE_IDX0 },
+=======
+	{ USB_DEVICE(SIEMENS_VENDOR_ID, SIEMENS_PRODUCT_ID_SX1) },
+	{ USB_DEVICE(SIEMENS_VENDOR_ID, SIEMENS_PRODUCT_ID_X65) },
+	{ USB_DEVICE(SIEMENS_VENDOR_ID, SIEMENS_PRODUCT_ID_X75) },
+>>>>>>> p9x
 	{ USB_DEVICE(SIEMENS_VENDOR_ID, SIEMENS_PRODUCT_ID_EF81) },
 	{ USB_DEVICE(BENQ_VENDOR_ID, BENQ_PRODUCT_ID_S81) }, /* Benq/Siemens S81 */
 	{ USB_DEVICE(SYNTECH_VENDOR_ID, SYNTECH_PRODUCT_ID) },
@@ -84,6 +93,7 @@ static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE(YCCABLE_VENDOR_ID, YCCABLE_PRODUCT_ID) },
 	{ USB_DEVICE(SUPERIAL_VENDOR_ID, SUPERIAL_PRODUCT_ID) },
 	{ USB_DEVICE(HP_VENDOR_ID, HP_LD220_PRODUCT_ID) },
+<<<<<<< HEAD
 	{ USB_DEVICE(HP_VENDOR_ID, HP_LD220TA_PRODUCT_ID) },
 	{ USB_DEVICE(HP_VENDOR_ID, HP_LD960_PRODUCT_ID) },
 	{ USB_DEVICE(HP_VENDOR_ID, HP_LD960TA_PRODUCT_ID) },
@@ -92,6 +102,11 @@ static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE(HP_VENDOR_ID, HP_LM920_PRODUCT_ID) },
 	{ USB_DEVICE(HP_VENDOR_ID, HP_LM940_PRODUCT_ID) },
 	{ USB_DEVICE(HP_VENDOR_ID, HP_TD620_PRODUCT_ID) },
+=======
+	{ USB_DEVICE(HP_VENDOR_ID, HP_LD960_PRODUCT_ID) },
+	{ USB_DEVICE(HP_VENDOR_ID, HP_LCM220_PRODUCT_ID) },
+	{ USB_DEVICE(HP_VENDOR_ID, HP_LCM960_PRODUCT_ID) },
+>>>>>>> p9x
 	{ USB_DEVICE(CRESSI_VENDOR_ID, CRESSI_EDY_PRODUCT_ID) },
 	{ USB_DEVICE(ZEAGLE_VENDOR_ID, ZEAGLE_N2ITION3_PRODUCT_ID) },
 	{ USB_DEVICE(SONY_VENDOR_ID, SONY_QN3USB_PRODUCT_ID) },
@@ -225,8 +240,20 @@ static int pl2303_probe(struct usb_serial *serial,
 static int pl2303_startup(struct usb_serial *serial)
 {
 	struct pl2303_serial_private *spriv;
+<<<<<<< HEAD
 	enum pl2303_type type = TYPE_01;
+=======
+	unsigned char num_ports = serial->num_ports;
+	enum pl2303_type type = type_0;
+>>>>>>> p9x
 	unsigned char *buf;
+
+	if (serial->num_bulk_in < num_ports ||
+			serial->num_bulk_out < num_ports ||
+			serial->num_interrupt_in < num_ports) {
+		dev_err(&serial->interface->dev, "missing endpoints\n");
+		return -ENODEV;
+	}
 
 	spriv = kzalloc(sizeof(*spriv), GFP_KERNEL);
 	if (!spriv)
@@ -473,6 +500,15 @@ static void pl2303_set_termios(struct tty_struct *tty,
 	unsigned char *buf;
 	int ret;
 	u8 control;
+<<<<<<< HEAD
+=======
+	const int baud_sup[] = { 75, 150, 300, 600, 1200, 1800, 2400, 3600,
+	                         4800, 7200, 9600, 14400, 19200, 28800, 38400,
+	                         57600, 115200, 230400, 460800, 614400,
+	                         921600, 1228800, 2457600, 3000000, 6000000 };
+	int baud_floor, baud_ceil;
+	int k;
+>>>>>>> p9x
 
 	if (old_termios && !tty_termios_hw_change(&tty->termios, old_termios))
 		return;
@@ -487,7 +523,11 @@ static void pl2303_set_termios(struct tty_struct *tty,
 
 	pl2303_get_line_request(port, buf);
 
+<<<<<<< HEAD
 	switch (C_CSIZE(tty)) {
+=======
+	switch (cflag & CSIZE) {
+>>>>>>> p9x
 	case CS5:
 		buf[6] = 5;
 		break;
@@ -500,6 +540,10 @@ static void pl2303_set_termios(struct tty_struct *tty,
 	default:
 	case CS8:
 		buf[6] = 8;
+<<<<<<< HEAD
+=======
+		break;
+>>>>>>> p9x
 	}
 	dev_dbg(&port->dev, "data bits = %d\n", buf[6]);
 
@@ -567,8 +611,19 @@ static void pl2303_set_termios(struct tty_struct *tty,
 	 *       only used in set_termios, which is serialised against itself.
 	 */
 	if (!old_termios || memcmp(buf, priv->line_settings, 7)) {
+<<<<<<< HEAD
 		ret = pl2303_set_line_request(port, buf);
 		if (!ret)
+=======
+		i = usb_control_msg(serial->dev,
+				    usb_sndctrlpipe(serial->dev, 0),
+				    SET_LINE_REQUEST, SET_LINE_REQUEST_TYPE,
+				    0, 0, buf, 7, 100);
+
+		dev_dbg(&port->dev, "0x21:0x20:0:0  %d\n", i);
+
+		if (i == 7)
+>>>>>>> p9x
 			memcpy(priv->line_settings, buf, 7);
 	}
 

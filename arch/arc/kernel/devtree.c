@@ -17,6 +17,7 @@
 #include <asm/clk.h>
 #include <asm/mach_desc.h>
 
+<<<<<<< HEAD
 static const void * __init arch_get_next_mach(const char *const **match)
 {
 	static const struct machine_desc *mdesc = __arch_info_begin;
@@ -30,6 +31,8 @@ static const void * __init arch_get_next_mach(const char *const **match)
 	return m;
 }
 
+=======
+>>>>>>> p9x
 /**
  * setup_machine_fdt - Machine setup when an dtb was passed to the kernel
  * @dt:		virtual address pointer to dt blob

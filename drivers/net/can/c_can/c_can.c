@@ -674,6 +674,22 @@ static int __c_can_get_berr_counter(const struct net_device *dev,
 	bec->txerr = reg_err_counter & ERR_CNT_TEC_MASK;
 
 	return 0;
+<<<<<<< HEAD
+=======
+}
+
+static int c_can_get_berr_counter(const struct net_device *dev,
+				  struct can_berr_counter *bec)
+{
+	struct c_can_priv *priv = netdev_priv(dev);
+	int err;
+
+	c_can_pm_runtime_get_sync(priv);
+	err = __c_can_get_berr_counter(dev, bec);
+	c_can_pm_runtime_put_sync(priv);
+
+	return err;
+>>>>>>> p9x
 }
 
 static int c_can_get_berr_counter(const struct net_device *dev,
@@ -836,6 +852,7 @@ static int c_can_do_rx_poll(struct net_device *dev, int quota)
 	BUILD_BUG_ON_MSG(C_CAN_MSG_OBJ_RX_LAST > 16,
 			"Implementation does not support more message objects than 16");
 
+<<<<<<< HEAD
 	while (quota > 0) {
 		if (!pend) {
 			pend = c_can_get_pending(priv);
@@ -848,6 +865,38 @@ static int c_can_do_rx_poll(struct net_device *dev, int quota)
 			toread = c_can_adjust_pending(pend);
 		} else {
 			toread = pend;
+=======
+			if (msg_ctrl_save & IF_MCONT_MSGLST) {
+				c_can_handle_lost_msg_obj(dev, 0, msg_obj);
+				num_rx_pkts++;
+				quota--;
+				continue;
+			}
+
+			if (msg_ctrl_save & IF_MCONT_EOB)
+				return num_rx_pkts;
+
+			if (!(msg_ctrl_save & IF_MCONT_NEWDAT))
+				continue;
+
+			/* read the data from the message object */
+			c_can_read_msg_object(dev, 0, msg_ctrl_save);
+
+			if (msg_obj < C_CAN_MSG_RX_LOW_LAST)
+				c_can_mark_rx_msg_obj(dev, 0,
+						msg_ctrl_save, msg_obj);
+			else if (msg_obj > C_CAN_MSG_RX_LOW_LAST)
+				/* activate this msg obj */
+				c_can_activate_rx_msg_obj(dev, 0,
+						msg_ctrl_save, msg_obj);
+			else if (msg_obj == C_CAN_MSG_RX_LOW_LAST)
+				/* activate all lower message objects */
+				c_can_activate_all_lower_rx_msg_obj(dev,
+						0, msg_ctrl_save);
+
+			num_rx_pkts++;
+			quota--;
+>>>>>>> p9x
 		}
 		/* Remove the bits from pend */
 		pend &= ~toread;

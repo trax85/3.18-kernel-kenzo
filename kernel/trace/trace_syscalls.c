@@ -343,8 +343,15 @@ static void ftrace_syscall_enter(void *data, struct pt_regs *regs, long id)
 	entry->nr = syscall_nr;
 	syscall_get_arguments(current, regs, 0, sys_data->nb_args, entry->args);
 
+<<<<<<< HEAD
 	event_trigger_unlock_commit(ftrace_file, buffer, event, entry,
 				    irq_flags, pc, 0);
+=======
+	if (!filter_current_check_discard(buffer, sys_data->enter_event,
+					  entry, event))
+		trace_current_buffer_unlock_commit(buffer, event,
+						   irq_flags, pc);
+>>>>>>> p9x
 }
 
 static void ftrace_syscall_exit(void *data, struct pt_regs *regs, long ret)
@@ -389,8 +396,15 @@ static void ftrace_syscall_exit(void *data, struct pt_regs *regs, long ret)
 	entry->nr = syscall_nr;
 	entry->ret = syscall_get_return_value(current, regs);
 
+<<<<<<< HEAD
 	event_trigger_unlock_commit(ftrace_file, buffer, event, entry,
 				    irq_flags, pc, 0);
+=======
+	if (!filter_current_check_discard(buffer, sys_data->exit_event,
+					  entry, event))
+		trace_current_buffer_unlock_commit(buffer, event,
+						   irq_flags, pc);
+>>>>>>> p9x
 }
 
 static int reg_event_syscall_enter(struct ftrace_event_file *file,

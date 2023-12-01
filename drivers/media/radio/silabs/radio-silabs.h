@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -27,7 +31,11 @@
 const unsigned char MIN_RDS_STD = 0x00;
 const unsigned char MAX_RDS_STD = 0x02;
 const unsigned char MIN_SRCH_MODE = 0x00;
+<<<<<<< HEAD
 const unsigned char MAX_SRCH_MODE = 0x02;
+=======
+const unsigned char MAX_SRCH_MODE = 0x01;
+>>>>>>> p9x
 
 /* Standard buffer size */
 #define STD_BUF_SIZE               (256)
@@ -58,8 +66,11 @@ const unsigned char MAX_SRCH_MODE = 0x02;
 #define MIN_DWELL_TIME 0x00
 #define MAX_DWELL_TIME 0x0F
 #define START_SCAN 1
+<<<<<<< HEAD
 #define GET_MSB(x)((x >> 8) & 0xFF)
 #define GET_LSB(x)((x) & 0xFF)
+=======
+>>>>>>> p9x
 /*
  * When tuning, we need to divide freq by TUNE_STEP_SIZE
  * before sending it to chip
@@ -513,6 +524,7 @@ struct fm_power_vreg_data {
 	/* is this regulator enabled? */
 	bool is_enabled;
 };
+<<<<<<< HEAD
 
 struct silabs_rel_freq {
 	__u8  rel_freq_msb;
@@ -529,4 +541,6 @@ enum search_t {
 	SCAN,
 	SCAN_FOR_STRONG,
 };
+=======
+>>>>>>> p9x
 #endif /* __RADIO_SILABS_H */

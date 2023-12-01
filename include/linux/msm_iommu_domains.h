@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -15,6 +19,10 @@
 
 #include <linux/errno.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/genalloc.h>
+>>>>>>> p9x
 #include <linux/rbtree.h>
 #include <linux/msm_ion.h>
 
@@ -22,8 +30,12 @@
 
 struct mem_pool {
 	struct mutex pool_mutex;
+<<<<<<< HEAD
 	unsigned long *bitmap;
 	unsigned long nr_pages;
+=======
+	struct gen_pool *gpool;
+>>>>>>> p9x
 	phys_addr_t paddr;
 	unsigned long size;
 	unsigned long free;
@@ -202,6 +214,10 @@ static inline void ion_unmap_iommu(struct ion_client *client,
 			struct ion_handle *handle, int domain_num,
 			int partition_num)
 {
+<<<<<<< HEAD
+=======
+	return;
+>>>>>>> p9x
 }
 
 static inline void msm_iommu_set_client_name(struct iommu_domain *domain,
@@ -227,7 +243,11 @@ static inline int msm_allocate_iova_address(unsigned int iommu_domain,
 static inline void msm_free_iova_address(unsigned long iova,
 			unsigned int iommu_domain,
 			unsigned int partition_no,
+<<<<<<< HEAD
 			unsigned long size) { }
+=======
+			unsigned long size) { return; }
+>>>>>>> p9x
 
 static inline int msm_use_iommu(void)
 {
@@ -268,6 +288,10 @@ static inline void msm_iommu_unmap_contig_buffer(dma_addr_t iova,
 					unsigned int partition_no,
 					unsigned long size)
 {
+<<<<<<< HEAD
+=======
+	return;
+>>>>>>> p9x
 }
 
 static inline int msm_register_domain(struct msm_iova_layout *layout)
@@ -303,6 +327,10 @@ static inline int msm_map_dma_buf(struct dma_buf *dma_buf,
 static inline void msm_unmap_dma_buf(struct sg_table *table, int domain_num,
 			int partition_num)
 {
+<<<<<<< HEAD
+=======
+	return;
+>>>>>>> p9x
 }
 
 #endif

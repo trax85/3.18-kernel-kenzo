@@ -31,7 +31,11 @@ struct proto pingv6_prot = {
 	.owner =	THIS_MODULE,
 	.init =		ping_init_sock,
 	.close =	ping_close,
+<<<<<<< HEAD
 	.connect =	ip6_datagram_connect_v6_only,
+=======
+	.connect =	ip6_datagram_connect,
+>>>>>>> p9x
 	.disconnect =	udp_disconnect,
 	.setsockopt =	ipv6_setsockopt,
 	.getsockopt =	ipv6_getsockopt,
@@ -50,12 +54,18 @@ static struct inet_protosw pingv6_protosw = {
 	.type =      SOCK_DGRAM,
 	.protocol =  IPPROTO_ICMPV6,
 	.prot =      &pingv6_prot,
+<<<<<<< HEAD
 	.ops =       &inet6_sockraw_ops,
+=======
+	.ops =       &inet6_dgram_ops,
+	.no_check =  UDP_CSUM_DEFAULT,
+>>>>>>> p9x
 	.flags =     INET_PROTOSW_REUSE,
 };
 
 
 /* Compatibility glue so we can support IPv6 when it's compiled as a module */
+<<<<<<< HEAD
 static int dummy_ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len,
 				 int *addr_len)
 {
@@ -73,10 +83,56 @@ static void dummy_ipv6_icmp_error(struct sock *sk, struct sk_buff *skb, int err,
 				  __be16 port, u32 info, u8 *payload) {}
 static int dummy_ipv6_chk_addr(struct net *net, const struct in6_addr *addr,
 			       const struct net_device *dev, int strict)
+=======
+int dummy_ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len,
+			  int *addr_len)
+{
+	return -EAFNOSUPPORT;
+}
+int dummy_ip6_datagram_recv_ctl(struct sock *sk, struct msghdr *msg,
+				 struct sk_buff *skb)
+{
+	return -EAFNOSUPPORT;
+}
+int dummy_icmpv6_err_convert(u8 type, u8 code, int *err)
+{
+	return -EAFNOSUPPORT;
+}
+void dummy_ipv6_icmp_error(struct sock *sk, struct sk_buff *skb, int err,
+			    __be16 port, u32 info, u8 *payload) {}
+int dummy_ipv6_chk_addr(struct net *net, const struct in6_addr *addr,
+			const struct net_device *dev, int strict)
+>>>>>>> p9x
 {
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+int __init pingv6_init(void)
+{
+	pingv6_ops.ipv6_recv_error = ipv6_recv_error;
+	pingv6_ops.ip6_datagram_recv_ctl = ip6_datagram_recv_ctl;
+	pingv6_ops.icmpv6_err_convert = icmpv6_err_convert;
+	pingv6_ops.ipv6_icmp_error = ipv6_icmp_error;
+	pingv6_ops.ipv6_chk_addr = ipv6_chk_addr;
+	return inet6_register_protosw(&pingv6_protosw);
+}
+
+/* This never gets called because it's not possible to unload the ipv6 module,
+ * but just in case.
+ */
+void pingv6_exit(void)
+{
+	pingv6_ops.ipv6_recv_error = dummy_ipv6_recv_error;
+	pingv6_ops.ip6_datagram_recv_ctl = dummy_ip6_datagram_recv_ctl;
+	pingv6_ops.icmpv6_err_convert = dummy_icmpv6_err_convert;
+	pingv6_ops.ipv6_icmp_error = dummy_ipv6_icmp_error;
+	pingv6_ops.ipv6_chk_addr = dummy_ipv6_chk_addr;
+	inet6_unregister_protosw(&pingv6_protosw);
+}
+
+>>>>>>> p9x
 int ping_v6_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 		    size_t len)
 {
@@ -101,7 +157,11 @@ int ping_v6_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 		return err;
 
 	if (msg->msg_name) {
+<<<<<<< HEAD
 		DECLARE_SOCKADDR(struct sockaddr_in6 *, u, msg->msg_name);
+=======
+		struct sockaddr_in6 *u = (struct sockaddr_in6 *) msg->msg_name;
+>>>>>>> p9x
 		if (msg->msg_namelen < sizeof(*u))
 			return -EINVAL;
 		if (u->sin6_family != AF_INET6) {
@@ -113,7 +173,11 @@ int ping_v6_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 	} else {
 		if (sk->sk_state != TCP_ESTABLISHED)
 			return -EDESTADDRREQ;
+<<<<<<< HEAD
 		daddr = &sk->sk_v6_daddr;
+=======
+		daddr = &np->daddr;
+>>>>>>> p9x
 	}
 
 	if (!oif)
@@ -147,7 +211,16 @@ int ping_v6_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 	fl6.fl6_icmp_code = user_icmph.icmp6_code;
 	security_sk_classify_flow(sk, flowi6_to_flowi(&fl6));
 
+<<<<<<< HEAD
 	dst = ip6_sk_dst_lookup_flow(sk, &fl6,  daddr);
+=======
+	if (!fl6.flowi6_oif && ipv6_addr_is_multicast(&fl6.daddr))
+		fl6.flowi6_oif = np->mcast_oif;
+	else if (!fl6.flowi6_oif)
+		fl6.flowi6_oif = np->ucast_oif;
+
+	dst = ip6_sk_dst_lookup_flow(sk, &fl6,  daddr, 1);
+>>>>>>> p9x
 	if (IS_ERR(dst))
 		return PTR_ERR(dst);
 	rt = (struct rt6_info *) dst;
@@ -165,7 +238,16 @@ int ping_v6_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 	pfh.wcheck = 0;
 	pfh.family = AF_INET6;
 
+<<<<<<< HEAD
 	hlimit = ip6_sk_dst_hoplimit(np, &fl6, dst);
+=======
+	if (ipv6_addr_is_multicast(&fl6.daddr))
+		hlimit = np->mcast_hops;
+	else
+		hlimit = np->hop_limit;
+	if (hlimit < 0)
+		hlimit = ip6_dst_hoplimit(dst);
+>>>>>>> p9x
 
 	lock_sock(sk);
 	err = ip6_append_data(sk, ping_getfrag, &pfh, len,
@@ -174,8 +256,13 @@ int ping_v6_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 			      MSG_DONTWAIT, np->dontfrag);
 
 	if (err) {
+<<<<<<< HEAD
 		ICMP6_INC_STATS(sock_net(sk), rt->rt6i_idev,
 				ICMP6_MIB_OUTERRORS);
+=======
+		ICMP6_INC_STATS_BH(sock_net(sk), rt->rt6i_idev,
+				   ICMP6_MIB_OUTERRORS);
+>>>>>>> p9x
 		ip6_flush_pending_frames(sk);
 	} else {
 		err = icmpv6_push_pending_frames(sk, &fl6,
@@ -189,6 +276,7 @@ int ping_v6_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 
 	return len;
 }
+<<<<<<< HEAD
 
 #ifdef CONFIG_PROC_FS
 static void *ping_v6_seq_start(struct seq_file *seq, loff_t *pos)
@@ -271,3 +359,5 @@ void pingv6_exit(void)
 #endif
 	inet6_unregister_protosw(&pingv6_protosw);
 }
+=======
+>>>>>>> p9x

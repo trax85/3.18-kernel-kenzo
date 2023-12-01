@@ -5436,7 +5436,15 @@ static int get_bitmap_file(struct mddev *mddev, void __user * arg)
 	char *ptr, *buf = NULL;
 	int err = -ENOMEM;
 
+<<<<<<< HEAD
 	file = kzalloc(sizeof(*file), GFP_NOIO);
+=======
+	if (md_allow_write(mddev))
+		file = kzalloc(sizeof(*file), GFP_NOIO);
+	else
+		file = kzalloc(sizeof(*file), GFP_KERNEL);
+
+>>>>>>> p9x
 	if (!file)
 		goto out;
 

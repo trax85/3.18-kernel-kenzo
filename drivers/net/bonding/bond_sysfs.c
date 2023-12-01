@@ -292,6 +292,69 @@ static ssize_t bonding_show_arp_interval(struct device *d,
 
 	return sprintf(buf, "%d\n", bond->params.arp_interval);
 }
+<<<<<<< HEAD
+=======
+
+static ssize_t bonding_store_arp_interval(struct device *d,
+					  struct device_attribute *attr,
+					  const char *buf, size_t count)
+{
+	int new_value, ret = count;
+	struct bonding *bond = to_bond(d);
+
+	if (!rtnl_trylock())
+		return restart_syscall();
+	if (sscanf(buf, "%d", &new_value) != 1) {
+		pr_err("%s: no arp_interval value specified.\n",
+		       bond->dev->name);
+		ret = -EINVAL;
+		goto out;
+	}
+	if (new_value < 0) {
+		pr_err("%s: Invalid arp_interval value %d not in range 0-%d; rejected.\n",
+		       bond->dev->name, new_value, INT_MAX);
+		ret = -EINVAL;
+		goto out;
+	}
+	if (bond->params.mode == BOND_MODE_ALB ||
+	    bond->params.mode == BOND_MODE_TLB ||
+	    bond->params.mode == BOND_MODE_8023AD) {
+		pr_info("%s: ARP monitoring cannot be used with ALB/TLB/802.3ad. Only MII monitoring is supported on %s.\n",
+			bond->dev->name, bond->dev->name);
+		ret = -EINVAL;
+		goto out;
+	}
+	pr_info("%s: Setting ARP monitoring interval to %d.\n",
+		bond->dev->name, new_value);
+	bond->params.arp_interval = new_value;
+	if (new_value) {
+		if (bond->params.miimon) {
+			pr_info("%s: ARP monitoring cannot be used with MII monitoring. %s Disabling MII monitoring.\n",
+				bond->dev->name, bond->dev->name);
+			bond->params.miimon = 0;
+		}
+		if (!bond->params.arp_targets[0])
+			pr_info("%s: ARP monitoring has been set up, but no ARP targets have been specified.\n",
+				bond->dev->name);
+	}
+	if (bond->dev->flags & IFF_UP) {
+		/* If the interface is up, we may need to fire off
+		 * the ARP timer.  If the interface is down, the
+		 * timer will get fired off when the open function
+		 * is called.
+		 */
+		if (!new_value) {
+			cancel_delayed_work_sync(&bond->arp_work);
+		} else {
+			cancel_delayed_work_sync(&bond->mii_work);
+			queue_delayed_work(bond->wq, &bond->arp_work, 0);
+		}
+	}
+out:
+	rtnl_unlock();
+	return ret;
+}
+>>>>>>> p9x
 static DEVICE_ATTR(arp_interval, S_IRUGO | S_IWUSR,
 		   bonding_show_arp_interval, bonding_sysfs_store_option);
 
@@ -325,6 +388,55 @@ static ssize_t bonding_show_downdelay(struct device *d,
 
 	return sprintf(buf, "%d\n", bond->params.downdelay * bond->params.miimon);
 }
+<<<<<<< HEAD
+=======
+
+static ssize_t bonding_store_downdelay(struct device *d,
+				       struct device_attribute *attr,
+				       const char *buf, size_t count)
+{
+	int new_value, ret = count;
+	struct bonding *bond = to_bond(d);
+
+	if (!rtnl_trylock())
+		return restart_syscall();
+	if (!(bond->params.miimon)) {
+		pr_err("%s: Unable to set down delay as MII monitoring is disabled\n",
+		       bond->dev->name);
+		ret = -EPERM;
+		goto out;
+	}
+
+	if (sscanf(buf, "%d", &new_value) != 1) {
+		pr_err("%s: no down delay value specified.\n", bond->dev->name);
+		ret = -EINVAL;
+		goto out;
+	}
+	if (new_value < 0) {
+		pr_err("%s: Invalid down delay value %d not in range %d-%d; rejected.\n",
+		       bond->dev->name, new_value, 0, INT_MAX);
+		ret = -EINVAL;
+		goto out;
+	} else {
+		if ((new_value % bond->params.miimon) != 0) {
+			pr_warning("%s: Warning: down delay (%d) is not a multiple of miimon (%d), delay rounded to %d ms\n",
+				   bond->dev->name, new_value,
+				   bond->params.miimon,
+				   (new_value / bond->params.miimon) *
+				   bond->params.miimon);
+		}
+		bond->params.downdelay = new_value / bond->params.miimon;
+		pr_info("%s: Setting down delay to %d.\n",
+			bond->dev->name,
+			bond->params.downdelay * bond->params.miimon);
+
+	}
+
+out:
+	rtnl_unlock();
+	return ret;
+}
+>>>>>>> p9x
 static DEVICE_ATTR(downdelay, S_IRUGO | S_IWUSR,
 		   bonding_show_downdelay, bonding_sysfs_store_option);
 
@@ -337,6 +449,55 @@ static ssize_t bonding_show_updelay(struct device *d,
 	return sprintf(buf, "%d\n", bond->params.updelay * bond->params.miimon);
 
 }
+<<<<<<< HEAD
+=======
+
+static ssize_t bonding_store_updelay(struct device *d,
+				     struct device_attribute *attr,
+				     const char *buf, size_t count)
+{
+	int new_value, ret = count;
+	struct bonding *bond = to_bond(d);
+
+	if (!rtnl_trylock())
+		return restart_syscall();
+	if (!(bond->params.miimon)) {
+		pr_err("%s: Unable to set up delay as MII monitoring is disabled\n",
+		       bond->dev->name);
+		ret = -EPERM;
+		goto out;
+	}
+
+	if (sscanf(buf, "%d", &new_value) != 1) {
+		pr_err("%s: no up delay value specified.\n",
+		       bond->dev->name);
+		ret = -EINVAL;
+		goto out;
+	}
+	if (new_value < 0) {
+		pr_err("%s: Invalid up delay value %d not in range %d-%d; rejected.\n",
+		       bond->dev->name, new_value, 0, INT_MAX);
+		ret = -EINVAL;
+		goto out;
+	} else {
+		if ((new_value % bond->params.miimon) != 0) {
+			pr_warning("%s: Warning: up delay (%d) is not a multiple of miimon (%d), updelay rounded to %d ms\n",
+				   bond->dev->name, new_value,
+				   bond->params.miimon,
+				   (new_value / bond->params.miimon) *
+				   bond->params.miimon);
+		}
+		bond->params.updelay = new_value / bond->params.miimon;
+		pr_info("%s: Setting up delay to %d.\n",
+			bond->dev->name,
+			bond->params.updelay * bond->params.miimon);
+	}
+
+out:
+	rtnl_unlock();
+	return ret;
+}
+>>>>>>> p9x
 static DEVICE_ATTR(updelay, S_IRUGO | S_IWUSR,
 		   bonding_show_updelay, bonding_sysfs_store_option);
 

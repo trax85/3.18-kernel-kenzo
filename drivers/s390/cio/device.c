@@ -1625,7 +1625,11 @@ out_unlock:
 	return rc;
 }
 
+<<<<<<< HEAD
 struct ccw_device * __init ccw_device_create_console(struct ccw_driver *drv)
+=======
+struct ccw_device *ccw_device_probe_console(struct ccw_driver *drv)
+>>>>>>> p9x
 {
 	struct io_subchannel_private *io_priv;
 	struct ccw_device *cdev;
@@ -1648,7 +1652,19 @@ struct ccw_device * __init ccw_device_create_console(struct ccw_driver *drv)
 		return cdev;
 	}
 	cdev->drv = drv;
+<<<<<<< HEAD
 	ccw_device_set_int_class(cdev);
+=======
+	set_io_private(sch, io_priv);
+	ret = ccw_device_console_enable(cdev, sch);
+	if (ret) {
+		set_io_private(sch, NULL);
+		put_device(&sch->dev);
+		put_device(&cdev->dev);
+		kfree(io_priv);
+		return ERR_PTR(ret);
+	}
+>>>>>>> p9x
 	return cdev;
 }
 

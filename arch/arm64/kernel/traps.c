@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1995-2009 Russell King
  * Copyright (C) 2012 ARM Ltd.
+ * Copyright (c) 2014, NVIDIA CORPORATION.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -31,6 +32,7 @@
 #include <linux/sched.h>
 #include <linux/syscalls.h>
 
+#include <asm/arch_timer.h>
 #include <asm/atomic.h>
 #include <asm/barrier.h>
 #include <asm/debug-monitors.h>
@@ -309,6 +311,7 @@ int is_valid_bugaddr(unsigned long pc)
 #endif
 
 static LIST_HEAD(undef_hook);
+<<<<<<< HEAD
 static DEFINE_RAW_SPINLOCK(undef_lock);
 
 void register_undef_hook(struct undef_hook *hook)
@@ -368,21 +371,66 @@ static int call_undef_hook(struct pt_regs *regs)
 
 	raw_spin_unlock_irqrestore(&undef_lock, flags);
 exit:
+=======
+
+void register_undef_hook(struct undef_hook *hook)
+{
+	list_add(&hook->node, &undef_hook);
+}
+
+static int call_undef_hook(struct pt_regs *regs, unsigned int instr)
+{
+	struct undef_hook *hook;
+	int (*fn)(struct pt_regs *regs, unsigned int instr) = NULL;
+
+	list_for_each_entry(hook, &undef_hook, node)
+		if ((instr & hook->instr_mask) == hook->instr_val &&
+		    (regs->pstate & hook->pstate_mask) == hook->pstate_val)
+			fn = hook->fn;
+
+>>>>>>> p9x
 	return fn ? fn(regs, instr) : 1;
 }
 
 asmlinkage void __exception do_undefinstr(struct pt_regs *regs)
 {
+	u32 instr;
 	siginfo_t info;
 	void __user *pc = (void __user *)instruction_pointer(regs);
 
 	/* check for AArch32 breakpoint instructions */
 	if (!aarch32_break_handler(regs))
 		return;
+<<<<<<< HEAD
 
 	if (call_undef_hook(regs) == 0)
 		return;
 
+=======
+	if (user_mode(regs)) {
+		if (compat_thumb_mode(regs)) {
+			if (get_user(instr, (u16 __user *)pc))
+				goto die_sig;
+			if (is_wide_instruction(instr)) {
+				u32 instr2;
+				if (get_user(instr2, (u16 __user *)pc+1))
+					goto die_sig;
+				instr <<= 16;
+				instr |= instr2;
+			}
+		} else if (get_user(instr, (u32 __user *)pc)) {
+			goto die_sig;
+		}
+	} else {
+		/* kernel mode */
+		instr = *((u32 *)pc);
+	}
+
+	if (call_undef_hook(regs, instr) == 0)
+		return;
+
+die_sig:
+>>>>>>> p9x
 	trace_undef_instr(regs, (void *)pc);
 
 	if (user_mode(regs) && show_unhandled_signals &&
@@ -415,10 +463,30 @@ static void cntfrq_read_handler(unsigned int esr, struct pt_regs *regs)
 	int rt = (esr & ESR_ELx_SYS64_ISS_RT_MASK) >> ESR_ELx_SYS64_ISS_RT_SHIFT;
 
 	if (rt != 31)
+<<<<<<< HEAD
 		regs->regs[rt] = read_sysreg(cntfrq_el0);
 	regs->pc += 4;
 }
 
+=======
+		asm volatile("mrs %0, cntfrq_el0" : "=r" (regs->regs[rt]));
+	regs->pc += 4;
+}
+
+static void cntpct_read_handler(unsigned int esr, struct pt_regs *regs)
+{
+	int rt = (esr & ESR_ELx_SYS64_ISS_RT_MASK) >> ESR_ELx_SYS64_ISS_RT_SHIFT;
+
+	isb();
+	if (rt != 31)
+		regs->regs[rt] = arch_counter_get_cntpct();
+	regs->pc += 4;
+}
+
+#define ESR_ELx_SYS64_ISS_SYS_CNTPCT    (ESR_ELx_SYS64_ISS_SYS_VAL(3, 3, 1, 14, 0) | \
+                                         ESR_ELx_SYS64_ISS_DIR_READ)
+
+>>>>>>> p9x
 asmlinkage void __exception do_sysinstr(unsigned int esr, struct pt_regs *regs)
 {
 	if ((esr & ESR_ELx_SYS64_ISS_SYS_OP_MASK) == ESR_ELx_SYS64_ISS_SYS_CNTVCT) {
@@ -427,6 +495,12 @@ asmlinkage void __exception do_sysinstr(unsigned int esr, struct pt_regs *regs)
 	} else if ((esr & ESR_ELx_SYS64_ISS_SYS_OP_MASK) == ESR_ELx_SYS64_ISS_SYS_CNTFRQ) {
 		cntfrq_read_handler(esr, regs);
 		return;
+<<<<<<< HEAD
+=======
+	} else if ((esr & ESR_ELx_SYS64_ISS_SYS_OP_MASK) == ESR_ELx_SYS64_ISS_SYS_CNTPCT) {
+		cntpct_read_handler(esr, regs);
+		return;
+>>>>>>> p9x
 	}
 
 	do_undefinstr(regs);
@@ -509,8 +583,13 @@ asmlinkage void bad_mode(struct pt_regs *regs, int reason, unsigned int esr)
 {
 	console_verbose();
 
+<<<<<<< HEAD
 	pr_crit("Bad mode in %s handler detected, code 0x%08x -- %s\n",
 		handler[reason], esr, esr_get_class_string(esr));
+=======
+	pr_crit("Bad mode in %s handler detected, code 0x%08x\n",
+		handler[reason], esr);
+>>>>>>> p9x
 
 	die("Oops - bad mode", regs, 0);
 	local_irq_disable();
@@ -527,8 +606,13 @@ asmlinkage void bad_el0_sync(struct pt_regs *regs, int reason, unsigned int esr)
 	void __user *pc = (void __user *)instruction_pointer(regs);
 	console_verbose();
 
+<<<<<<< HEAD
 	pr_crit("Bad mode in %s handler detected, code 0x%08x -- %s\n",
 		handler[reason], esr, esr_get_class_string(esr));
+=======
+	pr_crit("Bad EL0 synchronous exception detected on CPU%d, code 0x%08x\n",
+		smp_processor_id(), esr);
+>>>>>>> p9x
 	__show_regs(regs);
 
 	info.si_signo = SIGILL;
@@ -542,9 +626,12 @@ asmlinkage void bad_el0_sync(struct pt_regs *regs, int reason, unsigned int esr)
 		arm64_check_cache_ecc(NULL);
 	}
 
+<<<<<<< HEAD
 	current->thread.fault_address = 0;
 	current->thread.fault_code = 0;
 
+=======
+>>>>>>> p9x
 	force_sig_info(info.si_signo, &info, current);
 }
 

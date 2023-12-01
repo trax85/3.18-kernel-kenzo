@@ -754,17 +754,28 @@ struct task_struct *__switch_to(struct task_struct *prev,
 	struct ppc64_tlb_batch *batch;
 #endif
 
+<<<<<<< HEAD
 	WARN_ON(!irqs_disabled());
 
 	/* Back up the TAR and DSCR across context switches.
+=======
+	/* Back up the TAR across context switches.
+>>>>>>> p9x
 	 * Note that the TAR is not available for use in the kernel.  (To
 	 * provide this, the TAR should be backed up/restored on exception
 	 * entry/exit instead, and be in pt_regs.  FIXME, this should be in
 	 * pt_regs anyway (for debug).)
+<<<<<<< HEAD
 	 * Save the TAR and DSCR here before we do treclaim/trecheckpoint as
 	 * these will change them.
 	 */
 	save_early_sprs(&prev->thread);
+=======
+	 * Save the TAR here before we do treclaim/trecheckpoint as these
+	 * will change the TAR.
+	 */
+	save_tar(&prev->thread);
+>>>>>>> p9x
 
 	__switch_to_tm(prev);
 
@@ -1080,12 +1091,21 @@ int arch_dup_task_struct(struct task_struct *dst, struct task_struct *src)
 	flush_vsx_to_thread(src);
 	flush_spe_to_thread(src);
 	/*
+<<<<<<< HEAD
 	 * Flush TM state out so we can copy it.  __switch_to_tm() does this
 	 * flush but it removes the checkpointed state from the current CPU and
 	 * transitions the CPU out of TM mode.  Hence we need to call
 	 * tm_recheckpoint_new_task() (on the same task) to restore the
 	 * checkpointed state back and the TM mode.
 	 */
+=======
+	* Flush TM state out so we can copy it.  __switch_to_tm() does this
+	* flush but it removes the checkpointed state from the current CPU and
+	* transitions the CPU out of TM mode.  Hence we need to call
+	* tm_recheckpoint_new_task() (on the same task) to restore the
+	* checkpointed state back and the TM mode.
+	*/
+>>>>>>> p9x
 	__switch_to_tm(src);
 	tm_recheckpoint_new_task(src);
 

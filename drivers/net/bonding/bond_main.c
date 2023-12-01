@@ -605,6 +605,7 @@ static void bond_hw_addr_swap(struct bonding *bond, struct slave *new_active,
 	}
 }
 
+<<<<<<< HEAD
 /**
  * bond_set_dev_addr - clone slave's address to bond
  * @bond_dev: bond net device
@@ -622,13 +623,21 @@ static void bond_set_dev_addr(struct net_device *bond_dev,
 	call_netdevice_notifiers(NETDEV_CHANGEADDR, bond_dev);
 }
 
+=======
+>>>>>>> p9x
 static struct slave *bond_get_old_active(struct bonding *bond,
 					 struct slave *new_active)
 {
 	struct slave *slave;
+<<<<<<< HEAD
 	struct list_head *iter;
 
 	bond_for_each_slave(bond, slave, iter) {
+=======
+	int i;
+
+	bond_for_each_slave(bond, slave, i) {
+>>>>>>> p9x
 		if (slave == new_active)
 			continue;
 
@@ -639,7 +648,12 @@ static struct slave *bond_get_old_active(struct bonding *bond,
 	return NULL;
 }
 
+<<<<<<< HEAD
 /* bond_do_fail_over_mac
+=======
+/*
+ * bond_do_fail_over_mac
+>>>>>>> p9x
  *
  * Perform special MAC address swapping for fail_over_mac settings
  *
@@ -665,6 +679,9 @@ static void bond_do_fail_over_mac(struct bonding *bond,
 		 */
 		if (!new_active)
 			return;
+
+		if (!old_active)
+			old_active = bond_get_old_active(bond, new_active);
 
 		if (!old_active)
 			old_active = bond_get_old_active(bond, new_active);
@@ -1212,9 +1229,16 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev)
 			    slave_dev->name);
 	}
 
+<<<<<<< HEAD
 	/* already enslaved */
 	if (slave_dev->flags & IFF_SLAVE) {
 		netdev_dbg(bond_dev, "Error: Device was already enslaved\n");
+=======
+	/* already in-use? */
+	if (netdev_is_rx_handler_busy(slave_dev)) {
+		netdev_err(bond_dev,
+			   "Error: Device is in use and cannot be enslaved\n");
+>>>>>>> p9x
 		return -EBUSY;
 	}
 
@@ -1768,7 +1792,11 @@ static int __bond_release_one(struct net_device *bond_dev,
 	/* If the mode uses primary, then this case was handled above by
 	 * bond_change_active_slave(..., NULL)
 	 */
+<<<<<<< HEAD
 	if (!bond_uses_primary(bond)) {
+=======
+	if (!USES_PRIMARY(bond->params.mode)) {
+>>>>>>> p9x
 		/* unset promiscuity level from slave
 		 * NOTE: The NETDEV_CHANGEADDR call above may change the value
 		 * of the IFF_PROMISC flag in the bond_dev, but we need the
@@ -1826,8 +1854,13 @@ static int  bond_release_and_destroy(struct net_device *bond_dev,
 	ret = bond_release(bond_dev, slave_dev);
 	if (ret == 0 && !bond_has_slaves(bond)) {
 		bond_dev->priv_flags |= IFF_DISABLE_NETPOLL;
+<<<<<<< HEAD
 		netdev_info(bond_dev, "Destroying bond %s\n",
 			    bond_dev->name);
+=======
+		pr_info("%s: destroying bond %s.\n",
+			bond_dev->name, bond_dev->name);
+>>>>>>> p9x
 		bond_remove_proc_entry(bond);
 		unregister_netdevice(bond_dev);
 	}
@@ -4584,7 +4617,11 @@ out:
 	return res;
 err:
 	bond_destroy_debugfs();
+<<<<<<< HEAD
 	bond_netlink_fini();
+=======
+	rtnl_link_unregister(&bond_link_ops);
+>>>>>>> p9x
 err_link:
 	unregister_pernet_subsys(&bond_net_ops);
 	goto out;

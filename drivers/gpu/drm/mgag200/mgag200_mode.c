@@ -1610,7 +1610,11 @@ static int mga_vga_mode_valid(struct drm_connector *connector,
 			if (mga_vga_calculate_mode_bandwidth(mode, bpp)
 				> (24400 * 1024))
 				return MODE_BANDWIDTH;
+<<<<<<< HEAD
 		} else if (mdev->unique_rev_id == 0x02) {
+=======
+		} else if (mdev->unique_rev_id >= 0x02) {
+>>>>>>> p9x
 			if (mode->hdisplay > 1920)
 				return MODE_VIRTUAL_X;
 			if (mode->vdisplay > 1200)

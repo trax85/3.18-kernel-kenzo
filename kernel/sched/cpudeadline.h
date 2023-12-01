@@ -5,17 +5,29 @@
 
 #define IDX_INVALID     -1
 
+<<<<<<< HEAD
 struct cpudl_item {
 	u64 dl;
 	int cpu;
 	int idx;
+=======
+struct array_item {
+	u64 dl;
+	int cpu;
+>>>>>>> p9x
 };
 
 struct cpudl {
 	raw_spinlock_t lock;
 	int size;
+<<<<<<< HEAD
 	cpumask_var_t free_cpus;
 	struct cpudl_item *elements;
+=======
+	int cpu_to_idx[NR_CPUS];
+	struct array_item elements[NR_CPUS];
+	cpumask_var_t free_cpus;
+>>>>>>> p9x
 };
 
 

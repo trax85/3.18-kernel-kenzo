@@ -20,10 +20,13 @@ if CPU_FREQ
 config CPU_FREQ_GOV_COMMON
 	bool
 
+<<<<<<< HEAD
 config CPU_FREQ_BOOST_SW
 	bool
 	depends on THERMAL
 
+=======
+>>>>>>> p9x
 config SCHED_FREQ_INPUT
 	bool "Scheduler inputs to cpufreq governor"
 	depends on SCHED_HMP
@@ -122,6 +125,7 @@ config CPU_FREQ_DEFAULT_GOV_INTERACTIVE
 	  loading your cpufreq low-level hardware driver, using the
 	  'interactive' governor for latency-sensitive workloads.
 
+<<<<<<< HEAD
 config CPU_FREQ_DEFAULT_GOV_SCHED
 	bool "sched"
 	select CPU_FREQ_GOV_INTERACTIVE
@@ -129,6 +133,8 @@ config CPU_FREQ_DEFAULT_GOV_SCHED
 	  Use the CPUfreq governor 'sched' as default. This scales
 	  cpu frequency using CPU utilization estimates from the
 	  scheduler.
+=======
+>>>>>>> p9x
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
@@ -187,7 +193,11 @@ config CPU_FREQ_GOV_ONDEMAND
 	  If in doubt, say N.
 
 config CPU_FREQ_GOV_INTERACTIVE
+<<<<<<< HEAD
 	bool "'interactive' cpufreq policy governor"
+=======
+	tristate "'interactive' cpufreq policy governor"
+>>>>>>> p9x
 	help
 	  'interactive' - This driver adds a dynamic cpufreq policy governor
 	  designed for latency-sensitive workloads.
@@ -196,6 +206,12 @@ config CPU_FREQ_GOV_INTERACTIVE
 	  increases so that the system is more responsive to
 	  interactive workloads.
 
+<<<<<<< HEAD
+=======
+	  To compile this driver as a module, choose M here: the
+	  module will be called cpufreq_interactive.
+
+>>>>>>> p9x
 	  For details, take a look at linux/Documentation/cpu-freq.
 
 	  If in doubt, say N.
@@ -224,11 +240,28 @@ config CPU_FREQ_GOV_CONSERVATIVE
 
 	  If in doubt, say N.
 
+<<<<<<< HEAD
 config CPU_FREQ_GOV_SCHED
 	bool "'sched' cpufreq governor"
 	depends on CPU_FREQ
 	depends on SMP
 	select CPU_FREQ_GOV_COMMON
+=======
+config CPU_BOOST
+	tristate "Event base short term CPU freq boost"
+	depends on CPU_FREQ
+	help
+	  This driver boosts the frequency of one or more CPUs based on
+	  various events that might occur in the system. As of now, the
+	  events it reacts to are:
+	  - Migration of important threads from one CPU to another.
+
+	  If in doubt, say N.
+
+config GENERIC_CPUFREQ_CPU0
+	tristate "Generic CPU0 cpufreq driver"
+	depends on HAVE_CLK && REGULATOR && PM_OPP && OF
+>>>>>>> p9x
 	help
 	  'sched' - this governor scales cpu frequency from the
 	  scheduler as a function of cpu capacity utilization. It does

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012, 2015-2016, 2018 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012, 2015-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -18,9 +22,15 @@
 #include <linux/hrtimer.h>
 #include <linux/sched.h>
 #include <linux/math64.h>
+<<<<<<< HEAD
 
 #include "sched.h"
 #include <trace/events/sched.h>
+=======
+#include <trace/events/sched.h>
+
+#include "sched.h"
+>>>>>>> p9x
 
 static DEFINE_PER_CPU(u64, nr_prod_sum);
 static DEFINE_PER_CPU(u64, last_time);
@@ -31,8 +41,11 @@ static DEFINE_PER_CPU(unsigned long, iowait_prod_sum);
 static DEFINE_PER_CPU(spinlock_t, nr_lock) = __SPIN_LOCK_UNLOCKED(nr_lock);
 static s64 last_get_time;
 
+<<<<<<< HEAD
 static DEFINE_PER_CPU(atomic64_t, last_busy_time) = ATOMIC64_INIT(0);
 
+=======
+>>>>>>> p9x
 /**
  * sched_get_nr_running_avg
  * @return: Average nr_running, iowait and nr_big_tasks value since last poll.
@@ -98,6 +111,7 @@ void sched_get_nr_running_avg(int *avg, int *iowait_avg, int *big_avg)
 }
 EXPORT_SYMBOL(sched_get_nr_running_avg);
 
+<<<<<<< HEAD
 #define BUSY_NR_RUN		3
 #define BUSY_LOAD_FACTOR	10
 
@@ -133,6 +147,8 @@ static inline void update_last_busy_time(int cpu, bool dequeue,
 }
 #endif
 
+=======
+>>>>>>> p9x
 /**
  * sched_update_nr_prod
  * @cpu: The core id of the nr running driver.
@@ -158,16 +174,22 @@ void sched_update_nr_prod(int cpu, long delta, bool inc)
 
 	BUG_ON((s64)per_cpu(nr, cpu) < 0);
 
+<<<<<<< HEAD
 	update_last_busy_time(cpu, !inc, nr_running, curr_time);
 
+=======
+>>>>>>> p9x
 	per_cpu(nr_prod_sum, cpu) += nr_running * diff;
 	per_cpu(nr_big_prod_sum, cpu) += nr_eligible_big_tasks(cpu) * diff;
 	per_cpu(iowait_prod_sum, cpu) += nr_iowait_cpu(cpu) * diff;
 	spin_unlock_irqrestore(&per_cpu(nr_lock, cpu), flags);
 }
 EXPORT_SYMBOL(sched_update_nr_prod);
+<<<<<<< HEAD
 
 u64 sched_get_cpu_last_busy_time(int cpu)
 {
 	return atomic64_read(&per_cpu(last_busy_time, cpu));
 }
+=======
+>>>>>>> p9x

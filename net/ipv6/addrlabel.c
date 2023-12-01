@@ -277,7 +277,11 @@ static int __ip6addrlbl_add(struct ip6addrlbl_entry *newp, int replace)
 		last = p;
 	}
 	if (last)
+<<<<<<< HEAD
 		hlist_add_behind_rcu(&newp->list, &last->list);
+=======
+		hlist_add_after_rcu(&last->list, &newp->list);
+>>>>>>> p9x
 	else
 		hlist_add_head_rcu(&newp->list, &ip6addrlbl_table.head);
 out:

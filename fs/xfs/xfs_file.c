@@ -303,8 +303,12 @@ xfs_file_read_iter(
 			 * happen on XFS. Warn if it does fail.
 			 */
 			ret = invalidate_inode_pages2_range(VFS_I(ip)->i_mapping,
+<<<<<<< HEAD
 					pos >> PAGE_CACHE_SHIFT,
 					(pos + size - 1) >> PAGE_CACHE_SHIFT);
+=======
+						pos >> PAGE_CACHE_SHIFT, -1);
+>>>>>>> p9x
 			WARN_ON_ONCE(ret);
 			ret = 0;
 		}
@@ -657,8 +661,12 @@ xfs_file_dio_aio_write(
 		 * happen on XFS. Warn if it does fail.
 		 */
 		ret = invalidate_inode_pages2_range(VFS_I(ip)->i_mapping,
+<<<<<<< HEAD
 					pos >> PAGE_CACHE_SHIFT,
 					(pos + count - 1) >> PAGE_CACHE_SHIFT);
+=======
+						pos >> PAGE_CACHE_SHIFT, -1);
+>>>>>>> p9x
 		WARN_ON_ONCE(ret);
 		ret = 0;
 	}

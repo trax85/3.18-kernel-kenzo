@@ -368,7 +368,11 @@ static int mhl_sii_wait_for_rgnd(struct mhl_tx_ctrl *mhl_ctrl)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	reinit_completion(&mhl_ctrl->rgnd_done);
+=======
+	INIT_COMPLETION(mhl_ctrl->rgnd_done);
+>>>>>>> p9x
 	/*
 	 * after toggling reset line and enabling disc
 	 * tx can take a while to generate intr
@@ -399,19 +403,33 @@ static int mhl_sii_config(struct mhl_tx_ctrl *mhl_ctrl, bool on)
 
 	client = mhl_ctrl->i2c_handle;
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&mhl_ctrl->sii_config_lock);
+>>>>>>> p9x
 	if (on && !mhl_ctrl->irq_req_done) {
 		rc = mhl_vreg_config(mhl_ctrl, 1);
 		if (rc) {
 			pr_err("%s: vreg init failed [%d]\n",
 				__func__, rc);
+<<<<<<< HEAD
 			return -ENODEV;
+=======
+			rc = -ENODEV;
+			goto vreg_config_error;
+>>>>>>> p9x
 		}
 
 		rc = mhl_gpio_config(mhl_ctrl, 1);
 		if (rc) {
 			pr_err("%s: gpio init failed [%d]\n",
 				__func__, rc);
+<<<<<<< HEAD
 			return -ENODEV;
+=======
+			rc = -ENODEV;
+			goto vreg_config_error;
+>>>>>>> p9x
 		}
 
 		rc = request_threaded_irq(mhl_ctrl->i2c_handle->irq, NULL,
@@ -420,9 +438,18 @@ static int mhl_sii_config(struct mhl_tx_ctrl *mhl_ctrl, bool on)
 		if (rc) {
 			pr_err("%s: request_threaded_irq failed, status: %d\n",
 			       __func__, rc);
+<<<<<<< HEAD
 			return -ENODEV;
 		} else {
 			mhl_ctrl->irq_req_done = true;
+=======
+			rc = -ENODEV;
+			goto vreg_config_error;
+		} else {
+			mhl_ctrl->irq_req_done = true;
+			/* wait for i2c interrupt line to be activated */
+			msleep(100);
+>>>>>>> p9x
 		}
 	} else if (!on && mhl_ctrl->irq_req_done) {
 		free_irq(mhl_ctrl->i2c_handle->irq, mhl_ctrl);
@@ -431,6 +458,11 @@ static int mhl_sii_config(struct mhl_tx_ctrl *mhl_ctrl, bool on)
 		mhl_ctrl->irq_req_done = false;
 	}
 
+<<<<<<< HEAD
+=======
+vreg_config_error:
+	mutex_unlock(&mhl_ctrl->sii_config_lock);
+>>>>>>> p9x
 	return rc;
 }
 
@@ -472,6 +504,7 @@ static int mhl_sii_device_discovery(void *data, int id,
 
 	flush_work(&mhl_ctrl->mhl_intr_work);
 
+<<<<<<< HEAD
 	if (!mhl_ctrl->irq_req_done) {
 		rc = mhl_sii_config(mhl_ctrl, true);
 		if (rc) {
@@ -481,6 +514,12 @@ static int mhl_sii_device_discovery(void *data, int id,
 
 		/* wait for i2c interrupt line to be activated */
 		msleep(100);
+=======
+	rc = mhl_sii_config(mhl_ctrl, true);
+	if (rc) {
+		pr_err("%s: Failed to config vreg/gpio\n", __func__);
+		return rc;
+>>>>>>> p9x
 	}
 
 	if (!mhl_ctrl->disc_enabled) {
@@ -1337,7 +1376,11 @@ int mhl_send_msc_command(struct mhl_tx_ctrl *mhl_ctrl,
 		goto cbus_send_fail;
 	}
 
+<<<<<<< HEAD
 	reinit_completion(&mhl_ctrl->msc_cmd_done);
+=======
+	INIT_COMPLETION(mhl_ctrl->msc_cmd_done);
+>>>>>>> p9x
 	MHL_SII_REG_NAME_WR(REG_CBUS_PRI_START, start_bit);
 	timeout = wait_for_completion_timeout
 		(&mhl_ctrl->msc_cmd_done, msecs_to_jiffies(T_ABORT_NEXT));
@@ -1866,6 +1909,10 @@ static int mhl_i2c_probe(struct i2c_client *client,
 
 
 	init_completion(&mhl_ctrl->rgnd_done);
+<<<<<<< HEAD
+=======
+	mutex_init(&mhl_ctrl->sii_config_lock);
+>>>>>>> p9x
 
 
 	mhl_ctrl->mhl_psy.name = "ext-vbus";

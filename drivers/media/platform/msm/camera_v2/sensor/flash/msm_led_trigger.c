@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -21,6 +25,12 @@
 #undef CDBG
 #define CDBG(fmt, args...) pr_debug(fmt, ##args)
 
+<<<<<<< HEAD
+=======
+extern int32_t msm_led_torch_create_classdev(
+				struct platform_device *pdev, void *data);
+
+>>>>>>> p9x
 static enum flash_type flashtype;
 static struct msm_led_flash_ctrl_t fctrl;
 
@@ -28,7 +38,10 @@ static int32_t msm_led_trigger_get_subdev_id(struct msm_led_flash_ctrl_t *fctrl,
 	void *arg)
 {
 	uint32_t *subdev_id = (uint32_t *)arg;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	if (!subdev_id) {
 		pr_err("%s:%d failed\n", __func__, __LINE__);
 		return -EINVAL;
@@ -45,7 +58,10 @@ static int32_t msm_led_trigger_config(struct msm_led_flash_ctrl_t *fctrl,
 	struct msm_camera_led_cfg_t *cfg = (struct msm_camera_led_cfg_t *)data;
 	uint32_t i;
 	uint32_t curr_l, max_curr_l;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	CDBG("called led_state %d\n", cfg->cfgtype);
 
 	if (!fctrl) {
@@ -129,6 +145,19 @@ static const struct of_device_id msm_led_trigger_dt_match[] = {
 	{}
 };
 
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, msm_led_trigger_dt_match);
+
+static struct platform_driver msm_led_trigger_driver = {
+	.driver = {
+		.name = FLASH_NAME,
+		.owner = THIS_MODULE,
+		.of_match_table = msm_led_trigger_dt_match,
+	},
+};
+
+>>>>>>> p9x
 static int32_t msm_led_trigger_probe(struct platform_device *pdev)
 {
 	int32_t rc = 0, rc_1 = 0, i = 0;
@@ -298,6 +327,7 @@ static int32_t msm_led_trigger_probe(struct platform_device *pdev)
 	return rc;
 }
 
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(of, msm_led_trigger_dt_match);
 
 static struct platform_driver msm_led_trigger_driver = {
@@ -313,6 +343,13 @@ static int __init msm_led_trigger_add_driver(void)
 {
 	CDBG("called\n");
 	return platform_driver_register(&msm_led_trigger_driver);
+=======
+static int __init msm_led_trigger_add_driver(void)
+{
+	CDBG("called\n");
+	return platform_driver_probe(&msm_led_trigger_driver,
+		msm_led_trigger_probe);
+>>>>>>> p9x
 }
 
 static struct msm_flash_fn_t msm_led_trigger_func_tbl = {

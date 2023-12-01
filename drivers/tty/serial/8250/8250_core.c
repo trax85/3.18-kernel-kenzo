@@ -606,7 +606,11 @@ static void serial8250_set_sleep(struct uart_8250_port *p, int sleep)
 	if ((p->port.type == PORT_XR17V35X) ||
 	   (p->port.type == PORT_XR17D15X)) {
 		serial_out(p, UART_EXAR_SLEEP, sleep ? 0xff : 0);
+<<<<<<< HEAD
 		goto out;
+=======
+		return;
+>>>>>>> p9x
 	}
 
 	if (p->capabilities & UART_CAP_SLEEP) {

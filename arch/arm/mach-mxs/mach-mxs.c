@@ -430,7 +430,14 @@ static const char __init *mxs_get_revision(void)
 #define MX23_CLKCTRL_RESET_OFFSET	0x120
 #define MX28_CLKCTRL_RESET_OFFSET	0x1e0
 
+<<<<<<< HEAD
 static int __init mxs_restart_init(void)
+=======
+/*
+ * Reset the system. It is called by machine_restart().
+ */
+static void mxs_restart(enum reboot_mode mode, const char *cmd)
+>>>>>>> p9x
 {
 	struct device_node *np;
 

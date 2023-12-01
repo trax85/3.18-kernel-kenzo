@@ -109,6 +109,7 @@ of mapping (no unaligned accesses, no re-ordering, no write merging, no
 buffering, no pre-fetching). This has severe performance penalties and
 should not be used for general purpose DMA allocations. It should only
 be used if one of the restrictions on strongly ordered memory is required.
+<<<<<<< HEAD
 
 DMA_ATTR_NO_DELAYED_UNMAP
 -------------------------
@@ -126,3 +127,5 @@ DMA_ATTR_EXEC_MAPPING
 By default, the DMA mappings are non-executable. Some use cases might require
 an executable mapping. This attribute can be used to indicate to the DMA
 subsystem to create an executable mappings for the buffer.
+=======
+>>>>>>> p9x

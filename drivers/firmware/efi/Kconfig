@@ -36,6 +36,7 @@ config EFI_VARS_PSTORE_DEFAULT_DISABLE
 	  backend for pstore by default. This setting can be overridden
 	  using the efivars module's pstore_disable parameter.
 
+<<<<<<< HEAD
 config EFI_RUNTIME_MAP
 	bool "Export efi runtime maps to sysfs"
 	depends on X86 && EFI && KEXEC
@@ -47,6 +48,8 @@ config EFI_RUNTIME_MAP
 
 	  See also Documentation/ABI/testing/sysfs-firmware-efi-runtime-map.
 
+=======
+>>>>>>> p9x
 config EFI_PARAMS_FROM_FDT
 	bool
 	help
@@ -54,12 +57,15 @@ config EFI_PARAMS_FROM_FDT
 	  the EFI runtime support gets system table address, memory
           map address, and other parameters from the device tree.
 
+<<<<<<< HEAD
 config EFI_RUNTIME_WRAPPERS
 	bool
 
 config EFI_ARMSTUB
 	bool
 
+=======
+>>>>>>> p9x
 endmenu
 
 config UEFI_CPER

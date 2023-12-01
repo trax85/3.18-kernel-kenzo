@@ -476,8 +476,12 @@ tracesys_exit:
 trap_with_param:
 
 	; stop_pc info by gdb needs this info
+<<<<<<< HEAD
 	lr  r0, [efa]
 	mov r1, sp
+=======
+	st  orig_r8_IS_BRKPT, [sp, PT_orig_r8]
+>>>>>>> p9x
 
 	; Now that we have read EFA, it is safe to do "fake" rtie
 	;   and get out of CPU exception mode
@@ -652,7 +656,11 @@ resume_kernel_mode:
 
 restore_regs :
 
+<<<<<<< HEAD
 	TRACE_ASM_IRQ_ENABLE
+=======
+	lr	r10, [status32]
+>>>>>>> p9x
 
 	lr	r10, [status32]
 
@@ -690,6 +698,12 @@ not_exception:
 	; things to what they were, before returning from L2 context
 	;----------------------------------------------------------------
 
+<<<<<<< HEAD
+=======
+	ld   r9, [sp, PT_orig_r8]      ; get orig_r8 to make sure it is
+	brne r9, orig_r8_IS_IRQ2, 149f ; infact a L2 ISR ret path
+
+>>>>>>> p9x
 	ld r9, [sp, PT_status32]       ; get statu32_l2 (saved in pt_regs)
 	bbit0 r9, STATUS_A1_BIT, 149f  ; L1 not active when L2 IRQ, so normal
 

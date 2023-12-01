@@ -381,15 +381,35 @@ void __init mem_init(void)
 
 	/*
 	 * Explicitly reset zone->managed_pages because highmem pages are
+<<<<<<< HEAD
 	 * freed before calling free_all_bootmem();
+=======
+	 * freed before calling free_all_bootmem_node();
+>>>>>>> p9x
 	 */
 	reset_all_zones_managed_pages();
 	for (tmp = highstart_pfn; tmp < highend_pfn; tmp++)
 		free_highmem_page(pfn_to_page(tmp));
 #endif /* CONFIG_HIGHMEM */
 
+<<<<<<< HEAD
 	free_all_bootmem();
 	mem_init_print_info(NULL);
+=======
+	for_each_online_node(nid) {
+		pg_data_t *pgdat = NODE_DATA(nid);
+
+		num_physpages += pgdat->node_present_pages;
+
+		if (pgdat->node_spanned_pages)
+			free_all_bootmem_node(pgdat);
+	}
+
+	pr_info("Memory: %luk/%luk available\n",
+		(unsigned long)nr_free_pages() << (PAGE_SHIFT - 10),
+		num_physpages << (PAGE_SHIFT - 10));
+
+>>>>>>> p9x
 	show_mem(0);
 }
 
@@ -405,3 +425,14 @@ void free_initrd_mem(unsigned long start, unsigned long end)
 			   "initrd");
 }
 #endif
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_OF_FLATTREE
+void __init early_init_dt_setup_initrd_arch(u64 start, u64 end)
+{
+	pr_err("%s(%llx, %llx)\n",
+	       __func__, start, end);
+}
+#endif /* CONFIG_OF_FLATTREE */
+>>>>>>> p9x

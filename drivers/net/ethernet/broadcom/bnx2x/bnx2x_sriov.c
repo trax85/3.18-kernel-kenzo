@@ -533,7 +533,535 @@ op_err:
 	return rc;
 }
 
+<<<<<<< HEAD
 static int bnx2x_vf_queue_flr(struct bnx2x *bp, struct bnx2x_virtf *vf,
+=======
+static int bnx2x_vfop_config_list(struct bnx2x *bp,
+				  struct bnx2x_vfop_filters *filters,
+				  struct bnx2x_vlan_mac_ramrod_params *vlan_mac)
+{
+	struct bnx2x_vfop_filter *pos, *tmp;
+	struct list_head rollback_list, *filters_list = &filters->head;
+	struct bnx2x_vlan_mac_data *user_req = &vlan_mac->user_req;
+	int rc = 0, cnt = 0;
+
+	INIT_LIST_HEAD(&rollback_list);
+
+	list_for_each_entry_safe(pos, tmp, filters_list, link) {
+		if (bnx2x_vfop_set_user_req(bp, pos, user_req))
+			continue;
+
+		rc = bnx2x_config_vlan_mac(bp, vlan_mac);
+		if (rc >= 0) {
+			cnt += pos->add ? 1 : -1;
+			list_move(&pos->link, &rollback_list);
+			rc = 0;
+		} else if (rc == -EEXIST) {
+			rc = 0;
+		} else {
+			BNX2X_ERR("Failed to add a new vlan_mac command\n");
+			break;
+		}
+	}
+
+	/* rollback if error or too many rules added */
+	if (rc || cnt > filters->add_cnt) {
+		BNX2X_ERR("error or too many rules added. Performing rollback\n");
+		list_for_each_entry_safe(pos, tmp, &rollback_list, link) {
+			pos->add = !pos->add;	/* reverse op */
+			bnx2x_vfop_set_user_req(bp, pos, user_req);
+			bnx2x_config_vlan_mac(bp, vlan_mac);
+			list_del(&pos->link);
+		}
+		cnt = 0;
+		if (!rc)
+			rc = -EINVAL;
+	}
+	filters->add_cnt = cnt;
+	return rc;
+}
+
+/* VFOP set VLAN/MAC */
+static void bnx2x_vfop_vlan_mac(struct bnx2x *bp, struct bnx2x_virtf *vf)
+{
+	struct bnx2x_vfop *vfop = bnx2x_vfop_cur(bp, vf);
+	struct bnx2x_vlan_mac_ramrod_params *vlan_mac = &vfop->op_p->vlan_mac;
+	struct bnx2x_vlan_mac_obj *obj = vlan_mac->vlan_mac_obj;
+	struct bnx2x_vfop_filters *filters = vfop->args.filters.multi_filter;
+
+	enum bnx2x_vfop_vlan_mac_state state = vfop->state;
+
+	if (vfop->rc < 0)
+		goto op_err;
+
+	DP(BNX2X_MSG_IOV, "vf[%d] STATE: %d\n", vf->abs_vfid, state);
+
+	bnx2x_vfop_reset_wq(vf);
+
+	switch (state) {
+	case BNX2X_VFOP_VLAN_MAC_CLEAR:
+		/* next state */
+		vfop->state = BNX2X_VFOP_VLAN_MAC_CHK_DONE;
+
+		/* do delete */
+		vfop->rc = obj->delete_all(bp, obj,
+					   &vlan_mac->user_req.vlan_mac_flags,
+					   &vlan_mac->ramrod_flags);
+
+		bnx2x_vfop_finalize(vf, vfop->rc, VFOP_DONE);
+
+	case BNX2X_VFOP_VLAN_MAC_CONFIG_SINGLE:
+		/* next state */
+		vfop->state = BNX2X_VFOP_VLAN_MAC_CHK_DONE;
+
+		/* do config */
+		vfop->rc = bnx2x_config_vlan_mac(bp, vlan_mac);
+		if (vfop->rc == -EEXIST)
+			vfop->rc = 0;
+
+		bnx2x_vfop_finalize(vf, vfop->rc, VFOP_DONE);
+
+	case BNX2X_VFOP_VLAN_MAC_CHK_DONE:
+		vfop->rc = !!obj->raw.check_pending(&obj->raw);
+		bnx2x_vfop_finalize(vf, vfop->rc, VFOP_DONE);
+
+	case BNX2X_VFOP_MAC_CONFIG_LIST:
+		/* next state */
+		vfop->state = BNX2X_VFOP_VLAN_MAC_CHK_DONE;
+
+		/* do list config */
+		vfop->rc = bnx2x_vfop_config_list(bp, filters, vlan_mac);
+		if (vfop->rc)
+			goto op_err;
+
+		set_bit(RAMROD_CONT, &vlan_mac->ramrod_flags);
+		vfop->rc = bnx2x_config_vlan_mac(bp, vlan_mac);
+		bnx2x_vfop_finalize(vf, vfop->rc, VFOP_DONE);
+
+	case BNX2X_VFOP_VLAN_CONFIG_LIST:
+		/* next state */
+		vfop->state = BNX2X_VFOP_VLAN_CONFIG_LIST_0;
+
+		/* remove vlan0 - could be no-op */
+		vfop->rc = bnx2x_vfop_config_vlan0(bp, vlan_mac, false);
+		if (vfop->rc)
+			goto op_err;
+
+		/* Do vlan list config. if this operation fails we try to
+		 * restore vlan0 to keep the queue is working order
+		 */
+		vfop->rc = bnx2x_vfop_config_list(bp, filters, vlan_mac);
+		if (!vfop->rc) {
+			set_bit(RAMROD_CONT, &vlan_mac->ramrod_flags);
+			vfop->rc = bnx2x_config_vlan_mac(bp, vlan_mac);
+		}
+		bnx2x_vfop_finalize(vf, vfop->rc, VFOP_CONT); /* fall-through */
+
+	case BNX2X_VFOP_VLAN_CONFIG_LIST_0:
+		/* next state */
+		vfop->state = BNX2X_VFOP_VLAN_MAC_CHK_DONE;
+
+		if (list_empty(&obj->head))
+			/* add vlan0 */
+			vfop->rc = bnx2x_vfop_config_vlan0(bp, vlan_mac, true);
+		bnx2x_vfop_finalize(vf, vfop->rc, VFOP_DONE);
+
+	default:
+		bnx2x_vfop_default(state);
+	}
+op_err:
+	BNX2X_ERR("VLAN-MAC error: rc %d\n", vfop->rc);
+op_done:
+	kfree(filters);
+	bnx2x_vfop_credit(bp, vfop, obj);
+	bnx2x_vfop_end(bp, vf, vfop);
+op_pending:
+	return;
+}
+
+struct bnx2x_vfop_vlan_mac_flags {
+	bool drv_only;
+	bool dont_consume;
+	bool single_cmd;
+	bool add;
+};
+
+static void
+bnx2x_vfop_vlan_mac_prep_ramrod(struct bnx2x_vlan_mac_ramrod_params *ramrod,
+				struct bnx2x_vfop_vlan_mac_flags *flags)
+{
+	struct bnx2x_vlan_mac_data *ureq = &ramrod->user_req;
+
+	memset(ramrod, 0, sizeof(*ramrod));
+
+	/* ramrod flags */
+	if (flags->drv_only)
+		set_bit(RAMROD_DRV_CLR_ONLY, &ramrod->ramrod_flags);
+	if (flags->single_cmd)
+		set_bit(RAMROD_EXEC, &ramrod->ramrod_flags);
+
+	/* mac_vlan flags */
+	if (flags->dont_consume)
+		set_bit(BNX2X_DONT_CONSUME_CAM_CREDIT, &ureq->vlan_mac_flags);
+
+	/* cmd */
+	ureq->cmd = flags->add ? BNX2X_VLAN_MAC_ADD : BNX2X_VLAN_MAC_DEL;
+}
+
+static inline void
+bnx2x_vfop_mac_prep_ramrod(struct bnx2x_vlan_mac_ramrod_params *ramrod,
+			   struct bnx2x_vfop_vlan_mac_flags *flags)
+{
+	bnx2x_vfop_vlan_mac_prep_ramrod(ramrod, flags);
+	set_bit(BNX2X_ETH_MAC, &ramrod->user_req.vlan_mac_flags);
+}
+
+static int bnx2x_vfop_mac_delall_cmd(struct bnx2x *bp,
+				     struct bnx2x_virtf *vf,
+				     struct bnx2x_vfop_cmd *cmd,
+				     int qid, bool drv_only)
+{
+	struct bnx2x_vfop *vfop = bnx2x_vfop_add(bp, vf);
+
+	if (vfop) {
+		struct bnx2x_vfop_args_filters filters = {
+			.multi_filter = NULL,	/* single */
+			.credit = NULL,		/* consume credit */
+		};
+		struct bnx2x_vfop_vlan_mac_flags flags = {
+			.drv_only = drv_only,
+			.dont_consume = (filters.credit != NULL),
+			.single_cmd = true,
+			.add = false /* don't care */,
+		};
+		struct bnx2x_vlan_mac_ramrod_params *ramrod =
+			&vf->op_params.vlan_mac;
+
+		/* set ramrod params */
+		bnx2x_vfop_mac_prep_ramrod(ramrod, &flags);
+
+		/* set object */
+		ramrod->vlan_mac_obj = &bnx2x_vfq(vf, qid, mac_obj);
+
+		/* set extra args */
+		vfop->args.filters = filters;
+
+		bnx2x_vfop_opset(BNX2X_VFOP_VLAN_MAC_CLEAR,
+				 bnx2x_vfop_vlan_mac, cmd->done);
+		return bnx2x_vfop_transition(bp, vf, bnx2x_vfop_vlan_mac,
+					     cmd->block);
+	}
+	return -ENOMEM;
+}
+
+int bnx2x_vfop_mac_list_cmd(struct bnx2x *bp,
+			    struct bnx2x_virtf *vf,
+			    struct bnx2x_vfop_cmd *cmd,
+			    struct bnx2x_vfop_filters *macs,
+			    int qid, bool drv_only)
+{
+	struct bnx2x_vfop *vfop = bnx2x_vfop_add(bp, vf);
+
+	if (vfop) {
+		struct bnx2x_vfop_args_filters filters = {
+			.multi_filter = macs,
+			.credit = NULL,		/* consume credit */
+		};
+		struct bnx2x_vfop_vlan_mac_flags flags = {
+			.drv_only = drv_only,
+			.dont_consume = (filters.credit != NULL),
+			.single_cmd = false,
+			.add = false, /* don't care since only the items in the
+				       * filters list affect the sp operation,
+				       * not the list itself
+				       */
+		};
+		struct bnx2x_vlan_mac_ramrod_params *ramrod =
+			&vf->op_params.vlan_mac;
+
+		/* set ramrod params */
+		bnx2x_vfop_mac_prep_ramrod(ramrod, &flags);
+
+		/* set object */
+		ramrod->vlan_mac_obj = &bnx2x_vfq(vf, qid, mac_obj);
+
+		/* set extra args */
+		filters.multi_filter->add_cnt = BNX2X_VFOP_FILTER_ADD_CNT_MAX;
+		vfop->args.filters = filters;
+
+		bnx2x_vfop_opset(BNX2X_VFOP_MAC_CONFIG_LIST,
+				 bnx2x_vfop_vlan_mac, cmd->done);
+		return bnx2x_vfop_transition(bp, vf, bnx2x_vfop_vlan_mac,
+					     cmd->block);
+	}
+	return -ENOMEM;
+}
+
+int bnx2x_vfop_vlan_set_cmd(struct bnx2x *bp,
+			    struct bnx2x_virtf *vf,
+			    struct bnx2x_vfop_cmd *cmd,
+			    int qid, u16 vid, bool add)
+{
+	struct bnx2x_vfop *vfop = bnx2x_vfop_add(bp, vf);
+
+	if (vfop) {
+		struct bnx2x_vfop_args_filters filters = {
+			.multi_filter = NULL, /* single command */
+			.credit = &bnx2x_vfq(vf, qid, vlan_count),
+		};
+		struct bnx2x_vfop_vlan_mac_flags flags = {
+			.drv_only = false,
+			.dont_consume = (filters.credit != NULL),
+			.single_cmd = true,
+			.add = add,
+		};
+		struct bnx2x_vlan_mac_ramrod_params *ramrod =
+			&vf->op_params.vlan_mac;
+
+		/* set ramrod params */
+		bnx2x_vfop_vlan_mac_prep_ramrod(ramrod, &flags);
+		ramrod->user_req.u.vlan.vlan = vid;
+
+		/* set object */
+		ramrod->vlan_mac_obj = &bnx2x_vfq(vf, qid, vlan_obj);
+
+		/* set extra args */
+		vfop->args.filters = filters;
+
+		bnx2x_vfop_opset(BNX2X_VFOP_VLAN_MAC_CONFIG_SINGLE,
+				 bnx2x_vfop_vlan_mac, cmd->done);
+		return bnx2x_vfop_transition(bp, vf, bnx2x_vfop_vlan_mac,
+					     cmd->block);
+	}
+	return -ENOMEM;
+}
+
+static int bnx2x_vfop_vlan_delall_cmd(struct bnx2x *bp,
+			       struct bnx2x_virtf *vf,
+			       struct bnx2x_vfop_cmd *cmd,
+			       int qid, bool drv_only)
+{
+	struct bnx2x_vfop *vfop = bnx2x_vfop_add(bp, vf);
+
+	if (vfop) {
+		struct bnx2x_vfop_args_filters filters = {
+			.multi_filter = NULL, /* single command */
+			.credit = &bnx2x_vfq(vf, qid, vlan_count),
+		};
+		struct bnx2x_vfop_vlan_mac_flags flags = {
+			.drv_only = drv_only,
+			.dont_consume = (filters.credit != NULL),
+			.single_cmd = true,
+			.add = false, /* don't care */
+		};
+		struct bnx2x_vlan_mac_ramrod_params *ramrod =
+			&vf->op_params.vlan_mac;
+
+		/* set ramrod params */
+		bnx2x_vfop_vlan_mac_prep_ramrod(ramrod, &flags);
+
+		/* set object */
+		ramrod->vlan_mac_obj = &bnx2x_vfq(vf, qid, vlan_obj);
+
+		/* set extra args */
+		vfop->args.filters = filters;
+
+		bnx2x_vfop_opset(BNX2X_VFOP_VLAN_MAC_CLEAR,
+				 bnx2x_vfop_vlan_mac, cmd->done);
+		return bnx2x_vfop_transition(bp, vf, bnx2x_vfop_vlan_mac,
+					     cmd->block);
+	}
+	return -ENOMEM;
+}
+
+int bnx2x_vfop_vlan_list_cmd(struct bnx2x *bp,
+			     struct bnx2x_virtf *vf,
+			     struct bnx2x_vfop_cmd *cmd,
+			     struct bnx2x_vfop_filters *vlans,
+			     int qid, bool drv_only)
+{
+	struct bnx2x_vfop *vfop = bnx2x_vfop_add(bp, vf);
+
+	if (vfop) {
+		struct bnx2x_vfop_args_filters filters = {
+			.multi_filter = vlans,
+			.credit = &bnx2x_vfq(vf, qid, vlan_count),
+		};
+		struct bnx2x_vfop_vlan_mac_flags flags = {
+			.drv_only = drv_only,
+			.dont_consume = (filters.credit != NULL),
+			.single_cmd = false,
+			.add = false, /* don't care */
+		};
+		struct bnx2x_vlan_mac_ramrod_params *ramrod =
+			&vf->op_params.vlan_mac;
+
+		/* set ramrod params */
+		bnx2x_vfop_vlan_mac_prep_ramrod(ramrod, &flags);
+
+		/* set object */
+		ramrod->vlan_mac_obj = &bnx2x_vfq(vf, qid, vlan_obj);
+
+		/* set extra args */
+		filters.multi_filter->add_cnt = vf_vlan_rules_cnt(vf) -
+			atomic_read(filters.credit);
+
+		vfop->args.filters = filters;
+
+		bnx2x_vfop_opset(BNX2X_VFOP_VLAN_CONFIG_LIST,
+				 bnx2x_vfop_vlan_mac, cmd->done);
+		return bnx2x_vfop_transition(bp, vf, bnx2x_vfop_vlan_mac,
+					     cmd->block);
+	}
+	return -ENOMEM;
+}
+
+/* VFOP queue setup (queue constructor + set vlan 0) */
+static void bnx2x_vfop_qsetup(struct bnx2x *bp, struct bnx2x_virtf *vf)
+{
+	struct bnx2x_vfop *vfop = bnx2x_vfop_cur(bp, vf);
+	int qid = vfop->args.qctor.qid;
+	enum bnx2x_vfop_qsetup_state state = vfop->state;
+	struct bnx2x_vfop_cmd cmd = {
+		.done = bnx2x_vfop_qsetup,
+		.block = false,
+	};
+
+	if (vfop->rc < 0)
+		goto op_err;
+
+	DP(BNX2X_MSG_IOV, "vf[%d] STATE: %d\n", vf->abs_vfid, state);
+
+	switch (state) {
+	case BNX2X_VFOP_QSETUP_CTOR:
+		/* init the queue ctor command */
+		vfop->state = BNX2X_VFOP_QSETUP_VLAN0;
+		vfop->rc = bnx2x_vfop_qctor_cmd(bp, vf, &cmd, qid);
+		if (vfop->rc)
+			goto op_err;
+		return;
+
+	case BNX2X_VFOP_QSETUP_VLAN0:
+		/* skip if non-leading or FPGA/EMU*/
+		if (qid)
+			goto op_done;
+
+		/* init the queue set-vlan command (for vlan 0) */
+		vfop->state = BNX2X_VFOP_QSETUP_DONE;
+		vfop->rc = bnx2x_vfop_vlan_set_cmd(bp, vf, &cmd, qid, 0, true);
+		if (vfop->rc)
+			goto op_err;
+		return;
+op_err:
+	BNX2X_ERR("QSETUP[%d:%d] error: rc %d\n", vf->abs_vfid, qid, vfop->rc);
+op_done:
+	case BNX2X_VFOP_QSETUP_DONE:
+		vf->cfg_flags |= VF_CFG_VLAN;
+		smp_mb__before_atomic();
+		set_bit(BNX2X_SP_RTNL_HYPERVISOR_VLAN,
+			&bp->sp_rtnl_state);
+		smp_mb__after_atomic();
+		schedule_delayed_work(&bp->sp_rtnl_task, 0);
+		bnx2x_vfop_end(bp, vf, vfop);
+		return;
+	default:
+		bnx2x_vfop_default(state);
+	}
+}
+
+int bnx2x_vfop_qsetup_cmd(struct bnx2x *bp,
+			  struct bnx2x_virtf *vf,
+			  struct bnx2x_vfop_cmd *cmd,
+			  int qid)
+{
+	struct bnx2x_vfop *vfop = bnx2x_vfop_add(bp, vf);
+
+	if (vfop) {
+		vfop->args.qctor.qid = qid;
+
+		bnx2x_vfop_opset(BNX2X_VFOP_QSETUP_CTOR,
+				 bnx2x_vfop_qsetup, cmd->done);
+		return bnx2x_vfop_transition(bp, vf, bnx2x_vfop_qsetup,
+					     cmd->block);
+	}
+	return -ENOMEM;
+}
+
+/* VFOP queue FLR handling (clear vlans, clear macs, queue destructor) */
+static void bnx2x_vfop_qflr(struct bnx2x *bp, struct bnx2x_virtf *vf)
+{
+	struct bnx2x_vfop *vfop = bnx2x_vfop_cur(bp, vf);
+	int qid = vfop->args.qx.qid;
+	enum bnx2x_vfop_qflr_state state = vfop->state;
+	struct bnx2x_queue_state_params *qstate;
+	struct bnx2x_vfop_cmd cmd;
+
+	bnx2x_vfop_reset_wq(vf);
+
+	if (vfop->rc < 0)
+		goto op_err;
+
+	DP(BNX2X_MSG_IOV, "VF[%d] STATE: %d\n", vf->abs_vfid, state);
+
+	cmd.done = bnx2x_vfop_qflr;
+	cmd.block = false;
+
+	switch (state) {
+	case BNX2X_VFOP_QFLR_CLR_VLAN:
+		/* vlan-clear-all: driver-only, don't consume credit */
+		vfop->state = BNX2X_VFOP_QFLR_CLR_MAC;
+		vfop->rc = bnx2x_vfop_vlan_delall_cmd(bp, vf, &cmd, qid, true);
+		if (vfop->rc)
+			goto op_err;
+		return;
+
+	case BNX2X_VFOP_QFLR_CLR_MAC:
+		/* mac-clear-all: driver only consume credit */
+		vfop->state = BNX2X_VFOP_QFLR_TERMINATE;
+		vfop->rc = bnx2x_vfop_mac_delall_cmd(bp, vf, &cmd, qid, true);
+		DP(BNX2X_MSG_IOV,
+		   "VF[%d] vfop->rc after bnx2x_vfop_mac_delall_cmd was %d",
+		   vf->abs_vfid, vfop->rc);
+		if (vfop->rc)
+			goto op_err;
+		return;
+
+	case BNX2X_VFOP_QFLR_TERMINATE:
+		qstate = &vfop->op_p->qctor.qstate;
+		memset(qstate , 0, sizeof(*qstate));
+		qstate->q_obj = &bnx2x_vfq(vf, qid, sp_obj);
+		vfop->state = BNX2X_VFOP_QFLR_DONE;
+
+		DP(BNX2X_MSG_IOV, "VF[%d] qstate during flr was %d\n",
+		   vf->abs_vfid, qstate->q_obj->state);
+
+		if (qstate->q_obj->state != BNX2X_Q_STATE_RESET) {
+			qstate->q_obj->state = BNX2X_Q_STATE_STOPPED;
+			qstate->cmd = BNX2X_Q_CMD_TERMINATE;
+			vfop->rc = bnx2x_queue_state_change(bp, qstate);
+			bnx2x_vfop_finalize(vf, vfop->rc, VFOP_VERIFY_PEND);
+		} else {
+			goto op_done;
+		}
+
+op_err:
+	BNX2X_ERR("QFLR[%d:%d] error: rc %d\n",
+		  vf->abs_vfid, qid, vfop->rc);
+op_done:
+	case BNX2X_VFOP_QFLR_DONE:
+		bnx2x_vfop_end(bp, vf, vfop);
+		return;
+	default:
+		bnx2x_vfop_default(state);
+	}
+op_pending:
+	return;
+}
+
+static int bnx2x_vfop_qflr_cmd(struct bnx2x *bp,
+			       struct bnx2x_virtf *vf,
+			       struct bnx2x_vfop_cmd *cmd,
+>>>>>>> p9x
 			       int qid)
 {
 	int rc;
@@ -1763,12 +2291,15 @@ void bnx2x_vf_handle_filters_eqe(struct bnx2x *bp,
 	smp_mb__before_atomic();
 	clear_bit(BNX2X_FILTER_RX_MODE_PENDING, &vf->filter_state);
 	smp_mb__after_atomic();
+<<<<<<< HEAD
 }
 
 static void bnx2x_vf_handle_rss_update_eqe(struct bnx2x *bp,
 					   struct bnx2x_virtf *vf)
 {
 	vf->rss_conf_obj.raw.clear_pending(&vf->rss_conf_obj.raw);
+=======
+>>>>>>> p9x
 }
 
 int bnx2x_iov_eq_sp_event(struct bnx2x *bp, union event_ring_elem *elem)
@@ -3093,8 +3624,28 @@ alloc_mem_err:
 
 void bnx2x_iov_channel_down(struct bnx2x *bp)
 {
+<<<<<<< HEAD
 	int vf_idx;
 	struct pf_vf_bulletin_content *bulletin;
+=======
+	/* Enable sriov via delayed work. This must be done via delayed work
+	 * because it causes the probe of the vf devices to be run, which invoke
+	 * register_netdevice which must have rtnl lock taken. As we are holding
+	 * the lock right now, that could only work if the probe would not take
+	 * the lock. However, as the probe of the vf may be called from other
+	 * contexts as well (such as passthrough to vm failes) it can't assume
+	 * the lock is being held for it. Using delayed work here allows the
+	 * probe code to simply take the lock (i.e. wait for it to be released
+	 * if it is being held). We only want to do this if the number of VFs
+	 * was set before PF driver was loaded.
+	 */
+	if (IS_SRIOV(bp) && BNX2X_NR_VIRTFN(bp)) {
+		smp_mb__before_atomic();
+		set_bit(BNX2X_SP_RTNL_ENABLE_SRIOV, &bp->sp_rtnl_state);
+		smp_mb__after_atomic();
+		schedule_delayed_work(&bp->sp_rtnl_task, 0);
+	}
+>>>>>>> p9x
 
 	if (!IS_SRIOV(bp))
 		return;

@@ -895,7 +895,11 @@ static inline void perf_ibs_pm_init(void) { }
 
 #endif
 
+<<<<<<< HEAD
 static int
+=======
+static int __cpuinit
+>>>>>>> p9x
 perf_ibs_cpu_notifier(struct notifier_block *self, unsigned long action, void *hcpu)
 {
 	switch (action & ~CPU_TASKS_FROZEN) {
@@ -927,7 +931,11 @@ static __init int amd_ibs_init(void)
 		goto out;
 
 	perf_ibs_pm_init();
+<<<<<<< HEAD
 	cpu_notifier_register_begin();
+=======
+	get_online_cpus();
+>>>>>>> p9x
 	ibs_caps = caps;
 	/* make ibs_caps visible to other cpus: */
 	smp_mb();

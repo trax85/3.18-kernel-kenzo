@@ -127,6 +127,10 @@ enum {
 };
 
 #define INET_DIAG_MAX INET_DIAG_MARK
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 
 /* INET_DIAG_MEM */
 

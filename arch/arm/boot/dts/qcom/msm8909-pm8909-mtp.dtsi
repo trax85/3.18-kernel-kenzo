@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014-2015, 2017, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -116,12 +120,16 @@
 	qcom,cdc-vdd-spkdrv-current = <20000>;
 	qcom,cdc-on-demand-supplies = "cdc-vdd-mic-bias",
 				      "cdc-vdd-spkdrv";
+<<<<<<< HEAD
 	qcom,subsys-name = "modem";
+=======
+>>>>>>> p9x
 };
 
 &wcnss {
 	qcom,wcnss-vadc = <&pm8909_vadc>;
 };
+<<<<<<< HEAD
 
 &soc {
 	i2c@78b6000 {
@@ -130,3 +138,5 @@
 		};
 	};
 };
+=======
+>>>>>>> p9x

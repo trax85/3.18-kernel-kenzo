@@ -204,3 +204,25 @@ int pud_huge(pud_t pud)
 {
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+int pmd_huge_support(void)
+{
+	return 1;
+}
+
+struct page *follow_huge_pmd(struct mm_struct *mm, unsigned long address,
+			     pmd_t *pmdp, int write)
+{
+	struct page *page;
+
+	if (!MACHINE_HAS_HPAGE)
+		return NULL;
+
+	page = pmd_page(*pmdp);
+	if (page)
+		page += ((address & ~HPAGE_MASK) >> PAGE_SHIFT);
+	return page;
+}
+>>>>>>> p9x

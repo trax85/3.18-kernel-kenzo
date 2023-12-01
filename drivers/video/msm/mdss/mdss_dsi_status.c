@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -24,14 +28,25 @@
 #include <linux/kobject.h>
 #include <linux/string.h>
 #include <linux/sysfs.h>
+<<<<<<< HEAD
 #include <linux/interrupt.h>
+=======
+>>>>>>> p9x
 
 #include "mdss_fb.h"
 #include "mdss_dsi.h"
 #include "mdss_panel.h"
 #include "mdss_mdp.h"
 
+<<<<<<< HEAD
 #define STATUS_CHECK_INTERVAL_MS 5000
+=======
+#ifdef CONFIG_MACH_XIAOMI_KENZO
+#define STATUS_CHECK_INTERVAL_MS 2000
+#else
+#define STATUS_CHECK_INTERVAL_MS 5000
+#endif
+>>>>>>> p9x
 #define STATUS_CHECK_INTERVAL_MIN_MS 50
 #define DSI_STATUS_CHECK_INIT -1
 #define DSI_STATUS_CHECK_DISABLE 1
@@ -64,7 +79,11 @@ static void check_dsi_ctrl_status(struct work_struct *work)
 
 	if (mdss_panel_is_power_off(pdsi_status->mfd->panel_power_state) ||
 			pdsi_status->mfd->shutdown_pending) {
+<<<<<<< HEAD
 		pr_debug("%s: panel off\n", __func__);
+=======
+		pr_err("%s: panel off\n", __func__);
+>>>>>>> p9x
 		return;
 	}
 
@@ -95,15 +114,21 @@ irqreturn_t hw_vsync_handler(int irq, void *data)
 	else
 		pr_err("Pstatus data is NULL\n");
 
+<<<<<<< HEAD
 	if (!atomic_read(&ctrl_pdata->te_irq_ready)) {
 		complete_all(&ctrl_pdata->te_irq_comp);
 		atomic_inc(&ctrl_pdata->te_irq_ready);
 	}
+=======
+	if (!atomic_read(&ctrl_pdata->te_irq_ready))
+		atomic_inc(&ctrl_pdata->te_irq_ready);
+>>>>>>> p9x
 
 	return IRQ_HANDLED;
 }
 
 /*
+<<<<<<< HEAD
  * disable_esd_thread() - Cancels work item for the esd check.
  */
 void disable_esd_thread(void)
@@ -114,6 +139,8 @@ void disable_esd_thread(void)
 }
 
 /*
+=======
+>>>>>>> p9x
  * fb_event_callback() - Call back function for the fb_register_client()
  *			 notifying events
  * @self  : notifier block
@@ -139,6 +166,7 @@ static int fb_event_callback(struct notifier_block *self,
 		return NOTIFY_BAD;
 	}
 
+<<<<<<< HEAD
 	/* handle only mdss fb device */
 	if (strncmp("mdssfb", evdata->info->fix.id, 6))
 		return NOTIFY_DONE;
@@ -157,6 +185,18 @@ static int fb_event_callback(struct notifier_block *self,
 		pinfo = &ctrl_pdata->panel_data.panel_info;
 	}
 
+=======
+	mfd = evdata->info->par;
+	ctrl_pdata = container_of(dev_get_platdata(&mfd->pdev->dev),
+				struct mdss_dsi_ctrl_pdata, panel_data);
+	if (!ctrl_pdata) {
+		pr_err("%s: DSI ctrl not available\n", __func__);
+		return NOTIFY_BAD;
+	}
+
+	pinfo = &ctrl_pdata->panel_data.panel_info;
+
+>>>>>>> p9x
 	if ((!(pinfo->esd_check_enabled) &&
 			dsi_status_disable) ||
 			(dsi_status_disable == DSI_STATUS_CHECK_DISABLE)) {
@@ -177,12 +217,19 @@ static int fb_event_callback(struct notifier_block *self,
 			schedule_delayed_work(&pdata->check_status,
 				msecs_to_jiffies(interval));
 			break;
+<<<<<<< HEAD
 		case FB_BLANK_VSYNC_SUSPEND:
 		case FB_BLANK_NORMAL:
 			pr_debug("%s : ESD thread running\n", __func__);
 			break;
 		case FB_BLANK_POWERDOWN:
 		case FB_BLANK_HSYNC_SUSPEND:
+=======
+		case FB_BLANK_POWERDOWN:
+		case FB_BLANK_HSYNC_SUSPEND:
+		case FB_BLANK_VSYNC_SUSPEND:
+		case FB_BLANK_NORMAL:
+>>>>>>> p9x
 			cancel_delayed_work(&pdata->check_status);
 			break;
 		default:
@@ -231,6 +278,7 @@ static int param_set_interval(const char *val, struct kernel_param *kp)
 int __init mdss_dsi_status_init(void)
 {
 	int rc = 0;
+<<<<<<< HEAD
 	struct mdss_util_intf *util = mdss_get_util_intf();
 
 	if (!util) {
@@ -242,6 +290,8 @@ int __init mdss_dsi_status_init(void)
 		pr_info("Display is disabled, not progressing with dsi_init\n");
 		return -ENOTSUPP;
 	}
+=======
+>>>>>>> p9x
 
 	pstatus_data = kzalloc(sizeof(struct dsi_status_data), GFP_KERNEL);
 	if (!pstatus_data) {

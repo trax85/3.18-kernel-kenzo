@@ -1412,11 +1412,14 @@ static int security_context_to_sid_core(const char *scontext, u32 scontext_len,
 	if (!scontext_len)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	/* Copy the string to allow changes and ensure a NUL terminator */
 	scontext2 = kmemdup_nul(scontext, scontext_len, gfp_flags);
 	if (!scontext2)
 		return -ENOMEM;
 
+=======
+>>>>>>> p9x
 	if (!ss_initialized) {
 		int i;
 

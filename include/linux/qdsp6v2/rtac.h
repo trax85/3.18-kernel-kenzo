@@ -14,18 +14,24 @@
 #ifndef __RTAC_H__
 #define __RTAC_H__
 
+<<<<<<< HEAD
 #include <sound/apr_audio-v2.h>
 
+=======
+>>>>>>> p9x
 /* Voice Modes */
 #define RTAC_CVP		0
 #define RTAC_CVS		1
 #define RTAC_VOICE_MODES	2
 
+<<<<<<< HEAD
 #define RTAC_MAX_ACTIVE_DEVICES		4
 #define RTAC_MAX_ACTIVE_POPP		8
 
 #define DEFAULT_APP_TYPE	0x00011130
 
+=======
+>>>>>>> p9x
 enum {
 	ADM_RTAC_CAL,
 	ASM_RTAC_CAL,
@@ -52,6 +58,7 @@ struct rtac_cal_block_data {
 	struct rtac_cal_data		cal_data;
 };
 
+<<<<<<< HEAD
 struct rtac_popp_data {
 	uint32_t	popp;
 	uint32_t	popp_topology;
@@ -74,6 +81,8 @@ struct rtac_adm {
 	struct rtac_adm_data		device[RTAC_MAX_ACTIVE_DEVICES];
 };
 
+=======
+>>>>>>> p9x
 void rtac_add_adm_device(u32 port_id, u32 copp_id, u32 path_id, u32 popp_id,
 			u32 app_type, u32 acdb_dev_id);
 void rtac_remove_adm_device(u32 port_id, u32 copp_id);
@@ -94,5 +103,8 @@ void rtac_copy_voice_payload_to_user(void *payload, u32 payload_size);
 int rtac_clear_mapping(uint32_t cal_type);
 bool rtac_make_afe_callback(uint32_t *payload, u32 payload_size);
 void rtac_set_afe_handle(void *handle);
+<<<<<<< HEAD
 void get_rtac_adm_data(struct rtac_adm *adm_data);
+=======
+>>>>>>> p9x
 #endif

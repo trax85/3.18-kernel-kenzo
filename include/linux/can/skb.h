@@ -80,4 +80,8 @@ static inline struct sk_buff *can_create_echo_skb(struct sk_buff *skb)
 	return skb;
 }
 
+<<<<<<< HEAD
 #endif /* !_CAN_SKB_H */
+=======
+#endif /* CAN_SKB_H */
+>>>>>>> p9x

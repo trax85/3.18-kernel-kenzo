@@ -189,11 +189,19 @@ struct dmx_ts_feed {
 		    enum dmx_ts_pes pes_type,
 		    size_t circular_buffer_size,
 		    struct timespec timeout);
+<<<<<<< HEAD
 	int (*start_filtering)(struct dmx_ts_feed *feed);
 	int (*stop_filtering)(struct dmx_ts_feed *feed);
 	int (*set_video_codec)(struct dmx_ts_feed *feed,
 				enum dmx_video_codec video_codec);
 	int (*set_idx_params)(struct dmx_ts_feed *feed,
+=======
+	int (*start_filtering) (struct dmx_ts_feed* feed);
+	int (*stop_filtering) (struct dmx_ts_feed* feed);
+	int (*set_video_codec) (struct dmx_ts_feed *feed,
+				enum dmx_video_codec video_codec);
+	int (*set_idx_params) (struct dmx_ts_feed *feed,
+>>>>>>> p9x
 				struct dmx_indexing_params *idx_params);
 	int (*get_decoder_buff_status)(
 			struct dmx_ts_feed *feed,
@@ -211,7 +219,11 @@ struct dmx_ts_feed {
 				struct dmx_secure_mode *sec_mode);
 	int (*set_cipher_ops)(struct dmx_ts_feed *feed,
 				struct dmx_cipher_operations *cipher_ops);
+<<<<<<< HEAD
 	int (*oob_command)(struct dmx_ts_feed *feed,
+=======
+	int (*oob_command) (struct dmx_ts_feed *feed,
+>>>>>>> p9x
 			struct dmx_oob_command *cmd);
 	int (*ts_insertion_init)(struct dmx_ts_feed *feed);
 	int (*ts_insertion_terminate)(struct dmx_ts_feed *feed);
@@ -251,6 +263,7 @@ struct dmx_section_feed {
 	u8 secbuf_base[DMX_MAX_SECFEED_SIZE];
 	u16 secbufp, seclen, tsfeedp;
 
+<<<<<<< HEAD
 	int (*set)(struct dmx_section_feed *feed, u16 pid,
 			size_t circular_buffer_size, int check_crc);
 	int (*allocate_filter)(struct dmx_section_feed *feed,
@@ -259,6 +272,18 @@ struct dmx_section_feed {
 			       struct dmx_section_filter *filter);
 	int (*start_filtering)(struct dmx_section_feed *feed);
 	int (*stop_filtering)(struct dmx_section_feed *feed);
+=======
+	int (*set) (struct dmx_section_feed* feed,
+		    u16 pid,
+		    size_t circular_buffer_size,
+		    int check_crc);
+	int (*allocate_filter) (struct dmx_section_feed* feed,
+				struct dmx_section_filter** filter);
+	int (*release_filter) (struct dmx_section_feed* feed,
+			       struct dmx_section_filter* filter);
+	int (*start_filtering) (struct dmx_section_feed* feed);
+	int (*stop_filtering) (struct dmx_section_feed* feed);
+>>>>>>> p9x
 	int (*data_ready_cb)(struct dmx_section_feed *feed,
 			dmx_section_data_ready_cb callback);
 	int (*notify_data_read)(struct dmx_section_filter *filter,
@@ -267,7 +292,11 @@ struct dmx_section_feed {
 				struct dmx_secure_mode *sec_mode);
 	int (*set_cipher_ops)(struct dmx_section_feed *feed,
 				struct dmx_cipher_operations *cipher_ops);
+<<<<<<< HEAD
 	int (*oob_command)(struct dmx_section_feed *feed,
+=======
+	int (*oob_command) (struct dmx_section_feed *feed,
+>>>>>>> p9x
 				struct dmx_oob_command *cmd);
 	int (*get_scrambling_bits)(struct dmx_section_feed *feed, u8 *value);
 	int (*flush_buffer)(struct dmx_section_feed *feed, size_t length);
@@ -360,6 +389,7 @@ struct dmx_demux {
 	int dvr_input_protected;
 	struct dentry *debugfs_demux_dir; /* debugfs dir */
 
+<<<<<<< HEAD
 	int (*open)(struct dmx_demux *demux);
 	int (*close)(struct dmx_demux *demux);
 	int (*write)(struct dmx_demux *demux,
@@ -367,6 +397,13 @@ struct dmx_demux {
 			size_t count);
 	int (*allocate_ts_feed)(struct dmx_demux *demux,
 				 struct dmx_ts_feed **feed,
+=======
+	int (*open) (struct dmx_demux* demux);
+	int (*close) (struct dmx_demux* demux);
+	int (*write) (struct dmx_demux *demux, const char *buf, size_t count);
+	int (*allocate_ts_feed) (struct dmx_demux* demux,
+				 struct dmx_ts_feed** feed,
+>>>>>>> p9x
 				 dmx_ts_cb callback);
 	int (*release_ts_feed)(struct dmx_demux *demux,
 				struct dmx_ts_feed *feed);
@@ -388,7 +425,21 @@ struct dmx_demux {
 
 	int (*get_caps)(struct dmx_demux *demux, struct dmx_caps *caps);
 
+<<<<<<< HEAD
 	int (*set_source)(struct dmx_demux *demux, const dmx_source_t *src);
+=======
+	int (*set_source) (struct dmx_demux *demux, const dmx_source_t *src);
+
+	int (*set_tsp_format) (struct dmx_demux *demux,
+				enum dmx_tsp_format_t tsp_format);
+
+	int (*set_playback_mode) (struct dmx_demux *demux,
+				 enum dmx_playback_mode_t mode,
+				 dmx_ts_fullness ts_fullness_callback,
+				 dmx_section_fullness sec_fullness_callback);
+
+	int (*write_cancel) (struct dmx_demux *demux);
+>>>>>>> p9x
 
 	int (*set_tsp_format)(struct dmx_demux *demux,
 				enum dmx_tsp_format_t tsp_format);
@@ -403,6 +454,7 @@ struct dmx_demux {
 	int (*get_stc)(struct dmx_demux *demux, unsigned int num,
 			u64 *stc, unsigned int *base);
 
+<<<<<<< HEAD
 	int (*map_buffer)(struct dmx_demux *demux,
 			struct dmx_buffer *dmx_buffer,
 			void **priv_handle, void **mem);
@@ -411,6 +463,16 @@ struct dmx_demux {
 			void *priv_handle);
 
 	int (*get_tsp_size)(struct dmx_demux *demux);
+=======
+	int (*map_buffer) (struct dmx_demux *demux,
+			struct dmx_buffer *dmx_buffer,
+			void **priv_handle, void **mem);
+
+	int (*unmap_buffer) (struct dmx_demux *demux,
+			void *priv_handle);
+
+	int (*get_tsp_size) (struct dmx_demux *demux);
+>>>>>>> p9x
 };
 
 #endif /* #ifndef __DEMUX_H */

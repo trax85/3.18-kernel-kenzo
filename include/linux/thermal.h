@@ -66,6 +66,9 @@
 #define DEFAULT_THERMAL_GOVERNOR       "power_allocator"
 #endif
 
+/* Default temperature */
+#define DEFAULT_TEMP 40
+
 struct thermal_zone_device;
 struct thermal_cooling_device;
 struct thermal_instance;
@@ -182,6 +185,7 @@ struct sensor_info {
 	struct completion sysfs_notify_complete;
 };
 
+<<<<<<< HEAD
 /**
  * struct thermal_zone_device - structure for a thermal zone
  * @id:		unique id number for each thermal zone
@@ -219,6 +223,8 @@ struct sensor_info {
  * @node:	node in thermal_tz_list (in thermal_core.c)
  * @poll_queue:	delayed work for polling
  */
+=======
+>>>>>>> p9x
 struct thermal_zone_device {
 	int id;
 	char type[THERMAL_NAME_LENGTH];
@@ -466,6 +472,7 @@ int sensor_activate_trip(uint32_t sensor_id, struct sensor_threshold *threshold,
 int thermal_sensor_trip(struct thermal_zone_device *tz,
 		enum thermal_trip_type trip, long temp);
 
+<<<<<<< HEAD
 #else
 static inline bool cdev_is_power_actor(struct thermal_cooling_device *cdev)
 { return false; }
@@ -542,6 +549,9 @@ static inline int thermal_sensor_trip(struct thermal_zone_device *tz,
 #endif /* CONFIG_THERMAL */
 
 #if defined(CONFIG_NET) && IS_ENABLED(CONFIG_THERMAL)
+=======
+#ifdef CONFIG_NET
+>>>>>>> p9x
 extern int thermal_generate_netlink_event(struct thermal_zone_device *tz,
 						enum events event);
 #else

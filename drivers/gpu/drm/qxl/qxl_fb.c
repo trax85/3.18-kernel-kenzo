@@ -94,8 +94,11 @@ static void qxl_fb_dirty_flush(struct fb_info *info)
 
 	/* TODO: hard coding 32 bpp */
 	int stride = qfbdev->qfb.base.pitches[0];
+<<<<<<< HEAD
 
 	spin_lock_irqsave(&qfbdev->dirty.lock, flags);
+=======
+>>>>>>> p9x
 
 	x1 = qfbdev->dirty.x1;
 	x2 = qfbdev->dirty.x2;

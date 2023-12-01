@@ -408,8 +408,12 @@ SMB2_negotiate(const unsigned int xid, struct cifs_ses *ses)
 	}
 	server->dialect = le16_to_cpu(rsp->DialectRevision);
 
+<<<<<<< HEAD
 	/* SMB2 only has an extended negflavor */
 	server->negflavor = CIFS_NEGFLAVOR_EXTENDED;
+=======
+	server->maxBuf = le32_to_cpu(rsp->MaxTransactSize);
+>>>>>>> p9x
 	/* set it to the maximum buffer size value we can send with 1 credit */
 	server->maxBuf = min_t(unsigned int, le32_to_cpu(rsp->MaxTransactSize),
 			       SMB2_MAX_BUFFER_SIZE);
@@ -2309,8 +2313,13 @@ SMB2_query_directory(const unsigned int xid, struct cifs_tcon *tcon,
 		if (rc == -ENODATA && rsp->hdr.Status == STATUS_NO_MORE_FILES) {
 			srch_inf->endOfSearch = true;
 			rc = 0;
+<<<<<<< HEAD
 		} else
 			cifs_stats_fail_inc(tcon, SMB2_QUERY_DIRECTORY_HE);
+=======
+		}
+		cifs_stats_fail_inc(tcon, SMB2_QUERY_DIRECTORY_HE);
+>>>>>>> p9x
 		goto qdir_exit;
 	}
 

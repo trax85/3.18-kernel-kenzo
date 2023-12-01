@@ -192,7 +192,8 @@ static int usbhsf_pkt_handler(struct usbhs_pipe *pipe, int type)
 		goto __usbhs_pkt_handler_end;
 	}
 
-	ret = func(pkt, &is_done);
+	if (likely(func))
+		ret = func(pkt, &is_done);
 
 	if (is_done)
 		__usbhsf_pkt_del(pkt);
@@ -286,11 +287,26 @@ static void usbhsf_fifo_clear(struct usbhs_pipe *pipe,
 			      struct usbhs_fifo *fifo)
 {
 	struct usbhs_priv *priv = usbhs_pipe_to_priv(pipe);
+	int ret = 0;
 
-	if (!usbhs_pipe_is_dcp(pipe))
-		usbhsf_fifo_barrier(priv, fifo);
+	if (!usbhs_pipe_is_dcp(pipe)) {
+		/*
+		 * This driver checks the pipe condition first to avoid -EBUSY
+		 * from usbhsf_fifo_barrier() with about 10 msec delay in
+		 * the interrupt handler if the pipe is RX direction and empty.
+		 */
+		if (usbhs_pipe_is_dir_in(pipe))
+			ret = usbhs_pipe_is_accessible(pipe);
+		if (!ret)
+			ret = usbhsf_fifo_barrier(priv, fifo);
+	}
 
-	usbhs_write(priv, fifo->ctr, BCLR);
+	/*
+	 * if non-DCP pipe, this driver should set BCLR when
+	 * usbhsf_fifo_barrier() returns 0.
+	 */
+	if (!ret)
+		usbhs_write(priv, fifo->ctr, BCLR);
 }
 
 static int usbhsf_fifo_rcv_len(struct usbhs_priv *priv,
@@ -846,9 +862,9 @@ static void xfer_work(struct work_struct *work)
 
 	usbhs_pipe_running(pipe, 1);
 	usbhs_pipe_set_trans_count_if_bulk(pipe, pkt->trans);
-	usbhs_pipe_enable(pipe);
-	usbhsf_dma_start(pipe, fifo);
 	dma_async_issue_pending(chan);
+	usbhsf_dma_start(pipe, fifo);
+	usbhs_pipe_enable(pipe);
 }
 
 /*
@@ -917,6 +933,7 @@ static int usbhsf_dma_push_done(struct usbhs_pkt *pkt, int *is_done)
 
 	pkt->actual += pkt->trans;
 
+<<<<<<< HEAD
 	if (pkt->actual < pkt->length)
 		*is_done = 0;		/* there are remainder data */
 	else if (is_short)
@@ -924,6 +941,9 @@ static int usbhsf_dma_push_done(struct usbhs_pkt *pkt, int *is_done)
 	else
 		*is_done = !pkt->zero;	/* send zero packet? */
 
+=======
+	*is_done = !pkt->zero;	/* send zero packet ? */
+>>>>>>> p9x
 	usbhs_pipe_running(pipe, !*is_done);
 
 	usbhsf_dma_stop(pipe, pipe->fifo);
@@ -999,6 +1019,7 @@ static int usbhsf_dma_try_pop(struct usbhs_pkt *pkt, int *is_done)
 
 	pkt->trans = len;
 
+	usbhsf_tx_irq_ctrl(pipe, 0);
 	INIT_WORK(&pkt->work, xfer_work);
 	schedule_work(&pkt->work);
 

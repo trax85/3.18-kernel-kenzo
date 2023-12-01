@@ -164,6 +164,7 @@ static inline int netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 	return __netlink_dump_start(ssk, skb, nlh, control);
 }
 
+<<<<<<< HEAD
 struct netlink_tap {
 	struct net_device *dev;
 	struct module *module;
@@ -173,6 +174,8 @@ struct netlink_tap {
 extern int netlink_add_tap(struct netlink_tap *nt);
 extern int netlink_remove_tap(struct netlink_tap *nt);
 
+=======
+>>>>>>> p9x
 bool __netlink_ns_capable(const struct netlink_skb_parms *nsp,
 			  struct user_namespace *ns, int cap);
 bool netlink_ns_capable(const struct sk_buff *skb,

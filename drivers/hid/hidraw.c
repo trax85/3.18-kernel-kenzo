@@ -331,6 +331,7 @@ static int hidraw_fasync(int fd, struct file *file, int on)
 static void drop_ref(struct hidraw *hidraw, int exists_bit)
 {
 	if (exists_bit) {
+<<<<<<< HEAD
 		hidraw->exist = 0;
 		if (hidraw->open) {
 			hid_hw_close(hidraw->hid);
@@ -350,6 +351,20 @@ static void drop_ref(struct hidraw *hidraw, int exists_bit)
 			hid_hw_power(hidraw->hid, PM_HINT_NORMAL);
 			hid_hw_close(hidraw->hid);
 		}
+=======
+		hid_hw_close(hidraw->hid);
+		hidraw->exist = 0;
+		if (hidraw->open)
+			wake_up_interruptible(&hidraw->wait);
+	} else {
+		--hidraw->open;
+	}
+
+	if (!hidraw->open && !hidraw->exist) {
+		device_destroy(hidraw_class, MKDEV(hidraw_major, hidraw->minor));
+		hidraw_table[hidraw->minor] = NULL;
+		kfree(hidraw);
+>>>>>>> p9x
 	}
 }
 
@@ -357,13 +372,19 @@ static int hidraw_release(struct inode * inode, struct file * file)
 {
 	unsigned int minor = iminor(inode);
 	struct hidraw_list *list = file->private_data;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> p9x
 
 	mutex_lock(&minors_lock);
 
 	spin_lock_irqsave(&hidraw_table[minor]->list_lock, flags);
 	list_del(&list->node);
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&hidraw_table[minor]->list_lock, flags);
+=======
+>>>>>>> p9x
 	kfree(list);
 
 	drop_ref(hidraw_table[minor], 0);

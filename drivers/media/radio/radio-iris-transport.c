@@ -1,7 +1,13 @@
 /*
+<<<<<<< HEAD
  *  QTI's FM Shared Memory Transport Driver
  *
  *  FM HCI_SMD ( FM HCI Shared Memory Driver) is QTI's Shared memory driver
+=======
+ *  Qualcomm's FM Shared Memory Transport Driver
+ *
+ *  FM HCI_SMD ( FM HCI Shared Memory Driver) is Qualcomm's Shared memory driver
+>>>>>>> p9x
  *  for the HCI protocol. This file is based on drivers/bluetooth/hci_vhci.c
  *
  *  Copyright (c) 2000-2001, 2011-2012, 2014-2015 The Linux Foundation.
@@ -38,18 +44,30 @@ struct radio_data {
 	struct smd_channel  *fm_channel;
 };
 struct radio_data hs;
+<<<<<<< HEAD
 DEFINE_MUTEX(fm_smd_enable);
 static int fmsmd_set;
 static bool chan_opened;
+=======
+static DEFINE_MUTEX(fm_smd_enable);
+static int fmsmd_set;
+>>>>>>> p9x
 static int hcismd_fm_set_enable(const char *val, struct kernel_param *kp);
 module_param_call(fmsmd_set, hcismd_fm_set_enable, NULL, &fmsmd_set, 0644);
 static struct work_struct *reset_worker;
 static void radio_hci_smd_deregister(void);
+<<<<<<< HEAD
 static void radio_hci_smd_exit(void);
 
 static void radio_hci_smd_destruct(struct radio_hci_dev *hdev)
 {
 	radio_hci_unregister_dev();
+=======
+
+static void radio_hci_smd_destruct(struct radio_hci_dev *hdev)
+{
+	radio_hci_unregister_dev(hs.hdev);
+>>>>>>> p9x
 }
 
 
@@ -60,8 +78,11 @@ static void radio_hci_smd_recv_event(unsigned long temp)
 	struct sk_buff *skb;
 	unsigned  char *buf;
 	struct radio_data *hsmd = &hs;
+<<<<<<< HEAD
 	FMDBG("");
 
+=======
+>>>>>>> p9x
 	len = smd_read_avail(hsmd->fm_channel);
 
 	while (len) {
@@ -95,7 +116,10 @@ static void radio_hci_smd_recv_event(unsigned long temp)
 static int radio_hci_smd_send_frame(struct sk_buff *skb)
 {
 	int len = 0;
+<<<<<<< HEAD
 	FMDBG("skb %pK", skb);
+=======
+>>>>>>> p9x
 
 	len = smd_write(hs.fm_channel, skb->data, skb->len);
 	if (len < skb->len) {
@@ -134,8 +158,12 @@ static void send_disable_event(struct work_struct *worker)
 
 static void radio_hci_smd_notify_cmd(void *data, unsigned int event)
 {
+<<<<<<< HEAD
 	struct radio_hci_dev *hdev = (struct radio_hci_dev *)data;
 	FMDBG("data %p event %u", data, event);
+=======
+	struct radio_hci_dev *hdev = hs.hdev;
+>>>>>>> p9x
 
 	if (!hdev) {
 		FMDERR("Frame for unknown HCI device (hdev=NULL)");
@@ -166,7 +194,10 @@ static int radio_hci_smd_register_dev(struct radio_data *hsmd)
 {
 	struct radio_hci_dev *hdev;
 	int rc;
+<<<<<<< HEAD
 	FMDBG("hsmd: %pK", hsmd);
+=======
+>>>>>>> p9x
 
 	if (hsmd == NULL)
 		return -ENODEV;
@@ -175,11 +206,19 @@ static int radio_hci_smd_register_dev(struct radio_data *hsmd)
 	if (hdev == NULL)
 		return -ENODEV;
 
+<<<<<<< HEAD
+=======
+	hsmd->hdev = hdev;
+>>>>>>> p9x
 	tasklet_init(&hsmd->rx_task, radio_hci_smd_recv_event,
 		(unsigned long) hsmd);
 	hdev->send  = radio_hci_smd_send_frame;
 	hdev->destruct = radio_hci_smd_destruct;
+<<<<<<< HEAD
 	hdev->close_smd = radio_hci_smd_exit;
+=======
+	hdev->close_smd = radio_hci_smd_deregister;
+>>>>>>> p9x
 
 	/* Open the SMD Channel and device and register the callback function */
 	rc = smd_named_open_on_edge("APPS_FM", SMD_APPS_WCNSS,
@@ -202,18 +241,24 @@ static int radio_hci_smd_register_dev(struct radio_data *hsmd)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	hsmd->hdev = hdev;
+=======
+>>>>>>> p9x
 	return 0;
 }
 
 static void radio_hci_smd_deregister(void)
 {
+<<<<<<< HEAD
 	FMDBG("");
 
 	radio_hci_unregister_dev();
 	kfree(hs.hdev);
 	hs.hdev = NULL;
 
+=======
+>>>>>>> p9x
 	smd_close(hs.fm_channel);
 	hs.fm_channel = 0;
 	fmsmd_set = 0;
@@ -221,6 +266,7 @@ static void radio_hci_smd_deregister(void)
 
 static int radio_hci_smd_init(void)
 {
+<<<<<<< HEAD
 	int ret;
 
 	if (chan_opened) {
@@ -237,10 +283,14 @@ static int radio_hci_smd_init(void)
 	}
 	chan_opened = true;
 	return ret;
+=======
+	return radio_hci_smd_register_dev(&hs);
+>>>>>>> p9x
 }
 
 static void radio_hci_smd_exit(void)
 {
+<<<<<<< HEAD
 	if (!chan_opened) {
 		FMDBG("Channel already closed");
 		return;
@@ -249,12 +299,18 @@ static void radio_hci_smd_exit(void)
 	/* this should be called with fm_smd_enable lock held */
 	radio_hci_smd_deregister();
 	chan_opened = false;
+=======
+	radio_hci_smd_deregister();
+>>>>>>> p9x
 }
 
 static int hcismd_fm_set_enable(const char *val, struct kernel_param *kp)
 {
 	int ret = 0;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	mutex_lock(&fm_smd_enable);
 	ret = param_set_int(val, kp);
 	if (ret)
@@ -275,4 +331,8 @@ done:
 	return ret;
 }
 MODULE_DESCRIPTION("FM SMD driver");
+<<<<<<< HEAD
+=======
+MODULE_AUTHOR("Ankur Nandwani <ankurn@codeaurora.org>");
+>>>>>>> p9x
 MODULE_LICENSE("GPL v2");

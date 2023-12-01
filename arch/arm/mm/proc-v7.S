@@ -77,14 +77,23 @@ ENDPROC(cpu_v7_do_idle)
 ENTRY(cpu_v7_dcache_clean_area)
 	ALT_SMP(W(nop))			@ MP extensions imply L1 PTW
 	ALT_UP_B(1f)
+<<<<<<< HEAD
 	ret	lr
+=======
+	mov	pc, lr
+>>>>>>> p9x
 1:	dcache_line_size r2, r3
 2:	mcr	p15, 0, r0, c7, c10, 1		@ clean D entry
 	add	r0, r0, r2
 	subs	r1, r1, r2
 	bhi	2b
+<<<<<<< HEAD
 	dsb	ishst
 	ret	lr
+=======
+	dsb
+	mov	pc, lr
+>>>>>>> p9x
 ENDPROC(cpu_v7_dcache_clean_area)
 
 	string	cpu_v7_name, "ARMv7 Processor"
@@ -98,6 +107,7 @@ ENTRY(cpu_v7_do_suspend)
 	stmfd	sp!, {r4 - r10, lr}
 	mrc	p15, 0, r4, c13, c0, 0	@ FCSE/PID
 	mrc	p15, 0, r5, c13, c0, 3	@ User r/o thread ID
+<<<<<<< HEAD
 	stmia	r0!, {r4 - r5}
 #ifdef CONFIG_MMU
 	mrc	p15, 0, r6, c3, c0, 0	@ Domain ID
@@ -106,12 +116,25 @@ ENTRY(cpu_v7_do_suspend)
 #else
 	mrc	p15, 0, r7, c2, c0, 1	@ TTB 1
 #endif
+=======
+#ifdef CONFIG_ARM_LPAE
+	mrrc	p15, 1, r6, r7, c2	@ TTB 1
+#else
+	mrc	p15, 0, r7, c2, c0, 1	@ TTB 1
+#endif
+	stmia	r0!,  {r4-r7}
+	mrc	p15, 0, r7, c3, c0, 0	@ Domain ID
+>>>>>>> p9x
 	mrc	p15, 0, r11, c2, c0, 2	@ TTB control register
 #endif
 	mrc	p15, 0, r8, c1, c0, 0	@ Control register
 	mrc	p15, 0, r9, c1, c0, 1	@ Auxiliary control register
 	mrc	p15, 0, r10, c1, c0, 2	@ Co-processor access control
+<<<<<<< HEAD
 	stmia	r0, {r5 - r11}
+=======
+	stmia	r0, {r7 - r11}
+>>>>>>> p9x
 	ldmfd	sp!, {r4 - r10, pc}
 ENDPROC(cpu_v7_do_suspend)
 
@@ -119,9 +142,10 @@ ENTRY(cpu_v7_do_resume)
 	mov	ip, #0
 	mcr	p15, 0, ip, c7, c5, 0	@ invalidate I cache
 	mcr	p15, 0, ip, c13, c0, 1	@ set reserved context ID
-	ldmia	r0!, {r4 - r5}
+	ldmia	r0!, {r4 - r7}
 	mcr	p15, 0, r4, c13, c0, 0	@ FCSE/PID
 	mcr	p15, 0, r5, c13, c0, 3	@ User r/o thread ID
+<<<<<<< HEAD
 	ldmia	r0, {r5 - r11}
 #ifdef CONFIG_MMU
 	mcr	p15, 0, ip, c8, c7, 0	@ invalidate TLBs
@@ -129,12 +153,22 @@ ENTRY(cpu_v7_do_resume)
 #ifdef CONFIG_ARM_LPAE
 	mcrr	p15, 0, r1, ip, c2	@ TTB 0
 	mcrr	p15, 1, r5, r7, c2	@ TTB 1
+=======
+#ifdef CONFIG_ARM_LPAE
+	mcrr	p15, 0, r1, ip, c2	@ TTB 0
+	mcrr	p15, 1, r6, r7, c2	@ TTB 1
+>>>>>>> p9x
 #else
 	ALT_SMP(orr	r1, r1, #TTB_FLAGS_SMP)
 	ALT_UP(orr	r1, r1, #TTB_FLAGS_UP)
 	mcr	p15, 0, r1, c2, c0, 0	@ TTB 0
 	mcr	p15, 0, r7, c2, c0, 1	@ TTB 1
 #endif
+<<<<<<< HEAD
+=======
+	ldmia	r0!, {r7 - r11}
+	mcr	p15, 0, r7, c3, c0, 0	@ Domain ID
+>>>>>>> p9x
 	mcr	p15, 0, r11, c2, c0, 2	@ TTB control register
 	ldr	r4, =PRRR		@ PRRR
 	ldr	r5, =NMRR		@ NMRR
@@ -250,8 +284,12 @@ __v7_cr7mp_setup:
 __v7_ca7mp_setup:
 __v7_ca12mp_setup:
 __v7_ca15mp_setup:
+<<<<<<< HEAD
 __v7_b15mp_setup:
 __v7_ca17mp_setup:
+=======
+__v7_ca53mp_setup:
+>>>>>>> p9x
 	mov	r10, #0
 1:
 #ifdef CONFIG_SMP
@@ -416,6 +454,34 @@ __v7_setup:
 	mcr	p15, 0, r3, c10, c2, 0		@ write PRRR
 	mcr	p15, 0, r6, c10, c2, 1		@ write NMRR
 #endif
+<<<<<<< HEAD
+=======
+
+#if defined(CONFIG_ARCH_MSM_SCORPION) && !defined(CONFIG_MSM_SMP)
+	mov     r0, #0x33
+	mcr     p15, 3, r0, c15, c0, 3          @ set L2CR1
+#endif
+#if defined (CONFIG_ARCH_MSM_SCORPION)
+	mrc     p15, 0, r0, c1, c0, 1           @ read ACTLR
+#ifdef CONFIG_CPU_CACHE_ERR_REPORT
+	orr     r0, r0, #0x37                   @ turn on L1/L2 error reporting
+#else
+	bic     r0, r0, #0x37
+#endif
+#if defined (CONFIG_ARCH_MSM_SCORPIONMP)
+	orr    r0, r0, #0x1 << 24     @ optimal setting for Scorpion MP
+#endif
+#ifndef CONFIG_ARCH_MSM_KRAIT
+	mcr     p15, 0, r0, c1, c0, 1           @ write ACTLR
+#endif
+#endif
+#if defined (CONFIG_ARCH_MSM_SCORPIONMP)
+	mrc     p15, 3, r0, c15, c0, 2  @ optimal setting for Scorpion MP
+	orr         r0, r0, #0x1 << 21
+	mcr     p15, 3, r0, c15, c0, 2
+#endif
+
+>>>>>>> p9x
 	dsb					@ Complete invalidations
 #ifndef CONFIG_ARM_THUMBEE
 	mrc	p15, 0, r0, c0, c1, 0		@ read ID_PFR0 for ThumbEE
@@ -596,6 +662,16 @@ __krait_proc_info:
 	 */
 	__v7_proc __krait_proc_info, __v7_setup, hwcaps = HWCAP_IDIV | HWCAP_VFPv4
 	.size	__krait_proc_info, . - __krait_proc_info
+
+	/*
+	 * ARM Ltd. Cortex A53 processor.
+	 */
+	.type	__v7_ca53mp_proc_info, #object
+__v7_ca53mp_proc_info:
+	.long	0x410fd030
+	.long	0xff0ffff0
+	__v7_proc __v7_ca53mp_setup
+	.size	__v7_ca53mp_proc_info, . - __v7_ca53mp_proc_info
 
 	/*
 	 * Match any ARMv7 processor core.

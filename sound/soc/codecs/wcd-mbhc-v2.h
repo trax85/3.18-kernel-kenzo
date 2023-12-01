@@ -242,12 +242,20 @@ struct wcd_mbhc_moisture_cfg {
 	enum mbhc_hs_pullup_iref m_iref_ctl;
 };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 struct wcd_mbhc_config {
 	bool read_fw_bin;
 	void *calibration;
 	bool detect_extn_cable;
 	bool mono_stero_detection;
+<<<<<<< HEAD
 	bool (*swap_gnd_mic)(struct snd_soc_codec *codec);
+=======
+	bool (*swap_gnd_mic) (struct snd_soc_codec *codec);
+>>>>>>> p9x
 	bool hs_ext_micbias;
 	bool gnd_det_en;
 	int key_code[WCD_MBHC_KEYCODE_NUM];
@@ -314,6 +322,7 @@ do {                                                    \
 	}                                               \
 } while (0)
 
+<<<<<<< HEAD
 #define WCD_MBHC_REG_READ(function, val)	        \
 do {                                                    \
 	if (mbhc->wcd_mbhc_regs[function].reg) {        \
@@ -322,6 +331,16 @@ do {                                                    \
 		(mbhc->wcd_mbhc_regs[function].mask)) >> \
 		(mbhc->wcd_mbhc_regs[function].offset)); \
 	}                                               \
+=======
+#define WCD_MBHC_REG_READ(function, val)			\
+do {								\
+	if (mbhc->wcd_mbhc_regs[function].reg) {		\
+		val = (((snd_soc_read(mbhc->codec,		\
+		mbhc->wcd_mbhc_regs[function].reg)) &		\
+		(mbhc->wcd_mbhc_regs[function].mask)) >>	\
+		(mbhc->wcd_mbhc_regs[function].offset));	\
+	}							\
+>>>>>>> p9x
 } while (0)
 
 struct wcd_mbhc_cb {

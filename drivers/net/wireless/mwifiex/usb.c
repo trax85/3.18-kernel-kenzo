@@ -459,7 +459,10 @@ static int mwifiex_usb_suspend(struct usb_interface *intf, pm_message_t message)
 	 * 'suspended' state and a 'disconnect' one.
 	 */
 	adapter->is_suspended = true;
+<<<<<<< HEAD
 	adapter->hs_enabling = false;
+=======
+>>>>>>> p9x
 
 	if (atomic_read(&card->rx_cmd_urb_pending) && card->rx_cmd.urb)
 		usb_kill_urb(card->rx_cmd.urb);
@@ -578,7 +581,10 @@ static struct usb_driver mwifiex_usb_driver = {
 	.id_table = mwifiex_usb_table,
 	.suspend = mwifiex_usb_suspend,
 	.resume = mwifiex_usb_resume,
+<<<<<<< HEAD
 	.soft_unbind = 1,
+=======
+>>>>>>> p9x
 };
 
 static int mwifiex_usb_tx_init(struct mwifiex_adapter *adapter)

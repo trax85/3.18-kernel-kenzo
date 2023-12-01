@@ -1,6 +1,7 @@
 #ifndef __OF_RESERVED_MEM_H
 #define __OF_RESERVED_MEM_H
 
+<<<<<<< HEAD
 struct device;
 struct of_phandle_args;
 struct reserved_mem_ops;
@@ -32,16 +33,29 @@ typedef int (*reservedmem_of_init_fn)(struct reserved_mem *rmem);
 int of_reserved_mem_device_init(struct device *dev);
 void of_reserved_mem_device_release(struct device *dev);
 
+=======
+struct reserved_mem {
+	const char			*name;
+	unsigned long			fdt_node;
+	phys_addr_t			base;
+	phys_addr_t			size;
+};
+
+#ifdef CONFIG_OF_RESERVED_MEM
+>>>>>>> p9x
 void fdt_init_reserved_mem(void);
 void fdt_reserved_mem_save_node(unsigned long node, const char *uname,
 			       phys_addr_t base, phys_addr_t size);
 #else
+<<<<<<< HEAD
 static inline int of_reserved_mem_device_init(struct device *dev)
 {
 	return -ENOSYS;
 }
 static inline void of_reserved_mem_device_release(struct device *pdev) { }
 
+=======
+>>>>>>> p9x
 static inline void fdt_init_reserved_mem(void) { }
 static inline void fdt_reserved_mem_save_node(unsigned long node,
 		const char *uname, phys_addr_t base, phys_addr_t size) { }

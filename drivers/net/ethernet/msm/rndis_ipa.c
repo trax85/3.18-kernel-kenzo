@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2016, 2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, 2017 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -28,9 +32,12 @@
 #include <linux/rndis_ipa.h>
 #include <linux/workqueue.h>
 
+<<<<<<< HEAD
 #define CREATE_TRACE_POINTS
 #include "rndis_ipa_trace.h"
 
+=======
+>>>>>>> p9x
 #define DRV_NAME "RNDIS_IPA"
 #define DEBUGFS_DIR_NAME "rndis_ipa"
 #define DEBUGFS_AGGR_DIR_NAME "rndis_ipa_aggregation"
@@ -41,7 +48,11 @@
 #define IPA_TO_USB_CLIENT IPA_CLIENT_USB_CONS
 #define INACTIVITY_MSEC_DELAY 100
 #define DEFAULT_OUTSTANDING_HIGH 64
+<<<<<<< HEAD
 #define DEFAULT_OUTSTANDING_LOW 48
+=======
+#define DEFAULT_OUTSTANDING_LOW 32
+>>>>>>> p9x
 #define DEBUGFS_TEMP_BUF_SIZE 4
 #define RNDIS_IPA_PKT_TYPE 0x00000001
 #define RNDIS_IPA_DFLT_RT_HDL 0
@@ -170,7 +181,10 @@ enum rndis_ipa_operation {
  * This callback shall be called by the Netdev once the Netdev internal
  * state is changed to RNDIS_IPA_CONNECTED_AND_UP
  * @xmit_error_delayed_work: work item for cases where IPA driver Tx fails
+<<<<<<< HEAD
  * @state_lock: used to protect the state variable.
+=======
+>>>>>>> p9x
  */
 struct rndis_ipa_dev {
 	struct net_device *net;
@@ -198,7 +212,10 @@ struct rndis_ipa_dev {
 	u8 device_ethaddr[ETH_ALEN];
 	void (*device_ready_notify)(void);
 	struct delayed_work xmit_error_delayed_work;
+<<<<<<< HEAD
 	spinlock_t state_lock; /* Spinlock for the state variable.*/
+=======
+>>>>>>> p9x
 };
 
 /**
@@ -257,7 +274,11 @@ static ssize_t rndis_ipa_debugfs_aggr_write(struct file *file,
 static ssize_t rndis_ipa_debugfs_atomic_read(struct file *file,
 		char __user *ubuf, size_t count, loff_t *ppos);
 static void rndis_ipa_dump_skb(struct sk_buff *skb);
+<<<<<<< HEAD
 static void rndis_ipa_debugfs_init(struct rndis_ipa_dev *rndis_ipa_ctx);
+=======
+static int rndis_ipa_debugfs_init(struct rndis_ipa_dev *rndis_ipa_ctx);
+>>>>>>> p9x
 static void rndis_ipa_debugfs_destroy(struct rndis_ipa_dev *rndis_ipa_ctx);
 static int rndis_ipa_ep_registers_cfg(u32 usb_to_ipa_hdl,
 		u32 ipa_to_usb_hdl, u32 max_xfer_size_bytes_to_dev,
@@ -449,11 +470,14 @@ struct rndis_pkt_hdr rndis_template_hdr = {
 	.zeroes = {0},
 };
 
+<<<<<<< HEAD
 static void rndis_ipa_msg_free_cb(void *buff, u32 len, u32 type)
 {
 	kfree(buff);
 }
 
+=======
+>>>>>>> p9x
 /**
  * rndis_ipa_init() - create network device and initialize internal
  *  data structures
@@ -511,8 +535,11 @@ int rndis_ipa_init(struct ipa_usb_init_params *params)
 	memset(rndis_ipa_ctx, 0, sizeof(*rndis_ipa_ctx));
 	RNDIS_IPA_DEBUG("rndis_ipa_ctx (private)=%p\n", rndis_ipa_ctx);
 
+<<<<<<< HEAD
 	spin_lock_init(&rndis_ipa_ctx->state_lock);
 
+=======
+>>>>>>> p9x
 	rndis_ipa_ctx->net = net;
 	rndis_ipa_ctx->tx_filter = false;
 	rndis_ipa_ctx->rx_filter = false;
@@ -551,7 +578,14 @@ int rndis_ipa_init(struct ipa_usb_init_params *params)
 	RNDIS_IPA_DEBUG("Needed headroom for RNDIS header set to %d\n",
 		net->needed_headroom);
 
+<<<<<<< HEAD
 	rndis_ipa_debugfs_init(rndis_ipa_ctx);
+=======
+	result = rndis_ipa_debugfs_init(rndis_ipa_ctx);
+	if (result)
+		goto fail_debugfs;
+	RNDIS_IPA_DEBUG("debugfs entries were created\n");
+>>>>>>> p9x
 
 	result = rndis_ipa_set_device_ethernet_addr(net->dev_addr,
 			rndis_ipa_ctx->device_ethaddr);
@@ -608,6 +642,10 @@ fail_register_tx:
 fail_set_device_ethernet:
 fail_hdrs_cfg:
 	rndis_ipa_debugfs_destroy(rndis_ipa_ctx);
+<<<<<<< HEAD
+=======
+fail_debugfs:
+>>>>>>> p9x
 fail_netdev_priv:
 	free_netdev(net);
 fail_alloc_etherdev:
@@ -652,9 +690,12 @@ int rndis_ipa_pipe_connect_notify(u32 usb_to_ipa_hdl,
 	struct rndis_ipa_dev *rndis_ipa_ctx = private;
 	int next_state;
 	int result;
+<<<<<<< HEAD
 	unsigned long flags;
 	struct ipa_ecm_msg *rndis_msg;
 	struct ipa_msg_meta msg_meta;
+=======
+>>>>>>> p9x
 
 	RNDIS_IPA_LOG_ENTRY();
 
@@ -668,6 +709,7 @@ int rndis_ipa_pipe_connect_notify(u32 usb_to_ipa_hdl,
 	RNDIS_IPA_DEBUG("max_xfer_sz_to_host=%d\n",
 			max_xfer_size_bytes_to_host);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&rndis_ipa_ctx->state_lock, flags);
 	next_state = rndis_ipa_next_state(rndis_ipa_ctx->state,
 		RNDIS_IPA_CONNECT);
@@ -677,6 +719,14 @@ int rndis_ipa_pipe_connect_notify(u32 usb_to_ipa_hdl,
 		return -EPERM;
 	}
 	spin_unlock_irqrestore(&rndis_ipa_ctx->state_lock, flags);
+=======
+	next_state = rndis_ipa_next_state(rndis_ipa_ctx->state,
+		RNDIS_IPA_CONNECT);
+	if (next_state == RNDIS_IPA_INVALID) {
+		RNDIS_IPA_ERROR("use init()/disconnect() before connect()\n");
+		return -EPERM;
+	}
+>>>>>>> p9x
 
 	if (usb_to_ipa_hdl >= IPA_CLIENT_MAX) {
 		RNDIS_IPA_ERROR("usb_to_ipa_hdl(%d) - not valid ipa handle\n",
@@ -725,6 +775,7 @@ int rndis_ipa_pipe_connect_notify(u32 usb_to_ipa_hdl,
 	}
 	RNDIS_IPA_DEBUG("netif_carrier_on() was called\n");
 
+<<<<<<< HEAD
 	rndis_msg = kzalloc(sizeof(*rndis_msg), GFP_KERNEL);
 	if (!rndis_msg) {
 		result = -ENOMEM;
@@ -756,6 +807,9 @@ int rndis_ipa_pipe_connect_notify(u32 usb_to_ipa_hdl,
 	rndis_ipa_ctx->state = next_state;
 	spin_unlock_irqrestore(&rndis_ipa_ctx->state_lock, flags);
 
+=======
+	rndis_ipa_ctx->state = next_state;
+>>>>>>> p9x
 	RNDIS_IPA_STATE_DEBUG(rndis_ipa_ctx);
 
 	if (next_state == RNDIS_IPA_CONNECTED_AND_UP)
@@ -792,25 +846,36 @@ static int rndis_ipa_open(struct net_device *net)
 {
 	struct rndis_ipa_dev *rndis_ipa_ctx;
 	int next_state;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> p9x
 
 	RNDIS_IPA_LOG_ENTRY();
 
 	rndis_ipa_ctx = netdev_priv(net);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&rndis_ipa_ctx->state_lock, flags);
 
 	next_state = rndis_ipa_next_state(rndis_ipa_ctx->state, RNDIS_IPA_OPEN);
 	if (next_state == RNDIS_IPA_INVALID) {
 		spin_unlock_irqrestore(&rndis_ipa_ctx->state_lock, flags);
+=======
+	next_state = rndis_ipa_next_state(rndis_ipa_ctx->state, RNDIS_IPA_OPEN);
+	if (next_state == RNDIS_IPA_INVALID) {
+>>>>>>> p9x
 		RNDIS_IPA_ERROR("can't bring driver up before initialize\n");
 		return -EPERM;
 	}
 
 	rndis_ipa_ctx->state = next_state;
+<<<<<<< HEAD
 
 	spin_unlock_irqrestore(&rndis_ipa_ctx->state_lock, flags);
 
+=======
+>>>>>>> p9x
 	RNDIS_IPA_STATE_DEBUG(rndis_ipa_ctx);
 
 
@@ -907,7 +972,10 @@ static netdev_tx_t rndis_ipa_start_xmit(struct sk_buff *skb,
 	}
 
 	skb = rndis_encapsulate_skb(skb);
+<<<<<<< HEAD
 	trace_rndis_tx_dp(skb->protocol);
+=======
+>>>>>>> p9x
 	ret = ipa_tx_dp(IPA_TO_USB_CLIENT, skb, NULL);
 	if (ret) {
 		RNDIS_IPA_ERROR("ipa transmit failed (%d)\n", ret);
@@ -953,8 +1021,11 @@ static void rndis_ipa_tx_complete_notify(void *private,
 
 	NULL_CHECK_NO_RETVAL(private);
 
+<<<<<<< HEAD
 	trace_rndis_status_rcvd(skb->protocol);
 
+=======
+>>>>>>> p9x
 	RNDIS_IPA_DEBUG("Tx-complete, len=%d, skb->prot=%d, outstanding=%d\n",
 		skb->len, skb->protocol,
 		atomic_read(&rndis_ipa_ctx->outstanding_pkts));
@@ -1119,7 +1190,10 @@ static void rndis_ipa_packet_receive_notify(void *private,
 		return;
 	}
 
+<<<<<<< HEAD
 	trace_rndis_netif_ni(skb->protocol);
+=======
+>>>>>>> p9x
 	result = netif_rx_ni(skb);
 	if (result)
 		RNDIS_IPA_ERROR("fail on netif_rx_ni\n");
@@ -1143,6 +1217,7 @@ static int rndis_ipa_stop(struct net_device *net)
 {
 	struct rndis_ipa_dev *rndis_ipa_ctx = netdev_priv(net);
 	int next_state;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	RNDIS_IPA_LOG_ENTRY();
@@ -1152,10 +1227,18 @@ static int rndis_ipa_stop(struct net_device *net)
 	next_state = rndis_ipa_next_state(rndis_ipa_ctx->state, RNDIS_IPA_STOP);
 	if (next_state == RNDIS_IPA_INVALID) {
 		spin_unlock_irqrestore(&rndis_ipa_ctx->state_lock, flags);
+=======
+
+	RNDIS_IPA_LOG_ENTRY();
+
+	next_state = rndis_ipa_next_state(rndis_ipa_ctx->state, RNDIS_IPA_STOP);
+	if (next_state == RNDIS_IPA_INVALID) {
+>>>>>>> p9x
 		RNDIS_IPA_DEBUG("can't do network interface down without up\n");
 		return -EPERM;
 	}
 
+<<<<<<< HEAD
 	rndis_ipa_ctx->state = next_state;
 
 	spin_unlock_irqrestore(&rndis_ipa_ctx->state_lock, flags);
@@ -1163,6 +1246,12 @@ static int rndis_ipa_stop(struct net_device *net)
 	netif_stop_queue(net);
 	pr_info("RNDIS_IPA NetDev queue is stopped\n");
 
+=======
+	netif_stop_queue(net);
+	pr_info("RNDIS_IPA NetDev queue is stopped\n");
+
+	rndis_ipa_ctx->state = next_state;
+>>>>>>> p9x
 	RNDIS_IPA_STATE_DEBUG(rndis_ipa_ctx);
 
 	RNDIS_IPA_LOG_EXIT();
@@ -1191,15 +1280,19 @@ int rndis_ipa_pipe_disconnect_notify(void *private)
 	int next_state;
 	int outstanding_dropped_pkts;
 	int retval;
+<<<<<<< HEAD
 	unsigned long flags;
 	struct ipa_ecm_msg *rndis_msg;
 	struct ipa_msg_meta msg_meta;
+=======
+>>>>>>> p9x
 
 	RNDIS_IPA_LOG_ENTRY();
 
 	NULL_CHECK_RETVAL(rndis_ipa_ctx);
 	RNDIS_IPA_DEBUG("private=0x%p\n", private);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&rndis_ipa_ctx->state_lock, flags);
 
 	next_state = rndis_ipa_next_state(rndis_ipa_ctx->state,
@@ -1210,6 +1303,14 @@ int rndis_ipa_pipe_disconnect_notify(void *private)
 		return -EPERM;
 	}
 	spin_unlock_irqrestore(&rndis_ipa_ctx->state_lock, flags);
+=======
+	next_state = rndis_ipa_next_state(rndis_ipa_ctx->state,
+		RNDIS_IPA_DISCONNECT);
+	if (next_state == RNDIS_IPA_INVALID) {
+		RNDIS_IPA_ERROR("can't disconnect before connect\n");
+		return -EPERM;
+	}
+>>>>>>> p9x
 
 	if (rndis_ipa_ctx->during_xmit_error) {
 		RNDIS_IPA_DEBUG("canceling xmit-error delayed work\n");
@@ -1221,6 +1322,7 @@ int rndis_ipa_pipe_disconnect_notify(void *private)
 	netif_carrier_off(rndis_ipa_ctx->net);
 	RNDIS_IPA_DEBUG("carrier_off notification was sent\n");
 
+<<<<<<< HEAD
 	rndis_msg = kzalloc(sizeof(*rndis_msg), GFP_KERNEL);
 	if (!rndis_msg)
 		return -ENOMEM;
@@ -1238,6 +1340,8 @@ int rndis_ipa_pipe_disconnect_notify(void *private)
 		kfree(rndis_msg);
 		return -EPERM;
 	}
+=======
+>>>>>>> p9x
 	netif_stop_queue(rndis_ipa_ctx->net);
 	RNDIS_IPA_DEBUG("queue stopped\n");
 
@@ -1254,6 +1358,7 @@ int rndis_ipa_pipe_disconnect_notify(void *private)
 	}
 	RNDIS_IPA_DEBUG("RM was successfully destroyed\n");
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&rndis_ipa_ctx->state_lock, flags);
 	next_state = rndis_ipa_next_state(rndis_ipa_ctx->state,
 					  RNDIS_IPA_DISCONNECT);
@@ -1265,6 +1370,9 @@ int rndis_ipa_pipe_disconnect_notify(void *private)
 	rndis_ipa_ctx->state = next_state;
 	spin_unlock_irqrestore(&rndis_ipa_ctx->state_lock, flags);
 
+=======
+	rndis_ipa_ctx->state = next_state;
+>>>>>>> p9x
 	RNDIS_IPA_STATE_DEBUG(rndis_ipa_ctx);
 
 	pr_info("RNDIS_IPA NetDev pipes disconnected (%d outstanding clr)\n",
@@ -1303,7 +1411,10 @@ void rndis_ipa_cleanup(void *private)
 	struct rndis_ipa_dev *rndis_ipa_ctx = private;
 	int next_state;
 	int retval;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> p9x
 
 	RNDIS_IPA_LOG_ENTRY();
 
@@ -1314,6 +1425,7 @@ void rndis_ipa_cleanup(void *private)
 		return;
 	}
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&rndis_ipa_ctx->state_lock, flags);
 	next_state = rndis_ipa_next_state(rndis_ipa_ctx->state,
 		RNDIS_IPA_CLEANUP);
@@ -1324,6 +1436,14 @@ void rndis_ipa_cleanup(void *private)
 	}
 	spin_unlock_irqrestore(&rndis_ipa_ctx->state_lock, flags);
 
+=======
+	next_state = rndis_ipa_next_state(rndis_ipa_ctx->state,
+		RNDIS_IPA_CLEANUP);
+	if (next_state == RNDIS_IPA_INVALID) {
+		RNDIS_IPA_ERROR("use disconnect()before clean()\n");
+		return;
+	}
+>>>>>>> p9x
 	RNDIS_IPA_STATE_DEBUG(rndis_ipa_ctx);
 
 	retval = rndis_ipa_deregister_properties(rndis_ipa_ctx->net->name);
@@ -1346,6 +1466,7 @@ void rndis_ipa_cleanup(void *private)
 	unregister_netdev(rndis_ipa_ctx->net);
 	RNDIS_IPA_DEBUG("netdev unregistered\n");
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&rndis_ipa_ctx->state_lock, flags);
 	next_state = rndis_ipa_next_state(rndis_ipa_ctx->state,
 					  RNDIS_IPA_CLEANUP);
@@ -1356,6 +1477,9 @@ void rndis_ipa_cleanup(void *private)
 	}
 	rndis_ipa_ctx->state = next_state;
 	spin_unlock_irqrestore(&rndis_ipa_ctx->state_lock, flags);
+=======
+	rndis_ipa_ctx->state = next_state;
+>>>>>>> p9x
 	free_netdev(rndis_ipa_ctx->net);
 	pr_info("RNDIS_IPA NetDev was cleaned\n");
 
@@ -1748,7 +1872,11 @@ static int rndis_ipa_create_rm_resource(struct rndis_ipa_dev *rndis_ipa_ctx)
 	RNDIS_IPA_DEBUG("rm_it client was created\n");
 
 	result = ipa_rm_add_dependency_sync(DRV_RESOURCE_ID,
+<<<<<<< HEAD
 					    IPA_RM_RESOURCE_USB_CONS);
+=======
+				IPA_RM_RESOURCE_USB_CONS);
+>>>>>>> p9x
 
 	if (result && result != -EINPROGRESS)
 		RNDIS_IPA_ERROR("unable to add RNDIS/USB dependency (%d)\n",
@@ -1757,7 +1885,11 @@ static int rndis_ipa_create_rm_resource(struct rndis_ipa_dev *rndis_ipa_ctx)
 		RNDIS_IPA_DEBUG("RNDIS/USB dependency was set\n");
 
 	result = ipa_rm_add_dependency_sync(IPA_RM_RESOURCE_USB_PROD,
+<<<<<<< HEAD
 					    IPA_RM_RESOURCE_APPS_CONS);
+=======
+				IPA_RM_RESOURCE_APPS_CONS);
+>>>>>>> p9x
 	if (result && result != -EINPROGRESS)
 		RNDIS_IPA_ERROR("unable to add USB/APPS dependency (%d)\n",
 				result);
@@ -2168,11 +2300,18 @@ static void rndis_ipa_dump_skb(struct sk_buff *skb)
 		skb->len);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_FS
 /**
  * Creates the root folder for the driver
  */
 static void rndis_ipa_debugfs_init(struct rndis_ipa_dev *rndis_ipa_ctx)
+=======
+/**
+ * Creates the root folder for the driver
+ */
+static int rndis_ipa_debugfs_init(struct rndis_ipa_dev *rndis_ipa_ctx)
+>>>>>>> p9x
 {
 	const mode_t flags_read_write = S_IRUGO | S_IWUGO;
 	const mode_t flags_read_only = S_IRUGO;
@@ -2183,7 +2322,11 @@ static void rndis_ipa_debugfs_init(struct rndis_ipa_dev *rndis_ipa_ctx)
 	RNDIS_IPA_LOG_ENTRY();
 
 	if (!rndis_ipa_ctx)
+<<<<<<< HEAD
 		return;
+=======
+		return -EINVAL;
+>>>>>>> p9x
 
 	rndis_ipa_ctx->directory = debugfs_create_dir(DEBUGFS_DIR_NAME, NULL);
 	if (!rndis_ipa_ctx->directory) {
@@ -2357,6 +2500,7 @@ static void rndis_ipa_debugfs_init(struct rndis_ipa_dev *rndis_ipa_ctx)
 		goto fail_file;
 	}
 
+<<<<<<< HEAD
 	RNDIS_IPA_DEBUG("debugfs entries were created\n");
 	RNDIS_IPA_LOG_EXIT();
 
@@ -2365,6 +2509,15 @@ fail_file:
 	debugfs_remove_recursive(rndis_ipa_ctx->directory);
 fail_directory:
 	return;
+=======
+	RNDIS_IPA_LOG_EXIT();
+
+	return 0;
+fail_file:
+	debugfs_remove_recursive(rndis_ipa_ctx->directory);
+fail_directory:
+	return -EFAULT;
+>>>>>>> p9x
 }
 
 static void rndis_ipa_debugfs_destroy(struct rndis_ipa_dev *rndis_ipa_ctx)
@@ -2372,6 +2525,7 @@ static void rndis_ipa_debugfs_destroy(struct rndis_ipa_dev *rndis_ipa_ctx)
 	debugfs_remove_recursive(rndis_ipa_ctx->directory);
 }
 
+<<<<<<< HEAD
 #else /* !CONFIG_DEBUG_FS */
 
 static void rndis_ipa_debugfs_init(struct rndis_ipa_dev *rndis_ipa_ctx) {}
@@ -2379,6 +2533,8 @@ static void rndis_ipa_debugfs_init(struct rndis_ipa_dev *rndis_ipa_ctx) {}
 static void rndis_ipa_debugfs_destroy(struct rndis_ipa_dev *rndis_ipa_ctx) {}
 
 #endif /* CONFIG_DEBUG_FS*/
+=======
+>>>>>>> p9x
 
 static int rndis_ipa_debugfs_aggr_open(struct inode *inode,
 		struct file *file)

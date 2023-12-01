@@ -93,11 +93,16 @@ enum {
 	SNDRV_HWDEP_IFACE_SB_RC,	/* SB Extigy/Audigy2NX remote control */
 	SNDRV_HWDEP_IFACE_HDA,		/* HD-audio */
 	SNDRV_HWDEP_IFACE_USB_STREAM,	/* direct access to usb stream */
+<<<<<<< HEAD
 	SNDRV_HWDEP_IFACE_FW_DICE,	/* TC DICE FireWire device */
 	SNDRV_HWDEP_IFACE_FW_FIREWORKS,	/* Echo Audio Fireworks based device */
 	SNDRV_HWDEP_IFACE_FW_BEBOB,	/* BridgeCo BeBoB based device */
 	SNDRV_HWDEP_IFACE_AUDIO_BE,	/* Backend Audio Control */
 	SNDRV_HWDEP_IFACE_AUDIO_CODEC,  /* codec Audio Control */
+=======
+	SNDRV_HWDEP_IFACE_AUDIO_BE,	/* Backend Audio Control */
+	SNDRV_HWDEP_IFACE_AUDIO_CODEC,	/* codec Audio Control */
+>>>>>>> p9x
 
 	/* Don't forget to change the following: */
 	SNDRV_HWDEP_IFACE_LAST = SNDRV_HWDEP_IFACE_AUDIO_CODEC

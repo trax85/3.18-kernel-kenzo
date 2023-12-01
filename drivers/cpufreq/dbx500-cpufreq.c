@@ -28,8 +28,54 @@ static int dbx500_cpufreq_target(struct cpufreq_policy *policy,
 
 static int dbx500_cpufreq_init(struct cpufreq_policy *policy)
 {
+<<<<<<< HEAD
 	policy->clk = armss_clk;
 	return cpufreq_generic_init(policy, freq_table, 20 * 1000);
+=======
+	int i = 0;
+	unsigned long freq = clk_get_rate(armss_clk) / 1000;
+
+	/* The value is rounded to closest frequency in the defined table. */
+	while (freq_table[i + 1].frequency != CPUFREQ_TABLE_END) {
+		if (freq < freq_table[i].frequency +
+		   (freq_table[i + 1].frequency - freq_table[i].frequency) / 2)
+			return freq_table[i].frequency;
+		i++;
+	}
+
+	return freq_table[i].frequency;
+}
+
+static int dbx500_cpufreq_init(struct cpufreq_policy *policy)
+{
+	int res;
+
+	/* get policy fields based on the table */
+	res = cpufreq_frequency_table_cpuinfo(policy, freq_table);
+	if (!res)
+		cpufreq_frequency_table_get_attr(freq_table, policy->cpu);
+	else {
+		pr_err("dbx500-cpufreq: Failed to read policy table\n");
+		return res;
+	}
+
+	policy->min = policy->cpuinfo.min_freq;
+	policy->max = policy->cpuinfo.max_freq;
+	policy->cur = dbx500_cpufreq_getspeed(policy->cpu);
+	policy->governor = CPUFREQ_DEFAULT_GOVERNOR;
+
+	/*
+	 * FIXME : Need to take time measurement across the target()
+	 *	   function with no/some/all drivers in the notification
+	 *	   list.
+	 */
+	policy->cpuinfo.transition_latency = 20 * 1000; /* in ns */
+
+	/* policy sharing between dual CPUs */
+	cpumask_setall(policy->cpus);
+
+	return 0;
+>>>>>>> p9x
 }
 
 static struct cpufreq_driver dbx500_cpufreq_driver = {

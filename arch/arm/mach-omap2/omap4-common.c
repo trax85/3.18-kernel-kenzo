@@ -25,7 +25,10 @@
 #include <linux/irqchip/irq-crossbar.h>
 #include <linux/of_address.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
 #include <linux/genalloc.h>
+=======
+>>>>>>> p9x
 
 #include <asm/hardware/cache-l2x0.h>
 #include <asm/mach/map.h>
@@ -169,6 +172,7 @@ void __iomem *omap4_get_l2cache_base(void)
 
 static void omap4_l2c310_write_sec(unsigned long val, unsigned reg)
 {
+<<<<<<< HEAD
 	unsigned smc_op;
 
 	switch (reg) {
@@ -198,6 +202,11 @@ static void omap4_l2c310_write_sec(unsigned long val, unsigned reg)
 	}
 
 	omap_smc1(smc_op, val);
+=======
+	outer_flush_all();
+	/* Disable PL310 L2 Cache controller */
+	omap_smc1(0x102, 0x0);
+>>>>>>> p9x
 }
 
 int __init omap_l2_cache_init(void)

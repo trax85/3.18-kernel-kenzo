@@ -271,8 +271,11 @@ static int audio_open(struct inode *inode, struct file *file)
 	audio->wakelock_voted = false;
 	audio->audio_ws_mgr = &audio_ape_ws_mgr;
 
+<<<<<<< HEAD
 	init_waitqueue_head(&audio->event_wait);
 
+=======
+>>>>>>> p9x
 	audio->ac = q6asm_audio_client_alloc((app_cb) q6_audio_cb,
 					     (void *)audio);
 

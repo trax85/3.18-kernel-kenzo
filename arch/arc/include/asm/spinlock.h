@@ -69,22 +69,28 @@ static inline void arch_spin_unlock(arch_spinlock_t *lock)
 {
 	unsigned int tmp = __ARCH_SPIN_LOCK_UNLOCKED__;
 
+<<<<<<< HEAD
 	/*
 	 * RELEASE barrier: given the instructions avail on ARCv2, full barrier
 	 * is the only option
 	 */
 	smp_mb();
 
+=======
+>>>>>>> p9x
 	__asm__ __volatile__(
 	"	ex  %0, [%1]		\n"
 	: "+r" (tmp)
 	: "r"(&(lock->slock))
 	: "memory");
 
+<<<<<<< HEAD
 	/*
 	 * superfluous, but keeping for now - see pairing version in
 	 * arch_spin_lock above
 	 */
+=======
+>>>>>>> p9x
 	smp_mb();
 }
 

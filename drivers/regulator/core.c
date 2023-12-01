@@ -58,6 +58,11 @@ static LIST_HEAD(regulator_map_list);
 static LIST_HEAD(regulator_ena_gpio_list);
 static LIST_HEAD(regulator_supply_alias_list);
 static bool has_full_constraints;
+<<<<<<< HEAD
+=======
+static bool board_wants_dummy_regulator;
+static int suppress_info_printing;
+>>>>>>> p9x
 
 static struct dentry *debugfs_root;
 
@@ -93,10 +98,23 @@ struct regulator_enable_gpio {
  */
 struct regulator_supply_alias {
 	struct list_head list;
+<<<<<<< HEAD
 	struct device *src_dev;
 	const char *src_supply;
 	struct device *alias_dev;
 	const char *alias_supply;
+=======
+	unsigned int always_on:1;
+	unsigned int bypass:1;
+	int uA_load;
+	int min_uV;
+	int max_uV;
+	int enabled;
+	char *supply_name;
+	struct device_attribute dev_attr;
+	struct regulator_dev *rdev;
+	struct dentry *debugfs;
+>>>>>>> p9x
 };
 
 static int _regulator_is_enabled(struct regulator_dev *rdev);
@@ -968,6 +986,7 @@ static int machine_constraints_voltage(struct regulator_dev *rdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int machine_constraints_current(struct regulator_dev *rdev,
 	struct regulation_constraints *constraints)
 {
@@ -998,6 +1017,8 @@ static int machine_constraints_current(struct regulator_dev *rdev,
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 static int _regulator_do_enable(struct regulator_dev *rdev);
 
 /**
@@ -1077,7 +1098,8 @@ static int set_machine_constraints(struct regulator_dev *rdev,
 		}
 	}
 
-	print_constraints(rdev);
+	if (!suppress_info_printing)
+		print_constraints(rdev);
 	return 0;
 out:
 	kfree(rdev->constraints);
@@ -1099,7 +1121,8 @@ static int set_supply(struct regulator_dev *rdev,
 {
 	int err;
 
-	rdev_info(rdev, "supplied by %s\n", rdev_get_name(supply_rdev));
+	if (!suppress_info_printing)
+		rdev_info(rdev, "supplied by %s\n", rdev_get_name(supply_rdev));
 
 	rdev->supply = create_regulator(supply_rdev, &rdev->dev, "SUPPLY");
 	if (rdev->supply == NULL) {
@@ -1495,6 +1518,7 @@ struct regulator *regulator_get_exclusive(struct device *dev, const char *id)
 }
 EXPORT_SYMBOL_GPL(regulator_get_exclusive);
 
+<<<<<<< HEAD
 /**
  * regulator_get_optional - obtain optional access to a regulator.
  * @dev: device for regulator "consumer"
@@ -1521,6 +1545,8 @@ struct regulator *regulator_get_optional(struct device *dev, const char *id)
 }
 EXPORT_SYMBOL_GPL(regulator_get_optional);
 
+=======
+>>>>>>> p9x
 /* regulator_list_mutex lock held by regulator_put() */
 static void _regulator_put(struct regulator *regulator)
 {
@@ -2093,6 +2119,7 @@ static int _regulator_force_disable(struct regulator_dev *rdev)
 {
 	int ret = 0;
 
+<<<<<<< HEAD
 	ret = _notifier_call_chain(rdev, REGULATOR_EVENT_FORCE_DISABLE |
 			REGULATOR_EVENT_PRE_DISABLE, NULL);
 	if (ret & NOTIFY_STOP_MASK)
@@ -2103,6 +2130,11 @@ static int _regulator_force_disable(struct regulator_dev *rdev)
 		rdev_err(rdev, "failed to force disable\n");
 		_notifier_call_chain(rdev, REGULATOR_EVENT_FORCE_DISABLE |
 				REGULATOR_EVENT_ABORT_DISABLE, NULL);
+=======
+	ret = _regulator_do_disable(rdev);
+	if (ret < 0) {
+		rdev_err(rdev, "failed to force disable\n");
+>>>>>>> p9x
 		return ret;
 	}
 
@@ -2207,7 +2239,17 @@ int regulator_disable_deferred(struct regulator *regulator, int ms)
 			 msecs_to_jiffies(ms));
 	mutex_unlock(&rdev->mutex);
 
+<<<<<<< HEAD
 	return 0;
+=======
+	ret = queue_delayed_work(system_power_efficient_wq,
+				 &rdev->disable_work,
+				 msecs_to_jiffies(ms));
+	if (ret < 0)
+		return ret;
+	else
+		return 0;
+>>>>>>> p9x
 }
 EXPORT_SYMBOL_GPL(regulator_disable_deferred);
 
@@ -2344,6 +2386,7 @@ int regulator_list_voltage(struct regulator *regulator, unsigned selector)
 EXPORT_SYMBOL_GPL(regulator_list_voltage);
 
 /**
+<<<<<<< HEAD
  * regulator_get_regmap - get the regulator's register map
  * @regulator: regulator source
  *
@@ -2415,6 +2458,8 @@ int regulator_list_hardware_vsel(struct regulator *regulator,
 EXPORT_SYMBOL_GPL(regulator_list_hardware_vsel);
 
 /**
+=======
+>>>>>>> p9x
  * regulator_list_corner_voltage - return the maximum voltage in microvolts that
  *	can be physically configured for the regulator when operating at the
  *	specified voltage corner
@@ -2449,6 +2494,7 @@ int regulator_list_corner_voltage(struct regulator *regulator, int corner)
 EXPORT_SYMBOL(regulator_list_corner_voltage);
 
 /**
+<<<<<<< HEAD
  * regulator_get_linear_step - return the voltage step size between VSEL values
  * @regulator: regulator source
  *
@@ -2464,6 +2510,8 @@ unsigned int regulator_get_linear_step(struct regulator *regulator)
 EXPORT_SYMBOL_GPL(regulator_get_linear_step);
 
 /**
+=======
+>>>>>>> p9x
  * regulator_is_supported_voltage - check if a voltage range can be supported
  *
  * @regulator: Regulator to check.
@@ -3713,6 +3761,7 @@ static int reg_debug_enable_get(void *data, u64 *val)
 DEFINE_SIMPLE_ATTRIBUTE(reg_enable_fops, reg_debug_enable_get,
 			reg_debug_enable_set, "%llu\n");
 
+<<<<<<< HEAD
 static int reg_debug_bypass_enable_get(void *data, u64 *val)
 {
 	struct regulator *regulator = data;
@@ -3753,6 +3802,8 @@ static int reg_debug_bypass_enable_set(void *data, u64 val)
 DEFINE_SIMPLE_ATTRIBUTE(reg_bypass_enable_fops, reg_debug_bypass_enable_get,
 			reg_debug_bypass_enable_set, "%llu\n");
 
+=======
+>>>>>>> p9x
 static int reg_debug_fdisable_set(void *data, u64 val)
 {
 	int err_info;
@@ -3824,7 +3875,11 @@ static ssize_t reg_debug_volt_get(struct file *file, char __user *buf,
 	mutex_lock(&debug_buf_mutex);
 
 	output = snprintf(debug_buf, MAX_DEBUG_BUF_LEN-1, "%d\n", voltage);
+<<<<<<< HEAD
 	rc = simple_read_from_buffer((void __user *) buf, count, ppos,
+=======
+	rc = simple_read_from_buffer((void __user *) buf, output, ppos,
+>>>>>>> p9x
 					(void *) debug_buf, output);
 
 	mutex_unlock(&debug_buf_mutex);
@@ -3965,7 +4020,11 @@ static void rdev_init_debugfs(struct regulator_dev *rdev)
 {
 	struct dentry *err_ptr = NULL;
 	struct regulator *reg;
+<<<<<<< HEAD
 	const struct regulator_ops *reg_ops;
+=======
+	struct regulator_ops *reg_ops;
+>>>>>>> p9x
 	mode_t mode;
 
 	if (IS_ERR(rdev) || rdev == NULL ||
@@ -3997,7 +4056,10 @@ static void rdev_init_debugfs(struct regulator_dev *rdev)
 	}
 	rdev->debug_consumer = reg;
 
+<<<<<<< HEAD
 	rdev->open_offset = 1;
+=======
+>>>>>>> p9x
 	reg_ops = rdev->desc->ops;
 	mode = S_IRUGO | S_IWUSR;
 	/* Enabled File */
@@ -4010,6 +4072,7 @@ static void rdev_init_debugfs(struct regulator_dev *rdev)
 	}
 
 	mode = 0;
+<<<<<<< HEAD
 	/* Bypass Enable File */
 	if (reg_ops->set_bypass)
 		mode = S_IWUSR | S_IRUGO;
@@ -4024,6 +4087,8 @@ static void rdev_init_debugfs(struct regulator_dev *rdev)
 	}
 
 	mode = 0;
+=======
+>>>>>>> p9x
 	/* Force-Disable File */
 	if (reg_ops->is_enabled)
 		mode |= S_IRUGO;
@@ -4309,7 +4374,10 @@ void regulator_unregister(struct regulator_dev *rdev)
 		while (rdev->use_count--)
 			regulator_disable(rdev->supply);
 		regulator_put(rdev->supply);
+<<<<<<< HEAD
 	}
+=======
+>>>>>>> p9x
 	regulator_proxy_consumer_unregister(rdev->proxy_consumer);
 	rdev_deinit_debugfs(rdev);
 	mutex_lock(&regulator_list_mutex);
@@ -4380,7 +4448,11 @@ int regulator_suspend_finish(void)
 					ret = error;
 			}
 		} else {
+<<<<<<< HEAD
 			if (!have_full_constraints())
+=======
+			if (!has_full_constraints)
+>>>>>>> p9x
 				goto unlock;
 			if (!_regulator_is_enabled(rdev))
 				goto unlock;
@@ -4415,6 +4487,41 @@ void regulator_has_full_constraints(void)
 EXPORT_SYMBOL_GPL(regulator_has_full_constraints);
 
 /**
+<<<<<<< HEAD
+=======
+ * regulator_use_dummy_regulator - Provide a dummy regulator when none is found
+ *
+ * Calling this function will cause the regulator API to provide a
+ * dummy regulator to consumers if no physical regulator is found,
+ * allowing most consumers to proceed as though a regulator were
+ * configured.  This allows systems such as those with software
+ * controllable regulators for the CPU core only to be brought up more
+ * readily.
+ */
+void regulator_use_dummy_regulator(void)
+{
+	board_wants_dummy_regulator = true;
+}
+EXPORT_SYMBOL_GPL(regulator_use_dummy_regulator);
+
+/**
+ * regulator_suppress_info_printing - disable printing of info messages
+ *
+ * The regulator framework calls print_constraints() when a regulator is
+ * registered.  It also prints a disable message for each unused regulator in
+ * regulator_init_complete().
+ *
+ * Calling this function ensures that such messages do not end up in the
+ * log.
+ */
+void regulator_suppress_info_printing(void)
+{
+	suppress_info_printing = 1;
+}
+EXPORT_SYMBOL_GPL(regulator_suppress_info_printing);
+
+/**
+>>>>>>> p9x
  * rdev_get_drvdata - get rdev regulator driver data
  * @rdev: regulator
  *
@@ -4598,8 +4705,57 @@ static int __init regulator_init_complete(void)
 	 * not in use or always_on.  This is effectively the default
 	 * for DT and ACPI as they have full constraints.
 	 */
+<<<<<<< HEAD
 	class_for_each_device(&regulator_class, NULL, NULL,
 			      regulator_late_cleanup);
+=======
+	list_for_each_entry(rdev, &regulator_list, list) {
+		ops = rdev->desc->ops;
+		c = rdev->constraints;
+
+		if (c && c->always_on)
+			continue;
+
+		mutex_lock(&rdev->mutex);
+
+		if (rdev->use_count)
+			goto unlock;
+
+		/* If we can't read the status assume it's on. */
+		if (ops->is_enabled)
+			enabled = ops->is_enabled(rdev);
+		else
+			enabled = 1;
+
+		if (!enabled)
+			goto unlock;
+
+		if (has_full_constraints) {
+			/* We log since this may kill the system if it
+			 * goes wrong. */
+			if (!suppress_info_printing)
+				rdev_info(rdev, "disabling\n");
+			ret = _regulator_do_disable(rdev);
+			if (ret != 0) {
+				rdev_err(rdev, "couldn't disable: %d\n", ret);
+			}
+		} else {
+			/* The intention is that in future we will
+			 * assume that full constraints are provided
+			 * so warn even if we aren't going to do
+			 * anything here.
+			 */
+			if (!suppress_info_printing)
+				rdev_warn(rdev, "incomplete constraints, "
+						"leaving on\n");
+		}
+
+unlock:
+		mutex_unlock(&rdev->mutex);
+	}
+
+	mutex_unlock(&regulator_list_mutex);
+>>>>>>> p9x
 
 	return 0;
 }

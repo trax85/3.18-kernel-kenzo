@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2010, 2013, 2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2010, 2013, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -19,7 +23,10 @@
 #include <linux/slab.h>
 #include <linux/workqueue.h>
 #include <linux/of_gpio.h>
+<<<<<<< HEAD
 #include <linux/regulator/consumer.h>
+=======
+>>>>>>> p9x
 #include <linux/i2c/sx150x.h>
 #include <linux/of.h>
 #include <linux/delay.h>
@@ -518,7 +525,11 @@ static int sx150x_reset(struct sx150x_chip *chip)
 
 			/* Max. time for NRESET low is 2.5ms */
 			gpio_direction_output(rst_gpio, 0x0);
+<<<<<<< HEAD
 			usleep_range(2450, 2550);
+=======
+			usleep(2500);
+>>>>>>> p9x
 			gpio_direction_output(rst_gpio, 0x1);
 		}
 	}
@@ -671,6 +682,7 @@ static int sx150x_parse_dt(struct device *dev,
 	}
 	pdata->io_polarity = temp;
 
+<<<<<<< HEAD
 	rc = of_property_read_u32(np, "sx150x,gpio_base", &temp);
 	if (rc) {
 		pr_err("%s: Failed to find gpio_base %d\n", __func__, rc);
@@ -701,6 +713,11 @@ static int sx150x_parse_dt(struct device *dev,
 		pr_err("%s: No vdd_min voltage entries in dts %d\n",
 				__func__, rc);
 	pdata->vdd_in_minv = temp;
+=======
+	/* TODO: Add support for Interrupts */
+	pdata->irq_summary = -1;
+	pdata->gpio_base   = -1;
+>>>>>>> p9x
 
 	return 0;
 }
@@ -724,8 +741,16 @@ static int sx150x_probe(struct i2c_client *client,
 	if (client->dev.of_node) {
 		pdata = devm_kzalloc(&client->dev,
 			sizeof(struct sx150x_platform_data), GFP_KERNEL);
+<<<<<<< HEAD
 		if (!pdata)
 			return -ENOMEM;
+=======
+		if (!pdata) {
+			dev_err(&client->dev, "Failed to allocate memory\n");
+			return -ENOMEM;
+		}
+
+>>>>>>> p9x
 		rc = sx150x_parse_dt(&client->dev, pdata);
 		if (rc)
 			return rc;

@@ -150,7 +150,14 @@ struct _lowcore {
 	__u32	ftrace_func;			/* 0x02f8 */
 	__u32	spinlock_lockval;		/* 0x02fc */
 
+<<<<<<< HEAD
 	__u8	pad_0x0300[0x0e00-0x0300];	/* 0x0300 */
+=======
+	/* Interrupt response block */
+	__u8	irb[96];			/* 0x0300 */
+
+	__u8	pad_0x0360[0x0e00-0x0360];	/* 0x0360 */
+>>>>>>> p9x
 
 	/*
 	 * 0xe00 contains the address of the IPL Parameter Information
@@ -299,6 +306,7 @@ struct _lowcore {
 	__u64	machine_flags;			/* 0x0388 */
 	__u64	ftrace_func;			/* 0x0390 */
 	__u64	gmap;				/* 0x0398 */
+<<<<<<< HEAD
 	__u32	spinlock_lockval;		/* 0x03a0 */
 	__u8	pad_0x03a0[0x0400-0x03a4];	/* 0x03a4 */
 
@@ -306,6 +314,18 @@ struct _lowcore {
 	__u32	paste[16];			/* 0x0400 */
 
 	__u8	pad_0x04c0[0x0e00-0x0440];	/* 0x0440 */
+=======
+	__u8	pad_0x03a0[0x0400-0x03a0];	/* 0x03a0 */
+
+	/* Interrupt response block. */
+	__u8	irb[96];			/* 0x0400 */
+	__u8	pad_0x0460[0x0480-0x0460];	/* 0x0460 */
+
+	/* Per cpu primary space access list */
+	__u32	paste[16];			/* 0x0480 */
+
+	__u8	pad_0x04c0[0x0e00-0x04c0];	/* 0x04c0 */
+>>>>>>> p9x
 
 	/*
 	 * 0xe00 contains the address of the IPL Parameter Information

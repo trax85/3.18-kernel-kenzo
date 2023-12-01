@@ -332,11 +332,18 @@ static int register_trace_uprobe(struct trace_uprobe *tu)
 	mutex_lock(&uprobe_lock);
 
 	/* register as an event */
+<<<<<<< HEAD
 	old_tu = find_probe_event(ftrace_event_name(&tu->tp.call),
 			tu->tp.call.class->system);
 	if (old_tu) {
 		/* delete old event */
 		ret = unregister_trace_uprobe(old_tu);
+=======
+	old_tp = find_probe_event(tu->call.name, tu->call.class->system);
+	if (old_tp) {
+		/* delete old event */
+		ret = unregister_trace_uprobe(old_tp);
+>>>>>>> p9x
 		if (ret)
 			goto end;
 	}
@@ -1320,11 +1327,19 @@ static int unregister_uprobe_event(struct trace_uprobe *tu)
 	int ret;
 
 	/* tu->event is unregistered in trace_remove_event_call() */
+<<<<<<< HEAD
 	ret = trace_remove_event_call(&tu->tp.call);
 	if (ret)
 		return ret;
 	kfree(tu->tp.call.print_fmt);
 	tu->tp.call.print_fmt = NULL;
+=======
+	ret = trace_remove_event_call(&tu->call);
+	if (ret)
+		return ret;
+	kfree(tu->call.print_fmt);
+	tu->call.print_fmt = NULL;
+>>>>>>> p9x
 	return 0;
 }
 

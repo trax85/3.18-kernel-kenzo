@@ -61,12 +61,34 @@ static int vti_input(struct sk_buff *skb, int nexthdr, __be32 spi,
 	tunnel = ip_tunnel_lookup(itn, skb->dev->ifindex, TUNNEL_NO_KEY,
 				  iph->saddr, iph->daddr, 0);
 	if (tunnel != NULL) {
+<<<<<<< HEAD
 		if (!xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb))
 			goto drop;
+=======
+		struct pcpu_tstats *tstats;
+		u32 oldmark = skb->mark;
+		int ret;
+
+
+		/* temporarily mark the skb with the tunnel o_key, to
+		 * only match policies with this mark.
+		 */
+		skb->mark = be32_to_cpu(tunnel->parms.o_key);
+		ret = xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb);
+		skb->mark = oldmark;
+		if (!ret)
+			return -1;
+>>>>>>> p9x
 
 		XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip4 = tunnel;
 
+<<<<<<< HEAD
 		return xfrm_input(skb, nexthdr, spi, encap_type);
+=======
+		secpath_reset(skb);
+		skb->dev = tunnel->dev;
+		return 1;
+>>>>>>> p9x
 	}
 
 	return -EINVAL;
@@ -91,9 +113,22 @@ static int vti_input_ipip(struct sk_buff *skb, int nexthdr, __be32 spi,
 
 		XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip4 = tunnel;
 
+<<<<<<< HEAD
 		skb->dev = tunnel->dev;
 
 		return xfrm_input(skb, nexthdr, spi, encap_type);
+=======
+	memset(&fl4, 0, sizeof(fl4));
+	flowi4_init_output(&fl4, tunnel->parms.link,
+			   be32_to_cpu(tunnel->parms.o_key), RT_TOS(tos),
+			   RT_SCOPE_UNIVERSE,
+			   IPPROTO_IPIP, 0,
+			   dst, tiph->saddr, 0, 0);
+	rt = ip_route_output_key(dev_net(dev), &fl4);
+	if (IS_ERR(rt)) {
+		dev->stats.tx_carrier_errors++;
+		goto tx_error_icmp;
+>>>>>>> p9x
 	}
 
 	return -EINVAL;
@@ -196,6 +231,7 @@ static netdev_tx_t vti_xmit(struct sk_buff *skb, struct net_device *dev,
 
 	if (!dst) {
 		dev->stats.tx_carrier_errors++;
+		ip_rt_put(rt);
 		goto tx_error_icmp;
 	}
 
@@ -389,7 +425,19 @@ static void vti_tunnel_setup(struct net_device *dev)
 {
 	dev->netdev_ops		= &vti_netdev_ops;
 	dev->type		= ARPHRD_TUNNEL;
+<<<<<<< HEAD
 	ip_tunnel_setup(dev, vti_net_id);
+=======
+	dev->destructor		= vti_dev_free;
+
+	dev->mtu		= ETH_DATA_LEN;
+	dev->flags		= IFF_NOARP;
+	dev->iflink		= 0;
+	dev->addr_len		= 4;
+	dev->features		|= NETIF_F_NETNS_LOCAL;
+	dev->features		|= NETIF_F_LLTX;
+	dev->priv_flags		&= ~IFF_XMIT_DST_RELEASE;
+>>>>>>> p9x
 }
 
 static int vti_tunnel_init(struct net_device *dev)
@@ -414,10 +462,21 @@ static void __net_init vti_fb_tunnel_init(struct net_device *dev)
 {
 	struct ip_tunnel *tunnel = netdev_priv(dev);
 	struct iphdr *iph = &tunnel->parms.iph;
+<<<<<<< HEAD
+=======
+	struct vti_net *ipn = net_generic(dev_net(dev), vti_net_id);
+>>>>>>> p9x
 
 	iph->version		= 4;
 	iph->protocol		= IPPROTO_IPIP;
 	iph->ihl		= 5;
+<<<<<<< HEAD
+=======
+
+	dev_hold(dev);
+	rcu_assign_pointer(ipn->tunnels_wc[0], tunnel);
+	return 0;
+>>>>>>> p9x
 }
 
 static struct xfrm4_protocol vti_esp4_protocol __read_mostly = {

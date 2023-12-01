@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -22,6 +26,13 @@ static struct qseecom_handle *sdmx_qseecom_handles[SDMX_MAX_SESSIONS];
 static struct mutex sdmx_lock[SDMX_MAX_SESSIONS];
 
 #define QSEECOM_SBUFF_SIZE	SZ_128K
+<<<<<<< HEAD
+=======
+#define QSEECOM_ALIGN_SIZE	0x40
+#define QSEECOM_ALIGN_MASK	(QSEECOM_ALIGN_SIZE - 1)
+#define QSEECOM_ALIGN(x)	\
+	((x + QSEECOM_ALIGN_SIZE) & (~QSEECOM_ALIGN_MASK))
+>>>>>>> p9x
 
 enum sdmx_cmd_id {
 	SDMX_OPEN_SESSION_CMD,
@@ -42,11 +53,34 @@ enum sdmx_cmd_id {
 
 #pragma pack(push, sdmx, 1)
 
+<<<<<<< HEAD
+=======
+struct __sdmx_buff_descr {
+	/* 32bit Physical address where buffer starts */
+	u32 base_addr;
+
+	/* Size of buffer */
+	u32 size;
+};
+
+struct __sdmx_data_buff_descr {
+	/* 32bit Physical chunks of the buffer */
+	struct __sdmx_buff_descr buff_chunks[SDMX_MAX_PHYSICAL_CHUNKS];
+
+	/* Length of buffer */
+	u32 length;
+};
+
+>>>>>>> p9x
 struct sdmx_proc_req {
 	enum sdmx_cmd_id cmd_id;
 	u32 session_handle;
 	u8 flags;
+<<<<<<< HEAD
 	struct sdmx_buff_descr in_buf_descr;
+=======
+	struct __sdmx_buff_descr in_buf_descr;
+>>>>>>> p9x
 	u32 inp_fill_cnt;
 	u32 in_rd_offset;
 	u32 num_filters;
@@ -109,12 +143,20 @@ struct sdmx_add_filt_req {
 	u32 session_handle;
 	u32 pid;
 	enum sdmx_filter filter_type;
+<<<<<<< HEAD
 	struct sdmx_buff_descr meta_data_buf;
+=======
+	struct __sdmx_buff_descr meta_data_buf;
+>>>>>>> p9x
 	enum sdmx_buf_mode buffer_mode;
 	enum sdmx_raw_out_format ts_out_format;
 	u32 flags;
 	u32 num_data_bufs;
+<<<<<<< HEAD
 	struct sdmx_data_buff_descr data_bufs[];
+=======
+	struct __sdmx_data_buff_descr data_bufs[];
+>>>>>>> p9x
 };
 
 struct sdmx_add_filt_rsp {
@@ -275,7 +317,11 @@ EXPORT_SYMBOL(sdmx_get_version);
  * Initializes a new secure demux instance and returns a handle of the instance.
  *
  * @session_handle: handle of a secure demux instance to get its version.
+<<<<<<< HEAD
  * Return the version if successful or an error code.
+=======
+ * Return the version if successfull or an error code.
+>>>>>>> p9x
  */
 int sdmx_open_session(int *session_handle)
 {
@@ -497,7 +543,11 @@ int sdmx_add_filter(int session_handle,
 	enum sdmx_raw_out_format ts_out_format,
 	u32 flags)
 {
+<<<<<<< HEAD
 	int res, cmd_len, rsp_len;
+=======
+	int res, cmd_len, rsp_len, i, j;
+>>>>>>> p9x
 	struct sdmx_add_filt_req *cmd;
 	struct sdmx_add_filt_rsp *rsp;
 	enum sdmx_status ret;
@@ -507,7 +557,11 @@ int sdmx_add_filter(int session_handle,
 		return SDMX_STATUS_INVALID_INPUT_PARAMS;
 
 	cmd_len = sizeof(struct sdmx_add_filt_req)
+<<<<<<< HEAD
 		+ num_data_bufs * sizeof(struct sdmx_data_buff_descr);
+=======
+		+ num_data_bufs * sizeof(struct __sdmx_data_buff_descr);
+>>>>>>> p9x
 	rsp_len = sizeof(struct sdmx_add_filt_rsp);
 
 	/* Will be later overridden by SDMX response */
@@ -529,6 +583,7 @@ int sdmx_add_filter(int session_handle,
 	cmd->filter_type = filterype;
 	cmd->ts_out_format = ts_out_format;
 	cmd->flags = flags;
+<<<<<<< HEAD
 	if (meta_data_buf != NULL)
 		memcpy(&(cmd->meta_data_buf), meta_data_buf,
 				sizeof(struct sdmx_buff_descr));
@@ -539,6 +594,26 @@ int sdmx_add_filter(int session_handle,
 	cmd->num_data_bufs = num_data_bufs;
 	memcpy(cmd->data_bufs, data_bufs,
 			num_data_bufs * sizeof(struct sdmx_data_buff_descr));
+=======
+	if (meta_data_buf != NULL) {
+		cmd->meta_data_buf.base_addr = (u32)meta_data_buf->base_addr;
+		cmd->meta_data_buf.size = meta_data_buf->size;
+	} else {
+		memset(&(cmd->meta_data_buf), 0, sizeof(cmd->meta_data_buf));
+	}
+
+	cmd->buffer_mode = d_buf_mode;
+	cmd->num_data_bufs = num_data_bufs;
+	for (i = 0; i < num_data_bufs; i++) {
+		for (j = 0; j < SDMX_MAX_PHYSICAL_CHUNKS; j++) {
+			cmd->data_bufs[i].buff_chunks[j].base_addr =
+				(u32)data_bufs[i].buff_chunks[j].base_addr;
+			cmd->data_bufs[i].buff_chunks[j].size =
+				data_bufs[i].buff_chunks[j].size;
+		}
+		cmd->data_bufs[i].length = data_bufs[i].length;
+	}
+>>>>>>> p9x
 
 	/* Issue QSEECom command */
 	res = qseecom_send_command(sdmx_qseecom_handles[session_handle],
@@ -829,7 +904,11 @@ int sdmx_process(int session_handle, u8 flags,
 	cmd->cmd_id = SDMX_PROCESS_CMD;
 	cmd->session_handle = session_handle;
 	cmd->flags = flags;
+<<<<<<< HEAD
 	cmd->in_buf_descr.base_addr = input_buf_desc->base_addr;
+=======
+	cmd->in_buf_descr.base_addr = (u32)input_buf_desc->base_addr;
+>>>>>>> p9x
 	cmd->in_buf_descr.size = input_buf_desc->size;
 	cmd->inp_fill_cnt = *input_fill_count;
 	cmd->in_rd_offset = *input_read_offset;

@@ -11,6 +11,7 @@ of_unittest-objs := unittest.o unittest-data/testcases.dtb.o
 obj-$(CONFIG_OF_MDIO)	+= of_mdio.o
 obj-$(CONFIG_OF_PCI)	+= of_pci.o
 obj-$(CONFIG_OF_PCI_IRQ)  += of_pci_irq.o
+<<<<<<< HEAD
 obj-$(CONFIG_OF_SPMI)   += of_spmi.o
 obj-$(CONFIG_OF_MTD)	+= of_mtd.o
 obj-$(CONFIG_OF_RESERVED_MEM) += of_reserved_mem.o
@@ -22,3 +23,13 @@ obj-$(CONFIG_OF_OVERLAY) += overlay.o
 
 CFLAGS_fdt.o = -I$(src)/../../scripts/dtc/libfdt
 CFLAGS_fdt_address.o = -I$(src)/../../scripts/dtc/libfdt
+=======
+obj-$(CONFIG_OF_SPMI)	+= of_spmi.o
+obj-$(CONFIG_OF_MTD)	+= of_mtd.o
+obj-$(CONFIG_OF_SLIMBUS)	+= of_slimbus.o
+obj-$(CONFIG_OF_CORESIGHT) += of_coresight.o
+obj-$(CONFIG_OF_BATTERYDATA)	+= of_batterydata.o
+obj-$(CONFIG_OF_RESERVED_MEM) += of_reserved_mem.o
+
+CFLAGS_fdt.o = -I$(src)/../../scripts/dtc/libfdt
+>>>>>>> p9x

@@ -284,11 +284,18 @@ static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE(0x1199, 0x6893) },	/* Sierra Wireless Device */
 	/* Sierra Wireless Direct IP modems */
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x1199, 0x68A3, 0xFF, 0xFF, 0xFF),
+<<<<<<< HEAD
+	  .driver_info = (kernel_ulong_t)&direct_ip_interface_blacklist
+	},
+	{ USB_DEVICE_AND_INTERFACE_INFO(0x1199, 0x68AA, 0xFF, 0xFF, 0xFF),
+=======
+>>>>>>> p9x
 	  .driver_info = (kernel_ulong_t)&direct_ip_interface_blacklist
 	},
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x1199, 0x68AA, 0xFF, 0xFF, 0xFF),
 	  .driver_info = (kernel_ulong_t)&direct_ip_interface_blacklist
 	},
+	{ USB_DEVICE(0x1199, 0x68AB) }, /* Sierra Wireless AR8550 */
 	/* AT&T Direct IP LTE modems */
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x0F3D, 0x68AA, 0xFF, 0xFF, 0xFF),
 	  .driver_info = (kernel_ulong_t)&direct_ip_interface_blacklist
@@ -768,16 +775,38 @@ static void sierra_close(struct usb_serial_port *port)
 	int i;
 	struct usb_serial *serial = port->serial;
 	struct sierra_port_private *portdata;
+<<<<<<< HEAD
 	struct sierra_intf_private *intfdata = usb_get_serial_data(serial);
+=======
+	struct sierra_intf_private *intfdata = port->serial->private;
+>>>>>>> p9x
 	struct urb *urb;
 
 	portdata = usb_get_serial_port_data(port);
 
+<<<<<<< HEAD
 	/*
 	 * Need to take susp_lock to make sure port is not already being
 	 * resumed, but no need to hold it due to ASYNC_INITIALIZED.
 	 */
 	spin_lock_irq(&intfdata->susp_lock);
+=======
+	portdata->rts_state = 0;
+	portdata->dtr_state = 0;
+
+	mutex_lock(&serial->disc_mutex);
+	if (!serial->disconnected) {
+		/* odd error handling due to pm counters */
+		if (!usb_autopm_get_interface(serial->interface))
+			sierra_send_setup(port);
+		else
+			usb_autopm_get_interface_no_resume(serial->interface);
+
+	}
+	mutex_unlock(&serial->disc_mutex);
+	spin_lock_irq(&intfdata->susp_lock);
+	portdata->opened = 0;
+>>>>>>> p9x
 	if (--intfdata->open_ports == 0)
 		serial->interface->needs_remote_wakeup = 0;
 	spin_unlock_irq(&intfdata->susp_lock);
@@ -831,8 +860,16 @@ static int sierra_open(struct tty_struct *tty, struct usb_serial_port *port)
 	err = sierra_submit_rx_urbs(port, GFP_KERNEL);
 	if (err)
 		goto err_submit;
+<<<<<<< HEAD
 
 	spin_lock_irq(&intfdata->susp_lock);
+=======
+
+	sierra_send_setup(port);
+
+	spin_lock_irq(&intfdata->susp_lock);
+	portdata->opened = 1;
+>>>>>>> p9x
 	if (++intfdata->open_ports == 1)
 		serial->interface->needs_remote_wakeup = 1;
 	spin_unlock_irq(&intfdata->susp_lock);
@@ -1038,8 +1075,29 @@ static int sierra_resume(struct usb_serial *serial)
 	for (i = 0; i < serial->num_ports; i++) {
 		port = serial->port[i];
 
+<<<<<<< HEAD
 		if (!test_bit(ASYNCB_INITIALIZED, &port->port.flags))
 			continue;
+=======
+		if (!portdata)
+			continue;
+
+		while ((urb = usb_get_from_anchor(&portdata->delayed))) {
+			usb_anchor_urb(urb, &portdata->active);
+			intfdata->in_flight++;
+			err = usb_submit_urb(urb, GFP_ATOMIC);
+			if (err < 0) {
+				intfdata->in_flight--;
+				usb_unanchor_urb(urb);
+				kfree(urb->transfer_buffer);
+				usb_free_urb(urb);
+				spin_lock(&portdata->lock);
+				portdata->outstanding_urbs--;
+				spin_unlock(&portdata->lock);
+				continue;
+			}
+		}
+>>>>>>> p9x
 
 		err = sierra_submit_delayed_urbs(port);
 		if (err)

@@ -1719,11 +1719,25 @@ int ieee80211_ibss_leave(struct ieee80211_sub_if_data *sdata)
 
 	/* remove beacon */
 	kfree(sdata->u.ibss.ie);
+<<<<<<< HEAD
 
 	/* on the next join, re-program HT parameters */
 	memset(&ifibss->ht_capa, 0, sizeof(ifibss->ht_capa));
 	memset(&ifibss->ht_capa_mask, 0, sizeof(ifibss->ht_capa_mask));
 
+=======
+	presp = rcu_dereference_protected(ifibss->presp,
+					  lockdep_is_held(&sdata->u.ibss.mtx));
+	RCU_INIT_POINTER(sdata->u.ibss.presp, NULL);
+	sdata->vif.bss_conf.ibss_joined = false;
+	sdata->vif.bss_conf.ibss_creator = false;
+	sdata->vif.bss_conf.enable_beacon = false;
+	sdata->vif.bss_conf.ssid_len = 0;
+	clear_bit(SDATA_STATE_OFFCHANNEL_BEACON_STOPPED, &sdata->state);
+	ieee80211_bss_info_change_notify(sdata, BSS_CHANGED_BEACON_ENABLED |
+						BSS_CHANGED_IBSS);
+	ieee80211_vif_release_channel(sdata);
+>>>>>>> p9x
 	synchronize_rcu();
 
 	skb_queue_purge(&sdata->skb_queue);

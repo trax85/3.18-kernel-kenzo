@@ -530,6 +530,7 @@ static struct clk_lookup cpu_clocks_8976[] = {
 static struct mux_div_clk *cpussmux[] = { &a53ssmux, &a72ssmux, &ccissmux };
 static struct cpu_clk_8976 *cpuclk[] = { &a53_clk, &a72_clk, &cci_clk};
 
+<<<<<<< HEAD
 #ifdef CONFIG_MACH_XIAOMI_KENZO
 extern int cpr_regulator_get_corner_voltage(struct regulator *regulator,
 		int corner);
@@ -613,6 +614,8 @@ ssize_t cpu_clock_set_vdd(const char *buf, size_t count)
 }
 #endif
 
+=======
+>>>>>>> p9x
 static struct clk *logical_cpu_to_clk(int cpu)
 {
 	struct device_node *cpu_node = of_get_cpu_node(cpu, NULL);
@@ -756,7 +759,11 @@ static void populate_opp_table(struct platform_device *pdev)
 	struct platform_device *apc0_dev, *apc1_dev;
 	struct device_node *apc0_node, *apc1_node;
 	unsigned long apc0_fmax, apc1_fmax;
+<<<<<<< HEAD
 	int cpu, a53_cpu = 0, a72_cpu = 0;
+=======
+	int cpu, a53_cpu, a72_cpu;
+>>>>>>> p9x
 
 	apc0_node = of_parse_phandle(pdev->dev.of_node, "vdd_a53-supply", 0);
 	apc1_node = of_parse_phandle(pdev->dev.of_node, "vdd_a72-supply", 0);

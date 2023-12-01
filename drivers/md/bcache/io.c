@@ -9,7 +9,156 @@
 #include "bset.h"
 #include "debug.h"
 
+<<<<<<< HEAD
 #include <linux/blkdev.h>
+=======
+static void bch_bi_idx_hack_endio(struct bio *bio, int error)
+{
+	struct bio *p = bio->bi_private;
+
+	bio_endio(p, error);
+	bio_put(bio);
+}
+
+static void bch_generic_make_request_hack(struct bio *bio)
+{
+	if (bio->bi_idx) {
+		struct bio *clone = bio_alloc(GFP_NOIO, bio_segments(bio));
+
+		memcpy(clone->bi_io_vec,
+		       bio_iovec(bio),
+		       bio_segments(bio) * sizeof(struct bio_vec));
+
+		clone->bi_sector	= bio->bi_sector;
+		clone->bi_bdev		= bio->bi_bdev;
+		clone->bi_rw		= bio->bi_rw;
+		clone->bi_vcnt		= bio_segments(bio);
+		clone->bi_size		= bio->bi_size;
+
+		clone->bi_private	= bio;
+		clone->bi_end_io	= bch_bi_idx_hack_endio;
+
+		bio = clone;
+	}
+
+	/*
+	 * Hack, since drivers that clone bios clone up to bi_max_vecs, but our
+	 * bios might have had more than that (before we split them per device
+	 * limitations).
+	 *
+	 * To be taken out once immutable bvec stuff is in.
+	 */
+	bio->bi_max_vecs = bio->bi_vcnt;
+
+	generic_make_request(bio);
+}
+
+/**
+ * bch_bio_split - split a bio
+ * @bio:	bio to split
+ * @sectors:	number of sectors to split from the front of @bio
+ * @gfp:	gfp mask
+ * @bs:		bio set to allocate from
+ *
+ * Allocates and returns a new bio which represents @sectors from the start of
+ * @bio, and updates @bio to represent the remaining sectors.
+ *
+ * If bio_sectors(@bio) was less than or equal to @sectors, returns @bio
+ * unchanged.
+ *
+ * The newly allocated bio will point to @bio's bi_io_vec, if the split was on a
+ * bvec boundry; it is the caller's responsibility to ensure that @bio is not
+ * freed before the split.
+ *
+ * If bch_bio_split() is running under generic_make_request(), it's not safe to
+ * allocate more than one bio from the same bio set. Therefore, if it is running
+ * under generic_make_request() it masks out __GFP_WAIT when doing the
+ * allocation. The caller must check for failure if there's any possibility of
+ * it being called from under generic_make_request(); it is then the caller's
+ * responsibility to retry from a safe context (by e.g. punting to workqueue).
+ */
+struct bio *bch_bio_split(struct bio *bio, int sectors,
+			  gfp_t gfp, struct bio_set *bs)
+{
+	unsigned idx = bio->bi_idx, vcnt = 0, nbytes = sectors << 9;
+	struct bio_vec *bv;
+	struct bio *ret = NULL;
+
+	BUG_ON(sectors <= 0);
+
+	/*
+	 * If we're being called from underneath generic_make_request() and we
+	 * already allocated any bios from this bio set, we risk deadlock if we
+	 * use the mempool. So instead, we possibly fail and let the caller punt
+	 * to workqueue or somesuch and retry in a safe context.
+	 */
+	if (current->bio_list)
+		gfp &= ~__GFP_WAIT;
+
+	if (sectors >= bio_sectors(bio))
+		return bio;
+
+	if (bio->bi_rw & REQ_DISCARD) {
+		ret = bio_alloc_bioset(gfp, 1, bs);
+		if (!ret)
+			return NULL;
+		idx = 0;
+		goto out;
+	}
+
+	bio_for_each_segment(bv, bio, idx) {
+		vcnt = idx - bio->bi_idx;
+
+		if (!nbytes) {
+			ret = bio_alloc_bioset(gfp, vcnt, bs);
+			if (!ret)
+				return NULL;
+
+			memcpy(ret->bi_io_vec, bio_iovec(bio),
+			       sizeof(struct bio_vec) * vcnt);
+
+			break;
+		} else if (nbytes < bv->bv_len) {
+			ret = bio_alloc_bioset(gfp, ++vcnt, bs);
+			if (!ret)
+				return NULL;
+
+			memcpy(ret->bi_io_vec, bio_iovec(bio),
+			       sizeof(struct bio_vec) * vcnt);
+
+			ret->bi_io_vec[vcnt - 1].bv_len = nbytes;
+			bv->bv_offset	+= nbytes;
+			bv->bv_len	-= nbytes;
+			break;
+		}
+
+		nbytes -= bv->bv_len;
+	}
+out:
+	ret->bi_bdev	= bio->bi_bdev;
+	ret->bi_sector	= bio->bi_sector;
+	ret->bi_size	= sectors << 9;
+	ret->bi_rw	= bio->bi_rw;
+	ret->bi_vcnt	= vcnt;
+	ret->bi_max_vecs = vcnt;
+
+	bio->bi_sector	+= sectors;
+	bio->bi_size	-= sectors << 9;
+	bio->bi_idx	 = idx;
+
+	if (bio_integrity(bio)) {
+		if (bio_integrity_clone(ret, bio, gfp)) {
+			bio_put(ret);
+			return NULL;
+		}
+
+		bio_integrity_trim(ret, 0, bio_sectors(ret));
+		bio_integrity_trim(bio, bio_sectors(ret), bio_sectors(bio));
+	}
+
+	return ret;
+}
+>>>>>>> p9x
 
 static unsigned bch_bio_max_sectors(struct bio *bio)
 {

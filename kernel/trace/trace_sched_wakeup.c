@@ -623,9 +623,12 @@ static int __wakeup_tracer_init(struct trace_array *tr)
 
 static int wakeup_tracer_init(struct trace_array *tr)
 {
+<<<<<<< HEAD
 	if (wakeup_busy)
 		return -EBUSY;
 
+=======
+>>>>>>> p9x
 	wakeup_dl = 0;
 	wakeup_rt = 0;
 	return __wakeup_tracer_init(tr);
@@ -633,9 +636,12 @@ static int wakeup_tracer_init(struct trace_array *tr)
 
 static int wakeup_rt_tracer_init(struct trace_array *tr)
 {
+<<<<<<< HEAD
 	if (wakeup_busy)
 		return -EBUSY;
 
+=======
+>>>>>>> p9x
 	wakeup_dl = 0;
 	wakeup_rt = 1;
 	return __wakeup_tracer_init(tr);
@@ -643,9 +649,12 @@ static int wakeup_rt_tracer_init(struct trace_array *tr)
 
 static int wakeup_dl_tracer_init(struct trace_array *tr)
 {
+<<<<<<< HEAD
 	if (wakeup_busy)
 		return -EBUSY;
 
+=======
+>>>>>>> p9x
 	wakeup_dl = 1;
 	wakeup_rt = 0;
 	return __wakeup_tracer_init(tr);
@@ -728,6 +737,28 @@ static struct tracer wakeup_dl_tracer __read_mostly =
 	.reset		= wakeup_tracer_reset,
 	.start		= wakeup_tracer_start,
 	.stop		= wakeup_tracer_stop,
+	.print_max	= true,
+	.print_header	= wakeup_print_header,
+	.print_line	= wakeup_print_line,
+	.flags		= &tracer_flags,
+	.set_flag	= wakeup_set_flag,
+	.flag_changed	= wakeup_flag_changed,
+#ifdef CONFIG_FTRACE_SELFTEST
+	.selftest    = trace_selftest_startup_wakeup,
+#endif
+	.open		= wakeup_trace_open,
+	.close		= wakeup_trace_close,
+	.use_max_tr	= true,
+};
+
+static struct tracer wakeup_dl_tracer __read_mostly =
+{
+	.name		= "wakeup_dl",
+	.init		= wakeup_dl_tracer_init,
+	.reset		= wakeup_tracer_reset,
+	.start		= wakeup_tracer_start,
+	.stop		= wakeup_tracer_stop,
+	.wait_pipe	= poll_wait_pipe,
 	.print_max	= true,
 	.print_header	= wakeup_print_header,
 	.print_line	= wakeup_print_line,

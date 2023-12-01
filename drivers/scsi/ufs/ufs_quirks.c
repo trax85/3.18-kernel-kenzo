@@ -11,7 +11,11 @@
  * GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
 #include "ufshcd.h"
+=======
+#include <linux/scsi/ufs/ufshcd.h>
+>>>>>>> p9x
 #include "ufs_quirks.h"
 
 
@@ -20,22 +24,32 @@ static struct ufs_card_fix ufs_fixups[] = {
 	UFS_FIX(UFS_VENDOR_SAMSUNG, UFS_ANY_MODEL, UFS_DEVICE_NO_VCCQ),
 	UFS_FIX(UFS_VENDOR_SAMSUNG, UFS_ANY_MODEL,
 		UFS_DEVICE_QUIRK_RECOVERY_FROM_DL_NAC_ERRORS),
+<<<<<<< HEAD
 	UFS_FIX(UFS_VENDOR_SAMSUNG, UFS_ANY_MODEL,
 		UFS_DEVICE_NO_FASTAUTO),
+=======
+>>>>>>> p9x
 	UFS_FIX(UFS_VENDOR_TOSHIBA, "THGLF2G9C8KBADG",
 		UFS_DEVICE_QUIRK_PA_TACTIVATE),
 	UFS_FIX(UFS_VENDOR_TOSHIBA, "THGLF2G9D8KBADG",
 		UFS_DEVICE_QUIRK_PA_TACTIVATE),
+<<<<<<< HEAD
 	UFS_FIX(UFS_VENDOR_SAMSUNG, UFS_ANY_MODEL,
 		UFS_DEVICE_QUIRK_HOST_PA_TACTIVATE),
 	UFS_FIX(UFS_VENDOR_HYNIX, UFS_ANY_MODEL,
 		UFS_DEVICE_QUIRK_HOST_PA_SAVECONFIGTIME),
+=======
+>>>>>>> p9x
 
 	END_FIX
 };
 
+<<<<<<< HEAD
 static int ufs_get_device_info(struct ufs_hba *hba,
 				struct ufs_card_info *card_data)
+=======
+int ufs_get_device_info(struct ufs_hba *hba, struct ufs_card_info *card_data)
+>>>>>>> p9x
 {
 	int err;
 	u8 model_index;

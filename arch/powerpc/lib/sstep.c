@@ -1456,6 +1456,7 @@ int __kprobes analyse_instr(struct instruction_op *op, struct pt_regs *regs,
 			op->type = MKOP(LOAD, BYTEREV, 4);
 			break;
 
+<<<<<<< HEAD
 		case 597:	/* lswi */
 			if (rb == 0)
 				rb = 32;	/* # bytes to load */
@@ -1466,6 +1467,8 @@ int __kprobes analyse_instr(struct instruction_op *op, struct pt_regs *regs,
 							   regs->gpr[ra]);
 			break;
 
+=======
+>>>>>>> p9x
 #ifdef CONFIG_PPC_FPU
 		case 535:	/* lfsx */
 		case 567:	/* lfsux */

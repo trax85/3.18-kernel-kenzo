@@ -14,8 +14,11 @@ Required properties:
 - qcom, msm_bus,num_paths: The paths for source and destination ports
 - qcom, msm_bus,vectors: Vectors for bus topology.
 - qcom,ce-opp-freq: indicates the CE operating frequency in Hz, changes from target to target.
+<<<<<<< HEAD
 - qcom,full-disk-encrypt-info : Vectors defining full disk encryption unit, crypto engine, pipe pair configuration in <unit#, ce#, pipe-pair#>
 - qcom,per-file-encrypt-info : Vectors defining per file encryption unit, crypto engine, pipe pair configuration in <unit#, ce#, pipe-pair#>
+=======
+>>>>>>> p9x
 
 Optional properties:
   - qcom,support-bus-scaling : indicates if driver support scaling the bus for crypto operation.
@@ -24,9 +27,13 @@ Optional properties:
   - qcom,no-clock-support : indicates clocks are not handled by qseecom (could be handled by RPM)
   - qcom,appsbl-qseecom-support : indicates if there is qseecom support in appsbootloader
   - vdd-hba-supply   : handle for fixed power regulator
+<<<<<<< HEAD
   - qcom,qsee-reentrancy-support: indicates the qsee reentrancy phase supported by the target
   - qcom,commonlib64-loaded-by-uefi: indicates commonlib64 is loaded by uefi already
   - qcom,fde-key-size: indicates which FDE key size is used in device.
+=======
+  - qcom,qsee-reentrancy-support: indicates if driver supports qsee command reentrancy
+>>>>>>> p9x
 
 Example:
 	qcom,qseecom@fe806000 {
@@ -47,6 +54,7 @@ Example:
 		qcom,msm_bus,num_paths = <1>;
 		qcom,no-clock-support;
 		qcom,appsbl-qseecom-support;
+<<<<<<< HEAD
                 qcom,fde-key-size;
 		qcom,msm_bus,vectors =
 			<55 512 0 0>,
@@ -75,6 +83,8 @@ Example: The following dts setup is the same as the example above.
 		qcom,no-clock-support;
 		qcom,appsbl-qseecom-support;
                 qcom,fde-key-size;
+=======
+>>>>>>> p9x
 		qcom,msm_bus,vectors =
 			<55 512 0 0>,
 			<55 512 3936000000 393600000>,

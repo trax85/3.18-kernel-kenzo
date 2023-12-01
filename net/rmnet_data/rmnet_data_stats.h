@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014, 2016 The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -39,7 +43,10 @@ enum rmnet_skb_free_e {
 	RMNET_STATS_SKBFREE_DEAGG_UNKOWN_IP_TYP,
 	RMNET_STATS_SKBFREE_DEAGG_DATA_LEN_0,
 	RMNET_STATS_SKBFREE_INGRESS_BAD_MAP_CKSUM,
+<<<<<<< HEAD
 	RMNET_STATS_SKBFREE_MAPC_UNSUPPORTED,
+=======
+>>>>>>> p9x
 	RMNET_STATS_SKBFREE_MAX
 };
 

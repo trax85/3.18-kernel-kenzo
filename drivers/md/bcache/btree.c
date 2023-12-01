@@ -392,6 +392,7 @@ static void do_btree_node_write(struct btree *b)
 	i->version	= BCACHE_BSET_VERSION;
 	i->csum		= btree_csum_set(b, i);
 
+<<<<<<< HEAD
 	BUG_ON(b->bio);
 	b->bio = bch_bbio_alloc(b->c);
 
@@ -399,6 +400,11 @@ static void do_btree_node_write(struct btree *b)
 	b->bio->bi_private	= cl;
 	b->bio->bi_rw		= REQ_META|WRITE_SYNC|REQ_FUA;
 	b->bio->bi_iter.bi_size	= roundup(set_bytes(i), block_bytes(b->c));
+=======
+	btree_bio_init(b);
+	b->bio->bi_rw	= REQ_META|WRITE_SYNC|REQ_FUA;
+	b->bio->bi_size	= set_blocks(i, b->c) * block_bytes(b->c);
+>>>>>>> p9x
 	bch_bio_map(b->bio, i);
 
 	/*
@@ -415,6 +421,12 @@ static void do_btree_node_write(struct btree *b)
 	 * flush, and writes appending to leaf nodes aren't blocking anything so
 	 * just make all btree node writes FUA to keep things sane.
 	 */
+<<<<<<< HEAD
+=======
+
+	bkey_copy(&k.key, &b->key);
+	SET_PTR_OFFSET(&k.key, 0, PTR_OFFSET(&k.key, 0) + bset_offset(b, i));
+>>>>>>> p9x
 
 	bkey_copy(&k.key, &b->key);
 	SET_PTR_OFFSET(&k.key, 0, PTR_OFFSET(&k.key, 0) +
@@ -1646,9 +1658,15 @@ static void btree_gc_start(struct cache_set *c)
 
 	for_each_cache(ca, c, i)
 		for_each_bucket(b, ca) {
+<<<<<<< HEAD
 			b->last_gc = b->gen;
 			if (!atomic_read(&b->pin)) {
 				SET_GC_MARK(b, 0);
+=======
+			b->gc_gen = b->gen;
+			if (!atomic_read(&b->pin)) {
+				SET_GC_MARK(b, GC_MARK_RECLAIMABLE);
+>>>>>>> p9x
 				SET_GC_SECTORS_USED(b, 0);
 			}
 		}
@@ -2251,8 +2269,11 @@ void bch_btree_set_root(struct btree *b)
 	struct closure cl;
 
 	closure_init_stack(&cl);
+<<<<<<< HEAD
 
 	trace_bcache_btree_set_root(b);
+=======
+>>>>>>> p9x
 
 	BUG_ON(!b->written);
 
@@ -2266,6 +2287,10 @@ void bch_btree_set_root(struct btree *b)
 	b->c->root = b;
 
 	bch_journal_meta(b->c, &cl);
+<<<<<<< HEAD
+=======
+	pr_debug("%s for %pf", pbtree(b), __builtin_return_address(0));
+>>>>>>> p9x
 	closure_sync(&cl);
 }
 

@@ -931,7 +931,19 @@ static void sender(void                *send_info,
 	else
 		list_add_tail(&msg->link, &smi_info->xmit_msgs);
 
+<<<<<<< HEAD
 	check_start_timer_thread(smi_info);
+=======
+	if (smi_info->si_state == SI_NORMAL && smi_info->curr_msg == NULL) {
+		smi_mod_timer(smi_info, jiffies + SI_TIMEOUT_JIFFIES);
+
+		if (smi_info->thread)
+			wake_up_process(smi_info->thread);
+
+		start_next_msg(smi_info);
+		smi_event_handler(smi_info, 0);
+	}
+>>>>>>> p9x
 	spin_unlock_irqrestore(&smi_info->si_lock, flags);
 }
 
@@ -1176,14 +1188,21 @@ static int smi_start_processing(void       *send_info,
 
 	new_smi->intf = intf;
 
-	/* Try to claim any interrupts. */
-	if (new_smi->irq_setup)
-		new_smi->irq_setup(new_smi);
-
 	/* Set up the timer that drives the interface. */
 	setup_timer(&new_smi->si_timer, smi_timeout, (long)new_smi);
 	smi_mod_timer(new_smi, jiffies + SI_TIMEOUT_JIFFIES);
 
+	/* Try to claim any interrupts. */
+	if (new_smi->irq_setup)
+		new_smi->irq_setup(new_smi);
+
+<<<<<<< HEAD
+	/* Set up the timer that drives the interface. */
+	setup_timer(&new_smi->si_timer, smi_timeout, (long)new_smi);
+	smi_mod_timer(new_smi, jiffies + SI_TIMEOUT_JIFFIES);
+
+=======
+>>>>>>> p9x
 	/*
 	 * Check if the user forcefully enabled the daemon.
 	 */

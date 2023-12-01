@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2014, 2016 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -70,7 +74,10 @@
 #define VPE_SCALE_COEFF_LSBn(n)	(0x50400 + 8 * (n))
 #define VPE_SCALE_COEFF_MSBn(n)	(0x50404 + 8 * (n))
 #define VPE_SCALE_COEFF_NUM			32
+<<<<<<< HEAD
 #define VPE_SCALE_COEFF_MAX_N			127
+=======
+>>>>>>> p9x
 
 /*********** end of register offset ********************/
 
@@ -192,9 +199,13 @@ struct msm_vpe_tasklet_queue_cmd {
 struct msm_vpe_buffer_map_info_t {
 	unsigned long len;
 	dma_addr_t phy_addr;
+<<<<<<< HEAD
 	struct dma_buf *dbuf;
 	struct dma_buf_attachment *attachment;
 	struct sg_table *table;
+=======
+	struct ion_handle *ion_handle;
+>>>>>>> p9x
 	struct msm_vpe_buffer_info_t buff_info;
 };
 

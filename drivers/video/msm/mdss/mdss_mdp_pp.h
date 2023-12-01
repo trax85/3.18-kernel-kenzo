@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014-2015, 2017, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -17,6 +21,7 @@
 
 #include <linux/msm_mdp.h>
 
+<<<<<<< HEAD
 #define MDSS_BLOCK_DISP_NUM (MDP_BLOCK_MAX - MDP_LOGICAL_BLOCK_DISP_0)
 
 /* PP STS related flags */
@@ -200,6 +205,8 @@ static inline bool pp_sts_is_enabled(u32 sts, int side)
 }
 
 /* Debug related functions */
+=======
+>>>>>>> p9x
 void pp_print_lut(void *data, int size, char *tab, uint32_t type);
 void pp_print_uint16_lut(uint16_t *data, int size, char *tab);
 void pp_print_pcc_coeff(struct mdp_pcc_coeff *pcc_coeff, int tab_depth);

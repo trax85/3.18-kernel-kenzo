@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2002,2008-2011,2013-2014,2016-2017 The Linux Foundation.
+=======
+/* Copyright (c) 2002,2008-2011,2013-2014 The Linux Foundation.
+>>>>>>> p9x
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -35,6 +39,16 @@
 					__func__, ##args);\
 	} while (0)
 
+<<<<<<< HEAD
+=======
+#define KGSL_LOG_ERR_RATELIMITED(dev, lvl, fmt, args...) \
+	do { \
+		if ((lvl) >= 3)  \
+			dev_err_ratelimited(dev, "|%s| " fmt, \
+					__func__, ##args);\
+	} while (0)
+
+>>>>>>> p9x
 #define KGSL_LOG_CRIT(dev, lvl, fmt, args...) \
 	do { \
 		if ((lvl) >= 2) \
@@ -48,6 +62,12 @@
 		BUG(); \
 	} while (0)
 
+<<<<<<< HEAD
+=======
+#define KGSL_LOG_POSTMORTEM_WRITE(_dev, fmt, args...) \
+	do { dev_crit(_dev->dev, fmt, ##args); } while (0)
+
+>>>>>>> p9x
 #define KGSL_LOG_DUMP(_dev, fmt, args...)	dev_err(_dev->dev, fmt, ##args)
 
 #define KGSL_DEV_ERR_ONCE(_dev, fmt, args...) \
@@ -67,6 +87,7 @@
 					__func__, ##args);\
 	} while (0)
 
+<<<<<<< HEAD
 #define KGSL_LOG_ERR_RATELIMITED(dev, lvl, fmt, args...) \
 	do { \
 		if ((lvl) >= 3) \
@@ -74,6 +95,8 @@
 					__func__, ##args);\
 	} while (0)
 
+=======
+>>>>>>> p9x
 #define KGSL_DRV_INFO(_dev, fmt, args...) \
 KGSL_LOG_INFO(_dev->dev, _dev->drv_log, fmt, ##args)
 #define KGSL_DRV_WARN(_dev, fmt, args...) \
@@ -84,17 +107,46 @@ KGSL_LOG_ERR(_dev->dev, _dev->drv_log, fmt, ##args)
 KGSL_LOG_CRIT(_dev->dev, _dev->drv_log, fmt, ##args)
 #define KGSL_DRV_CRIT_RATELIMIT(_dev, fmt, args...) \
 KGSL_LOG_CRIT_RATELIMITED(_dev->dev, _dev->drv_log, fmt, ##args)
+<<<<<<< HEAD
 #define KGSL_DRV_ERR_RATELIMIT(_dev, fmt, args...) \
 KGSL_LOG_ERR_RATELIMITED(_dev->dev, _dev->drv_log, fmt, ##args)
 #define KGSL_DRV_FATAL(_dev, fmt, args...) \
 KGSL_LOG_FATAL((_dev)->dev, (_dev)->drv_log, fmt, ##args)
 
+=======
+#define KGSL_DRV_FATAL(_dev, fmt, args...) \
+KGSL_LOG_FATAL((_dev)->dev, (_dev)->drv_log, fmt, ##args)
+
+#define KGSL_CMD_INFO(_dev, fmt, args...) \
+KGSL_LOG_INFO(_dev->dev, _dev->cmd_log, fmt, ##args)
+#define KGSL_CMD_WARN(_dev, fmt, args...) \
+KGSL_LOG_WARN(_dev->dev, _dev->cmd_log, fmt, ##args)
+#define KGSL_CMD_ERR(_dev, fmt, args...) \
+KGSL_LOG_ERR(_dev->dev, _dev->cmd_log, fmt, ##args)
+#define KGSL_CMD_CRIT(_dev, fmt, args...) \
+KGSL_LOG_CRIT(_dev->dev, _dev->cmd_log, fmt, ##args)
+
+#define KGSL_CTXT_INFO(_dev, fmt, args...) \
+KGSL_LOG_INFO(_dev->dev, _dev->ctxt_log, fmt, ##args)
+#define KGSL_CTXT_WARN(_dev, fmt, args...) \
+KGSL_LOG_WARN(_dev->dev, _dev->ctxt_log, fmt, ##args)
+#define KGSL_CTXT_ERR(_dev, fmt, args...)  \
+KGSL_LOG_ERR(_dev->dev, _dev->ctxt_log, fmt, ##args)
+#define KGSL_CTXT_CRIT(_dev, fmt, args...) \
+KGSL_LOG_CRIT(_dev->dev, _dev->ctxt_log, fmt, ##args)
+
+>>>>>>> p9x
 #define KGSL_MEM_INFO(_dev, fmt, args...) \
 KGSL_LOG_INFO(_dev->dev, _dev->mem_log, fmt, ##args)
 #define KGSL_MEM_WARN(_dev, fmt, args...) \
 KGSL_LOG_WARN(_dev->dev, _dev->mem_log, fmt, ##args)
 #define KGSL_MEM_ERR(_dev, fmt, args...)  \
 KGSL_LOG_ERR(_dev->dev, _dev->mem_log, fmt, ##args)
+<<<<<<< HEAD
+=======
+#define KGSL_MEM_ERR_RATELIMITED(_dev, fmt, args...)  \
+KGSL_LOG_ERR_RATELIMITED(_dev->dev, _dev->mem_log, fmt, ##args)
+>>>>>>> p9x
 #define KGSL_MEM_CRIT(_dev, fmt, args...) \
 KGSL_LOG_CRIT(_dev->dev, _dev->mem_log, fmt, ##args)
 
@@ -113,4 +165,16 @@ KGSL_LOG_CRIT(_dev->dev, _dev->pwr_log, fmt, ##args)
 #define KGSL_CORE_ERR(fmt, args...) \
 pr_err("kgsl: %s: " fmt, __func__, ##args)
 
+<<<<<<< HEAD
+=======
+#define KGSL_CORE_ERR_ONCE(fmt, args...) \
+({ \
+	static bool kgsl_core_err_once; \
+	if (!kgsl_core_err_once) { \
+		kgsl_core_err_once = true; \
+		pr_err("kgsl: %s: " fmt, __func__, ##args); \
+	} \
+})
+
+>>>>>>> p9x
 #endif /* __KGSL_LOG_H */

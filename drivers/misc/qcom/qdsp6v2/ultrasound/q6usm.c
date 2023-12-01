@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2016, 2019, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -33,7 +37,11 @@
 #define WRITEDONE_IDX_STATUS    0
 
 /* Standard timeout in the asynchronous ops */
+<<<<<<< HEAD
 #define Q6USM_TIMEOUT_JIFFIES	(1*HZ) /* 1 sec */
+=======
+#define Q6USM_TIMEOUT_JIFFIES	1000 /* 1 sec */
+>>>>>>> p9x
 
 static DEFINE_MUTEX(session_lock);
 
@@ -90,8 +98,12 @@ static int q6usm_memory_map(phys_addr_t buf_add, int dir, uint32_t bufsz,
 	mem_region_map.flags = 0;
 
 	mem_region_map.shm_addr_lsw = lower_32_bits(buf_add);
+<<<<<<< HEAD
 	mem_region_map.shm_addr_msw =
 			msm_audio_populate_upper_32_bits(buf_add);
+=======
+	mem_region_map.shm_addr_msw = populate_upper_32_bits(buf_add);
+>>>>>>> p9x
 	mem_region_map.mem_size_bytes = bufsz * bufcnt;
 
 	rc = apr_send_pkt(this_mmap.apr, (uint32_t *) &mem_region_map);
@@ -104,7 +116,11 @@ static int q6usm_memory_map(phys_addr_t buf_add, int dir, uint32_t bufsz,
 
 	rc = wait_event_timeout(this_mmap.cmd_wait,
 				(atomic_read(&this_mmap.cmd_state) == 0),
+<<<<<<< HEAD
 				Q6USM_TIMEOUT_JIFFIES);
+=======
+				 msecs_to_jiffies(Q6USM_TIMEOUT_JIFFIES));
+>>>>>>> p9x
 	if (!rc) {
 		rc = -ETIME;
 		pr_err("%s: timeout. waited for memory_map\n", __func__);
@@ -142,7 +158,11 @@ int q6usm_memory_unmap(phys_addr_t buf_add, int dir, uint32_t session,
 
 	rc = wait_event_timeout(this_mmap.cmd_wait,
 				(atomic_read(&this_mmap.cmd_state) == 0),
+<<<<<<< HEAD
 				Q6USM_TIMEOUT_JIFFIES);
+=======
+				 msecs_to_jiffies(Q6USM_TIMEOUT_JIFFIES));
+>>>>>>> p9x
 	if (!rc) {
 		rc = -ETIME;
 		pr_err("%s: timeout. waited for memory_unmap\n", __func__);
@@ -507,12 +527,15 @@ static int32_t q6usm_mmapcallback(struct apr_client_data *data, void *priv)
 	uint32_t token;
 	uint32_t *payload = data->payload;
 
+<<<<<<< HEAD
 	if (data->payload_size < (2 * sizeof(uint32_t))) {
 		pr_err("%s: payload has invalid size[%d]\n", __func__,
 		       data->payload_size);
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> p9x
 	pr_debug("%s: ptr0[0x%x]; ptr1[0x%x]; opcode[0x%x]\n",
 		 __func__, payload[0], payload[1], data->opcode);
 	pr_debug("%s: token[0x%x]; payload_size[%d]; src[%d]; dest[%d];\n",
@@ -573,11 +596,14 @@ static int32_t q6usm_callback(struct apr_client_data *data, void *priv)
 	}
 
 	if (data->opcode == APR_BASIC_RSP_RESULT) {
+<<<<<<< HEAD
 		if (data->payload_size < (2 * sizeof(uint32_t))) {
 			pr_err("%s: payload has invalid size[%d]\n", __func__,
 			       data->payload_size);
 			return -EINVAL;
 		}
+=======
+>>>>>>> p9x
 		/* status field check */
 		if (payload[1]) {
 			pr_err("%s: wrong response[%d] on cmd [%d]\n",
@@ -641,6 +667,7 @@ static int32_t q6usm_callback(struct apr_client_data *data, void *priv)
 
 		opcode = Q6USM_EVENT_READ_DONE;
 		spin_lock_irqsave(&port->dsp_lock, dsp_flags);
+<<<<<<< HEAD
 		if (data->payload_size <
 		    (sizeof(uint32_t)*(READDONE_IDX_STATUS + 1))) {
 			pr_err("%s: Invalid payload size for READDONE[%d]\n",
@@ -649,6 +676,8 @@ static int32_t q6usm_callback(struct apr_client_data *data, void *priv)
 					       dsp_flags);
 			return -EINVAL;
 		}
+=======
+>>>>>>> p9x
 		if (payload[READDONE_IDX_STATUS]) {
 			pr_err("%s: wrong READDONE[%d]; token[%d]\n",
 			       __func__,
@@ -694,12 +723,15 @@ static int32_t q6usm_callback(struct apr_client_data *data, void *priv)
 		struct us_port_data *port = &usc->port[IN];
 
 		opcode = Q6USM_EVENT_WRITE_DONE;
+<<<<<<< HEAD
 		if (data->payload_size <
 		    (sizeof(uint32_t)*(WRITEDONE_IDX_STATUS + 1))) {
 			pr_err("%s: Invalid payload size for WRITEDONE[%d]\n",
 			       __func__, data->payload_size);
 			return -EINVAL;
 		}
+=======
+>>>>>>> p9x
 		if (payload[WRITEDONE_IDX_STATUS]) {
 			pr_err("%s: wrong WRITEDONE_IDX_STATUS[%d]\n",
 			       __func__,
@@ -779,7 +811,11 @@ static void q6usm_add_hdr(struct us_client *usc, struct apr_hdr *hdr,
 		hdr->token = usc->session;
 		atomic_set(&usc->cmd_state, 1);
 	}
+<<<<<<< HEAD
 	hdr->pkt_size  = pkt_size;
+=======
+	hdr->pkt_size  = APR_PKT_SIZE(APR_HDR_SIZE, pkt_size);
+>>>>>>> p9x
 	mutex_unlock(&usc->cmd_lock);
 	return;
 }
@@ -818,13 +854,21 @@ int q6usm_open_read(struct us_client *usc,
 	int rc = 0x00;
 	struct usm_stream_cmd_open_read open;
 
+<<<<<<< HEAD
+=======
+	pr_debug("%s: session[%d]", __func__, usc->session);
+
+>>>>>>> p9x
 	if ((usc == NULL) || (usc->apr == NULL)) {
 		pr_err("%s: client or its apr is NULL\n", __func__);
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	pr_debug("%s: session[%d]", __func__, usc->session);
 
+=======
+>>>>>>> p9x
 	q6usm_add_hdr(usc, &open.hdr, sizeof(open), true);
 	open.hdr.opcode = USM_STREAM_CMD_OPEN_READ;
 	open.src_endpoint = 0; /* AFE */
@@ -845,7 +889,11 @@ int q6usm_open_read(struct us_client *usc,
 	}
 	rc = wait_event_timeout(usc->cmd_wait,
 				(atomic_read(&usc->cmd_state) == 0),
+<<<<<<< HEAD
 				Q6USM_TIMEOUT_JIFFIES);
+=======
+				 msecs_to_jiffies(Q6USM_TIMEOUT_JIFFIES));
+>>>>>>> p9x
 	if (!rc) {
 		rc = -ETIME;
 		pr_err("%s: timeout, waited for OPEN_READ rc[%d]\n",
@@ -900,7 +948,11 @@ int q6usm_enc_cfg_blk(struct us_client *usc, struct us_encdec_cfg *us_cfg)
 	} else
 		round_params_size = 0;
 
+<<<<<<< HEAD
 	q6usm_add_hdr(usc, &enc_cfg->hdr, total_cfg_size, true);
+=======
+	q6usm_add_hdr(usc, &enc_cfg->hdr, total_cfg_size - APR_HDR_SIZE, true);
+>>>>>>> p9x
 
 	enc_cfg->hdr.opcode = USM_STREAM_CMD_SET_ENC_PARAM;
 	enc_cfg->param_id = USM_PARAM_ID_ENCDEC_ENC_CFG_BLK;
@@ -955,7 +1007,11 @@ int q6usm_enc_cfg_blk(struct us_client *usc, struct us_encdec_cfg *us_cfg)
 	}
 	rc = wait_event_timeout(usc->cmd_wait,
 				(atomic_read(&usc->cmd_state) == 0),
+<<<<<<< HEAD
 				Q6USM_TIMEOUT_JIFFIES);
+=======
+				 msecs_to_jiffies(Q6USM_TIMEOUT_JIFFIES));
+>>>>>>> p9x
 	if (!rc) {
 		rc = -ETIME;
 		pr_err("%s: timeout opcode[0x%x]\n",
@@ -1014,7 +1070,11 @@ int q6usm_dec_cfg_blk(struct us_client *usc, struct us_encdec_cfg *us_cfg)
 		round_params_size = 0;
 	}
 
+<<<<<<< HEAD
 	q6usm_add_hdr(usc, &dec_cfg->hdr, total_cfg_size, true);
+=======
+	q6usm_add_hdr(usc, &dec_cfg->hdr, total_cfg_size - APR_HDR_SIZE, true);
+>>>>>>> p9x
 
 	dec_cfg->hdr.opcode = USM_DATA_CMD_MEDIA_FORMAT_UPDATE;
 	dec_cfg->format_id = int_format;
@@ -1043,7 +1103,11 @@ int q6usm_dec_cfg_blk(struct us_client *usc, struct us_encdec_cfg *us_cfg)
 	}
 	rc = wait_event_timeout(usc->cmd_wait,
 				(atomic_read(&usc->cmd_state) == 0),
+<<<<<<< HEAD
 				Q6USM_TIMEOUT_JIFFIES);
+=======
+				 msecs_to_jiffies(Q6USM_TIMEOUT_JIFFIES));
+>>>>>>> p9x
 	if (!rc) {
 		rc = -ETIME;
 		pr_err("%s: timeout opcode[0x%x]\n",
@@ -1065,13 +1129,21 @@ int q6usm_open_write(struct us_client *usc,
 	uint32_t int_format = INVALID_FORMAT;
 	struct usm_stream_cmd_open_write open;
 
+<<<<<<< HEAD
+=======
+	pr_debug("%s: session[%d]", __func__, usc->session);
+
+>>>>>>> p9x
 	if ((usc == NULL) || (usc->apr == NULL)) {
 		pr_err("%s: APR handle NULL\n", __func__);
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	pr_debug("%s: session[%d]", __func__, usc->session);
 
+=======
+>>>>>>> p9x
 	q6usm_add_hdr(usc, &open.hdr, sizeof(open), true);
 	open.hdr.opcode = USM_STREAM_CMD_OPEN_WRITE;
 
@@ -1091,7 +1163,11 @@ int q6usm_open_write(struct us_client *usc,
 	}
 	rc = wait_event_timeout(usc->cmd_wait,
 				(atomic_read(&usc->cmd_state) == 0),
+<<<<<<< HEAD
 				Q6USM_TIMEOUT_JIFFIES);
+=======
+				 msecs_to_jiffies(Q6USM_TIMEOUT_JIFFIES));
+>>>>>>> p9x
 	if (!rc) {
 		rc = -ETIME;
 		pr_err("%s:timeout. waited for OPEN_WRITR rc[%d]\n",
@@ -1129,7 +1205,11 @@ int q6usm_run(struct us_client *usc, uint32_t flags,
 
 	rc = wait_event_timeout(usc->cmd_wait,
 				(atomic_read(&usc->cmd_state) == 0),
+<<<<<<< HEAD
 				Q6USM_TIMEOUT_JIFFIES);
+=======
+				 msecs_to_jiffies(Q6USM_TIMEOUT_JIFFIES));
+>>>>>>> p9x
 	if (!rc) {
 		rc = -ETIME;
 		pr_err("%s: timeout. waited for run success rc[%d]\n",
@@ -1174,13 +1254,21 @@ int q6usm_read(struct us_client *usc, uint32_t read_ind)
 		read_counter = (port->buf_cnt - port->cpu_buf) + read_ind;
 	}
 
+<<<<<<< HEAD
 	q6usm_add_hdr(usc, &read.hdr, sizeof(read), false);
+=======
+	q6usm_add_hdr(usc, &read.hdr, (sizeof(read) - APR_HDR_SIZE), false);
+>>>>>>> p9x
 
 	read.hdr.opcode = USM_DATA_CMD_READ;
 	read.buf_size = port->buf_size;
 	buf_addr = (u64)(port->phys) + port->buf_size * (port->cpu_buf);
 	read.buf_addr_lsw = lower_32_bits(buf_addr);
+<<<<<<< HEAD
 	read.buf_addr_msw = msm_audio_populate_upper_32_bits(buf_addr);
+=======
+	read.buf_addr_msw = populate_upper_32_bits(buf_addr);
+>>>>>>> p9x
 	read.mem_map_handle = *((uint32_t *)(port->ext));
 
 	for (loop_ind = 0; loop_ind < read_counter; ++loop_ind) {
@@ -1189,7 +1277,11 @@ int q6usm_read(struct us_client *usc, uint32_t read_ind)
 		buf_addr = (u64)(port->phys) +
 				port->buf_size * (port->cpu_buf);
 		read.buf_addr_lsw = lower_32_bits(buf_addr);
+<<<<<<< HEAD
 		read.buf_addr_msw = msm_audio_populate_upper_32_bits(buf_addr);
+=======
+		read.buf_addr_msw = populate_upper_32_bits(buf_addr);
+>>>>>>> p9x
 		read.seq_id = port->cpu_buf;
 		read.hdr.token = port->cpu_buf;
 		read.counter = 1;
@@ -1250,13 +1342,22 @@ int q6usm_write(struct us_client *usc, uint32_t write_ind)
 		}
 	}
 
+<<<<<<< HEAD
 	q6usm_add_hdr(usc, &cmd_write.hdr, sizeof(cmd_write), false);
+=======
+	q6usm_add_hdr(usc, &cmd_write.hdr,
+		      (sizeof(cmd_write) - APR_HDR_SIZE), false);
+>>>>>>> p9x
 
 	cmd_write.hdr.opcode = USM_DATA_CMD_WRITE;
 	cmd_write.buf_size = port->buf_size;
 	buf_addr = (u64)(port->phys) + port->buf_size * (port->cpu_buf);
 	cmd_write.buf_addr_lsw = lower_32_bits(buf_addr);
+<<<<<<< HEAD
 	cmd_write.buf_addr_msw = msm_audio_populate_upper_32_bits(buf_addr);
+=======
+	cmd_write.buf_addr_msw = populate_upper_32_bits(buf_addr);
+>>>>>>> p9x
 	cmd_write.mem_map_handle = *((uint32_t *)(port->ext));
 	cmd_write.res0 = 0;
 	cmd_write.res1 = 0;
@@ -1268,8 +1369,12 @@ int q6usm_write(struct us_client *usc, uint32_t write_ind)
 		buf_addr = (u64)(port->phys) +
 				port->buf_size * (port->cpu_buf);
 		cmd_write.buf_addr_lsw = lower_32_bits(buf_addr);
+<<<<<<< HEAD
 		cmd_write.buf_addr_msw =
 				msm_audio_populate_upper_32_bits(buf_addr);
+=======
+		cmd_write.buf_addr_msw = populate_upper_32_bits(buf_addr);
+>>>>>>> p9x
 		cmd_write.seq_id = port->cpu_buf;
 		cmd_write.hdr.token = port->cpu_buf;
 
@@ -1322,7 +1427,11 @@ int q6usm_cmd(struct us_client *usc, int cmd)
 		pr_err("%s: APR handle NULL\n", __func__);
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	q6usm_add_hdr(usc, &hdr, sizeof(hdr), true);
+=======
+	q6usm_add_hdr(usc, &hdr, (sizeof(hdr) - APR_HDR_SIZE), true);
+>>>>>>> p9x
 	switch (cmd) {
 	case CMD_CLOSE:
 		hdr.opcode = USM_STREAM_CMD_CLOSE;
@@ -1340,7 +1449,11 @@ int q6usm_cmd(struct us_client *usc, int cmd)
 		goto fail_cmd;
 	}
 	rc = wait_event_timeout(usc->cmd_wait, (atomic_read(state) == 0),
+<<<<<<< HEAD
 				Q6USM_TIMEOUT_JIFFIES);
+=======
+				msecs_to_jiffies(Q6USM_TIMEOUT_JIFFIES));
+>>>>>>> p9x
 	if (!rc) {
 		rc = -ETIME;
 		pr_err("%s:timeout. waited for response opcode[0x%x]\n",
@@ -1368,7 +1481,12 @@ int q6usm_set_us_detection(struct us_client *usc,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	q6usm_add_hdr(usc, &detect_info->hdr, detect_info_size, true);
+=======
+	q6usm_add_hdr(usc, &detect_info->hdr,
+		      detect_info_size - APR_HDR_SIZE, true);
+>>>>>>> p9x
 
 	detect_info->hdr.opcode = USM_SESSION_CMD_SIGNAL_DETECT_MODE;
 
@@ -1379,11 +1497,19 @@ int q6usm_set_us_detection(struct us_client *usc,
 	}
 	rc = wait_event_timeout(usc->cmd_wait,
 				(atomic_read(&usc->cmd_state) == 0),
+<<<<<<< HEAD
 				Q6USM_TIMEOUT_JIFFIES);
 	if (!rc) {
 		rc = -ETIME;
 		pr_err("%s: CMD_SIGNAL_DETECT_MODE: timeout=%d\n",
 		       __func__, Q6USM_TIMEOUT_JIFFIES);
+=======
+				 msecs_to_jiffies(Q6USM_TIMEOUT_JIFFIES));
+	if (!rc) {
+		rc = -ETIME;
+		pr_err("%s: CMD_SIGNAL_DETECT_MODE: timeout=%ld\n",
+		       __func__, msecs_to_jiffies(Q6USM_TIMEOUT_JIFFIES));
+>>>>>>> p9x
 	} else
 		rc = 0;
 
@@ -1403,12 +1529,21 @@ int q6usm_set_us_stream_param(int dir, struct us_client *usc,
 	}
 	port = &usc->port[dir];
 
+<<<<<<< HEAD
 	q6usm_add_hdr(usc, &cmd_set_param.hdr, sizeof(cmd_set_param), true);
 
 	cmd_set_param.hdr.opcode = USM_STREAM_CMD_SET_PARAM;
 	cmd_set_param.buf_size = buf_size;
 	cmd_set_param.buf_addr_msw =
 			msm_audio_populate_upper_32_bits(port->param_phys);
+=======
+	q6usm_add_hdr(usc, &cmd_set_param.hdr,
+		(sizeof(cmd_set_param) - APR_HDR_SIZE), true);
+
+	cmd_set_param.hdr.opcode = USM_STREAM_CMD_SET_PARAM;
+	cmd_set_param.buf_size = buf_size;
+	cmd_set_param.buf_addr_msw = populate_upper_32_bits(port->param_phys);
+>>>>>>> p9x
 	cmd_set_param.buf_addr_lsw = lower_32_bits(port->param_phys);
 	cmd_set_param.mem_map_handle =
 			*((uint32_t *)(port->param_buf_mem_handle));
@@ -1425,11 +1560,19 @@ int q6usm_set_us_stream_param(int dir, struct us_client *usc,
 
 	rc = wait_event_timeout(usc->cmd_wait,
 				(atomic_read(&usc->cmd_state) == 0),
+<<<<<<< HEAD
 				Q6USM_TIMEOUT_JIFFIES);
 	if (!rc) {
 		rc = -ETIME;
 		pr_err("%s: CMD_SET_PARAM: timeout=%d\n",
 			__func__, Q6USM_TIMEOUT_JIFFIES);
+=======
+				 msecs_to_jiffies(Q6USM_TIMEOUT_JIFFIES));
+	if (!rc) {
+		rc = -ETIME;
+		pr_err("%s: CMD_SET_PARAM: timeout=%ld\n",
+			__func__, msecs_to_jiffies(Q6USM_TIMEOUT_JIFFIES));
+>>>>>>> p9x
 	} else
 		rc = 0;
 
@@ -1449,12 +1592,21 @@ int q6usm_get_us_stream_param(int dir, struct us_client *usc,
 	}
 	port = &usc->port[dir];
 
+<<<<<<< HEAD
 	q6usm_add_hdr(usc, &cmd_get_param.hdr, sizeof(cmd_get_param), true);
 
 	cmd_get_param.hdr.opcode = USM_STREAM_CMD_GET_PARAM;
 	cmd_get_param.buf_size = buf_size;
 	cmd_get_param.buf_addr_msw =
 			msm_audio_populate_upper_32_bits(port->param_phys);
+=======
+	q6usm_add_hdr(usc, &cmd_get_param.hdr,
+			(sizeof(cmd_get_param) - APR_HDR_SIZE), true);
+
+	cmd_get_param.hdr.opcode = USM_STREAM_CMD_GET_PARAM;
+	cmd_get_param.buf_size = buf_size;
+	cmd_get_param.buf_addr_msw = populate_upper_32_bits(port->param_phys);
+>>>>>>> p9x
 	cmd_get_param.buf_addr_lsw = lower_32_bits(port->param_phys);
 	cmd_get_param.mem_map_handle =
 			*((uint32_t *)(port->param_buf_mem_handle));
@@ -1471,11 +1623,19 @@ int q6usm_get_us_stream_param(int dir, struct us_client *usc,
 
 	rc = wait_event_timeout(usc->cmd_wait,
 				(atomic_read(&usc->cmd_state) == 0),
+<<<<<<< HEAD
 				Q6USM_TIMEOUT_JIFFIES);
 	if (!rc) {
 		rc = -ETIME;
 		pr_err("%s: CMD_GET_PARAM: timeout=%d\n",
 			__func__, Q6USM_TIMEOUT_JIFFIES);
+=======
+				 msecs_to_jiffies(Q6USM_TIMEOUT_JIFFIES));
+	if (!rc) {
+		rc = -ETIME;
+		pr_err("%s: CMD_GET_PARAM: timeout=%ld\n",
+			__func__, msecs_to_jiffies(Q6USM_TIMEOUT_JIFFIES));
+>>>>>>> p9x
 	} else
 		rc = 0;
 

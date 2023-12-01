@@ -109,7 +109,13 @@ _nouveau_mc_dtor(struct nouveau_object *object)
 
 int
 nouveau_mc_create_(struct nouveau_object *parent, struct nouveau_object *engine,
+<<<<<<< HEAD
 		   struct nouveau_oclass *bclass, int length, void **pobject)
+=======
+		   struct nouveau_oclass *oclass,
+		   const struct nouveau_mc_intr *intr_map,
+		   int length, void **pobject)
+>>>>>>> p9x
 {
 	const struct nouveau_mc_oclass *oclass = (void *)bclass;
 	struct nouveau_device *device = nv_device(parent);
@@ -122,6 +128,7 @@ nouveau_mc_create_(struct nouveau_object *parent, struct nouveau_object *engine,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	pmc->unk260 = nouveau_mc_unk260;
 
 	if (nv_device_is_pci(device))
@@ -162,6 +169,12 @@ nouveau_mc_create_(struct nouveau_object *parent, struct nouveau_object *engine,
 	ret = request_irq(pmc->irq, nouveau_mc_intr, IRQF_SHARED, "nouveau",
 			  pmc);
 
+=======
+	pmc->intr_map = intr_map;
+
+	ret = request_irq(device->pdev->irq, nouveau_mc_intr,
+			  IRQF_SHARED, "nouveau", pmc);
+>>>>>>> p9x
 	if (ret < 0)
 		return ret;
 

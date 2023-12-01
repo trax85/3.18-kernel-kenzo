@@ -33,6 +33,10 @@ struct dm_io_client {
 struct io {
 	unsigned long error_bits;
 	atomic_t count;
+<<<<<<< HEAD
+=======
+	struct completion *wait;
+>>>>>>> p9x
 	struct dm_io_client *client;
 	io_notify_fn callback;
 	void *context;
@@ -130,8 +134,28 @@ static void dec_count(struct io *io, unsigned int region, int error)
 	if (error)
 		set_bit(region, &io->error_bits);
 
+<<<<<<< HEAD
 	if (atomic_dec_and_test(&io->count))
 		complete_io(io);
+=======
+	if (atomic_dec_and_test(&io->count)) {
+		if (io->vma_invalidate_size)
+			invalidate_kernel_vmap_range(io->vma_invalidate_address,
+						     io->vma_invalidate_size);
+
+		if (io->wait)
+			complete(io->wait);
+
+		else {
+			unsigned long r = io->error_bits;
+			io_notify_fn fn = io->callback;
+			void *context = io->context;
+
+			mempool_free(io, io->client->pool);
+			fn(r, context);
+		}
+	}
+>>>>>>> p9x
 }
 
 static void endio(struct bio *bio, int error)
@@ -304,6 +328,12 @@ static void do_region(int rw, unsigned region, struct dm_io_region *where,
 		return;
 	}
 
+	/* Reject unsupported discard requests */
+	if ((rw & REQ_DISCARD) && !blk_queue_discard(q)) {
+		dec_count(io, region, -EOPNOTSUPP);
+		return;
+	}
+
 	/*
 	 * where->count may be zero if rw holds a flush and we need to
 	 * send a zero-sized flush.
@@ -405,8 +435,20 @@ static int sync_io(struct dm_io_client *client, unsigned int num_regions,
 		   struct dm_io_region *where, int rw, struct dpages *dp,
 		   unsigned long *error_bits)
 {
+<<<<<<< HEAD
 	struct io *io;
 	struct sync_io sio;
+=======
+	/*
+	 * gcc <= 4.3 can't do the alignment for stack variables, so we must
+	 * align it on our own.
+	 * volatile prevents the optimizer from removing or reusing
+	 * "io_" field from the stack frame (allowed in ANSI C).
+	 */
+	volatile char io_[sizeof(struct io) + __alignof__(struct io) - 1];
+	struct io *io = (struct io *)PTR_ALIGN(&io_, __alignof__(struct io));
+	DECLARE_COMPLETION_ONSTACK(wait);
+>>>>>>> p9x
 
 	if (num_regions > 1 && (rw & RW_MASK) != WRITE) {
 		WARN_ON(1);
@@ -418,6 +460,10 @@ static int sync_io(struct dm_io_client *client, unsigned int num_regions,
 	io = mempool_alloc(client->pool, GFP_NOIO);
 	io->error_bits = 0;
 	atomic_set(&io->count, 1); /* see dispatch_io() */
+<<<<<<< HEAD
+=======
+	io->wait = &wait;
+>>>>>>> p9x
 	io->client = client;
 	io->callback = sync_io_complete;
 	io->context = &sio;
@@ -427,7 +473,11 @@ static int sync_io(struct dm_io_client *client, unsigned int num_regions,
 
 	dispatch_io(rw, num_regions, where, dp, io, 1);
 
+<<<<<<< HEAD
 	wait_for_completion_io(&sio.wait);
+=======
+	wait_for_completion_io(&wait);
+>>>>>>> p9x
 
 	if (error_bits)
 		*error_bits = sio.error_bits;
@@ -450,6 +500,10 @@ static int async_io(struct dm_io_client *client, unsigned int num_regions,
 	io = mempool_alloc(client->pool, GFP_NOIO);
 	io->error_bits = 0;
 	atomic_set(&io->count, 1); /* see dispatch_io() */
+<<<<<<< HEAD
+=======
+	io->wait = NULL;
+>>>>>>> p9x
 	io->client = client;
 	io->callback = fn;
 	io->context = context;

@@ -711,11 +711,18 @@ static __init int mvebu_mbus_debugfs_init(void)
 }
 fs_initcall(mvebu_mbus_debugfs_init);
 
+<<<<<<< HEAD
 static int __init mvebu_mbus_common_init(struct mvebu_mbus_state *mbus,
 					 phys_addr_t mbuswins_phys_base,
 					 size_t mbuswins_size,
 					 phys_addr_t sdramwins_phys_base,
 					 size_t sdramwins_size)
+=======
+int __init mvebu_mbus_init(const char *soc, phys_addr_t mbuswins_phys_base,
+			   size_t mbuswins_size,
+			   phys_addr_t sdramwins_phys_base,
+			   size_t sdramwins_size, int is_coherent)
+>>>>>>> p9x
 {
 	int win;
 
@@ -729,6 +736,11 @@ static int __init mvebu_mbus_common_init(struct mvebu_mbus_state *mbus,
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
+=======
+	mbus->hw_io_coherency = is_coherent;
+
+>>>>>>> p9x
 	for (win = 0; win < mbus->soc->num_wins; win++)
 		mvebu_mbus_disable_window(mbus, win);
 

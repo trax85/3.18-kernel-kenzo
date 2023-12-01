@@ -15,7 +15,10 @@
 
 #include <sensor/csid/msm_csid.h>
 
+<<<<<<< HEAD
 uint8_t csid_lane_assign_v3_6_0[PHY_LANE_MAX] = {0, 1, 2, 3, 4};
+=======
+>>>>>>> p9x
 struct csid_reg_parms_t csid_v3_6_0 = {
 	/* MIPI	CSID registers */
 	0x0,
@@ -52,6 +55,7 @@ struct csid_reg_parms_t csid_v3_6_0 = {
 	0x4,
 	17,
 	0x30060000,
+<<<<<<< HEAD
 	0xFFFFFFFF,
 	0xFFFFFFFF,
 	0xFFFFFFFF,
@@ -59,5 +63,7 @@ struct csid_reg_parms_t csid_v3_6_0 = {
 	20,
 	0xFFFFFFFF,
 	0xFFFFFFFF,
+=======
+>>>>>>> p9x
 };
 #endif

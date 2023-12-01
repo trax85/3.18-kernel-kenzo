@@ -288,11 +288,22 @@ xfs_set_acl(struct inode *inode, struct posix_acl *acl, int type)
 	if (type == ACL_TYPE_ACCESS) {
 		umode_t mode;
 		struct posix_acl *old_acl = acl;
+<<<<<<< HEAD
 		error = posix_acl_update_mode(inode, &mode, &acl);
 		if (!acl)
 			posix_acl_release(old_acl);
 		if (error)
 			return error;
+=======
+
+		error = posix_acl_update_mode(inode, &mode, &acl);
+
+		if (error)
+			goto out_release;
+		if (!acl)
+			posix_acl_release(old_acl);
+
+>>>>>>> p9x
 		error = xfs_set_mode(inode, mode);
 		if (error)
 			return error;

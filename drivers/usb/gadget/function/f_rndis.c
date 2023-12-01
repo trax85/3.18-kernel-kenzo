@@ -27,7 +27,10 @@
 #include "u_ether_configfs.h"
 #include "u_rndis.h"
 #include "rndis.h"
+<<<<<<< HEAD:drivers/usb/gadget/function/f_rndis.c
 #include "configfs.h"
+=======
+>>>>>>> p9x:drivers/usb/gadget/f_rndis.c
 
 /*
  * This function is an RNDIS Ethernet port -- a Microsoft protocol that's
@@ -78,7 +81,11 @@ MODULE_PARM_DESC(rndis_dl_max_pkt_per_xfer,
 static unsigned int rndis_ul_max_pkt_per_xfer = 3;
 module_param(rndis_ul_max_pkt_per_xfer, uint, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(rndis_ul_max_pkt_per_xfer,
+<<<<<<< HEAD:drivers/usb/gadget/function/f_rndis.c
        "Maximum packets per transfer for UL aggregation");
+=======
+	"Maximum packets per transfer for UL aggregation");
+>>>>>>> p9x:drivers/usb/gadget/f_rndis.c
 
 static unsigned int rx_trigger_enabled;
 module_param(rx_trigger_enabled, uint, S_IRUGO | S_IWUSR);
@@ -98,7 +105,10 @@ struct f_rndis {
 };
 
 static struct f_rndis *__rndis;
+<<<<<<< HEAD:drivers/usb/gadget/function/f_rndis.c
 static spinlock_t _rndis_lock;
+=======
+>>>>>>> p9x:drivers/usb/gadget/f_rndis.c
 
 int
 rndis_rx_trigger(bool write)
@@ -474,7 +484,11 @@ static void rndis_response_available(void *_rndis)
 
 static void rndis_response_complete(struct usb_ep *ep, struct usb_request *req)
 {
+<<<<<<< HEAD:drivers/usb/gadget/function/f_rndis.c
 	struct f_rndis			*rndis;
+=======
+	struct f_rndis			*rndis = req->context;
+>>>>>>> p9x:drivers/usb/gadget/f_rndis.c
 	struct usb_composite_dev	*cdev;
 	int				status = req->status;
 	struct usb_ep *notify_ep;
@@ -492,6 +506,11 @@ static void rndis_response_complete(struct usb_ep *ep, struct usb_request *req)
 	}
 
 	cdev = rndis->port.func.config->cdev;
+
+	if (!rndis->port.func.config || !rndis->port.func.config->cdev)
+		return;
+	else
+		cdev = rndis->port.func.config->cdev;
 
 	/* after TX:
 	 *  - USB_CDC_GET_ENCAPSULATED_RESPONSE (ep0/control)
@@ -538,11 +557,16 @@ out:
 
 static void rndis_command_complete(struct usb_ep *ep, struct usb_request *req)
 {
+<<<<<<< HEAD:drivers/usb/gadget/function/f_rndis.c
 	struct f_rndis			*rndis;
+=======
+	struct f_rndis			*rndis = req->context;
+>>>>>>> p9x:drivers/usb/gadget/f_rndis.c
 	struct usb_composite_dev	*cdev;
 	int				status;
 	rndis_init_msg_type		*buf;
 
+<<<<<<< HEAD:drivers/usb/gadget/function/f_rndis.c
 	if (req->status != 0) {
 		pr_err("%s: RNDIS command completion error:%d\n",
 				__func__, req->status);
@@ -562,6 +586,12 @@ static void rndis_command_complete(struct usb_ep *ep, struct usb_request *req)
 	}
 
 	cdev = rndis->port.func.config->cdev;
+=======
+	if (!rndis->port.func.config || !rndis->port.func.config->cdev)
+		return;
+	else
+		cdev = rndis->port.func.config->cdev;
+>>>>>>> p9x:drivers/usb/gadget/f_rndis.c
 
 	/* received RNDIS command from USB_CDC_SEND_ENCAPSULATED_COMMAND */
 //	spin_lock(&dev->lock);
@@ -587,7 +617,10 @@ static void rndis_command_complete(struct usb_ep *ep, struct usb_request *req)
 			gether_update_dl_max_pkts_per_xfer(&rndis->port,
 					 rndis->port.dl_max_pkts_per_xfer);
 
+<<<<<<< HEAD:drivers/usb/gadget/function/f_rndis.c
 			spin_unlock(&_rndis_lock);
+=======
+>>>>>>> p9x:drivers/usb/gadget/f_rndis.c
 			return;
 		}
 
@@ -1012,7 +1045,17 @@ rndis_old_unbind(struct usb_configuration *c, struct usb_function *f)
 	spin_lock_irqsave(&_rndis_lock, flags);
 	kfree(rndis);
 	__rndis = NULL;
+<<<<<<< HEAD:drivers/usb/gadget/function/f_rndis.c
 	spin_unlock_irqrestore(&_rndis_lock, flags);
+=======
+}
+
+/* Some controllers can't support RNDIS ... */
+static inline bool can_support_rndis(struct usb_configuration *c)
+{
+	/* everything else is *presumably* fine */
+	return true;
+>>>>>>> p9x:drivers/usb/gadget/f_rndis.c
 }
 
 int
@@ -1022,6 +1065,27 @@ rndis_bind_config_vendor(struct usb_configuration *c, u8 ethaddr[ETH_ALEN],
 	struct f_rndis	*rndis;
 	int		status;
 
+<<<<<<< HEAD:drivers/usb/gadget/function/f_rndis.c
+=======
+	if (!can_support_rndis(c) || !ethaddr)
+		return -EINVAL;
+
+	/* setup RNDIS itself */
+	status = rndis_init();
+	if (status < 0)
+		return status;
+
+	if (rndis_string_defs[0].id == 0) {
+		status = usb_string_ids_tab(c->cdev, rndis_string_defs);
+		if (status)
+			return status;
+
+		rndis_control_intf.iInterface = rndis_string_defs[0].id;
+		rndis_data_intf.iInterface = rndis_string_defs[1].id;
+		rndis_iad_descriptor.iFunction = rndis_string_defs[2].id;
+	}
+
+>>>>>>> p9x:drivers/usb/gadget/f_rndis.c
 	/* allocate and initialize one new instance */
 	status = -ENOMEM;
 	rndis = kzalloc(sizeof *rndis, GFP_KERNEL);
@@ -1045,6 +1109,7 @@ rndis_bind_config_vendor(struct usb_configuration *c, u8 ethaddr[ETH_ALEN],
 	rndis->port.ul_max_pkts_per_xfer = rndis_ul_max_pkt_per_xfer;
 	rndis->port.dl_max_pkts_per_xfer = rndis_dl_max_pkt_per_xfer;
 	rndis->port.rx_trigger_enabled = rx_trigger_enabled;
+<<<<<<< HEAD:drivers/usb/gadget/function/f_rndis.c
 
 	rndis->port.func.name = "rndis";
 	/* descriptors are per-instance copies */
@@ -1218,6 +1283,8 @@ static struct usb_function *rndis_alloc(struct usb_function_instance *fi)
 	rndis->port.unwrap = rndis_rm_hdr;
 	rndis->port.ul_max_pkts_per_xfer = rndis_ul_max_pkt_per_xfer;
 	rndis->port.dl_max_pkts_per_xfer = rndis_dl_max_pkt_per_xfer;
+=======
+>>>>>>> p9x:drivers/usb/gadget/f_rndis.c
 
 	rndis->port.func.name = "rndis";
 	/* descriptors are per-instance copies */

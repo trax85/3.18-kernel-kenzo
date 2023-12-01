@@ -146,7 +146,11 @@ struct gsi_channel_info {
  *	Note that for writes (IN transfers) some data bytes may still
  *	reside in a device-side FIFO when the request is reported as
  *	complete.
+<<<<<<< HEAD
  * @udc_priv: Vendor private data in usage by the UDC.
+=======
+ *@udc_priv: Vendor private data in usage by the UDC.
+>>>>>>> p9x
  *
  * These are allocated/freed through the endpoint they're used with.  The
  * hardware's driver can add extra per-request data to the memory it returns,
@@ -208,7 +212,6 @@ struct usb_ep_ops {
 	struct usb_request *(*alloc_request) (struct usb_ep *ep,
 		gfp_t gfp_flags);
 	void (*free_request) (struct usb_ep *ep, struct usb_request *req);
-
 	int (*queue) (struct usb_ep *ep, struct usb_request *req,
 		gfp_t gfp_flags);
 	int (*dequeue) (struct usb_ep *ep, struct usb_request *req);
@@ -244,8 +247,11 @@ struct usb_ep_ops {
  *	enabled and remains valid until the endpoint is disabled.
  * @comp_desc: In case of SuperSpeed support, this is the endpoint companion
  *	descriptor that is used to configure the endpoint
+<<<<<<< HEAD
  * @ep_type: Used to specify type of EP eg. normal vs h/w accelerated.
  * @ep_intr_num: Interrupter number for EP.
+=======
+>>>>>>> p9x
  * @endless: In case where endless transfer is being initiated, this is set
  *	to disable usb event interrupt for few events.
  *
@@ -267,9 +273,12 @@ struct usb_ep {
 	u8			address;
 	const struct usb_endpoint_descriptor	*desc;
 	const struct usb_ss_ep_comp_descriptor	*comp_desc;
+<<<<<<< HEAD
 	enum ep_type		ep_type;
 	u8			ep_num;
 	u8			ep_intr_num;
+=======
+>>>>>>> p9x
 	bool			endless;
 };
 
@@ -627,11 +636,26 @@ struct usb_gadget_ops {
  *	only supports HNP on a different root port.
  * @b_hnp_enable: OTG device feature flag, indicating that the A-Host
  *	enabled HNP support.
+<<<<<<< HEAD
  * @quirk_ep_out_aligned_size: epout requires buffer size to be aligned to
  *	MaxPacketSize.
  * @xfer_isr_count: UI (transfer complete) interrupts count
  * @usb_core_id: Identifies the usb core controlled by this usb_gadget.
  *		 Used in case of more then one core operates concurrently.
+=======
+ * @host_request: A flag set by user when wishes to take up host role.
+ * @otg_srp_reqd: OTG test mode feature to initiate SRP after the end of
+ * current session.
+ * @name: Identifies the controller hardware type.  Used in diagnostics
+ *	and sometimes configuration.
+ * @dev: Driver model state for this abstract device.
+ * @out_epnum: last used out ep number
+ * @in_epnum: last used in ep number
+ * @usb_core_id: Identifies the usb core controlled by this usb_gadget.
+ *		 Used in case of more then one core operates concurrently.
+ * @streaming_enabled: Enable streaming mode with usb core.
+ * @xfer_isr_count: UI (transfer complete) interrupts count
+>>>>>>> p9x
  * @bam2bam_func_enabled; Indicates function using bam2bam is enabled or not.
  * @extra_buf_alloc: Extra allocation size for AXI prefetch so that out of
  * boundary access is protected.
@@ -675,11 +699,26 @@ struct usb_gadget {
 	unsigned			b_hnp_enable:1;
 	unsigned			a_hnp_support:1;
 	unsigned			a_alt_hnp_support:1;
+<<<<<<< HEAD
 	unsigned			quirk_ep_out_aligned_size:1;
 	bool				remote_wakeup;
 	u32				xfer_isr_count;
 	u8				usb_core_id;
 	bool				l1_supported;
+=======
+	unsigned			host_request:1;
+	unsigned			otg_srp_reqd:1;
+	const char			*name;
+	struct device			dev;
+	unsigned			out_epnum;
+	unsigned			in_epnum;
+	bool				l1_supported;
+	u8				usb_core_id;
+	bool				streaming_enabled;
+	bool				remote_wakeup;
+	void				*private;
+	u32				xfer_isr_count;
+>>>>>>> p9x
 	bool				bam2bam_func_enabled;
 	u32				extra_buf_alloc;
 	int				interrupt_num;
@@ -935,6 +974,7 @@ static inline int usb_gadget_disconnect(struct usb_gadget *gadget)
 }
 
 /**
+<<<<<<< HEAD
  * usb_gadget_restart - software-controlled reset of USB peripheral connection
  * @gadget:the peripheral being reset
  *
@@ -949,6 +989,8 @@ static inline int usb_gadget_restart(struct usb_gadget *gadget)
 }
 
 /**
+=======
+>>>>>>> p9x
  * usb_gadget_autopm_get - increment PM-usage counter of usb gadget's parent
  * device.
  * @gadget: usb gadget whose parent device counter is incremented
@@ -1248,6 +1290,11 @@ int usb_gadget_get_string(struct usb_gadget_strings *table, int id, u8 *buf);
 /*-------------------------------------------------------------------------*/
 
 /* utility to simplify managing config descriptors */
+
+/* Find and fill the requested descriptor into buffer */
+int
+usb_find_descriptor_fillbuf(void *, unsigned,
+		const struct usb_descriptor_header **, u8);
 
 /* write vector of descriptors into buffer */
 int usb_descriptor_fillbuf(void *, unsigned,

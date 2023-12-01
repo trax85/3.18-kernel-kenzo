@@ -83,6 +83,7 @@ struct ion_co_heap_pdata {
 	void *(*setup_ion_region)(void);
 };
 
+<<<<<<< HEAD
 struct msm_ion_prefetch_info {
 	struct list_head list;
 	int heap_id;
@@ -90,6 +91,8 @@ struct msm_ion_prefetch_info {
 	int nr_sizes;
 };
 
+=======
+>>>>>>> p9x
 /**
  * struct ion_cma_pdata - extra data for CMA regions
  * @default_prefetch_size - default size to use for prefetching
@@ -101,7 +104,11 @@ struct ion_cma_pdata {
 #ifdef CONFIG_ION
 /**
  *  msm_ion_client_create - allocate a client using the ion_device specified in
+<<<<<<< HEAD
  *				drivers/staging/android/ion/msm/msm_ion.c
+=======
+ *				drivers/gpu/ion/msm/msm_ion.c
+>>>>>>> p9x
  *
  * name is the same as ion_client_create, return values
  * are the same as ion_client_create.
@@ -139,7 +146,11 @@ int ion_handle_get_flags(struct ion_client *client, struct ion_handle *handle,
  */
 
 int ion_handle_get_size(struct ion_client *client, struct ion_handle *handle,
+<<<<<<< HEAD
 			size_t *size);
+=======
+			unsigned long *size);
+>>>>>>> p9x
 /**
  * msm_ion_do_cache_op - do cache operations.
  *
@@ -157,6 +168,15 @@ int ion_handle_get_size(struct ion_client *client, struct ion_handle *handle,
 int msm_ion_do_cache_op(struct ion_client *client, struct ion_handle *handle,
 			void *vaddr, unsigned long len, unsigned int cmd);
 
+<<<<<<< HEAD
+=======
+int msm_ion_secure_table(struct sg_table *table);
+
+int msm_ion_unsecure_table(struct sg_table *table);
+int msm_ion_hyp_assign_call(struct sg_table *table,
+				u32 *source_vm_list, u32 source_list_size,
+				u32 *dest_vm_list, u32 dest_list_size);
+>>>>>>> p9x
 #else
 static inline struct ion_client *msm_ion_client_create(const char *name)
 {
@@ -164,7 +184,11 @@ static inline struct ion_client *msm_ion_client_create(const char *name)
 }
 
 static inline int ion_handle_get_size(struct ion_client *client,
+<<<<<<< HEAD
 				struct ion_handle *handle, size_t *size)
+=======
+				struct ion_handle *handle, unsigned long *size)
+>>>>>>> p9x
 {
 	return -ENODEV;
 }
@@ -176,6 +200,26 @@ static inline int msm_ion_do_cache_op(struct ion_client *client,
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
+=======
+static inline int msm_ion_secure_table(struct sg_table *table)
+{
+	return -ENODEV;
+}
+
+static inline int msm_ion_unsecure_table(struct sg_table *table)
+{
+	return -ENODEV;
+}
+
+static inline int msm_ion_hyp_assign_call(struct sg_table *table,
+				u32 *source_vm_list, u32 source_list_size,
+				u32 *dest_vm_list, u32 dest_list_size)
+{
+	return -ENODEV;
+}
+
+>>>>>>> p9x
 #endif /* CONFIG_ION */
 
 #endif

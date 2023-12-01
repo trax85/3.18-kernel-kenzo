@@ -1000,7 +1000,11 @@ struct key *find_keyring_by_name(const char *name, bool uid_keyring)
 					continue;
 			} else {
 				if (key_permission(make_key_ref(keyring, 0),
+<<<<<<< HEAD
 						   KEY_NEED_SEARCH) < 0)
+=======
+						   KEY_SEARCH) < 0)
+>>>>>>> p9x
 					continue;
 			}
 

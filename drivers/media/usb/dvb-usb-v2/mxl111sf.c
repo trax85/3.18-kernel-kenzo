@@ -61,6 +61,14 @@ int mxl111sf_ctrl_msg(struct dvb_usb_device *d,
 	int wo = (rbuf == NULL || rlen == 0); /* write-only */
 	int ret;
 	u8 sndbuf[MAX_XFER_SIZE];
+<<<<<<< HEAD
+=======
+
+	if (1 + wlen > sizeof(sndbuf)) {
+		pr_warn("%s: len=%d is too big!\n", __func__, wlen);
+		return -EOPNOTSUPP;
+	}
+>>>>>>> p9x
 
 	if (1 + wlen > sizeof(sndbuf)) {
 		pr_warn("%s: len=%d is too big!\n", __func__, wlen);

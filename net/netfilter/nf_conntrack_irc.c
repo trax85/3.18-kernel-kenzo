@@ -1,8 +1,22 @@
 /* Copyright (c) 2015, The Linux Foundation. All rights reserved.
+<<<<<<< HEAD
+=======
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+>>>>>>> p9x
  * IRC extension for IP connection tracking, Version 1.21
  * (C) 2000-2002 by Harald Welte <laforge@gnumonks.org>
  * based on RR's ip_conntrack_ftp.c
  * (C) 2006-2012 Patrick McHardy <kaber@trash.net>
+<<<<<<< HEAD
  *
  * Linux Foundation chooses to take subject only to the GPLv2 license terms,
  * and distributes only under these terms.
@@ -10,6 +24,8 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> p9x
  */
 
 #include <linux/module.h>
@@ -92,11 +108,18 @@ static struct irc_client_info *search_client_by_ip
 {
 	struct irc_client_info *temp, *ret = NULL;
 	struct list_head *obj_ptr, *prev_obj_ptr;
+<<<<<<< HEAD
 
 	list_for_each_safe(obj_ptr, prev_obj_ptr, &client_list.ptr) {
 		temp = list_entry(obj_ptr, struct irc_client_info, ptr);
 		if ((temp->client_ip == tuple->src.u3.ip) &&
 		    (temp->server_ip == tuple->dst.u3.ip))
+=======
+	list_for_each_safe(obj_ptr, prev_obj_ptr, &client_list.ptr) {
+		temp = list_entry(obj_ptr, struct irc_client_info, ptr);
+		if ((temp->client_ip == tuple->src.u3.ip) &&
+			(temp->server_ip == tuple->dst.u3.ip))
+>>>>>>> p9x
 			ret = temp;
 	}
 	return ret;
@@ -137,7 +160,11 @@ static int parse_dcc(char *data, const char *data_end, __be32 *ip,
 }
 
 static bool mangle_ip(struct nf_conn *ct,
+<<<<<<< HEAD
 		      int dir, char *nick_start)
+=======
+					int dir, char *nick_start)
+>>>>>>> p9x
 {
 	char *nick_end;
 	struct nf_conntrack_tuple *tuple;
@@ -148,6 +175,7 @@ static bool mangle_ip(struct nf_conn *ct,
 	nick_end = nick_start;
 	while (*nick_end != ' ')
 		nick_end++;
+<<<<<<< HEAD
 	list_for_each_safe(obj_ptr, prev_obj_ptr,
 			   &client_list.ptr) {
 		temp = list_entry(obj_ptr,
@@ -162,11 +190,33 @@ static bool mangle_ip(struct nf_conn *ct,
 				return false;
 		}
 	}
+=======
+
+	list_for_each_safe(obj_ptr, prev_obj_ptr,
+					   &client_list.ptr) {
+	temp = list_entry(obj_ptr,
+		struct irc_client_info, ptr);
+	/*If it is an internal client,
+	 *do not mangle the DCC Server IP
+	 */
+	if ((temp->server_ip == tuple->dst.u3.ip) &&
+		(temp->nickname_len == nick_end - nick_start)) {
+			if (memcmp(nick_start, temp->nickname,
+				temp->nickname_len) == 0)
+					return false;
+		}
+	}
+
+>>>>>>> p9x
 	return true;
 }
 
 static int handle_nickname(struct nf_conn *ct,
+<<<<<<< HEAD
 			   int dir, char *nick_start)
+=======
+					int dir, char *nick_start)
+>>>>>>> p9x
 {
 	char *nick_end;
 	struct nf_conntrack_tuple *tuple;
@@ -198,8 +248,13 @@ static int handle_nickname(struct nf_conn *ct,
 				kmalloc(i, GFP_ATOMIC);
 			if (temp->nickname) {
 				temp->nickname_len = i;
+<<<<<<< HEAD
 				memcpy(temp->nickname,
 				       nick_start, temp->nickname_len);
+=======
+				memcpy(&temp->nickname,
+					   nick_start, temp->nickname_len);
+>>>>>>> p9x
 			} else {
 				list_del(&temp->ptr);
 				no_of_clients--;
@@ -222,6 +277,7 @@ static int handle_nickname(struct nf_conn *ct,
 				return NF_DROP;
 			}
 			memcpy(temp->nickname, nick_start,
+<<<<<<< HEAD
 			       temp->nickname_len);
 			memcpy(&temp->client_ip,
 			       &tuple->src.u3.ip, sizeof(__be32));
@@ -233,6 +289,18 @@ static int handle_nickname(struct nf_conn *ct,
 		} else {
 			return NF_DROP;
 		}
+=======
+				temp->nickname_len);
+			memcpy(&temp->client_ip,
+				&tuple->src.u3.ip, sizeof(__be32));
+			memcpy(&temp->server_ip,
+				&tuple->dst.u3.ip, sizeof(__be32));
+			temp->conn_to_server = false;
+			list_add(&(temp->ptr),
+				&(client_list.ptr));
+		} else
+			return NF_DROP;
+>>>>>>> p9x
 	}
 	return NF_ACCEPT;
 }
@@ -321,7 +389,11 @@ static int help(struct sk_buff *skb, unsigned int protoff,
 			nick_end = data;
 			i = 0;
 			while ((*nick_end != 0x0d) &&
+<<<<<<< HEAD
 			       (*(nick_end + 1) != '\n')) {
+=======
+					(*(nick_end + 1) != '\n')) {
+>>>>>>> p9x
 				nick_end++;
 				i++;
 			}
@@ -333,7 +405,11 @@ static int help(struct sk_buff *skb, unsigned int protoff,
 				if (temp->nickname) {
 					temp->nickname_len = i;
 					memcpy(temp->nickname, data,
+<<<<<<< HEAD
 					       temp->nickname_len);
+=======
+						   temp->nickname_len);
+>>>>>>> p9x
 					temp->conn_to_server = true;
 				} else {
 					list_del(&temp->ptr);
@@ -341,10 +417,165 @@ static int help(struct sk_buff *skb, unsigned int protoff,
 					kfree(temp);
 					ret = NF_ACCEPT;
 				}
+<<<<<<< HEAD
 			}
 			/*NICK during registration*/
 			ret = NF_ACCEPT;
 			goto out;
+=======
+			}
+			/*NICK during registration*/
+			ret = NF_ACCEPT;
+			goto out;
+		}
+	}
+
+	else{
+		/*Parsing NICK command from client to create an entry
+		 * strlen("NICK xxxxxx")
+		 * 5+strlen("xxxxxx")=1 (minimum length of nickname)
+		 */
+		data = ib_ptr;
+		data_limit = ib_ptr + skb->len - dataoff;
+		while (data < data_limit - (5 + MINLENNICK)) {
+			if (memcmp(data, "NICK ", 5)) {
+				data++;
+				continue;
+			}
+			data += 5;
+			ret = handle_nickname(ct, dir, data);
+			goto out;
+		}
+
+		data = ib_ptr;
+		while (data < data_limit - 6) {
+			if (memcmp(data, "QUIT :", 6)) {
+				data++;
+				continue;
+			}
+			/* Parsing QUIT to free the list entry
+			 */
+			tuple = &ct->tuplehash[dir].tuple;
+			temp = search_client_by_ip(tuple);
+			if (temp) {
+				list_del(&temp->ptr);
+				no_of_clients--;
+				kfree(temp->nickname);
+				kfree(temp);
+			}
+			ret = NF_ACCEPT;
+			goto out;
+		}
+		/* strlen("\1DCC SENT t AAAAAAAA P\1\n")=24
+		 * 5+MINMATCHLEN+strlen("t AAAAAAAA P\1\n")=14
+		 */
+		data = ib_ptr;
+		while (data < data_limit - (19 + MINMATCHLEN)) {
+			if (memcmp(data, "\1DCC ", 5)) {
+				data++;
+				continue;
+			}
+			data += 5;
+			/* we have at least (19+MINMATCHLEN)-5
+			 *bytes valid data left
+			 */
+			iph = ip_hdr(skb);
+			pr_debug("DCC found in master %pI4:%u %pI4:%u\n",
+				 &iph->saddr, ntohs(th->source),
+				 &iph->daddr, ntohs(th->dest));
+
+			for (i = 0; i < ARRAY_SIZE(dccprotos); i++) {
+				if (memcmp(data, dccprotos[i],
+							strlen(dccprotos[i]))) {
+					/* no match */
+					continue;
+				}
+				data += strlen(dccprotos[i]);
+				pr_debug("DCC %s detected\n", dccprotos[i]);
+
+				/* we have at least
+				 * (19+MINMATCHLEN)-5-dccprotos[i].matchlen
+				 *bytes valid data left (== 14/13 bytes)
+				 */
+				if (parse_dcc(data, data_limit, &dcc_ip,
+							&dcc_port, &addr_beg_p,
+							&addr_end_p)) {
+					pr_debug("unable to parse dcc command\n");
+					continue;
+				}
+
+				pr_debug("DCC bound ip/port: %pI4:%u\n",
+					 &dcc_ip, dcc_port);
+
+				/* dcc_ip can be the internal OR
+				 *external (NAT'ed) IP
+				 */
+				tuple = &ct->tuplehash[dir].tuple;
+				if (tuple->src.u3.ip != dcc_ip &&
+				    tuple->dst.u3.ip != dcc_ip) {
+					net_warn_ratelimited("Forged DCC command from %pI4: %pI4:%u\n",
+							     &tuple->src.u3.ip,
+							     &dcc_ip, dcc_port);
+					continue;
+				}
+
+				exp = nf_ct_expect_alloc(ct);
+				if (exp == NULL) {
+					nf_ct_helper_log(skb, ct,
+							 "cannot alloc expectation");
+					ret = NF_DROP;
+					goto out;
+				}
+				tuple = &ct->tuplehash[!dir].tuple;
+				port = htons(dcc_port);
+				nf_ct_expect_init(exp,
+						  NF_CT_EXPECT_CLASS_DEFAULT,
+						  tuple->src.l3num,
+						  NULL, &tuple->dst.u3,
+						  IPPROTO_TCP, NULL, &port);
+
+				nf_nat_irc = rcu_dereference(nf_nat_irc_hook);
+
+				tuple = &ct->tuplehash[dir].tuple;
+				for_print = ib_ptr;
+				/* strlen("PRIVMSG xxxx :\1DCC
+				 *SENT t AAAAAAAA P\1\n")=26
+				 * 8+strlen(xxxx) = 1(min length)+7+
+				 *MINMATCHLEN+strlen("t AAAAAAAA P\1\n")=14
+				 *Parsing DCC command to get client name and
+				 *check whether it is an internal client
+				 */
+				while (for_print <
+					data_limit - (25 + MINMATCHLEN)) {
+					if (memcmp(for_print, "PRIVMSG ", 8)) {
+						for_print++;
+						continue;
+					}
+					for_print += 8;
+					mangle = mangle_ip(ct,
+							dir, for_print);
+					break;
+				}
+				if (mangle &&
+					nf_nat_irc &&
+					ct->status & IPS_NAT_MASK)
+					ret = nf_nat_irc(skb, ctinfo,
+						 protoff,
+						 addr_beg_p - ib_ptr,
+						 addr_end_p - addr_beg_p,
+						 exp);
+
+				else if (mangle &&
+					nf_ct_expect_related(exp)
+						!= 0) {
+					nf_ct_helper_log(skb, ct,
+						 "cannot add expectation");
+					ret = NF_DROP;
+				}
+				nf_ct_expect_put(exp);
+				goto out;
+			}
+>>>>>>> p9x
 		}
 	}
 

@@ -241,6 +241,7 @@ int iwl_mvm_add_sta(struct iwl_mvm *mvm,
 		if (vif->hw_queue[i] != IEEE80211_INVAL_HW_QUEUE)
 			mvm_sta->tfd_queue_msk |= BIT(vif->hw_queue[i]);
 
+<<<<<<< HEAD
 	/* for HW restart - reset everything but the sequence number */
 	for (i = 0; i < IWL_MAX_TID_COUNT; i++) {
 		u16 seq = mvm_sta->tid_data[i].seq_number;
@@ -248,6 +249,10 @@ int iwl_mvm_add_sta(struct iwl_mvm *mvm,
 		mvm_sta->tid_data[i].seq_number = seq;
 	}
 	mvm_sta->agg_tids = 0;
+=======
+	/* for HW restart - need to reset the seq_number etc... */
+	memset(mvm_sta->tid_data, 0, sizeof(mvm_sta->tid_data));
+>>>>>>> p9x
 
 	ret = iwl_mvm_sta_send_to_fw(mvm, sta, false);
 	if (ret)
@@ -1019,9 +1024,13 @@ int iwl_mvm_sta_tx_agg_flush(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 		if (iwl_mvm_flush_tx_path(mvm, BIT(txq_id), true))
 			IWL_ERR(mvm, "Couldn't flush the AGG queue\n");
 
+<<<<<<< HEAD
 		iwl_mvm_sta_tx_agg(mvm, sta, tid, txq_id, false);
 
 		iwl_mvm_disable_txq(mvm, tid_data->txq_id);
+=======
+		iwl_trans_txq_disable(mvm->trans, tid_data->txq_id);
+>>>>>>> p9x
 	}
 
 	mvm->queue_to_mac80211[tid_data->txq_id] =

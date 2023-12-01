@@ -218,6 +218,8 @@ struct sock *cookie_v6_check(struct sock *sk, struct sk_buff *skb)
 
 	ireq->ir_mark = inet_request_mark(sk, skb);
 
+	ireq->ir_mark = inet_request_mark(sk, skb);
+
 	req->expires = 0UL;
 	req->num_retrans = 0;
 	ireq->ecn_ok		= ecn_ok;
@@ -240,12 +242,21 @@ struct sock *cookie_v6_check(struct sock *sk, struct sk_buff *skb)
 		struct flowi6 fl6;
 		memset(&fl6, 0, sizeof(fl6));
 		fl6.flowi6_proto = IPPROTO_TCP;
+<<<<<<< HEAD
 		fl6.daddr = ireq->ir_v6_rmt_addr;
 		final_p = fl6_update_dst(&fl6, rcu_dereference(np->opt), &final);
 		fl6.saddr = ireq->ir_v6_loc_addr;
 		fl6.flowi6_oif = sk->sk_bound_dev_if;
 		fl6.flowi6_mark = ireq->ir_mark;
 		fl6.fl6_dport = ireq->ir_rmt_port;
+=======
+		fl6.daddr = ireq6->rmt_addr;
+		final_p = fl6_update_dst(&fl6, rcu_dereference(np->opt), &final);
+		fl6.saddr = ireq6->loc_addr;
+		fl6.flowi6_oif = sk->sk_bound_dev_if;
+		fl6.flowi6_mark = ireq->ir_mark;
+		fl6.fl6_dport = inet_rsk(req)->rmt_port;
+>>>>>>> p9x
 		fl6.fl6_sport = inet_sk(sk)->inet_sport;
 		fl6.flowi6_uid = sk->sk_uid;
 		security_req_classify_flow(req, flowi6_to_flowi(&fl6));

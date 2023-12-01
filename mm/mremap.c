@@ -210,8 +210,12 @@ unsigned long move_page_tables(struct vm_area_struct *vma,
 		if (pmd_trans_huge(*old_pmd)) {
 			int err = 0;
 			if (extent == HPAGE_PMD_SIZE) {
+<<<<<<< HEAD
 				VM_BUG_ON_VMA(vma->vm_file || !vma->anon_vma,
 					      vma);
+=======
+				VM_BUG_ON(vma->vm_file || !vma->anon_vma);
+>>>>>>> p9x
 				/* See comment in move_ptes() */
 				if (need_rmap_locks)
 					anon_vma_lock_write(vma->anon_vma);

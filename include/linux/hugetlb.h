@@ -42,6 +42,7 @@ struct hugepage_subpool *hugepage_new_subpool(long nr_blocks);
 void hugepage_put_subpool(struct hugepage_subpool *spool);
 
 int PageHuge(struct page *page);
+int PageHeadHuge(struct page *page_head);
 
 void reset_vma_resv_huge_pages(struct vm_area_struct *vma);
 int hugetlb_sysctl_handler(struct ctl_table *, int, void __user *, size_t *, loff_t *);
@@ -110,6 +111,11 @@ unsigned long hugetlb_change_protection(struct vm_area_struct *vma,
 #else /* !CONFIG_HUGETLB_PAGE */
 
 static inline int PageHuge(struct page *page)
+{
+	return 0;
+}
+
+static inline int PageHeadHuge(struct page *page_head)
 {
 	return 0;
 }
@@ -384,6 +390,20 @@ static inline int hstate_index(struct hstate *h)
 	return h - hstates;
 }
 
+<<<<<<< HEAD
+=======
+int pmd_huge_support(void);
+/*
+ * Currently hugepage migration is enabled only for pmd-based hugepage.
+ * This function will be updated when hugepage migration is more widely
+ * supported.
+ */
+static inline int hugepage_migration_support(struct hstate *h)
+{
+	return pmd_huge_support() && (huge_page_shift(h) == PMD_SHIFT);
+}
+
+>>>>>>> p9x
 pgoff_t __basepage_index(struct page *page);
 
 /* Return page->index in PAGE_SIZE units */
@@ -395,6 +415,7 @@ static inline pgoff_t basepage_index(struct page *page)
 	return __basepage_index(page);
 }
 
+<<<<<<< HEAD
 extern void dissolve_free_huge_pages(unsigned long start_pfn,
 				     unsigned long end_pfn);
 static inline int hugepage_migration_supported(struct hstate *h)
@@ -424,6 +445,8 @@ static inline spinlock_t *huge_pte_lockptr(struct hstate *h,
 #define hugepages_supported() (HPAGE_SHIFT != 0)
 #endif
 
+=======
+>>>>>>> p9x
 #else	/* CONFIG_HUGETLB_PAGE */
 struct hstate {};
 #define alloc_huge_page_node(h, nid) NULL
@@ -446,11 +469,17 @@ static inline unsigned int pages_per_huge_page(struct hstate *h)
 }
 #define hstate_index_to_shift(index) 0
 #define hstate_index(h) 0
+<<<<<<< HEAD
+=======
+#define pmd_huge_support()	0
+#define hugepage_migration_support(h)	0
+>>>>>>> p9x
 
 static inline pgoff_t basepage_index(struct page *page)
 {
 	return page->index;
 }
+<<<<<<< HEAD
 #define dissolve_free_huge_pages(s, e)	do {} while (0)
 #define hugepage_migration_supported(h)	0
 
@@ -459,6 +488,9 @@ static inline spinlock_t *huge_pte_lockptr(struct hstate *h,
 {
 	return &mm->page_table_lock;
 }
+=======
+
+>>>>>>> p9x
 #endif	/* CONFIG_HUGETLB_PAGE */
 
 static inline spinlock_t *huge_pte_lock(struct hstate *h,

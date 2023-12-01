@@ -15,6 +15,7 @@
 #ifndef _ZRAM_DRV_H_
 #define _ZRAM_DRV_H_
 
+<<<<<<< HEAD
 #include <linux/spinlock.h>
 #include <linux/zsmalloc.h>
 
@@ -25,6 +26,16 @@
  * invalid value for num_devices module parameter.
  */
 static const unsigned max_num_devices = 32;
+=======
+#include <linux/rwsem.h>
+#include <linux/zsmalloc.h>
+#include <linux/crypto.h>
+
+#include "zcomp.h"
+
+u32 zram_compressed_size = 0;
+u32 zram_pages_stored = 0;
+>>>>>>> p9x
 
 /*-- Configurable parameters */
 
@@ -84,7 +95,10 @@ struct zram_stats {
 	atomic64_t compr_data_size;	/* compressed size of pages stored */
 	atomic64_t num_reads;	/* failed + successful */
 	atomic64_t num_writes;	/* --do-- */
+<<<<<<< HEAD
 	atomic64_t num_migrated;	/* no. of migrated object */
+=======
+>>>>>>> p9x
 	atomic64_t failed_reads;	/* can happen when memory is too low */
 	atomic64_t failed_writes;	/* can happen when memory is too low */
 	atomic64_t invalid_io;	/* non-page-aligned I/O requests */
@@ -109,7 +123,10 @@ struct zram {
 	 * the number of pages zram can consume for storing compressed data
 	 */
 	unsigned long limit_pages;
+<<<<<<< HEAD
 	int max_comp_streams;
+=======
+>>>>>>> p9x
 
 	struct zram_stats stats;
 	atomic_t refcount; /* refcount for zram_meta */
@@ -120,6 +137,14 @@ struct zram {
 	 * we can store in a disk.
 	 */
 	u64 disksize;	/* bytes */
+<<<<<<< HEAD
 	char compressor[10];
+=======
+	char compressor[CRYPTO_MAX_ALG_NAME];
+	/*
+	 * zram is claimed so open request will be failed
+	 */
+	bool claim; /* Protected by bdev->bd_mutex */
+>>>>>>> p9x
 };
 #endif

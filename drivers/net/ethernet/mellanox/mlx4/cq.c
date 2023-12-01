@@ -324,6 +324,13 @@ void mlx4_cq_free(struct mlx4_dev *dev, struct mlx4_cq *cq)
 	if (err)
 		mlx4_warn(dev, "HW2SW_CQ failed (%d) for CQN %06x\n", err, cq->cqn);
 
+<<<<<<< HEAD
+=======
+	spin_lock(&cq_table->lock);
+	radix_tree_delete(&cq_table->tree, cq->cqn);
+	spin_unlock(&cq_table->lock);
+
+>>>>>>> p9x
 	synchronize_irq(priv->eq_table.eq[cq->vector].irq);
 
 	if (atomic_dec_and_test(&cq->refcount))

@@ -334,7 +334,11 @@ struct sta_info *sta_info_alloc(struct ieee80211_sub_if_data *sdata,
 
 	spin_lock_init(&sta->lock);
 	spin_lock_init(&sta->ps_lock);
+<<<<<<< HEAD
 	INIT_WORK(&sta->drv_deliver_wk, sta_deliver_ps_frames);
+=======
+	INIT_WORK(&sta->drv_unblock_wk, sta_unblock);
+>>>>>>> p9x
 	INIT_WORK(&sta->ampdu_mlme.work, ieee80211_ba_session_work);
 	mutex_init(&sta->ampdu_mlme.mtx);
 #ifdef CONFIG_MAC80211_MESH
@@ -1136,6 +1140,7 @@ void ieee80211_sta_ps_deliver_wakeup(struct sta_info *sta)
 		buffered += tmp - count;
 	}
 
+<<<<<<< HEAD
 	ieee80211_add_pending_skbs(local, &pending);
 
 	/* now we're no longer in the deliver code */
@@ -1163,6 +1168,10 @@ void ieee80211_sta_ps_deliver_wakeup(struct sta_info *sta)
 					   sta->sta.addr,
 					   sdata->vif.bss_conf.bssid);
 	}
+=======
+	ieee80211_add_pending_skbs_fn(local, &pending, clear_sta_ps_flags, sta);
+	spin_unlock(&sta->ps_lock);
+>>>>>>> p9x
 
 	local->total_ps_buffered -= buffered;
 

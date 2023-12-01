@@ -189,6 +189,16 @@ static ssize_t da9052_read_vbbat(struct device *dev,
 	return sprintf(buf, "%d\n", vbbat_reg_to_mv(ret));
 }
 
+<<<<<<< HEAD
+=======
+static ssize_t da9052_hwmon_show_name(struct device *dev,
+				      struct device_attribute *devattr,
+				      char *buf)
+{
+	return sprintf(buf, "da9052\n");
+}
+
+>>>>>>> p9x
 static ssize_t show_label(struct device *dev,
 			  struct device_attribute *devattr, char *buf)
 {

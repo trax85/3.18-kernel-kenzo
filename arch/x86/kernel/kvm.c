@@ -163,6 +163,7 @@ void kvm_async_pf_task_wait(u32 token)
 			 */
 			native_safe_halt();
 			local_irq_disable();
+			rcu_irq_enter();
 		}
 
 		rcu_irq_enter();

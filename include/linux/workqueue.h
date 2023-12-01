@@ -315,7 +315,11 @@ enum {
 
 	__WQ_DRAINING		= 1 << 16, /* internal: workqueue is draining */
 	__WQ_ORDERED		= 1 << 17, /* internal: workqueue is ordered */
+<<<<<<< HEAD
 	__WQ_ORDERED_EXPLICIT	= 1 << 19, /* internal: alloc_ordered_workqueue() */
+=======
+	__WQ_ORDERED_EXPLICIT	= 1 << 18, /* internal: alloc_ordered_workqueue() */
+>>>>>>> p9x
 
 	WQ_MAX_ACTIVE		= 512,	  /* I like 512, better ideas? */
 	WQ_MAX_UNBOUND_PER_CPU	= 4,	  /* 4 * #cpus for unbound wq */
@@ -361,6 +365,23 @@ extern struct workqueue_struct *system_unbound_wq;
 extern struct workqueue_struct *system_freezable_wq;
 extern struct workqueue_struct *system_power_efficient_wq;
 extern struct workqueue_struct *system_freezable_power_efficient_wq;
+<<<<<<< HEAD
+=======
+
+static inline struct workqueue_struct * __deprecated __system_nrt_wq(void)
+{
+	return system_wq;
+}
+
+static inline struct workqueue_struct * __deprecated __system_nrt_freezable_wq(void)
+{
+	return system_freezable_wq;
+}
+
+/* equivlalent to system_wq and system_freezable_wq, deprecated */
+#define system_nrt_wq			__system_nrt_wq()
+#define system_nrt_freezable_wq		__system_nrt_freezable_wq()
+>>>>>>> p9x
 
 extern struct workqueue_struct *
 __alloc_workqueue_key(const char *fmt, unsigned int flags, int max_active,

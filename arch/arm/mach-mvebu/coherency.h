@@ -17,6 +17,11 @@
 extern unsigned long coherency_phys_base;
 int set_cpu_coherent(void);
 
+<<<<<<< HEAD
+=======
+int set_cpu_coherent(int cpu_id, int smp_group_id);
+int coherency_available(void);
+>>>>>>> p9x
 int coherency_init(void);
 int coherency_available(void);
 

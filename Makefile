@@ -1,8 +1,15 @@
 VERSION = 3
+<<<<<<< HEAD
 PATCHLEVEL = 18
 SUBLEVEL = 140
 EXTRAVERSION =
 NAME = Diseased Newt
+=======
+PATCHLEVEL = 10
+SUBLEVEL = 108
+EXTRAVERSION =
+NAME = END-OF-LIFE
+>>>>>>> p9x
 
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"
@@ -387,6 +394,7 @@ CFLAGS_KCOV	= -fsanitize-coverage=trace-pc
 USERINCLUDE    := \
 		-I$(srctree)/arch/$(hdr-arch)/include/uapi \
 		-Iarch/$(hdr-arch)/include/generated/uapi \
+		-I$(srctree)/drivers/soc/qcom \
 		-I$(srctree)/include/uapi \
 		-Iinclude/generated/uapi \
                 -include $(srctree)/include/linux/kconfig.h
@@ -406,6 +414,10 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
+<<<<<<< HEAD
+=======
+		   -fno-delete-null-pointer-checks \
+>>>>>>> p9x
 		   -std=gnu89
 
 KBUILD_AFLAGS_KERNEL :=
@@ -426,7 +438,11 @@ export MAKE AWK GENKSYMS INSTALLKERNEL PERL PYTHON UTS_MACHINE
 export HOSTCXX HOSTCXXFLAGS LDFLAGS_MODULE CHECK CHECKFLAGS
 
 export KBUILD_CPPFLAGS NOSTDINC_FLAGS LINUXINCLUDE OBJCOPYFLAGS LDFLAGS
+<<<<<<< HEAD
 export KBUILD_CFLAGS CFLAGS_KERNEL CFLAGS_MODULE CFLAGS_GCOV CFLAGS_KCOV CFLAGS_KASAN CFLAGS_UBSAN
+=======
+export KBUILD_CFLAGS CFLAGS_KERNEL CFLAGS_MODULE CFLAGS_GCOV CFLAGS_KASAN
+>>>>>>> p9x
 export KBUILD_AFLAGS AFLAGS_KERNEL AFLAGS_MODULE
 export KBUILD_AFLAGS_MODULE KBUILD_CFLAGS_MODULE KBUILD_LDFLAGS_MODULE
 export KBUILD_AFLAGS_KERNEL KBUILD_CFLAGS_KERNEL
@@ -646,6 +662,7 @@ KBUILD_CFLAGS += $(call cc-option,-Wframe-larger-than=${CONFIG_FRAME_WARN})
 endif
 
 # Handle stack protector mode.
+<<<<<<< HEAD
 #
 # Since kbuild can potentially perform two passes (first with the old
 # .config values and then with updated .config values), we cannot error out
@@ -662,6 +679,8 @@ endif
 # to let the build fail with bad compiler flags so that we can't produce a
 # kernel when there is a CONFIG and compiler mismatch.
 #
+=======
+>>>>>>> p9x
 ifdef CONFIG_CC_STACKPROTECTOR_REGULAR
   stackp-flag := -fstack-protector
   ifeq ($(call cc-option, $(stackp-flag)),)
@@ -678,6 +697,7 @@ ifdef CONFIG_CC_STACKPROTECTOR_STRONG
 else
   # Force off for distro compilers that enable stack protector by default.
   stackp-flag := $(call cc-option, -fno-stack-protector)
+<<<<<<< HEAD
 endif
 endif
 KBUILD_CFLAGS += $(stackp-flag)
@@ -688,7 +708,11 @@ ifdef CONFIG_KCOV
              -fsanitize-coverage=trace-pc is not supported by compiler)
     CFLAGS_KCOV =
   endif
+=======
+>>>>>>> p9x
 endif
+endif
+KBUILD_CFLAGS += $(stackp-flag)
 
 ifeq ($(COMPILER),clang)
 KBUILD_CPPFLAGS += $(call cc-option,-Qunused-arguments,)
@@ -802,8 +826,11 @@ ifeq ($(shell $(CONFIG_SHELL) $(srctree)/scripts/gcc-goto.sh $(CC)), y)
 endif
 
 include $(srctree)/scripts/Makefile.kasan
+<<<<<<< HEAD
 include $(srctree)/scripts/Makefile.extrawarn
 include $(srctree)/scripts/Makefile.ubsan
+=======
+>>>>>>> p9x
 
 # Add user supplied CPPFLAGS, AFLAGS and CFLAGS as the last assignments
 KBUILD_CPPFLAGS += $(KCPPFLAGS)

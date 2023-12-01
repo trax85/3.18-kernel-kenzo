@@ -7,10 +7,13 @@ generic-y += barrier.h
 generic-y += clkdev.h
 generic-y += cputime.h
 generic-y += exec.h
+<<<<<<< HEAD
 generic-y += hash.h
 generic-y += irq_work.h
 generic-y += kvm_para.h
 generic-y += linkage.h
+=======
+>>>>>>> p9x
 generic-y += mcs_spinlock.h
 generic-y += module.h
 generic-y += preempt.h

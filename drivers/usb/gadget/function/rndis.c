@@ -34,8 +34,11 @@
 #include <asm/io.h>
 #include <asm/byteorder.h>
 #include <asm/unaligned.h>
+<<<<<<< HEAD:drivers/usb/gadget/function/rndis.c
 
 #include "u_rndis.h"
+=======
+>>>>>>> p9x:drivers/usb/gadget/rndis.c
 #include "u_bam_data.h"
 
 #undef	VERBOSE_DEBUG
@@ -63,12 +66,20 @@ MODULE_PARM_DESC (rndis_debug, "enable debugging");
 int rndis_ul_max_pkt_per_xfer_rcvd;
 module_param(rndis_ul_max_pkt_per_xfer_rcvd, int, S_IRUGO);
 MODULE_PARM_DESC(rndis_ul_max_pkt_per_xfer_rcvd,
+<<<<<<< HEAD:drivers/usb/gadget/function/rndis.c
 		"Max num of REMOTE_NDIS_PACKET_MSGs received in a single transfer");
+=======
+	"Max num of REMOTE_NDIS_PACKET_MSGs received in a single transfer");
+>>>>>>> p9x:drivers/usb/gadget/rndis.c
 
 int rndis_ul_max_xfer_size_rcvd;
 module_param(rndis_ul_max_xfer_size_rcvd, int, S_IRUGO);
 MODULE_PARM_DESC(rndis_ul_max_xfer_size_rcvd,
+<<<<<<< HEAD:drivers/usb/gadget/function/rndis.c
 		"Max size of bus transfer received");
+=======
+	"Max size of bus transfer received");
+>>>>>>> p9x:drivers/usb/gadget/rndis.c
 
 
 static rndis_params rndis_per_dev_params[RNDIS_MAX_CONFIGS];
@@ -859,6 +870,7 @@ int rndis_msg_parser(u8 configNr, u8 *buf)
 		pr_debug("%s: RNDIS_MSG_HALT\n",
 			__func__);
 
+<<<<<<< HEAD:drivers/usb/gadget/function/rndis.c
 		if (params->state == RNDIS_DATA_INITIALIZED) {
 			if (params->flow_ctrl_enable) {
 				params->flow_ctrl_enable(true);
@@ -869,7 +881,18 @@ int rndis_msg_parser(u8 configNr, u8 *buf)
 				}
 			}
 			params->state = RNDIS_UNINITIALIZED;
+=======
+		if (!is_rndis_ipa_supported()) {
+			if (params->dev) {
+				netif_carrier_off(params->dev);
+				netif_stop_queue(params->dev);
+			}
+		} else {
+			if (params->state == RNDIS_DATA_INITIALIZED)
+				u_bam_data_stop_rndis_ipa();
+>>>>>>> p9x:drivers/usb/gadget/rndis.c
 		}
+		params->state = RNDIS_UNINITIALIZED;
 		return 0;
 
 	case RNDIS_MSG_QUERY:
@@ -961,6 +984,10 @@ int rndis_set_param_dev(u8 configNr, struct net_device *dev, u16 *cdc_filter)
 	/* reset aggregation stats for every set_alt */
 	rndis_ul_max_xfer_size_rcvd = 0;
 	rndis_ul_max_pkt_per_xfer_rcvd = 0;
+<<<<<<< HEAD:drivers/usb/gadget/function/rndis.c
+=======
+
+>>>>>>> p9x:drivers/usb/gadget/rndis.c
 	return 0;
 }
 EXPORT_SYMBOL_GPL(rndis_set_param_dev);
@@ -988,8 +1015,11 @@ int rndis_set_param_medium(u8 configNr, u32 medium, u32 speed)
 
 	return 0;
 }
+<<<<<<< HEAD:drivers/usb/gadget/function/rndis.c
 EXPORT_SYMBOL_GPL(rndis_set_param_medium);
 
+=======
+>>>>>>> p9x:drivers/usb/gadget/rndis.c
 u32 rndis_get_dl_max_xfer_size(u8 configNr)
 {
 	pr_debug("%s:\n", __func__);
@@ -1016,7 +1046,10 @@ void rndis_set_pkt_alignment_factor(u8 configNr, u8 pkt_alignment_factor)
 	rndis_per_dev_params[configNr].pkt_alignment_factor =
 					pkt_alignment_factor;
 }
+<<<<<<< HEAD:drivers/usb/gadget/function/rndis.c
 
+=======
+>>>>>>> p9x:drivers/usb/gadget/rndis.c
 /**
  * rndis_flow_control: enable/disable flow control with USB RNDIS interface
  * confignr - RNDIS network interface number
@@ -1032,6 +1065,7 @@ void rndis_flow_control(u8 confignr, bool enable_flow_control)
 	params = &rndis_per_dev_params[confignr];
 	pr_debug("%s(): params->state:%x\n", __func__, params->state);
 	if (enable_flow_control) {
+<<<<<<< HEAD:drivers/usb/gadget/function/rndis.c
 		if (params->state == RNDIS_DATA_INITIALIZED) {
 			if (params->flow_ctrl_enable) {
 				params->flow_ctrl_enable(enable_flow_control);
@@ -1050,6 +1084,24 @@ void rndis_flow_control(u8 confignr, bool enable_flow_control)
 				if (netif_running(params->dev))
 					netif_wake_queue(params->dev);
 			}
+=======
+		if (is_rndis_ipa_supported()) {
+			if (params->state == RNDIS_DATA_INITIALIZED)
+				u_bam_data_stop_rndis_ipa();
+		} else {
+			netif_carrier_off(params->dev);
+			netif_stop_queue(params->dev);
+		}
+		params->state = RNDIS_INITIALIZED;
+	} else {
+		if (is_rndis_ipa_supported()) {
+			if (params->state != RNDIS_DATA_INITIALIZED)
+				u_bam_data_start_rndis_ipa();
+		} else {
+			netif_carrier_on(params->dev);
+			if (netif_running(params->dev))
+				netif_wake_queue(params->dev);
+>>>>>>> p9x:drivers/usb/gadget/rndis.c
 		}
 		params->state = RNDIS_DATA_INITIALIZED;
 	}
@@ -1151,8 +1203,13 @@ int rndis_rm_hdr(struct gether *port,
 
 	while (skb->len) {
 		struct rndis_packet_msg_type *hdr;
+<<<<<<< HEAD:drivers/usb/gadget/function/rndis.c
 		struct sk_buff          *skb2;
 		u32             msg_len, data_offset, data_len;
+=======
+		struct sk_buff		*skb2;
+		u32		msg_len, data_offset, data_len;
+>>>>>>> p9x:drivers/usb/gadget/rndis.c
 
 		if (skb->len < sizeof *hdr) {
 			pr_err("invalid rndis pkt: skblen:%u hdr_len:%zu",
@@ -1167,18 +1224,30 @@ int rndis_rm_hdr(struct gether *port,
 		data_len = le32_to_cpu(hdr->DataLength);
 
 		if (skb->len < msg_len ||
+<<<<<<< HEAD:drivers/usb/gadget/function/rndis.c
 				((data_offset + data_len + 8) > msg_len)) {
 			pr_err("invalid rndis message: %d/%d/%d/%d, len:%d\n",
 					le32_to_cpu(hdr->MessageType),
 					msg_len, data_offset, data_len, skb->len);
+=======
+			((data_offset + data_len + 8) > msg_len)) {
+			pr_err("invalid rndis message: %d/%d/%d/%d, len:%d\n",
+				le32_to_cpu(hdr->MessageType),
+				msg_len, data_offset, data_len, skb->len);
+>>>>>>> p9x:drivers/usb/gadget/rndis.c
 			dev_kfree_skb_any(skb);
 			return -EOVERFLOW;
 		}
 
 		if (le32_to_cpu(hdr->MessageType) != RNDIS_MSG_PACKET) {
 			pr_err("invalid rndis message: %d/%d/%d/%d, len:%d\n",
+<<<<<<< HEAD:drivers/usb/gadget/function/rndis.c
 					le32_to_cpu(hdr->MessageType),
 					msg_len, data_offset, data_len, skb->len);
+=======
+				le32_to_cpu(hdr->MessageType),
+				msg_len, data_offset, data_len, skb->len);
+>>>>>>> p9x:drivers/usb/gadget/rndis.c
 			dev_kfree_skb_any(skb);
 			return -EINVAL;
 		}
@@ -1231,7 +1300,11 @@ static int rndis_proc_show(struct seq_file *m, void *v)
 			 "vendor    : %s\n"
 			 "ul-max-xfer-size:%zu max-xfer-size-rcvd: %d\n"
 			 "ul-max-pkts-per-xfer:%d max-pkts-per-xfer-rcvd:%d\n"
+<<<<<<< HEAD:drivers/usb/gadget/function/rndis.c
 			 "pkt_alignment_factor:%d\n",
+=======
+			"pkt_alignment_factor:%d\n",
+>>>>>>> p9x:drivers/usb/gadget/rndis.c
 			 param->confignr, (param->used) ? "y" : "n",
 			 ({ char *s = "?";
 			 switch (param->state) {
@@ -1246,6 +1319,7 @@ static int rndis_proc_show(struct seq_file *m, void *v)
 			 (param->media_state) ? 0 : param->speed*100,
 			 (param->media_state) ? "disconnected" : "connected",
 			 param->vendorID, param->vendorDescr,
+<<<<<<< HEAD:drivers/usb/gadget/function/rndis.c
 			 param->dev ? param->max_pkt_per_xfer *
 				 (param->dev->mtu + sizeof(struct ethhdr) +
 				 sizeof(struct rndis_packet_msg_type) + 22) : 0,
@@ -1253,6 +1327,15 @@ static int rndis_proc_show(struct seq_file *m, void *v)
 			 param->max_pkt_per_xfer,
 			 rndis_ul_max_pkt_per_xfer_rcvd,
 			 param->pkt_alignment_factor);
+=======
+			 param->max_pkt_per_xfer *
+				 (param->dev->mtu + sizeof(struct ethhdr) +
+				  sizeof(struct rndis_packet_msg_type) + 22),
+			 rndis_ul_max_xfer_size_rcvd,
+			 param->max_pkt_per_xfer,
+			 rndis_ul_max_pkt_per_xfer_rcvd,
+			param->pkt_alignment_factor);
+>>>>>>> p9x:drivers/usb/gadget/rndis.c
 	return 0;
 }
 
@@ -1321,10 +1404,14 @@ static struct proc_dir_entry *rndis_connect_state [RNDIS_MAX_CONFIGS];
 
 #endif /* CONFIG_USB_GADGET_DEBUG_FILES */
 
+static bool rndis_initialized;
 
 int rndis_init(void)
 {
 	u8 i;
+
+	if (rndis_initialized)
+		return 0;
 
 	for (i = 0; i < RNDIS_MAX_CONFIGS; i++) {
 #ifdef	CONFIG_USB_GADGET_DEBUG_FILES
@@ -1354,6 +1441,7 @@ int rndis_init(void)
 		INIT_LIST_HEAD(&(rndis_per_dev_params[i].resp_queue));
 	}
 
+	rndis_initialized = true;
 	return 0;
 }
 
@@ -1362,7 +1450,13 @@ void rndis_exit(void)
 #ifdef CONFIG_USB_GADGET_DEBUG_FILES
 	u8 i;
 	char name[20];
+#endif
 
+	if (!rndis_initialized)
+		return;
+	rndis_initialized = false;
+
+#ifdef CONFIG_USB_GADGET_DEBUG_FILES
 	for (i = 0; i < RNDIS_MAX_CONFIGS; i++) {
 		sprintf(name, NAME_TEMPLATE, i);
 		remove_proc_entry(name, NULL);

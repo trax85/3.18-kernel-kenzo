@@ -185,13 +185,24 @@ int copy_siginfo_to_user32(compat_siginfo_t __user *to, const siginfo_t *from)
 		err |= __put_user(from->si_pid, &to->si_pid);
 		err |= __put_user(from->si_uid, &to->si_uid);
 		err |= __put_user(from->si_int, &to->si_int);
+<<<<<<< HEAD
 		break;
 	case __SI_SYS:
 		err |= __put_user((compat_uptr_t)(unsigned long)
 				from->si_call_addr, &to->si_call_addr);
 		err |= __put_user(from->si_syscall, &to->si_syscall);
 		err |= __put_user(from->si_arch, &to->si_arch);
+=======
+>>>>>>> p9x
 		break;
+#ifdef __ARCH_SIGSYS
+	case __SI_SYS:
+		err |= __put_user((compat_uptr_t)(unsigned long)
+				from->si_call_addr, &to->si_call_addr);
+		err |= __put_user(from->si_syscall, &to->si_syscall);
+		err |= __put_user(from->si_arch, &to->si_arch);
+		break;
+#endif
 	default: /* this is just in case for now ... */
 		err |= __put_user(from->si_pid, &to->si_pid);
 		err |= __put_user(from->si_uid, &to->si_uid);
@@ -476,9 +487,12 @@ static void compat_setup_return(struct pt_regs *regs, struct k_sigaction *ka,
 
 	/* The IT state must be cleared for both ARM and Thumb-2 */
 	spsr &= ~COMPAT_PSR_IT_MASK;
+<<<<<<< HEAD
 
 	/* Restore the original endianness */
 	spsr |= COMPAT_PSR_ENDSTATE;
+=======
+>>>>>>> p9x
 
 	if (ka->sa.sa_flags & SA_RESTORER) {
 		retcode = ptr_to_compat(ka->sa.sa_restorer);
@@ -527,7 +541,11 @@ static int compat_setup_sigframe(struct compat_sigframe __user *sf,
 
 	__put_user_error((compat_ulong_t)0, &sf->uc.uc_mcontext.trap_no, err);
 	/* set the compat FSR WnR */
+<<<<<<< HEAD
 	__put_user_error(!!(current->thread.fault_code & ESR_ELx_WNR) <<
+=======
+	__put_user_error(!!(current->thread.fault_code & ESR_EL1_WRITE) <<
+>>>>>>> p9x
 			 FSR_WRITE_SHIFT, &sf->uc.uc_mcontext.error_code, err);
 	__put_user_error(current->thread.fault_address, &sf->uc.uc_mcontext.fault_address, err);
 	__put_user_error(set->sig[0], &sf->uc.uc_mcontext.oldmask, err);

@@ -95,6 +95,8 @@ static int atomic_dec_return_safe(atomic_t *v)
 #define RBD_MINORS_PER_MAJOR		256
 #define RBD_SINGLE_MAJOR_PART_SHIFT	4
 
+#define RBD_MAX_PARENT_CHAIN_LEN	16
+
 #define RBD_SNAP_DEV_NAME_PREFIX	"snap_"
 #define RBD_MAX_SNAP_NAME_LEN	\
 			(NAME_MAX - (sizeof (RBD_SNAP_DEV_NAME_PREFIX) - 1))
@@ -419,11 +421,15 @@ static ssize_t rbd_add(struct bus_type *bus, const char *buf,
 		       size_t count);
 static ssize_t rbd_remove(struct bus_type *bus, const char *buf,
 			  size_t count);
+<<<<<<< HEAD
 static ssize_t rbd_add_single_major(struct bus_type *bus, const char *buf,
 				    size_t count);
 static ssize_t rbd_remove_single_major(struct bus_type *bus, const char *buf,
 				       size_t count);
 static int rbd_dev_image_probe(struct rbd_device *rbd_dev, bool mapping);
+=======
+static int rbd_dev_image_probe(struct rbd_device *rbd_dev, int depth);
+>>>>>>> p9x
 static void rbd_spec_put(struct rbd_spec *spec);
 
 static int rbd_dev_id_to_minor(int dev_id)
@@ -1255,8 +1261,13 @@ static void zero_bio_chain(struct bio *chain, int start_ofs)
 				int remainder = max(start_ofs - pos, 0);
 				buf = bvec_kmap_irq(&bv, &flags);
 				memset(buf + remainder, 0,
+<<<<<<< HEAD
 				       bv.bv_len - remainder);
 				flush_dcache_page(bv.bv_page);
+=======
+				       bv->bv_len - remainder);
+				flush_dcache_page(bv->bv_page);
+>>>>>>> p9x
 				bvec_kunmap_irq(buf, &flags);
 			}
 			pos += bv.bv_len;
@@ -2414,10 +2425,17 @@ static int rbd_img_request_fill(struct rbd_img_request *img_request,
 	struct rbd_device *rbd_dev = img_request->rbd_dev;
 	struct rbd_obj_request *obj_request = NULL;
 	struct rbd_obj_request *next_obj_request;
+<<<<<<< HEAD
 	struct bio *bio_list = NULL;
 	unsigned int bio_offset = 0;
 	struct page **pages = NULL;
 	enum obj_operation_type op_type;
+=======
+	bool write_request = img_request_write_test(img_request);
+	struct bio *bio_list = 0;
+	unsigned int bio_offset = 0;
+	struct page **pages = 0;
+>>>>>>> p9x
 	u64 img_offset;
 	u64 resid;
 
@@ -2454,6 +2472,11 @@ static int rbd_img_request_fill(struct rbd_img_request *img_request,
 		rbd_segment_name_free(object_name);
 		if (!obj_request)
 			goto out_unwind;
+		/*
+		 * set obj_request->img_request before creating the
+		 * osd_request so that it gets the right snapc
+		 */
+		rbd_img_obj_request_add(img_request, obj_request);
 
 		/*
 		 * set obj_request->img_request before creating the
@@ -2492,6 +2515,26 @@ static int rbd_img_request_fill(struct rbd_img_request *img_request,
 
 		obj_request->osd_req = osd_req;
 		obj_request->callback = rbd_img_obj_callback;
+<<<<<<< HEAD
+=======
+		rbd_img_request_get(img_request);
+
+		osd_req_op_extent_init(osd_req, 0, opcode, offset, length,
+						0, 0);
+		if (type == OBJ_REQUEST_BIO)
+			osd_req_op_extent_osd_data_bio(osd_req, 0,
+					obj_request->bio_list, length);
+		else
+			osd_req_op_extent_osd_data_pages(osd_req, 0,
+					obj_request->pages, length,
+					offset & ~PAGE_MASK, false, false);
+
+		if (write_request)
+			rbd_osd_req_format_write(obj_request);
+		else
+			rbd_osd_req_format_read(obj_request);
+
+>>>>>>> p9x
 		obj_request->img_offset = img_offset;
 
 		rbd_img_obj_request_fill(obj_request, osd_req, op_type, 0);
@@ -2521,8 +2564,12 @@ rbd_osd_copyup_callback(struct rbd_obj_request *obj_request)
 
 	dout("%s: obj %p\n", __func__, obj_request);
 
+<<<<<<< HEAD
 	rbd_assert(obj_request->type == OBJ_REQUEST_BIO ||
 		obj_request->type == OBJ_REQUEST_NODATA);
+=======
+	rbd_assert(obj_request->type == OBJ_REQUEST_BIO);
+>>>>>>> p9x
 	rbd_assert(obj_request_img_data_test(obj_request));
 	img_request = obj_request->img_request;
 	rbd_assert(img_request);
@@ -2875,10 +2922,28 @@ static bool img_obj_request_simple(struct rbd_obj_request *obj_request)
 	rbd_assert(img_request);
 	rbd_dev = img_request->rbd_dev;
 
+<<<<<<< HEAD
 	/* Reads */
 	if (!img_request_write_test(img_request) &&
 	    !img_request_discard_test(img_request))
 		return true;
+=======
+	/*
+	 * Only writes to layered images need special handling.
+	 * Reads and non-layered writes are simple object requests.
+	 * Layered writes that start beyond the end of the overlap
+	 * with the parent have no parent data, so they too are
+	 * simple object requests.  Finally, if the target object is
+	 * known to already exist, its parent data has already been
+	 * copied, so a write to the object can also be handled as a
+	 * simple object request.
+	 */
+	if (!img_request_write_test(img_request) ||
+		!img_request_layered_test(img_request) ||
+		!obj_request_overlaps_parent(obj_request) ||
+		((known = obj_request_known_test(obj_request)) &&
+			obj_request_exists_test(obj_request))) {
+>>>>>>> p9x
 
 	/* Non-layered writes */
 	if (!img_request_layered_test(img_request))
@@ -3110,9 +3175,13 @@ static void rbd_watch_cb(u64 ver, u64 notify_id, u8 opcode, void *data)
 	if (ret)
 		rbd_warn(rbd_dev, "refresh failed: %d", ret);
 
+<<<<<<< HEAD
 	ret = rbd_obj_notify_ack_sync(rbd_dev, notify_id);
 	if (ret)
 		rbd_warn(rbd_dev, "notify_ack ret %d", ret);
+=======
+	rbd_obj_notify_ack_sync(rbd_dev, notify_id);
+>>>>>>> p9x
 }
 
 /*
@@ -3675,6 +3744,7 @@ static void rbd_exists_validate(struct rbd_device *rbd_dev)
 }
 
 static void rbd_dev_update_size(struct rbd_device *rbd_dev)
+<<<<<<< HEAD
 {
 	sector_t size;
 	bool removing;
@@ -3696,6 +3766,51 @@ static void rbd_dev_update_size(struct rbd_device *rbd_dev)
 		dout("setting size to %llu sectors", (unsigned long long)size);
 		set_capacity(rbd_dev->disk, size);
 		revalidate_disk(rbd_dev->disk);
+=======
+{
+	sector_t size;
+	bool removing;
+
+	/*
+	 * Don't hold the lock while doing disk operations,
+	 * or lock ordering will conflict with the bdev mutex via:
+	 * rbd_add() -> blkdev_get() -> rbd_open()
+	 */
+	spin_lock_irq(&rbd_dev->lock);
+	removing = test_bit(RBD_DEV_FLAG_REMOVING, &rbd_dev->flags);
+	spin_unlock_irq(&rbd_dev->lock);
+	/*
+	 * If the device is being removed, rbd_dev->disk has
+	 * been destroyed, so don't try to update its size
+	 */
+	if (!removing) {
+		size = (sector_t)rbd_dev->mapping.size / SECTOR_SIZE;
+		dout("setting size to %llu sectors", (unsigned long long)size);
+		set_capacity(rbd_dev->disk, size);
+		revalidate_disk(rbd_dev->disk);
+	}
+}
+
+static int rbd_dev_refresh(struct rbd_device *rbd_dev)
+{
+	u64 mapping_size;
+	int ret;
+
+	rbd_assert(rbd_image_format_valid(rbd_dev->image_format));
+	mapping_size = rbd_dev->mapping.size;
+	mutex_lock_nested(&ctl_mutex, SINGLE_DEPTH_NESTING);
+	if (rbd_dev->image_format == 1)
+		ret = rbd_dev_v1_header_info(rbd_dev);
+	else
+		ret = rbd_dev_v2_header_info(rbd_dev);
+
+	/* If it's a mapped snapshot, validate its EXISTS flag */
+
+	rbd_exists_validate(rbd_dev);
+	mutex_unlock(&ctl_mutex);
+	if (mapping_size != rbd_dev->mapping.size) {
+		rbd_dev_update_size(rbd_dev);
+>>>>>>> p9x
 	}
 }
 
@@ -5170,7 +5285,12 @@ out_err:
 	return ret;
 }
 
-static int rbd_dev_probe_parent(struct rbd_device *rbd_dev)
+/*
+ * @depth is rbd_dev_image_probe() -> rbd_dev_probe_parent() ->
+ * rbd_dev_image_probe() recursion depth, which means it's also the
+ * length of the already discovered part of the parent chain.
+ */
+static int rbd_dev_probe_parent(struct rbd_device *rbd_dev, int depth)
 {
 	struct rbd_device *parent = NULL;
 	int ret;
@@ -5178,6 +5298,7 @@ static int rbd_dev_probe_parent(struct rbd_device *rbd_dev)
 	if (!rbd_dev->parent_spec)
 		return 0;
 
+<<<<<<< HEAD
 	parent = rbd_dev_create(rbd_dev->rbd_client, rbd_dev->parent_spec);
 	if (!parent) {
 		ret = -ENOMEM;
@@ -5199,6 +5320,35 @@ static int rbd_dev_probe_parent(struct rbd_device *rbd_dev)
 	atomic_set(&rbd_dev->parent_ref, 1);
 	return 0;
 
+=======
+	if (++depth > RBD_MAX_PARENT_CHAIN_LEN) {
+		pr_info("parent chain is too long (%d)\n", depth);
+		ret = -EINVAL;
+		goto out_err;
+	}
+
+	parent = rbd_dev_create(rbd_dev->rbd_client, rbd_dev->parent_spec);
+	if (!parent) {
+		ret = -ENOMEM;
+		goto out_err;
+	}
+
+	/*
+	 * Images related by parent/child relationships always share
+	 * rbd_client and spec/parent_spec, so bump their refcounts.
+	 */
+	__rbd_get_client(rbd_dev->rbd_client);
+	rbd_spec_get(rbd_dev->parent_spec);
+
+	ret = rbd_dev_image_probe(parent, depth);
+	if (ret < 0)
+		goto out_err;
+
+	rbd_dev->parent = parent;
+	atomic_set(&rbd_dev->parent_ref, 1);
+	return 0;
+
+>>>>>>> p9x
 out_err:
 	rbd_dev_unparent(rbd_dev);
 	if (parent)
@@ -5320,7 +5470,7 @@ static void rbd_dev_image_release(struct rbd_device *rbd_dev)
  * parent), initiate a watch on its header object before using that
  * object to get detailed information about the rbd image.
  */
-static int rbd_dev_image_probe(struct rbd_device *rbd_dev, bool mapping)
+static int rbd_dev_image_probe(struct rbd_device *rbd_dev, int depth)
 {
 	int ret;
 
@@ -5338,8 +5488,13 @@ static int rbd_dev_image_probe(struct rbd_device *rbd_dev, bool mapping)
 	if (ret)
 		goto err_out_format;
 
+<<<<<<< HEAD
 	if (mapping) {
 		ret = rbd_dev_header_watch_sync(rbd_dev);
+=======
+	if (!depth) {
+		ret = rbd_dev_header_watch_sync(rbd_dev, true);
+>>>>>>> p9x
 		if (ret)
 			goto out_header_name;
 	}
@@ -5361,6 +5516,7 @@ static int rbd_dev_image_probe(struct rbd_device *rbd_dev, bool mapping)
 	if (ret)
 		goto err_out_probe;
 
+<<<<<<< HEAD
 	if (rbd_dev->header.features & RBD_FEATURE_LAYERING) {
 		ret = rbd_dev_v2_parent_info(rbd_dev);
 		if (ret)
@@ -5376,6 +5532,9 @@ static int rbd_dev_image_probe(struct rbd_device *rbd_dev, bool mapping)
 	}
 
 	ret = rbd_dev_probe_parent(rbd_dev);
+=======
+	ret = rbd_dev_probe_parent(rbd_dev, depth);
+>>>>>>> p9x
 	if (ret)
 		goto err_out_probe;
 
@@ -5386,8 +5545,17 @@ static int rbd_dev_image_probe(struct rbd_device *rbd_dev, bool mapping)
 err_out_probe:
 	rbd_dev_unprobe(rbd_dev);
 err_out_watch:
+<<<<<<< HEAD
 	if (mapping)
 		rbd_dev_header_unwatch_sync(rbd_dev);
+=======
+	if (!depth) {
+		tmp = rbd_dev_header_watch_sync(rbd_dev, false);
+		if (tmp)
+			rbd_warn(rbd_dev, "unable to tear down "
+					"watch request (%d)\n", tmp);
+	}
+>>>>>>> p9x
 out_header_name:
 	kfree(rbd_dev->header_name);
 	rbd_dev->header_name = NULL;
@@ -5448,7 +5616,7 @@ static ssize_t do_rbd_add(struct bus_type *bus,
 	rbdc = NULL;		/* rbd_dev now owns this */
 	spec = NULL;		/* rbd_dev now owns this */
 
-	rc = rbd_dev_image_probe(rbd_dev, true);
+	rc = rbd_dev_image_probe(rbd_dev, 0);
 	if (rc < 0)
 		goto err_out_rbd_dev;
 
@@ -5486,6 +5654,7 @@ err_out_module:
 	return (ssize_t)rc;
 }
 
+<<<<<<< HEAD
 static ssize_t rbd_add(struct bus_type *bus,
 		       const char *buf,
 		       size_t count)
@@ -5503,6 +5672,8 @@ static ssize_t rbd_add_single_major(struct bus_type *bus,
 	return do_rbd_add(bus, buf, count);
 }
 
+=======
+>>>>>>> p9x
 static void rbd_dev_device_release(struct device *dev)
 {
 	struct rbd_device *rbd_dev = dev_to_rbd_dev(dev);
@@ -5562,6 +5733,11 @@ static ssize_t do_rbd_remove(struct bus_type *bus,
 	if (dev_id != ul)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	mutex_lock_nested(&ctl_mutex, SINGLE_DEPTH_NESTING);
+
+>>>>>>> p9x
 	ret = -ENOENT;
 	spin_lock(&rbd_dev_list_lock);
 	list_for_each(tmp, &rbd_dev_list) {
@@ -5582,16 +5758,28 @@ static ssize_t do_rbd_remove(struct bus_type *bus,
 	}
 	spin_unlock(&rbd_dev_list_lock);
 	if (ret < 0 || already)
+<<<<<<< HEAD
 		return ret;
 
 	rbd_dev_header_unwatch_sync(rbd_dev);
+=======
+		goto done;
+
+	ret = rbd_dev_header_watch_sync(rbd_dev, false);
+	if (ret)
+		rbd_warn(rbd_dev, "failed to cancel watch event (%d)\n", ret);
+
+>>>>>>> p9x
 	/*
 	 * flush remaining watch callbacks - these must be complete
 	 * before the osd_client is shutdown
 	 */
 	dout("%s: flushing notifies", __func__);
 	ceph_osdc_flush_notifies(&rbd_dev->rbd_client->client->osdc);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	/*
 	 * Don't free anything from rbd_dev->disk until after all
 	 * notifies are completely processed. Otherwise

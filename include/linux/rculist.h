@@ -286,11 +286,19 @@ static inline void list_splice_init_rcu(struct list_head *list,
  * primitives such as list_add_rcu() as long as it's guarded by rcu_read_lock().
  */
 #define list_first_or_null_rcu(ptr, type, member) \
+<<<<<<< HEAD
 ({ \
 	struct list_head *__ptr = (ptr); \
 	struct list_head *__next = ACCESS_ONCE(__ptr->next); \
 	likely(__ptr != __next) ? list_entry_rcu(__next, type, member) : NULL; \
 })
+=======
+	({struct list_head *__ptr = (ptr); \
+	  struct list_head *__next = ACCESS_ONCE(__ptr->next); \
+	  likely(__ptr != __next) ? \
+		list_entry_rcu(__next, type, member) : NULL; \
+	})
+>>>>>>> p9x
 
 /**
  * list_for_each_entry_rcu	-	iterate over rcu list of given type

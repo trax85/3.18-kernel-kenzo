@@ -169,6 +169,15 @@
 #define CPU_METHOD_OF_TABLES()	OF_TABLE(CONFIG_SMP, cpu_method)
 #define EARLYCON_OF_TABLES()	OF_TABLE(CONFIG_SERIAL_EARLYCON, earlycon)
 
+#ifdef CONFIG_OF
+#define CPU_METHOD_OF_TABLES() . = ALIGN(8);				\
+		VMLINUX_SYMBOL(__cpu_method_of_table) = .;		\
+		*(__cpu_method_of_table)				\
+		VMLINUX_SYMBOL(__cpu_method_of_table_end) = .;
+#else
+#define CPU_METHOD_OF_TABLES()
+#endif
+
 #define KERNEL_DTB()							\
 	STRUCT_ALIGN();							\
 	VMLINUX_SYMBOL(__dtb_start) = .;				\
@@ -506,7 +515,11 @@
 	KPROBE_BLACKLIST()						\
 	MEM_DISCARD(init.rodata)					\
 	CLK_OF_TABLES()							\
+<<<<<<< HEAD
 	RESERVEDMEM_OF_TABLES()						\
+=======
+	CPU_METHOD_OF_TABLES()						\
+>>>>>>> p9x
 	CLKSRC_OF_TABLES()						\
 	IOMMU_OF_TABLES()						\
 	CPU_METHOD_OF_TABLES()						\
@@ -664,6 +677,11 @@
 		VMLINUX_SYMBOL(__security_initcall_start) = .;		\
 		*(.security_initcall.init)				\
 		VMLINUX_SYMBOL(__security_initcall_end) = .;
+
+#define COMPAT_EXPORTS							\
+		VMLINUX_SYMBOL(__compat_exports_start) = .;		\
+		*(.exportcompat.init)					\
+		VMLINUX_SYMBOL(__compat_exports_end) = .;
 
 #ifdef CONFIG_BLK_DEV_INITRD
 #define INIT_RAM_FS							\

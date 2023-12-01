@@ -61,6 +61,7 @@ struct cfg80211_registered_device {
 	struct list_head bss_list;
 	struct rb_root bss_tree;
 	u32 bss_generation;
+	u32 bss_entries;
 	struct cfg80211_scan_request *scan_req; /* protected by RTNL */
 	struct sk_buff *scan_msg;
 	struct cfg80211_sched_scan_request *sched_scan_req;
@@ -68,6 +69,11 @@ struct cfg80211_registered_device {
 	struct work_struct scan_done_wk;
 	struct work_struct sched_scan_results_wk;
 
+<<<<<<< HEAD
+=======
+	struct mutex sched_scan_mtx;
+
+>>>>>>> p9x
 	struct genl_info *cur_cmd_info;
 
 	struct work_struct conn_work;
@@ -203,7 +209,11 @@ struct cfg80211_event {
 			size_t req_ie_len;
 			size_t resp_ie_len;
 			struct cfg80211_bss *bss;
+<<<<<<< HEAD
 			int status; /* -1 = failed; 0..65535 = status code */
+=======
+			u16 status;
+>>>>>>> p9x
 		} cr;
 		struct {
 			const u8 *req_ie;
@@ -440,6 +450,9 @@ cfg80211_get_chan_state(struct wireless_dev *wdev,
 
 int cfg80211_set_monitor_channel(struct cfg80211_registered_device *rdev,
 				 struct cfg80211_chan_def *chandef);
+int ieee80211_get_ratemask(struct ieee80211_supported_band *sband,
+			   const u8 *rates, unsigned int n_rates,
+			   u32 *mask);
 
 int ieee80211_get_ratemask(struct ieee80211_supported_band *sband,
 			   const u8 *rates, unsigned int n_rates,
@@ -451,9 +464,12 @@ int cfg80211_validate_beacon_int(struct cfg80211_registered_device *rdev,
 void cfg80211_update_iface_num(struct cfg80211_registered_device *rdev,
 			       enum nl80211_iftype iftype, int num);
 
+<<<<<<< HEAD
 void __cfg80211_leave(struct cfg80211_registered_device *rdev,
 		      struct wireless_dev *wdev);
 
+=======
+>>>>>>> p9x
 void cfg80211_stop_p2p_device(struct cfg80211_registered_device *rdev,
 			      struct wireless_dev *wdev);
 

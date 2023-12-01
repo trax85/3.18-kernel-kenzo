@@ -314,7 +314,11 @@ static inline int cipso_v4_validate(const struct sk_buff *skb,
 			goto out;
 		}
 		tag_len = opt[opt_iter + 1];
+<<<<<<< HEAD
 		if ((tag_len == 0) || (tag_len > (opt_len - opt_iter))) {
+=======
+		if ((tag_len == 0) || (opt[opt_iter + 1] > (opt_len - opt_iter))) {
+>>>>>>> p9x
 			err_offset = opt_iter + 1;
 			goto out;
 		}

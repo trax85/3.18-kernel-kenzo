@@ -117,6 +117,9 @@ struct frag_hdr {
 #define IP6_REPLY_MARK(net, mark) \
 	((net)->ipv6.sysctl.fwmark_reflect ? (mark) : 0)
 
+#define IP6_REPLY_MARK(net, mark) \
+	((net)->ipv6.sysctl.fwmark_reflect ? (mark) : 0)
+
 #include <net/sock.h>
 
 /* sysctls */
@@ -253,6 +256,17 @@ struct ipv6_fl_socklist {
 	struct rcu_head			rcu;
 };
 
+<<<<<<< HEAD
+=======
+extern struct ip6_flowlabel	*fl6_sock_lookup(struct sock *sk, __be32 label);
+extern struct ipv6_txoptions	*fl6_merge_options(struct ipv6_txoptions * opt_space,
+						   struct ip6_flowlabel * fl,
+						   struct ipv6_txoptions * fopt);
+extern void			fl6_free_socklist(struct sock *sk);
+extern int			ipv6_flowlabel_opt(struct sock *sk, char __user *optval, int optlen);
+extern int			ip6_flowlabel_init(void);
+extern void			ip6_flowlabel_cleanup(void);
+>>>>>>> p9x
 static inline struct ipv6_txoptions *txopt_get(const struct ipv6_pinfo *np)
 {
 	struct ipv6_txoptions *opt;
@@ -270,6 +284,7 @@ static inline void txopt_put(struct ipv6_txoptions *opt)
 	if (opt && atomic_dec_and_test(&opt->refcnt))
 		kfree_rcu(opt, rcu);
 }
+<<<<<<< HEAD
 
 struct ip6_flowlabel *fl6_sock_lookup(struct sock *sk, __be32 label);
 struct ipv6_txoptions *fl6_merge_options(struct ipv6_txoptions *opt_space,
@@ -281,6 +296,8 @@ int ipv6_flowlabel_opt_get(struct sock *sk, struct in6_flowlabel_req *freq,
 			   int flags);
 int ip6_flowlabel_init(void);
 void ip6_flowlabel_cleanup(void);
+=======
+>>>>>>> p9x
 
 static inline void fl6_sock_release(struct ip6_flowlabel *fl)
 {
@@ -292,6 +309,14 @@ void icmpv6_notify(struct sk_buff *skb, u8 type, u8 code, __be32 info);
 
 int icmpv6_push_pending_frames(struct sock *sk, struct flowi6 *fl6,
 			       struct icmp6hdr *thdr, int len);
+<<<<<<< HEAD
+=======
+
+struct dst_entry *icmpv6_route_lookup(struct net *net, struct sk_buff *skb,
+				      struct sock *sk, struct flowi6 *fl6);
+
+extern int 			ip6_ra_control(struct sock *sk, int sel);
+>>>>>>> p9x
 
 int ip6_ra_control(struct sock *sk, int sel);
 
@@ -570,6 +595,14 @@ static inline u32 __ipv6_addr_jhash(const struct in6_addr *a, const u32 initval)
 			    (__force u32)a->s6_addr32[2],
 			    (__force u32)a->s6_addr32[3],
 			    initval);
+<<<<<<< HEAD
+=======
+}
+
+static inline u32 ipv6_addr_jhash(const struct in6_addr *a)
+{
+	return __ipv6_addr_jhash(a, ipv6_hash_secret);
+>>>>>>> p9x
 }
 
 static inline bool ipv6_addr_loopback(const struct in6_addr *a)
@@ -691,6 +724,7 @@ static inline int ipv6_addr_diff(const struct in6_addr *a1, const struct in6_add
 	return __ipv6_addr_diff(a1, a2, sizeof(struct in6_addr));
 }
 
+<<<<<<< HEAD
 void ipv6_proxy_select_ident(struct sk_buff *skb);
 
 int ip6_dst_hoplimit(struct dst_entry *dst);
@@ -753,6 +787,8 @@ static inline __be32 ip6_make_flowlabel(struct net *net, struct sk_buff *skb,
 #endif
 
 
+=======
+>>>>>>> p9x
 /*
  *	Header manipulation
  */
@@ -875,6 +911,7 @@ int ip6_datagram_connect(struct sock *sk, struct sockaddr *addr, int addr_len);
 int ip6_datagram_connect_v6_only(struct sock *sk, struct sockaddr *addr,
 				 int addr_len);
 
+<<<<<<< HEAD
 int ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len,
 		    int *addr_len);
 int ipv6_recv_rxpmtu(struct sock *sk, struct msghdr *msg, int len,
@@ -883,6 +920,16 @@ void ipv6_icmp_error(struct sock *sk, struct sk_buff *skb, int err, __be16 port,
 		     u32 info, u8 *payload);
 void ipv6_local_error(struct sock *sk, int err, struct flowi6 *fl6, u32 info);
 void ipv6_local_rxpmtu(struct sock *sk, struct flowi6 *fl6, u32 mtu);
+=======
+extern int 			ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len,
+						int *addr_len);
+extern int 			ipv6_recv_rxpmtu(struct sock *sk, struct msghdr *msg, int len,
+						 int *addr_len);
+extern void			ipv6_icmp_error(struct sock *sk, struct sk_buff *skb, int err, __be16 port,
+						u32 info, u8 *payload);
+extern void			ipv6_local_error(struct sock *sk, int err, struct flowi6 *fl6, u32 info);
+extern void			ipv6_local_rxpmtu(struct sock *sk, struct flowi6 *fl6, u32 mtu);
+>>>>>>> p9x
 
 int inet6_release(struct socket *sock);
 int inet6_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len);

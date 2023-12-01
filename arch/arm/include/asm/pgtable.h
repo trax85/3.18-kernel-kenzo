@@ -120,18 +120,32 @@ extern pgprot_t		pgprot_s2_device;
 	__pgprot_modify(prot, L_PTE_MT_MASK, L_PTE_MT_BUFFERABLE)
 
 #define pgprot_stronglyordered(prot) \
-	__pgprot_modify(prot, L_PTE_MT_MASK, L_PTE_MT_UNCACHED)
+	__pgprot_modify(prot, L_PTE_MT_MASK, L_PTE_MT_UNCACHED | L_PTE_XN)
+
+#define pgprot_device(prot) \
+	__pgprot_modify(prot, L_PTE_MT_MASK, L_PTE_MT_DEV_NONSHARED)
+
+#define pgprot_writethroughcache(prot) \
+	__pgprot_modify(prot, L_PTE_MT_MASK, L_PTE_MT_WRITETHROUGH)
+
+#define pgprot_writebackcache(prot) \
+	__pgprot_modify(prot, L_PTE_MT_MASK, L_PTE_MT_WRITEBACK)
+
+#define pgprot_writebackwacache(prot) \
+	__pgprot_modify(prot, L_PTE_MT_MASK, L_PTE_MT_WRITEALLOC)
 
 #ifdef CONFIG_ARM_DMA_MEM_BUFFERABLE
 #define pgprot_dmacoherent(prot) \
 	__pgprot_modify(prot, L_PTE_MT_MASK, L_PTE_MT_BUFFERABLE | L_PTE_XN)
 #define __HAVE_PHYS_MEM_ACCESS_PROT
+#define COHERENT_IS_NORMAL 1
 struct file;
 extern pgprot_t phys_mem_access_prot(struct file *file, unsigned long pfn,
 				     unsigned long size, pgprot_t vma_prot);
 #else
 #define pgprot_dmacoherent(prot) \
 	__pgprot_modify(prot, L_PTE_MT_MASK, L_PTE_MT_UNCACHED | L_PTE_XN)
+#define COHERENT_IS_NORMAL 0
 #endif
 
 #endif /* __ASSEMBLY__ */
@@ -216,6 +230,17 @@ static inline pte_t *pmd_page_vaddr(pmd_t pmd)
 #define pte_isset(pte, val)	((u32)(val) == (val) ? pte_val(pte) & (val) \
 						: !!(pte_val(pte) & (val)))
 #define pte_isclear(pte, val)	(!(pte_val(pte) & (val)))
+<<<<<<< HEAD
+=======
+
+#define pte_none(pte)		(!pte_val(pte))
+#define pte_present(pte)	(pte_isset((pte), L_PTE_PRESENT))
+#define pte_write(pte)		(pte_isclear((pte), L_PTE_RDONLY))
+#define pte_dirty(pte)		(pte_isset((pte), L_PTE_DIRTY))
+#define pte_young(pte)		(pte_isset((pte), L_PTE_YOUNG))
+#define pte_exec(pte)		(pte_isclear((pte), L_PTE_XN))
+#define pte_special(pte)	(0)
+>>>>>>> p9x
 
 #define pte_none(pte)		(!pte_val(pte))
 #define pte_present(pte)	(pte_isset((pte), L_PTE_PRESENT))
@@ -262,6 +287,11 @@ PTE_BIT_FUNC(mkold,     &= ~L_PTE_YOUNG);
 PTE_BIT_FUNC(mkyoung,   |= L_PTE_YOUNG);
 PTE_BIT_FUNC(mkexec,   &= ~L_PTE_XN);
 PTE_BIT_FUNC(mknexec,   |= L_PTE_XN);
+<<<<<<< HEAD
+=======
+
+static inline pte_t pte_mkspecial(pte_t pte) { return pte; }
+>>>>>>> p9x
 
 static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
 {

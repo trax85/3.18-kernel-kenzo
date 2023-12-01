@@ -4,6 +4,7 @@ generic-y += clkdev.h
 generic-y += cputime.h
 generic-y += device.h
 generic-y += exec.h
+<<<<<<< HEAD
 generic-y += hash.h
 generic-y += irq_work.h
 generic-y += mcs_spinlock.h
@@ -12,3 +13,8 @@ generic-y += scatterlist.h
 generic-y += syscalls.h
 generic-y += trace_clock.h
 generic-y += word-at-a-time.h
+=======
+generic-y += mcs_spinlock.h
+generic-y += syscalls.h
+generic-y += trace_clock.h
+>>>>>>> p9x

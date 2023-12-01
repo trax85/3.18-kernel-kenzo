@@ -1,7 +1,10 @@
 config MSM_PM
 	depends on PM
 	select MSM_IDLE_STATS if DEBUG_FS
+<<<<<<< HEAD
 	select CPU_IDLE_MULTIPLE_DRIVERS
+=======
+>>>>>>> p9x
 	bool "Qualcomm platform specific PM driver"
 	help
 	  Platform specific power driver to manage cores and l2
@@ -22,6 +25,7 @@ config APSS_CORE_EA
 	  Platform specific power aware driver to provide power
 	  and temperature information to the scheduler.
 
+<<<<<<< HEAD
 config MSM_APM
        bool "Qualcomm Technologies Inc platform specific APM driver"
        help
@@ -30,6 +34,8 @@ config MSM_APM
 	SRAM Vmin requirements are met across different performance
 	levels.
 
+=======
+>>>>>>> p9x
 if MSM_PM
 menuconfig MSM_IDLE_STATS
 	bool "Collect idle statistics"

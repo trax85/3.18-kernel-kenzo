@@ -27,7 +27,10 @@
 #include <asm/cacheflush.h>
 #include <soc/qcom/scm.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
 #include <linux/regulator/consumer.h>
+=======
+>>>>>>> p9x
 
 #define CREATE_TRACE_POINTS
 #define TRACE_MSM_LMH
@@ -38,16 +41,21 @@
 #define LMH_DEVICE			"lmh-profile"
 #define LMH_MAX_SENSOR			10
 #define LMH_GET_PROFILE_SIZE		10
+<<<<<<< HEAD
 #define LMH_SCM_PAYLOAD_SIZE		10
 #define LMH_DEFAULT_PROFILE		0
 #define LMH_DEBUG_READ_TYPE		0x0
 #define LMH_DEBUG_CONFIG_TYPE		0x1
+=======
+#define LMH_DEFAULT_PROFILE		0
+>>>>>>> p9x
 #define LMH_CHANGE_PROFILE		0x01
 #define LMH_GET_PROFILES		0x02
 #define LMH_CTRL_QPMDA			0x03
 #define LMH_TRIM_ERROR			0x04
 #define LMH_GET_INTENSITY		0x06
 #define LMH_GET_SENSORS			0x07
+<<<<<<< HEAD
 #define LMH_DEBUG_SET			0x08
 #define LMH_DEBUG_READ_BUF_SIZE		0x09
 #define LMH_DEBUG_READ			0x0A
@@ -55,6 +63,8 @@
 #define MAX_TRACE_EVENT_MSG_LEN		50
 #define APCS_DPM_VOLTAGE_SCALE		0x09950804
 #define LMH_ODCM_MAX_COUNT		6
+=======
+>>>>>>> p9x
 
 #define LMH_CHECK_SCM_CMD(_cmd) \
 	do { \
@@ -64,6 +74,7 @@
 		} \
 	} while (0)
 
+<<<<<<< HEAD
 #define LMH_GET_RECURSSIVE_DATA(desc_arg, cmd_idx, cmd_buf, payload, next, \
 	size, cmd_id, dest_buf, ret)					\
 	do {								\
@@ -109,6 +120,8 @@
 		next += LMH_SCM_PAYLOAD_SIZE;				\
 	} while (next < size)						\
 
+=======
+>>>>>>> p9x
 struct __attribute__((__packed__)) lmh_sensor_info {
 	uint32_t			name;
 	uint32_t			node_id;
@@ -127,6 +140,7 @@ struct lmh_profile {
 	uint32_t			level_ct;
 	uint32_t			curr_level;
 	uint32_t			*levels;
+<<<<<<< HEAD
 	uint32_t			read_type_count;
 	uint32_t			config_type_count;
 };
@@ -137,11 +151,18 @@ struct lmh_debug {
 	uint32_t			*config_type;
 	uint32_t			read_type_count;
 	uint32_t			config_type_count;
+=======
+>>>>>>> p9x
 };
 
 struct lmh_driver_data {
 	struct device			*dev;
+<<<<<<< HEAD
 	struct workqueue_struct		*poll_wq;
+=======
+	struct workqueue_struct		*isr_wq;
+	struct work_struct		isr_work;
+>>>>>>> p9x
 	struct delayed_work		poll_work;
 	uint32_t			log_enabled;
 	uint32_t			log_delay;
@@ -154,6 +175,7 @@ struct lmh_driver_data {
 	int				irq_num;
 	int				max_sensor_count;
 	struct lmh_profile		dev_info;
+<<<<<<< HEAD
 	struct lmh_debug		debug_info;
 	struct regulator		*regulator;
 	struct notifier_block		dpm_notifier_blk;
@@ -161,6 +183,8 @@ struct lmh_driver_data {
 	uint32_t			odcm_thresh_mV;
 	void __iomem			*odcm_reg[LMH_ODCM_MAX_COUNT];
 	bool				odcm_enabled;
+=======
+>>>>>>> p9x
 };
 
 struct lmh_sensor_data {
@@ -169,10 +193,15 @@ struct lmh_sensor_data {
 	uint32_t			sensor_hw_node_id;
 	int				sensor_sw_id;
 	struct lmh_sensor_ops		ops;
+<<<<<<< HEAD
+=======
+	enum lmh_monitor_state		state;
+>>>>>>> p9x
 	long				last_read_value;
 	struct list_head		list_ptr;
 };
 
+<<<<<<< HEAD
 struct lmh_default_data {
 	uint32_t			default_profile;
 	uint32_t			odcm_reg_addr[LMH_ODCM_MAX_COUNT];
@@ -196,6 +225,11 @@ static struct lmh_driver_data		*lmh_data;
 static DECLARE_RWSEM(lmh_sensor_access);
 static DEFINE_MUTEX(lmh_sensor_read);
 static DEFINE_MUTEX(lmh_odcm_access);
+=======
+static struct lmh_driver_data		*lmh_data;
+static DECLARE_RWSEM(lmh_sensor_access);
+static DEFINE_MUTEX(lmh_sensor_read);
+>>>>>>> p9x
 static LIST_HEAD(lmh_sensor_list);
 
 static int lmh_read(struct lmh_sensor_ops *ops, long *val)
@@ -275,6 +309,7 @@ enable_exit:
 	return ret;
 }
 
+<<<<<<< HEAD
 static void lmh_update(struct lmh_driver_data *lmh_dat,
 	struct lmh_sensor_data *lmh_sensor)
 {
@@ -296,6 +331,66 @@ static void lmh_update(struct lmh_driver_data *lmh_dat,
 	}
 	lmh_sensor->ops.new_value_notify(&lmh_sensor->ops,
 		lmh_sensor->last_read_value);
+=======
+static int lmh_reset(struct lmh_sensor_ops *ops)
+{
+	int ret = 0;
+	struct lmh_sensor_data *lmh_iter_sensor = NULL;
+	struct lmh_sensor_data *lmh_sensor = container_of(ops,
+		       struct lmh_sensor_data, ops);
+
+	down_write(&lmh_sensor_access);
+	if (lmh_data->intr_status_val & BIT(lmh_sensor->sensor_sw_id)) {
+		if (lmh_sensor->last_read_value) {
+			ret = -EAGAIN;
+			goto reset_exit;
+		}
+		lmh_data->intr_status_val ^= BIT(lmh_sensor->sensor_sw_id);
+		lmh_sensor->state = LMH_ISR_MONITOR;
+		pr_debug("Sensor:[%s] not throttling. Switch to monitor mode\n",
+			       lmh_sensor->sensor_name);
+		trace_lmh_sensor_interrupt(lmh_sensor->sensor_name,
+			lmh_sensor->last_read_value);
+	} else {
+		pr_err("Sensor:[%s] is already in reset state\n",
+			lmh_sensor->sensor_name);
+	}
+
+	if (!lmh_data->intr_status_val) {
+		/*
+		 * Scan through the sensor list and abort the interrupt
+		 * enable if any of the sensor is still throttling
+		 */
+		list_for_each_entry(lmh_iter_sensor, &lmh_sensor_list,
+			list_ptr) {
+			if (lmh_iter_sensor->last_read_value) {
+				pr_debug("Sensor:[%s] retrigger interrupt\n",
+					lmh_iter_sensor->sensor_name);
+				lmh_data->intr_status_val
+					|= BIT(lmh_iter_sensor->sensor_sw_id);
+				lmh_iter_sensor->state = LMH_ISR_POLLING;
+				lmh_iter_sensor->ops.interrupt_notify(
+					&lmh_iter_sensor->ops,
+					lmh_iter_sensor->last_read_value);
+			}
+		}
+		if (!lmh_data->intr_status_val) {
+			lmh_data->intr_state = LMH_ISR_MONITOR;
+			pr_debug("Zero throttling. Re-enabling interrupt\n");
+			/*
+			 * Don't use cancel_delayed_work_sync as it will lead
+			 * to deadlock because of the mutex
+			 */
+			cancel_delayed_work(&lmh_data->poll_work);
+			trace_lmh_event_call("Lmh Interrupt Clear");
+			enable_irq(lmh_data->irq_num);
+		}
+	}
+
+reset_exit:
+	up_write(&lmh_sensor_access);
+	return ret;
+>>>>>>> p9x
 }
 
 static void lmh_read_and_update(struct lmh_driver_data *lmh_dat)
@@ -310,6 +405,10 @@ static void lmh_read_and_update(struct lmh_driver_data *lmh_dat)
 		uint32_t size;
 	} cmd_buf;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 	mutex_lock(&lmh_sensor_read);
 	list_for_each_entry(lmh_sensor, &lmh_sensor_list, list_ptr)
 		lmh_sensor->last_read_value = 0;
@@ -360,12 +459,41 @@ static void lmh_read_and_update(struct lmh_driver_data *lmh_dat)
 
 read_exit:
 	mutex_unlock(&lmh_sensor_read);
+<<<<<<< HEAD
 	list_for_each_entry(lmh_sensor, &lmh_sensor_list, list_ptr)
 		lmh_update(lmh_dat, lmh_sensor);
 
 	return;
 }
 
+=======
+	return;
+}
+
+static void lmh_read_and_notify(struct lmh_driver_data *lmh_dat)
+{
+	struct lmh_sensor_data *lmh_sensor = NULL;
+	long val;
+
+	lmh_read_and_update(lmh_dat);
+	list_for_each_entry(lmh_sensor, &lmh_sensor_list, list_ptr) {
+		val = lmh_sensor->last_read_value;
+		if (val > 0 && !(lmh_dat->intr_status_val
+			& BIT(lmh_sensor->sensor_sw_id))) {
+			pr_debug("Sensor:[%s] interrupt triggered\n",
+				lmh_sensor->sensor_name);
+			trace_lmh_sensor_interrupt(lmh_sensor->sensor_name,
+							val);
+			lmh_dat->intr_status_val
+			       |= BIT(lmh_sensor->sensor_sw_id);
+			lmh_sensor->state = LMH_ISR_POLLING;
+			lmh_sensor->ops.interrupt_notify(&lmh_sensor->ops, val);
+		}
+	}
+
+}
+
+>>>>>>> p9x
 static void lmh_poll(struct work_struct *work)
 {
 	struct lmh_driver_data *lmh_dat = container_of(work,
@@ -374,6 +502,7 @@ static void lmh_poll(struct work_struct *work)
 	down_write(&lmh_sensor_access);
 	if (lmh_dat->intr_state != LMH_ISR_POLLING)
 		goto poll_exit;
+<<<<<<< HEAD
 	lmh_read_and_update(lmh_dat);
 	if (!lmh_data->intr_status_val) {
 		lmh_data->intr_state = LMH_ISR_MONITOR;
@@ -385,6 +514,11 @@ static void lmh_poll(struct work_struct *work)
 		queue_delayed_work(lmh_dat->poll_wq, &lmh_dat->poll_work,
 			msecs_to_jiffies(lmh_get_poll_interval()));
 	}
+=======
+	lmh_read_and_notify(lmh_dat);
+	schedule_delayed_work(&lmh_dat->poll_work,
+			msecs_to_jiffies(lmh_poll_interval));
+>>>>>>> p9x
 
 poll_exit:
 	up_write(&lmh_sensor_access);
@@ -413,6 +547,7 @@ static void lmh_trim_error(void)
 	return;
 }
 
+<<<<<<< HEAD
 static irqreturn_t lmh_isr_thread(int irq, void *data)
 {
 	struct lmh_driver_data *lmh_dat = data;
@@ -428,6 +563,16 @@ static irqreturn_t lmh_isr_thread(int irq, void *data)
 		WARN_ON(1);
 		goto isr_unlock_exit;
 	}
+=======
+static void lmh_notify(struct work_struct *work)
+{
+	struct lmh_driver_data *lmh_dat = container_of(work,
+			struct lmh_driver_data, isr_work);
+
+	/* Cancel any pending polling work event before scheduling new one */
+	cancel_delayed_work_sync(&lmh_dat->poll_work);
+	down_write(&lmh_sensor_access);
+>>>>>>> p9x
 	lmh_dat->intr_state = LMH_ISR_POLLING;
 	if (!lmh_data->trim_err_disable) {
 		lmh_dat->intr_reg_val = readl_relaxed(lmh_dat->intr_addr);
@@ -436,6 +581,7 @@ static irqreturn_t lmh_isr_thread(int irq, void *data)
 			trace_lmh_event_call("Lmh trim error");
 			lmh_trim_error();
 			lmh_dat->intr_state = LMH_ISR_MONITOR;
+<<<<<<< HEAD
 			goto decide_next_action;
 		}
 	}
@@ -449,12 +595,50 @@ decide_next_action:
 
 isr_unlock_exit:
 	up_write(&lmh_sensor_access);
+=======
+			goto notify_exit;
+		}
+	}
+	lmh_read_and_notify(lmh_dat);
+	if (!lmh_dat->intr_status_val) {
+		pr_debug("LMH not throttling. Enabling interrupt\n");
+		lmh_dat->intr_state = LMH_ISR_MONITOR;
+		trace_lmh_event_call("Lmh Zero throttle Interrupt Clear");
+		goto notify_exit;
+	}
+
+notify_exit:
+	if (lmh_dat->intr_state == LMH_ISR_POLLING)
+		schedule_delayed_work(&lmh_dat->poll_work,
+			msecs_to_jiffies(lmh_poll_interval));
+	else
+		enable_irq(lmh_dat->irq_num);
+	up_write(&lmh_sensor_access);
+	return;
+}
+
+static irqreturn_t lmh_handle_isr(int irq, void *data)
+{
+	struct lmh_driver_data *lmh_dat = data;
+
+	pr_debug("LMH Interrupt triggered\n");
+	trace_lmh_event_call("Lmh Interrupt");
+	if (lmh_dat->intr_state == LMH_ISR_MONITOR) {
+		disable_irq_nosync(lmh_dat->irq_num);
+		queue_work(lmh_dat->isr_wq, &lmh_dat->isr_work);
+	}
+
+>>>>>>> p9x
 	return IRQ_HANDLED;
 }
 
 static int lmh_get_sensor_devicetree(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	int ret = 0, idx = 0;
+=======
+	int ret = 0;
+>>>>>>> p9x
 	char *key = NULL;
 	struct device_node *node = pdev->dev.of_node;
 	struct resource *lmh_intr_base = NULL;
@@ -473,6 +657,7 @@ static int lmh_get_sensor_devicetree(struct platform_device *pdev)
 		}
 	}
 
+<<<<<<< HEAD
 	lmh_data->regulator = devm_regulator_get(lmh_data->dev, "vdd-apss");
 	if (IS_ERR(lmh_data->regulator)) {
 		pr_err("unable to get vdd-apss regulator. err:%ld\n",
@@ -502,6 +687,8 @@ static int lmh_get_sensor_devicetree(struct platform_device *pdev)
 		}
 	}
 
+=======
+>>>>>>> p9x
 	lmh_data->irq_num = platform_get_irq(pdev, 0);
 	if (lmh_data->irq_num < 0) {
 		ret = lmh_data->irq_num;
@@ -509,9 +696,14 @@ static int lmh_get_sensor_devicetree(struct platform_device *pdev)
 		goto dev_exit;
 	}
 
+<<<<<<< HEAD
 	ret = request_threaded_irq(lmh_data->irq_num, NULL,
 		lmh_isr_thread, IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
 		LMH_INTERRUPT, lmh_data);
+=======
+	ret = request_irq(lmh_data->irq_num, lmh_handle_isr,
+				IRQF_TRIGGER_HIGH, LMH_INTERRUPT, lmh_data);
+>>>>>>> p9x
 	if (ret) {
 		pr_err("Error getting irq for LMH. err:%d\n", ret);
 		goto dev_exit;
@@ -554,6 +746,7 @@ static void lmh_remove_sensors(void)
 	up_write(&lmh_sensor_access);
 }
 
+<<<<<<< HEAD
 static int lmh_check_tz_debug_cmds(void)
 {
 	LMH_CHECK_SCM_CMD(LMH_DEBUG_SET);
@@ -564,6 +757,8 @@ static int lmh_check_tz_debug_cmds(void)
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 static int lmh_check_tz_dev_cmds(void)
 {
 	LMH_CHECK_SCM_CMD(LMH_CHANGE_PROFILE);
@@ -613,6 +808,11 @@ static int lmh_parse_sensor(struct lmh_sensor_info *sens_info)
 	lmh_sensor->ops.read = lmh_read;
 	lmh_sensor->ops.disable_hw_log = lmh_disable_log;
 	lmh_sensor->ops.enable_hw_log = lmh_enable_log;
+<<<<<<< HEAD
+=======
+	lmh_sensor->ops.reset_interrupt = lmh_reset;
+	lmh_sensor->state = LMH_ISR_MONITOR;
+>>>>>>> p9x
 	lmh_sensor->sensor_sw_id = lmh_data->max_sensor_count++;
 	lmh_sensor->sensor_hw_name = sens_info->name;
 	lmh_sensor->sensor_hw_node_id = sens_info->node_id;
@@ -777,7 +977,11 @@ static int lmh_get_level(struct lmh_device_ops *ops, int *level)
 static int lmh_get_dev_info(void)
 {
 	int ret = 0;
+<<<<<<< HEAD
 	uint32_t size = 0, next = 0;
+=======
+	uint32_t size = 0, next = 0, idx = 0;
+>>>>>>> p9x
 	struct scm_desc desc_arg;
 	uint32_t *payload = NULL;
 	struct {
@@ -794,6 +998,7 @@ static int lmh_get_dev_info(void)
 		goto get_dev_exit;
 	}
 
+<<<<<<< HEAD
 	cmd_buf.list_addr = SCM_BUFFER_PHYS(payload);
 	/* &payload may be a physical address > 4 GB */
 	desc_arg.args[0] = SCM_BUFFER_PHYS(payload);
@@ -813,6 +1018,57 @@ static int lmh_get_dev_info(void)
 			lmh_data->dev_info.curr_level, ret);
 		goto get_dev_exit;
 	}
+=======
+	do {
+		cmd_buf.list_addr = SCM_BUFFER_PHYS(payload);
+		/* &payload may be a physical address > 4 GB */
+		desc_arg.args[0] = SCM_BUFFER_PHYS(payload);
+		desc_arg.args[1] = cmd_buf.list_size =
+			SCM_BUFFER_SIZE(uint32_t) * LMH_GET_PROFILE_SIZE;
+		desc_arg.args[2] = cmd_buf.list_start = next;
+		desc_arg.arginfo = SCM_ARGS(3, SCM_RW, SCM_VAL, SCM_VAL);
+		trace_lmh_event_call("GET_PROFILE enter");
+		dmac_flush_range(payload, payload + sizeof(uint32_t) *
+			LMH_GET_PROFILE_SIZE);
+		if (!is_scm_armv8()) {
+			ret = scm_call(SCM_SVC_LMH, LMH_GET_PROFILES,
+				(void *) &cmd_buf, SCM_BUFFER_SIZE(cmd_buf),
+				&size, SCM_BUFFER_SIZE(size));
+		} else {
+			ret = scm_call2(SCM_SIP_FNID(SCM_SVC_LMH,
+				LMH_GET_PROFILES), &desc_arg);
+			size = desc_arg.ret[0];
+		}
+		/* Have memory barrier before we access the TZ data */
+		mb();
+		trace_lmh_event_call("GET_PROFILE exit");
+		if (ret) {
+			pr_err("Error in SCM v%d get Profile call. err:%d\n",
+					(is_scm_armv8()) ? 8 : 7, ret);
+			goto get_dev_exit;
+		}
+		if (!size) {
+			pr_err("No LMH device supported.\n");
+			ret = -ENODEV;
+			goto get_dev_exit;
+		}
+		if (!lmh_data->dev_info.levels) {
+			lmh_data->dev_info.levels = devm_kzalloc(lmh_data->dev,
+				sizeof(uint32_t) * size, GFP_KERNEL);
+			if (!lmh_data->dev_info.levels) {
+				pr_err("No Memory\n");
+				ret = -ENOMEM;
+				goto get_dev_exit;
+			}
+			lmh_data->dev_info.level_ct = size;
+			lmh_data->dev_info.curr_level = LMH_DEFAULT_PROFILE;
+		}
+		for (idx = next; idx < min((next + LMH_GET_PROFILE_SIZE), size);
+			idx++)
+			lmh_data->dev_info.levels[idx] = payload[idx - next];
+		next += LMH_GET_PROFILE_SIZE;
+	} while (next < size);
+>>>>>>> p9x
 
 get_dev_exit:
 	if (ret)
@@ -846,6 +1102,7 @@ dev_init_exit:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int lmh_debug_read(struct lmh_debug_ops *ops, uint32_t **buf)
 {
 	int ret = 0, size = 0, tz_ret = 0;
@@ -1245,6 +1502,8 @@ static int lmh_debug_init(void)
 debug_init_exit:
 	return ret;
 }
+=======
+>>>>>>> p9x
 static int lmh_sensor_init(struct platform_device *pdev)
 {
 	int ret = 0;
@@ -1290,14 +1549,24 @@ static int lmh_probe(struct platform_device *pdev)
 	}
 	lmh_data->dev = &pdev->dev;
 
+<<<<<<< HEAD
 	lmh_data->poll_wq = alloc_workqueue("lmh_poll_wq", WQ_HIGHPRI, 0);
 	if (!lmh_data->poll_wq) {
+=======
+	lmh_data->isr_wq = alloc_workqueue("lmh_isr_wq", WQ_HIGHPRI, 0);
+	if (!lmh_data->isr_wq) {
+>>>>>>> p9x
 		pr_err("Error allocating workqueue\n");
 		ret = -ENOMEM;
 		goto probe_exit;
 	}
+<<<<<<< HEAD
 	INIT_DEFERRABLE_WORK(&lmh_data->poll_work, lmh_poll);
 
+=======
+	INIT_WORK(&lmh_data->isr_work, lmh_notify);
+	INIT_DEFERRABLE_WORK(&lmh_data->poll_work, lmh_poll);
+>>>>>>> p9x
 	ret = lmh_sensor_init(pdev);
 	if (ret) {
 		pr_err("Sensor Init failed. err:%d\n", ret);
@@ -1309,6 +1578,7 @@ static int lmh_probe(struct platform_device *pdev)
 			ret);
 		ret = 0;
 	}
+<<<<<<< HEAD
 
 	if (lmh_data->regulator)
 		lmh_dpm_init();
@@ -1318,13 +1588,20 @@ static int lmh_probe(struct platform_device *pdev)
 		pr_err("LMH debug init failed. err:%d\n", ret);
 		ret = 0;
 	}
+=======
+>>>>>>> p9x
 	platform_set_drvdata(pdev, lmh_data);
 
 	return ret;
 
 probe_exit:
+<<<<<<< HEAD
 	if (lmh_data->poll_wq)
 		destroy_workqueue(lmh_data->poll_wq);
+=======
+	if (lmh_data->isr_wq)
+		destroy_workqueue(lmh_data->isr_wq);
+>>>>>>> p9x
 	lmh_data = NULL;
 	return ret;
 }
@@ -1333,11 +1610,19 @@ static int lmh_remove(struct platform_device *pdev)
 {
 	struct lmh_driver_data *lmh_dat = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	destroy_workqueue(lmh_dat->poll_wq);
 	free_irq(lmh_dat->irq_num, lmh_dat);
 	lmh_remove_sensors();
 	lmh_device_deregister(&lmh_dat->dev_info.dev_ops);
 	lmh_dpm_remove();
+=======
+	cancel_delayed_work_sync(&lmh_dat->poll_work);
+	destroy_workqueue(lmh_dat->isr_wq);
+	free_irq(lmh_dat->irq_num, lmh_dat);
+	lmh_remove_sensors();
+	lmh_device_deregister(&lmh_dat->dev_info.dev_ops);
+>>>>>>> p9x
 
 	return 0;
 }
@@ -1345,11 +1630,14 @@ static int lmh_remove(struct platform_device *pdev)
 static struct of_device_id lmh_match[] = {
 	{
 		.compatible = "qcom,lmh",
+<<<<<<< HEAD
 		.data = (void *)&lmh_lite_data,
 	},
 	{
 		.compatible = "qcom,lmh_v1",
 		.data = (void *)&lmh_v1_data,
+=======
+>>>>>>> p9x
 	},
 	{},
 };
@@ -1366,6 +1654,7 @@ static struct platform_driver lmh_driver = {
 
 int __init lmh_init_driver(void)
 {
+<<<<<<< HEAD
 	struct device_node *comp_node;
 
 	comp_node = of_find_matching_node(NULL, lmh_match);
@@ -1381,6 +1670,8 @@ int __init lmh_init_driver(void)
 	}
 
 plt_register:
+=======
+>>>>>>> p9x
 	return platform_driver_register(&lmh_driver);
 }
 

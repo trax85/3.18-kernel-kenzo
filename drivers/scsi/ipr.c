@@ -3996,13 +3996,17 @@ static ssize_t ipr_store_update_fw(struct device *dev,
 	struct ipr_sglist *sglist;
 	char fname[100];
 	char *src;
-	int len, result, dnld_size;
+	char *endline;
+	int result, dnld_size;
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EACCES;
 
-	len = snprintf(fname, 99, "%s", buf);
-	fname[len-1] = '\0';
+	snprintf(fname, sizeof(fname), "%s", buf);
+
+	endline = strchr(fname, '\n');
+	if (endline)
+		*endline = '\0';
 
 	if (request_firmware(&fw_entry, fname, &ioa_cfg->pdev->dev)) {
 		dev_err(&ioa_cfg->pdev->dev, "Firmware file %s not found\n", fname);
@@ -6247,10 +6251,15 @@ static void ipr_scsi_done(struct ipr_cmnd *ipr_cmd)
 		scsi_dma_unmap(scsi_cmd);
 
 		spin_lock_irqsave(ipr_cmd->hrrq->lock, lock_flags);
+<<<<<<< HEAD
 		scsi_cmd->scsi_done(scsi_cmd);
 		if (ipr_cmd->eh_comp)
 			complete(ipr_cmd->eh_comp);
 		list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
+=======
+		list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
+		scsi_cmd->scsi_done(scsi_cmd);
+>>>>>>> p9x
 		spin_unlock_irqrestore(ipr_cmd->hrrq->lock, lock_flags);
 	} else {
 		spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);

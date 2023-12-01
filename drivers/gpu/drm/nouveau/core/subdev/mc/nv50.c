@@ -45,8 +45,20 @@ nv50_mc_intr[] = {
 static void
 nv50_mc_msi_rearm(struct nouveau_mc *pmc)
 {
+<<<<<<< HEAD
 	struct nouveau_device *device = nv_device(pmc);
 	pci_write_config_byte(device->pdev, 0x68, 0xff);
+=======
+	struct nv50_mc_priv *priv;
+	int ret;
+
+	ret = nouveau_mc_create(parent, engine, oclass, nv50_mc_intr, &priv);
+	*pobject = nv_object(priv);
+	if (ret)
+		return ret;
+
+	return 0;
+>>>>>>> p9x
 }
 
 int

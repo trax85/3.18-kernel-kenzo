@@ -81,6 +81,7 @@ static inline bool is_vlan_dev(struct net_device *dev)
 #define vlan_tx_tag_present(__skb)	((__skb)->vlan_tci & VLAN_TAG_PRESENT)
 #define vlan_tx_tag_get(__skb)		((__skb)->vlan_tci & ~VLAN_TAG_PRESENT)
 #define vlan_tx_tag_get_id(__skb)	((__skb)->vlan_tci & VLAN_VID_MASK)
+<<<<<<< HEAD
 
 /**
  *	struct vlan_pcpu_stats - VLAN percpu rx/tx stats
@@ -103,6 +104,8 @@ struct vlan_pcpu_stats {
 	u32			rx_errors;
 	u32			tx_dropped;
 };
+=======
+>>>>>>> p9x
 
 #if defined(CONFIG_VLAN_8021Q) || defined(CONFIG_VLAN_8021Q_MODULE)
 

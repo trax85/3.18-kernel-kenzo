@@ -248,8 +248,10 @@ enum {
 #define ESCO_2EV5	0x0100
 #define ESCO_3EV5	0x0200
 
-#define SCO_ESCO_MASK  (ESCO_HV1 | ESCO_HV2 | ESCO_HV3)
-#define EDR_ESCO_MASK  (ESCO_2EV3 | ESCO_3EV3 | ESCO_2EV5 | ESCO_3EV5)
+#define SCO_ESCO_MASK	(ESCO_HV1 | ESCO_HV2 | ESCO_HV3)
+#define EDR_ESCO_MASK	(ESCO_2EV3 | ESCO_3EV3 | ESCO_2EV5 | ESCO_3EV5)
+#define ALL_ESCO_MASK	(SCO_ESCO_MASK | ESCO_EV3 | ESCO_EV4 | ESCO_EV5 | \
+			EDR_ESCO_MASK)
 
 /* ACL flags */
 #define ACL_START_NO_FLUSH	0x00
@@ -1851,4 +1853,133 @@ static inline struct hci_sco_hdr *hci_sco_hdr(const struct sk_buff *skb)
 #define hci_handle(h)		(h & 0x0fff)
 #define hci_flags(h)		(h >> 12)
 
+<<<<<<< HEAD
+=======
+/* ---- HCI Sockets ---- */
+
+/* Socket options */
+#define HCI_DATA_DIR	1
+#define HCI_FILTER	2
+#define HCI_TIME_STAMP	3
+
+/* CMSG flags */
+#define HCI_CMSG_DIR	0x0001
+#define HCI_CMSG_TSTAMP	0x0002
+
+struct sockaddr_hci {
+	sa_family_t    hci_family;
+	unsigned short hci_dev;
+	unsigned short hci_channel;
+};
+#define HCI_DEV_NONE	0xffff
+
+#define HCI_CHANNEL_RAW		0
+#define HCI_CHANNEL_MONITOR	2
+#define HCI_CHANNEL_CONTROL	3
+
+struct hci_filter {
+	unsigned long type_mask;
+	unsigned long event_mask[2];
+	__le16 opcode;
+};
+
+struct hci_ufilter {
+	__u32  type_mask;
+	__u32  event_mask[2];
+	__le16 opcode;
+};
+
+#define HCI_FLT_TYPE_BITS	31
+#define HCI_FLT_EVENT_BITS	63
+#define HCI_FLT_OGF_BITS	63
+#define HCI_FLT_OCF_BITS	127
+
+/* ---- HCI Ioctl requests structures ---- */
+struct hci_dev_stats {
+	__u32 err_rx;
+	__u32 err_tx;
+	__u32 cmd_tx;
+	__u32 evt_rx;
+	__u32 acl_tx;
+	__u32 acl_rx;
+	__u32 sco_tx;
+	__u32 sco_rx;
+	__u32 byte_rx;
+	__u32 byte_tx;
+};
+
+struct hci_dev_info {
+	__u16 dev_id;
+	char  name[8];
+
+	bdaddr_t bdaddr;
+
+	__u32 flags;
+	__u8  type;
+
+	__u8  features[8];
+
+	__u32 pkt_type;
+	__u32 link_policy;
+	__u32 link_mode;
+
+	__u16 acl_mtu;
+	__u16 acl_pkts;
+	__u16 sco_mtu;
+	__u16 sco_pkts;
+
+	struct hci_dev_stats stat;
+};
+
+struct hci_conn_info {
+	__u16    handle;
+	bdaddr_t bdaddr;
+	__u8     type;
+	__u8     out;
+	__u16    state;
+	__u32    link_mode;
+	__u32    mtu;
+	__u32    cnt;
+	__u32    pkts;
+};
+
+struct hci_dev_req {
+	__u16  dev_id;
+	__u32  dev_opt;
+};
+
+struct hci_dev_list_req {
+	__u16  dev_num;
+	struct hci_dev_req dev_req[0];	/* hci_dev_req structures */
+};
+
+struct hci_conn_list_req {
+	__u16  dev_id;
+	__u16  conn_num;
+	struct hci_conn_info conn_info[0];
+};
+
+struct hci_conn_info_req {
+	bdaddr_t bdaddr;
+	__u8     type;
+	struct   hci_conn_info conn_info[0];
+};
+
+struct hci_auth_info_req {
+	bdaddr_t bdaddr;
+	__u8     type;
+};
+
+struct hci_inquiry_req {
+	__u16 dev_id;
+	__u16 flags;
+	__u8  lap[3];
+	__u8  length;
+	__u8  num_rsp;
+};
+#define IREQ_CACHE_FLUSH 0x0001
+
+extern bool enable_hs;
+
+>>>>>>> p9x
 #endif /* __HCI_H */

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -67,7 +71,10 @@ static unsigned int iommu_pm_create_sup_cls_str(char **buf,
 		int i;
 		struct event_class *ptr;
 		size_t array_len = ARRAY_SIZE(pmu_event_classes);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 		ptr = pmu_event_classes;
 
 		for (j = 0; j < nevent_cls; ++j) {
@@ -110,7 +117,10 @@ static const char *iommu_pm_find_event_class_name(int event_class)
 	struct event_class *ptr;
 	int i;
 	const char *event_class_name = NO_EVENT_CLASS_NAME;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	if (event_class < 0)
 		goto out;
 
@@ -169,7 +179,10 @@ static struct iommu_pmon *iommu_pm_get_pm_by_dev(struct device *dev)
 	struct iommu_pmon *pmon;
 	struct iommu_info *info;
 	struct list_head *ent;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	list_for_each(ent, &iommu_list) {
 		pmon = list_entry(ent, struct iommu_pmon, iommu_list);
 		info = &pmon->iommu;
@@ -217,10 +230,15 @@ static void iommu_pm_reset_counts(struct iommu_pmon *pmon)
 {
 	unsigned int i;
 	unsigned int j;
+<<<<<<< HEAD
 
 	for (i = 0; i < pmon->num_groups; ++i) {
 		struct iommu_pmon_cnt_group *cnt_grp = &pmon->cnt_grp[i];
 
+=======
+	for (i = 0; i < pmon->num_groups; ++i) {
+		struct iommu_pmon_cnt_group *cnt_grp = &pmon->cnt_grp[i];
+>>>>>>> p9x
 		for (j = 0; j < cnt_grp->num_counters; ++j) {
 			cnt_grp->counters[j].value = 0;
 			cnt_grp->counters[j].overflow_count = 0;
@@ -232,10 +250,15 @@ static void iommu_pm_set_all_counters(struct iommu_pmon *pmon)
 {
 	unsigned int i;
 	unsigned int j;
+<<<<<<< HEAD
 
 	for (i = 0; i < pmon->num_groups; ++i) {
 		struct iommu_pmon_cnt_group *cnt_grp = &pmon->cnt_grp[i];
 
+=======
+	for (i = 0; i < pmon->num_groups; ++i) {
+		struct iommu_pmon_cnt_group *cnt_grp = &pmon->cnt_grp[i];
+>>>>>>> p9x
 		for (j = 0; j < cnt_grp->num_counters; ++j)
 			iommu_pm_set_event_type(pmon, &cnt_grp->counters[j]);
 	}
@@ -246,6 +269,7 @@ static void iommu_pm_read_all_counters(struct iommu_pmon *pmon)
 	unsigned int i;
 	unsigned int j;
 	struct iommu_info *iommu = &pmon->iommu;
+<<<<<<< HEAD
 
 	for (i = 0; i < pmon->num_groups; ++i) {
 		struct iommu_pmon_cnt_group *cnt_grp = &pmon->cnt_grp[i];
@@ -253,6 +277,12 @@ static void iommu_pm_read_all_counters(struct iommu_pmon *pmon)
 		for (j = 0; j < cnt_grp->num_counters; ++j) {
 			struct iommu_pmon_counter *counter;
 
+=======
+	for (i = 0; i < pmon->num_groups; ++i) {
+		struct iommu_pmon_cnt_group *cnt_grp = &pmon->cnt_grp[i];
+		for (j = 0; j < cnt_grp->num_counters; ++j) {
+			struct iommu_pmon_counter *counter;
+>>>>>>> p9x
 			counter = &cnt_grp->counters[j];
 			counter->value = iommu->hw_ops->read_counter(counter);
 		}
@@ -412,7 +442,10 @@ static ssize_t iommu_pm_event_class_write(struct file *fp,
 	if (wr_cnt >= 1) {
 		int rv;
 		long value;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 		buf[wr_cnt-1] = '\0';
 		rv = kstrtol(buf, 10, &value);
 		if (!rv) {
@@ -455,7 +488,10 @@ static ssize_t iommu_reset_counters_write(struct file *fp,
 	if (wr_cnt >= 1) {
 		unsigned long cmd = 0;
 		int rv;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 		buf[wr_cnt-1] = '\0';
 		rv = kstrtoul(buf, 10, &cmd);
 		if (!rv && (cmd == 1)) {
@@ -513,7 +549,10 @@ static ssize_t iommu_pm_enable_counters_write(struct file *fp,
 	if (wr_cnt >= 1) {
 		unsigned long cmd;
 		int rv;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 		buf[wr_cnt-1] = '\0';
 		rv = kstrtoul(buf, 10, &cmd);
 		if (!rv && (cmd < 2)) {
@@ -587,7 +626,10 @@ static int iommu_pm_create_grp_debugfs_counters_hierarchy(
 	for (j = 0; j < cnt_grp->num_counters; ++j) {
 		struct dentry *grp_dir = cnt_grp->group_dir;
 		struct dentry *counter_dir;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 		cnt_grp->counters[j].cnt_group = cnt_grp;
 		cnt_grp->counters[j].counter_no = j;
 		cnt_grp->counters[j].absolute_counter_no = *abs_counter_no;
@@ -692,6 +734,10 @@ int msm_iommu_pm_iommu_register(struct iommu_pmon *pmon_entry)
 	pmon_entry->cnt_grp = kzalloc(sizeof(*pmon_entry->cnt_grp)
 				      * pmon_entry->num_groups, GFP_KERNEL);
 	if (!pmon_entry->cnt_grp) {
+<<<<<<< HEAD
+=======
+		pr_err("Unable to allocate memory for counter groups\n");
+>>>>>>> p9x
 		ret = -ENOMEM;
 		goto file_err;
 	}
@@ -785,6 +831,11 @@ void msm_iommu_pm_iommu_unregister(struct device *dev)
 
 remove_debugfs:
 	debugfs_remove_recursive(msm_iommu_root_debugfs_dir);
+<<<<<<< HEAD
+=======
+
+	return;
+>>>>>>> p9x
 }
 EXPORT_SYMBOL(msm_iommu_pm_iommu_unregister);
 
@@ -792,7 +843,10 @@ struct iommu_pmon *msm_iommu_pm_alloc(struct device *dev)
 {
 	struct iommu_pmon *pmon_entry;
 	struct iommu_info *info;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	pmon_entry = devm_kzalloc(dev, sizeof(*pmon_entry), GFP_KERNEL);
 	if (!pmon_entry)
 		return NULL;
@@ -807,7 +861,10 @@ EXPORT_SYMBOL(msm_iommu_pm_alloc);
 void msm_iommu_pm_free(struct device *dev)
 {
 	struct iommu_pmon *pmon = iommu_pm_get_pm_by_dev(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	if (pmon)
 		iommu_pm_del_from_iommu_list(pmon);
 }
@@ -816,7 +873,10 @@ EXPORT_SYMBOL(msm_iommu_pm_free);
 void msm_iommu_attached(struct device *dev)
 {
 	struct iommu_pmon *pmon = iommu_pm_get_pm_by_dev(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	if (pmon) {
 		mutex_lock(&pmon->lock);
 		++pmon->iommu_attach_count;
@@ -835,7 +895,10 @@ EXPORT_SYMBOL(msm_iommu_attached);
 void msm_iommu_detached(struct device *dev)
 {
 	struct iommu_pmon *pmon = iommu_pm_get_pm_by_dev(dev);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	if (pmon) {
 		mutex_lock(&pmon->lock);
 		if (pmon->iommu_attach_count == 1) {
@@ -851,3 +914,7 @@ void msm_iommu_detached(struct device *dev)
 	}
 }
 EXPORT_SYMBOL(msm_iommu_detached);
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x

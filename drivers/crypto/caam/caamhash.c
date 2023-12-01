@@ -944,6 +944,7 @@ static int ahash_final_ctx(struct ahash_request *req)
 						buf, state->buf_dma, buflen,
 						last_buflen);
 	(edesc->sec4_sg + sec4_sg_src_index - 1)->len |= SEC4_SG_LEN_FIN;
+<<<<<<< HEAD
 
 	edesc->sec4_sg_dma = dma_map_single(jrdev, edesc->sec4_sg,
 					    sec4_sg_bytes, DMA_TO_DEVICE);
@@ -951,6 +952,8 @@ static int ahash_final_ctx(struct ahash_request *req)
 		dev_err(jrdev, "unable to map S/G table\n");
 		return -ENOMEM;
 	}
+=======
+>>>>>>> p9x
 
 	append_seq_in_ptr(desc, edesc->sec4_sg_dma, ctx->ctx_len + buflen,
 			  LDST_SGF);

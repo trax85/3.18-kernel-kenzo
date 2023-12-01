@@ -468,6 +468,7 @@ int iwl_mvm_mac_setup_register(struct iwl_mvm *mvm)
 		iwl_mvm_leds_exit(mvm);
 
 	return ret;
+<<<<<<< HEAD
 }
 
 static bool iwl_mvm_defer_tx(struct iwl_mvm *mvm,
@@ -509,6 +510,8 @@ static bool iwl_mvm_defer_tx(struct iwl_mvm *mvm,
 out:
 	spin_unlock(&mvm->d0i3_tx_lock);
 	return defer;
+=======
+>>>>>>> p9x
 }
 
 static void iwl_mvm_mac_tx(struct ieee80211_hw *hw,
@@ -2001,6 +2004,7 @@ static int iwl_mvm_mac_sta_state(struct ieee80211_hw *hw,
 			ret = -EINVAL;
 			goto out_unlock;
 		}
+<<<<<<< HEAD
 
 		if (sta->tdls &&
 		    (vif->p2p ||
@@ -2012,6 +2016,8 @@ static int iwl_mvm_mac_sta_state(struct ieee80211_hw *hw,
 			goto out_unlock;
 		}
 
+=======
+>>>>>>> p9x
 		ret = iwl_mvm_add_sta(mvm, vif, sta);
 		if (sta->tdls && ret == 0)
 			iwl_mvm_recalc_tdls_state(mvm, vif, true);

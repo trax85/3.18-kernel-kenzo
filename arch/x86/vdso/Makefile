@@ -2,7 +2,10 @@
 # Building vDSO images for x86.
 #
 
+<<<<<<< HEAD
 KBUILD_CFLAGS += $(DISABLE_LTO)
+=======
+>>>>>>> p9x
 KASAN_SANITIZE := n
 
 VDSO64-$(CONFIG_X86_64)		:= y

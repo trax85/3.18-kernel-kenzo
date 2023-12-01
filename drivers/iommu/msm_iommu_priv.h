@@ -55,19 +55,25 @@ struct msm_iommu_pt {
  * pt: Page table attribute structure
  * list_attached: List of devices (contexts) attached to this domain.
  * client_name: Name of the domain client.
+<<<<<<< HEAD
  * procid: Procid used by the clients
  * asid: Unique asid assigned to each domain
  * attributes: Attributes associated with domains, like DYNAMIC attributes
  * base: If the domain is dynamic in nature, it must point to its base domain
+=======
+>>>>>>> p9x
  */
 struct msm_iommu_priv {
 	struct msm_iommu_pt pt;
 	struct list_head list_attached;
 	const char *client_name;
+<<<<<<< HEAD
 	u32 procid;
 	u32 asid;
 	u32 attributes;
 	struct iommu_domain *base;
+=======
+>>>>>>> p9x
 };
 
 #endif

@@ -76,9 +76,16 @@ int ipv6_chk_home_addr(struct net *net, const struct in6_addr *addr);
 bool ipv6_chk_custom_prefix(const struct in6_addr *addr,
 				   const unsigned int prefix_len,
 				   struct net_device *dev);
+<<<<<<< HEAD
+=======
+
+extern int			ipv6_chk_prefix(const struct in6_addr *addr,
+						struct net_device *dev);
+>>>>>>> p9x
 
 int ipv6_chk_prefix(const struct in6_addr *addr, struct net_device *dev);
 
+<<<<<<< HEAD
 struct inet6_ifaddr *ipv6_get_ifaddr(struct net *net,
 				     const struct in6_addr *addr,
 				     struct net_device *dev, int strict);
@@ -93,6 +100,25 @@ int ipv6_get_lladdr(struct net_device *dev, struct in6_addr *addr,
 int ipv6_rcv_saddr_equal(const struct sock *sk, const struct sock *sk2);
 void addrconf_join_solict(struct net_device *dev, const struct in6_addr *addr);
 void addrconf_leave_solict(struct inet6_dev *idev, const struct in6_addr *addr);
+=======
+extern int			ipv6_dev_get_saddr(struct net *net,
+					       const struct net_device *dev,
+					       const struct in6_addr *daddr,
+					       unsigned int srcprefs,
+					       struct in6_addr *saddr);
+extern int			__ipv6_get_lladdr(struct inet6_dev *idev,
+						  struct in6_addr *addr,
+						  unsigned char banned_flags);
+extern int			ipv6_get_lladdr(struct net_device *dev,
+						struct in6_addr *addr,
+						unsigned char banned_flags);
+extern int 			ipv6_rcv_saddr_equal(const struct sock *sk,
+						    const struct sock *sk2);
+extern void			addrconf_join_solict(struct net_device *dev,
+					const struct in6_addr *addr);
+extern void			addrconf_leave_solict(struct inet6_dev *idev,
+					const struct in6_addr *addr);
+>>>>>>> p9x
 
 static inline unsigned long addrconf_timeout_fixup(u32 timeout,
 						   unsigned int unit)
@@ -201,14 +227,28 @@ void addrconf_prefix_rcv(struct net_device *dev,
 
 u32 addrconf_rt_table(const struct net_device *dev, u32 default_table);
 
+u32 addrconf_rt_table(const struct net_device *dev, u32 default_table);
+
 /*
  *	anycast prototypes (anycast.c)
  */
+<<<<<<< HEAD
 int ipv6_sock_ac_join(struct sock *sk, int ifindex,
 		      const struct in6_addr *addr);
 int ipv6_sock_ac_drop(struct sock *sk, int ifindex,
 		      const struct in6_addr *addr);
 void ipv6_sock_ac_close(struct sock *sk);
+=======
+extern int ipv6_sock_ac_join(struct sock *sk,int ifindex, const struct in6_addr *addr);
+extern int ipv6_sock_ac_drop(struct sock *sk,int ifindex, const struct in6_addr *addr);
+extern void ipv6_sock_ac_close(struct sock *sk);
+
+extern int ipv6_dev_ac_inc(struct net_device *dev, const struct in6_addr *addr);
+extern int __ipv6_dev_ac_dec(struct inet6_dev *idev, const struct in6_addr *addr);
+extern bool ipv6_chk_acast_addr(struct net *net, struct net_device *dev,
+				const struct in6_addr *addr);
+extern void ipv6_ac_destroy_dev(struct inet6_dev *idev);
+>>>>>>> p9x
 
 int __ipv6_dev_ac_inc(struct inet6_dev *idev, const struct in6_addr *addr);
 int __ipv6_dev_ac_dec(struct inet6_dev *idev, const struct in6_addr *addr);

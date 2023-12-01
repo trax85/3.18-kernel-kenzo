@@ -132,7 +132,7 @@ static inline struct musb *dev_to_musb(struct device *dev)
 /*-------------------------------------------------------------------------*/
 
 #ifndef CONFIG_BLACKFIN
-static int musb_ulpi_read(struct usb_phy *phy, u32 offset)
+static int musb_ulpi_read(struct usb_phy *phy, u32 reg)
 {
 	void __iomem *addr = phy->io_priv;
 	int	i = 0;
@@ -151,7 +151,7 @@ static int musb_ulpi_read(struct usb_phy *phy, u32 offset)
 	 * ULPICarKitControlDisableUTMI after clearing POWER_SUSPENDM.
 	 */
 
-	musb_writeb(addr, MUSB_ULPI_REG_ADDR, (u8)offset);
+	musb_writeb(addr, MUSB_ULPI_REG_ADDR, (u8)reg);
 	musb_writeb(addr, MUSB_ULPI_REG_CONTROL,
 			MUSB_ULPI_REG_REQ | MUSB_ULPI_RDN_WR);
 
@@ -176,7 +176,7 @@ out:
 	return ret;
 }
 
-static int musb_ulpi_write(struct usb_phy *phy, u32 offset, u32 data)
+static int musb_ulpi_write(struct usb_phy *phy, u32 val, u32 reg)
 {
 	void __iomem *addr = phy->io_priv;
 	int	i = 0;
@@ -191,8 +191,8 @@ static int musb_ulpi_write(struct usb_phy *phy, u32 offset, u32 data)
 	power &= ~MUSB_POWER_SUSPENDM;
 	musb_writeb(addr, MUSB_POWER, power);
 
-	musb_writeb(addr, MUSB_ULPI_REG_ADDR, (u8)offset);
-	musb_writeb(addr, MUSB_ULPI_REG_DATA, (u8)data);
+	musb_writeb(addr, MUSB_ULPI_REG_ADDR, (u8)reg);
+	musb_writeb(addr, MUSB_ULPI_REG_DATA, (u8)val);
 	musb_writeb(addr, MUSB_ULPI_REG_CONTROL, MUSB_ULPI_REG_REQ);
 
 	while (!(musb_readb(addr, MUSB_ULPI_REG_CONTROL)
@@ -672,7 +672,11 @@ static irqreturn_t musb_stage0_irq(struct musb *musb, u8 int_usb,
 			break;
 		case OTG_STATE_A_HOST:
 			musb->xceiv->state = OTG_STATE_A_SUSPEND;
+<<<<<<< HEAD
 			musb->is_active = musb->hcd->self.b_hnp_enable;
+=======
+			musb->is_active = musb_to_hcd(musb)->self.b_hnp_enable;
+>>>>>>> p9x
 			break;
 		case OTG_STATE_B_HOST:
 			/* Transition to B_PERIPHERAL, see 6.8.2.6 p 44 */

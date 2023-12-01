@@ -17,6 +17,7 @@
 #include <linux/module.h>
 #include <linux/ratelimit.h>
 
+<<<<<<< HEAD
 
 #define MIN_TTYB_SIZE	256
 #define TTYB_ALIGN_MASK	255
@@ -105,6 +106,9 @@ static void tty_buffer_reset(struct tty_buffer *p, size_t size)
 	p->flags = 0;
 }
 
+=======
+#define TTY_MAX_BUF 131072
+>>>>>>> p9x
 /**
  *	tty_buffer_free_all		-	free buffers used by a tty
  *	@tty: tty to free from
@@ -152,6 +156,7 @@ static struct tty_buffer *tty_buffer_alloc(struct tty_port *port, size_t size)
 	struct llist_node *free;
 	struct tty_buffer *p;
 
+<<<<<<< HEAD
 	/* Round the buffer size out */
 	size = __ALIGN_MASK(size, TTYB_ALIGN_MASK);
 
@@ -166,6 +171,9 @@ static struct tty_buffer *tty_buffer_alloc(struct tty_port *port, size_t size)
 	/* Should possibly check if this fails for the largest buffer we
 	   have queued and recycle that ? */
 	if (atomic_read(&port->buf.mem_used) > port->buf.mem_limit)
+=======
+	if (port->buf.memory_used + size > TTY_MAX_BUF)
+>>>>>>> p9x
 		return NULL;
 	p = kmalloc(sizeof(struct tty_buffer) + 2 * size, GFP_ATOMIC);
 	if (p == NULL)

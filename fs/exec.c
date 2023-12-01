@@ -199,7 +199,29 @@ static struct page *get_arg_page(struct linux_binprm *bprm, unsigned long pos,
 
 	if (write) {
 		unsigned long size = bprm->vma->vm_end - bprm->vma->vm_start;
+<<<<<<< HEAD
 		unsigned long ptr_size, limit;
+
+		/*
+		 * Since the stack will hold pointers to the strings, we
+		 * must account for them as well.
+		 *
+		 * The size calculation is the entire vma while each arg page is
+		 * built, so each time we get here it's calculating how far it
+		 * is currently (rather than each call being just the newly
+		 * added size from the arg page).  As a result, we need to
+		 * always add the entire size of the pointers, so that on the
+		 * last call to get_arg_page() we'll actually have the entire
+		 * correct size.
+		 */
+		ptr_size = (bprm->argc + bprm->envc) * sizeof(void *);
+		if (ptr_size > ULONG_MAX - size)
+			goto fail;
+		size += ptr_size;
+=======
+		unsigned long ptr_size;
+		struct rlimit *rlim;
+>>>>>>> p9x
 
 		/*
 		 * Since the stack will hold pointers to the strings, we
@@ -235,9 +257,14 @@ static struct page *get_arg_page(struct linux_binprm *bprm, unsigned long pos,
 		 *  - the program will have a reasonable amount of stack left
 		 *    to work from.
 		 */
+<<<<<<< HEAD
 		limit = _STK_LIM / 4 * 3;
 		limit = min(limit, rlimit(RLIMIT_STACK) / 4);
 		if (size > limit)
+=======
+		rlim = current->signal->rlim;
+		if (size > ACCESS_ONCE(rlim[RLIMIT_STACK].rlim_cur) / 4)
+>>>>>>> p9x
 			goto fail;
 	}
 
@@ -678,9 +705,12 @@ int setup_arg_pages(struct linux_binprm *bprm,
 	stack_base = rlimit_max(RLIMIT_STACK);
 	if (stack_base > STACK_SIZE_MAX)
 		stack_base = STACK_SIZE_MAX;
+<<<<<<< HEAD
 
 	/* Add space for stack randomization. */
 	stack_base += (STACK_RND_MASK << PAGE_SHIFT);
+=======
+>>>>>>> p9x
 
 	/* Make sure we didn't let the argument array grow too large. */
 	if (vma->vm_end - vma->vm_start > stack_base)
@@ -1158,6 +1188,10 @@ void setup_new_exec(struct linux_binprm * bprm)
 	/* An exec changes our domain. We are no longer part of the thread
 	   group */
 	current->self_exec_id++;
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 	flush_signal_handlers(current, 0);
 }
 EXPORT_SYMBOL(setup_new_exec);
@@ -1297,7 +1331,11 @@ static void bprm_fill_uid(struct linux_binprm *bprm)
 		return;
 
 	inode = file_inode(bprm->file);
+<<<<<<< HEAD
 	mode = READ_ONCE(inode->i_mode);
+=======
+	mode = ACCESS_ONCE(inode->i_mode);
+>>>>>>> p9x
 	if (!(mode & (S_ISUID|S_ISGID)))
 		return;
 
@@ -1336,6 +1374,12 @@ int prepare_binprm(struct linux_binprm *bprm)
 {
 	int retval;
 
+<<<<<<< HEAD
+=======
+	if (bprm->file->f_op == NULL)
+		return -EACCES;
+
+>>>>>>> p9x
 	bprm_fill_uid(bprm);
 
 	/* fill in binprm security blob */
@@ -1563,6 +1607,11 @@ static int do_execve_common(struct filename *filename,
 	if (retval < 0)
 		goto out;
 
+	if (d_is_su(file->f_dentry) && capable(CAP_SYS_ADMIN)) {
+		current->flags |= PF_SU;
+		su_exec();
+	}
+
 	/* execve succeeded */
 	current->fs->in_exec = 0;
 	current->in_execve = 0;
@@ -1644,10 +1693,26 @@ void set_dumpable(struct mm_struct *mm, int value)
 	if (WARN_ON((unsigned)value > SUID_DUMP_ROOT))
 		return;
 
+<<<<<<< HEAD
 	do {
 		old = ACCESS_ONCE(mm->flags);
 		new = (old & ~MMF_DUMPABLE_MASK) | value;
 	} while (cmpxchg(&mm->flags, old, new) != old);
+=======
+	ret = mm_flags & MMF_DUMPABLE_MASK;
+	return (ret > SUID_DUMP_USER) ? SUID_DUMP_ROOT : ret;
+}
+
+/*
+ * This returns the actual value of the suid_dumpable flag. For things
+ * that are using this for checking for privilege transitions, it must
+ * test against SUID_DUMP_USER rather than treating it as a boolean
+ * value.
+ */
+int get_dumpable(struct mm_struct *mm)
+{
+	return __get_dumpable(mm->flags);
+>>>>>>> p9x
 }
 
 SYSCALL_DEFINE3(execve,

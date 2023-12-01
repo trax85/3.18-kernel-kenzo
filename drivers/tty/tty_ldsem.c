@@ -39,10 +39,24 @@
 				lock_acquire(&(l)->dep_map, s, t, r, c, n, i)
 # define __rel(l, n, i)				\
 				lock_release(&(l)->dep_map, n, i)
+<<<<<<< HEAD
 #define lockdep_acquire(l, s, t, i)		__acq(l, s, t, 0, 1, NULL, i)
 #define lockdep_acquire_nest(l, s, t, n, i)	__acq(l, s, t, 0, 1, n, i)
 #define lockdep_acquire_read(l, s, t, i)	__acq(l, s, t, 1, 1, NULL, i)
 #define lockdep_release(l, n, i)		__rel(l, n, i)
+=======
+# ifdef CONFIG_PROVE_LOCKING
+#  define lockdep_acquire(l, s, t, i)		__acq(l, s, t, 0, 2, NULL, i)
+#  define lockdep_acquire_nest(l, s, t, n, i)	__acq(l, s, t, 0, 2, n, i)
+#  define lockdep_acquire_read(l, s, t, i)	__acq(l, s, t, 1, 2, NULL, i)
+#  define lockdep_release(l, n, i)		__rel(l, n, i)
+# else
+#  define lockdep_acquire(l, s, t, i)		__acq(l, s, t, 0, 1, NULL, i)
+#  define lockdep_acquire_nest(l, s, t, n, i)	__acq(l, s, t, 0, 1, n, i)
+#  define lockdep_acquire_read(l, s, t, i)	__acq(l, s, t, 1, 1, NULL, i)
+#  define lockdep_release(l, n, i)		__rel(l, n, i)
+# endif
+>>>>>>> p9x
 #else
 # define lockdep_acquire(l, s, t, i)		do { } while (0)
 # define lockdep_acquire_nest(l, s, t, n, i)	do { } while (0)
@@ -79,6 +93,7 @@ static inline long ldsem_atomic_update(long delta, struct ld_semaphore *sem)
 	return atomic_long_add_return(delta, (atomic_long_t *)&sem->count);
 }
 
+<<<<<<< HEAD
 /*
  * ldsem_cmpxchg() updates @*old with the last-known sem->count value.
  * Returns 1 if count was successfully changed; @*old will have @new value.
@@ -94,6 +109,13 @@ static inline int ldsem_cmpxchg(long *old, long new, struct ld_semaphore *sem)
 		*old = tmp;
 		return 0;
 	}
+=======
+static inline int ldsem_cmpxchg(long *old, long new, struct ld_semaphore *sem)
+{
+	long tmp = *old;
+	*old = atomic_long_cmpxchg(&sem->count, *old, new);
+	return *old == tmp;
+>>>>>>> p9x
 }
 
 /*
@@ -306,6 +328,7 @@ down_write_failed(struct ld_semaphore *sem, long count, long timeout)
 	if (!locked)
 		ldsem_atomic_update(-LDSEM_WAIT_BIAS, sem);
 	list_del(&waiter.list);
+<<<<<<< HEAD
 
 	/*
 	 * In case of timeout, wake up every reader who gave the right of way
@@ -316,6 +339,8 @@ down_write_failed(struct ld_semaphore *sem, long count, long timeout)
 	if (!locked && list_empty(&sem->write_wait))
 		__ldsem_wake_readers(sem);
 
+=======
+>>>>>>> p9x
 	raw_spin_unlock_irq(&sem->wait_lock);
 
 	__set_task_state(tsk, TASK_RUNNING);

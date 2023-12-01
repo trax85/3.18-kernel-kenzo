@@ -55,7 +55,11 @@ static void *squashfs_xz_comp_opts(struct squashfs_sb_info *msblk,
 	struct comp_opts *opts;
 	int err = 0, n;
 
+<<<<<<< HEAD
 	opts = kmalloc(sizeof(*opts), GFP_ATOMIC);
+=======
+	opts = kmalloc(sizeof(*opts), GFP_KERNEL);
+>>>>>>> p9x
 	if (opts == NULL) {
 		err = -ENOMEM;
 		goto out2;
@@ -136,13 +140,20 @@ static int squashfs_xz_uncompress(struct squashfs_sb_info *msblk, void *strm,
 	enum xz_ret xz_err;
 	int avail, total = 0, k = 0;
 	struct squashfs_xz *stream = strm;
+<<<<<<< HEAD
 	void *buf = NULL;
+=======
+>>>>>>> p9x
 
 	xz_dec_reset(stream->state);
 	stream->buf.in_pos = 0;
 	stream->buf.in_size = 0;
 	stream->buf.out_pos = 0;
+<<<<<<< HEAD
 	stream->buf.out_size = PAGE_SIZE;
+=======
+	stream->buf.out_size = PAGE_CACHE_SIZE;
+>>>>>>> p9x
 	stream->buf.out = squashfs_first_page(output);
 
 	do {
@@ -157,9 +168,15 @@ static int squashfs_xz_uncompress(struct squashfs_sb_info *msblk, void *strm,
 
 		if (stream->buf.out_pos == stream->buf.out_size) {
 			stream->buf.out = squashfs_next_page(output);
+<<<<<<< HEAD
 			if (!IS_ERR(stream->buf.out)) {
 				stream->buf.out_pos = 0;
 				total += PAGE_SIZE;
+=======
+			if (stream->buf.out != NULL) {
+				stream->buf.out_pos = 0;
+				total += PAGE_CACHE_SIZE;
+>>>>>>> p9x
 			}
 		}
 
@@ -182,7 +199,10 @@ static int squashfs_xz_uncompress(struct squashfs_sb_info *msblk, void *strm,
 	if (xz_err != XZ_STREAM_END || k < b)
 		goto out;
 
+<<<<<<< HEAD
 	kfree(buf);
+=======
+>>>>>>> p9x
 	return total + stream->buf.out_pos;
 
 out:

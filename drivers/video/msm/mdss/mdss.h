@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -20,18 +24,26 @@
 #include <linux/types.h>
 #include <linux/workqueue.h>
 #include <linux/irqreturn.h>
+<<<<<<< HEAD
 #include <linux/irqdomain.h>
 #include <linux/mdss_io_util.h>
 
 #include <linux/msm-bus.h>
 #include <linux/file.h>
 #include <linux/dma-direction.h>
+=======
+#include <linux/mdss_io_util.h>
+#include <linux/msm_iommu_domains.h>
+>>>>>>> p9x
 
 #include "mdss_panel.h"
 
 #define MAX_DRV_SUP_MMB_BLKS	44
 #define MAX_DRV_SUP_PIPES 10
+<<<<<<< HEAD
 #define MAX_CLIENT_NAME_LEN 20
+=======
+>>>>>>> p9x
 
 #define MDSS_PINCTRL_STATE_DEFAULT "mdss_default"
 #define MDSS_PINCTRL_STATE_SLEEP  "mdss_sleep"
@@ -39,13 +51,23 @@
 enum mdss_mdp_clk_type {
 	MDSS_CLK_AHB,
 	MDSS_CLK_AXI,
+<<<<<<< HEAD
 	MDSS_CLK_MDP_CORE,
 	MDSS_CLK_MDP_LUT,
 	MDSS_CLK_MDP_VSYNC,
+=======
+	MDSS_CLK_MDP_SRC,
+	MDSS_CLK_MDP_CORE,
+	MDSS_CLK_MDP_LUT,
+	MDSS_CLK_MDP_VSYNC,
+	MDSS_CLK_MDP_TBU,
+	MDSS_CLK_MDP_TBU_RT,
+>>>>>>> p9x
 	MDSS_MAX_CLK
 };
 
 enum mdss_iommu_domain_type {
+<<<<<<< HEAD
 	MDSS_IOMMU_DOMAIN_UNSECURE,
 	MDSS_IOMMU_DOMAIN_ROT_UNSECURE,
 	MDSS_IOMMU_DOMAIN_SECURE,
@@ -59,6 +81,20 @@ enum mdss_bus_vote_type {
 	VOTE_INDEX_MID,
 	VOTE_INDEX_HIGH,
 	VOTE_INDEX_MAX,
+=======
+	MDSS_IOMMU_DOMAIN_SECURE,
+	MDSS_IOMMU_DOMAIN_UNSECURE,
+	MDSS_IOMMU_MAX_DOMAIN
+};
+
+struct mdss_iommu_map_type {
+	char *client_name;
+	char *ctx_name;
+	struct device *ctx;
+	struct msm_iova_partition partitions[1];
+	int npartitions;
+	int domain_idx;
+>>>>>>> p9x
 };
 
 struct mdss_hw_settings {
@@ -76,6 +112,14 @@ struct mdss_debug_inf {
 	void (*debug_enable_clock)(int on);
 };
 
+<<<<<<< HEAD
+=======
+struct mdss_fudge_factor {
+	u32 numer;
+	u32 denom;
+};
+
+>>>>>>> p9x
 struct mdss_perf_tune {
 	unsigned long min_mdp_clk;
 	u64 min_bus_vote;
@@ -94,6 +138,7 @@ struct mdss_intr {
 	spinlock_t lock;
 };
 
+<<<<<<< HEAD
 struct simplified_prefill_factors {
 	u32 fmt_mt_nv12_factor;
 	u32 fmt_mt_factor;
@@ -102,6 +147,8 @@ struct simplified_prefill_factors {
 	u32 xtra_ff_factor;
 };
 
+=======
+>>>>>>> p9x
 struct mdss_prefill_data {
 	u32 ot_bytes;
 	u32 y_buf_bytes;
@@ -110,11 +157,19 @@ struct mdss_prefill_data {
 	u32 post_scaler_pixels;
 	u32 pp_pixels;
 	u32 fbc_lines;
+<<<<<<< HEAD
 	u32 ts_threshold;
 	u32 ts_end;
 	u32 ts_overhead;
 	struct mult_factor ts_rate;
 	struct simplified_prefill_factors prefill_factors;
+=======
+};
+
+struct mdss_mdp_ppb {
+	u32 ctl_off;
+	u32 cfg_off;
+>>>>>>> p9x
 };
 
 struct mdss_mdp_dsc {
@@ -128,13 +183,17 @@ enum mdss_hw_index {
 	MDSS_HW_DSI1,
 	MDSS_HW_HDMI,
 	MDSS_HW_EDP,
+<<<<<<< HEAD
 	MDSS_HW_MISC,
+=======
+>>>>>>> p9x
 	MDSS_MAX_HW_BLK
 };
 
 enum mdss_bus_clients {
 	MDSS_MDP_RT,
 	MDSS_DSI_RT,
+<<<<<<< HEAD
 	MDSS_HW_RT,
 	MDSS_MDP_NRT,
 	MDSS_MAX_BUS_CLIENTS
@@ -276,18 +335,38 @@ struct mdss_smmu_ops {
 			gfp_t gfp_mask, bool padding);
 };
 
+=======
+	MDSS_MDP_NRT,
+	MDSS_IOMMU_RT,
+	MDSS_MAX_BUS_CLIENTS
+};
+
+enum mdss_hw_quirk {
+	MDSS_QUIRK_BWCPANIC,
+	MDSS_QUIRK_DOWNSCALE_HANG,
+	MDSS_QUIRK_SVS_PLUS_VOTING,
+	MDSS_QUIRK_MAX,
+};
+
+>>>>>>> p9x
 struct mdss_data_type {
 	u32 mdp_rev;
 	struct clk *mdp_clk[MDSS_MAX_CLK];
 	struct regulator *fs;
+<<<<<<< HEAD
 	struct regulator *venus;
+=======
+>>>>>>> p9x
 	struct regulator *vdd_cx;
 	bool batfet_required;
 	struct regulator *batfet;
 	bool en_svs_high;
 	u32 max_mdp_clk_rate;
 	struct mdss_util_intf *mdss_util;
+<<<<<<< HEAD
 	struct mdss_panel_data *pdata;
+=======
+>>>>>>> p9x
 
 	struct platform_device *pdev;
 	struct dss_io_data mdss_io;
@@ -295,8 +374,18 @@ struct mdss_data_type {
 	struct dss_io_data vbif_nrt_io;
 	char __iomem *mdp_base;
 
+<<<<<<< HEAD
 	struct mdss_smmu_client mdss_smmu[MDSS_IOMMU_MAX_DOMAIN];
 	struct mdss_smmu_ops smmu_ops;
+=======
+	/* Used to store if vote to enable svs plus has been sent or not */
+	u32 svs_plus_vote;
+	/* Min rate from where SVS plus vote is needed */
+	u32 svs_plus_min;
+	/* Max rate till where SVS plus vote is needed */
+	u32 svs_plus_max;
+
+>>>>>>> p9x
 	struct mutex reg_lock;
 
 	/* bitmap to track pipes that have BWC enabled */
@@ -305,6 +394,7 @@ struct mdss_data_type {
 	DECLARE_BITMAP(mdss_quirk_map, MDSS_QUIRK_MAX);
 	/* bitmap to track total mmbs in use */
 	DECLARE_BITMAP(mmb_alloc_map, MAX_DRV_SUP_MMB_BLKS);
+<<<<<<< HEAD
 	/* bitmap to track qos applicable settings */
 	DECLARE_BITMAP(mdss_qos_map, MDSS_QOS_MAX);
 	/* bitmap to track hw capabilities/features */
@@ -312,16 +402,23 @@ struct mdss_data_type {
 
 	u32 has_bwc;
 	/* values used when HW has a common panic/robust LUT */
+=======
+
+	u32 has_bwc;
+>>>>>>> p9x
 	u32 default_panic_lut0;
 	u32 default_panic_lut1;
 	u32 default_robust_lut;
 
+<<<<<<< HEAD
 	/* values used when HW has panic/robust LUTs per pipe */
 	u32 default_panic_lut_per_pipe_linear;
 	u32 default_panic_lut_per_pipe_tile;
 	u32 default_robust_lut_per_pipe_linear;
 	u32 default_robust_lut_per_pipe_tile;
 
+=======
+>>>>>>> p9x
 	u32 has_decimation;
 	bool has_fixed_qos_arbiter_enabled;
 	bool has_panic_ctrl;
@@ -332,20 +429,33 @@ struct mdss_data_type {
 	u8 has_non_scalar_rgb;
 	bool has_src_split;
 	bool idle_pc_enabled;
+<<<<<<< HEAD
 	bool has_pingpong_split;
 	bool has_pixel_ram;
 	bool needs_hist_vote;
 	bool has_ubwc;
 	bool has_wb_ubwc;
 	bool has_separate_rotator;
+=======
+	bool needs_iommu_bw_vote;
+	bool has_pingpong_split;
+	bool has_pixel_ram;
+	bool needs_hist_vote;
+	bool has_10_bit_pa;
+>>>>>>> p9x
 
 	u32 default_ot_rd_limit;
 	u32 default_ot_wr_limit;
 
+<<<<<<< HEAD
 	struct irq_domain *irq_domain;
 	u32 *mdp_irq_mask;
 	u32 mdp_hist_irq_mask;
 	u32 mdp_intf_irq_mask;
+=======
+	u32 mdp_irq_mask;
+	u32 mdp_hist_irq_mask;
+>>>>>>> p9x
 
 	int suspend_fs_ena;
 	u8 clk_ena;
@@ -353,6 +463,10 @@ struct mdss_data_type {
 	u8 vsync_ena;
 
 	struct notifier_block gdsc_cb;
+<<<<<<< HEAD
+=======
+	struct notifier_block tlb_timeout_cb;
+>>>>>>> p9x
 
 	u32 res_init;
 
@@ -360,6 +474,7 @@ struct mdss_data_type {
 	u32 smp_mb_cnt;
 	u32 smp_mb_size;
 	u32 smp_mb_per_pipe;
+<<<<<<< HEAD
 	u32 pixel_ram_size;
 
 	u32 rot_block_size;
@@ -381,20 +496,31 @@ struct mdss_data_type {
 	struct reg_bus_client *reg_bus_clt;
 	struct reg_bus_client *pp_reg_bus_clt;
 
+=======
+
+	u32 rot_block_size;
+
+>>>>>>> p9x
 	u32 axi_port_cnt;
 	u32 nrt_axi_port_cnt;
 	u32 bus_channels;
 	u32 curr_bw_uc_idx;
+<<<<<<< HEAD
 	u32 ao_bw_uc_idx; /* active only idx */
 	struct msm_bus_scale_pdata *bus_scale_table;
 	struct msm_bus_scale_pdata *reg_bus_scale_table;
 	struct msm_bus_scale_pdata *hw_rt_bus_scale_table;
+=======
+	u32 bus_hdl;
+	struct msm_bus_scale_pdata *bus_scale_table;
+>>>>>>> p9x
 	u32 max_bw_low;
 	u32 max_bw_high;
 	u32 max_bw_per_pipe;
 	u32 *vbif_rt_qos;
 	u32 *vbif_nrt_qos;
 	u32 npriority_lvl;
+<<<<<<< HEAD
 	u32 rot_dwnscale_min;
 	u32 rot_dwnscale_max;
 
@@ -405,11 +531,24 @@ struct mdss_data_type {
 	struct mult_factor per_pipe_ib_factor;
 	bool apply_post_scale_bytes;
 	bool hflip_buffer_reused;
+=======
+	u32 bus_bw_cnt;
+	struct mutex bus_bw_lock;
+
+	u32 reg_bus_hdl;
+
+	struct mdss_fudge_factor ab_factor;
+	struct mdss_fudge_factor ib_factor;
+	struct mdss_fudge_factor ib_factor_overlap;
+	struct mdss_fudge_factor ib_factor_cmd;
+	struct mdss_fudge_factor clk_factor;
+>>>>>>> p9x
 
 	u32 disable_prefill;
 	u32 *clock_levels;
 	u32 nclk_lvl;
 
+<<<<<<< HEAD
 	u32 enable_gate;
 	u32 enable_bw_release;
 	u32 enable_rotator_bw_release;
@@ -420,6 +559,14 @@ struct mdss_data_type {
 	struct mdss_hw_settings *hw_settings;
 
 	int rects_per_sspp[MDSS_MDP_PIPE_TYPE_MAX];
+=======
+	u32 enable_bw_release;
+	u32 enable_rotator_bw_release;
+	u32 serialize_wait4pp;
+
+	struct mdss_hw_settings *hw_settings;
+
+>>>>>>> p9x
 	struct mdss_mdp_pipe *vig_pipes;
 	struct mdss_mdp_pipe *rgb_pipes;
 	struct mdss_mdp_pipe *dma_pipes;
@@ -431,10 +578,15 @@ struct mdss_data_type {
 	u8  ncursor_pipes;
 	u32 max_cursor_size;
 
+<<<<<<< HEAD
 	u32 nppb_ctl;
 	u32 *ppb_ctl;
 	u32 nppb_cfg;
 	u32 *ppb_cfg;
+=======
+	u32 nppb;
+	struct mdss_mdp_ppb *ppb;
+>>>>>>> p9x
 	char __iomem *slave_pingpong_base;
 
 	struct mdss_mdp_mixer *mixer_intf;
@@ -444,6 +596,7 @@ struct mdss_data_type {
 	u32 max_mixer_width;
 	u32 max_pipe_width;
 
+<<<<<<< HEAD
 	struct mdss_mdp_writeback *wb;
 	u32 nwb;
 	u32 *wb_offsets;
@@ -452,6 +605,11 @@ struct mdss_data_type {
 
 	struct mdss_mdp_ctl *ctl_off;
 	u32 nctl;
+=======
+	struct mdss_mdp_ctl *ctl_off;
+	u32 nctl;
+	u32 nwb;
+>>>>>>> p9x
 	u32 ndspp;
 
 	struct mdss_mdp_dp_intf *dp_off;
@@ -464,12 +622,16 @@ struct mdss_data_type {
 	u32 nad_cfgs;
 	u32 nmax_concurrent_ad_hw;
 	struct workqueue_struct *ad_calc_wq;
+<<<<<<< HEAD
 	u32 ad_debugen;
+=======
+>>>>>>> p9x
 
 	struct mdss_intr hist_intr;
 
 	struct ion_client *iclient;
 	int iommu_attached;
+<<<<<<< HEAD
 
 	struct debug_bus *dbg_bus;
 	u32 dbg_bus_size;
@@ -477,6 +639,12 @@ struct mdss_data_type {
 	u32 vbif_dbg_bus_size;
 	struct vbif_debug_bus *nrt_vbif_dbg_bus;
 	u32 nrt_vbif_dbg_bus_size;
+=======
+	struct mdss_iommu_map_type *iommu_map;
+
+	struct debug_bus *dbg_bus;
+	u32 dbg_bus_size;
+>>>>>>> p9x
 	struct mdss_debug_inf debug_inf;
 	bool mixer_switched;
 	struct mdss_panel_cfg pan_cfg;
@@ -486,6 +654,11 @@ struct mdss_data_type {
 
 	int handoff_pending;
 	bool idle_pc;
+<<<<<<< HEAD
+=======
+	bool allow_cx_vddmin;
+	bool vdd_cx_en;
+>>>>>>> p9x
 	struct mdss_perf_tune perf_tune;
 	bool traffic_shaper_en;
 	int iommu_ref_cnt;
@@ -496,6 +669,7 @@ struct mdss_data_type {
 
 	u64 ab[MDSS_MAX_BUS_CLIENTS];
 	u64 ib[MDSS_MAX_BUS_CLIENTS];
+<<<<<<< HEAD
 	struct mdss_pp_block_off pp_block_off;
 
 	struct mdss_mdp_cdm *cdm_off;
@@ -504,11 +678,16 @@ struct mdss_data_type {
 
 	struct mdss_mdp_dsc *dsc_off;
 	u32 ndsc;
+=======
+>>>>>>> p9x
 
 	struct mdss_max_bw_settings *max_bw_settings;
 	u32 bw_mode_bitmap;
 	u32 max_bw_settings_cnt;
+<<<<<<< HEAD
 	bool bw_limit_pending;
+=======
+>>>>>>> p9x
 
 	struct mdss_max_bw_settings *max_per_pipe_bw_settings;
 	u32 mdss_per_pipe_bw_cnt;
@@ -517,20 +696,31 @@ struct mdss_data_type {
 	u32 bcolor0;
 	u32 bcolor1;
 	u32 bcolor2;
+<<<<<<< HEAD
 	struct mdss_scaler_block *scaler_off;
 
 	u32 splash_intf_sel;
 	u32 splash_split_disp;
 };
 
+=======
+	struct mdss_mdp_dsc *dsc_off;
+	u32 ndsc;
+
+};
+>>>>>>> p9x
 extern struct mdss_data_type *mdss_res;
 
 struct irq_info {
 	u32 irq;
 	u32 irq_mask;
+<<<<<<< HEAD
 	u32 irq_wake_mask;
 	u32 irq_ena;
 	u32 irq_wake_ena;
+=======
+	u32 irq_ena;
+>>>>>>> p9x
 	u32 irq_buzy;
 };
 
@@ -545,17 +735,23 @@ struct irq_info *mdss_intr_line(void);
 void mdss_bus_bandwidth_ctrl(int enable);
 int mdss_iommu_ctrl(int enable);
 int mdss_bus_scale_set_quota(int client, u64 ab_quota, u64 ib_quota);
+<<<<<<< HEAD
 int mdss_update_reg_bus_vote(struct reg_bus_client *, u32 usecase_ndx);
 struct reg_bus_client *mdss_reg_bus_vote_client_create(char *client_name);
 void mdss_reg_bus_vote_client_destroy(struct reg_bus_client *);
+=======
+>>>>>>> p9x
 
 struct mdss_util_intf {
 	bool mdp_probe_done;
 	int (*register_irq)(struct mdss_hw *hw);
 	void (*enable_irq)(struct mdss_hw *hw);
 	void (*disable_irq)(struct mdss_hw *hw);
+<<<<<<< HEAD
 	void (*enable_wake_irq)(struct mdss_hw *hw);
 	void (*disable_wake_irq)(struct mdss_hw *hw);
+=======
+>>>>>>> p9x
 	void (*disable_irq_nosync)(struct mdss_hw *hw);
 	int (*irq_dispatch)(u32 hw_ndx, int irq, void *ptr);
 	int (*get_iommu_domain)(u32 type);
@@ -567,6 +763,7 @@ struct mdss_util_intf {
 	int (*bus_scale_set_quota)(int client, u64 ab_quota, u64 ib_quota);
 	int (*panel_intf_status)(u32 disp_num, u32 intf_type);
 	struct mdss_panel_cfg* (*panel_intf_type)(int intf_val);
+<<<<<<< HEAD
 	int (*dyn_clk_gating_ctrl)(int enable);
 	bool (*param_check)(char *param_string);
 	bool display_disabled;
@@ -574,6 +771,29 @@ struct mdss_util_intf {
 
 struct mdss_util_intf *mdss_get_util_intf(void);
 bool mdss_get_irq_enable_state(struct mdss_hw *hw);
+=======
+};
+
+struct mdss_util_intf *mdss_get_util_intf(void);
+
+static inline struct ion_client *mdss_get_ionclient(void)
+{
+	if (!mdss_res)
+		return NULL;
+	return mdss_res->iclient;
+}
+
+static inline int mdss_get_iommu_domain(u32 type)
+{
+	if (type >= MDSS_IOMMU_MAX_DOMAIN)
+		return -EINVAL;
+
+	if (!mdss_res)
+		return -ENODEV;
+
+	return mdss_res->iommu_map[type].domain_idx;
+}
+>>>>>>> p9x
 
 static inline int mdss_get_sd_client_cnt(void)
 {

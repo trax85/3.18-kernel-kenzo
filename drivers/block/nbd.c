@@ -643,6 +643,7 @@ static int __nbd_ioctl(struct block_device *bdev, struct nbd_device *nbd,
 		int err;
 		if (nbd->sock)
 			return -EBUSY;
+<<<<<<< HEAD
 		sock = sockfd_lookup(arg, &err);
 		if (sock) {
 			nbd->sock = sock;
@@ -650,6 +651,21 @@ static int __nbd_ioctl(struct block_device *bdev, struct nbd_device *nbd,
 				bdev->bd_invalidated = 1;
 			nbd->disconnect = 0; /* we're connected now */
 			return 0;
+=======
+		file = fget(arg);
+		if (file) {
+			struct inode *inode = file_inode(file);
+			if (S_ISSOCK(inode->i_mode)) {
+				nbd->file = file;
+				nbd->sock = SOCKET_I(inode);
+				if (max_part > 0)
+					bdev->bd_invalidated = 1;
+				nbd->disconnect = 0; /* we're connected now */
+				return 0;
+			} else {
+				fput(file);
+			}
+>>>>>>> p9x
 		}
 		return -EINVAL;
 	}

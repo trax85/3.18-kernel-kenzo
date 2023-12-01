@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -53,6 +57,7 @@ static unsigned int _ft_policy_show(struct adreno_device *adreno_dev)
 static int _ft_pagefault_policy_store(struct adreno_device *adreno_dev,
 		unsigned int val)
 {
+<<<<<<< HEAD
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
 	int ret = 0;
 
@@ -64,11 +69,24 @@ static int _ft_pagefault_policy_store(struct adreno_device *adreno_dev,
 			(unsigned long) val);
 
 	if (ret == 0)
+=======
+	struct kgsl_device *device = &adreno_dev->dev;
+	int ret;
+
+	mutex_lock(&device->mutex);
+	val &= KGSL_FT_PAGEFAULT_MASK;
+	ret = kgsl_mmu_set_pagefault_policy(&device->mmu, (unsigned long) val);
+	if (!ret)
+>>>>>>> p9x
 		adreno_dev->ft_pf_policy = val;
 
 	mutex_unlock(&device->mutex);
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return ret;
+>>>>>>> p9x
 }
 
 static unsigned int _ft_pagefault_policy_show(struct adreno_device *adreno_dev)
@@ -79,7 +97,11 @@ static unsigned int _ft_pagefault_policy_show(struct adreno_device *adreno_dev)
 static int _ft_fast_hang_detect_store(struct adreno_device *adreno_dev,
 		unsigned int val)
 {
+<<<<<<< HEAD
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
+=======
+	struct kgsl_device *device = &adreno_dev->dev;
+>>>>>>> p9x
 
 	if (!test_bit(ADRENO_DEVICE_SOFT_FAULT_DETECT, &adreno_dev->priv))
 		return 0;
@@ -119,7 +141,11 @@ static unsigned int _ft_long_ib_detect_show(struct adreno_device *adreno_dev)
 static int _ft_hang_intr_status_store(struct adreno_device *adreno_dev,
 		unsigned int val)
 {
+<<<<<<< HEAD
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
+=======
+	struct kgsl_device *device = &adreno_dev->dev;
+>>>>>>> p9x
 	int ret = 0;
 
 	if (val == test_bit(ADRENO_DEVICE_HANG_INTR, &adreno_dev->priv))
@@ -148,7 +174,11 @@ static unsigned int _ft_hang_intr_status_show(struct adreno_device *adreno_dev)
 static int _pwrctrl_store(struct adreno_device *adreno_dev,
 		unsigned int val, unsigned int flag)
 {
+<<<<<<< HEAD
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
+=======
+	struct kgsl_device *device = &adreno_dev->dev;
+>>>>>>> p9x
 
 	if (val == test_bit(flag, &adreno_dev->pwrctrl_flag))
 		return 0;
@@ -165,6 +195,7 @@ static int _pwrctrl_store(struct adreno_device *adreno_dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int _preemption_store(struct adreno_device *adreno_dev,
 		unsigned int val)
 {
@@ -201,6 +232,8 @@ static unsigned int _hwcg_show(struct adreno_device *adreno_dev)
 	return test_bit(ADRENO_HWCG_CTRL, &adreno_dev->pwrctrl_flag);
 }
 
+=======
+>>>>>>> p9x
 static int _sptp_pc_store(struct adreno_device *adreno_dev,
 		unsigned int val)
 {
@@ -313,9 +346,12 @@ static DEVICE_INT_ATTR(wake_timeout, 0644, adreno_wake_timeout);
 
 static ADRENO_SYSFS_BOOL(sptp_pc);
 static ADRENO_SYSFS_BOOL(lm);
+<<<<<<< HEAD
 static ADRENO_SYSFS_BOOL(preemption);
 static ADRENO_SYSFS_BOOL(hwcg);
 
+=======
+>>>>>>> p9x
 
 static const struct device_attribute *_attr_list[] = {
 	&adreno_attr_ft_policy.attr,
@@ -327,8 +363,11 @@ static const struct device_attribute *_attr_list[] = {
 	&dev_attr_wake_timeout.attr,
 	&adreno_attr_sptp_pc.attr,
 	&adreno_attr_lm.attr,
+<<<<<<< HEAD
 	&adreno_attr_preemption.attr,
 	&adreno_attr_hwcg.attr,
+=======
+>>>>>>> p9x
 	NULL,
 };
 
@@ -428,6 +467,7 @@ static struct kobj_type ktype_ppd = {
 	.sysfs_ops = &ppd_sysfs_ops,
 };
 
+<<<<<<< HEAD
 static void ppd_sysfs_close(struct adreno_device *adreno_dev)
 {
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
@@ -435,10 +475,15 @@ static void ppd_sysfs_close(struct adreno_device *adreno_dev)
 	if (!ADRENO_FEATURE(adreno_dev, ADRENO_PPD))
 		return;
 
+=======
+static void ppd_sysfs_close(struct kgsl_device *device)
+{
+>>>>>>> p9x
 	sysfs_remove_file(&device->ppd_kobj, &attr_enable.attr);
 	kobject_put(&device->ppd_kobj);
 }
 
+<<<<<<< HEAD
 static int ppd_sysfs_init(struct adreno_device *adreno_dev)
 {
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
@@ -448,6 +493,11 @@ static int ppd_sysfs_init(struct adreno_device *adreno_dev)
 		return -ENODEV;
 
 	ret = kobject_init_and_add(&device->ppd_kobj, &ktype_ppd,
+=======
+static int ppd_sysfs_init(struct kgsl_device *device)
+{
+	int ret = kobject_init_and_add(&device->ppd_kobj, &ktype_ppd,
+>>>>>>> p9x
 		&device->dev->kobj, "ppd");
 
 	if (ret == 0)
@@ -458,6 +508,7 @@ static int ppd_sysfs_init(struct adreno_device *adreno_dev)
 
 /**
  * adreno_sysfs_close() - Take down the adreno sysfs files
+<<<<<<< HEAD
  * @adreno_dev: Pointer to the adreno device
  *
  * Take down the sysfs files on when the device goes away
@@ -467,16 +518,30 @@ void adreno_sysfs_close(struct adreno_device *adreno_dev)
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
 
 	ppd_sysfs_close(adreno_dev);
+=======
+ * @device: Pointer to the KGSL device
+ *
+ * Take down the sysfs files on when the device goes away
+ */
+void adreno_sysfs_close(struct kgsl_device *device)
+{
+	ppd_sysfs_close(device);
+>>>>>>> p9x
 	kgsl_remove_device_sysfs_files(device->dev, _attr_list);
 }
 
 /**
  * adreno_sysfs_init() - Initialize adreno sysfs files
+<<<<<<< HEAD
  * @adreno_dev: Pointer to the adreno device
+=======
+ * @device: Pointer to the KGSL device
+>>>>>>> p9x
  *
  * Initialize many of the adreno specific sysfs files especially for fault
  * tolerance and power control
  */
+<<<<<<< HEAD
 int adreno_sysfs_init(struct adreno_device *adreno_dev)
 {
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
@@ -487,6 +552,16 @@ int adreno_sysfs_init(struct adreno_device *adreno_dev)
 	/* Add the PPD directory and files */
 	if (ret == 0)
 		ppd_sysfs_init(adreno_dev);
+=======
+int adreno_sysfs_init(struct kgsl_device *device)
+{
+	int ret = kgsl_create_device_sysfs_files(device->dev, _attr_list);
+	if (ret != 0)
+		return ret;
+
+	/* Add the PPD directory and files */
+	ppd_sysfs_init(device);
+>>>>>>> p9x
 
 	return 0;
 }

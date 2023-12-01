@@ -21,10 +21,17 @@ targets := Image Image.gz
 DTB_NAMES := $(subst $\",,$(CONFIG_BUILD_ARM64_APPENDED_DTB_IMAGE_NAMES))
 ifneq ($(DTB_NAMES),)
 DTB_LIST := $(addsuffix .dtb,$(DTB_NAMES))
+<<<<<<< HEAD
 DTB_OBJS := $(addprefix $(obj)/dts/,$(DTB_LIST))
 else
 DTB_OBJS := $(shell find $(obj)/dts/ -name \*.dtb)
 endif
+=======
+else
+DTB_LIST := $(dtb-y)
+endif
+DTB_OBJS := $(addprefix $(obj)/dts/,$(DTB_LIST))
+>>>>>>> p9x
 
 $(obj)/Image: vmlinux FORCE
 	$(call if_changed,objcopy)
@@ -35,6 +42,7 @@ $(obj)/Image.gz: $(obj)/Image FORCE
 $(obj)/Image.gz-dtb: $(obj)/Image.gz $(DTB_OBJS) FORCE
 	$(call if_changed,cat)
 
+<<<<<<< HEAD
 $(obj)/Image-dtb-hdr: $(obj)/Image FORCE
 	echo -n 'UNCOMPRESSED_IMG' > $@ && \
 	$(call size_append, $(filter-out FORCE,$^)) >> $@
@@ -42,6 +50,8 @@ $(obj)/Image-dtb-hdr: $(obj)/Image FORCE
 $(obj)/Image-dtb: $(obj)/Image-dtb-hdr $(obj)/Image $(DTB_OBJS) FORCE
 	$(call if_changed,cat)
 
+=======
+>>>>>>> p9x
 install: $(obj)/Image
 	$(CONFIG_SHELL) $(srctree)/$(src)/install.sh $(KERNELRELEASE) \
 	$(obj)/Image System.map "$(INSTALL_PATH)"

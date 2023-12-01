@@ -31,6 +31,9 @@
 #define PANIC_TIMER_STEP 100
 #define PANIC_BLINK_SPD 18
 
+/* Machine specific panic information string */
+char *mach_panic_string;
+
 int panic_on_oops = CONFIG_PANIC_ON_OOPS_VALUE;
 static unsigned long tainted_mask;
 static int pause_on_oops;
@@ -38,6 +41,12 @@ static int pause_on_oops_flag;
 static DEFINE_SPINLOCK(pause_on_oops_lock);
 static bool crash_kexec_post_notifiers;
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_PANIC_TIMEOUT
+#define CONFIG_PANIC_TIMEOUT 0
+#endif
+>>>>>>> p9x
 int panic_timeout = CONFIG_PANIC_TIMEOUT;
 EXPORT_SYMBOL_GPL(panic_timeout);
 
@@ -150,6 +159,7 @@ void panic(const char *fmt, ...)
 
 	bust_spinlocks(0);
 
+<<<<<<< HEAD
 	/*
 	 * We may have ended up stopping the CPU holding the lock (in
 	 * smp_send_stop()) while still having some valuable data in the console
@@ -159,6 +169,8 @@ void panic(const char *fmt, ...)
 	 * panic() is not being callled from OOPS.
 	 */
 	debug_locks_off();
+=======
+>>>>>>> p9x
 	console_flush_on_panic();
 
 	if (!panic_blink)
@@ -393,6 +405,7 @@ void oops_enter(void)
 	tracing_off();
 	/* can't trust the integrity of the kernel anymore: */
 	debug_locks_off();
+	oops_printk_start();
 	do_oops_enter_exit();
 }
 
@@ -415,7 +428,17 @@ late_initcall(init_oops_id);
 void print_oops_end_marker(void)
 {
 	init_oops_id();
+<<<<<<< HEAD
 	pr_warn("---[ end trace %016llx ]---\n", (unsigned long long)oops_id);
+=======
+
+	if (mach_panic_string)
+		printk(KERN_WARNING "Board Information: %s\n",
+		       mach_panic_string);
+
+	printk(KERN_WARNING "---[ end trace %016llx ]---\n",
+		(unsigned long long)oops_id);
+>>>>>>> p9x
 }
 
 /*

@@ -1,7 +1,11 @@
 #! /usr/bin/env python2
 # -*- coding: utf-8 -*-
 
+<<<<<<< HEAD
 # Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+=======
+# Copyright (c) 2011-2012, 2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -40,6 +44,7 @@ import subprocess
 # force LANG to be set to en_US.UTF-8 to get consistent warnings.
 
 allowed_warnings = set([
+<<<<<<< HEAD
     "fdt.c:932",
     "hid-magicmouse.c:579",
     "sysrq.c:956",
@@ -47,6 +52,19 @@ allowed_warnings = set([
     "pppopns.c:296",
     "pppopns.c:305",
     "pppopns.c:336",
+=======
+    "return_address.c:63",
+    "kprobes.c:1493",
+    "rcutree.c:1614",
+    "af_unix.c:893",
+    "nl80211.c:58",
+    "jhash.h:137",
+    "cmpxchg.h:162",
+    "ping.c:87",
+    "nfnetlink_queue_core.c:264",
+    "nfnetlink_queue_core.c:265",
+    "irq.c:159",
+>>>>>>> p9x
  ])
 
 # Capture the name of the object file, can find it.
@@ -58,7 +76,11 @@ def interpret_warning(line):
     line = line.rstrip('\n')
     m = warning_re.match(line)
     if m and m.group(2) not in allowed_warnings:
+<<<<<<< HEAD
         print >> sys.stderr, "error, forbidden warning:", m.group(2)
+=======
+        print "error, forbidden warning:", m.group(2)
+>>>>>>> p9x
 
         # If there is a warning, remove any object if it exists.
         if ofile:
@@ -83,17 +105,28 @@ def run_gcc():
     try:
         proc = subprocess.Popen(args, stderr=subprocess.PIPE)
         for line in proc.stderr:
+<<<<<<< HEAD
             print >> sys.stderr, line,
+=======
+            print line,
+>>>>>>> p9x
             interpret_warning(line)
 
         result = proc.wait()
     except OSError as e:
         result = e.errno
         if result == errno.ENOENT:
+<<<<<<< HEAD
             print >> sys.stderr, args[0] + ':',e.strerror
             print >> sys.stderr, 'Is your PATH set correctly?'
         else:
             print >> sys.stderr, ' '.join(args), str(e)
+=======
+            print args[0] + ':',e.strerror
+            print 'Is your PATH set correctly?'
+        else:
+            print ' '.join(args), str(e)
+>>>>>>> p9x
 
     return result
 

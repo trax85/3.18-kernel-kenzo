@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -38,9 +42,12 @@
 #define QCE_MAX_NUM_DESC    128
 #define SPS_MAX_PKT_SIZE  (32 * 1024  - 64)
 
+<<<<<<< HEAD
 /* default bam ipc log level */
 #define QCE_BAM_DEFAULT_IPC_LOGLVL 2
 
+=======
+>>>>>>> p9x
 /* State of consumer/producer Pipe */
 enum qce_pipe_st_enum {
 	QCE_PIPE_STATE_IDLE = 0,
@@ -49,6 +56,7 @@ enum qce_pipe_st_enum {
 	QCE_PIPE_STATE_LAST
 };
 
+<<<<<<< HEAD
 enum qce_xfer_type_enum {
 	QCE_XFER_HASHING,
 	QCE_XFER_CIPHERING,
@@ -58,6 +66,8 @@ enum qce_xfer_type_enum {
 	QCE_XFER_TYPE_LAST
 };
 
+=======
+>>>>>>> p9x
 struct qce_sps_ep_conn_data {
 	struct sps_pipe			*pipe;
 	struct sps_connect		connect;
@@ -126,7 +136,10 @@ struct qce_cmdlistptr_ops {
 	struct qce_cmdlist_info aead_hmac_sha256_cbc_3des;
 	struct qce_cmdlist_info aead_aes_128_ccm;
 	struct qce_cmdlist_info aead_aes_256_ccm;
+<<<<<<< HEAD
 	struct qce_cmdlist_info cipher_null;
+=======
+>>>>>>> p9x
 	struct qce_cmdlist_info f8_kasumi;
 	struct qce_cmdlist_info f8_snow3g;
 	struct qce_cmdlist_info f9_kasumi;
@@ -178,10 +191,25 @@ struct qce_ce_cfg_reg_setting {
 	uint32_t auth_cfg_snow3g;
 };
 
+<<<<<<< HEAD
 struct ce_bam_info {
 	uint32_t			bam_irq;
 	uint32_t			bam_mem;
 	void __iomem			*bam_iobase;
+=======
+/* DM data structure with buffers, commandlists & commmand pointer lists */
+struct ce_sps_data {
+
+	uint32_t			bam_irq;
+	uint32_t			bam_mem;
+	void __iomem			*bam_iobase;
+
+	struct qce_sps_ep_conn_data	producer;
+	struct qce_sps_ep_conn_data	consumer;
+	struct sps_event_notify		notify;
+	struct scatterlist		*src;
+	struct scatterlist		*dst;
+>>>>>>> p9x
 	uint32_t			ce_device;
 	uint32_t			ce_hw_instance;
 	uint32_t			bam_ee;
@@ -189,6 +217,7 @@ struct ce_bam_info {
 	unsigned int			src_pipe_index;
 	unsigned int			dest_pipe_index;
 	unsigned long			bam_handle;
+<<<<<<< HEAD
 	int				ce_burst_size;
 	uint32_t			minor_version;
 	struct qce_sps_ep_conn_data	producer;
@@ -241,4 +270,24 @@ struct qce_driver_stats {
 	int outstanding_reqs;
 };
 
+=======
+
+	enum qce_pipe_st_enum consumer_state;	/* Consumer pipe state */
+	enum qce_pipe_st_enum producer_state;	/* Producer pipe state */
+
+	int consumer_status;		/* consumer pipe status */
+	int producer_status;		/* producer pipe status */
+
+	struct sps_transfer in_transfer;
+	struct sps_transfer out_transfer;
+
+	int ce_burst_size;
+
+	struct qce_cmdlistptr_ops cmdlistptr;
+	uint32_t result_dump;
+	uint32_t ignore_buffer;
+	struct ce_result_dump_format *result;
+	uint32_t minor_version;
+};
+>>>>>>> p9x
 #endif /* _DRIVERS_CRYPTO_MSM_QCE50_H */

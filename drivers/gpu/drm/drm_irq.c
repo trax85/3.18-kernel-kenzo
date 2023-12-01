@@ -322,9 +322,42 @@ static void vblank_disable_and_save(struct drm_device *dev, unsigned int pipe)
 	 * calling the ->disable_vblank() operation in atomic context with the
 	 * hardware potentially runtime suspended.
 	 */
+<<<<<<< HEAD
 	if (vblank->enabled) {
 		dev->driver->disable_vblank(dev, pipe);
 		vblank->enabled = false;
+=======
+	do {
+		dev->last_vblank[crtc] = dev->driver->get_vblank_counter(dev, crtc);
+		vblrc = drm_get_last_vbltimestamp(dev, crtc, &tvblank, 0);
+	} while (dev->last_vblank[crtc] != dev->driver->get_vblank_counter(dev, crtc) && (--count) && vblrc);
+
+	if (!count)
+		vblrc = 0;
+
+	/* Compute time difference to stored timestamp of last vblank
+	 * as updated by last invocation of drm_handle_vblank() in vblank irq.
+	 */
+	vblcount = atomic_read(&dev->_vblank_count[crtc]);
+	diff_ns = timeval_to_ns(&tvblank) -
+		  timeval_to_ns(&vblanktimestamp(dev, crtc, vblcount));
+
+	/* If there is at least 1 msec difference between the last stored
+	 * timestamp and tvblank, then we are currently executing our
+	 * disable inside a new vblank interval, the tvblank timestamp
+	 * corresponds to this new vblank interval and the irq handler
+	 * for this vblank didn't run yet and won't run due to our disable.
+	 * Therefore we need to do the job of drm_handle_vblank() and
+	 * increment the vblank counter by one to account for this vblank.
+	 *
+	 * Skip this step if there isn't any high precision timestamp
+	 * available. In that case we can't account for this and just
+	 * hope for the best.
+	 */
+	if ((vblrc > 0) && (abs64(diff_ns) > 1000000)) {
+		atomic_inc(&dev->_vblank_count[crtc]);
+		smp_mb__after_atomic();
+>>>>>>> p9x
 	}
 
 	/*
@@ -1185,7 +1218,22 @@ static int drm_vblank_enable(struct drm_device *dev, unsigned int pipe)
 
 	spin_unlock(&dev->vblank_time_lock);
 
+<<<<<<< HEAD
 	return ret;
+=======
+	/* Reinitialize corresponding vblank timestamp if high-precision query
+	 * available. Skip this step if query unsupported or failed. Will
+	 * reinitialize delayed at next vblank interrupt in that case.
+	 */
+	if (rc) {
+		tslot = atomic_read(&dev->_vblank_count[crtc]) + diff;
+		vblanktimestamp(dev, crtc, tslot) = t_vblank;
+	}
+
+	smp_mb__before_atomic_inc();
+	atomic_add(diff, &dev->_vblank_count[crtc]);
+	smp_mb__after_atomic();
+>>>>>>> p9x
 }
 
 /**
@@ -1914,6 +1962,41 @@ bool drm_handle_vblank(struct drm_device *dev, unsigned int pipe)
 
 	spin_unlock_irqrestore(&dev->event_lock, irqflags);
 
+<<<<<<< HEAD
+=======
+	/* Compute time difference to timestamp of last vblank */
+	diff_ns = timeval_to_ns(&tvblank) -
+		  timeval_to_ns(&vblanktimestamp(dev, crtc, vblcount));
+
+	/* Update vblank timestamp and count if at least
+	 * DRM_REDUNDANT_VBLIRQ_THRESH_NS nanoseconds
+	 * difference between last stored timestamp and current
+	 * timestamp. A smaller difference means basically
+	 * identical timestamps. Happens if this vblank has
+	 * been already processed and this is a redundant call,
+	 * e.g., due to spurious vblank interrupts. We need to
+	 * ignore those for accounting.
+	 */
+	if (abs64(diff_ns) > DRM_REDUNDANT_VBLIRQ_THRESH_NS) {
+		/* Store new timestamp in ringbuffer. */
+		vblanktimestamp(dev, crtc, vblcount + 1) = tvblank;
+
+		/* Increment cooked vblank count. This also atomically commits
+		 * the timestamp computed above.
+		 */
+		smp_mb__before_atomic_inc();
+		atomic_inc(&dev->_vblank_count[crtc]);
+		smp_mb__after_atomic();
+	} else {
+		DRM_DEBUG("crtc %d: Redundant vblirq ignored. diff_ns = %d\n",
+			  crtc, (int) diff_ns);
+	}
+
+	DRM_WAKEUP(&dev->vbl_queue[crtc]);
+	drm_handle_vblank_events(dev, crtc);
+
+	spin_unlock_irqrestore(&dev->vblank_time_lock, irqflags);
+>>>>>>> p9x
 	return true;
 }
 EXPORT_SYMBOL(drm_handle_vblank);

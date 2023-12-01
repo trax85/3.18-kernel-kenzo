@@ -37,7 +37,10 @@
 
 #define __KVM_HAVE_GUEST_DEBUG
 #define __KVM_HAVE_IRQ_LINE
+<<<<<<< HEAD
 #define __KVM_HAVE_READONLY_MEM
+=======
+>>>>>>> p9x
 
 #define KVM_REG_SIZE(id)						\
 	(1U << (((id) & KVM_REG_SIZE_MASK) >> KVM_REG_SIZE_SHIFT))
@@ -160,7 +163,10 @@ struct kvm_arch_memory_slot {
 #define   KVM_DEV_ARM_VGIC_CPUID_MASK	(0xffULL << KVM_DEV_ARM_VGIC_CPUID_SHIFT)
 #define   KVM_DEV_ARM_VGIC_OFFSET_SHIFT	0
 #define   KVM_DEV_ARM_VGIC_OFFSET_MASK	(0xffffffffULL << KVM_DEV_ARM_VGIC_OFFSET_SHIFT)
+<<<<<<< HEAD
 #define KVM_DEV_ARM_VGIC_GRP_NR_IRQS	3
+=======
+>>>>>>> p9x
 
 /* KVM_IRQ_LINE irq field index values */
 #define KVM_ARM_IRQ_TYPE_SHIFT		24
@@ -179,6 +185,7 @@ struct kvm_arch_memory_slot {
 #define KVM_ARM_IRQ_CPU_IRQ		0
 #define KVM_ARM_IRQ_CPU_FIQ		1
 
+<<<<<<< HEAD
 /*
  * This used to hold the highest supported SPI, but it is now obsolete
  * and only here to provide source code level compatibility with older
@@ -187,6 +194,10 @@ struct kvm_arch_memory_slot {
 #ifndef __KERNEL__
 #define KVM_ARM_IRQ_GIC_MAX		127
 #endif
+=======
+/* Highest supported SPI, from VGIC_NR_IRQS */
+#define KVM_ARM_IRQ_GIC_MAX		127
+>>>>>>> p9x
 
 /* PSCI interface */
 #define KVM_PSCI_FN_BASE		0x95c1ba5e

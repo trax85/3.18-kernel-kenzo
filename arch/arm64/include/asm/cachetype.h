@@ -30,6 +30,7 @@
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
 #include <linux/bitops.h>
 
 #define CTR_L1IP(ctr)	(((ctr) >> CTR_L1IP_SHIFT) & CTR_L1IP_MASK)
@@ -67,6 +68,9 @@ extern u64 __attribute_const__ cache_get_ccsidr(u64 csselr);
 
 /* Helpers for Level 1 Instruction cache csselr = 1L */
 static inline int icache_get_linesize(void)
+=======
+static inline u32 icache_policy(void)
+>>>>>>> p9x
 {
 	return CACHE_LINESIZE(cache_get_ccsidr(1L));
 }

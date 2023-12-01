@@ -101,12 +101,17 @@ EXPORT_SYMBOL(msm_bus_scale_unregister_client);
 /**
  * msm_bus_scale_register() - Register the clients with the msm bus
  * driver
+<<<<<<< HEAD
  *
  * @mas: Master ID
  * @slv: Slave ID
  * @name: descriptive name for this client
  * @active_only: Whether or not this bandwidth vote should only be
  *               effective while the application processor is active.
+=======
+ * @pdata: Platform data of the client, containing src, dest, ab, ib.
+ * Return non-zero value in case of success, 0 in case of failure.
+>>>>>>> p9x
  *
  * Client data contains the vectors specifying arbitrated bandwidth (ab)
  * and instantaneous bandwidth (ib) requested between a particular
@@ -130,9 +135,15 @@ EXPORT_SYMBOL(msm_bus_scale_register);
  * msm_bus_scale_client_update_bw() - Update the request for bandwidth
  * from a particular client
  *
+<<<<<<< HEAD
  * @cl: Handle to the client
  * @ab: Arbitrated bandwidth being requested
  * @ib: Instantaneous bandwidth being requested
+=======
+ * cl: Handle to the client
+ * index: Index into the vector, to which the bw and clock values need to be
+ * updated
+>>>>>>> p9x
  */
 int msm_bus_scale_update_bw(struct msm_bus_client_handle *cl, u64 ab, u64 ib)
 {

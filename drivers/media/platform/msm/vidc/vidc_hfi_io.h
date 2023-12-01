@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -82,6 +86,10 @@
 #define VIDC_WRAPPER_HW_VERSION_MINOR_VERSION_MASK  0xFFF0000
 #define VIDC_WRAPPER_HW_VERSION_MINOR_VERSION_SHIFT 16
 #define VIDC_WRAPPER_HW_VERSION_STEP_VERSION_MASK   0xFFFF
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 #define VIDC_WRAPPER_CLOCK_CONFIG	(VIDC_WRAPPER_BASE_OFFS + 0x04)
 
 #define VIDC_WRAPPER_INTR_STATUS	(VIDC_WRAPPER_BASE_OFFS + 0x0C)
@@ -112,7 +120,10 @@
 #define VIDC_WRAPPER_AXI_HALT		(VIDC_WRAPPER_BASE_OFFS + 0x2008)
 #define VIDC_WRAPPER_AXI_HALT_STATUS	(VIDC_WRAPPER_BASE_OFFS + 0x200C)
 #define VIDC_WRAPPER_CPU_CGC_DIS	(VIDC_WRAPPER_BASE_OFFS + 0x2010)
+<<<<<<< HEAD
 #define VIDC_WRAPPER_CPU_STATUS (VIDC_WRAPPER_BASE_OFFS + 0x2014)
+=======
+>>>>>>> p9x
 #define VIDC_VENUS_VBIF_CLK_ON		(VIDC_VBIF_BASE_OFFS + 0x4)
 #define VIDC_VBIF_IN_RD_LIM_CONF0       (VIDC_VBIF_BASE_OFFS + 0xB0)
 #define VIDC_VBIF_IN_RD_LIM_CONF1       (VIDC_VBIF_BASE_OFFS + 0xB4)
@@ -139,7 +150,10 @@
 #define VIDC_VBIF_AT_OLD_HIGH           (VIDC_VBIF_BASE_OFFS + 0xC08)
 #define VIDC_VBIF_AT_NEW_BASE           (VIDC_VBIF_BASE_OFFS + 0xC10)
 #define VIDC_VBIF_AT_NEW_HIGH           (VIDC_VBIF_BASE_OFFS + 0xC18)
+<<<<<<< HEAD
 #define VENUS_VBIF_XIN_HALT_CTRL1   (VIDC_VBIF_BASE_OFFS + 0x204)
+=======
+>>>>>>> p9x
 #define VENUS_VBIF_AXI_HALT_CTRL0   (VIDC_VBIF_BASE_OFFS + 0x208)
 #define VENUS_VBIF_AXI_HALT_CTRL1   (VIDC_VBIF_BASE_OFFS + 0x20C)
 
@@ -151,8 +165,11 @@
 	(VIDC_WRAPPER_BASE_OFFS + 0x20)
 #define VIDC_VENUS0_WRAPPER_VBIF_PRIORITY_LEVEL \
 	(VIDC_WRAPPER_BASE_OFFS + 0x24)
+<<<<<<< HEAD
 #define VIDC_VENUS_WRAPPER_MMCC_VENUS0_POWER_STATUS \
 	(VIDC_WRAPPER_BASE_OFFS + 0x44)
+=======
+>>>>>>> p9x
 
 #define VIDC_CTRL_INIT 0x000D2048
 #define VIDC_CTRL_INIT_RESERVED_BITS31_1__M 0xFFFFFFFE

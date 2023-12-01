@@ -54,10 +54,16 @@ struct ipv6_devconf {
 	__s32		accept_dad;
 	__s32		force_tllao;
 	__s32           ndisc_notify;
+<<<<<<< HEAD
 	__s32		suppress_frag_ndisc;
 	__s32		accept_ra_prefix_route;
 	__s32		use_oif_addrs_only;
 	__s32		accept_ra_mtu;
+=======
+	__s32		accept_ra_prefix_route;
+	__s32		accept_ra_mtu;
+	__s32		use_oif_addrs_only;
+>>>>>>> p9x
 	void		*sysctl;
 };
 
@@ -263,6 +269,33 @@ struct tcp6_timewait_sock {
 static inline struct ipv6_pinfo *inet6_sk(const struct sock *__sk)
 {
 	return sk_fullsock(__sk) ? inet_sk(__sk)->pinet6 : NULL;
+<<<<<<< HEAD
+=======
+}
+
+static inline struct inet6_request_sock *
+			inet6_rsk(const struct request_sock *rsk)
+{
+	return (struct inet6_request_sock *)(((u8 *)rsk) +
+					     inet_rsk(rsk)->inet6_rsk_offset);
+}
+
+static inline u32 inet6_rsk_offset(struct request_sock *rsk)
+{
+	return rsk->rsk_ops->obj_size - sizeof(struct inet6_request_sock);
+}
+
+static inline struct request_sock *inet6_reqsk_alloc(struct request_sock_ops *ops)
+{
+	struct request_sock *req = reqsk_alloc(ops);
+
+	if (req != NULL) {
+		inet_rsk(req)->inet6_rsk_offset = inet6_rsk_offset(req);
+		inet6_rsk(req)->pktopts = NULL;
+	}
+
+	return req;
+>>>>>>> p9x
 }
 
 static inline struct raw6_sock *raw6_sk(const struct sock *sk)

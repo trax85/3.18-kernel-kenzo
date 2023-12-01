@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -15,9 +19,13 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/bitops.h>
 #include <soc/qcom/subsystem_restart.h>
 #include <soc/qcom/boot_stats.h>
+=======
+#include <soc/qcom/subsystem_restart.h>
+>>>>>>> p9x
 #include <asm/div64.h>
 #include "msm_vidc_common.h"
 #include "vidc_hfi_api.h"
@@ -29,6 +37,12 @@
 	__rc; \
 })
 
+<<<<<<< HEAD
+=======
+#define IS_VALID_DCVS_SESSION(__cur_mbpf, __min_mbpf) \
+		((__cur_mbpf) >= (__min_mbpf))
+
+>>>>>>> p9x
 #define SUM_ARRAY(__arr, __start, __end) ({\
 		int __index;\
 		typeof((__arr)[0]) __sum = 0;\
@@ -46,7 +60,14 @@
 #define V4L2_EVENT_RELEASE_BUFFER_REFERENCE \
 		V4L2_EVENT_MSM_VIDC_RELEASE_BUFFER_REFERENCE
 
+<<<<<<< HEAD
 #define MAX_SUPPORTED_INSTANCES 16
+=======
+#define IS_SESSION_CMD_VALID(cmd) (((cmd) >= SESSION_MSG_START) && \
+		((cmd) <= SESSION_MSG_END))
+#define IS_SYS_CMD_VALID(cmd) (((cmd) >= SYS_MSG_START) && \
+		((cmd) <= SYS_MSG_END))
+>>>>>>> p9x
 
 const char *const mpeg_video_vidc_extradata[] = {
 	"Extradata none",
@@ -79,7 +100,10 @@ const char *const mpeg_video_vidc_extradata[] = {
 	"Extradata light level SEI",
 	"Extradata display VUI",
 	"Extradata vpx color space",
+<<<<<<< HEAD
 	"Extradata PQ Info",
+=======
+>>>>>>> p9x
 };
 
 struct getprop_buf {
@@ -89,18 +113,38 @@ struct getprop_buf {
 
 static void msm_comm_generate_session_error(struct msm_vidc_inst *inst);
 static void msm_comm_generate_sys_error(struct msm_vidc_inst *inst);
+<<<<<<< HEAD
 static void handle_session_error(enum hal_command_response cmd, void *data);
 
 bool msm_comm_turbo_session(struct msm_vidc_inst *inst)
+=======
+static void handle_session_error(enum command_response cmd, void *data);
+
+static inline bool is_turbo_session(struct msm_vidc_inst *inst)
+>>>>>>> p9x
 {
 	return !!(inst->flags & VIDC_TURBO);
 }
 
+<<<<<<< HEAD
+=======
+static inline bool is_low_power_session(struct msm_vidc_inst *inst)
+{
+	return !!(inst->flags & VIDC_POWER_SAVE);
+}
+
+static inline bool is_low_latency_session(struct msm_vidc_inst *inst)
+{
+	return !!(inst->flags & VIDC_LOW_LATENCY);
+}
+
+>>>>>>> p9x
 static inline bool is_thumbnail_session(struct msm_vidc_inst *inst)
 {
 	return !!(inst->flags & VIDC_THUMBNAIL);
 }
 
+<<<<<<< HEAD
 static inline bool is_low_power_session(struct msm_vidc_inst *inst)
 {
 	return !!(inst->flags & VIDC_LOW_POWER);
@@ -117,12 +161,21 @@ int msm_comm_s_ctrl(struct msm_vidc_inst *inst, struct v4l2_control *ctrl)
 }
 
 int msm_comm_g_ctrl_for_id(struct msm_vidc_inst *inst, int id)
+=======
+static inline bool is_realtime_session(struct msm_vidc_inst *inst)
+{
+	return !!(inst->flags & VIDC_REALTIME);
+}
+
+int msm_comm_g_ctrl(struct msm_vidc_inst *inst, int id)
+>>>>>>> p9x
 {
 	int rc = 0;
 	struct v4l2_control ctrl = {
 		.id = id,
 	};
 
+<<<<<<< HEAD
 	rc = msm_comm_g_ctrl(inst, &ctrl);
 	return rc ?: ctrl.value;
 }
@@ -291,10 +344,28 @@ static int msm_comm_get_mbs_per_frame(struct msm_vidc_inst *inst)
 		inst->prop.height[CAPTURE_PORT]);
 
 	return max(output_port_mbs, capture_port_mbs);
+=======
+	rc = v4l2_g_ctrl(&inst->ctrl_handler, &ctrl);
+	return rc ?: ctrl.value;
+}
+enum multi_stream msm_comm_get_stream_output_mode(struct msm_vidc_inst *inst)
+{
+	if (inst->session_type == MSM_VIDC_DECODER) {
+		int rc = 0;
+		struct v4l2_control ctrl = {
+			.id = V4L2_CID_MPEG_VIDC_VIDEO_STREAM_OUTPUT_MODE
+		};
+		rc = v4l2_g_ctrl(&inst->ctrl_handler, &ctrl);
+		if (!rc && ctrl.value)
+			return HAL_VIDEO_DECODER_SECONDARY;
+	}
+	return HAL_VIDEO_DECODER_PRIMARY;
+>>>>>>> p9x
 }
 
 static int msm_comm_get_mbs_per_sec(struct msm_vidc_inst *inst)
 {
+<<<<<<< HEAD
 	int rc;
 	u32 fps;
 	struct v4l2_control ctrl;
@@ -306,14 +377,34 @@ static int msm_comm_get_mbs_per_sec(struct msm_vidc_inst *inst)
 	rc = msm_comm_g_ctrl(inst, &ctrl);
 	if (!rc && ctrl.value) {
 		fps = (ctrl.value >> 16) ? ctrl.value >> 16 : 1;
+=======
+	int output_port_mbs, capture_port_mbs;
+	int fps;
+
+	output_port_mbs = NUM_MBS_PER_FRAME(inst->prop.width[OUTPUT_PORT],
+		inst->prop.height[OUTPUT_PORT]);
+	capture_port_mbs = NUM_MBS_PER_FRAME(inst->prop.width[CAPTURE_PORT],
+		inst->prop.height[CAPTURE_PORT]);
+
+	if (inst->operating_rate) {
+		fps = (inst->operating_rate >> 16) ?
+			inst->operating_rate >> 16 : 1;
+>>>>>>> p9x
 		/*
 		 * Check if operating rate is less than fps.
 		 * If Yes, then use fps to scale the clocks
 		*/
 		fps = fps > inst->prop.fps ? fps : inst->prop.fps;
+<<<<<<< HEAD
 		return (mb_per_frame * fps);
 	} else
 		return (mb_per_frame * inst->prop.fps);
+=======
+		return max(output_port_mbs, capture_port_mbs) * fps;
+	} else {
+		return max(output_port_mbs, capture_port_mbs) * inst->prop.fps;
+	}
+>>>>>>> p9x
 }
 
 int msm_comm_get_inst_load(struct msm_vidc_inst *inst,
@@ -321,11 +412,17 @@ int msm_comm_get_inst_load(struct msm_vidc_inst *inst,
 {
 	int load = 0;
 
+<<<<<<< HEAD
 	mutex_lock(&inst->lock);
 
 	if (!(inst->state >= MSM_VIDC_OPEN_DONE &&
 		inst->state < MSM_VIDC_STOP_DONE))
 		goto exit;
+=======
+	if (!(inst->state >= MSM_VIDC_OPEN_DONE &&
+		inst->state < MSM_VIDC_STOP_DONE))
+		return 0;
+>>>>>>> p9x
 
 	load = msm_comm_get_mbs_per_sec(inst);
 
@@ -334,11 +431,16 @@ int msm_comm_get_inst_load(struct msm_vidc_inst *inst,
 			load = 0;
 	}
 
+<<<<<<< HEAD
 	if (msm_comm_turbo_session(inst)) {
+=======
+	if (is_turbo_session(inst)) {
+>>>>>>> p9x
 		if (!(quirks & LOAD_CALC_IGNORE_TURBO_LOAD))
 			load = inst->core->resources.max_load;
 	}
 
+<<<<<<< HEAD
 	/*  Clock and Load calculations for REALTIME/NON-REALTIME
 	 *                        OPERATING RATE SET/NO OPERATING RATE SET
 	 *
@@ -356,14 +458,29 @@ int msm_comm_get_inst_load(struct msm_vidc_inst *inst,
 		(quirks & LOAD_CALC_IGNORE_NON_REALTIME_LOAD)) {
 		if (!inst->prop.fps) {
 			dprintk(VIDC_INFO, "instance:%pK fps = 0\n", inst);
+=======
+	if (!is_thumbnail_session(inst) && !is_realtime_session(inst) &&
+		(quirks & LOAD_CALC_IGNORE_NON_REALTIME_LOAD)) {
+		if (!inst->prop.fps) {
+			dprintk(VIDC_INFO, "%s: instance:%pK prop->fps is set 0\n", __func__, inst);
+>>>>>>> p9x
 			load = 0;
 		} else {
 			load = msm_comm_get_mbs_per_sec(inst) / inst->prop.fps;
 		}
 	}
 
+<<<<<<< HEAD
 exit:
 	mutex_unlock(&inst->lock);
+=======
+	dprintk(VIDC_DBG,
+		"inst[%pK]: load %d, wxh %dx%d, fps %d, operating_rate %d, flags 0x%x, quirks 0x%x\n",
+		inst, load, inst->prop.width[OUTPUT_PORT],
+		inst->prop.height[OUTPUT_PORT], inst->prop.fps,
+		inst->operating_rate >> 16, inst->flags, quirks);
+
+>>>>>>> p9x
 	return load;
 }
 
@@ -390,7 +507,11 @@ int msm_comm_get_load(struct msm_vidc_core *core,
 	return num_mbs_per_sec;
 }
 
+<<<<<<< HEAD
 enum hal_domain get_hal_domain(int session_type)
+=======
+static enum hal_domain get_hal_domain(int session_type)
+>>>>>>> p9x
 {
 	enum hal_domain domain;
 	switch (session_type) {
@@ -409,9 +530,16 @@ enum hal_domain get_hal_domain(int session_type)
 	return domain;
 }
 
+<<<<<<< HEAD
 enum hal_video_codec get_hal_codec(int fourcc)
 {
 	enum hal_video_codec codec;
+=======
+enum hal_video_codec get_hal_codec_type(int fourcc)
+{
+	enum hal_video_codec codec;
+	dprintk(VIDC_DBG, "codec is 0x%x\n", fourcc);
+>>>>>>> p9x
 	switch (fourcc) {
 	case V4L2_PIX_FMT_H264:
 	case V4L2_PIX_FMT_H264_NO_SC:
@@ -463,6 +591,7 @@ enum hal_video_codec get_hal_codec(int fourcc)
 	return codec;
 }
 
+<<<<<<< HEAD
 static enum hal_uncompressed_format get_hal_uncompressed(int fourcc)
 {
 	enum hal_uncompressed_format format = HAL_UNUSED_COLOR;
@@ -494,13 +623,18 @@ static enum hal_uncompressed_format get_hal_uncompressed(int fourcc)
 	return format;
 }
 
+=======
+>>>>>>> p9x
 static int msm_comm_vote_bus(struct msm_vidc_core *core)
 {
 	int rc = 0, vote_data_count = 0, i = 0;
 	struct hfi_device *hdev;
 	struct msm_vidc_inst *inst = NULL;
 	struct vidc_bus_vote_data *vote_data = NULL;
+<<<<<<< HEAD
 	unsigned long core_freq = 0;
+=======
+>>>>>>> p9x
 
 	if (!core) {
 		dprintk(VIDC_ERR, "%s Invalid args: %pK\n", __func__, core);
@@ -526,6 +660,7 @@ static int msm_comm_vote_bus(struct msm_vidc_core *core)
 		goto fail_alloc;
 	}
 
+<<<<<<< HEAD
 	core_freq = call_hfi_op(hdev, get_core_clock_rate,
 			hdev->hfi_device_data, 0);
 
@@ -577,6 +712,32 @@ static int msm_comm_vote_bus(struct msm_vidc_core *core)
 		 */
 		vote_data[i].color_formats[0] = get_hal_uncompressed(yuv);
 		vote_data[i].num_formats = 1;
+=======
+	list_for_each_entry(inst, &core->instances, list) {
+		int codec = 0;
+		codec = inst->session_type == MSM_VIDC_DECODER ?
+			inst->fmts[OUTPUT_PORT]->fourcc :
+			inst->fmts[CAPTURE_PORT]->fourcc;
+
+		vote_data[i].session = VIDC_VOTE_DATA_SESSION_VAL(
+				get_hal_codec_type(codec),
+				get_hal_domain(inst->session_type));
+		vote_data[i].load = msm_comm_get_inst_load(inst,
+				LOAD_CALC_NO_QUIRKS);
+
+		vote_data[i].power_mode = 0;
+		if (is_low_power_session(inst))
+			vote_data[i].power_mode |= VIDC_POWER_LOW;
+		if (is_turbo_session(inst))
+			vote_data[i].power_mode |= VIDC_POWER_TURBO;
+		if (is_low_latency_session(inst))
+			vote_data[i].power_mode |= VIDC_POWER_LOW_LATENCY;
+
+		/* if no power modes enabled then go for normal */
+		if (!vote_data[i].power_mode)
+			vote_data[i].power_mode |= VIDC_POWER_NORMAL;
+
+>>>>>>> p9x
 		i++;
 	}
 	mutex_unlock(&core->lock);
@@ -594,6 +755,25 @@ fail_alloc:
 	return rc;
 }
 
+<<<<<<< HEAD
+=======
+static void msm_comm_unvote_buses(struct msm_vidc_core *core)
+{
+	struct hfi_device *hdev;
+
+	if (!core || !core->device) {
+		dprintk(VIDC_ERR, "%s invalid parameters\n", __func__);
+		return;
+	}
+
+	hdev = core->device;
+	if (call_hfi_op(hdev, unvote_bus, hdev->hfi_device_data))
+		dprintk(VIDC_WARN,
+				"Failed to unvote for buses\n");
+
+}
+
+>>>>>>> p9x
 struct msm_vidc_core *get_vidc_core(int core_id)
 {
 	struct msm_vidc_core *core;
@@ -667,18 +847,29 @@ struct buf_queue *msm_comm_get_vb2q(
 	return NULL;
 }
 
+<<<<<<< HEAD
 static void handle_sys_init_done(enum hal_command_response cmd, void *data)
+=======
+static void handle_sys_init_done(enum command_response cmd, void *data)
+>>>>>>> p9x
 {
 	struct msm_vidc_cb_cmd_done *response = data;
 	struct msm_vidc_core *core;
 	struct vidc_hal_sys_init_done *sys_init_msg;
 	u32 index;
 
+<<<<<<< HEAD
 	if (!IS_HAL_SYS_CMD(cmd)) {
 		dprintk(VIDC_ERR, "%s - invalid cmd\n", __func__);
 		return;
 	}
 
+=======
+	if (!IS_SYS_CMD_VALID(cmd)) {
+		dprintk(VIDC_ERR, "%s - invalid cmd\n", __func__);
+		return;
+	}
+>>>>>>> p9x
 	index = SYS_MSG_INDEX(cmd);
 
 	if (!response) {
@@ -686,19 +877,33 @@ static void handle_sys_init_done(enum hal_command_response cmd, void *data)
 			"Failed to get valid response for sys init\n");
 		return;
 	}
+<<<<<<< HEAD
+=======
+	if (response->status) {
+		dprintk(VIDC_ERR, "%s: status 0x%x\n", __func__,
+			response->status);
+		return;
+	}
+>>>>>>> p9x
 	core = get_vidc_core(response->device_id);
 	if (!core) {
 		dprintk(VIDC_ERR, "Wrong device_id received\n");
 		return;
 	}
+<<<<<<< HEAD
 	sys_init_msg = &response->data.sys_init_done;
 	if (!sys_init_msg) {
+=======
+	sys_init_msg = response->data;
+	if (!sys_init_msg || !sys_init_msg->capabilities) {
+>>>>>>> p9x
 		dprintk(VIDC_ERR, "sys_init_done message not proper\n");
 		return;
 	}
 
 	core->enc_codec_supported = sys_init_msg->enc_codec_supported;
 	core->dec_codec_supported = sys_init_msg->dec_codec_supported;
+<<<<<<< HEAD
 
 	/* This should come from sys_init_done */
 	core->resources.max_inst_count =
@@ -709,14 +914,25 @@ static void handle_sys_init_done(enum hal_command_response cmd, void *data)
 		core->resources.max_secure_inst_count ? :
 		core->resources.max_inst_count;
 
+=======
+>>>>>>> p9x
 	if (core->id == MSM_VIDC_CORE_VENUS &&
 		(core->dec_codec_supported & HAL_VIDEO_CODEC_H264))
 			core->dec_codec_supported |=
 				HAL_VIDEO_CODEC_MVC;
 
 	core->codec_count = sys_init_msg->codec_count;
+<<<<<<< HEAD
 	memcpy(core->capabilities, sys_init_msg->capabilities,
 		sys_init_msg->codec_count * sizeof(struct msm_vidc_capability));
+=======
+	if (core->capabilities)
+		memcpy(core->capabilities, sys_init_msg->capabilities,
+			sys_init_msg->codec_count *
+			sizeof(struct msm_vidc_capability));
+	else
+		dprintk(VIDC_ERR, "%s: core capabilities is NULL\n", __func__);
+>>>>>>> p9x
 
 	dprintk(VIDC_DBG,
 		"%s: supported_codecs[%d]: enc = %#x, dec = %#x\n",
@@ -728,6 +944,7 @@ static void handle_sys_init_done(enum hal_command_response cmd, void *data)
 	return;
 }
 
+<<<<<<< HEAD
 void put_inst(struct msm_vidc_inst *inst)
 {
 	void put_inst_helper(struct kref *kref)
@@ -784,6 +1001,9 @@ struct msm_vidc_inst *get_inst(struct msm_vidc_core *core,
 }
 
 static void handle_session_release_buf_done(enum hal_command_response cmd,
+=======
+static void handle_session_release_buf_done(enum command_response cmd,
+>>>>>>> p9x
 	void *data)
 {
 	struct msm_vidc_cb_cmd_done *response = data;
@@ -794,11 +1014,16 @@ static void handle_session_release_buf_done(enum hal_command_response cmd,
 	u32 buf_found = false;
 	u32 address;
 
+<<<<<<< HEAD
 	if (!response) {
+=======
+	if (!response || !response->data) {
+>>>>>>> p9x
 		dprintk(VIDC_ERR, "Invalid release_buf_done response\n");
 		return;
 	}
 
+<<<<<<< HEAD
 	inst = get_inst(get_vidc_core(response->device_id),
 			response->session_id);
 	if (!inst) {
@@ -807,13 +1032,21 @@ static void handle_session_release_buf_done(enum hal_command_response cmd,
 	}
 
 	buffer = &response->data.buffer_info;
+=======
+	inst = (struct msm_vidc_inst *)response->session_id;
+	buffer = (struct hal_buffer_info *) response->data;
+>>>>>>> p9x
 	address = buffer->buffer_addr;
 
 	mutex_lock(&inst->scratchbufs.lock);
 	list_for_each_safe(ptr, next, &inst->scratchbufs.list) {
 		buf = list_entry(ptr, struct internal_buf, list);
 		if (address == (u32)buf->handle->device_addr) {
+<<<<<<< HEAD
 			dprintk(VIDC_DBG, "releasing scratch: %pa\n",
+=======
+			dprintk(VIDC_DBG, "releasing scratch: 0x%pa\n",
+>>>>>>> p9x
 					&buf->handle->device_addr);
 			buf_found = true;
 		}
@@ -824,7 +1057,11 @@ static void handle_session_release_buf_done(enum hal_command_response cmd,
 	list_for_each_safe(ptr, next, &inst->persistbufs.list) {
 		buf = list_entry(ptr, struct internal_buf, list);
 		if (address == (u32)buf->handle->device_addr) {
+<<<<<<< HEAD
 			dprintk(VIDC_DBG, "releasing persist: %pa\n",
+=======
+			dprintk(VIDC_DBG, "releasing persist: 0x%pa\n",
+>>>>>>> p9x
 					&buf->handle->device_addr);
 			buf_found = true;
 		}
@@ -833,6 +1070,7 @@ static void handle_session_release_buf_done(enum hal_command_response cmd,
 
 	if (!buf_found)
 		dprintk(VIDC_ERR, "invalid buffer received from firmware");
+<<<<<<< HEAD
 	if (IS_HAL_SESSION_CMD(cmd)) {
 		complete(&inst->completions[SESSION_MSG_INDEX(cmd)]);
 	} else {
@@ -844,6 +1082,18 @@ static void handle_session_release_buf_done(enum hal_command_response cmd,
 
 static void handle_sys_release_res_done(
 		enum hal_command_response cmd, void *data)
+=======
+	if (IS_SESSION_CMD_VALID(cmd)) {
+		complete(&inst->completions[SESSION_MSG_INDEX(cmd)]);
+	} else {
+		dprintk(VIDC_ERR, "Invalid inst cmd response: %d\n", cmd);
+		return;
+	}
+}
+
+static void handle_sys_release_res_done(
+	enum command_response cmd, void *data)
+>>>>>>> p9x
 {
 	struct msm_vidc_cb_cmd_done *response = data;
 	struct msm_vidc_core *core;
@@ -857,8 +1107,12 @@ static void handle_sys_release_res_done(
 		dprintk(VIDC_ERR, "Wrong device_id received\n");
 		return;
 	}
+<<<<<<< HEAD
 	complete(&core->completions[
 			SYS_MSG_INDEX(HAL_SYS_RELEASE_RESOURCE_DONE)]);
+=======
+	complete(&core->completions[SYS_MSG_INDEX(RELEASE_RESOURCE_DONE)]);
+>>>>>>> p9x
 }
 
 static void change_inst_state(struct msm_vidc_inst *inst,
@@ -882,14 +1136,22 @@ exit:
 	mutex_unlock(&inst->lock);
 }
 
+<<<<<<< HEAD
 static int signal_session_msg_receipt(enum hal_command_response cmd,
+=======
+static int signal_session_msg_receipt(enum command_response cmd,
+>>>>>>> p9x
 		struct msm_vidc_inst *inst)
 {
 	if (!inst) {
 		dprintk(VIDC_ERR, "Invalid(%pK) instance id\n", inst);
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	if (IS_HAL_SESSION_CMD(cmd)) {
+=======
+	if (IS_SESSION_CMD_VALID(cmd)) {
+>>>>>>> p9x
 		complete(&inst->completions[SESSION_MSG_INDEX(cmd)]);
 	} else {
 		dprintk(VIDC_ERR, "Invalid inst cmd response: %d\n", cmd);
@@ -899,11 +1161,19 @@ static int signal_session_msg_receipt(enum hal_command_response cmd,
 }
 
 static int wait_for_sess_signal_receipt(struct msm_vidc_inst *inst,
+<<<<<<< HEAD
 	enum hal_command_response cmd)
 {
 	int rc = 0;
 
 	if (!IS_HAL_SESSION_CMD(cmd)) {
+=======
+	enum command_response cmd)
+{
+	int rc = 0;
+
+	if (!IS_SESSION_CMD_VALID(cmd)) {
+>>>>>>> p9x
 		dprintk(VIDC_ERR, "Invalid inst cmd response: %d\n", cmd);
 		return -EINVAL;
 	}
@@ -911,10 +1181,15 @@ static int wait_for_sess_signal_receipt(struct msm_vidc_inst *inst,
 		&inst->completions[SESSION_MSG_INDEX(cmd)],
 		msecs_to_jiffies(msm_vidc_hw_rsp_timeout));
 	if (!rc) {
+<<<<<<< HEAD
 		dprintk(VIDC_ERR, "Wait interrupted or timed out: %d\n",
 				SESSION_MSG_INDEX(cmd));
 		msm_comm_kill_session(inst);
 		BUG_ON(msm_vidc_debug_timeout);
+=======
+		dprintk(VIDC_ERR, "Wait interrupted or timedout: %d\n", rc);
+		msm_comm_kill_session(inst);
+>>>>>>> p9x
 		rc = -EIO;
 	} else {
 		rc = 0;
@@ -925,7 +1200,11 @@ static int wait_for_sess_signal_receipt(struct msm_vidc_inst *inst,
 static int wait_for_state(struct msm_vidc_inst *inst,
 	enum instance_state flipped_state,
 	enum instance_state desired_state,
+<<<<<<< HEAD
 	enum hal_command_response hal_cmd)
+=======
+	enum command_response hal_cmd)
+>>>>>>> p9x
 {
 	int rc = 0;
 	if (IS_ALREADY_IN_STATE(flipped_state, desired_state)) {
@@ -945,11 +1224,19 @@ void msm_vidc_queue_v4l2_event(struct msm_vidc_inst *inst, int event_type)
 {
 	struct v4l2_event event = {.id = 0, .type = event_type};
 	v4l2_event_queue_fh(&inst->event_handler, &event);
+<<<<<<< HEAD
+=======
+	wake_up(&inst->kernel_event_queue);
+>>>>>>> p9x
 }
 
 static void msm_comm_generate_max_clients_error(struct msm_vidc_inst *inst)
 {
+<<<<<<< HEAD
 	enum hal_command_response cmd = HAL_SESSION_ERROR;
+=======
+	enum command_response cmd = SESSION_ERROR;
+>>>>>>> p9x
 	struct msm_vidc_cb_cmd_done response = {0};
 
 	if (!inst) {
@@ -966,11 +1253,19 @@ static void print_cap(const char *type,
 		struct hal_capability_supported *cap)
 {
 	dprintk(VIDC_DBG,
+<<<<<<< HEAD
 		"%-24s: %-8d %-8d %-8d\n",
 		type, cap->min, cap->max, cap->step_size);
 }
 
 static void handle_session_init_done(enum hal_command_response cmd, void *data)
+=======
+		"%-16s: %-8d %-8d %-8d\n",
+		type, cap->min, cap->max, cap->step_size);
+}
+
+static void handle_session_init_done(enum command_response cmd, void *data)
+>>>>>>> p9x
 {
 	struct msm_vidc_cb_cmd_done *response = data;
 	struct msm_vidc_inst *inst = NULL;
@@ -986,6 +1281,7 @@ static void handle_session_init_done(enum hal_command_response cmd, void *data)
 		return;
 	}
 
+<<<<<<< HEAD
 	inst = get_inst(get_vidc_core(response->device_id),
 		response->session_id);
 
@@ -997,11 +1293,26 @@ static void handle_session_init_done(enum hal_command_response cmd, void *data)
 	if (response->status) {
 		dprintk(VIDC_ERR,
 			"Session init response from FW : %#x\n",
+=======
+	inst = response->session_id;
+	if (!inst || !inst->core || !inst->core->device) {
+		dprintk(VIDC_ERR,
+			"%s: invalid parameters, inst %pK\n", __func__, inst);
+		return;
+	}
+	core = inst->core;
+	hdev = inst->core->device;
+
+	if (response->status) {
+		dprintk(VIDC_ERR,
+			"Session init response from FW : 0x%x\n",
+>>>>>>> p9x
 			response->status);
 		if (response->status == VIDC_ERR_MAX_CLIENTS)
 			msm_comm_generate_max_clients_error(inst);
 		else
 			msm_comm_generate_session_error(inst);
+<<<<<<< HEAD
 
 		signal_session_msg_receipt(cmd, inst);
 		put_inst(inst);
@@ -1013,11 +1324,22 @@ static void handle_session_init_done(enum hal_command_response cmd, void *data)
 	codec = inst->session_type == MSM_VIDC_DECODER ?
 			inst->fmts[OUTPUT_PORT].fourcc :
 			inst->fmts[CAPTURE_PORT].fourcc;
+=======
+	}
+
+	codec = inst->session_type == MSM_VIDC_DECODER ?
+			inst->fmts[OUTPUT_PORT]->fourcc :
+			inst->fmts[CAPTURE_PORT]->fourcc;
+>>>>>>> p9x
 
 	/* check if capabilities are available for this session */
 	for (i = 0; i < VIDC_MAX_SESSIONS; i++) {
 		if (core->capabilities[i].codec ==
+<<<<<<< HEAD
 				get_hal_codec(codec) &&
+=======
+				get_hal_codec_type(codec) &&
+>>>>>>> p9x
 			core->capabilities[i].domain ==
 				get_hal_domain(inst->session_type)) {
 			capability = &core->capabilities[i];
@@ -1025,15 +1347,25 @@ static void handle_session_init_done(enum hal_command_response cmd, void *data)
 		}
 	}
 
+<<<<<<< HEAD
 	if (capability) {
 		dprintk(VIDC_DBG,
 			"%s: capabilities available for codec 0x%x, domain %#x\n",
+=======
+	if (capability && capability->capability_set) {
+		dprintk(VIDC_DBG,
+			"%s: capabilities available for codec 0x%x, domain 0x%x\n",
+>>>>>>> p9x
 			__func__, capability->codec, capability->domain);
 		memcpy(&inst->capability, capability,
 			sizeof(struct msm_vidc_capability));
 	} else {
 		session_init_done = (struct vidc_hal_session_init_done *)
+<<<<<<< HEAD
 				&response->data.session_init_done;
+=======
+				response->data;
+>>>>>>> p9x
 		if (!session_init_done) {
 			dprintk(VIDC_ERR,
 				"%s: Failed to get valid response for session init\n",
@@ -1049,7 +1381,11 @@ static void handle_session_init_done(enum hal_command_response cmd, void *data)
 			sizeof(struct msm_vidc_capability));
 	}
 	inst->capability.pixelprocess_capabilities =
+<<<<<<< HEAD
 		call_hfi_op(hdev, get_core_capabilities, hdev->hfi_device_data);
+=======
+		call_hfi_op(hdev, get_core_capabilities);
+>>>>>>> p9x
 
 	dprintk(VIDC_DBG,
 		"Capability type : min      max      step size\n");
@@ -1061,6 +1397,7 @@ static void handle_session_init_done(enum hal_command_response cmd, void *data)
 	print_cap("scale_y", &inst->capability.scale_y);
 	print_cap("hier_p", &inst->capability.hier_p);
 	print_cap("ltr_count", &inst->capability.ltr_count);
+<<<<<<< HEAD
 	print_cap("mbs_per_sec_low_power",
 		&inst->capability.mbs_per_sec_power_save);
 
@@ -1088,12 +1425,37 @@ static void handle_event_change(enum hal_command_response cmd, void *data)
 	if (!inst || !inst->core || !inst->core->device) {
 		dprintk(VIDC_WARN, "Got a response for an inactive session\n");
 		goto err_bad_event;
+=======
+
+	signal_session_msg_receipt(cmd, inst);
+}
+
+static void handle_event_change(enum command_response cmd, void *data)
+{
+	struct msm_vidc_inst *inst;
+	struct hfi_device *hdev;
+	struct v4l2_control control = {0};
+	struct msm_vidc_cb_event *event_notify = data;
+	int event = V4L2_EVENT_SEQ_CHANGED_INSUFFICIENT;
+	int rc = 0;
+
+	if (!event_notify) {
+		dprintk(VIDC_ERR, "Got an empty event from hfi\n");
+		return;
+	}
+
+	inst = (struct msm_vidc_inst *)event_notify->session_id;
+	if (!inst || !inst->core || !inst->core->device) {
+		dprintk(VIDC_WARN, "Got a response for an inactive session\n");
+		return;
+>>>>>>> p9x
 	}
 	hdev = inst->core->device;
 
 	switch (event_notify->hal_event_type) {
 	case HAL_EVENT_SEQ_CHANGED_SUFFICIENT_RESOURCES:
 		event = V4L2_EVENT_SEQ_CHANGED_INSUFFICIENT;
+<<<<<<< HEAD
 
 		rc = msm_comm_g_ctrl_for_id(inst,
 			V4L2_CID_MPEG_VIDC_VIDEO_CONTINUE_DATA_TRANSFER);
@@ -1114,6 +1476,16 @@ static void handle_event_change(enum hal_command_response cmd, void *data)
 					HAL_PARAM_FRAME_SIZE, &frame_sz);
 			}
 
+=======
+		control.id =
+			V4L2_CID_MPEG_VIDC_VIDEO_CONTINUE_DATA_TRANSFER;
+		rc = v4l2_g_ctrl(&inst->ctrl_handler, &control);
+		if (rc)
+			dprintk(VIDC_WARN,
+					"Failed to get Smooth streamng flag\n");
+		if (!rc && control.value == true) {
+			event = V4L2_EVENT_SEQ_CHANGED_SUFFICIENT;
+>>>>>>> p9x
 			dprintk(VIDC_DBG,
 				"send session_continue after sufficient event\n");
 			rc = call_hfi_op(hdev, session_continue,
@@ -1122,7 +1494,11 @@ static void handle_event_change(enum hal_command_response cmd, void *data)
 				dprintk(VIDC_ERR,
 					"%s - failed to send session_continue\n",
 					__func__);
+<<<<<<< HEAD
 				goto err_bad_event;
+=======
+				return;
+>>>>>>> p9x
 			}
 		}
 		break;
@@ -1135,6 +1511,7 @@ static void handle_event_change(enum hal_command_response cmd, void *data)
 		struct buffer_info *binfo = NULL, *temp = NULL;
 		u32 *ptr = NULL;
 
+<<<<<<< HEAD
 		dprintk(VIDC_DBG, "%s - inst: %pK buffer: %pa extra: %pa\n",
 				__func__, inst, &event_notify->packet_buffer,
 				&event_notify->extra_data_buffer);
@@ -1145,6 +1522,30 @@ static void handle_event_change(enum hal_command_response cmd, void *data)
 					"Event release buf ref received in invalid state - discard\n");
 			goto err_bad_event;
 		}
+=======
+		dprintk(VIDC_DBG, "%s - inst: %pK buffer: 0x%pa extra: 0x%pa\n",
+				__func__, inst, &event_notify->packet_buffer,
+				&event_notify->extra_data_buffer);
+
+		/*
+		* If buffer release event is received with inst->state
+		* greater than STOP means client called STOP directly
+		* without FLUSH. This also means that they don't expect
+		* these buffers back. Processing these commands will not
+		* add any value. This can also results deadlocks between
+		* try_state and event_notify due to inst->sync_lock.
+		*/
+
+		mutex_lock(&inst->lock);
+		if (inst->state >= MSM_VIDC_STOP ||
+			inst->core->state == VIDC_CORE_INVALID) {
+			dprintk(VIDC_ERR,
+				"Event release buf ref received in invalid state - discard\n");
+			mutex_unlock(&inst->lock);
+			return;
+		}
+		mutex_unlock(&inst->lock);
+>>>>>>> p9x
 
 		/*
 		 * Get the buffer_info entry for the
@@ -1156,7 +1557,11 @@ static void handle_event_change(enum hal_command_response cmd, void *data)
 			dprintk(VIDC_ERR,
 					"%s buffer not found in registered list\n",
 					__func__);
+<<<<<<< HEAD
 			goto err_bad_event;
+=======
+			return;
+>>>>>>> p9x
 		}
 
 		/* Fill event data to be sent to client*/
@@ -1187,15 +1592,23 @@ static void handle_event_change(enum hal_command_response cmd, void *data)
 			dprintk(VIDC_ERR,
 					"%s: buffer unmap failed\n", __func__);
 		mutex_unlock(&inst->registeredbufs.lock);
+<<<<<<< HEAD
 
 		/*send event to client*/
 		v4l2_event_queue_fh(&inst->event_handler, &buf_event);
 		goto err_bad_event;
+=======
+		/*send event to client*/
+		v4l2_event_queue_fh(&inst->event_handler, &buf_event);
+		wake_up(&inst->kernel_event_queue);
+		return;
+>>>>>>> p9x
 	}
 	default:
 		break;
 	}
 
+<<<<<<< HEAD
 	/* Bit depth and pic struct changed event are combined into a single
 	 * event (insufficient event) for the userspace. Currently bitdepth
 	 * changes is only for HEVC and interlaced support is for all
@@ -1247,6 +1660,8 @@ static void handle_event_change(enum hal_command_response cmd, void *data)
 				"V4L2_EVENT_SEQ_CHANGED_INSUFFICIENT due to colour space change\n");
 	}
 
+=======
+>>>>>>> p9x
 	if (event == V4L2_EVENT_SEQ_CHANGED_INSUFFICIENT) {
 		dprintk(VIDC_DBG, "V4L2_EVENT_SEQ_CHANGED_INSUFFICIENT\n");
 		inst->reconfig_height = event_notify->height;
@@ -1254,6 +1669,7 @@ static void handle_event_change(enum hal_command_response cmd, void *data)
 		inst->in_reconfig = true;
 	} else {
 		dprintk(VIDC_DBG, "V4L2_EVENT_SEQ_CHANGED_SUFFICIENT\n");
+<<<<<<< HEAD
 		dprintk(VIDC_DBG,
 			"event_notify->height = %d event_notify->width = %d\n",
 			event_notify->height,
@@ -1264,11 +1680,31 @@ static void handle_event_change(enum hal_command_response cmd, void *data)
 
 	inst->seqchanged_count++;
 
+=======
+		if (msm_comm_get_stream_output_mode(inst) !=
+				HAL_VIDEO_DECODER_SECONDARY) {
+			dprintk(VIDC_DBG,
+					"event_notify->height = %d event_notify->width = %d\n",
+					event_notify->height,
+					event_notify->width);
+			inst->prop.height[CAPTURE_PORT] =
+				event_notify->height;
+			inst->prop.width[CAPTURE_PORT] =
+				event_notify->width;
+			inst->prop.height[OUTPUT_PORT] =
+				event_notify->height;
+			inst->prop.width[OUTPUT_PORT] =
+				event_notify->width;
+		}
+	}
+
+>>>>>>> p9x
 	if (inst->session_type == MSM_VIDC_DECODER)
 		msm_dcvs_init_load(inst);
 
 	rc = msm_vidc_check_session_supported(inst);
 	if (!rc) {
+<<<<<<< HEAD
 		seq_changed_event.type = event;
 		if (event == V4L2_EVENT_SEQ_CHANGED_INSUFFICIENT) {
 			u32 *ptr = NULL;
@@ -1278,6 +1714,15 @@ static void handle_event_change(enum hal_command_response cmd, void *data)
 			ptr[1] = event_notify->width;
 		}
 		v4l2_event_queue_fh(&inst->event_handler, &seq_changed_event);
+=======
+		struct v4l2_event seq_changed_event = {.id = 0, .type = event };
+		u32 *ptr = NULL;
+		ptr = (u32 *)seq_changed_event.u.data;
+		ptr[0] = event_notify->height;
+		ptr[1] = event_notify->width;
+		v4l2_event_queue_fh(&inst->event_handler, &seq_changed_event);
+		wake_up(&inst->kernel_event_queue);
+>>>>>>> p9x
 	} else if (rc == -ENOTSUPP) {
 		msm_vidc_queue_v4l2_event(inst,
 				V4L2_EVENT_MSM_VIDC_HW_UNSUPPORTED);
@@ -1285,6 +1730,7 @@ static void handle_event_change(enum hal_command_response cmd, void *data)
 		msm_vidc_queue_v4l2_event(inst,
 				V4L2_EVENT_MSM_VIDC_HW_OVERLOAD);
 	}
+<<<<<<< HEAD
 
 err_bad_event:
 	put_inst(inst);
@@ -1292,15 +1738,25 @@ err_bad_event:
 }
 
 static void handle_session_prop_info(enum hal_command_response cmd, void *data)
+=======
+}
+
+static void handle_session_prop_info(enum command_response cmd, void *data)
+>>>>>>> p9x
 {
 	struct msm_vidc_cb_cmd_done *response = data;
 	struct getprop_buf *getprop;
 	struct msm_vidc_inst *inst;
+<<<<<<< HEAD
 	if (!response) {
+=======
+	if (!response || !response->data) {
+>>>>>>> p9x
 		dprintk(VIDC_ERR,
 			"Failed to get valid response for prop info\n");
 		return;
 	}
+<<<<<<< HEAD
 
 	inst = get_inst(get_vidc_core(response->device_id),
 			response->session_id);
@@ -1308,10 +1764,14 @@ static void handle_session_prop_info(enum hal_command_response cmd, void *data)
 		dprintk(VIDC_WARN, "Got a response for an inactive session\n");
 		return;
 	}
+=======
+	inst = (struct msm_vidc_inst *)response->session_id;
+>>>>>>> p9x
 
 	getprop = kzalloc(sizeof(*getprop), GFP_KERNEL);
 	if (!getprop) {
 		dprintk(VIDC_ERR, "%s: getprop kzalloc failed\n", __func__);
+<<<<<<< HEAD
 		goto err_prop_info;
 	}
 
@@ -1321,6 +1781,16 @@ static void handle_session_prop_info(enum hal_command_response cmd, void *data)
 		dprintk(VIDC_ERR, "%s: kmemdup failed\n", __func__);
 		kfree(getprop);
 		goto err_prop_info;
+=======
+		return;
+	}
+
+	getprop->data = kmemdup(response->data, response->size, GFP_KERNEL);
+	if (!getprop->data) {
+		dprintk(VIDC_ERR, "%s: kmemdup failed\n", __func__);
+		kfree(getprop);
+		return;
+>>>>>>> p9x
 	}
 
 	mutex_lock(&inst->pending_getpropq.lock);
@@ -1328,6 +1798,7 @@ static void handle_session_prop_info(enum hal_command_response cmd, void *data)
 	mutex_unlock(&inst->pending_getpropq.lock);
 
 	signal_session_msg_receipt(cmd, inst);
+<<<<<<< HEAD
 err_prop_info:
 	put_inst(inst);
 	return;
@@ -1425,6 +1896,66 @@ static void handle_release_res_done(enum hal_command_response cmd, void *data)
 	put_inst(inst);
 }
 
+=======
+	return;
+}
+
+static void handle_load_resource_done(enum command_response cmd, void *data)
+{
+	struct msm_vidc_cb_cmd_done *response = data;
+	struct msm_vidc_inst *inst;
+	if (response) {
+		inst = (struct msm_vidc_inst *)response->session_id;
+		if (response->status) {
+			dprintk(VIDC_ERR,
+				"Load resource response from FW : 0x%x\n",
+				response->status);
+			msm_comm_generate_session_error(inst);
+		}
+	} else
+		dprintk(VIDC_ERR,
+			"Failed to get valid response for load resource\n");
+}
+
+static void handle_start_done(enum command_response cmd, void *data)
+{
+	struct msm_vidc_cb_cmd_done *response = data;
+	struct msm_vidc_inst *inst;
+	if (response) {
+		inst = (struct msm_vidc_inst *)response->session_id;
+		signal_session_msg_receipt(cmd, inst);
+	} else {
+		dprintk(VIDC_ERR,
+			"Failed to get valid response for start\n");
+	}
+}
+
+static void handle_stop_done(enum command_response cmd, void *data)
+{
+	struct msm_vidc_cb_cmd_done *response = data;
+	struct msm_vidc_inst *inst;
+	if (response) {
+		inst = (struct msm_vidc_inst *)response->session_id;
+		signal_session_msg_receipt(cmd, inst);
+	} else {
+		dprintk(VIDC_ERR,
+			"Failed to get valid response for stop\n");
+	}
+}
+
+static void handle_release_res_done(enum command_response cmd, void *data)
+{
+	struct msm_vidc_cb_cmd_done *response = data;
+	struct msm_vidc_inst *inst;
+	if (response) {
+		inst = (struct msm_vidc_inst *)response->session_id;
+		signal_session_msg_receipt(cmd, inst);
+	} else {
+		dprintk(VIDC_ERR,
+			"Failed to get valid response for release resource\n");
+	}
+}
+>>>>>>> p9x
 void validate_output_buffers(struct msm_vidc_inst *inst)
 {
 	struct internal_buf *binfo;
@@ -1441,7 +1972,11 @@ void validate_output_buffers(struct msm_vidc_inst *inst)
 	list_for_each_entry(binfo, &inst->outputbufs.list, list) {
 		if (binfo->buffer_ownership != DRIVER) {
 			dprintk(VIDC_DBG,
+<<<<<<< HEAD
 				"This buffer is with FW %pa\n",
+=======
+				"This buffer is with FW 0x%pa\n",
+>>>>>>> p9x
 				&binfo->handle->device_addr);
 			continue;
 		}
@@ -1512,6 +2047,7 @@ int msm_comm_queue_output_buffers(struct msm_vidc_inst *inst)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void handle_session_flush(enum hal_command_response cmd, void *data)
 {
 	struct msm_vidc_cb_cmd_done *response = data;
@@ -1575,6 +2111,68 @@ exit:
 }
 
 static void handle_session_error(enum hal_command_response cmd, void *data)
+=======
+static void handle_session_flush(enum command_response cmd, void *data)
+{
+	struct msm_vidc_cb_cmd_done *response = data;
+	struct msm_vidc_inst *inst;
+	int rc;
+	if (response) {
+		inst = (struct msm_vidc_inst *)response->session_id;
+		if (msm_comm_get_stream_output_mode(inst) ==
+			HAL_VIDEO_DECODER_SECONDARY) {
+			validate_output_buffers(inst);
+			if (!inst->in_reconfig) {
+				rc = msm_comm_queue_output_buffers(inst);
+				if (rc) {
+					dprintk(VIDC_ERR,
+						"Failed to queue output buffers: %d\n",
+						rc);
+				}
+			}
+		}
+		msm_vidc_queue_v4l2_event(inst, V4L2_EVENT_MSM_VIDC_FLUSH_DONE);
+	} else {
+		dprintk(VIDC_ERR, "Failed to get valid response for flush\n");
+	}
+}
+
+static void handle_sys_idle(enum command_response cmd, void *data)
+{
+	struct msm_vidc_cb_cmd_done *response = data;
+	struct msm_vidc_core *core = NULL;
+	int rc = 0;
+
+	if (!response) {
+		rc = -EINVAL;
+		goto exit;
+	}
+
+	core = get_vidc_core(response->device_id);
+	if (!core) {
+		dprintk(VIDC_ERR, "Received IDLE with invalid core\n");
+		rc = -EINVAL;
+		goto exit;
+	}
+
+	dprintk(VIDC_DBG, "SYS_IDLE received for core %pK\n", core);
+	if (core->resources.dynamic_bw_update) {
+		mutex_lock(&core->lock);
+		core->idle_stats.start_time = ktime_get();
+		dprintk(VIDC_DBG, "%s: start idle time %llu us\n",
+				__func__, ktime_to_us(
+					core->idle_stats.start_time));
+		core->idle_stats.idle = true;
+		mutex_unlock(&core->lock);
+	}
+
+exit:
+	if (rc)
+		dprintk(VIDC_WARN, "Failed to handle idle message\n");
+}
+
+static void handle_session_error(enum command_response cmd, void *data)
+>>>>>>> p9x
 {
 	struct msm_vidc_cb_cmd_done *response = data;
 	struct hfi_device *hdev = NULL;
@@ -1587,10 +2185,19 @@ static void handle_session_error(enum hal_command_response cmd, void *data)
 		return;
 	}
 
+<<<<<<< HEAD
 	inst = get_inst(get_vidc_core(response->device_id),
 			response->session_id);
 	if (!inst) {
 		dprintk(VIDC_WARN, "Got a response for an inactive session\n");
+=======
+	inst = (struct msm_vidc_inst *)response->session_id;
+
+	if (!inst || !inst->session || !inst->core->device) {
+		dprintk(VIDC_ERR,
+				"Session (%pK) not in a stable enough state to handle session error\n",
+				inst);
+>>>>>>> p9x
 		return;
 	}
 
@@ -1601,6 +2208,7 @@ static void handle_session_error(enum hal_command_response cmd, void *data)
 	if (response->status == VIDC_ERR_MAX_CLIENTS) {
 		dprintk(VIDC_WARN, "Too many clients, rejecting %pK", inst);
 		event = V4L2_EVENT_MSM_VIDC_MAX_CLIENTS;
+<<<<<<< HEAD
 
 		/*
 		 * Clean the HFI session now. Since inst->state is moved to
@@ -1612,15 +2220,23 @@ static void handle_session_error(enum hal_command_response cmd, void *data)
 		msm_comm_session_clean(inst);
 	} else if (response->status == VIDC_ERR_NOT_SUPPORTED) {
 		dprintk(VIDC_WARN, "Unsupported bitstream in %pK", inst);
+=======
+	} else if (response->status == VIDC_ERR_NOT_SUPPORTED) {
+		dprintk(VIDC_WARN, "Unsupported error for %pK", inst);
+>>>>>>> p9x
 		event = V4L2_EVENT_MSM_VIDC_HW_UNSUPPORTED;
 	} else {
 		dprintk(VIDC_WARN, "Unknown session error (%d) for %pK\n",
 				response->status, inst);
 		event = V4L2_EVENT_MSM_VIDC_SYS_ERROR;
 	}
+<<<<<<< HEAD
 
 	msm_vidc_queue_v4l2_event(inst, event);
 	put_inst(inst);
+=======
+	msm_vidc_queue_v4l2_event(inst, event);
+>>>>>>> p9x
 }
 
 static void msm_comm_clean_notify_client(struct msm_vidc_core *core)
@@ -1647,7 +2263,16 @@ static void msm_comm_clean_notify_client(struct msm_vidc_core *core)
 	mutex_unlock(&core->lock);
 }
 
+<<<<<<< HEAD
 static void handle_sys_error(enum hal_command_response cmd, void *data)
+=======
+struct sys_err_handler_data {
+	struct msm_vidc_core *core;
+	struct delayed_work work;
+};
+
+static void handle_sys_error(enum command_response cmd, void *data)
+>>>>>>> p9x
 {
 	struct msm_vidc_cb_cmd_done *response = data;
 	struct msm_vidc_core *core = NULL;
@@ -1670,21 +2295,39 @@ static void handle_sys_error(enum hal_command_response cmd, void *data)
 
 	dprintk(VIDC_WARN, "SYS_ERROR %d received for core %pK\n", cmd, core);
 	msm_comm_clean_notify_client(core);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	hdev = core->device;
 	mutex_lock(&core->lock);
 	if (core->state == VIDC_CORE_INVALID) {
 		dprintk(VIDC_DBG, "Calling core_release\n");
 		rc = call_hfi_op(hdev, core_release,
+<<<<<<< HEAD
 						 hdev->hfi_device_data);
+=======
+			hdev->hfi_device_data);
+>>>>>>> p9x
 		if (rc) {
 			dprintk(VIDC_ERR, "core_release failed\n");
 			mutex_unlock(&core->lock);
 			return;
 		}
+<<<<<<< HEAD
 		core->state = VIDC_CORE_UNINIT;
 	}
 	mutex_unlock(&core->lock);
+=======
+
+		core->state = VIDC_CORE_UNINIT;
+		call_hfi_op(hdev, unload_fw, hdev->hfi_device_data);
+		dprintk(VIDC_DBG, "Firmware unloaded\n");
+		msm_comm_unvote_buses(core);
+	}
+	mutex_unlock(&core->lock);
+
+>>>>>>> p9x
 }
 
 void msm_comm_session_clean(struct msm_vidc_inst *inst)
@@ -1698,25 +2341,39 @@ void msm_comm_session_clean(struct msm_vidc_inst *inst)
 	}
 
 	hdev = inst->core->device;
+<<<<<<< HEAD
 	mutex_lock(&inst->lock);
 	if (hdev && inst->session) {
 		dprintk(VIDC_DBG, "cleaning up instance: %pK\n", inst);
 		rc = call_hfi_op(hdev, session_clean,
 				(void *)inst->session);
+=======
+	if (hdev && inst->session) {
+		dprintk(VIDC_DBG, "cleaning up instance: 0x%pK\n", inst);
+		rc = call_hfi_op(hdev, session_clean,
+				(void *) inst->session);
+>>>>>>> p9x
 		if (rc) {
 			dprintk(VIDC_ERR,
 				"Session clean failed :%pK\n", inst);
 		}
 		inst->session = NULL;
 	}
+<<<<<<< HEAD
 	mutex_unlock(&inst->lock);
 }
 
 static void handle_session_close(enum hal_command_response cmd, void *data)
+=======
+}
+
+static void handle_session_close(enum command_response cmd, void *data)
+>>>>>>> p9x
 {
 	struct msm_vidc_cb_cmd_done *response = data;
 	struct msm_vidc_inst *inst;
 
+<<<<<<< HEAD
 	if (!response) {
 		dprintk(VIDC_ERR,
 			"Failed to get valid response for session close\n");
@@ -1733,6 +2390,20 @@ static void handle_session_close(enum hal_command_response cmd, void *data)
 	signal_session_msg_receipt(cmd, inst);
 	show_stats(inst);
 	put_inst(inst);
+=======
+	if (response) {
+		inst = (struct msm_vidc_inst *)response->session_id;
+		if (!inst || !inst->core || !inst->core->device) {
+			dprintk(VIDC_ERR, "%s invalid params\n", __func__);
+			return;
+		}
+		signal_session_msg_receipt(cmd, inst);
+		show_stats(inst);
+	} else {
+		dprintk(VIDC_ERR,
+			"Failed to get valid response for session close\n");
+	}
+>>>>>>> p9x
 }
 
 static struct vb2_buffer *get_vb_from_device_addr(struct buf_queue *bufq,
@@ -1759,14 +2430,22 @@ static struct vb2_buffer *get_vb_from_device_addr(struct buf_queue *bufq,
 	mutex_unlock(&bufq->lock);
 	if (!found) {
 		dprintk(VIDC_DBG,
+<<<<<<< HEAD
 			"Failed to find buffer in queued list: %#lx, qtype = %d\n",
+=======
+			"Failed to find buffer in queued list: 0x%lx, qtype = %d\n",
+>>>>>>> p9x
 			dev_addr, q->type);
 		vb = NULL;
 	}
 	return vb;
 }
 
+<<<<<<< HEAD
 static void handle_ebd(enum hal_command_response cmd, void *data)
+=======
+static void handle_ebd(enum command_response cmd, void *data)
+>>>>>>> p9x
 {
 	struct msm_vidc_cb_data_done *response = data;
 	struct vb2_buffer *vb;
@@ -1778,6 +2457,7 @@ static void handle_ebd(enum hal_command_response cmd, void *data)
 		return;
 	}
 
+<<<<<<< HEAD
 	inst = get_inst(get_vidc_core(response->device_id),
 			response->session_id);
 	if (!inst) {
@@ -1787,6 +2467,16 @@ static void handle_ebd(enum hal_command_response cmd, void *data)
 
 	vb = get_vb_from_device_addr(&inst->bufq[OUTPUT_PORT],
 			response->input_done.packet_buffer);
+=======
+	inst = (struct msm_vidc_inst *)response->session_id;
+	if (!inst) {
+		dprintk(VIDC_ERR, "%s Invalid response from vidc_hal\n",
+			__func__);
+		return;
+	}
+	vb = get_vb_from_device_addr(&inst->bufq[OUTPUT_PORT],
+				response->clnt_data);
+>>>>>>> p9x
 	if (vb) {
 		vb->v4l2_planes[0].bytesused = response->input_done.filled_len;
 		vb->v4l2_planes[0].data_offset = response->input_done.offset;
@@ -1795,8 +2485,13 @@ static void handle_ebd(enum hal_command_response cmd, void *data)
 		if (vb->v4l2_planes[0].bytesused > vb->v4l2_planes[0].length)
 			dprintk(VIDC_INFO, "bytesused overflow length\n");
 		if (vb->v4l2_planes[0].m.userptr !=
+<<<<<<< HEAD
 			response->clnt_data)
 			dprintk(VIDC_INFO, "Client data != bufaddr\n");
+=======
+			response->input_done.packet_buffer)
+			dprintk(VIDC_INFO, "Unexpected buffer address\n");
+>>>>>>> p9x
 		empty_buf_done = (struct vidc_hal_ebd *)&response->input_done;
 		if (empty_buf_done) {
 			if (empty_buf_done->status == VIDC_ERR_NOT_SUPPORTED) {
@@ -1818,6 +2513,7 @@ static void handle_ebd(enum hal_command_response cmd, void *data)
 				dprintk(VIDC_INFO,
 					"Failed: Start code not found\n");
 			}
+<<<<<<< HEAD
 			if (empty_buf_done->flags & HAL_BUFFERFLAG_SYNCFRAME)
 				vb->v4l2_buf.flags |=
 					V4L2_QCOM_BUF_FLAG_IDRFRAME |
@@ -1825,6 +2521,11 @@ static void handle_ebd(enum hal_command_response cmd, void *data)
 		}
 		dprintk(VIDC_DBG,
 			"Got ebd from hal: device_addr: %pa, alloc: %d, status: %#x, pic_type: %#x, flags: %#x\n",
+=======
+		}
+		dprintk(VIDC_DBG,
+			"Got ebd from hal: device_addr: 0x%pa, alloc: %d, status: 0x%x, pic_type: 0x%x, flags: 0x%x\n",
+>>>>>>> p9x
 			&empty_buf_done->packet_buffer,
 			empty_buf_done->alloc_len, empty_buf_done->status,
 			empty_buf_done->picture_type, empty_buf_done->flags);
@@ -1832,10 +2533,16 @@ static void handle_ebd(enum hal_command_response cmd, void *data)
 		mutex_lock(&inst->bufq[OUTPUT_PORT].lock);
 		vb2_buffer_done(vb, VB2_BUF_STATE_DONE);
 		mutex_unlock(&inst->bufq[OUTPUT_PORT].lock);
+<<<<<<< HEAD
 		msm_vidc_debugfs_update(inst, MSM_VIDC_DEBUGFS_EVENT_EBD);
 	}
 
 	put_inst(inst);
+=======
+		wake_up(&inst->kernel_event_queue);
+		msm_vidc_debugfs_update(inst, MSM_VIDC_DEBUGFS_EVENT_EBD);
+	}
+>>>>>>> p9x
 }
 
 int buf_ref_get(struct msm_vidc_inst *inst, struct buffer_info *binfo)
@@ -1851,9 +2558,12 @@ int buf_ref_get(struct msm_vidc_inst *inst, struct buffer_info *binfo)
 		dprintk(VIDC_DBG, "%s: invalid ref_cnt: %d\n", __func__, cnt);
 		cnt = -EINVAL;
 	}
+<<<<<<< HEAD
 	if (cnt == 2)
 		inst->buffers_held_in_driver++;
 
+=======
+>>>>>>> p9x
 	dprintk(VIDC_DBG, "REF_GET[%d] fd[0] = %d\n", cnt, binfo->fd[0]);
 
 	return cnt;
@@ -1872,7 +2582,11 @@ int buf_ref_put(struct msm_vidc_inst *inst, struct buffer_info *binfo)
 	atomic_dec(&binfo->ref_count);
 	cnt = atomic_read(&binfo->ref_count);
 	dprintk(VIDC_DBG, "REF_PUT[%d] fd[0] = %d\n", cnt, binfo->fd[0]);
+<<<<<<< HEAD
 	if (!cnt)
+=======
+	if (cnt == 0)
+>>>>>>> p9x
 		release_buf = true;
 	else if (cnt == 1)
 		qbuf_again = true;
@@ -1884,6 +2598,13 @@ int buf_ref_put(struct msm_vidc_inst *inst, struct buffer_info *binfo)
 	if (cnt < 0)
 		return cnt;
 
+<<<<<<< HEAD
+=======
+	rc = output_buffer_cache_invalidate(inst, binfo);
+	if (rc)
+		return rc;
+
+>>>>>>> p9x
 	if (release_buf) {
 		/*
 		* We can not delete binfo here as we need to set the user
@@ -1897,7 +2618,10 @@ int buf_ref_put(struct msm_vidc_inst *inst, struct buffer_info *binfo)
 			binfo->fd[0]);
 		binfo->pending_deletion = true;
 	} else if (qbuf_again) {
+<<<<<<< HEAD
 		inst->buffers_held_in_driver--;
+=======
+>>>>>>> p9x
 		rc = qbuf_dynamic_buf(inst, binfo);
 		if (!rc)
 			return rc;
@@ -1924,11 +2648,19 @@ static void handle_dynamic_buffer(struct msm_vidc_inst *inst,
 		}
 		if (flags & HAL_BUFFERFLAG_READONLY) {
 			dprintk(VIDC_DBG,
+<<<<<<< HEAD
 				"FBD fd[0] = %d -> Reference with f/w, addr: %pa\n",
 				binfo->fd[0], &device_addr);
 		} else {
 			dprintk(VIDC_DBG,
 				"FBD fd[0] = %d -> FBD_ref_released, addr: %pa\n",
+=======
+				"FBD fd[0] = %d -> Reference with f/w, addr: 0x%pa\n",
+				binfo->fd[0], &device_addr);
+		} else {
+			dprintk(VIDC_DBG,
+				"FBD fd[0] = %d -> FBD_ref_released, addr: 0x%pa\n",
+>>>>>>> p9x
 				binfo->fd[0], &device_addr);
 
 			mutex_lock(&inst->registeredbufs.lock);
@@ -1957,7 +2689,11 @@ static int handle_multi_stream_buffers(struct msm_vidc_inst *inst,
 		if (handle && dev_addr == handle->device_addr) {
 			if (binfo->buffer_ownership == DRIVER) {
 				dprintk(VIDC_ERR,
+<<<<<<< HEAD
 					"FW returned same buffer: %pa\n",
+=======
+					"FW returned same buffer: 0x%pa\n",
+>>>>>>> p9x
 					&dev_addr);
 				break;
 			}
@@ -1970,7 +2706,11 @@ static int handle_multi_stream_buffers(struct msm_vidc_inst *inst,
 
 	if (!found) {
 		dprintk(VIDC_ERR,
+<<<<<<< HEAD
 			"Failed to find output buffer in queued list: %pa\n",
+=======
+			"Failed to find output buffer in queued list: 0x%pa\n",
+>>>>>>> p9x
 			&dev_addr);
 	}
 
@@ -1986,7 +2726,11 @@ enum hal_buffer msm_comm_get_hal_output_buffer(struct msm_vidc_inst *inst)
 		return HAL_BUFFER_OUTPUT;
 }
 
+<<<<<<< HEAD
 static void handle_fbd(enum hal_command_response cmd, void *data)
+=======
+static void handle_fbd(enum command_response cmd, void *data)
+>>>>>>> p9x
 {
 	struct msm_vidc_cb_data_done *response = data;
 	struct msm_vidc_inst *inst;
@@ -1995,12 +2739,16 @@ static void handle_fbd(enum hal_command_response cmd, void *data)
 	enum hal_buffer buffer_type;
 	int extra_idx = 0;
 	int64_t time_usec = 0;
+<<<<<<< HEAD
 	static int first_enc_frame = 1;
+=======
+>>>>>>> p9x
 
 	if (!response) {
 		dprintk(VIDC_ERR, "Invalid response from vidc_hal\n");
 		return;
 	}
+<<<<<<< HEAD
 
 	inst = get_inst(get_vidc_core(response->device_id),
 			response->session_id);
@@ -2009,6 +2757,9 @@ static void handle_fbd(enum hal_command_response cmd, void *data)
 		return;
 	}
 
+=======
+	inst = (struct msm_vidc_inst *)response->session_id;
+>>>>>>> p9x
 	fill_buf_done = (struct vidc_hal_fbd *)&response->output_done;
 	buffer_type = msm_comm_get_hal_output_buffer(inst);
 	if (fill_buf_done->buffer_type == buffer_type) {
@@ -2018,11 +2769,18 @@ static void handle_fbd(enum hal_command_response cmd, void *data)
 		if (handle_multi_stream_buffers(inst,
 				fill_buf_done->packet_buffer1))
 			dprintk(VIDC_ERR,
+<<<<<<< HEAD
 				"Failed : Output buffer not found %pa\n",
 				&fill_buf_done->packet_buffer1);
 		goto err_handle_fbd;
 	}
 
+=======
+				"Failed : Output buffer not found 0x%pa\n",
+				&fill_buf_done->packet_buffer1);
+		return;
+	}
+>>>>>>> p9x
 	if (vb) {
 		vb->v4l2_planes[0].bytesused = fill_buf_done->filled_len1;
 		vb->v4l2_planes[0].data_offset = fill_buf_done->offset1;
@@ -2045,14 +2803,23 @@ static void handle_fbd(enum hal_command_response cmd, void *data)
 				vb->v4l2_planes[0].bytesused,
 				vb->v4l2_planes[0].length);
 		if (!(fill_buf_done->flags1 &
+<<<<<<< HEAD
 			HAL_BUFFERFLAG_TIMESTAMPINVALID)) {
+=======
+			HAL_BUFFERFLAG_TIMESTAMPINVALID) &&
+			fill_buf_done->filled_len1) {
+>>>>>>> p9x
 			time_usec = fill_buf_done->timestamp_hi;
 			time_usec = (time_usec << 32) |
 				fill_buf_done->timestamp_lo;
 		} else {
 			time_usec = 0;
 			dprintk(VIDC_DBG,
+<<<<<<< HEAD
 					"Set zero timestamp for buffer %pa, filled: %d, (hi:%u, lo:%u)\n",
+=======
+					"Set zero timestamp for buffer 0x%pa, filled: %d, (hi:%u, lo:%u)\n",
+>>>>>>> p9x
 					&fill_buf_done->packet_buffer1,
 					fill_buf_done->filled_len1,
 					fill_buf_done->timestamp_hi,
@@ -2062,8 +2829,13 @@ static void handle_fbd(enum hal_command_response cmd, void *data)
 			ns_to_timeval(time_usec * NSEC_PER_USEC);
 		vb->v4l2_buf.flags = 0;
 		extra_idx =
+<<<<<<< HEAD
 			EXTRADATA_IDX(inst->fmts[CAPTURE_PORT].num_planes);
 		if (extra_idx && extra_idx < VIDEO_MAX_PLANES) {
+=======
+			EXTRADATA_IDX(inst->fmts[CAPTURE_PORT]->num_planes);
+		if (extra_idx && (extra_idx < VIDEO_MAX_PLANES)) {
+>>>>>>> p9x
 			vb->v4l2_planes[extra_idx].m.userptr =
 				(unsigned long)fill_buf_done->extra_data_buffer;
 			vb->v4l2_planes[extra_idx].bytesused =
@@ -2091,7 +2863,15 @@ static void handle_fbd(enum hal_command_response cmd, void *data)
 			vb->v4l2_buf.flags |= V4L2_QCOM_BUF_DROP_FRAME;
 		if (fill_buf_done->flags1 & HAL_BUFFERFLAG_MBAFF)
 			vb->v4l2_buf.flags |= V4L2_MSM_BUF_FLAG_MBAFF;
+<<<<<<< HEAD
 
+=======
+		if (fill_buf_done->flags1 &
+			HAL_BUFFERFLAG_TS_DISCONTINUITY)
+			vb->v4l2_buf.flags |= V4L2_QCOM_BUF_TS_DISCONTINUITY;
+		if (fill_buf_done->flags1 & HAL_BUFFERFLAG_TS_ERROR)
+			vb->v4l2_buf.flags |= V4L2_QCOM_BUF_TS_ERROR;
+>>>>>>> p9x
 		switch (fill_buf_done->picture_type) {
 		case HAL_PICTURE_IDR:
 			vb->v4l2_buf.flags |= V4L2_QCOM_BUF_FLAG_IDRFRAME;
@@ -2114,10 +2894,19 @@ static void handle_fbd(enum hal_command_response cmd, void *data)
 		default:
 			break;
 		}
+<<<<<<< HEAD
 
 		inst->count.fbd++;
 
 		if (extra_idx && extra_idx < VIDEO_MAX_PLANES) {
+=======
+		inst->count.fbd++;
+		if (fill_buf_done->filled_len1)
+			msm_vidc_debugfs_update(inst,
+				MSM_VIDC_DEBUGFS_EVENT_FBD);
+
+		if (extra_idx && (extra_idx < VIDEO_MAX_PLANES)) {
+>>>>>>> p9x
 			dprintk(VIDC_DBG,
 				"extradata: userptr = %pK;"
 				" bytesused = %d; length = %d\n",
@@ -2125,6 +2914,7 @@ static void handle_fbd(enum hal_command_response cmd, void *data)
 				vb->v4l2_planes[extra_idx].bytesused,
 				vb->v4l2_planes[extra_idx].length);
 		}
+<<<<<<< HEAD
 		if (first_enc_frame == 1) {
 			boot_stats_init();
 			pr_debug("KPI: First Encoded frame received\n");
@@ -2132,16 +2922,25 @@ static void handle_fbd(enum hal_command_response cmd, void *data)
 		}
 		dprintk(VIDC_DBG,
 		"Got fbd from hal: device_addr: %pa, alloc: %d, filled: %d, offset: %d, ts: %lld, flags: %#x, crop: %d %d %d %d, pic_type: %#x, mark_data: %#x\n",
+=======
+		dprintk(VIDC_DBG,
+		"Got fbd from hal: device_addr: 0x%pa, alloc: %d, filled: %d, offset: %d, ts: %lld, flags: 0x%x, crop: %d %d %d %d, pic_type: 0x%x\n",
+>>>>>>> p9x
 		&fill_buf_done->packet_buffer1, fill_buf_done->alloc_len1,
 		fill_buf_done->filled_len1, fill_buf_done->offset1, time_usec,
 		fill_buf_done->flags1, fill_buf_done->start_x_coord,
 		fill_buf_done->start_y_coord, fill_buf_done->frame_width,
+<<<<<<< HEAD
 		fill_buf_done->frame_height, fill_buf_done->picture_type,
 		fill_buf_done->mark_data);
+=======
+		fill_buf_done->frame_height, fill_buf_done->picture_type);
+>>>>>>> p9x
 
 		mutex_lock(&inst->bufq[CAPTURE_PORT].lock);
 		vb2_buffer_done(vb, VB2_BUF_STATE_DONE);
 		mutex_unlock(&inst->bufq[CAPTURE_PORT].lock);
+<<<<<<< HEAD
 		msm_vidc_debugfs_update(inst, MSM_VIDC_DEBUGFS_EVENT_FBD);
 	}
 
@@ -2150,16 +2949,27 @@ err_handle_fbd:
 }
 
 static void handle_seq_hdr_done(enum hal_command_response cmd, void *data)
+=======
+		wake_up(&inst->kernel_event_queue);
+	}
+}
+
+static void handle_seq_hdr_done(enum command_response cmd, void *data)
+>>>>>>> p9x
 {
 	struct msm_vidc_cb_data_done *response = data;
 	struct msm_vidc_inst *inst;
 	struct vb2_buffer *vb;
 	struct vidc_hal_fbd *fill_buf_done;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	if (!response) {
 		dprintk(VIDC_ERR, "Invalid response from vidc_hal\n");
 		return;
 	}
+<<<<<<< HEAD
 
 	inst = get_inst(get_vidc_core(response->device_id),
 			response->session_id);
@@ -2168,14 +2978,22 @@ static void handle_seq_hdr_done(enum hal_command_response cmd, void *data)
 		return;
 	}
 
+=======
+	inst = (struct msm_vidc_inst *)response->session_id;
+>>>>>>> p9x
 	fill_buf_done = (struct vidc_hal_fbd *)&response->output_done;
 	vb = get_vb_from_device_addr(&inst->bufq[CAPTURE_PORT],
 				fill_buf_done->packet_buffer1);
 	if (!vb) {
 		dprintk(VIDC_ERR,
+<<<<<<< HEAD
 				"Failed to find video buffer for seq_hdr_done: %pa\n",
 				&fill_buf_done->packet_buffer1);
 		goto err_seq_hdr_done;
+=======
+				"Failed to find video buffer for seq_hdr_done\n");
+		return;
+>>>>>>> p9x
 	}
 
 	vb->v4l2_planes[0].bytesused = fill_buf_done->filled_len1;
@@ -2191,6 +3009,7 @@ static void handle_seq_hdr_done(enum hal_command_response cmd, void *data)
 	mutex_lock(&inst->bufq[CAPTURE_PORT].lock);
 	vb2_buffer_done(vb, VB2_BUF_STATE_DONE);
 	mutex_unlock(&inst->bufq[CAPTURE_PORT].lock);
+<<<<<<< HEAD
 
 err_seq_hdr_done:
 	put_inst(inst);
@@ -2255,6 +3074,74 @@ void handle_cmd_response(enum hal_command_response cmd, void *data)
 		break;
 	default:
 		dprintk(VIDC_DBG, "response unhandled: %d\n", cmd);
+=======
+}
+
+void handle_cmd_response(enum command_response cmd, void *data)
+{
+	dprintk(VIDC_DBG, "Command response = %d\n", cmd);
+	switch (cmd) {
+	case SYS_INIT_DONE:
+		handle_sys_init_done(cmd, data);
+		break;
+	case RELEASE_RESOURCE_DONE:
+		handle_sys_release_res_done(cmd, data);
+		break;
+	case SESSION_INIT_DONE:
+		handle_session_init_done(cmd, data);
+		break;
+	case SESSION_PROPERTY_INFO:
+		handle_session_prop_info(cmd, data);
+		break;
+	case SESSION_LOAD_RESOURCE_DONE:
+		handle_load_resource_done(cmd, data);
+		break;
+	case SESSION_START_DONE:
+		handle_start_done(cmd, data);
+		break;
+	case SESSION_ETB_DONE:
+		handle_ebd(cmd, data);
+		break;
+	case SESSION_FTB_DONE:
+		handle_fbd(cmd, data);
+		break;
+	case SESSION_STOP_DONE:
+		handle_stop_done(cmd, data);
+		break;
+	case SESSION_RELEASE_RESOURCE_DONE:
+		handle_release_res_done(cmd, data);
+		break;
+	case SESSION_END_DONE:
+	case SESSION_ABORT_DONE:
+		handle_session_close(cmd, data);
+		break;
+	case VIDC_EVENT_CHANGE:
+		handle_event_change(cmd, data);
+		break;
+	case SESSION_FLUSH_DONE:
+		handle_session_flush(cmd, data);
+		break;
+	case SESSION_GET_SEQ_HDR_DONE:
+		handle_seq_hdr_done(cmd, data);
+		break;
+	case SYS_WATCHDOG_TIMEOUT:
+		handle_sys_error(cmd, data);
+		break;
+	case SYS_ERROR:
+		handle_sys_error(cmd, data);
+		break;
+	case SESSION_ERROR:
+		handle_session_error(cmd, data);
+		break;
+	case SESSION_RELEASE_BUFFER_DONE:
+		handle_session_release_buf_done(cmd, data);
+		break;
+	case SYS_IDLE:
+		handle_sys_idle(cmd, data);
+		break;
+	default:
+		dprintk(VIDC_ERR, "response unhandled\n");
+>>>>>>> p9x
 		break;
 	}
 }
@@ -2264,19 +3151,31 @@ int msm_comm_scale_clocks(struct msm_vidc_core *core)
 	int num_mbs_per_sec =
 		msm_comm_get_load(core, MSM_VIDC_ENCODER, LOAD_CALC_NO_QUIRKS) +
 		msm_comm_get_load(core, MSM_VIDC_DECODER, LOAD_CALC_NO_QUIRKS);
+<<<<<<< HEAD
 	return msm_comm_scale_clocks_load(core, num_mbs_per_sec,
 				LOAD_CALC_NO_QUIRKS);
 }
 
 int msm_comm_scale_clocks_load(struct msm_vidc_core *core,
 		int num_mbs_per_sec, enum load_calc_quirks quirks)
+=======
+	return msm_comm_scale_clocks_load(core, num_mbs_per_sec);
+}
+
+int msm_comm_scale_clocks_load(struct msm_vidc_core *core, int num_mbs_per_sec)
+>>>>>>> p9x
 {
 	int rc = 0;
 	struct hfi_device *hdev;
 	struct msm_vidc_inst *inst = NULL;
+<<<<<<< HEAD
 	unsigned long instant_bitrate = 0;
 	int num_sessions = 0;
 	struct vidc_clk_scale_data clk_scale_data = { {0} };
+=======
+	int num_sessions = 0;
+	struct vidc_clk_scale_data clk_scale_data;
+>>>>>>> p9x
 	int codec = 0;
 
 	if (!core) {
@@ -2291,6 +3190,7 @@ int msm_comm_scale_clocks_load(struct msm_vidc_core *core,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&core->lock);
 	list_for_each_entry(inst, &core->instances, list) {
 
@@ -2331,6 +3231,26 @@ int msm_comm_scale_clocks_load(struct msm_vidc_core *core,
 	rc = call_hfi_op(hdev, scale_clocks,
 		hdev->hfi_device_data, num_mbs_per_sec,
 		&clk_scale_data, instant_bitrate);
+=======
+	memset(&clk_scale_data, 0, sizeof(clk_scale_data));
+	mutex_lock(&core->lock);
+	list_for_each_entry(inst, &core->instances, list) {
+		codec = inst->session_type == MSM_VIDC_DECODER ?
+			inst->fmts[OUTPUT_PORT]->fourcc :
+			inst->fmts[CAPTURE_PORT]->fourcc;
+		clk_scale_data.session[num_sessions] =
+				VIDC_VOTE_DATA_SESSION_VAL(
+				get_hal_codec_type(codec),
+				get_hal_domain(inst->session_type));
+		num_sessions++;
+	}
+
+	clk_scale_data.num_sessions = num_sessions;
+	mutex_unlock(&core->lock);
+
+	rc = call_hfi_op(hdev, scale_clocks,
+		hdev->hfi_device_data, num_mbs_per_sec, &clk_scale_data);
+>>>>>>> p9x
 	if (rc)
 		dprintk(VIDC_ERR, "Failed to set clock rate: %d\n", rc);
 
@@ -2383,7 +3303,11 @@ static unsigned long msm_comm_get_clock_rate(struct msm_vidc_core *core)
 	}
 	hdev = core->device;
 
+<<<<<<< HEAD
 	freq = call_hfi_op(hdev, get_core_clock_rate, hdev->hfi_device_data, 1);
+=======
+	freq = call_hfi_op(hdev, get_core_clock_rate, hdev->hfi_device_data);
+>>>>>>> p9x
 	dprintk(VIDC_DBG, "clock freq %ld\n", freq);
 
 	return freq;
@@ -2446,7 +3370,12 @@ static int msm_comm_session_abort(struct msm_vidc_inst *inst)
 		return -EINVAL;
 	}
 	hdev = inst->core->device;
+<<<<<<< HEAD
 	abort_completion = SESSION_MSG_INDEX(HAL_SESSION_ABORT_DONE);
+=======
+	abort_completion = SESSION_MSG_INDEX(SESSION_ABORT_DONE);
+	init_completion(&inst->completions[abort_completion]);
+>>>>>>> p9x
 
 	rc = call_hfi_op(hdev, session_abort, (void *)inst->session);
 	if (rc) {
@@ -2461,7 +3390,10 @@ static int msm_comm_session_abort(struct msm_vidc_inst *inst)
 		dprintk(VIDC_ERR,
 				"%s: Wait interrupted or timed out [%pK]: %d\n",
 				__func__, inst, abort_completion);
+<<<<<<< HEAD
 		BUG_ON(msm_vidc_debug_timeout);
+=======
+>>>>>>> p9x
 		rc = -EBUSY;
 	} else {
 		rc = 0;
@@ -2489,6 +3421,11 @@ static void handle_thermal_event(struct msm_vidc_core *core)
 			inst->state < MSM_VIDC_CLOSE_DONE) {
 			dprintk(VIDC_WARN, "%s: abort inst %pK\n",
 				__func__, inst);
+<<<<<<< HEAD
+=======
+
+			change_inst_state(inst, MSM_VIDC_CORE_INVALID);
+>>>>>>> p9x
 			rc = msm_comm_session_abort(inst);
 			if (rc) {
 				dprintk(VIDC_ERR,
@@ -2496,7 +3433,10 @@ static void handle_thermal_event(struct msm_vidc_core *core)
 					__func__, rc);
 				goto err_sess_abort;
 			}
+<<<<<<< HEAD
 			change_inst_state(inst, MSM_VIDC_CORE_INVALID);
+=======
+>>>>>>> p9x
 			dprintk(VIDC_WARN,
 				"%s Send sys error for inst %pK\n",
 				__func__, inst);
@@ -2540,12 +3480,20 @@ int msm_comm_check_core_init(struct msm_vidc_core *core)
 	}
 	dprintk(VIDC_DBG, "Waiting for SYS_INIT_DONE\n");
 	rc = wait_for_completion_timeout(
+<<<<<<< HEAD
 		&core->completions[SYS_MSG_INDEX(HAL_SYS_INIT_DONE)],
 		msecs_to_jiffies(msm_vidc_hw_rsp_timeout));
 	if (!rc) {
 		dprintk(VIDC_ERR, "%s: Wait interrupted or timed out: %d\n",
 				__func__, SYS_MSG_INDEX(HAL_SYS_INIT_DONE));
 		BUG_ON(msm_vidc_debug_timeout);
+=======
+		&core->completions[SYS_MSG_INDEX(SYS_INIT_DONE)],
+		msecs_to_jiffies(msm_vidc_hw_rsp_timeout));
+	if (!rc) {
+		dprintk(VIDC_ERR, "%s: Wait interrupted or timed out: %d\n",
+				__func__, SYS_MSG_INDEX(SYS_INIT_DONE));
+>>>>>>> p9x
 		rc = -EIO;
 		goto exit;
 	} else {
@@ -2565,13 +3513,17 @@ static int msm_comm_init_core_done(struct msm_vidc_inst *inst)
 	rc = msm_comm_check_core_init(inst->core);
 	if (rc) {
 		dprintk(VIDC_ERR, "%s - failed to initialize core\n", __func__);
+<<<<<<< HEAD
 		msm_comm_generate_sys_error(inst);
+=======
+>>>>>>> p9x
 		return rc;
 	}
 	change_inst_state(inst, MSM_VIDC_CORE_INIT_DONE);
 	return rc;
 }
 
+<<<<<<< HEAD
 static int msm_comm_init_core(struct msm_vidc_inst *inst)
 {
 	int rc = 0;
@@ -2583,6 +3535,17 @@ static int msm_comm_init_core(struct msm_vidc_inst *inst)
 
 	core = inst->core;
 	hdev = core->device;
+=======
+int msm_comm_load_fw(struct msm_vidc_core *core)
+{
+	int rc = 0;
+	struct hfi_device *hdev;
+
+	if (!core || !core->device)
+		return -EINVAL;
+	hdev = core->device;
+
+>>>>>>> p9x
 	mutex_lock(&core->lock);
 	if (core->state >= VIDC_CORE_INIT) {
 		dprintk(VIDC_INFO, "Video core: %d is already in state: %d\n",
@@ -2597,13 +3560,18 @@ static int msm_comm_init_core(struct msm_vidc_inst *inst)
 				"%s: failed to allocate capabilities\n",
 				__func__);
 			rc = -ENOMEM;
+<<<<<<< HEAD
 			goto fail_cap_alloc;
+=======
+			goto fail_alloc_mem;
+>>>>>>> p9x
 		}
 	} else {
 		dprintk(VIDC_WARN,
 			"%s: capabilities memory is expected to be freed\n",
 			__func__);
 	}
+<<<<<<< HEAD
 
 	rc = call_hfi_op(hdev, core_init, hdev->hfi_device_data);
 	if (rc) {
@@ -2615,15 +3583,88 @@ static int msm_comm_init_core(struct msm_vidc_inst *inst)
 	core->smmu_fault_handled = false;
 core_already_inited:
 	change_inst_state(inst, MSM_VIDC_CORE_INIT);
+=======
+	mutex_unlock(&core->lock);
+
+	rc = msm_comm_vote_bus(core);
+	if (rc) {
+		dprintk(VIDC_ERR, "Failed to scale DDR bus: %d\n", rc);
+		goto fail_vote_bus;
+	}
+
+	mutex_lock(&core->lock);
+	if (core->state < VIDC_CORE_LOADED) {
+		rc = call_hfi_op(hdev, load_fw, hdev->hfi_device_data);
+		if (rc) {
+			dprintk(VIDC_ERR, "Failed to load video firmware\n");
+			mutex_unlock(&core->lock);
+			goto fail_load_fw;
+		}
+		core->state = VIDC_CORE_LOADED;
+		dprintk(VIDC_DBG, "Firmware downloaded\n");
+	}
+	mutex_unlock(&core->lock);
+	rc = msm_comm_scale_clocks(core);
+	if (rc) {
+		dprintk(VIDC_ERR, "Failed to scale clocks: %d\n", rc);
+		goto fail_core_init;
+	}
+
+	mutex_lock(&core->lock);
+	if (core->state == VIDC_CORE_LOADED) {
+		init_completion(&core->completions
+			[SYS_MSG_INDEX(SYS_INIT_DONE)]);
+		rc = call_hfi_op(hdev, core_init, hdev->hfi_device_data);
+		if (rc) {
+			dprintk(VIDC_ERR, "Failed to init core, id = %d\n",
+				core->id);
+			mutex_unlock(&core->lock);
+			goto fail_core_init;
+		}
+		core->state = VIDC_CORE_INIT;
+	}
+
+core_already_inited:
+>>>>>>> p9x
 	mutex_unlock(&core->lock);
 	return rc;
 
 fail_core_init:
+<<<<<<< HEAD
 	kfree(core->capabilities);
 fail_cap_alloc:
 	core->capabilities = NULL;
 	core->state = VIDC_CORE_UNINIT;
 	mutex_unlock(&core->lock);
+=======
+	mutex_lock(&core->lock);
+	call_hfi_op(hdev, unload_fw, hdev->hfi_device_data);
+	core->state = VIDC_CORE_UNINIT;
+	mutex_unlock(&core->lock);
+fail_load_fw:
+	msm_comm_unvote_buses(core);
+fail_vote_bus:
+	kfree(core->capabilities);
+	core->capabilities = NULL;
+fail_alloc_mem:
+	return rc;
+}
+
+static int msm_comm_init_core(struct msm_vidc_inst *inst)
+{
+	int rc = 0;
+
+	if (!inst || !inst->core)
+		return -EINVAL;
+
+	rc = msm_comm_load_fw(inst->core);
+	if (rc) {
+		dprintk(VIDC_ERR, "%s - firmware loading failed\n", __func__);
+		return rc;
+	}
+
+	change_inst_state(inst, MSM_VIDC_CORE_INIT);
+>>>>>>> p9x
 	return rc;
 }
 
@@ -2652,7 +3693,20 @@ static int msm_vidc_deinit_core(struct msm_vidc_inst *inst)
 
 	mutex_lock(&core->lock);
 
+<<<<<<< HEAD
 	if (!core->resources.never_unload_fw) {
+=======
+	/*
+	 * If firmware is configured to be always loaded in memory,
+	 * then unload it only if the core has gone in to bad state.
+	 */
+	if (core->resources.early_fw_load &&
+		core->state != VIDC_CORE_INVALID) {
+			goto core_already_uninited;
+	}
+
+	if (list_empty(&core->instances)) {
+>>>>>>> p9x
 		cancel_delayed_work(&core->fw_unload_work);
 
 		/*
@@ -2701,13 +3755,20 @@ static int msm_comm_session_init(int flipped_state,
 		goto exit;
 	}
 	if (inst->session_type == MSM_VIDC_DECODER) {
+<<<<<<< HEAD
 		fourcc = inst->fmts[OUTPUT_PORT].fourcc;
 	} else if (inst->session_type == MSM_VIDC_ENCODER) {
 		fourcc = inst->fmts[CAPTURE_PORT].fourcc;
+=======
+		fourcc = inst->fmts[OUTPUT_PORT]->fourcc;
+	} else if (inst->session_type == MSM_VIDC_ENCODER) {
+		fourcc = inst->fmts[CAPTURE_PORT]->fourcc;
+>>>>>>> p9x
 	} else {
 		dprintk(VIDC_ERR, "Invalid session\n");
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 
 	rc = call_hfi_op(hdev, session_init, hdev->hfi_device_data,
 			inst, get_hal_domain(inst->session_type),
@@ -2715,6 +3776,16 @@ static int msm_comm_session_init(int flipped_state,
 			&inst->session);
 
 	if (rc || !inst->session) {
+=======
+	init_completion(
+		&inst->completions[SESSION_MSG_INDEX(SESSION_INIT_DONE)]);
+
+	inst->session = call_hfi_op(hdev, session_init, hdev->hfi_device_data,
+			inst, get_hal_domain(inst->session_type),
+			get_hal_codec_type(fourcc));
+
+	if (!inst->session) {
+>>>>>>> p9x
 		dprintk(VIDC_ERR,
 			"Failed to call session init for: %pK, %pK, %d, %d\n",
 			inst->core->device, inst,
@@ -2743,7 +3814,11 @@ static void msm_vidc_print_running_insts(struct msm_vidc_core *core)
 			if (is_thumbnail_session(temp))
 				strlcat(properties, "N", sizeof(properties));
 
+<<<<<<< HEAD
 			if (msm_comm_turbo_session(temp))
+=======
+			if (is_turbo_session(temp))
+>>>>>>> p9x
 				strlcat(properties, "T", sizeof(properties));
 
 			dprintk(VIDC_ERR, "%4d|%4d|%4d|%4d|%4s\n",
@@ -2791,8 +3866,12 @@ static int msm_vidc_load_resources(int flipped_state,
 		msm_comm_get_load(core, MSM_VIDC_DECODER, quirks) +
 		msm_comm_get_load(core, MSM_VIDC_ENCODER, quirks);
 
+<<<<<<< HEAD
 	max_load_adj = core->resources.max_load +
 		inst->capability.mbs_per_frame.max;
+=======
+	max_load_adj = core->resources.max_load + inst->capability.mbs_per_frame.max;
+>>>>>>> p9x
 
 	if (num_mbs_per_sec > max_load_adj) {
 		dprintk(VIDC_ERR, "HW is overloaded, needed: %d max: %d\n",
@@ -2803,6 +3882,15 @@ static int msm_vidc_load_resources(int flipped_state,
 		return -EBUSY;
 	}
 
+<<<<<<< HEAD
+=======
+	if (!is_thermal_permissible(core)) {
+		dprintk(VIDC_WARN,
+			"Thermal level critical, stop the session!\n");
+		return -ENOTSUPP;
+	}
+
+>>>>>>> p9x
 	hdev = core->device;
 	if (IS_ALREADY_IN_STATE(flipped_state, MSM_VIDC_LOAD_RESOURCES)) {
 		dprintk(VIDC_INFO, "inst: %pK is already in state: %d\n",
@@ -2845,6 +3933,11 @@ static int msm_vidc_start(int flipped_state, struct msm_vidc_inst *inst)
 			inst, inst->state);
 		goto exit;
 	}
+<<<<<<< HEAD
+=======
+	init_completion(
+		&inst->completions[SESSION_MSG_INDEX(SESSION_START_DONE)]);
+>>>>>>> p9x
 	rc = call_hfi_op(hdev, session_start, (void *) inst->session);
 	if (rc) {
 		dprintk(VIDC_ERR,
@@ -2874,6 +3967,11 @@ static int msm_vidc_stop(int flipped_state, struct msm_vidc_inst *inst)
 		goto exit;
 	}
 	dprintk(VIDC_DBG, "Send Stop to hal\n");
+<<<<<<< HEAD
+=======
+	init_completion(
+		&inst->completions[SESSION_MSG_INDEX(SESSION_STOP_DONE)]);
+>>>>>>> p9x
 	rc = call_hfi_op(hdev, session_stop, (void *) inst->session);
 	if (rc) {
 		dprintk(VIDC_ERR, "Failed to send stop\n");
@@ -2903,6 +4001,11 @@ static int msm_vidc_release_res(int flipped_state, struct msm_vidc_inst *inst)
 	}
 	dprintk(VIDC_DBG,
 		"Send release res to hal\n");
+<<<<<<< HEAD
+=======
+	init_completion(
+	&inst->completions[SESSION_MSG_INDEX(SESSION_RELEASE_RESOURCE_DONE)]);
+>>>>>>> p9x
 	rc = call_hfi_op(hdev, session_release_res, (void *) inst->session);
 	if (rc) {
 		dprintk(VIDC_ERR,
@@ -2933,6 +4036,11 @@ static int msm_comm_session_close(int flipped_state,
 	}
 	dprintk(VIDC_DBG,
 		"Send session close to hal\n");
+<<<<<<< HEAD
+=======
+	init_completion(
+		&inst->completions[SESSION_MSG_INDEX(SESSION_END_DONE)]);
+>>>>>>> p9x
 	rc = call_hfi_op(hdev, session_end, (void *) inst->session);
 	if (rc) {
 		dprintk(VIDC_ERR,
@@ -2944,6 +4052,29 @@ exit:
 	return rc;
 }
 
+<<<<<<< HEAD
+=======
+static int msm_comm_session_close_done(int flipped_state,
+		struct msm_vidc_inst *inst)
+{
+	int rc = 0;
+
+	if (!inst || !inst->core || !inst->core->device) {
+		dprintk(VIDC_ERR, "%s invalid params\n", __func__);
+		return -EINVAL;
+	}
+
+	rc = wait_for_state(inst, flipped_state, MSM_VIDC_CLOSE_DONE,
+			SESSION_END_DONE);
+	if (rc)
+		dprintk(VIDC_ERR, "%s: session_end_done failed\n", __func__);
+	else
+		msm_comm_session_clean(inst);
+
+	return rc;
+}
+
+>>>>>>> p9x
 int msm_comm_suspend(int core_id)
 {
 	struct hfi_device *hdev;
@@ -2965,6 +4096,7 @@ int msm_comm_suspend(int core_id)
 	}
 
 	mutex_lock(&core->lock);
+<<<<<<< HEAD
 	if (core->state == VIDC_CORE_INVALID) {
 		dprintk(VIDC_ERR,
 				"%s - fw is not in proper state, skip suspend\n",
@@ -2979,6 +4111,13 @@ int msm_comm_suspend(int core_id)
 
 exit:
 	mutex_unlock(&core->lock);
+=======
+	rc = call_hfi_op(hdev, suspend, hdev->hfi_device_data);
+	if (rc)
+		dprintk(VIDC_WARN, "Failed to suspend\n");
+	mutex_unlock(&core->lock);
+
+>>>>>>> p9x
 	return rc;
 }
 
@@ -3022,7 +4161,10 @@ static int set_output_buffers(struct msm_vidc_inst *inst,
 	struct hal_buffer_requirements *output_buf, *extradata_buf;
 	int i;
 	struct hfi_device *hdev;
+<<<<<<< HEAD
 	struct hal_buffer_size_minimum b;
+=======
+>>>>>>> p9x
 
 	hdev = inst->core->device;
 
@@ -3039,11 +4181,14 @@ static int set_output_buffers(struct msm_vidc_inst *inst,
 		output_buf->buffer_size);
 
 	buffer_size = output_buf->buffer_size;
+<<<<<<< HEAD
 	b.buffer_type = buffer_type;
 	b.buffer_size = buffer_size;
 	rc = call_hfi_op(hdev, session_set_property,
 		inst->session, HAL_PARAM_BUFFER_SIZE_MINIMUM,
 		&b);
+=======
+>>>>>>> p9x
 
 	extradata_buf = get_buff_req_buffer(inst, HAL_BUFFER_EXTRADATA_OUTPUT);
 	if (extradata_buf) {
@@ -3130,6 +4275,7 @@ err_no_mem:
 	return rc;
 }
 
+<<<<<<< HEAD
 static inline char *get_buffer_name(enum hal_buffer buffer_type)
 {
 	switch (buffer_type) {
@@ -3139,13 +4285,22 @@ static inline char *get_buffer_name(enum hal_buffer buffer_type)
 	case HAL_BUFFER_EXTRADATA_INPUT: return "input_extra";
 	case HAL_BUFFER_EXTRADATA_OUTPUT: return "output_extra";
 	case HAL_BUFFER_EXTRADATA_OUTPUT2: return "output2_extra";
+=======
+static inline char *get_internal_buffer_name(enum hal_buffer buffer_type)
+{
+	switch (buffer_type) {
+>>>>>>> p9x
 	case HAL_BUFFER_INTERNAL_SCRATCH: return "scratch";
 	case HAL_BUFFER_INTERNAL_SCRATCH_1: return "scratch_1";
 	case HAL_BUFFER_INTERNAL_SCRATCH_2: return "scratch_2";
 	case HAL_BUFFER_INTERNAL_PERSIST: return "persist";
 	case HAL_BUFFER_INTERNAL_PERSIST_1: return "persist_1";
+<<<<<<< HEAD
 	case HAL_BUFFER_INTERNAL_CMD_QUEUE: return "queue";
 	default: return "????";
+=======
+	default: return "unknown";
+>>>>>>> p9x
 	}
 }
 
@@ -3175,9 +4330,15 @@ static int set_internal_buf_on_fw(struct msm_vidc_inst *inst,
 	buffer_info.buffer_type = buffer_type;
 	buffer_info.num_buffers = 1;
 	buffer_info.align_device_addr = handle->device_addr;
+<<<<<<< HEAD
 	dprintk(VIDC_DBG, "%s %s buffer : %pa\n",
 				reuse ? "Reusing" : "Allocated",
 				get_buffer_name(buffer_type),
+=======
+	dprintk(VIDC_DBG, "%s %s buffer : 0x%pa\n",
+				reuse ? "Reusing" : "Allocated",
+				get_internal_buffer_name(buffer_type),
+>>>>>>> p9x
 				&buffer_info.align_device_addr);
 
 	rc = call_hfi_op(hdev, session_set_buffers,
@@ -3234,8 +4395,11 @@ static bool reuse_internal_buffers(struct msm_vidc_inst *inst,
 			}
 		}
 		reused = true;
+<<<<<<< HEAD
 		dprintk(VIDC_DBG,
 			"Re-using internal buffer type : %d\n", buffer_type);
+=======
+>>>>>>> p9x
 	}
 	mutex_unlock(&buf_list->lock);
 	return reused;
@@ -3314,7 +4478,11 @@ static int set_internal_buffers(struct msm_vidc_inst *inst,
 	}
 
 	dprintk(VIDC_DBG, "Buffer type %s: num = %d, size = %d\n",
+<<<<<<< HEAD
 		get_buffer_name(buffer_type),
+=======
+		get_internal_buffer_name(buffer_type),
+>>>>>>> p9x
 		internal_buf->buffer_count_actual, internal_buf->buffer_size);
 
 	/*
@@ -3339,7 +4507,11 @@ int msm_comm_try_state(struct msm_vidc_inst *inst, int state)
 		return -EINVAL;
 	}
 	dprintk(VIDC_DBG,
+<<<<<<< HEAD
 			"Trying to move inst: %pK from: %#x to %#x\n",
+=======
+			"Trying to move inst: %pK from: 0x%x to 0x%x\n",
+>>>>>>> p9x
 			inst, inst->state, state);
 	core = inst->core;
 	if (!core) {
@@ -3357,7 +4529,11 @@ int msm_comm_try_state(struct msm_vidc_inst *inst, int state)
 	}
 	flipped_state = get_flipped_state(inst->state, state);
 	dprintk(VIDC_DBG,
+<<<<<<< HEAD
 			"flipped_state = %#x\n", flipped_state);
+=======
+			"flipped_state = 0x%x\n", flipped_state);
+>>>>>>> p9x
 	switch (flipped_state) {
 	case MSM_VIDC_CORE_UNINIT_DONE:
 	case MSM_VIDC_CORE_INIT:
@@ -3374,7 +4550,11 @@ int msm_comm_try_state(struct msm_vidc_inst *inst, int state)
 			break;
 	case MSM_VIDC_OPEN_DONE:
 		rc = wait_for_state(inst, flipped_state, MSM_VIDC_OPEN_DONE,
+<<<<<<< HEAD
 			HAL_SESSION_INIT_DONE);
+=======
+			SESSION_INIT_DONE);
+>>>>>>> p9x
 		if (rc || state <= get_flipped_state(inst->state, state))
 			break;
 	case MSM_VIDC_LOAD_RESOURCES:
@@ -3388,7 +4568,11 @@ int msm_comm_try_state(struct msm_vidc_inst *inst, int state)
 			break;
 	case MSM_VIDC_START_DONE:
 		rc = wait_for_state(inst, flipped_state, MSM_VIDC_START_DONE,
+<<<<<<< HEAD
 				HAL_SESSION_START_DONE);
+=======
+				SESSION_START_DONE);
+>>>>>>> p9x
 		if (rc || state <= get_flipped_state(inst->state, state))
 			break;
 	case MSM_VIDC_STOP:
@@ -3397,7 +4581,11 @@ int msm_comm_try_state(struct msm_vidc_inst *inst, int state)
 			break;
 	case MSM_VIDC_STOP_DONE:
 		rc = wait_for_state(inst, flipped_state, MSM_VIDC_STOP_DONE,
+<<<<<<< HEAD
 				HAL_SESSION_STOP_DONE);
+=======
+				SESSION_STOP_DONE);
+>>>>>>> p9x
 		if (rc || state <= get_flipped_state(inst->state, state))
 			break;
 		dprintk(VIDC_DBG, "Moving to Stop Done state\n");
@@ -3408,7 +4596,11 @@ int msm_comm_try_state(struct msm_vidc_inst *inst, int state)
 	case MSM_VIDC_RELEASE_RESOURCES_DONE:
 		rc = wait_for_state(inst, flipped_state,
 			MSM_VIDC_RELEASE_RESOURCES_DONE,
+<<<<<<< HEAD
 			HAL_SESSION_RELEASE_RESOURCE_DONE);
+=======
+			SESSION_RELEASE_RESOURCE_DONE);
+>>>>>>> p9x
 		if (rc || state <= get_flipped_state(inst->state, state))
 			break;
 		dprintk(VIDC_DBG,
@@ -3418,11 +4610,17 @@ int msm_comm_try_state(struct msm_vidc_inst *inst, int state)
 		if (rc || state <= get_flipped_state(inst->state, state))
 			break;
 	case MSM_VIDC_CLOSE_DONE:
+<<<<<<< HEAD
 		rc = wait_for_state(inst, flipped_state, MSM_VIDC_CLOSE_DONE,
 				HAL_SESSION_END_DONE);
 		if (rc || state <= get_flipped_state(inst->state, state))
 			break;
 		msm_comm_session_clean(inst);
+=======
+		rc = msm_comm_session_close_done(flipped_state, inst);
+		if (rc || state <= get_flipped_state(inst->state, state))
+			break;
+>>>>>>> p9x
 	case MSM_VIDC_CORE_UNINIT:
 	case MSM_VIDC_CORE_INVALID:
 		dprintk(VIDC_DBG, "Sending core uninit\n");
@@ -3446,6 +4644,7 @@ exit:
 	return rc;
 }
 
+<<<<<<< HEAD
 int msm_vidc_comm_cmd(void *instance, union msm_v4l2_cmd *cmd)
 {
 	struct msm_vidc_inst *inst = instance;
@@ -3701,11 +4900,106 @@ int msm_comm_qbuf(struct msm_vidc_inst *inst, struct vb2_buffer *vb)
 
 	if (!inst) {
 		dprintk(VIDC_ERR, "%s: Invalid arguments\n", __func__);
+=======
+int msm_comm_compute_idle_time(struct msm_vidc_inst *inst)
+{
+	int j = 0, rc = 0, last_sample_index = 0;
+	struct msm_vidc_idle_stats *idle_stats;
+	struct msm_vidc_core *core;
+	const ktime_t zero_ktime = ktime_set(0, 0);
+	ktime_t cumulative_idle_time = zero_ktime;
+	u64 temp;
+
+	if (!inst || !inst->core) {
+		dprintk(VIDC_ERR, "%s invalid parameters\n", __func__);
 		return -EINVAL;
 	}
 
 	core = inst->core;
+
+	mutex_lock(&core->lock);
+	idle_stats = &core->idle_stats;
+	last_sample_index = idle_stats->last_sample_index;
+
+	idle_stats->samples[last_sample_index] = idle_stats->idle ?
+		ktime_sub(ktime_get(), idle_stats->start_time) : zero_ktime;
+
+	idle_stats->sample_count++;
+	if (idle_stats->sample_count > IDLE_TIME_WINDOW_SIZE)
+		idle_stats->sample_count = IDLE_TIME_WINDOW_SIZE;
+
+	for (j = 0; j < idle_stats->sample_count; j++) {
+		cumulative_idle_time = ktime_add(cumulative_idle_time,
+			idle_stats->samples[j]);
+	}
+
+	temp = ktime_to_ns(cumulative_idle_time);
+	do_div(temp, idle_stats->sample_count);
+	idle_stats->avg_idle_time = ns_to_ktime(temp);
+
+	idle_stats->idle = true;
+	idle_stats->last_sample_index++;
+	idle_stats->last_sample_index %= sizeof(idle_stats->samples);
+	dprintk(VIDC_DBG, "%s: Idle stats: current %llu us, average %llu us\n",
+		__func__, ktime_to_us(idle_stats->samples[last_sample_index]),
+		ktime_to_us(idle_stats->avg_idle_time));
+	mutex_unlock(&core->lock);
+
+	idle_stats->fb_err_level = ktime_compare(idle_stats->avg_idle_time,
+			zero_ktime) == 0 ? 3 : 0;
+	if (idle_stats->fb_err_level != idle_stats->prev_fb_err_level) {
+		idle_stats->prev_fb_err_level = idle_stats->fb_err_level;
+		if (msm_comm_vote_bus(core)) {
+			dprintk(VIDC_WARN,
+			"Failed to scale DDR bus. Performance might be impacted\n");
+		}
+	}
+
+	return rc;
+}
+
+int msm_comm_qbuf(struct vb2_buffer *vb)
+{
+	int rc = 0;
+	struct vb2_queue *q;
+	struct msm_vidc_inst *inst;
+	struct vb2_buf_entry *entry;
+	struct vidc_frame_data frame_data;
+	struct msm_vidc_core *core;
+	struct hfi_device *hdev;
+	int extra_idx = 0;
+
+	if (!vb || !vb->vb2_queue)  {
+		dprintk(VIDC_ERR, "%s: Invalid input: %pK\n",
+			__func__, vb);
+		return -EINVAL;
+	}
+
+	q = vb->vb2_queue;
+	inst = q->drv_priv;
+	if (!inst) {
+		dprintk(VIDC_ERR, "%s: Invalid input: %pK\n",
+			__func__, vb);
+>>>>>>> p9x
+		return -EINVAL;
+	}
+
+	core = inst->core;
+<<<<<<< HEAD
 	hdev = core->device;
+=======
+	if (!core) {
+		dprintk(VIDC_ERR,
+			"Invalid input: %pK, %pK, %pK\n", inst, core, vb);
+		return -EINVAL;
+	}
+	hdev = core->device;
+	if (!hdev) {
+		dprintk(VIDC_ERR, "%s: Invalid input: %pK\n",
+			__func__, hdev);
+		return -EINVAL;
+	}
+>>>>>>> p9x
 
 	if (inst->state == MSM_VIDC_CORE_INVALID ||
 		core->state == VIDC_CORE_INVALID ||
@@ -3713,6 +5007,7 @@ int msm_comm_qbuf(struct msm_vidc_inst *inst, struct vb2_buffer *vb)
 		dprintk(VIDC_ERR, "Core is in bad state. Can't Queue\n");
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 
 	/* Stick the buffer into the pendinq, we'll pop it out later on
 	 * if we want to commit it to hardware */
@@ -3905,12 +5200,180 @@ err_bad_input:
 
 	kfree(etbs.data);
 	kfree(ftbs.data);
+=======
+	if (inst->state != MSM_VIDC_START_DONE) {
+		entry = kzalloc(sizeof(*entry), GFP_KERNEL);
+		if (!entry) {
+			dprintk(VIDC_ERR, "Out of memory\n");
+			goto err_no_mem;
+		}
+		entry->vb = vb;
+
+		mutex_lock(&inst->pendingq.lock);
+		list_add_tail(&entry->list, &inst->pendingq.list);
+		mutex_unlock(&inst->pendingq.lock);
+	} else {
+		int64_t time_usec = timeval_to_ns(&vb->v4l2_buf.timestamp);
+		do_div(time_usec, NSEC_PER_USEC);
+		memset(&frame_data, 0 , sizeof(struct vidc_frame_data));
+		frame_data.alloc_len = vb->v4l2_planes[0].length;
+		frame_data.filled_len = vb->v4l2_planes[0].bytesused;
+		frame_data.offset = vb->v4l2_planes[0].data_offset;
+		frame_data.device_addr = vb->v4l2_planes[0].m.userptr;
+		frame_data.timestamp = time_usec;
+		frame_data.flags = 0;
+		frame_data.clnt_data = frame_data.device_addr;
+		if (q->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE &&
+			(frame_data.filled_len > frame_data.alloc_len ||
+			frame_data.offset > frame_data.alloc_len)) {
+			dprintk(VIDC_ERR,
+				"Buffer will overflow, not queueing it\n");
+			rc = -EINVAL;
+			goto err_bad_input;
+		}
+
+		if (q->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
+			frame_data.buffer_type = HAL_BUFFER_INPUT;
+			if (vb->v4l2_buf.flags & V4L2_QCOM_BUF_FLAG_EOS) {
+				frame_data.flags |= HAL_BUFFERFLAG_EOS;
+				dprintk(VIDC_DBG,
+					"Received EOS on output capability\n");
+			}
+
+			if (vb->v4l2_buf.flags &
+				V4L2_MSM_BUF_FLAG_YUV_601_709_CLAMP) {
+				frame_data.flags |=
+					HAL_BUFFERFLAG_YUV_601_709_CSC_CLAMP;
+				dprintk(VIDC_DBG,
+					"Received buff with 601to709 clamp\n");
+			}
+
+			if (vb->v4l2_buf.flags &
+					V4L2_QCOM_BUF_FLAG_CODECCONFIG) {
+				frame_data.flags |= HAL_BUFFERFLAG_CODECCONFIG;
+				dprintk(VIDC_DBG,
+					"Received CODECCONFIG on output cap\n");
+			}
+
+			if (vb->v4l2_buf.flags &
+					V4L2_QCOM_BUF_FLAG_DECODEONLY) {
+				frame_data.flags |= HAL_BUFFERFLAG_DECODEONLY;
+				dprintk(VIDC_DBG,
+					"Received DECODEONLY on output cap\n");
+			}
+
+			if (vb->v4l2_buf.flags &
+				V4L2_QCOM_BUF_TIMESTAMP_INVALID)
+				frame_data.timestamp = LLONG_MAX;
+
+			if (vb->v4l2_buf.flags &
+					V4L2_QCOM_BUF_TS_DISCONTINUITY) {
+				frame_data.flags |=
+					HAL_BUFFERFLAG_TS_DISCONTINUITY;
+				dprintk(VIDC_DBG,
+					"Received TS_DISCONTINUE on output\n");
+			}
+
+			if (vb->v4l2_buf.flags & V4L2_QCOM_BUF_TS_ERROR) {
+				frame_data.flags |=
+					HAL_BUFFERFLAG_TS_ERROR;
+				dprintk(VIDC_DBG,
+					"Received TS_ERROR on output cap\n");
+			}
+
+			extra_idx =
+				EXTRADATA_IDX(inst->fmts[OUTPUT_PORT]->
+					num_planes);
+			if (extra_idx && (extra_idx < VIDEO_MAX_PLANES) &&
+					vb->v4l2_planes[extra_idx].m.userptr) {
+				frame_data.extradata_addr =
+					vb->v4l2_planes[extra_idx].m.userptr;
+				frame_data.flags |= HAL_BUFFERFLAG_EXTRADATA;
+			}
+
+			dprintk(VIDC_DBG,
+				"Sending etb to hal: device_addr: 0x%pa, alloc: %d, filled: %d, offset: %d, ts: %lld, flags = 0x%x, v4l2_buf index = %d\n",
+				&frame_data.device_addr, frame_data.alloc_len,
+				frame_data.filled_len, frame_data.offset,
+				frame_data.timestamp, frame_data.flags,
+				vb->v4l2_buf.index);
+
+			if (core->resources.dynamic_bw_update)
+				msm_comm_compute_idle_time(inst);
+
+			msm_dcvs_check_and_scale_clocks(inst, true);
+			rc = call_hfi_op(hdev, session_etb, (void *)
+					inst->session, &frame_data);
+			if (!rc)
+				msm_vidc_debugfs_update(inst,
+					MSM_VIDC_DEBUGFS_EVENT_ETB);
+			dprintk(VIDC_DBG, "Sent etb to HAL\n");
+		} else if (q->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
+			struct vidc_seq_hdr seq_hdr;
+			frame_data.filled_len = 0;
+			frame_data.offset = 0;
+			frame_data.alloc_len = vb->v4l2_planes[0].length;
+			frame_data.buffer_type =
+				msm_comm_get_hal_output_buffer(inst);
+
+			extra_idx =
+			EXTRADATA_IDX(inst->fmts[CAPTURE_PORT]->num_planes);
+			if (extra_idx && (extra_idx < VIDEO_MAX_PLANES) &&
+				vb->v4l2_planes[extra_idx].m.userptr) {
+				frame_data.extradata_addr =
+					vb->v4l2_planes[extra_idx].m.userptr;
+				frame_data.extradata_size =
+					vb->v4l2_planes[extra_idx].length;
+			}
+
+			dprintk(VIDC_DBG,
+				"Sending ftb to hal: device_addr: 0x%pa, alloc: %d, buffer_type: %d, ts: %lld, flags = 0x%x, v4l2_buf index = %d\n",
+				&frame_data.device_addr, frame_data.alloc_len,
+				frame_data.buffer_type, frame_data.timestamp,
+				frame_data.flags, vb->v4l2_buf.index);
+
+			if (core->resources.dynamic_bw_update)
+				msm_comm_compute_idle_time(inst);
+
+			if (atomic_read(&inst->seq_hdr_reqs) &&
+			   inst->session_type == MSM_VIDC_ENCODER) {
+				seq_hdr.seq_hdr = vb->v4l2_planes[0].
+					m.userptr;
+				seq_hdr.seq_hdr_len = vb->v4l2_planes[0].length;
+				rc = call_hfi_op(hdev, session_get_seq_hdr,
+					(void *) inst->session, &seq_hdr);
+				if (!rc) {
+					inst->vb2_seq_hdr = vb;
+					dprintk(VIDC_DBG, "Seq_hdr: %pK\n",
+						inst->vb2_seq_hdr);
+				}
+				atomic_dec(&inst->seq_hdr_reqs);
+			} else {
+				msm_dcvs_check_and_scale_clocks(inst, false);
+				rc = call_hfi_op(hdev, session_ftb,
+					(void *) inst->session, &frame_data);
+				if (!rc)
+					msm_vidc_debugfs_update(inst,
+						MSM_VIDC_DEBUGFS_EVENT_FTB);
+			}
+		} else {
+			dprintk(VIDC_ERR,
+				"This capability is not supported: %d\n",
+				q->type);
+			rc = -EINVAL;
+		}
+	}
+err_bad_input:
+	if (rc)
+		dprintk(VIDC_ERR, "Failed to queue buffer\n");
+>>>>>>> p9x
 err_no_mem:
 	return rc;
 }
 
 int msm_comm_try_get_bufreqs(struct msm_vidc_inst *inst)
 {
+<<<<<<< HEAD
 	int rc = 0, i = 0;
 	union hal_get_property hprop;
 
@@ -3932,6 +5395,30 @@ int msm_comm_try_get_bufreqs(struct msm_vidc_inst *inst)
 				req.buffer_count_actual, req.buffer_size);
 	}
 
+=======
+	struct buffer_requirements buf_req;
+	int rc = 0;
+	int i = 0;
+	union hal_get_property hprop;
+
+	rc = msm_comm_try_get_prop(inst,
+					HAL_PARAM_GET_BUFFER_REQUIREMENTS,
+					&hprop);
+	if (rc) {
+		dprintk(VIDC_ERR, "%s Error rc:%d\n", __func__, rc);
+		return rc;
+	}
+	buf_req = hprop.buf_req;
+	memcpy(&inst->buff_req, &buf_req,
+			sizeof(struct buffer_requirements));
+	for (i = 0; i < HAL_BUFFER_MAX; i++) {
+		dprintk(VIDC_DBG,
+				"buffer type: %d, count : %d, size: %d\n",
+				inst->buff_req.buffer[i].buffer_type,
+				inst->buff_req.buffer[i].buffer_count_actual,
+				inst->buff_req.buffer[i].buffer_size);
+	}
+>>>>>>> p9x
 	dprintk(VIDC_PROF, "Input buffers: %d, Output buffers: %d\n",
 			inst->buff_req.buffer[0].buffer_count_actual,
 			inst->buff_req.buffer[1].buffer_count_actual);
@@ -3950,6 +5437,7 @@ int msm_comm_try_get_prop(struct msm_vidc_inst *inst, enum hal_property ptype,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	hdev = inst->core->device;
 	mutex_lock(&inst->sync_lock);
 	if (inst->state < MSM_VIDC_OPEN_DONE ||
@@ -3992,11 +5480,57 @@ int msm_comm_try_get_prop(struct msm_vidc_inst *inst, enum hal_property ptype,
 
 	rc = wait_for_completion_timeout(&inst->completions[
 			SESSION_MSG_INDEX(HAL_SESSION_PROPERTY_INFO)],
+=======
+	if (inst->state == MSM_VIDC_CORE_INVALID ||
+			inst->core->state == VIDC_CORE_INVALID) {
+		dprintk(VIDC_ERR,
+			"Core is in bad state can't query get_bufreqs()\n");
+		return -EAGAIN;
+	}
+	hdev = inst->core->device;
+	mutex_lock(&inst->sync_lock);
+	if (inst->state < MSM_VIDC_OPEN_DONE || inst->state >= MSM_VIDC_CLOSE) {
+		dprintk(VIDC_ERR,
+			"%s Not in proper state\n", __func__);
+		rc = -EAGAIN;
+		goto exit;
+	}
+	init_completion(
+		&inst->completions[SESSION_MSG_INDEX(SESSION_PROPERTY_INFO)]);
+	switch (ptype) {
+	case HAL_PARAM_PROFILE_LEVEL_CURRENT:
+		rc = call_hfi_op(hdev, session_get_property,
+					(void *) inst->session, ptype);
+		if (rc) {
+			dprintk(VIDC_ERR, "%s Failed: PROFILE_LEVEL_INFO\n",
+						__func__);
+			rc = -EAGAIN;
+			goto exit;
+		}
+		break;
+	case HAL_PARAM_GET_BUFFER_REQUIREMENTS:
+		rc = call_hfi_op(hdev, session_get_buf_req,
+						(void *) inst->session);
+		if (rc) {
+			dprintk(VIDC_ERR, "Failed to get property\n");
+			rc = -EAGAIN;
+			goto exit;
+		}
+		break;
+	default:
+		rc = -EAGAIN;
+		dprintk(VIDC_ERR, "%s id:%d not supported\n", __func__, ptype);
+		break;
+	}
+	rc = wait_for_completion_timeout(
+		&inst->completions[SESSION_MSG_INDEX(SESSION_PROPERTY_INFO)],
+>>>>>>> p9x
 		msecs_to_jiffies(msm_vidc_hw_rsp_timeout));
 	if (!rc) {
 		dprintk(VIDC_ERR,
 			"%s: Wait interrupted or timed out [%pK]: %d\n",
 			__func__, inst,
+<<<<<<< HEAD
 			SESSION_MSG_INDEX(HAL_SESSION_PROPERTY_INFO));
 		inst->state = MSM_VIDC_CORE_INVALID;
 		msm_comm_kill_session(inst);
@@ -4006,22 +5540,41 @@ int msm_comm_try_get_prop(struct msm_vidc_inst *inst, enum hal_property ptype,
 	} else {
 		/* wait_for_completion_timeout returns jiffies before expiry */
 		rc = 0;
+=======
+			SESSION_MSG_INDEX(SESSION_PROPERTY_INFO));
+		inst->state = MSM_VIDC_CORE_INVALID;
+		msm_comm_kill_session(inst);
+		rc = -EIO;
+		goto exit;
+>>>>>>> p9x
 	}
 
 	mutex_lock(&inst->pending_getpropq.lock);
 	if (!list_empty(&inst->pending_getpropq.list)) {
 		buf = list_first_entry(&inst->pending_getpropq.list,
 					struct getprop_buf, list);
+<<<<<<< HEAD
 		*hprop = *(union hal_get_property *)buf->data;
 		kfree(buf->data);
 		list_del(&buf->list);
 		kfree(buf);
+=======
+		*hprop = *((union hal_get_property *) buf->data);
+		kfree(buf->data);
+		list_del(&buf->list);
+		kfree(buf);
+		rc = 0;
+>>>>>>> p9x
 	} else {
 		dprintk(VIDC_ERR, "%s getprop list empty\n", __func__);
 		rc = -EINVAL;
 	}
 	mutex_unlock(&inst->pending_getpropq.lock);
 exit:
+<<<<<<< HEAD
+=======
+	mutex_unlock(&inst->sync_lock);
+>>>>>>> p9x
 	return rc;
 }
 
@@ -4038,6 +5591,7 @@ int msm_comm_release_output_buffers(struct msm_vidc_inst *inst)
 				"Invalid instance pointer = %pK\n", inst);
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	mutex_lock(&inst->outputbufs.lock);
 	if (list_empty(&inst->outputbufs.list)) {
 		dprintk(VIDC_DBG, "%s - No OUTPUT buffers allocated\n",
@@ -4047,6 +5601,8 @@ int msm_comm_release_output_buffers(struct msm_vidc_inst *inst)
 	}
 	mutex_unlock(&inst->outputbufs.lock);
 
+=======
+>>>>>>> p9x
 	core = inst->core;
 	if (!core) {
 		dprintk(VIDC_ERR,
@@ -4079,7 +5635,11 @@ int msm_comm_release_output_buffers(struct msm_vidc_inst *inst)
 				(void *)inst->session, &buffer_info);
 			if (rc) {
 				dprintk(VIDC_WARN,
+<<<<<<< HEAD
 					"Rel output buf fail:%pa, %d\n",
+=======
+					"Rel output buf fail:0x%pa, %d\n",
+>>>>>>> p9x
 					&buffer_info.align_device_addr,
 					buffer_info.buffer_size);
 			}
@@ -4130,7 +5690,11 @@ static enum hal_buffer scratch_buf_sufficient(struct msm_vidc_inst *inst,
 		goto not_sufficient;
 
 	dprintk(VIDC_DBG,
+<<<<<<< HEAD
 		"Existing scratch buffer is sufficient for buffer type %#x\n",
+=======
+		"Existing scratch buffer is sufficient for buffer type 0x%x\n",
+>>>>>>> p9x
 		buffer_type);
 
 	return buffer_type;
@@ -4193,17 +5757,30 @@ int msm_comm_release_scratch_buffers(struct msm_vidc_inst *inst,
 		if (inst->state != MSM_VIDC_CORE_INVALID &&
 				core->state != VIDC_CORE_INVALID) {
 			buffer_info.response_required = true;
+<<<<<<< HEAD
+=======
+			init_completion(&inst->completions[SESSION_MSG_INDEX
+			   (SESSION_RELEASE_BUFFER_DONE)]);
+>>>>>>> p9x
 			rc = call_hfi_op(hdev, session_release_buffers,
 				(void *)inst->session, &buffer_info);
 			if (rc) {
 				dprintk(VIDC_WARN,
+<<<<<<< HEAD
 					"Rel scrtch buf fail:%pa, %d\n",
+=======
+					"Rel scrtch buf fail:0x%pa, %d\n",
+>>>>>>> p9x
 					&buffer_info.align_device_addr,
 					buffer_info.buffer_size);
 			}
 			mutex_unlock(&inst->scratchbufs.lock);
 			rc = wait_for_sess_signal_receipt(inst,
+<<<<<<< HEAD
 				HAL_SESSION_RELEASE_BUFFER_DONE);
+=======
+				SESSION_RELEASE_BUFFER_DONE);
+>>>>>>> p9x
 			if (rc) {
 				change_inst_state(inst,
 					MSM_VIDC_CORE_INVALID);
@@ -4263,17 +5840,31 @@ int msm_comm_release_persist_buffers(struct msm_vidc_inst *inst)
 		if (inst->state != MSM_VIDC_CORE_INVALID &&
 				core->state != VIDC_CORE_INVALID) {
 			buffer_info.response_required = true;
+<<<<<<< HEAD
+=======
+			init_completion(
+			   &inst->completions[SESSION_MSG_INDEX
+			   (SESSION_RELEASE_BUFFER_DONE)]);
+>>>>>>> p9x
 			rc = call_hfi_op(hdev, session_release_buffers,
 				(void *)inst->session, &buffer_info);
 			if (rc) {
 				dprintk(VIDC_WARN,
+<<<<<<< HEAD
 					"Rel prst buf fail:%pa, %d\n",
+=======
+					"Rel prst buf fail:0x%pa, %d\n",
+>>>>>>> p9x
 					&buffer_info.align_device_addr,
 					buffer_info.buffer_size);
 			}
 			mutex_unlock(&inst->persistbufs.lock);
 			rc = wait_for_sess_signal_receipt(inst,
+<<<<<<< HEAD
 				HAL_SESSION_RELEASE_BUFFER_DONE);
+=======
+				SESSION_RELEASE_BUFFER_DONE);
+>>>>>>> p9x
 			if (rc) {
 				change_inst_state(inst, MSM_VIDC_CORE_INVALID);
 				msm_comm_kill_session(inst);
@@ -4405,7 +5996,10 @@ static void msm_comm_flush_in_invalid_state(struct msm_vidc_inst *inst)
 
 		dprintk(VIDC_DBG, "Flushing buffers of type %d in bad state\n",
 				port);
+<<<<<<< HEAD
 		mutex_lock(&inst->bufq[port].lock);
+=======
+>>>>>>> p9x
 		list_for_each_safe(ptr, next, &inst->bufq[port].
 				vb2_bufq.queued_list) {
 			struct vb2_buffer *vb = container_of(ptr,
@@ -4414,9 +6008,16 @@ static void msm_comm_flush_in_invalid_state(struct msm_vidc_inst *inst)
 			vb->v4l2_planes[0].bytesused = 0;
 			vb->v4l2_planes[0].data_offset = 0;
 
+<<<<<<< HEAD
 			vb2_buffer_done(vb, VB2_BUF_STATE_DONE);
 		}
 		mutex_unlock(&inst->bufq[port].lock);
+=======
+			mutex_lock(&inst->bufq[port].lock);
+			vb2_buffer_done(vb, VB2_BUF_STATE_DONE);
+			mutex_unlock(&inst->bufq[port].lock);
+		}
+>>>>>>> p9x
 	}
 
 	msm_vidc_queue_v4l2_event(inst, V4L2_EVENT_MSM_VIDC_FLUSH_DONE);
@@ -4456,8 +6057,14 @@ void msm_comm_flush_dynamic_buffers(struct msm_vidc_inst *inst)
 		u32 *ptr = NULL;
 
 		list_for_each_entry(binfo, &inst->registeredbufs.list, list) {
+<<<<<<< HEAD
 			if (binfo->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE &&
 				atomic_read(&binfo->ref_count) == 2) {
+=======
+			if ((binfo->type ==
+				V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) &&
+				(atomic_read(&binfo->ref_count) == 2)) {
+>>>>>>> p9x
 
 				atomic_dec(&binfo->ref_count);
 				buf_event.type =
@@ -4470,11 +6077,19 @@ void msm_comm_flush_dynamic_buffers(struct msm_vidc_inst *inst)
 				ptr[4] = (u32) binfo->timestamp.tv_usec;
 				ptr[5] = binfo->v4l2_index;
 				dprintk(VIDC_DBG,
+<<<<<<< HEAD
 					"released buffer held in driver before issuing flush: %pa fd[0]: %d\n",
+=======
+					"released buffer held in driver before issuing flush: 0x%pa fd[0]: %d\n",
+>>>>>>> p9x
 					&binfo->device_addr[0], binfo->fd[0]);
 				/*send event to client*/
 				v4l2_event_queue_fh(&inst->event_handler,
 					&buf_event);
+<<<<<<< HEAD
+=======
+				wake_up(&inst->kernel_event_queue);
+>>>>>>> p9x
 			}
 		}
 	}
@@ -4506,7 +6121,11 @@ void msm_comm_flush_pending_dynamic_buffers(struct msm_vidc_inst *inst)
 	list_for_each_entry(binfo, &inst->registeredbufs.list, list) {
 		if (binfo->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
 			dprintk(VIDC_DBG,
+<<<<<<< HEAD
 				"%s: binfo = %pK device_addr = %pa\n",
+=======
+				"%s: binfo = %pK device_addr = 0x%pa\n",
+>>>>>>> p9x
 				__func__, binfo, &binfo->device_addr[0]);
 			buf_ref_put(inst, binfo);
 		}
@@ -4519,7 +6138,12 @@ int msm_comm_flush(struct msm_vidc_inst *inst, u32 flags)
 	int rc =  0;
 	bool ip_flush = false;
 	bool op_flush = false;
+<<<<<<< HEAD
 	struct vb2_buf_entry *temp, *next;
+=======
+	struct list_head *ptr, *next;
+	struct vb2_buf_entry *temp;
+>>>>>>> p9x
 	struct mutex *lock;
 	struct msm_vidc_core *core;
 	struct hfi_device *hdev;
@@ -4549,10 +6173,16 @@ int msm_comm_flush(struct msm_vidc_inst *inst, u32 flags)
 	}
 
 	msm_comm_flush_dynamic_buffers(inst);
+<<<<<<< HEAD
 
 	if (inst->state == MSM_VIDC_CORE_INVALID ||
 			core->state == VIDC_CORE_INVALID ||
 			core->state == VIDC_CORE_UNINIT) {
+=======
+	if (inst->state == MSM_VIDC_CORE_INVALID ||
+		core->state == VIDC_CORE_UNINIT ||
+		core->state == VIDC_CORE_INVALID) {
+>>>>>>> p9x
 		dprintk(VIDC_ERR,
 				"Core %pK and inst %pK are in bad state\n",
 					core, inst);
@@ -4573,8 +6203,11 @@ int msm_comm_flush(struct msm_vidc_inst *inst, u32 flags)
 			"FLUSH BUG: Pending q not empty! It should be empty\n");
 		}
 		mutex_unlock(&inst->pendingq.lock);
+<<<<<<< HEAD
 		atomic_inc(&inst->in_flush);
 		dprintk(VIDC_DBG, "Send flush Output to firmware\n");
+=======
+>>>>>>> p9x
 		rc = call_hfi_op(hdev, session_flush, inst->session,
 				HAL_FLUSH_OUTPUT);
 	} else {
@@ -4584,6 +6217,7 @@ int msm_comm_flush(struct msm_vidc_inst *inst, u32 flags)
 		 * streamon driver should flush the pending queue
 		 */
 		mutex_lock(&inst->pendingq.lock);
+<<<<<<< HEAD
 		list_for_each_entry_safe(temp, next,
 				&inst->pendingq.list, list) {
 			enum v4l2_buf_type type = temp->vb->v4l2_buf.type;
@@ -4604,6 +6238,21 @@ int msm_comm_flush(struct msm_vidc_inst *inst, u32 flags)
 			list_del(&temp->list);
 			mutex_unlock(lock);
 
+=======
+		list_for_each_safe(ptr, next, &inst->pendingq.list) {
+			temp =
+			list_entry(ptr, struct vb2_buf_entry, list);
+			if (temp->vb->v4l2_buf.type ==
+				V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE)
+				lock = &inst->bufq[CAPTURE_PORT].lock;
+			else
+				lock = &inst->bufq[OUTPUT_PORT].lock;
+			temp->vb->v4l2_planes[0].bytesused = 0;
+			mutex_lock(lock);
+			vb2_buffer_done(temp->vb, VB2_BUF_STATE_DONE);
+			mutex_unlock(lock);
+			list_del(&temp->list);
+>>>>>>> p9x
 			kfree(temp);
 		}
 		mutex_unlock(&inst->pendingq.lock);
@@ -4611,8 +6260,11 @@ int msm_comm_flush(struct msm_vidc_inst *inst, u32 flags)
 		/*Do not send flush in case of session_error */
 		if (!(inst->state == MSM_VIDC_CORE_INVALID &&
 			  core->state != VIDC_CORE_INVALID))
+<<<<<<< HEAD
 			atomic_inc(&inst->in_flush);
 			dprintk(VIDC_DBG, "Send flush all to firmware\n");
+=======
+>>>>>>> p9x
 			rc = call_hfi_op(hdev, session_flush, inst->session,
 				HAL_FLUSH_ALL);
 	}
@@ -4692,6 +6344,7 @@ enum hal_extradata_id msm_comm_get_hal_extradata_index(
 	case V4L2_MPEG_VIDC_EXTRADATA_METADATA_MBI:
 		ret = HAL_EXTRADATA_METADATA_MBI;
 		break;
+<<<<<<< HEAD
 	case V4L2_MPEG_VIDC_EXTRADATA_VQZIP_SEI:
 		ret = HAL_EXTRADATA_VQZIP_SEI;
 		break;
@@ -4704,6 +6357,8 @@ enum hal_extradata_id msm_comm_get_hal_extradata_index(
 	case V4L2_MPEG_VIDC_EXTRADATA_OUTPUT_CROP:
 		ret = HAL_EXTRADATA_OUTPUT_CROP;
 		break;
+=======
+>>>>>>> p9x
 	case V4L2_MPEG_VIDC_EXTRADATA_DISPLAY_COLOUR_SEI:
 		ret = HAL_EXTRADATA_MASTERING_DISPLAY_COLOUR_SEI;
 		break;
@@ -4716,9 +6371,12 @@ enum hal_extradata_id msm_comm_get_hal_extradata_index(
 	case V4L2_MPEG_VIDC_EXTRADATA_VPX_COLORSPACE:
 		ret = HAL_EXTRADATA_VPX_COLORSPACE;
 		break;
+<<<<<<< HEAD
 	case V4L2_MPEG_VIDC_EXTRADATA_PQ_INFO:
 		ret = HAL_EXTRADATA_PQ_INFO;
 		break;
+=======
+>>>>>>> p9x
 	default:
 		dprintk(VIDC_WARN, "Extradata not found: %d\n", index);
 		break;
@@ -4743,6 +6401,44 @@ enum hal_buffer_layout_type msm_comm_get_hal_buffer_layout(
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+int msm_comm_get_domain_partition(struct msm_vidc_inst *inst, u32 flags,
+	enum v4l2_buf_type buf_type, int *domain, int *partition)
+{
+	struct hfi_device *hdev;
+	u32 hal_buffer_type = 0;
+	if (!inst || !inst->core || !inst->core->device)
+		return -EINVAL;
+
+	hdev = inst->core->device;
+
+	/*
+	 * TODO: Due to the way in which the underlying smem mechanism
+	 * maps buffer types to corresponding IOMMU domains, we need to
+	 * pass in HAL_BUFFER_OUTPUT for input buffers (and vice versa)
+	 * so that buffers are mapped into the correct domains. In the
+	 * future, we should try to remove this workaround.
+	 */
+	switch (buf_type) {
+	case V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE:
+		hal_buffer_type = (inst->session_type == MSM_VIDC_ENCODER) ?
+			HAL_BUFFER_INPUT : HAL_BUFFER_OUTPUT;
+		break;
+	case V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE:
+		hal_buffer_type = (inst->session_type == MSM_VIDC_ENCODER) ?
+			HAL_BUFFER_OUTPUT : HAL_BUFFER_INPUT;
+		break;
+	default:
+		dprintk(VIDC_ERR, "v4l2 buf type not found %d\n", buf_type);
+		return -ENOTSUPP;
+	}
+	return call_hfi_op(hdev, iommu_get_domain_partition,
+		hdev->hfi_device_data, flags, hal_buffer_type, domain,
+		partition);
+};
+
+>>>>>>> p9x
 int msm_vidc_trigger_ssr(struct msm_vidc_core *core,
 	enum hal_ssr_trigger_type type)
 {
@@ -4767,8 +6463,12 @@ static int msm_vidc_load_supported(struct msm_vidc_inst *inst)
 		LOAD_CALC_IGNORE_NON_REALTIME_LOAD;
 
 	if (inst->state == MSM_VIDC_OPEN_DONE) {
+<<<<<<< HEAD
 		max_load_adj = inst->core->resources.max_load +
 			inst->capability.mbs_per_frame.max;
+=======
+		max_load_adj = inst->core->resources.max_load + inst->capability.mbs_per_frame.max;
+>>>>>>> p9x
 		num_mbs_per_sec = msm_comm_get_load(inst->core,
 					MSM_VIDC_DECODER, quirks);
 		num_mbs_per_sec += msm_comm_get_load(inst->core,
@@ -4809,8 +6509,13 @@ int msm_vidc_check_scaling_supported(struct msm_vidc_inst *inst)
 		!inst->capability.scale_y.min ||
 		!inst->capability.scale_y.max) {
 
+<<<<<<< HEAD
 		if (input_width * input_height !=
 			output_width * output_height) {
+=======
+		if ((input_width * input_height) !=
+			(output_width * output_height)) {
+>>>>>>> p9x
 			dprintk(VIDC_ERR,
 				"%s: scaling is not supported (%dx%d != %dx%d)\n",
 				__func__, input_width, input_height,
@@ -4867,7 +6572,10 @@ int msm_vidc_check_session_supported(struct msm_vidc_inst *inst)
 	int rc = 0;
 	struct hfi_device *hdev;
 	struct msm_vidc_core *core;
+<<<<<<< HEAD
 	int mbs_per_frame = 0;
+=======
+>>>>>>> p9x
 
 	if (!inst || !inst->core || !inst->core->device) {
 		dprintk(VIDC_WARN, "%s: Invalid parameter\n", __func__);
@@ -4885,6 +6593,7 @@ int msm_vidc_check_session_supported(struct msm_vidc_inst *inst)
 		return rc;
 	}
 
+<<<<<<< HEAD
 	if (!is_thermal_permissible(core)) {
 		dprintk(VIDC_WARN,
 			"Thermal level critical, stop all active sessions!\n");
@@ -4892,6 +6601,9 @@ int msm_vidc_check_session_supported(struct msm_vidc_inst *inst)
 	}
 
 	if (!rc) {
+=======
+	if (!rc && inst->capability.capability_set) {
+>>>>>>> p9x
 		if (inst->prop.width[CAPTURE_PORT] < capability->width.min ||
 			inst->prop.height[CAPTURE_PORT] <
 			capability->height.min) {
@@ -4903,8 +6615,13 @@ int msm_vidc_check_session_supported(struct msm_vidc_inst *inst)
 				capability->height.min);
 			rc = -ENOTSUPP;
 		}
+<<<<<<< HEAD
 		if (!rc && inst->prop.width[CAPTURE_PORT] >
 			capability->width.max) {
+=======
+		if (!rc && (inst->prop.width[CAPTURE_PORT] >
+			capability->width.max)) {
+>>>>>>> p9x
 			dprintk(VIDC_ERR,
 				"Unsupported width = %u supported max width = %u",
 				inst->prop.width[CAPTURE_PORT],
@@ -4912,6 +6629,7 @@ int msm_vidc_check_session_supported(struct msm_vidc_inst *inst)
 				rc = -ENOTSUPP;
 		}
 
+<<<<<<< HEAD
 		if (!rc && inst->prop.height[CAPTURE_PORT] >
 			capability->height.max) {
 			dprintk(VIDC_ERR,
@@ -4927,6 +6645,16 @@ int msm_vidc_check_session_supported(struct msm_vidc_inst *inst)
 			"Unsupported mbs per frame = %u, max supported is - %u\n",
 			mbs_per_frame,
 			capability->mbs_per_frame.max);
+=======
+		if (!rc && (inst->prop.height[CAPTURE_PORT]
+			* inst->prop.width[CAPTURE_PORT] >
+			capability->width.max * capability->height.max)) {
+			dprintk(VIDC_ERR,
+			"Unsupported WxH = (%u)x(%u), max supported is - (%u)x(%u)\n",
+			inst->prop.width[CAPTURE_PORT],
+			inst->prop.height[CAPTURE_PORT],
+			capability->width.max, capability->height.max);
+>>>>>>> p9x
 			rc = -ENOTSUPP;
 		}
 	}
@@ -4941,7 +6669,11 @@ int msm_vidc_check_session_supported(struct msm_vidc_inst *inst)
 
 static void msm_comm_generate_session_error(struct msm_vidc_inst *inst)
 {
+<<<<<<< HEAD
 	enum hal_command_response cmd = HAL_SESSION_ERROR;
+=======
+	enum command_response cmd = SESSION_ERROR;
+>>>>>>> p9x
 	struct msm_vidc_cb_cmd_done response = {0};
 
 	dprintk(VIDC_WARN, "msm_comm_generate_session_error\n");
@@ -4958,7 +6690,11 @@ static void msm_comm_generate_session_error(struct msm_vidc_inst *inst)
 static void msm_comm_generate_sys_error(struct msm_vidc_inst *inst)
 {
 	struct msm_vidc_core *core;
+<<<<<<< HEAD
 	enum hal_command_response cmd = HAL_SYS_ERROR;
+=======
+	enum command_response cmd = SYS_ERROR;
+>>>>>>> p9x
 	struct msm_vidc_cb_cmd_done response  = {0};
 	if (!inst || !inst->core) {
 		dprintk(VIDC_ERR, "%s: invalid input parameters\n", __func__);
@@ -4994,11 +6730,18 @@ int msm_comm_kill_session(struct msm_vidc_inst *inst)
 		if (rc == -EBUSY) {
 			msm_comm_generate_sys_error(inst);
 			return 0;
+<<<<<<< HEAD
 		} else if (rc) {
 			return rc;
 		}
 		change_inst_state(inst, MSM_VIDC_CLOSE_DONE);
 		msm_comm_generate_session_error(inst);
+=======
+		} else if (rc)
+			return rc;
+
+		change_inst_state(inst, MSM_VIDC_CLOSE_DONE);
+>>>>>>> p9x
 	} else {
 		dprintk(VIDC_WARN,
 				"Inactive session %pK, triggering an internal session error\n",
@@ -5010,6 +6753,25 @@ int msm_comm_kill_session(struct msm_vidc_inst *inst)
 	return rc;
 }
 
+<<<<<<< HEAD
+=======
+static inline int power_on_for_smem(struct msm_vidc_inst *inst)
+{
+	struct hfi_device *hdev = NULL;
+	int rc = 0;
+
+	if (!inst || !inst->core || !inst->core->device) {
+		dprintk(VIDC_ERR, "%s: invalid inst handle\n", __func__);
+		return -EINVAL;
+	}
+	hdev = inst->core->device;
+	rc = call_hfi_op(hdev, power_enable, hdev->hfi_device_data);
+	if (rc)
+		dprintk(VIDC_ERR, "%s: failed to power on fw\n", __func__);
+	return rc;
+}
+
+>>>>>>> p9x
 struct msm_smem *msm_comm_smem_alloc(struct msm_vidc_inst *inst,
 			size_t size, u32 align, u32 flags,
 			enum hal_buffer buffer_type, int map_kernel)
@@ -5020,8 +6782,19 @@ struct msm_smem *msm_comm_smem_alloc(struct msm_vidc_inst *inst,
 		dprintk(VIDC_ERR, "%s: invalid inst: %pK\n", __func__, inst);
 		return NULL;
 	}
+<<<<<<< HEAD
 	m = msm_smem_alloc(inst->mem_client, size, align,
 				flags, buffer_type, map_kernel);
+=======
+	mutex_lock(&inst->core->lock);
+	if (power_on_for_smem(inst))
+		goto err_power_on;
+
+	m = msm_smem_alloc(inst->mem_client, size, align,
+				flags, buffer_type, map_kernel);
+err_power_on:
+	mutex_unlock(&inst->core->lock);
+>>>>>>> p9x
 	return m;
 }
 
@@ -5032,7 +6805,19 @@ void msm_comm_smem_free(struct msm_vidc_inst *inst, struct msm_smem *mem)
 			"%s: invalid params: %pK %pK\n", __func__, inst, mem);
 		return;
 	}
+<<<<<<< HEAD
 	msm_smem_free(inst->mem_client, mem);
+=======
+
+	mutex_lock(&inst->core->lock);
+	if (inst->state != MSM_VIDC_CORE_INVALID) {
+		if (power_on_for_smem(inst))
+			goto err_power_on;
+	}
+	msm_smem_free(inst->mem_client, mem);
+err_power_on:
+	mutex_unlock(&inst->core->lock);
+>>>>>>> p9x
 }
 
 int msm_comm_smem_cache_operations(struct msm_vidc_inst *inst,
@@ -5062,11 +6847,38 @@ struct msm_smem *msm_comm_smem_user_to_kernel(struct msm_vidc_inst *inst,
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	m = msm_smem_user_to_kernel(inst->mem_client,
 			fd, offset, buffer_type);
 	return m;
 }
 
+=======
+	mutex_lock(&inst->core->lock);
+	if (power_on_for_smem(inst))
+		goto err_power_on;
+
+	m = msm_smem_user_to_kernel(inst->mem_client,
+			fd, offset, buffer_type);
+err_power_on:
+	mutex_unlock(&inst->core->lock);
+	return m;
+}
+
+int msm_comm_smem_get_domain_partition(struct msm_vidc_inst *inst,
+			u32 flags, enum hal_buffer buffer_type,
+			int *domain_num, int *partition_num)
+{
+	if (!inst || !domain_num || !partition_num) {
+		dprintk(VIDC_ERR, "%s: invalid params: %pK %pK %pK\n",
+			__func__, inst, domain_num, partition_num);
+		return -EINVAL;
+	}
+	return msm_smem_get_domain_partition(inst->mem_client, flags,
+			buffer_type, domain_num, partition_num);
+}
+
+>>>>>>> p9x
 void msm_vidc_fw_unload_handler(struct work_struct *work)
 {
 	struct msm_vidc_core *core = NULL;
@@ -5097,7 +6909,17 @@ void msm_vidc_fw_unload_handler(struct work_struct *work)
 				return;
 			}
 		}
+<<<<<<< HEAD
 		core->state = VIDC_CORE_UNINIT;
+=======
+
+		core->state = VIDC_CORE_UNINIT;
+
+		call_hfi_op(hdev, unload_fw, hdev->hfi_device_data);
+		dprintk(VIDC_DBG, "Firmware unloaded\n");
+		msm_comm_unvote_buses(core);
+
+>>>>>>> p9x
 		kfree(core->capabilities);
 		core->capabilities = NULL;
 	}
@@ -5108,7 +6930,10 @@ int msm_comm_set_color_format(struct msm_vidc_inst *inst,
 		enum hal_buffer buffer_type, int fourcc)
 {
 	struct hal_uncompressed_format_select hal_fmt = {0};
+<<<<<<< HEAD
 	enum hal_uncompressed_format format = HAL_UNUSED_COLOR;
+=======
+>>>>>>> p9x
 	int rc = 0;
 	struct hfi_device *hdev;
 
@@ -5118,15 +6943,33 @@ int msm_comm_set_color_format(struct msm_vidc_inst *inst,
 	}
 
 	hdev = inst->core->device;
+<<<<<<< HEAD
 
 	format = get_hal_uncompressed(fourcc);
 	if (format == HAL_UNUSED_COLOR) {
 		dprintk(VIDC_ERR, "Using unsupported colorformat %#x\n",
 				fourcc);
+=======
+	hal_fmt.buffer_type = buffer_type;
+
+	switch (fourcc) {
+	case V4L2_PIX_FMT_NV12:
+		dprintk(VIDC_DBG, "set color format: nv12\n");
+		hal_fmt.format = HAL_COLOR_FORMAT_NV12;
+		break;
+	case V4L2_PIX_FMT_NV21:
+		dprintk(VIDC_DBG, "set color format: nv21\n");
+		hal_fmt.format = HAL_COLOR_FORMAT_NV21;
+		break;
+	default:
+		dprintk(VIDC_ERR, "%s: unknown color formar: %#x\n",
+			__func__, fourcc);
+>>>>>>> p9x
 		rc = -ENOTSUPP;
 		goto exit;
 	}
 
+<<<<<<< HEAD
 	hal_fmt.buffer_type = buffer_type;
 	hal_fmt.format = format;
 
@@ -5138,10 +6981,20 @@ int msm_comm_set_color_format(struct msm_vidc_inst *inst,
 	else
 		dprintk(VIDC_DBG, "Setting uncompressed colorformat to %#x\n",
 				format);
+=======
+	rc = call_hfi_op(hdev, session_set_property, inst->session,
+		HAL_PARAM_UNCOMPRESSED_FORMAT_SELECT, &hal_fmt);
+	if (rc) {
+		dprintk(VIDC_ERR,
+			"%s: Failed to set color format[%#x]\n",
+			__func__, hal_fmt.format);
+	}
+>>>>>>> p9x
 
 exit:
 	return rc;
 }
+<<<<<<< HEAD
 
 int msm_vidc_comm_s_parm(struct msm_vidc_inst *inst, struct v4l2_streamparm *a)
 {
@@ -5214,3 +7067,5 @@ int msm_vidc_comm_s_parm(struct msm_vidc_inst *inst, struct v4l2_streamparm *a)
 exit:
 	return rc;
 }
+=======
+>>>>>>> p9x

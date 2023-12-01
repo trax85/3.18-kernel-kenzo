@@ -9,12 +9,16 @@
 #include <linux/pfn.h>
 #include <linux/suspend.h>
 #include <linux/mm.h>
+#include <asm/sections.h>
 #include <asm/ctl_reg.h>
 #include <asm/ipl.h>
+<<<<<<< HEAD
 #include <asm/cio.h>
 #include <asm/pci.h>
 #include <asm/sections.h>
 #include "entry.h"
+=======
+>>>>>>> p9x
 
 /*
  * The restore of the saved pages in an hibernation image will set

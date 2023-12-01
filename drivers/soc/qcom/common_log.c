@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -17,13 +21,19 @@
 #include <linux/kallsyms.h>
 #include <linux/slab.h>
 #include <linux/kmemleak.h>
+<<<<<<< HEAD
 #include <linux/async.h>
+=======
+>>>>>>> p9x
 #include <soc/qcom/memory_dump.h>
 
 #define MISC_DUMP_DATA_LEN		4096
 #define PMIC_DUMP_DATA_LEN		4096
 #define VSENSE_DUMP_DATA_LEN		4096
+<<<<<<< HEAD
 #define RPM_DUMP_DATA_LEN		(160 * 1024)
+=======
+>>>>>>> p9x
 
 void register_misc_dump(void)
 {
@@ -132,6 +142,7 @@ err0:
 	}
 }
 
+<<<<<<< HEAD
 void register_rpm_dump(void)
 {
 	static void *dump_addr;
@@ -168,6 +179,8 @@ err0:
 	}
 }
 
+=======
+>>>>>>> p9x
 static void __init common_log_register_log_buf(void)
 {
 	char **log_bufp;
@@ -236,12 +249,17 @@ static void __init common_log_register_log_buf(void)
 	}
 }
 
+<<<<<<< HEAD
 static void __init async_common_log_init(void *data, async_cookie_t cookie)
+=======
+static int __init msm_common_log_init(void)
+>>>>>>> p9x
 {
 	common_log_register_log_buf();
 	register_misc_dump();
 	register_pmic_dump();
 	register_vsense_dump();
+<<<<<<< HEAD
 	register_rpm_dump();
 }
 
@@ -249,6 +267,8 @@ static int __init msm_common_log_init(void)
 {
 	/* Initialize asynchronously to reduce boot time */
 	async_schedule(async_common_log_init, NULL);
+=======
+>>>>>>> p9x
 	return 0;
 }
 late_initcall(msm_common_log_init);

@@ -195,6 +195,7 @@ struct team {
 	bool queue_override_enabled;
 	struct list_head *qom_lists; /* array of queue override mapping lists */
 	bool port_mtu_change_allowed;
+<<<<<<< HEAD
 	struct {
 		unsigned int count;
 		unsigned int interval; /* in ms */
@@ -207,6 +208,8 @@ struct team {
 		atomic_t count_pending;
 		struct delayed_work dw;
 	} mcast_rejoin;
+=======
+>>>>>>> p9x
 	long mode_priv[TEAM_MODE_PRIV_LONGS];
 };
 

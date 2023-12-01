@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2017, 2019 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -62,6 +66,7 @@
 #define HAL_MAX_MATRIX_COEFFS 9
 #define HAL_MAX_BIAS_COEFFS 3
 #define HAL_MAX_LIMIT_COEFFS 6
+<<<<<<< HEAD
 #define VENUS_VERSION_LENGTH 128
 
 /* 16 encoder and 16 decoder sessions */
@@ -69,6 +74,11 @@
 #define VIDC_MAX_DECODE_SESSIONS        16
 #define VIDC_MAX_ENCODE_SESSIONS        16
 
+=======
+
+/* 32 encoder and 32 decoder sessions */
+#define VIDC_MAX_SESSIONS               64
+>>>>>>> p9x
 
 enum vidc_status {
 	VIDC_ERR_NONE = 0x0,
@@ -121,15 +131,21 @@ enum hal_extradata_id {
 	HAL_EXTRADATA_DIGITAL_ZOOM,
 	HAL_EXTRADATA_LTR_INFO,
 	HAL_EXTRADATA_METADATA_MBI,
+<<<<<<< HEAD
 	HAL_EXTRADATA_VQZIP_SEI,
 	HAL_EXTRADATA_YUV_STATS,
 	HAL_EXTRADATA_ROI_QP,
 	HAL_EXTRADATA_OUTPUT_CROP,
+=======
+>>>>>>> p9x
 	HAL_EXTRADATA_MASTERING_DISPLAY_COLOUR_SEI,
 	HAL_EXTRADATA_CONTENT_LIGHT_LEVEL_SEI,
 	HAL_EXTRADATA_VUI_DISPLAY_INFO,
 	HAL_EXTRADATA_VPX_COLORSPACE,
+<<<<<<< HEAD
 	HAL_EXTRADATA_PQ_INFO,
+=======
+>>>>>>> p9x
 };
 
 enum hal_property {
@@ -199,12 +215,20 @@ enum hal_property {
 	HAL_CONFIG_VDEC_MULTI_STREAM,
 	HAL_PARAM_VENC_MULTI_SLICE_INFO,
 	HAL_CONFIG_VENC_TIMESTAMP_SCALE,
+<<<<<<< HEAD
+=======
+	HAL_PARAM_VENC_LOW_LATENCY,
+>>>>>>> p9x
 	HAL_PARAM_VENC_SYNC_FRAME_SEQUENCE_HEADER,
 	HAL_PARAM_VDEC_SYNC_FRAME_DECODE,
 	HAL_PARAM_VENC_H264_ENTROPY_CABAC_MODEL,
 	HAL_CONFIG_VENC_MAX_BITRATE,
 	HAL_PARAM_VENC_H264_VUI_TIMING_INFO,
+<<<<<<< HEAD
 	HAL_PARAM_VENC_GENERATE_AUDNAL,
+=======
+	HAL_PARAM_VENC_H264_GENERATE_AUDNAL,
+>>>>>>> p9x
 	HAL_PARAM_VENC_MAX_NUM_B_FRAMES,
 	HAL_PARAM_BUFFER_ALLOC_MODE,
 	HAL_PARAM_VDEC_FRAME_ASSEMBLY,
@@ -231,6 +255,7 @@ enum hal_property {
 	HAL_PARAM_VDEC_NON_SECURE_OUTPUT2,
 	HAL_PARAM_VENC_HIER_P_HYBRID_MODE,
 	HAL_PARAM_VENC_MBI_STATISTICS_MODE,
+<<<<<<< HEAD
 	HAL_PARAM_SYNC_BASED_INTERRUPT,
 	HAL_CONFIG_VENC_FRAME_QP,
 	HAL_CONFIG_VENC_BASELAYER_PRIORITYID,
@@ -245,6 +270,11 @@ enum hal_property {
 	HAL_PARAM_VENC_VIDEO_SIGNAL_INFO,
 	HAL_PARAM_VENC_SESSION_QP_RANGE_PACKED,
 	HAL_PARAM_VENC_H264_TRANSFORM_8x8,
+=======
+	HAL_PARAM_VENC_BITRATE_TYPE,
+	HAL_PARAM_VENC_VIDEO_SIGNAL_INFO,
+	HAL_PARAM_VENC_CONSTRAINED_INTRA_PRED,
+>>>>>>> p9x
 	HAL_PARAM_VENC_IFRAMESIZE_TYPE,
 };
 
@@ -531,6 +561,7 @@ struct hal_frame_rate {
 };
 
 enum hal_uncompressed_format {
+<<<<<<< HEAD
 	HAL_COLOR_FORMAT_MONOCHROME     = 0x00000001,
 	HAL_COLOR_FORMAT_NV12           = 0x00000002,
 	HAL_COLOR_FORMAT_NV21           = 0x00000004,
@@ -549,13 +580,32 @@ enum hal_uncompressed_format {
 	HAL_COLOR_FORMAT_RGBA8888       = 0x00008000,
 	HAL_COLOR_FORMAT_RGBA8888_UBWC  = 0x00010000,
 	HAL_UNUSED_COLOR                = 0x10000000,
+=======
+	HAL_COLOR_FORMAT_MONOCHROME   = 0x00000001,
+	HAL_COLOR_FORMAT_NV12         = 0x00000002,
+	HAL_COLOR_FORMAT_NV21         = 0x00000004,
+	HAL_COLOR_FORMAT_NV12_4x4TILE = 0x00000008,
+	HAL_COLOR_FORMAT_NV21_4x4TILE = 0x00000010,
+	HAL_COLOR_FORMAT_YUYV         = 0x00000020,
+	HAL_COLOR_FORMAT_YVYU         = 0x00000040,
+	HAL_COLOR_FORMAT_UYVY         = 0x00000080,
+	HAL_COLOR_FORMAT_VYUY         = 0x00000100,
+	HAL_COLOR_FORMAT_RGB565       = 0x00000200,
+	HAL_COLOR_FORMAT_BGR565       = 0x00000400,
+	HAL_COLOR_FORMAT_RGB888       = 0x00000800,
+	HAL_COLOR_FORMAT_BGR888       = 0x00001000,
+	HAL_UNUSED_COLOR              = 0x10000000,
+>>>>>>> p9x
 };
 
 enum hal_statistics_mode_type {
 	HAL_STATISTICS_MODE_DEFAULT	= 0x00000001,
 	HAL_STATISTICS_MODE_1		= 0x00000002,
 	HAL_STATISTICS_MODE_2		= 0x00000004,
+<<<<<<< HEAD
 	HAL_STATISTICS_MODE_3		= 0x00000008,
+=======
+>>>>>>> p9x
 };
 
 enum hal_ssr_trigger_type {
@@ -608,7 +658,11 @@ struct hal_frame_size {
 };
 
 struct hal_enable {
+<<<<<<< HEAD
 	bool enable;
+=======
+	u32 enable;
+>>>>>>> p9x
 };
 
 struct hal_buffer_count_actual {
@@ -645,7 +699,10 @@ enum hal_picture {
 	HAL_PICTURE_P = 0x02,
 	HAL_PICTURE_B = 0x04,
 	HAL_PICTURE_IDR = 0x08,
+<<<<<<< HEAD
 	HAL_PICTURE_CRA = 0x10,
+=======
+>>>>>>> p9x
 	HAL_FRAME_NOTCODED = 0x7F002000,
 	HAL_FRAME_YUV = 0x7F004000,
 	HAL_UNUSED_PICT = 0x10000000,
@@ -720,8 +777,11 @@ enum hal_rate_control {
 	HAL_RATE_CONTROL_VBR_CFR,
 	HAL_RATE_CONTROL_CBR_VFR,
 	HAL_RATE_CONTROL_CBR_CFR,
+<<<<<<< HEAD
 	HAL_RATE_CONTROL_MBR_CFR,
 	HAL_RATE_CONTROL_MBR_VFR,
+=======
+>>>>>>> p9x
 	HAL_UNUSED_RC = 0x10000000,
 };
 
@@ -908,7 +968,10 @@ enum hal_capability {
 	HAL_CAPABILITY_HIER_B_NUM_ENH_LAYERS,
 	HAL_CAPABILITY_LCU_SIZE,
 	HAL_CAPABILITY_HIER_P_HYBRID_NUM_ENH_LAYERS,
+<<<<<<< HEAD
 	HAL_CAPABILITY_MBS_PER_SECOND_POWER_SAVE,
+=======
+>>>>>>> p9x
 	HAL_UNUSED_CAPABILITY = 0x10000000,
 };
 
@@ -953,11 +1016,14 @@ struct hal_seq_header_info {
 	u32 nax_header_len;
 };
 
+<<<<<<< HEAD
 struct hal_aspect_ratio {
 	u32 aspect_width;
 	u32 aspect_height;
 };
 
+=======
+>>>>>>> p9x
 struct hal_codec_supported {
 	u32 decoder_codec_supported;
 	u32 encoder_codec_supported;
@@ -1014,15 +1080,24 @@ enum hal_iframesize_type {
 };
 
 enum vidc_resource_id {
+<<<<<<< HEAD
 	VIDC_RESOURCE_NONE,
 	VIDC_RESOURCE_OCMEM,
 	VIDC_RESOURCE_VMEM,
 	VIDC_UNUSED_RESOURCE = 0x10000000,
+=======
+	VIDC_RESOURCE_OCMEM = 0x00000001,
+	VIDC_UNUSED_RESORUCE = 0x10000000,
+>>>>>>> p9x
 };
 
 struct vidc_resource_hdr {
 	enum vidc_resource_id resource_id;
+<<<<<<< HEAD
 	void *resource_handle;
+=======
+	u32 resource_handle;
+>>>>>>> p9x
 	u32 size;
 };
 
@@ -1077,8 +1152,13 @@ struct vidc_seq_hdr {
 };
 
 struct hal_fw_info {
+<<<<<<< HEAD
 	char version[VENUS_VERSION_LENGTH];
 	phys_addr_t base_addr;
+=======
+	char version[128];
+	int base_addr;
+>>>>>>> p9x
 	int register_base;
 	int register_size;
 	int irq;
@@ -1131,16 +1211,25 @@ struct hal_ltr_mark {
 	u32 mark_frame;
 };
 
+<<<<<<< HEAD
 enum hal_perf_mode {
 	HAL_PERF_MODE_POWER_SAVE,
 	HAL_PERF_MODE_POWER_MAX_QUALITY,
+=======
+struct hal_venc_perf_mode {
+	u32 mode;
+>>>>>>> p9x
 };
 
 struct hal_hybrid_hierp {
 	u32 layers;
 };
 
+<<<<<<< HEAD
 struct hal_scs_threshold {
+=======
+struct hfi_scs_threshold {
+>>>>>>> p9x
 	u32 threshold_value;
 };
 
@@ -1169,6 +1258,10 @@ union hal_get_property {
 	struct hal_bitrate bitrate;
 	struct hal_profile_level profile_level;
 	struct hal_profile_level_supported profile_level_supported;
+<<<<<<< HEAD
+=======
+	struct hal_h264_entropy_control h264_entropy_control;
+>>>>>>> p9x
 	struct hal_mpeg4_time_resolution mpeg4_time_resolution;
 	struct hal_mpeg4_header_extension mpeg4_header_extension;
 	struct hal_h264_db_control h264_db_control;
@@ -1201,6 +1294,7 @@ union hal_get_property {
 	struct hal_buffer_info buffer_info;
 	struct hal_buffer_alloc_mode buffer_alloc_mode;
 	struct buffer_requirements buf_req;
+<<<<<<< HEAD
 	enum hal_h264_entropy h264_entropy;
 };
 
@@ -1244,6 +1338,70 @@ enum hal_command_response {
 	HAL_RESPONSE_UNUSED = 0x10000000,
 };
 
+=======
+};
+
+/* HAL Response */
+
+enum command_response {
+/* SYSTEM COMMANDS_DONE*/
+	VIDC_EVENT_CHANGE,
+	SYS_INIT_DONE,
+	SET_RESOURCE_DONE,
+	RELEASE_RESOURCE_DONE,
+	PING_ACK_DONE,
+	PC_PREP_DONE,
+	SYS_IDLE,
+	SYS_DEBUG,
+	SYS_WATCHDOG_TIMEOUT,
+	SYS_ERROR,
+/* SESSION COMMANDS_DONE */
+	SESSION_LOAD_RESOURCE_DONE,
+	SESSION_INIT_DONE,
+	SESSION_END_DONE,
+	SESSION_ABORT_DONE,
+	SESSION_START_DONE,
+	SESSION_STOP_DONE,
+	SESSION_ETB_DONE,
+	SESSION_FTB_DONE,
+	SESSION_FLUSH_DONE,
+	SESSION_SUSPEND_DONE,
+	SESSION_RESUME_DONE,
+	SESSION_SET_PROP_DONE,
+	SESSION_GET_PROP_DONE,
+	SESSION_PARSE_SEQ_HDR_DONE,
+	SESSION_GET_SEQ_HDR_DONE,
+	SESSION_RELEASE_BUFFER_DONE,
+	SESSION_RELEASE_RESOURCE_DONE,
+	SESSION_PROPERTY_INFO,
+	SESSION_ERROR,
+	RESPONSE_UNUSED = 0x10000000,
+};
+
+/* Command Callback structure */
+
+struct msm_vidc_cb_cmd_done {
+	u32 device_id;
+	void *session_id;
+	enum vidc_status status;
+	u32 size;
+	void *data;
+};
+
+struct msm_vidc_cb_event {
+	u32 device_id;
+	void *session_id;
+	enum vidc_status status;
+	u32 height;
+	u32 width;
+	u32 hal_event_type;
+	ion_phys_addr_t packet_buffer;
+	ion_phys_addr_t extra_data_buffer;
+};
+
+/* Data callback structure */
+
+>>>>>>> p9x
 struct vidc_hal_ebd {
 	u32 timestamp_hi;
 	u32 timestamp_lo;
@@ -1294,6 +1452,21 @@ struct vidc_hal_fbd {
 	enum hal_buffer buffer_type;
 };
 
+<<<<<<< HEAD
+=======
+struct msm_vidc_cb_data_done {
+	u32 device_id;
+	void *session_id;
+	enum vidc_status status;
+	u32 size;
+	u32 clnt_data;
+	union {
+		struct vidc_hal_ebd input_done;
+		struct vidc_hal_fbd output_done;
+	};
+};
+
+>>>>>>> p9x
 struct msm_vidc_capability {
 	enum hal_domain domain;
 	enum hal_video_codec codec;
@@ -1313,7 +1486,10 @@ struct msm_vidc_capability {
 	struct hal_capability_supported hier_b;
 	struct hal_capability_supported lcu_size;
 	struct hal_capability_supported hier_p_hybrid;
+<<<<<<< HEAD
 	struct hal_capability_supported mbs_per_sec_power_save;
+=======
+>>>>>>> p9x
 	struct hal_profile_level_supported profile_level;
 	struct hal_uncompressed_format_supported uncomp_format;
 	struct hal_interlace_format_supported HAL_format;
@@ -1322,6 +1498,10 @@ struct msm_vidc_capability {
 	enum buffer_mode_type alloc_mode_out;
 	enum buffer_mode_type alloc_mode_in;
 	u32 pixelprocess_capabilities;
+<<<<<<< HEAD
+=======
+	bool capability_set;
+>>>>>>> p9x
 };
 
 struct vidc_hal_sys_init_done {
@@ -1329,13 +1509,17 @@ struct vidc_hal_sys_init_done {
 	u32 enc_codec_supported;
 	u32 codec_count;
 	struct msm_vidc_capability *capabilities;
+<<<<<<< HEAD
 	u32 max_sessions_supported;
+=======
+>>>>>>> p9x
 };
 
 struct vidc_hal_session_init_done {
 	struct msm_vidc_capability capability;
 };
 
+<<<<<<< HEAD
 struct msm_vidc_cb_cmd_done {
 	u32 device_id;
 	void *session_id;
@@ -1395,6 +1579,11 @@ struct msm_vidc_cb_info {
 
 enum msm_vidc_hfi_type {
 	VIDC_HFI_VENUS,
+=======
+enum msm_vidc_hfi_type {
+	VIDC_HFI_VENUS,
+	VIDC_HFI_Q6,
+>>>>>>> p9x
 };
 
 enum msm_vidc_thermal_level {
@@ -1427,6 +1616,7 @@ static inline enum vidc_vote_data_session VIDC_VOTE_DATA_SESSION_VAL(
 	return (1 << ilog2(c) * 2) | ((d - 1) << (ilog2(c) * 2 + 1));
 }
 
+<<<<<<< HEAD
 struct msm_vidc_gov_data {
 	struct vidc_bus_vote_data *data;
 	u32 data_count;
@@ -1449,10 +1639,17 @@ struct vidc_bus_vote_data {
 	struct imem_ab_table *imem_ab_tbl;
 	u32 imem_ab_tbl_size;
 	unsigned long core_freq;
+=======
+struct vidc_bus_vote_data {
+	enum vidc_vote_data_session session;
+	int load;
+	enum msm_vidc_power_mode power_mode;
+>>>>>>> p9x
 };
 
 struct vidc_clk_scale_data {
 	enum vidc_vote_data_session session[VIDC_MAX_SESSIONS];
+<<<<<<< HEAD
 	enum msm_vidc_power_mode power_mode[VIDC_MAX_SESSIONS];
 	u32 load[VIDC_MAX_SESSIONS];
 	int num_sessions;
@@ -1475,6 +1672,12 @@ struct hal_cmd_sys_get_property_packet {
 	u32 rg_property_data[1];
 };
 
+=======
+	unsigned long freq[VIDC_MAX_SESSIONS];
+	int num_sessions;
+};
+
+>>>>>>> p9x
 #define call_hfi_op(q, op, args...)			\
 	(((q) && (q)->op) ? ((q)->op(args)) : 0)
 
@@ -1484,11 +1687,19 @@ struct hfi_device {
 	/*Add function pointers for all the hfi functions below*/
 	int (*core_init)(void *device);
 	int (*core_release)(void *device);
+<<<<<<< HEAD
 	int (*core_ping)(void *device);
 	int (*core_trigger_ssr)(void *device, enum hal_ssr_trigger_type);
 	int (*session_init)(void *device, void *session_id,
 		enum hal_domain session_type, enum hal_video_codec codec_type,
 		void **new_session);
+=======
+	int (*core_pc_prep)(void *device);
+	int (*core_ping)(void *device);
+	int (*core_trigger_ssr)(void *device, enum hal_ssr_trigger_type);
+	void *(*session_init)(void *device, void *session_id,
+		enum hal_domain session_type, enum hal_video_codec codec_type);
+>>>>>>> p9x
 	int (*session_end)(void *session);
 	int (*session_abort)(void *session);
 	int (*session_set_buffers)(void *sess,
@@ -1500,11 +1711,18 @@ struct hfi_device {
 	int (*session_start)(void *sess);
 	int (*session_continue)(void *sess);
 	int (*session_stop)(void *sess);
+<<<<<<< HEAD
 	int (*session_etb)(void *sess, struct vidc_frame_data *input_frame);
 	int (*session_ftb)(void *sess, struct vidc_frame_data *output_frame);
 	int (*session_process_batch)(void *sess,
 		int num_etbs, struct vidc_frame_data etbs[],
 		int num_ftbs, struct vidc_frame_data ftbs[]);
+=======
+	int (*session_etb)(void *sess,
+			struct vidc_frame_data *input_frame);
+	int (*session_ftb)(void *sess,
+			struct vidc_frame_data *output_frame);
+>>>>>>> p9x
 	int (*session_parse_seq_hdr)(void *sess,
 			struct vidc_seq_hdr *seq_hdr);
 	int (*session_get_seq_hdr)(void *sess,
@@ -1515,6 +1733,7 @@ struct hfi_device {
 			void *pdata);
 	int (*session_get_property)(void *sess, enum hal_property ptype);
 	int (*scale_clocks)(void *dev, int load,
+<<<<<<< HEAD
 			struct vidc_clk_scale_data *data,
 			unsigned long instant_bitrate);
 	int (*vote_bus)(void *dev, struct vidc_bus_vote_data *data,
@@ -1534,6 +1753,34 @@ typedef void (*msm_vidc_callback) (u32 response, void *callback);
 struct hfi_device *vidc_hfi_initialize(enum msm_vidc_hfi_type hfi_type,
 		u32 device_id, struct msm_vidc_platform_resources *res,
 		hfi_cmd_response_callback callback);
+=======
+			struct vidc_clk_scale_data *data);
+	int (*vote_bus)(void *dev, struct vidc_bus_vote_data *data,
+			int num_data);
+	int (*unvote_bus)(void *dev);
+	int (*iommu_get_domain_partition)(void *dev, u32 flags, u32 buffer_type,
+			int *domain_num, int *partition_num);
+	int (*load_fw)(void *dev);
+	void (*unload_fw)(void *dev);
+	int (*get_fw_info)(void *dev, struct hal_fw_info *fw_info);
+	int (*get_stride_scanline)(int color_fmt, int width,
+		int height,	int *stride, int *scanlines);
+	int (*session_clean)(void *sess);
+	int (*get_core_capabilities)(void);
+	int (*power_enable)(void *dev);
+	int (*suspend)(void *dev);
+	unsigned long (*get_core_clock_rate)(void *dev);
+	enum hal_default_properties (*get_default_properties)(void *dev);
+};
+
+typedef void (*hfi_cmd_response_callback) (enum command_response cmd,
+			void *data);
+typedef void (*msm_vidc_callback) (u32 response, void *callback);
+
+void *vidc_hfi_initialize(enum msm_vidc_hfi_type hfi_type, u32 device_id,
+			struct msm_vidc_platform_resources *res,
+			hfi_cmd_response_callback callback);
+>>>>>>> p9x
 void vidc_hfi_deinitialize(enum msm_vidc_hfi_type hfi_type,
 			struct hfi_device *hdev);
 u32 vidc_get_hfi_domain(enum hal_domain hal_domain);

@@ -895,6 +895,7 @@ void cfg80211_update_iface_num(struct cfg80211_registered_device *rdev,
 		rdev->num_running_monitor_ifaces += num;
 }
 
+<<<<<<< HEAD
 void __cfg80211_leave(struct cfg80211_registered_device *rdev,
 		      struct wireless_dev *wdev)
 {
@@ -935,6 +936,11 @@ void __cfg80211_leave(struct cfg80211_registered_device *rdev,
 
 void cfg80211_stop_iface(struct wiphy *wiphy, struct wireless_dev *wdev,
 			 gfp_t gfp)
+=======
+static int cfg80211_netdev_notifier_call(struct notifier_block *nb,
+					 unsigned long state,
+					 void *ndev)
+>>>>>>> p9x
 {
 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wiphy);
 	struct cfg80211_event *ev;
@@ -1022,20 +1028,34 @@ static int cfg80211_netdev_notifier_call(struct notifier_block *nb,
 			break;
 		case NL80211_IFTYPE_P2P_CLIENT:
 		case NL80211_IFTYPE_STATION:
+<<<<<<< HEAD
 			ASSERT_RTNL();
 			sched_scan_req = rtnl_dereference(rdev->sched_scan_req);
 			if (sched_scan_req && dev == sched_scan_req->dev)
 				__cfg80211_stop_sched_scan(rdev, false);
+=======
+			mutex_lock(&rdev->sched_scan_mtx);
+			__cfg80211_stop_sched_scan(rdev, false);
+			mutex_unlock(&rdev->sched_scan_mtx);
+>>>>>>> p9x
 
 			wdev_lock(wdev);
 #ifdef CONFIG_CFG80211_WEXT
 			kfree(wdev->wext.ie);
 			wdev->wext.ie = NULL;
 			wdev->wext.ie_len = 0;
+<<<<<<< HEAD
 			wdev->wext.connect.auth_type = NL80211_AUTHTYPE_AUTOMATIC;
 #endif
 			cfg80211_disconnect(rdev, dev,
 					WLAN_REASON_DEAUTH_LEAVING, true);
+=======
+			wdev->wext.connect.auth_type =
+						NL80211_AUTHTYPE_AUTOMATIC;
+#endif
+			__cfg80211_disconnect(rdev, dev,
+					      WLAN_REASON_DEAUTH_LEAVING, true);
+>>>>>>> p9x
 			cfg80211_mlme_down(rdev, dev);
 			wdev_unlock(wdev);
 			break;
@@ -1043,7 +1063,12 @@ static int cfg80211_netdev_notifier_call(struct notifier_block *nb,
 			cfg80211_leave_mesh(rdev, dev);
 			break;
 		case NL80211_IFTYPE_AP:
+<<<<<<< HEAD
 			cfg80211_stop_ap(rdev, dev, false);
+=======
+		case NL80211_IFTYPE_P2P_GO:
+			cfg80211_stop_ap(rdev, dev);
+>>>>>>> p9x
 			break;
 		default:
 			break;

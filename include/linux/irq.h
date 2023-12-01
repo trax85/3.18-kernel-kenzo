@@ -418,6 +418,10 @@ extern void irq_cpu_online(void);
 extern void irq_cpu_offline(void);
 extern int irq_set_affinity_locked(struct irq_data *data,
 				   const struct cpumask *cpumask, bool force);
+<<<<<<< HEAD
+=======
+extern void irq_affinity_notify(struct work_struct *work);
+>>>>>>> p9x
 
 #if defined(CONFIG_SMP) && defined(CONFIG_GENERIC_PENDING_IRQ)
 void irq_move_irq(struct irq_data *data);
@@ -848,6 +852,7 @@ static inline void irq_gc_lock(struct irq_chip_generic *gc) { }
 static inline void irq_gc_unlock(struct irq_chip_generic *gc) { }
 #endif
 
+<<<<<<< HEAD
 static inline void irq_reg_writel(struct irq_chip_generic *gc,
 				  u32 val, int reg_offset)
 {
@@ -876,4 +881,6 @@ static inline u32 irq_reg_readl(struct irq_chip_generic *gc,
 		return readl(gc->reg_base + reg_offset);
 }
 
+=======
+>>>>>>> p9x
 #endif /* _LINUX_IRQ_H */

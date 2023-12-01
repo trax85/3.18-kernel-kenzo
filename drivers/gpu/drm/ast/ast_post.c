@@ -57,7 +57,11 @@ bool ast_is_vga_enabled(struct drm_device *dev)
 	if (ast->chip == AST1180) {
 		/* TODO 1180 */
 	} else {
+<<<<<<< HEAD
 		ch = ast_io_read8(ast, AST_IO_VGA_ENABLE_PORT);
+=======
+		ch = ast_io_read8(ast, 0x43);
+>>>>>>> p9x
 		return !!(ch & 0x01);
 	}
 	return false;

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014 - 2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -125,6 +129,10 @@ struct qpic_panel_io_desc {
 	struct regulator *avdd_vreg;
 	u32 init;
 	struct qpic_pinctrl_res pin_res;
+<<<<<<< HEAD
+=======
+	bool splash_screen_transition;
+>>>>>>> p9x
 };
 
 int mdss_qpic_panel_io_init(struct platform_device *pdev,

@@ -294,17 +294,23 @@ static const struct pci_device_id iwl_hw_card_ids[] = {
 	{IWL_PCI_DEVICE(0x08B1, 0x4462, iwl7260_n_cfg)},
 	{IWL_PCI_DEVICE(0x08B1, 0x4870, iwl7260_2ac_cfg)},
 	{IWL_PCI_DEVICE(0x08B1, 0x486E, iwl7260_2ac_cfg)},
+<<<<<<< HEAD
 	{IWL_PCI_DEVICE(0x08B1, 0x4A70, iwl7260_2ac_cfg_high_temp)},
 	{IWL_PCI_DEVICE(0x08B1, 0x4A6E, iwl7260_2ac_cfg_high_temp)},
 	{IWL_PCI_DEVICE(0x08B1, 0x4A6C, iwl7260_2ac_cfg_high_temp)},
+=======
+>>>>>>> p9x
 	{IWL_PCI_DEVICE(0x08B1, 0x4570, iwl7260_2ac_cfg)},
 	{IWL_PCI_DEVICE(0x08B1, 0x4560, iwl7260_2n_cfg)},
 	{IWL_PCI_DEVICE(0x08B2, 0x4370, iwl7260_2ac_cfg)},
 	{IWL_PCI_DEVICE(0x08B2, 0x4360, iwl7260_2n_cfg)},
 	{IWL_PCI_DEVICE(0x08B1, 0x5070, iwl7260_2ac_cfg)},
+<<<<<<< HEAD
 	{IWL_PCI_DEVICE(0x08B1, 0x5072, iwl7260_2ac_cfg)},
 	{IWL_PCI_DEVICE(0x08B1, 0x5170, iwl7260_2ac_cfg)},
 	{IWL_PCI_DEVICE(0x08B1, 0x5770, iwl7260_2ac_cfg)},
+=======
+>>>>>>> p9x
 	{IWL_PCI_DEVICE(0x08B1, 0x4020, iwl7260_2n_cfg)},
 	{IWL_PCI_DEVICE(0x08B1, 0x402A, iwl7260_2n_cfg)},
 	{IWL_PCI_DEVICE(0x08B2, 0x4220, iwl7260_2n_cfg)},
@@ -358,6 +364,7 @@ static const struct pci_device_id iwl_hw_card_ids[] = {
 	{IWL_PCI_DEVICE(0x08B3, 0x8060, iwl3160_2n_cfg)},
 	{IWL_PCI_DEVICE(0x08B3, 0x8062, iwl3160_n_cfg)},
 	{IWL_PCI_DEVICE(0x08B4, 0x8270, iwl3160_2ac_cfg)},
+<<<<<<< HEAD
 	{IWL_PCI_DEVICE(0x08B4, 0x8370, iwl3160_2ac_cfg)},
 	{IWL_PCI_DEVICE(0x08B4, 0x8272, iwl3160_2ac_cfg)},
 	{IWL_PCI_DEVICE(0x08B3, 0x8470, iwl3160_2ac_cfg)},
@@ -422,6 +429,10 @@ static const struct pci_device_id iwl_hw_card_ids[] = {
 	{IWL_PCI_DEVICE(0x24F3, 0x0004, iwl8260_2n_cfg)},
 	{IWL_PCI_DEVICE(0x24F4, 0x0030, iwl8260_2ac_cfg)},
 #endif /* CONFIG_IWLMVM */
+=======
+	{IWL_PCI_DEVICE(0x08B3, 0x8470, iwl3160_2ac_cfg)},
+	{IWL_PCI_DEVICE(0x08B3, 0x8570, iwl3160_2ac_cfg)},
+>>>>>>> p9x
 
 	{0}
 };

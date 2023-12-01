@@ -249,9 +249,15 @@ void sctp_generate_t3_rtx_event(unsigned long peer)
 
 	/* Check whether a task is in the sock.  */
 
+<<<<<<< HEAD
 	bh_lock_sock(sk);
 	if (sock_owned_by_user(sk)) {
 		pr_debug("%s: sock is busy\n", __func__);
+=======
+	sctp_bh_lock_sock(sk);
+	if (sock_owned_by_user(sk)) {
+		SCTP_DEBUG_PRINTK("%s:Sock is busy.\n", __func__);
+>>>>>>> p9x
 
 		/* Try again later.  */
 		if (!mod_timer(&transport->T3_rtx_timer, jiffies + (HZ/20)))
@@ -276,7 +282,11 @@ void sctp_generate_t3_rtx_event(unsigned long peer)
 		sk->sk_err = -error;
 
 out_unlock:
+<<<<<<< HEAD
 	bh_unlock_sock(sk);
+=======
+	sctp_bh_unlock_sock(sk);
+>>>>>>> p9x
 	sctp_transport_put(transport);
 }
 
@@ -290,10 +300,18 @@ static void sctp_generate_timeout_event(struct sctp_association *asoc,
 	struct net *net = sock_net(sk);
 	int error = 0;
 
+<<<<<<< HEAD
 	bh_lock_sock(sk);
 	if (sock_owned_by_user(sk)) {
 		pr_debug("%s: sock is busy: timer %d\n", __func__,
 			 timeout_type);
+=======
+	sctp_bh_lock_sock(sk);
+	if (sock_owned_by_user(sk)) {
+		SCTP_DEBUG_PRINTK("%s:Sock is busy: timer %d\n",
+				  __func__,
+				  timeout_type);
+>>>>>>> p9x
 
 		/* Try again later.  */
 		if (!mod_timer(&asoc->timers[timeout_type], jiffies + (HZ/20)))
@@ -317,7 +335,11 @@ static void sctp_generate_timeout_event(struct sctp_association *asoc,
 		sk->sk_err = -error;
 
 out_unlock:
+<<<<<<< HEAD
 	bh_unlock_sock(sk);
+=======
+	sctp_bh_unlock_sock(sk);
+>>>>>>> p9x
 	sctp_association_put(asoc);
 }
 
@@ -370,9 +392,15 @@ void sctp_generate_heartbeat_event(unsigned long data)
 	struct sock *sk = asoc->base.sk;
 	struct net *net = sock_net(sk);
 
+<<<<<<< HEAD
 	bh_lock_sock(sk);
 	if (sock_owned_by_user(sk)) {
 		pr_debug("%s: sock is busy\n", __func__);
+=======
+	sctp_bh_lock_sock(sk);
+	if (sock_owned_by_user(sk)) {
+		SCTP_DEBUG_PRINTK("%s:Sock is busy.\n", __func__);
+>>>>>>> p9x
 
 		/* Try again later.  */
 		if (!mod_timer(&transport->hb_timer, jiffies + (HZ/20)))
@@ -395,7 +423,11 @@ void sctp_generate_heartbeat_event(unsigned long data)
 		 sk->sk_err = -error;
 
 out_unlock:
+<<<<<<< HEAD
 	bh_unlock_sock(sk);
+=======
+	sctp_bh_unlock_sock(sk);
+>>>>>>> p9x
 	sctp_transport_put(transport);
 }
 
@@ -408,10 +440,17 @@ void sctp_generate_proto_unreach_event(unsigned long data)
 	struct sctp_association *asoc = transport->asoc;
 	struct sock *sk = asoc->base.sk;
 	struct net *net = sock_net(sk);
+<<<<<<< HEAD
 
 	bh_lock_sock(sk);
 	if (sock_owned_by_user(sk)) {
 		pr_debug("%s: sock is busy\n", __func__);
+=======
+	
+	sctp_bh_lock_sock(sk);
+	if (sock_owned_by_user(sk)) {
+		SCTP_DEBUG_PRINTK("%s:Sock is busy.\n", __func__);
+>>>>>>> p9x
 
 		/* Try again later.  */
 		if (!mod_timer(&transport->proto_unreach_timer,
@@ -431,7 +470,11 @@ void sctp_generate_proto_unreach_event(unsigned long data)
 		   asoc->state, asoc->ep, asoc, transport, GFP_ATOMIC);
 
 out_unlock:
+<<<<<<< HEAD
 	bh_unlock_sock(sk);
+=======
+	sctp_bh_unlock_sock(sk);
+>>>>>>> p9x
 	sctp_association_put(asoc);
 }
 

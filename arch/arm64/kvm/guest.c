@@ -38,6 +38,10 @@ struct kvm_stats_debugfs_item debugfs_entries[] = {
 
 int kvm_arch_vcpu_setup(struct kvm_vcpu *vcpu)
 {
+<<<<<<< HEAD
+=======
+	vcpu->arch.hcr_el2 = HCR_GUEST_FLAGS;
+>>>>>>> p9x
 	return 0;
 }
 
@@ -46,6 +50,7 @@ static u64 core_reg_offset_from_id(u64 id)
 	return id & ~(KVM_REG_ARCH_MASK | KVM_REG_SIZE_MASK | KVM_REG_ARM_CORE);
 }
 
+<<<<<<< HEAD
 static int validate_core_offset(const struct kvm_one_reg *reg)
 {
 	u64 off = core_reg_offset_from_id(reg->id);
@@ -85,6 +90,8 @@ static int validate_core_offset(const struct kvm_one_reg *reg)
 	return -EINVAL;
 }
 
+=======
+>>>>>>> p9x
 static int get_core_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 {
 	/*
@@ -104,9 +111,12 @@ static int get_core_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 	    (off + (KVM_REG_SIZE(reg->id) / sizeof(__u32))) >= nr_regs)
 		return -ENOENT;
 
+<<<<<<< HEAD
 	if (validate_core_offset(reg))
 		return -EINVAL;
 
+=======
+>>>>>>> p9x
 	if (copy_to_user(uaddr, ((u32 *)regs) + off, KVM_REG_SIZE(reg->id)))
 		return -EFAULT;
 
@@ -129,9 +139,12 @@ static int set_core_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 	    (off + (KVM_REG_SIZE(reg->id) / sizeof(__u32))) >= nr_regs)
 		return -ENOENT;
 
+<<<<<<< HEAD
 	if (validate_core_offset(reg))
 		return -EINVAL;
 
+=======
+>>>>>>> p9x
 	if (KVM_REG_SIZE(reg->id) > sizeof(tmp))
 		return -EINVAL;
 
@@ -141,17 +154,24 @@ static int set_core_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 	}
 
 	if (off == KVM_REG_ARM_CORE_REG(regs.pstate)) {
+<<<<<<< HEAD
 		u64 mode = (*(u64 *)valp) & COMPAT_PSR_MODE_MASK;
 		switch (mode) {
 		case COMPAT_PSR_MODE_USR:
 			if ((read_cpuid(ID_AA64PFR0_EL1) & 0xf) != 2)
 				return -EINVAL;
 			break;
+=======
+		u32 mode = (*(u32 *)valp) & COMPAT_PSR_MODE_MASK;
+		switch (mode) {
+		case COMPAT_PSR_MODE_USR:
+>>>>>>> p9x
 		case COMPAT_PSR_MODE_FIQ:
 		case COMPAT_PSR_MODE_IRQ:
 		case COMPAT_PSR_MODE_SVC:
 		case COMPAT_PSR_MODE_ABT:
 		case COMPAT_PSR_MODE_UND:
+<<<<<<< HEAD
 			if (!vcpu_el1_is_32bit(vcpu))
 				return -EINVAL;
 			break;
@@ -160,6 +180,11 @@ static int set_core_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 		case PSR_MODE_EL1h:
 			if (vcpu_el1_is_32bit(vcpu))
 				return -EINVAL;
+=======
+		case PSR_MODE_EL0t:
+		case PSR_MODE_EL1t:
+		case PSR_MODE_EL1h:
+>>>>>>> p9x
 			break;
 		default:
 			err = -EINVAL;
@@ -188,6 +213,7 @@ static unsigned long num_core_regs(void)
 }
 
 /**
+<<<<<<< HEAD
  * ARM64 versions of the TIMER registers, always available on arm64
  */
 
@@ -241,14 +267,20 @@ static int get_timer_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 }
 
 /**
+=======
+>>>>>>> p9x
  * kvm_arm_num_regs - how many registers do we present via KVM_GET_ONE_REG
  *
  * This is for all registers.
  */
 unsigned long kvm_arm_num_regs(struct kvm_vcpu *vcpu)
 {
+<<<<<<< HEAD
 	return num_core_regs() + kvm_arm_num_sys_reg_descs(vcpu)
                 + NUM_TIMER_REGS;
+=======
+	return num_core_regs() + kvm_arm_num_sys_reg_descs(vcpu);
+>>>>>>> p9x
 }
 
 /**
@@ -260,7 +292,10 @@ int kvm_arm_copy_reg_indices(struct kvm_vcpu *vcpu, u64 __user *uindices)
 {
 	unsigned int i;
 	const u64 core_reg = KVM_REG_ARM64 | KVM_REG_SIZE_U64 | KVM_REG_ARM_CORE;
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> p9x
 
 	for (i = 0; i < sizeof(struct kvm_regs) / sizeof(__u32); i++) {
 		if (put_user(core_reg | i, uindices))
@@ -268,11 +303,14 @@ int kvm_arm_copy_reg_indices(struct kvm_vcpu *vcpu, u64 __user *uindices)
 		uindices++;
 	}
 
+<<<<<<< HEAD
 	ret = copy_timer_indices(vcpu, uindices);
 	if (ret)
 		return ret;
 	uindices += NUM_TIMER_REGS;
 
+=======
+>>>>>>> p9x
 	return kvm_arm_copy_sys_reg_indices(vcpu, uindices);
 }
 
@@ -286,9 +324,12 @@ int kvm_arm_get_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 	if ((reg->id & KVM_REG_ARM_COPROC_MASK) == KVM_REG_ARM_CORE)
 		return get_core_reg(vcpu, reg);
 
+<<<<<<< HEAD
 	if (is_timer_reg(reg->id))
 		return get_timer_reg(vcpu, reg);
 
+=======
+>>>>>>> p9x
 	return kvm_arm_sys_reg_get_reg(vcpu, reg);
 }
 
@@ -302,9 +343,12 @@ int kvm_arm_set_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 	if ((reg->id & KVM_REG_ARM_COPROC_MASK) == KVM_REG_ARM_CORE)
 		return set_core_reg(vcpu, reg);
 
+<<<<<<< HEAD
 	if (is_timer_reg(reg->id))
 		return set_timer_reg(vcpu, reg);
 
+=======
+>>>>>>> p9x
 	return kvm_arm_sys_reg_set_reg(vcpu, reg);
 }
 

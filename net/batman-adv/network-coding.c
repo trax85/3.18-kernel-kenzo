@@ -58,6 +58,7 @@ static void batadv_nc_start_timer(struct batadv_priv *bat_priv)
 }
 
 /**
+<<<<<<< HEAD
  * batadv_nc_tvlv_container_update - update the network coding tvlv container
  *  after network coding setting change
  * @bat_priv: the bat priv with all the soft interface information
@@ -115,6 +116,11 @@ static void batadv_nc_tvlv_ogm_handler_v1(struct batadv_priv *bat_priv,
  * batadv_nc_mesh_init - initialise coding hash table and start house keeping
  * @bat_priv: the bat priv with all the soft interface information
  */
+=======
+ * batadv_nc_mesh_init - initialise coding hash table and start house keeping
+ * @bat_priv: the bat priv with all the soft interface information
+ */
+>>>>>>> p9x
 int batadv_nc_mesh_init(struct batadv_priv *bat_priv)
 {
 	bat_priv->nc.timestamp_fwd_flush = jiffies;
@@ -1831,8 +1837,11 @@ free_nc_packet:
  */
 void batadv_nc_mesh_free(struct batadv_priv *bat_priv)
 {
+<<<<<<< HEAD
 	batadv_tvlv_container_unregister(bat_priv, BATADV_TVLV_NC, 1);
 	batadv_tvlv_handler_unregister(bat_priv, BATADV_TVLV_NC, 1);
+=======
+>>>>>>> p9x
 	cancel_delayed_work_sync(&bat_priv->nc.work);
 
 	batadv_nc_purge_paths(bat_priv, bat_priv->nc.coding_hash, NULL);

@@ -65,9 +65,15 @@ static inline struct page *dma_addr_to_page(struct device *dev,
 static inline int cpu_needs_post_dma_flush(struct device *dev)
 {
 	return !plat_device_is_coherent(dev) &&
+<<<<<<< HEAD
 	       (boot_cpu_type() == CPU_R10000 ||
 		boot_cpu_type() == CPU_R12000 ||
 		boot_cpu_type() == CPU_BMIPS5000);
+=======
+	       (current_cpu_type() == CPU_R10000 ||
+		current_cpu_type() == CPU_R12000 ||
+		current_cpu_type() == CPU_BMIPS5000);
+>>>>>>> p9x
 }
 
 static gfp_t massage_gfp_flags(const struct device *dev, gfp_t gfp)
@@ -322,8 +328,14 @@ static void mips_dma_sync_sg_for_cpu(struct device *dev,
 {
 	int i;
 
+<<<<<<< HEAD
 	if (cpu_needs_post_dma_flush(dev))
 		for (i = 0; i < nelems; i++, sg++)
+=======
+	/* Make sure that gcc doesn't leave the empty loop body.  */
+	for (i = 0; i < nelems; i++, sg++) {
+		if (cpu_needs_post_dma_flush(dev))
+>>>>>>> p9x
 			__dma_sync(sg_page(sg), sg->offset, sg->length,
 				   direction);
 }

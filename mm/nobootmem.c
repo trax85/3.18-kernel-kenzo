@@ -92,7 +92,11 @@ static void __init __free_pages_memory(unsigned long start, unsigned long end)
 		while (start + (1UL << order) > end)
 			order--;
 
+<<<<<<< HEAD
 		__free_pages_bootmem(pfn_to_page(start), start, order);
+=======
+		__free_pages_bootmem(pfn_to_page(start), order);
+>>>>>>> p9x
 
 		start += (1UL << order);
 	}
@@ -145,10 +149,19 @@ static unsigned long __init free_low_memory_core_early(void)
 
 static int reset_managed_pages_done __initdata;
 
+<<<<<<< HEAD
 void reset_node_managed_pages(pg_data_t *pgdat)
 {
 	struct zone *z;
 
+=======
+static inline void __init reset_node_managed_pages(pg_data_t *pgdat)
+{
+	struct zone *z;
+
+	if (reset_managed_pages_done)
+		return;
+>>>>>>> p9x
 	for (z = pgdat->node_zones; z < pgdat->node_zones + MAX_NR_ZONES; z++)
 		z->managed_pages = 0;
 }
@@ -157,12 +170,17 @@ void __init reset_all_zones_managed_pages(void)
 {
 	struct pglist_data *pgdat;
 
+<<<<<<< HEAD
 	if (reset_managed_pages_done)
 		return;
 
 	for_each_online_pgdat(pgdat)
 		reset_node_managed_pages(pgdat);
 
+=======
+	for_each_online_pgdat(pgdat)
+		reset_node_managed_pages(pgdat);
+>>>>>>> p9x
 	reset_managed_pages_done = 1;
 }
 

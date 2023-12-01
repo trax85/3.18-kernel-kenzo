@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
  * only version 2 as published by the Free Software Foundation.
@@ -26,9 +30,17 @@
 #include <linux/scatterlist.h>
 #include <linux/device-mapper.h>
 #include <linux/printk.h>
+<<<<<<< HEAD
 
 #include <asm/page.h>
 #include <asm/unaligned.h>
+=======
+#include <linux/pft.h>
+
+#include <asm/page.h>
+#include <asm/unaligned.h>
+
+>>>>>>> p9x
 #include <crypto/scatterwalk.h>
 #include <crypto/hash.h>
 #include <crypto/md5.h>
@@ -42,7 +54,11 @@
 #define MAX_ENCRYPTION_BUFFERS 1
 #define MIN_IOS 256
 #define MIN_POOL_PAGES 32
+<<<<<<< HEAD
 #define KEY_SIZE_XTS 64
+=======
+#define KEY_SIZE_XTS 32
+>>>>>>> p9x
 #define AES_XTS_IV_LEN 16
 #define MAX_MSM_ICE_KEY_LUT_SIZE 32
 #define SECTOR_SIZE 512
@@ -126,6 +142,10 @@ static struct qcrypto_func_set dm_qcrypto_func = {
 		qcrypto_get_engine_list
 };
 #endif
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 static void req_crypt_cipher_complete
 		(struct crypto_async_request *req, int err);
 static void req_cryptd_split_req_queue_cb
@@ -137,9 +157,16 @@ static void req_crypt_split_io_complete
 
 static  bool req_crypt_should_encrypt(struct req_dm_crypt_io *req)
 {
+<<<<<<< HEAD
 	int ret = 0;
 	bool should_encrypt = false;
 	struct bio *bio = NULL;
+=======
+	int ret;
+	bool should_encrypt = false;
+	struct bio *bio = NULL;
+	u32 key_id = 0;
+>>>>>>> p9x
 	bool is_encrypted = false;
 	bool is_inplace = false;
 
@@ -150,6 +177,10 @@ static  bool req_crypt_should_encrypt(struct req_dm_crypt_io *req)
 		return false;
 	bio = req->cloned_request->bio;
 
+<<<<<<< HEAD
+=======
+	ret = pft_get_key_index(bio, &key_id, &is_encrypted, &is_inplace);
+>>>>>>> p9x
 	/* req->key_id = key_id; @todo support more than 1 pfe key */
 	if ((ret == 0) && (is_encrypted || is_inplace)) {
 		should_encrypt = true;
@@ -164,9 +195,16 @@ static  bool req_crypt_should_encrypt(struct req_dm_crypt_io *req)
 
 static  bool req_crypt_should_deccrypt(struct req_dm_crypt_io *req)
 {
+<<<<<<< HEAD
 	int ret = 0;
 	bool should_deccrypt = false;
 	struct bio *bio = NULL;
+=======
+	int ret;
+	bool should_deccrypt = false;
+	struct bio *bio = NULL;
+	u32 key_id = 0;
+>>>>>>> p9x
 	bool is_encrypted = false;
 	bool is_inplace = false;
 
@@ -177,6 +215,10 @@ static  bool req_crypt_should_deccrypt(struct req_dm_crypt_io *req)
 
 	bio = req->cloned_request->bio;
 
+<<<<<<< HEAD
+=======
+	ret = pft_get_key_index(bio, &key_id, &is_encrypted, &is_inplace);
+>>>>>>> p9x
 	/* req->key_id = key_id; @todo support more than 1 pfe key */
 	if ((ret == 0) && (is_encrypted && !is_inplace)) {
 		should_deccrypt = true;
@@ -457,22 +499,37 @@ static void req_cryptd_crypt_write_convert(struct req_dm_crypt_io *io)
 	struct bio *bio_src = NULL;
 	unsigned int total_sg_len_req_in = 0, total_sg_len_req_out = 0,
 		total_bytes_in_req = 0, error = DM_MAPIO_REMAPPED, rc = 0;
+<<<<<<< HEAD
 	struct ablkcipher_request *req = NULL;
 	struct req_crypt_result result;
+=======
+	struct req_iterator iter = {0, NULL};
+	struct req_iterator iter1 = {0, NULL};
+	struct ablkcipher_request *req = NULL;
+	struct req_crypt_result result;
+	struct bio_vec *bvec = NULL;
+>>>>>>> p9x
 	struct scatterlist *req_sg_in = NULL;
 	struct scatterlist *req_sg_out = NULL;
 	int copy_bio_sector_to_req = 0;
 	gfp_t gfp_mask = GFP_NOIO | __GFP_HIGHMEM;
 	struct page *page = NULL;
 	u8 IV[AES_XTS_IV_LEN];
+<<<<<<< HEAD
 	int size = 0, err = 0;
+=======
+	int remaining_size = 0, err = 0;
+>>>>>>> p9x
 	struct crypto_engine_entry engine;
 	unsigned int engine_list_total = 0;
 	struct crypto_engine_entry *curr_engine_list = NULL;
 	unsigned int *engine_cursor = NULL;
+<<<<<<< HEAD
 	unsigned int i;
 	struct bio_vec *_bvec;
 	struct bio *_bio;
+=======
+>>>>>>> p9x
 
 
 	if (io) {
@@ -582,6 +639,7 @@ static void req_cryptd_crypt_write_convert(struct req_dm_crypt_io *io)
 		goto ablkcipher_req_alloc_failure;
 	}
 
+<<<<<<< HEAD
 	__rq_for_each_bio(_bio, clone) {
 		bio_for_each_segment_all(_bvec, _bio, i) {
 			if (_bvec->bv_len > size) {
@@ -607,6 +665,29 @@ static void req_cryptd_crypt_write_convert(struct req_dm_crypt_io *io)
 				_bvec->bv_offset = PAGE_SIZE - size;
 				size = size - _bvec->bv_len;
 			}
+=======
+	rq_for_each_segment(bvec, clone, iter) {
+		if (bvec->bv_len > remaining_size) {
+			page = NULL;
+			while (page == NULL) {
+				page = mempool_alloc(req_page_pool, gfp_mask);
+				if (!page) {
+					DMERR("%s Crypt page alloc failed",
+							__func__);
+					congestion_wait(BLK_RW_ASYNC, HZ/100);
+				}
+			}
+
+			bvec->bv_page = page;
+			bvec->bv_offset = 0;
+			remaining_size = PAGE_SIZE -  bvec->bv_len;
+			if (remaining_size < 0)
+				BUG();
+		} else {
+			bvec->bv_page = page;
+			bvec->bv_offset = PAGE_SIZE - remaining_size;
+			remaining_size = remaining_size -  bvec->bv_len;
+>>>>>>> p9x
 		}
 	}
 
@@ -652,6 +733,10 @@ static void req_cryptd_crypt_write_convert(struct req_dm_crypt_io *io)
 
 	__rq_for_each_bio(bio_src, clone) {
 		if (copy_bio_sector_to_req == 0) {
+<<<<<<< HEAD
+=======
+			clone->buffer = bio_data(bio_src);
+>>>>>>> p9x
 			copy_bio_sector_to_req++;
 		}
 		blk_queue_bounce(clone->q, &bio_src);
@@ -668,6 +753,7 @@ ablkcipher_req_alloc_failure:
 		ablkcipher_request_free(req);
 
 	if (error == DM_REQ_CRYPT_ERROR_AFTER_PAGE_MALLOC) {
+<<<<<<< HEAD
 		__rq_for_each_bio(_bio, clone) {
 			bio_for_each_segment_all(_bvec, _bio, i) {
 				if (_bvec->bv_offset == 0) {
@@ -678,6 +764,15 @@ ablkcipher_req_alloc_failure:
 					_bvec->bv_page = NULL;
 				}
 			}
+=======
+		bvec = NULL;
+		rq_for_each_segment(bvec, clone, iter1) {
+			if (bvec->bv_offset == 0) {
+				mempool_free(bvec->bv_page, req_page_pool);
+				bvec->bv_page = NULL;
+			} else
+				bvec->bv_page = NULL;
+>>>>>>> p9x
 		}
 	}
 
@@ -854,10 +949,17 @@ static inline void req_crypt_blk_partition_remap(struct bio *bio)
 		/*
 		* Check for integer overflow, should never happen.
 		*/
+<<<<<<< HEAD
 		if (p->start_sect > (UINT_MAX - bio->bi_iter.bi_sector))
 			BUG();
 
 		bio->bi_iter.bi_sector += p->start_sect;
+=======
+		if (p->start_sect > (UINT_MAX - bio->bi_sector))
+			BUG();
+
+		bio->bi_sector += p->start_sect;
+>>>>>>> p9x
 		bio->bi_bdev = bdev->bd_contains;
 	}
 }
@@ -874,6 +976,7 @@ static int req_crypt_endio(struct dm_target *ti, struct request *clone,
 			    int error, union map_info *map_context)
 {
 	int err = 0;
+<<<<<<< HEAD
 	struct bio_vec *_bvec;
 	struct bio *_bio;
 	unsigned int i;
@@ -883,10 +986,21 @@ static int req_crypt_endio(struct dm_target *ti, struct request *clone,
 	if (encryption_mode == DM_REQ_CRYPT_ENCRYPTION_MODE_TRANSPARENT) {
 		mempool_free(req_io, req_io_pool);
 		err = error;
+=======
+	struct req_iterator iter1;
+	struct bio_vec *bvec = NULL;
+	struct req_dm_crypt_io *req_io = map_context->ptr;
+
+	/* If it is for ICE, free up req_io and return */
+	bvec = NULL;
+	if (encryption_mode == DM_REQ_CRYPT_ENCRYPTION_MODE_TRANSPARENT) {
+		mempool_free(req_io, req_io_pool);
+>>>>>>> p9x
 		goto submit_request;
 	}
 
 	if (rq_data_dir(clone) == WRITE) {
+<<<<<<< HEAD
 		__rq_for_each_bio(_bio, clone) {
 			bio_for_each_segment_all(_bvec, _bio, i) {
 				if (req_io->should_encrypt &&
@@ -898,6 +1012,14 @@ static int req_crypt_endio(struct dm_target *ti, struct request *clone,
 					_bvec->bv_page = NULL;
 				}
 			}
+=======
+		rq_for_each_segment(bvec, clone, iter1) {
+			if (req_io->should_encrypt && bvec->bv_offset == 0) {
+				mempool_free(bvec->bv_page, req_page_pool);
+				bvec->bv_page = NULL;
+			} else
+				bvec->bv_page = NULL;
+>>>>>>> p9x
 		}
 		mempool_free(req_io, req_io_pool);
 		goto submit_request;
@@ -929,6 +1051,16 @@ static int req_crypt_map(struct dm_target *ti, struct request *clone,
 	struct bio *bio_src = NULL;
 	gfp_t gfp_flag = GFP_KERNEL;
 
+<<<<<<< HEAD
+=======
+	if ((rq_data_dir(clone) != READ) &&
+			 (rq_data_dir(clone) != WRITE)) {
+		error = DM_REQ_CRYPT_ERROR;
+		DMERR("%s Unknown request\n", __func__);
+		goto submit_request;
+	}
+
+>>>>>>> p9x
 	if (in_interrupt() || irqs_disabled())
 		gfp_flag = GFP_NOWAIT;
 
@@ -964,7 +1096,11 @@ static int req_crypt_map(struct dm_target *ti, struct request *clone,
 		 * then the cloned request. This is undesirable for req-dm-crypt
 		 * hence added a flag BIO_DONTFREE, this flag will ensure that
 		 * blk layer does not complete the cloned bios before completing
+<<<<<<< HEAD
 		 * the request. When the crypt endio is called, post-processing
+=======
+		 * the request. When the crypt endio is called, post-processsing
+>>>>>>> p9x
 		 * is done and then the dm layer will complete the bios (clones)
 		 * and free them.
 		 */
@@ -979,7 +1115,12 @@ static int req_crypt_map(struct dm_target *ti, struct request *clone,
 		 */
 		req_crypt_blk_partition_remap(bio_src);
 		if (copy_bio_sector_to_req == 0) {
+<<<<<<< HEAD
 			clone->__sector = bio_src->bi_iter.bi_sector;
+=======
+			clone->__sector = bio_src->bi_sector;
+			clone->buffer = bio_data(bio_src);
+>>>>>>> p9x
 			copy_bio_sector_to_req++;
 		}
 		blk_queue_bounce(clone->q, &bio_src);
@@ -1311,6 +1452,7 @@ static int req_crypt_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	}
 
 	/*
+<<<<<<< HEAD
 	 * If underlying device supports flush, mapped target
 	 * should also allow it
 	 */
@@ -1320,6 +1462,19 @@ static int req_crypt_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	err = 0;
 	DMINFO("%s: Mapping block_device %s to dm-req-crypt ok!\n",
 	       __func__, argv[3]);
+=======
+	 * If underlying device supports flush/discard, mapped target
+	 * should also allow it
+	 */
+	ti->num_flush_bios = 1;
+	ti->num_discard_bios = 1;
+
+	err = 0;
+
+	DMINFO("%s: Mapping block_device %s to dm-req-crypt ok!\n",
+	       __func__, argv[3]);
+
+>>>>>>> p9x
 ctr_exit:
 	if (err)
 		req_crypt_dtr(ti);
@@ -1332,6 +1487,10 @@ static int req_crypt_iterate_devices(struct dm_target *ti,
 {
 	return fn(ti, dev, start_sector_orig, ti->len, data);
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 void set_qcrypto_func_dm(void *dev,
 			void *flag,
 			void *engines,

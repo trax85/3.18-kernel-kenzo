@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2015, 2017 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -17,11 +21,20 @@
 #include <linux/delay.h>
 #include <linux/regulator/consumer.h>
 #include <linux/regulator/rpm-smd-regulator.h>
+<<<<<<< HEAD
+=======
+#include <linux/mfd/pm8xxx/pm8921.h>
+#include <linux/mfd/pm8xxx/gpio.h>
+>>>>>>> p9x
 #include <linux/wcnss_wlan.h>
 #include <linux/semaphore.h>
 #include <linux/list.h>
 #include <linux/slab.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
+=======
+#include <linux/leds.h>
+>>>>>>> p9x
 
 
 static void __iomem *msm_wcnss_base;
@@ -30,6 +43,10 @@ static DEFINE_MUTEX(list_lock);
 static DEFINE_SEMAPHORE(wcnss_power_on_lock);
 static int auto_detect;
 static int is_power_on;
+<<<<<<< HEAD
+=======
+DEFINE_LED_TRIGGER(wlan_indication_led);
+>>>>>>> p9x
 
 #define RIVA_PMU_OFFSET         0x28
 
@@ -39,7 +56,10 @@ static int is_power_on;
 
 #define PRONTO_IRIS_REG_READ_OFFSET       0x1134
 #define PRONTO_IRIS_REG_CHIP_ID           0x04
+<<<<<<< HEAD
 #define PRONTO_IRIS_REG_CHIP_ID_MASK      0xffff
+=======
+>>>>>>> p9x
 /* IRIS card chip ID's */
 #define WCN3660       0x0200
 #define WCN3660A      0x0300
@@ -125,13 +145,21 @@ int xo_auto_detect(u32 reg)
 int wcnss_get_iris_name(char *iris_name)
 {
 	struct wcnss_wlan_config *cfg = NULL;
+<<<<<<< HEAD
 	u32 iris_id;
+=======
+	int iris_id;
+>>>>>>> p9x
 
 	cfg = wcnss_get_wlan_config();
 
 	if (cfg) {
 		iris_id = cfg->iris_id;
+<<<<<<< HEAD
 		iris_id = PRONTO_IRIS_REG_CHIP_ID_MASK & (iris_id >> 16);
+=======
+		iris_id = iris_id >> 16;
+>>>>>>> p9x
 	} else {
 		return 1;
 	}
@@ -168,9 +196,14 @@ EXPORT_SYMBOL(wcnss_get_iris_name);
 
 int validate_iris_chip_id(u32 reg)
 {
+<<<<<<< HEAD
 	u32 iris_id;
 
 	iris_id = PRONTO_IRIS_REG_CHIP_ID_MASK & (reg >> 16);
+=======
+	int iris_id;
+	iris_id = reg >> 16;
+>>>>>>> p9x
 
 	switch (iris_id) {
 	case WCN3660:
@@ -402,7 +435,11 @@ fail:
 
 /* Helper routine to turn off all WCNSS & IRIS vregs */
 static void wcnss_vregs_off(struct vregs_info regulators[], uint size,
+<<<<<<< HEAD
 			    struct vregs_level *voltage_level)
+=======
+		struct vregs_level *voltage_level)
+>>>>>>> p9x
 {
 	int i, rc = 0;
 	struct wcnss_wlan_config *cfg;
@@ -410,7 +447,11 @@ static void wcnss_vregs_off(struct vregs_info regulators[], uint size,
 	cfg = wcnss_get_wlan_config();
 
 	if (!cfg) {
+<<<<<<< HEAD
 		pr_err("Failed to get WLAN configuration\n");
+=======
+		pr_err("Faild to get WLAN configuration\n");
+>>>>>>> p9x
 		return;
 	}
 
@@ -419,11 +460,14 @@ static void wcnss_vregs_off(struct vregs_info regulators[], uint size,
 		if (regulators[i].state == VREG_NULL_CONFIG)
 			continue;
 
+<<<<<<< HEAD
 		if (cfg->wcn_external_gpio_support) {
 			if (!memcmp(regulators[i].name, VDD_PA, sizeof(VDD_PA)))
 				continue;
 		}
 
+=======
+>>>>>>> p9x
 		/* Remove PWM mode */
 		if (regulators[i].state & VREG_OPTIMUM_MODE_MASK) {
 			rc = regulator_set_optimum_mode(
@@ -435,6 +479,10 @@ static void wcnss_vregs_off(struct vregs_info regulators[], uint size,
 
 		/* Set voltage to lowest level */
 		if (regulators[i].state & VREG_SET_VOLTAGE_MASK) {
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 			if (cfg->is_pronto_vadc) {
 				if (cfg->vbatt < WCNSS_VBATT_THRESHOLD &&
 				    !memcmp(regulators[i].name,
@@ -480,17 +528,25 @@ static int wcnss_vregs_on(struct device *dev,
 	cfg = wcnss_get_wlan_config();
 
 	if (!cfg) {
+<<<<<<< HEAD
 		pr_err("Failed to get WLAN configuration\n");
+=======
+		pr_err("Faild to get WLAN configuration\n");
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
 	for (i = 0; i < size; i++) {
+<<<<<<< HEAD
 		if (cfg->wcn_external_gpio_support) {
 			if (!memcmp(regulators[i].name, VDD_PA, sizeof(VDD_PA)))
 				continue;
 		}
 
 		/* Get regulator source */
+=======
+			/* Get regulator source */
+>>>>>>> p9x
 		regulators[i].regulator =
 			regulator_get(dev, regulators[i].name);
 		if (IS_ERR(regulators[i].regulator)) {
@@ -504,7 +560,12 @@ static int wcnss_vregs_on(struct device *dev,
 
 		/* Set voltage to nominal. Exclude swtiches e.g. LVS */
 		if ((voltage_level[i].nominal_min ||
+<<<<<<< HEAD
 		     voltage_level[i].max_voltage) && (reg_cnt > 0)) {
+=======
+			voltage_level[i].max_voltage) && (reg_cnt > 0)) {
+
+>>>>>>> p9x
 			if (cfg->is_pronto_vadc) {
 				if (cfg->vbatt < WCNSS_VBATT_THRESHOLD &&
 				    !memcmp(regulators[i].name,
@@ -564,8 +625,12 @@ static void wcnss_iris_vregs_off(enum wcnss_hw_type hw_type,
 	switch (hw_type) {
 	case WCNSS_PRONTO_HW:
 		wcnss_vregs_off(iris_vregs_pronto,
+<<<<<<< HEAD
 				ARRAY_SIZE(iris_vregs_pronto),
 				cfg->iris_vlevel);
+=======
+			ARRAY_SIZE(iris_vregs_pronto), cfg->iris_vlevel);
+>>>>>>> p9x
 		break;
 	default:
 		pr_err("%s invalid hardware %d\n", __func__, hw_type);
@@ -582,8 +647,13 @@ static int wcnss_iris_vregs_on(struct device *dev,
 	switch (hw_type) {
 	case WCNSS_PRONTO_HW:
 		ret = wcnss_vregs_on(dev, iris_vregs_pronto,
+<<<<<<< HEAD
 				     ARRAY_SIZE(iris_vregs_pronto),
 				     cfg->iris_vlevel);
+=======
+				ARRAY_SIZE(iris_vregs_pronto),
+				cfg->iris_vlevel);
+>>>>>>> p9x
 		break;
 	default:
 		pr_err("%s invalid hardware %d\n", __func__, hw_type);
@@ -597,7 +667,11 @@ static void wcnss_core_vregs_off(enum wcnss_hw_type hw_type,
 	switch (hw_type) {
 	case WCNSS_PRONTO_HW:
 		wcnss_vregs_off(pronto_vregs,
+<<<<<<< HEAD
 				ARRAY_SIZE(pronto_vregs), cfg->pronto_vlevel);
+=======
+			ARRAY_SIZE(pronto_vregs), cfg->pronto_vlevel);
+>>>>>>> p9x
 		break;
 	default:
 		pr_err("%s invalid hardware %d\n", __func__, hw_type);
@@ -614,8 +688,12 @@ static int wcnss_core_vregs_on(struct device *dev,
 	switch (hw_type) {
 	case WCNSS_PRONTO_HW:
 		ret = wcnss_vregs_on(dev, pronto_vregs,
+<<<<<<< HEAD
 				     ARRAY_SIZE(pronto_vregs),
 				     cfg->pronto_vlevel);
+=======
+				ARRAY_SIZE(pronto_vregs), cfg->pronto_vlevel);
+>>>>>>> p9x
 		break;
 	default:
 		pr_err("%s invalid hardware %d\n", __func__, hw_type);
@@ -702,6 +780,12 @@ int wcnss_req_power_on_lock(char *driver_name)
 	list_add(&node->list, &power_on_lock_list);
 	mutex_unlock(&list_lock);
 
+<<<<<<< HEAD
+=======
+	if (wlan_indication_led)
+		led_trigger_event(wlan_indication_led, LED_FULL);
+
+>>>>>>> p9x
 	return 0;
 
 err:
@@ -728,6 +812,21 @@ int wcnss_free_power_on_lock(char *driver_name)
 		up(&wcnss_power_on_lock);
 	mutex_unlock(&list_lock);
 
+<<<<<<< HEAD
 	return ret;
 }
 EXPORT_SYMBOL(wcnss_free_power_on_lock);
+=======
+	if (wlan_indication_led)
+		led_trigger_event(wlan_indication_led, LED_OFF);
+
+	return ret;
+}
+EXPORT_SYMBOL(wcnss_free_power_on_lock);
+
+void wcnss_en_wlan_led_trigger(void)
+{
+	led_trigger_register_simple("wlan-indication-led",
+		&wlan_indication_led);
+}
+>>>>>>> p9x

@@ -555,7 +555,10 @@ static int rxrpc_preparse_xdr(struct key_preparsed_payload *prep)
 	const __be32 *xdr = prep->data, *token;
 	const char *cp;
 	unsigned int len, paddedlen, loop, ntoken, toklen, sec_ix;
+<<<<<<< HEAD
 	size_t datalen = prep->datalen;
+=======
+>>>>>>> p9x
 	int ret;
 
 	_enter(",{%x,%x,%x,%x},%zu",

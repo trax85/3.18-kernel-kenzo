@@ -125,6 +125,29 @@ static void s3c2412_idle(void)
 	cpu_do_idle();
 }
 
+<<<<<<< HEAD
+=======
+void s3c2412_restart(enum reboot_mode mode, const char *cmd)
+{
+	if (mode == REBOOT_SOFT)
+		soft_restart(0);
+
+	/* errata "Watch-dog/Software Reset Problem" specifies that
+	 * this reset must be done with the SYSCLK sourced from
+	 * EXTCLK instead of FOUT to avoid a glitch in the reset
+	 * mechanism.
+	 *
+	 * See the watchdog section of the S3C2412 manual for more
+	 * information on this fix.
+	 */
+
+	__raw_writel(0x00, S3C2412_CLKSRC);
+	__raw_writel(S3C2412_SWRST_RESET, S3C2412_SWRST);
+
+	mdelay(1);
+}
+
+>>>>>>> p9x
 /* s3c2412_map_io
  *
  * register the standard cpu IO areas, and any passed in from the

@@ -345,8 +345,11 @@ out_unlock:
 		mask_irq(desc);
 		chip_bus_sync_unlock(desc);
 	}
+<<<<<<< HEAD
 
 	return handled;
+=======
+>>>>>>> p9x
 }
 EXPORT_SYMBOL_GPL(handle_nested_irq);
 

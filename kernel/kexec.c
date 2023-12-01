@@ -57,6 +57,7 @@ size_t vmcoreinfo_max_size = sizeof(vmcoreinfo_data);
 /* Flag to indicate we are going to kexec a new kernel */
 bool kexec_in_progress = false;
 
+<<<<<<< HEAD
 /*
  * Declare these symbols weak so that if architecture provides a purgatory,
  * these will be overridden.
@@ -68,6 +69,8 @@ size_t __weak kexec_purgatory_size = 0;
 static int kexec_calculate_store_digests(struct kimage *image);
 #endif
 
+=======
+>>>>>>> p9x
 /* Location of the reserved area for the crash kernel */
 struct resource crashk_res = {
 	.name  = "Crash kernel",

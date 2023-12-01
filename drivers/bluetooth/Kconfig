@@ -252,7 +252,11 @@ config BT_WILINK
 	  core driver to communicate with the BT core of the combo chip.
 
 	  Say Y here to compile support for Texas Instrument's WiLink7 driver
+<<<<<<< HEAD
 	  into the kernel or say M to compile it as module (btwilink).
+=======
+	  into the kernel or say M to compile it as module.
+>>>>>>> p9x
 
 config MSM_BT_POWER
 	tristate "MSM Bluetooth Power Control"
@@ -262,6 +266,7 @@ config MSM_BT_POWER
 	  Provides a parameter to switch on/off power from PMIC
 	  to Bluetooth device.
 
+<<<<<<< HEAD
 config BTFM_SLIM
 	tristate "MSM Bluetooth/FM Slimbus Driver"
 	depends on MSM_BT_POWER
@@ -282,4 +287,6 @@ config BTFM_SLIM_WCN3990
 	  It is designed to adapt any future BT/FM device to implement a specific
 	  chip initialization process and control.
 
+=======
+>>>>>>> p9x
 endmenu

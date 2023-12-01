@@ -839,6 +839,38 @@ struct se_hba {
 	struct se_subsystem_api *transport;
 };
 
+<<<<<<< HEAD
+=======
+struct se_port_stat_grps {
+	struct config_group stat_group;
+	struct config_group scsi_port_group;
+	struct config_group scsi_tgt_port_group;
+	struct config_group scsi_transport_group;
+};
+
+struct se_lun {
+#define SE_LUN_LINK_MAGIC			0xffff7771
+	u32			lun_link_magic;
+	bool			lun_shutdown;
+	/* See transport_lun_status_table */
+	enum transport_lun_status_table lun_status;
+	u32			lun_access;
+	u32			lun_flags;
+	u32			unpacked_lun;
+	atomic_t		lun_acl_count;
+	spinlock_t		lun_acl_lock;
+	spinlock_t		lun_cmd_lock;
+	spinlock_t		lun_sep_lock;
+	struct completion	lun_shutdown_comp;
+	struct list_head	lun_cmd_list;
+	struct list_head	lun_acl_list;
+	struct se_device	*lun_se_dev;
+	struct se_port		*lun_sep;
+	struct config_group	lun_group;
+	struct se_port_stat_grps port_stat_grps;
+};
+
+>>>>>>> p9x
 struct scsi_port_stats {
        u64     cmd_pdus;
        u64     tx_data_octets;

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -18,10 +22,17 @@
 		interrupts = <0 27 1>;
 	};
 
+<<<<<<< HEAD
 	smp2pgpio_smp2p_7_in: qcom,smp2pgpio-smp2p-7-in {
 		compatible = "qcom,smp2pgpio";
 		qcom,entry-name = "smp2p";
 		qcom,remote-pid = <7>;
+=======
+	smp2pgpio_smp2p_15_in: qcom,smp2pgpio-smp2p-15-in {
+		compatible = "qcom,smp2pgpio";
+		qcom,entry-name = "smp2p";
+		qcom,remote-pid = <15>;
+>>>>>>> p9x
 		qcom,is-inbound;
 		gpio-controller;
 		#gpio-cells = <2>;
@@ -29,6 +40,7 @@
 		#interrupt-cells = <2>;
 	};
 
+<<<<<<< HEAD
 	qcom,smp2pgpio_test_smp2p_7_in {
 		compatible = "qcom,smp2pgpio_test_smp2p_7_in";
 		gpios = <&smp2pgpio_smp2p_7_in 0 0>;
@@ -38,15 +50,32 @@
 		compatible = "qcom,smp2pgpio";
 		qcom,entry-name = "smp2p";
 		qcom,remote-pid = <7>;
+=======
+	qcom,smp2pgpio_test_smp2p_15_in {
+		compatible = "qcom,smp2pgpio_test_smp2p_15_in";
+		gpios = <&smp2pgpio_smp2p_15_in 0 0>;
+	};
+
+	smp2pgpio_smp2p_15_out: qcom,smp2pgpio-smp2p-15-out {
+		compatible = "qcom,smp2pgpio";
+		qcom,entry-name = "smp2p";
+		qcom,remote-pid = <15>;
+>>>>>>> p9x
 		gpio-controller;
 		#gpio-cells = <2>;
 		interrupt-controller;
 		#interrupt-cells = <2>;
 	};
 
+<<<<<<< HEAD
 	qcom,smp2pgpio_test_smp2p_7_out {
 		compatible = "qcom,smp2pgpio_test_smp2p_7_out";
 		gpios = <&smp2pgpio_smp2p_7_out 0 0>;
+=======
+	qcom,smp2pgpio_test_smp2p_15_out {
+		compatible = "qcom,smp2pgpio_test_smp2p_15_out";
+		gpios = <&smp2pgpio_smp2p_15_out 0 0>;
+>>>>>>> p9x
 	};
 
 	smp2pgpio_smp2p_1_in: qcom,smp2pgpio-smp2p-1-in {

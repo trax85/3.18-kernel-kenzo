@@ -3434,8 +3434,12 @@ int drm_mode_getfb(struct drm_device *dev,
 	r->bpp = fb->bits_per_pixel;
 	r->pitch = fb->pitches[0];
 	if (fb->funcs->create_handle) {
+<<<<<<< HEAD
 		if (file_priv->is_master || capable(CAP_SYS_ADMIN) ||
 		    drm_is_control_client(file_priv)) {
+=======
+		if (file_priv->is_master || capable(CAP_SYS_ADMIN)) {
+>>>>>>> p9x
 			ret = fb->funcs->create_handle(fb, file_priv,
 						       &r->handle);
 		} else {

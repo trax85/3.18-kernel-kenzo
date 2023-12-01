@@ -32,9 +32,13 @@
 #include <linux/of_fdt.h>
 #include <linux/dma-mapping.h>
 #include <linux/dma-contiguous.h>
+<<<<<<< HEAD
 #include <linux/efi.h>
 
 #include <asm/fixmap.h>
+=======
+
+>>>>>>> p9x
 #include <asm/sections.h>
 #include <asm/setup.h>
 #include <asm/sizes.h>
@@ -45,7 +49,16 @@
 
 phys_addr_t memstart_addr __read_mostly = 0;
 
+<<<<<<< HEAD
 #ifdef CONFIG_BLK_DEV_INITRD
+=======
+void __init early_init_dt_setup_initrd_arch(u64 start, u64 end)
+{
+	phys_initrd_start = start;
+	phys_initrd_size = end - start;
+}
+
+>>>>>>> p9x
 static int __init early_initrd(char *p)
 {
 	unsigned long start, size;
@@ -63,6 +76,7 @@ static int __init early_initrd(char *p)
 early_param("initrd", early_initrd);
 #endif
 
+<<<<<<< HEAD
 /*
  * Return the maximum physical address for ZONE_DMA (DMA_BIT_MASK(32)). It
  * currently assumes that for memory starting above 4G, 32-bit devices will
@@ -74,6 +88,8 @@ static phys_addr_t __init max_zone_dma_phys(void)
 	return min(offset + (1ULL << 32), memblock_end_of_DRAM());
 }
 
+=======
+>>>>>>> p9x
 static void __init zone_sizes_init(unsigned long min, unsigned long max)
 {
 	struct memblock_region *reg;
@@ -84,7 +100,13 @@ static void __init zone_sizes_init(unsigned long min, unsigned long max)
 
 	/* 4GB maximum for 32-bit only capable devices */
 	if (IS_ENABLED(CONFIG_ZONE_DMA)) {
+<<<<<<< HEAD
 		max_dma = PFN_DOWN(max_zone_dma_phys());
+=======
+		unsigned long max_dma_phys =
+			(unsigned long)(dma_to_phys(NULL, DMA_BIT_MASK(32)) + 1);
+		max_dma = max(min, min(max, max_dma_phys >> PAGE_SHIFT));
+>>>>>>> p9x
 		zone_size[ZONE_DMA] = max_dma - min;
 	}
 	zone_size[ZONE_NORMAL] = max - max_dma;
@@ -114,13 +136,19 @@ static void __init zone_sizes_init(unsigned long min, unsigned long max)
 }
 
 #ifdef CONFIG_HAVE_ARCH_PFN_VALID
+#define PFN_MASK ((1UL << (64 - PAGE_SHIFT)) - 1)
+
 int pfn_valid(unsigned long pfn)
 {
+<<<<<<< HEAD
 	phys_addr_t addr = pfn << PAGE_SHIFT;
 
 	if ((addr >> PAGE_SHIFT) != pfn)
 		return 0;
 	return memblock_is_memory(addr);
+=======
+	return (pfn & PFN_MASK) == pfn && memblock_is_memory(pfn << PAGE_SHIFT);
+>>>>>>> p9x
 }
 EXPORT_SYMBOL(pfn_valid);
 #endif
@@ -176,11 +204,19 @@ void __init arm64_memblock_init(void)
 
 	early_init_fdt_scan_reserved_mem();
 
+<<<<<<< HEAD
 	/* 4GB maximum for 32-bit only capable devices */
 	if (IS_ENABLED(CONFIG_ZONE_DMA))
 		dma_phys_limit = max_zone_dma_phys();
 
 	high_memory = __va(memblock_end_of_DRAM() - 1) + 1;
+=======
+	early_init_fdt_scan_reserved_mem();
+
+	/* 4GB maximum for 32-bit only capable devices */
+	if (IS_ENABLED(CONFIG_ZONE_DMA))
+		dma_phys_limit = dma_to_phys(NULL, DMA_BIT_MASK(32)) + 1;
+>>>>>>> p9x
 	dma_contiguous_reserve(dma_phys_limit);
 
 	memblock_allow_resize();
@@ -283,7 +319,13 @@ static void __init free_unused_memmap(void)
  */
 void __init mem_init(void)
 {
+<<<<<<< HEAD
 	set_max_mapnr(pfn_to_page(max_pfn) - mem_map);
+=======
+	arm64_swiotlb_init();
+
+	max_mapnr   = pfn_to_page(max_pfn + PHYS_PFN_OFFSET) - mem_map;
+>>>>>>> p9x
 
 #ifndef CONFIG_SPARSEMEM_VMEMMAP
 	free_unused_memmap();
@@ -356,17 +398,30 @@ void __init mem_init(void)
 	}
 }
 
+<<<<<<< HEAD
 static inline void poison_init_mem(void *s, size_t count)
 {
 	memset(s, 0, count);
 }
 
+=======
+#ifdef CONFIG_STRICT_MEMORY_RWX
+void free_initmem(void)
+{
+	poison_init_mem(__init_data_begin, __init_end - __init_data_begin);
+	free_reserved_area(PAGE_ALIGN((unsigned long)&__init_data_begin),
+				  ((unsigned long)&__init_end) & PAGE_MASK,
+				  0, "unused kernel");
+}
+#else
+>>>>>>> p9x
 void free_initmem(void)
 {
 	fixup_init();
 	free_initmem_default(0);
 	free_alternatives_memory();
 }
+#endif
 
 #ifdef CONFIG_BLK_DEV_INITRD
 

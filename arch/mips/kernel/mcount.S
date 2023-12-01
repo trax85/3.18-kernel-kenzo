@@ -138,11 +138,31 @@ fgraph_trace:
 	bne	t1, t3, ftrace_graph_caller
 	 nop
 #endif
+<<<<<<< HEAD
+=======
+	b	ftrace_stub
+#ifdef CONFIG_32BIT
+	 addiu sp, sp, 8
+#else
+	 nop
+#endif
+>>>>>>> p9x
 
 #ifdef CONFIG_32BIT
 	addiu sp, sp, 8
 #endif
 
+<<<<<<< HEAD
+=======
+	move	a0, ra		/* arg1: self return address */
+	jalr	t2		/* (1) call *ftrace_trace_function */
+	 move	a1, AT		/* arg2: parent's return address */
+
+	MCOUNT_RESTORE_REGS
+#ifdef CONFIG_32BIT
+	addiu sp, sp, 8
+#endif
+>>>>>>> p9x
 	.globl ftrace_stub
 ftrace_stub:
 	RETURN_BACK

@@ -733,7 +733,41 @@ int gnttab_map_refs(struct gnttab_map_grant_ref *map_ops,
 			gnttab_retry_eagain_gop(GNTTABOP_map_grant_ref, map_ops + i,
 						&map_ops[i].status, __func__);
 
+<<<<<<< HEAD
 	return set_foreign_p2m_mapping(map_ops, kmap_ops, pages, count);
+=======
+	if (xen_feature(XENFEAT_auto_translated_physmap))
+		return ret;
+
+	if (!in_interrupt() && paravirt_get_lazy_mode() == PARAVIRT_LAZY_NONE) {
+		arch_enter_lazy_mmu_mode();
+		lazy = true;
+	}
+
+	for (i = 0; i < count; i++) {
+		/* Do not add to override if the map failed. */
+		if (map_ops[i].status)
+			continue;
+
+		if (map_ops[i].flags & GNTMAP_contains_pte) {
+			pte = (pte_t *) (mfn_to_virt(PFN_DOWN(map_ops[i].host_addr)) +
+				(map_ops[i].host_addr & ~PAGE_MASK));
+			mfn = pte_mfn(*pte);
+		} else {
+			mfn = PFN_DOWN(map_ops[i].dev_bus_addr);
+		}
+		ret = m2p_add_override(mfn, pages[i], kmap_ops ?
+				       &kmap_ops[i] : NULL);
+		if (ret)
+			goto out;
+	}
+
+ out:
+	if (lazy)
+		arch_leave_lazy_mmu_mode();
+
+	return ret;
+>>>>>>> p9x
 }
 EXPORT_SYMBOL_GPL(gnttab_map_refs);
 
@@ -747,7 +781,30 @@ int gnttab_unmap_refs(struct gnttab_unmap_grant_ref *unmap_ops,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	return clear_foreign_p2m_mapping(unmap_ops, kmap_ops, pages, count);
+=======
+	if (xen_feature(XENFEAT_auto_translated_physmap))
+		return ret;
+
+	if (!in_interrupt() && paravirt_get_lazy_mode() == PARAVIRT_LAZY_NONE) {
+		arch_enter_lazy_mmu_mode();
+		lazy = true;
+	}
+
+	for (i = 0; i < count; i++) {
+		ret = m2p_remove_override(pages[i], kmap_ops ?
+				       &kmap_ops[i] : NULL);
+		if (ret)
+			goto out;
+	}
+
+ out:
+	if (lazy)
+		arch_leave_lazy_mmu_mode();
+
+	return ret;
+>>>>>>> p9x
 }
 EXPORT_SYMBOL_GPL(gnttab_unmap_refs);
 

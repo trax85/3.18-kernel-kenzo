@@ -448,6 +448,7 @@ in your dentry operations instead.
 --
 [mandatory]
 	vfs_readdir() is gone; switch to iterate_dir() instead
+<<<<<<< HEAD
 --
 [mandatory]
 	->readdir() is gone now; switch to ->iterate()
@@ -463,3 +464,5 @@ in your dentry operations instead.
 	of the in-tree instances did).  inode_hash_lock is still held,
 	of course, so they are still serialized wrt removal from inode hash,
 	as well as wrt set() callback of iget5_locked().
+=======
+>>>>>>> p9x

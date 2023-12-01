@@ -293,13 +293,22 @@ static struct inode *iget_xattr(struct ubifs_info *c, ino_t inum)
 
 	inode = ubifs_iget(c->vfs_sb, inum);
 	if (IS_ERR(inode)) {
+<<<<<<< HEAD
 		ubifs_err(c, "dead extended attribute entry, error %d",
 			  (int)PTR_ERR(inode));
+=======
+		ubifs_err("dead extended attribute entry, error %d",
+				c->vi.ubi_num, (int)PTR_ERR(inode));
+>>>>>>> p9x
 		return inode;
 	}
 	if (ubifs_inode(inode)->xattr)
 		return inode;
+<<<<<<< HEAD
 	ubifs_err(c, "corrupt extended attribute entry");
+=======
+	ubifs_err("corrupt extended attribute entry", c->vi.ubi_num);
+>>>>>>> p9x
 	iput(inode);
 	return ERR_PTR(-EINVAL);
 }
@@ -418,8 +427,13 @@ ssize_t ubifs_getxattr(struct dentry *dentry, const char *name, void *buf,
 	if (buf) {
 		/* If @buf is %NULL we are supposed to return the length */
 		if (ui->data_len > size) {
+<<<<<<< HEAD
 			ubifs_err(c, "buffer size %zd, xattr len %d",
 				  size, ui->data_len);
+=======
+			ubifs_err("buffer size %zd, xattr len %d",
+					c->vi.ubi_num, size, ui->data_len);
+>>>>>>> p9x
 			err = -ERANGE;
 			goto out_iput;
 		}
@@ -492,7 +506,12 @@ ssize_t ubifs_listxattr(struct dentry *dentry, char *buffer, size_t size)
 
 	kfree(pxent);
 	if (err != -ENOENT) {
+<<<<<<< HEAD
 		ubifs_err(c, "cannot find next direntry, error %d", err);
+=======
+		ubifs_err("cannot find next direntry, error %d", c->vi.ubi_num,
+				err);
+>>>>>>> p9x
 		return err;
 	}
 

@@ -174,6 +174,7 @@ static void iwl_pcie_set_pwr(struct iwl_trans *trans, bool vaux)
 
 /* PCI registers */
 #define PCI_CFG_RETRY_TIMEOUT	0x041
+#define PCI_EXP_DEVCTL2_LTR_EN	0x0400
 
 static void iwl_pcie_apm_config(struct iwl_trans *trans)
 {
@@ -287,6 +288,22 @@ static int iwl_pcie_apm_init(struct iwl_trans *trans)
 		iwl_read_prph(trans, OSC_CLK);
 		iwl_read_prph(trans, OSC_CLK);
 	}
+
+	/*
+	 * Enable the oscillator to count wake up time for L1 exit. This
+	 * consumes slightly more power (100uA) - but allows to be sure
+	 * that we wake up from L1 on time.
+	 *
+	 * This looks weird: read twice the same register, discard the
+	 * value, set a bit, and yet again, read that same register
+	 * just to discard the value. But that's the way the hardware
+	 * seems to like it.
+	 */
+	iwl_read_prph(trans, OSC_CLK);
+	iwl_read_prph(trans, OSC_CLK);
+	iwl_set_bits_prph(trans, OSC_CLK, OSC_CLK_FORCE_CONTROL);
+	iwl_read_prph(trans, OSC_CLK);
+	iwl_read_prph(trans, OSC_CLK);
 
 	/*
 	 * Enable DMA clock and wait for it to stabilize.
@@ -478,10 +495,16 @@ static int iwl_pcie_nic_init(struct iwl_trans *trans)
 	spin_lock(&trans_pcie->irq_lock);
 	iwl_pcie_apm_init(trans);
 
+<<<<<<< HEAD
 	spin_unlock(&trans_pcie->irq_lock);
 
 	if (trans->cfg->device_family != IWL_DEVICE_FAMILY_8000)
 		iwl_pcie_set_pwr(trans, false);
+=======
+	spin_unlock_irqrestore(&trans_pcie->irq_lock, flags);
+
+	iwl_pcie_set_pwr(trans, false);
+>>>>>>> p9x
 
 	iwl_op_mode_nic_config(trans->op_mode);
 
@@ -551,7 +574,11 @@ static int iwl_pcie_prepare_card_hw(struct iwl_trans *trans)
 		msleep(25);
 	}
 
+<<<<<<< HEAD
 	IWL_ERR(trans, "Couldn't prepare the card\n");
+=======
+	IWL_DEBUG_INFO(trans, "got NIC after %d iterations\n", iter);
+>>>>>>> p9x
 
 	return ret;
 }
@@ -2137,8 +2164,13 @@ struct iwl_trans *iwl_trans_pcie_alloc(struct pci_dev *pdev,
 	spin_lock_init(&trans_pcie->reg_lock);
 	init_waitqueue_head(&trans_pcie->ucode_write_waitq);
 
+<<<<<<< HEAD
 	err = pci_enable_device(pdev);
 	if (err)
+=======
+	if (pci_enable_device(pdev)) {
+		err = -ENODEV;
+>>>>>>> p9x
 		goto out_no_pci;
 
 	if (!cfg->base_params->pcie_l1_allowed) {
@@ -2151,6 +2183,11 @@ struct iwl_trans *iwl_trans_pcie_alloc(struct pci_dev *pdev,
 				       PCIE_LINK_STATE_L1 |
 				       PCIE_LINK_STATE_CLKPM);
 	}
+
+	/* W/A - seems to solve weird behavior. We need to remove this if we
+	 * don't want to stay in L1 all the time. This wastes a lot of power */
+	pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S | PCIE_LINK_STATE_L1 |
+			       PCIE_LINK_STATE_CLKPM);
 
 	pci_set_master(pdev);
 

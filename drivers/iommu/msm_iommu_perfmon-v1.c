@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -63,7 +67,10 @@ static unsigned int iommu_pm_is_hw_access_OK(const struct iommu_pmon *pmon)
 static void iommu_pm_grp_enable(struct iommu_info *iommu, unsigned int grp_no)
 {
 	unsigned int pmcgcr;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	pmcgcr = readl_relaxed(iommu->base + PMCGCR_(grp_no));
 	pmcgcr |= CGCR_CEN;
 	writel_relaxed(pmcgcr, iommu->base + PMCGCR_(grp_no));
@@ -72,7 +79,10 @@ static void iommu_pm_grp_enable(struct iommu_info *iommu, unsigned int grp_no)
 static void iommu_pm_grp_disable(struct iommu_info *iommu, unsigned int grp_no)
 {
 	unsigned int pmcgcr;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	pmcgcr = readl_relaxed(iommu->base + PMCGCR_(grp_no));
 	pmcgcr &= ~CGCR_CEN;
 	writel_relaxed(pmcgcr, iommu->base + PMCGCR_(grp_no));
@@ -81,7 +91,10 @@ static void iommu_pm_grp_disable(struct iommu_info *iommu, unsigned int grp_no)
 static void iommu_pm_enable(struct iommu_info *iommu)
 {
 	unsigned int pmcr;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	pmcr = readl_relaxed(iommu->base + PMCR);
 	pmcr |= CR_E;
 	writel_relaxed(pmcr, iommu->base + PMCR);
@@ -90,7 +103,10 @@ static void iommu_pm_enable(struct iommu_info *iommu)
 static void iommu_pm_disable(struct iommu_info *iommu)
 {
 	unsigned int pmcr;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	pmcr = readl_relaxed(iommu->base + PMCR);
 	pmcr &= ~CR_E;
 	writel_relaxed(pmcr, iommu->base + PMCR);
@@ -99,7 +115,10 @@ static void iommu_pm_disable(struct iommu_info *iommu)
 static void iommu_pm_reset_counters(const struct iommu_info *iommu)
 {
 	unsigned int pmcr;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	pmcr = readl_relaxed(iommu->base + PMCR);
 	pmcr |= PMCR_P;
 	writel_relaxed(pmcr, iommu->base + PMCR);
@@ -120,7 +139,10 @@ static void iommu_pm_check_for_overflow(struct iommu_pmon *pmon)
 
 	for (i = 0; i < pmon->num_groups; ++i) {
 		struct iommu_pmon_cnt_group *cnt_grp = &pmon->cnt_grp[i];
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 		for (j = 0; j < cnt_grp->num_counters; ++j) {
 			counter = &cnt_grp->counters[j];
 			reg_no = counter->absolute_counter_no / 32;
@@ -242,7 +264,10 @@ static unsigned int iommu_pm_read_counter(struct iommu_pmon_counter *counter)
 	struct iommu_pmon *pmon = counter->cnt_group->pmon;
 	struct iommu_info *info = &pmon->iommu;
 	unsigned int cnt_no = counter->absolute_counter_no;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	return readl_relaxed(info->base + PMEVCNTR_(cnt_no));
 }
 
@@ -274,3 +299,7 @@ struct iommu_pm_hw_ops *iommu_pm_get_hw_ops_v1(void)
 	return &iommu_pm_hw_ops;
 }
 EXPORT_SYMBOL(iommu_pm_get_hw_ops_v1);
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x

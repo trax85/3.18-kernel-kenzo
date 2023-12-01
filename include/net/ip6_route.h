@@ -108,6 +108,7 @@ void rt6_purge_dflt_routers(struct net *net);
 int rt6_route_rcv(struct net_device *dev, u8 *opt, int len,
 		  const struct in6_addr *gwaddr);
 
+<<<<<<< HEAD
 void ip6_update_pmtu(struct sk_buff *skb, struct net *net, __be32 mtu, int oif,
 		     u32 mark, kuid_t uid);
 void ip6_sk_update_pmtu(struct sk_buff *skb, struct sock *sk, __be32 mtu);
@@ -116,6 +117,15 @@ void ip6_redirect(struct sk_buff *skb, struct net *net, int oif, u32 mark,
 void ip6_redirect_no_header(struct sk_buff *skb, struct net *net, int oif,
 			    u32 mark);
 void ip6_sk_redirect(struct sk_buff *skb, struct sock *sk);
+=======
+extern void ip6_update_pmtu(struct sk_buff *skb, struct net *net, __be32 mtu,
+			    int oif, u32 mark, kuid_t uid);
+extern void ip6_sk_update_pmtu(struct sk_buff *skb, struct sock *sk,
+			       __be32 mtu);
+extern void ip6_redirect(struct sk_buff *skb, struct net *net, int oif, u32 mark,
+			 kuid_t uid);
+extern void ip6_sk_redirect(struct sk_buff *skb, struct sock *sk);
+>>>>>>> p9x
 
 struct netlink_callback;
 
@@ -183,6 +193,7 @@ static inline int ip6_skb_dst_mtu(struct sk_buff *skb)
 	       skb_dst(skb)->dev->mtu : dst_mtu(skb_dst(skb));
 }
 
+<<<<<<< HEAD
 static inline bool ip6_sk_accept_pmtu(const struct sock *sk)
 {
 	return inet6_sk(sk)->pmtudisc != IPV6_PMTUDISC_INTERFACE &&
@@ -197,6 +208,10 @@ static inline bool ip6_sk_ignore_df(const struct sock *sk)
 
 static inline struct in6_addr *rt6_nexthop(struct rt6_info *rt)
 {
+=======
+static inline struct in6_addr *rt6_nexthop(struct rt6_info *rt)
+{
+>>>>>>> p9x
 	return &rt->rt6i_gateway;
 }
 

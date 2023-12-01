@@ -1288,6 +1288,11 @@ done:
 int mwifiex_associate(struct mwifiex_private *priv,
 		      struct mwifiex_bssdescriptor *bss_desc)
 {
+<<<<<<< HEAD
+=======
+	u8 current_bssid[ETH_ALEN];
+
+>>>>>>> p9x
 	/* Return error if the adapter is not STA role or table entry
 	 * is not marked as infra.
 	 */

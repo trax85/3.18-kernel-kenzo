@@ -511,7 +511,7 @@ static struct inode *hugetlbfs_get_inode(struct super_block *sb,
 		/*
 		 * The policy is initialized here even if we are creating a
 		 * private inode because initialization simply creates an
-		 * an empty rb tree and calls spin_lock_init(), later when we
+		 * an empty rb tree and calls rwlock_init(), later when we
 		 * call mpol_free_shared_policy() it will just return because
 		 * the rb tree will still be empty.
 		 */
@@ -957,7 +957,11 @@ static int get_hstate_idx(int page_size_log)
 	return h - hstates;
 }
 
+<<<<<<< HEAD
 static const struct dentry_operations anon_ops = {
+=======
+static struct dentry_operations anon_ops = {
+>>>>>>> p9x
 	.d_dname = simple_dname
 };
 

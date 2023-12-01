@@ -28,7 +28,10 @@
 #include <linux/platform_device.h>
 #include <linux/of.h>
 #include <linux/devfreq.h>
+<<<<<<< HEAD
 #include <trace/events/power.h>
+=======
+>>>>>>> p9x
 #include "governor.h"
 #include "governor_cache_hwmon.h"
 
@@ -135,9 +138,18 @@ static unsigned long measure_mrps_and_set_irq(struct cache_hwmon_node *node,
 
 	preempt_enable();
 
+<<<<<<< HEAD
 	trace_cache_hwmon_meas(dev_name(hw->df->dev.parent), stat->mrps[HIGH],
 			       stat->mrps[MED], stat->mrps[LOW],
 			       stat->busy_percent, us);
+=======
+	dev_dbg(hw->df->dev.parent,
+		"stat H=%3lu, M=%3lu, L=%3lu, T=%3lu, b=%3u, f=%4lu, us=%d\n",
+		 stat->mrps[HIGH], stat->mrps[MED], stat->mrps[LOW],
+		 stat->mrps[HIGH] + stat->mrps[MED] + stat->mrps[LOW],
+		 stat->busy_percent, hw->df->previous_freq / 1000, us);
+
+>>>>>>> p9x
 	return 0;
 }
 
@@ -166,7 +178,10 @@ static void compute_cache_freq(struct cache_hwmon_node *node,
 
 	new_mhz += node->guard_band_mhz;
 	*freq = new_mhz * 1000;
+<<<<<<< HEAD
 	trace_cache_hwmon_update(dev_name(node->hw->df->dev.parent), *freq);
+=======
+>>>>>>> p9x
 }
 
 #define TOO_SOON_US	(1 * USEC_PER_MSEC)

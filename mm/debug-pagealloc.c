@@ -73,14 +73,23 @@ static void check_poison_mem(struct page *page,
 	if (!__ratelimit(&ratelimit))
 		return;
 	else if (start == end && single_bit_flip(*start, PAGE_POISON))
+<<<<<<< HEAD
 		pr_err("pagealloc: single bit error on page with phys start 0x%lx\n",
 			(unsigned long)page_to_phys(page));
 	else
 		pr_err("pagealloc: memory corruption on page with phys start 0x%lx\n",
 			(unsigned long)page_to_phys(page));
 
+=======
+		printk(KERN_ERR "pagealloc: single bit error on page with phys start 0x%lx\n",
+			(unsigned long)page_to_phys(page));
+	else
+		printk(KERN_ERR "pagealloc: memory corruption on page with phys start 0x%lx\n",
+			(unsigned long)page_to_phys(page));
+>>>>>>> p9x
 	print_hex_dump(KERN_ERR, "", DUMP_PREFIX_ADDRESS, 16, 1, start,
 			end - start + 1, 1);
+	BUG_ON(PANIC_CORRUPTION);
 	dump_stack();
 }
 

@@ -80,13 +80,20 @@ static int restore_usr_regs(struct pt_regs *regs, struct rt_sigframe __user *sf)
 	int err;
 
 	err = __copy_from_user(&set, &sf->uc.uc_sigmask, sizeof(set));
+<<<<<<< HEAD
 	if (!err)
 		set_current_blocked(&set);
 
+=======
+>>>>>>> p9x
 	err |= __copy_from_user(regs, &(sf->uc.uc_mcontext.regs.scratch),
 				sizeof(sf->uc.uc_mcontext.regs.scratch));
+	if (err)
+		return err;
 
-	return err;
+	set_current_blocked(&set);
+
+	return 0;
 }
 
 static inline int is_do_ss_needed(unsigned int magic)
@@ -240,10 +247,17 @@ setup_rt_frame(struct ksignal *ksig, sigset_t *set, struct pt_regs *regs)
 	 * handler returns using sigreturn stub provided already by userpsace
 	 * If not, nuke the process right away
 	 */
+<<<<<<< HEAD
 	if(!(ksig->ka.sa.sa_flags & SA_RESTORER))
 		return 1;
 
 	regs->blink = (unsigned long)ksig->ka.sa.sa_restorer;
+=======
+	if(!(ka->sa.sa_flags & SA_RESTORER))
+		return 1;
+
+	regs->blink = (unsigned long)ka->sa.sa_restorer;
+>>>>>>> p9x
 
 	/* User Stack for signal handler will be above the frame just carved */
 	regs->sp = (unsigned long)sf;
@@ -311,9 +325,18 @@ handle_signal(struct ksignal *ksig, struct pt_regs *regs)
 	int failed;
 
 	/* Set up the stack frame */
+<<<<<<< HEAD
 	failed = setup_rt_frame(ksig, oldset, regs);
 
 	signal_setup_done(failed, ksig, 0);
+=======
+	failed = setup_rt_frame(sig, ka, info, oldset, regs);
+
+	if (failed)
+		force_sigsegv(sig, current);
+	else
+		signal_delivered(sig, info, ka, regs, 0);
+>>>>>>> p9x
 }
 
 void do_signal(struct pt_regs *regs)

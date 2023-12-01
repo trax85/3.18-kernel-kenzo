@@ -478,6 +478,7 @@ u32 ip_idents_reserve(u32 hash, int segs)
 	u32 now = (u32)jiffies;
 	u32 delta = 0;
 
+<<<<<<< HEAD
 	if (old != now && cmpxchg(&bucket->stamp32, old, now) == old)
 		delta = prandom_u32_max(now - old);
 
@@ -497,6 +498,33 @@ void __ip_select_ident(struct iphdr *iph, int segs)
 	hash = jhash_3words((__force u32)iph->daddr,
 			    (__force u32)iph->saddr,
 			    iph->protocol ^ ip_idents_hashrnd_extra,
+=======
+	if (old != now && cmpxchg(&bucket->stamp32, old, now) == old) {
+		u64 x = prandom_u32();
+
+		x *= (now - old);
+		delta = (u32)(x >> 32);
+	}
+
+	return atomic_add_return(segs + delta, &bucket->id) - segs;
+}
+EXPORT_SYMBOL(ip_idents_reserve);
+
+void __ip_select_ident(struct iphdr *iph, int segs)
+{
+	static u32 ip_idents_hashrnd __read_mostly;
+	static bool hashrnd_initialized = false;
+	u32 hash, id;
+
+	if (unlikely(!hashrnd_initialized)) {
+		hashrnd_initialized = true;
+		get_random_bytes(&ip_idents_hashrnd, sizeof(ip_idents_hashrnd));
+	}
+
+	hash = jhash_3words((__force u32)iph->daddr,
+			    (__force u32)iph->saddr,
+			    iph->protocol,
+>>>>>>> p9x
 			    ip_idents_hashrnd);
 	id = ip_idents_reserve(hash, segs);
 	iph->id = htons(id);
@@ -756,7 +784,13 @@ static void __ip_do_redirect(struct rtable *rt, struct sk_buff *skb, struct flow
 			goto reject_redirect;
 	}
 
+<<<<<<< HEAD
 	n = ipv4_neigh_lookup(&rt->dst, NULL, &new_gw);
+=======
+	n = __ipv4_neigh_lookup(rt->dst.dev, new_gw);
+	if (!n)
+		n = neigh_create(&arp_tbl, &new_gw, rt->dst.dev);
+>>>>>>> p9x
 	if (!IS_ERR(n)) {
 		if (!(n->nud_state & NUD_VALID)) {
 			neigh_event_send(n, NULL);
@@ -804,7 +838,11 @@ static void ip_do_redirect(struct dst_entry *dst, struct sock *sk, struct sk_buf
 
 	rt = (struct rtable *) dst;
 
+<<<<<<< HEAD
 	__build_flow_key(net, &fl4, sk, iph, oif, tos, prot, mark, 0);
+=======
+	__build_flow_key(sock_net(sk), &fl4, sk, iph, oif, tos, prot, mark, 0);
+>>>>>>> p9x
 	__ip_do_redirect(rt, skb, &fl4, true);
 }
 
@@ -1060,12 +1098,17 @@ void ipv4_sk_update_pmtu(struct sk_buff *skb, struct sock *sk, u32 mtu)
 	struct net *net = sock_net(sk);
 
 	bh_lock_sock(sk);
+<<<<<<< HEAD
 
 	if (!ip_sk_accept_pmtu(sk))
 		goto out;
 
 	odst = sk_dst_get(sk);
 
+=======
+	odst = sk_dst_get(sk);
+
+>>>>>>> p9x
 	if (sock_owned_by_user(sk) || !odst) {
 		__ipv4_sk_update_pmtu(skb, sk, mtu);
 		goto out;
@@ -1756,7 +1799,10 @@ static int ip_route_input_slow(struct sk_buff *skb, __be32 daddr, __be32 saddr,
 		if (!IN_DEV_FORWARD(in_dev))
 			err = -EHOSTUNREACH;
 		goto no_route;
+<<<<<<< HEAD
 	}
+=======
+>>>>>>> p9x
 
 	if (res.type == RTN_BROADCAST)
 		goto brd_input;

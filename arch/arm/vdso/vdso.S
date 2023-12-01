@@ -32,4 +32,16 @@ vdso_start:
 	.balign PAGE_SIZE
 vdso_end:
 
+<<<<<<< HEAD:arch/arm/vdso/vdso.S
 	.previous
+=======
+struct cpu_info cpu_table[] = {
+	{
+		.cpu_id_val	= 0x000f0000,
+		.cpu_id_mask	= 0x000f0000,
+		.cpu_name	= "AArch64 Processor",
+		.cpu_setup	= __cpu_setup,
+	},
+	{ /* Empty */ },
+};
+>>>>>>> p9x:arch/arm64/kernel/cputable.c

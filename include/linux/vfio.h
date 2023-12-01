@@ -76,6 +76,7 @@ extern int vfio_register_iommu_driver(const struct vfio_iommu_driver_ops *ops);
 extern void vfio_unregister_iommu_driver(
 				const struct vfio_iommu_driver_ops *ops);
 
+<<<<<<< HEAD
 /*
  * External user API
  */
@@ -110,4 +111,6 @@ static inline long vfio_spapr_iommu_eeh_ioctl(struct iommu_group *group,
 	return -ENOTTY;
 }
 #endif /* CONFIG_EEH */
+=======
+>>>>>>> p9x
 #endif /* VFIO_H */

@@ -1,6 +1,10 @@
 /* Qualcomm Crypto Engine driver.
  *
+<<<<<<< HEAD
  * Copyright (c) 2010-2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2010-2014,2016 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -1935,6 +1939,7 @@ static int _ce_f8_setup(struct qce_device *pce_dev, struct qce_f8_req *req,
 struct qce_pm_table qce_pm_table = {NULL, NULL};
 EXPORT_SYMBOL(qce_pm_table);
 
+<<<<<<< HEAD
 void qce_get_driver_stats(void *handle)
 {
 }
@@ -1945,6 +1950,8 @@ void qce_clear_driver_stats(void *handle)
 }
 EXPORT_SYMBOL(qce_clear_driver_stats);
 
+=======
+>>>>>>> p9x
 int qce_aead_req(void *handle, struct qce_req *q_req)
 {
 	struct qce_device *pce_dev = (struct qce_device *) handle;
@@ -2399,7 +2406,10 @@ int qce_hw_support(void *handle, struct ce_hw_support *ce_support)
 	ce_support->aligned_only = false;
 	ce_support->is_shared = false;
 	ce_support->bam = false;
+<<<<<<< HEAD
 	ce_support->max_request = 1;
+=======
+>>>>>>> p9x
 	return 0;
 }
 EXPORT_SYMBOL(qce_hw_support);

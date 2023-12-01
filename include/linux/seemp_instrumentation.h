@@ -92,7 +92,11 @@ static inline void seemp_logk_recvfrom(int fd, void __user *ubuf,
 }
 
 static inline void seemp_logk_oom_adjust_write(pid_t pid,
+<<<<<<< HEAD
 					kuid_t uid, int oom_adj)
+=======
+					uid_t uid, int oom_adj)
+>>>>>>> p9x
 {
 	char *buf = NULL;
 	void *blck = NULL;
@@ -105,12 +109,20 @@ static inline void seemp_logk_oom_adjust_write(pid_t pid,
 	/*fill the buf*/
 	SEEMP_LOGK_RECORD(SEEMP_API_kernel__oom_adjust_write,
 			 "app_uid=%d,app_pid=%d,oom_adj=%d",
+<<<<<<< HEAD
 			uid.val, pid, oom_adj);
+=======
+			uid, pid, oom_adj);
+>>>>>>> p9x
 
 	seemp_logk_kernel_end(blck);
 }
 
+<<<<<<< HEAD
 static inline void seemp_logk_oom_score_adj_write(pid_t pid, kuid_t uid,
+=======
+static inline void seemp_logk_oom_score_adj_write(pid_t pid, uid_t uid,
+>>>>>>> p9x
 					int oom_adj_score)
 {
 	char *buf = NULL;
@@ -124,7 +136,11 @@ static inline void seemp_logk_oom_score_adj_write(pid_t pid, kuid_t uid,
 	/*fill the buf*/
 	snprintf(buf, MAX_BUF_SIZE,
 		"-1|kernel|oom_score_adj_write|app_uid=%d,app_pid=%d,oom_adj=%d|--end",
+<<<<<<< HEAD
 		uid.val, pid, oom_adj_score);
+=======
+		uid, pid, oom_adj_score);
+>>>>>>> p9x
 
 	seemp_logk_kernel_end(blck);
 }

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -221,11 +225,14 @@ DEFINE_EVENT(kgsl_pwr_template, kgsl_rail,
 	TP_ARGS(device, on)
 );
 
+<<<<<<< HEAD
 DEFINE_EVENT(kgsl_pwr_template, kgsl_retention_clk,
 	TP_PROTO(struct kgsl_device *device, int on),
 	TP_ARGS(device, on)
 );
 
+=======
+>>>>>>> p9x
 TRACE_EVENT(kgsl_clk,
 
 	TP_PROTO(struct kgsl_device *device, unsigned int on,
@@ -344,9 +351,15 @@ TRACE_EVENT(kgsl_gpubusy,
 
 TRACE_EVENT(kgsl_pwrstats,
 	TP_PROTO(struct kgsl_device *device, s64 time,
+<<<<<<< HEAD
 		struct kgsl_power_stats *pstats, u32 ctxt_count),
 
 	TP_ARGS(device, time, pstats, ctxt_count),
+=======
+		struct kgsl_power_stats *pstats),
+
+	TP_ARGS(device, time, pstats),
+>>>>>>> p9x
 
 	TP_STRUCT__entry(
 		__string(device_name, device->name)
@@ -354,7 +367,10 @@ TRACE_EVENT(kgsl_pwrstats,
 		__field(u64, busy_time)
 		__field(u64, ram_time)
 		__field(u64, ram_wait)
+<<<<<<< HEAD
 		__field(u32, context_count)
+=======
+>>>>>>> p9x
 	),
 
 	TP_fast_assign(
@@ -363,6 +379,7 @@ TRACE_EVENT(kgsl_pwrstats,
 		__entry->busy_time = pstats->busy_time;
 		__entry->ram_time = pstats->ram_time;
 		__entry->ram_wait = pstats->ram_wait;
+<<<<<<< HEAD
 		__entry->context_count = ctxt_count;
 	),
 
@@ -370,6 +387,14 @@ TRACE_EVENT(kgsl_pwrstats,
 		"d_name=%s total=%lld busy=%lld ram_time=%lld ram_wait=%lld context_count=%u",
 		__get_str(device_name), __entry->total_time, __entry->busy_time,
 		__entry->ram_time, __entry->ram_wait, __entry->context_count
+=======
+	),
+
+	TP_printk(
+		"d_name=%s total=%lld busy=%lld ram_time=%lld ram_wait=%lld",
+		__get_str(device_name), __entry->total_time, __entry->busy_time,
+		__entry->ram_time, __entry->ram_wait
+>>>>>>> p9x
 	)
 );
 
@@ -472,6 +497,7 @@ TRACE_EVENT(kgsl_mem_mmap,
 TRACE_EVENT(kgsl_mem_unmapped_area_collision,
 
 	TP_PROTO(struct kgsl_mem_entry *mem_entry,
+<<<<<<< HEAD
 		 unsigned long addr,
 		 unsigned long len),
 
@@ -481,10 +507,24 @@ TRACE_EVENT(kgsl_mem_unmapped_area_collision,
 		__field(unsigned int, id)
 		__field(unsigned long, addr)
 		__field(unsigned long, len)
+=======
+		 unsigned long hint,
+		 uint64_t len,
+		 uint64_t addr),
+
+	TP_ARGS(mem_entry, hint, len, addr),
+
+	TP_STRUCT__entry(
+		__field(unsigned int, id)
+		__field(unsigned long, hint)
+		__field(unsigned long, len)
+		__field(unsigned long, addr)
+>>>>>>> p9x
 	),
 
 	TP_fast_assign(
 		__entry->id = mem_entry->id;
+<<<<<<< HEAD
 		__entry->len = len;
 		__entry->addr = addr;
 	),
@@ -492,6 +532,16 @@ TRACE_EVENT(kgsl_mem_unmapped_area_collision,
 	TP_printk(
 		"id=%u len=%lu addr=0x%lx",
 		__entry->id, __entry->len, __entry->addr
+=======
+		__entry->hint  = hint;
+		__entry->len = (unsigned long) len;
+		__entry->addr = (unsigned long) addr;
+	),
+
+	TP_printk(
+		"id=%u hint=0x%lx len=%lu addr=0x%lx",
+		__entry->id, __entry->hint, __entry->len, __entry->addr
+>>>>>>> p9x
 	)
 );
 
@@ -1019,17 +1069,28 @@ TRACE_EVENT(kgsl_active_count,
 );
 
 TRACE_EVENT(kgsl_pagetable_destroy,
+<<<<<<< HEAD
 	TP_PROTO(u64 ptbase, unsigned int name),
 	TP_ARGS(ptbase, name),
 	TP_STRUCT__entry(
 		__field(u64, ptbase)
+=======
+	TP_PROTO(phys_addr_t ptbase, unsigned int name),
+	TP_ARGS(ptbase, name),
+	TP_STRUCT__entry(
+		__field(phys_addr_t, ptbase)
+>>>>>>> p9x
 		__field(unsigned int, name)
 	),
 	TP_fast_assign(
 		__entry->ptbase = ptbase;
 		__entry->name = name;
 	),
+<<<<<<< HEAD
 	TP_printk("ptbase=%llx name=%u", __entry->ptbase, __entry->name)
+=======
+	TP_printk("ptbase=%pa name=%u", &__entry->ptbase, __entry->name)
+>>>>>>> p9x
 );
 
 DECLARE_EVENT_CLASS(syncpoint_timestamp_template,

@@ -82,6 +82,7 @@
 					05 01 00 00 10 00 01 29];
 					/* Set display on, wait 16ms */
 		qcom,mdss-dsi-on-command-state = "dsi_lp_mode";
+<<<<<<< HEAD
 		qcom,mdss-dsi-post-mode-switch-on-command =
 			[29 01 00 00 00 00 02 b0 03
 			05 01 00 00 0a 00 01 00
@@ -107,10 +108,13 @@
 			05 01 00 00 10 00 01 29];
 			/* Set display on, wait 16ms */
 		qcom,mdss-dsi-post-mode-switch-on-command-state = "dsi_lp_mode";
+=======
+>>>>>>> p9x
 		qcom,mdss-dsi-off-command = [05 01 00 00 32 00 02 28 00
 					05 01 00 00 78 00 02 10 00];
 		qcom,mdss-dsi-off-command-state = "dsi_hs_mode";
 		qcom,mdss-dsi-reset-sequence = <1 10>, <0 10>, <1 10>;
+<<<<<<< HEAD
 		qcom,dynamic-mode-switch-enabled;
 		qcom,dynamic-mode-switch-type = "dynamic-switch-immediate";
 		qcom,video-to-cmd-mode-switch-commands =
@@ -121,5 +125,7 @@
 			[23 00 00 00 00 00 02 b0 00
 			29 00 00 00 00 00 02 b3 1c
 			23 01 00 00 00 00 02 b0 03];
+=======
+>>>>>>> p9x
 	};
 };

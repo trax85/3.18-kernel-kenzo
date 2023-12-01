@@ -225,7 +225,18 @@ static int s3c2416_cpufreq_set_target(struct cpufreq_policy *policy,
 
 	mutex_lock(&cpufreq_lock);
 
+<<<<<<< HEAD
 	idx = s3c_freq->freq_table[index].driver_data;
+=======
+	pr_debug("cpufreq: to %dKHz, relation %d\n", target_freq, relation);
+
+	ret = cpufreq_frequency_table_target(policy, s3c_freq->freq_table,
+					     target_freq, relation, &i);
+	if (ret != 0)
+		goto out;
+
+	idx = s3c_freq->freq_table[i].driver_data;
+>>>>>>> p9x
 
 	if (idx == SOURCE_HCLK)
 		to_dvs = 1;
@@ -243,7 +254,11 @@ static int s3c2416_cpufreq_set_target(struct cpufreq_policy *policy,
 	 */
 	new_freq = (s3c_freq->is_dvs && !to_dvs)
 				? clk_get_rate(s3c_freq->hclk) / 1000
+<<<<<<< HEAD
 				: s3c_freq->freq_table[index].frequency;
+=======
+				: s3c_freq->freq_table[i].frequency;
+>>>>>>> p9x
 
 	if (to_dvs) {
 		pr_debug("cpufreq: enter dvs\n");
@@ -474,9 +489,15 @@ err_hclk:
 }
 
 static struct cpufreq_driver s3c2416_cpufreq_driver = {
+<<<<<<< HEAD
 	.flags		= CPUFREQ_NEED_INITIAL_FREQ_CHECK,
 	.verify		= cpufreq_generic_frequency_table_verify,
 	.target_index	= s3c2416_cpufreq_set_target,
+=======
+	.flags          = 0,
+	.verify		= s3c2416_cpufreq_verify_speed,
+	.target		= s3c2416_cpufreq_set_target,
+>>>>>>> p9x
 	.get		= s3c2416_cpufreq_get_speed,
 	.init		= s3c2416_cpufreq_driver_init,
 	.name		= "s3c2416",

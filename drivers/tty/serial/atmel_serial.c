@@ -1797,7 +1797,62 @@ static int atmel_startup(struct uart_port *port)
 
 	return 0;
 
+<<<<<<< HEAD
 free_irq:
+=======
+/*
+ * Disable the port
+ */
+static void atmel_shutdown(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+
+	/*
+	 * Clear out any scheduled tasklets before
+	 * we destroy the buffers
+	 */
+	tasklet_kill(&atmel_port->tasklet);
+
+	/*
+	 * Ensure everything is stopped and
+	 * disable all interrupts, port and break condition.
+	 */
+	atmel_stop_rx(port);
+	atmel_stop_tx(port);
+
+	UART_PUT_CR(port, ATMEL_US_RSTSTA);
+	UART_PUT_IDR(port, -1);
+
+
+	/*
+	 * Shut-down the DMA.
+	 */
+	if (atmel_use_dma_rx(port)) {
+		int i;
+
+		for (i = 0; i < 2; i++) {
+			struct atmel_dma_buffer *pdc = &atmel_port->pdc_rx[i];
+
+			dma_unmap_single(port->dev,
+					 pdc->dma_addr,
+					 pdc->dma_size,
+					 DMA_FROM_DEVICE);
+			kfree(pdc->buf);
+		}
+	}
+	if (atmel_use_dma_tx(port)) {
+		struct atmel_dma_buffer *pdc = &atmel_port->pdc_tx;
+
+		dma_unmap_single(port->dev,
+				 pdc->dma_addr,
+				 pdc->dma_size,
+				 DMA_TO_DEVICE);
+	}
+
+	/*
+	 * Free the interrupt
+	 */
+>>>>>>> p9x
 	free_irq(port->irq, port);
 
 	return retval;

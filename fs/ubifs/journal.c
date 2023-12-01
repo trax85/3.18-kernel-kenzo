@@ -363,12 +363,21 @@ again:
 		 * This should not happen unless the journal size limitations
 		 * are too tough.
 		 */
+<<<<<<< HEAD
 		ubifs_err(c, "stuck in space allocation");
 		err = -ENOSPC;
 		goto out;
 	} else if (cmt_retries > 32)
 		ubifs_warn(c, "too many space allocation re-tries (%d)",
 			   cmt_retries);
+=======
+		ubifs_err("stuck in space allocation", c->vi.ubi_num);
+		err = -ENOSPC;
+		goto out;
+	} else if (cmt_retries > 32)
+		ubifs_warn("too many space allocation re-tries (%d)",
+			   c->vi.ubi_num, cmt_retries);
+>>>>>>> p9x
 
 	dbg_jnl("-EAGAIN, commit and retry (retried %d times)",
 		cmt_retries);
@@ -380,8 +389,13 @@ again:
 	goto again;
 
 out:
+<<<<<<< HEAD
 	ubifs_err(c, "cannot reserve %d bytes in jhead %d, error %d",
 		  len, jhead, err);
+=======
+	ubifs_err("cannot reserve %d bytes in jhead %d, error %d",
+		  c->vi.ubi_num, len, jhead, err);
+>>>>>>> p9x
 	if (err == -ENOSPC) {
 		/* This are some budgeting problems, print useful information */
 		down_write(&c->commit_sem);
@@ -1099,14 +1113,20 @@ out_free:
 
 /**
  * recomp_data_node - re-compress a truncated data node.
+ * @c: UBIFS file-system description object
  * @dn: data node to re-compress
  * @new_len: new length
  *
  * This function is used when an inode is truncated and the last data node of
  * the inode has to be re-compressed and re-written.
  */
+<<<<<<< HEAD
 static int recomp_data_node(const struct ubifs_info *c,
 			    struct ubifs_data_node *dn, int *new_len)
+=======
+static int recomp_data_node(struct ubifs_info *c, struct ubifs_data_node *dn,
+			    int *new_len)
+>>>>>>> p9x
 {
 	void *buf;
 	int err, len, compr_type, out_len;

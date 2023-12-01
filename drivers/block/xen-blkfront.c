@@ -74,6 +74,7 @@ struct grant {
 struct blk_shadow {
 	struct blkif_request req;
 	struct request *request;
+<<<<<<< HEAD
 	struct grant **grants_used;
 	struct grant **indirect_grants;
 	struct scatterlist *sg;
@@ -83,6 +84,10 @@ struct split_bio {
 	struct bio *bio;
 	atomic_t pending;
 	int err;
+=======
+	struct grant *grants_used[BLKIF_MAX_SEGMENTS_PER_REQUEST];
+	struct scatterlist sg[BLKIF_MAX_SEGMENTS_PER_REQUEST];
+>>>>>>> p9x
 };
 
 static DEFINE_MUTEX(blkfront_mutex);
@@ -122,7 +127,10 @@ struct blkfront_info
 	struct gnttab_free_callback callback;
 	struct blk_shadow shadow[BLK_RING_SIZE];
 	struct list_head grants;
+<<<<<<< HEAD
 	struct list_head indirect_pages;
+=======
+>>>>>>> p9x
 	unsigned int persistent_gnts_c;
 	unsigned long shadow_free;
 	unsigned int feature_flush;
@@ -238,8 +246,12 @@ static struct grant *get_grant(grant_ref_t *gref_head,
 	unsigned long buffer_mfn;
 
 	BUG_ON(list_empty(&info->grants));
+<<<<<<< HEAD
 	gnt_list_entry = list_first_entry(&info->grants, struct grant,
 	                                  node);
+=======
+	gnt_list_entry = list_first_entry(&info->grants, struct grant, node);
+>>>>>>> p9x
 	list_del(&gnt_list_entry->node);
 
 	if (gnt_list_entry->gref != GRANT_INVALID_REF) {
@@ -448,6 +460,7 @@ static int blkif_queue_request(struct request *req)
 		else
 			ring_req->u.discard.flag = 0;
 	} else {
+<<<<<<< HEAD
 		BUG_ON(info->max_indirect_segments == 0 &&
 		       req->nr_phys_segments > BLKIF_MAX_SEGMENTS_PER_REQUEST);
 		BUG_ON(info->max_indirect_segments &&
@@ -511,6 +524,17 @@ static int blkif_queue_request(struct request *req)
 				ring_req->u.indirect.indirect_grefs[n] = gnt_list_entry->gref;
 			}
 
+=======
+		ring_req->u.rw.nr_segments = blk_rq_map_sg(req->q, req,
+							   info->shadow[id].sg);
+		BUG_ON(ring_req->u.rw.nr_segments >
+		       BLKIF_MAX_SEGMENTS_PER_REQUEST);
+
+		for_each_sg(info->shadow[id].sg, sg, ring_req->u.rw.nr_segments, i) {
+			fsect = sg->offset >> 9;
+			lsect = fsect + (sg->length >> 9) - 1;
+
+>>>>>>> p9x
 			gnt_list_entry = get_grant(&gref_head, page_to_pfn(sg_page(sg)), info);
 			ref = gnt_list_entry->gref;
 
@@ -1035,8 +1059,12 @@ static void blkif_completion(struct blk_shadow *s, struct blkfront_info *info,
 	void *shared_data;
 	int nseg;
 
+<<<<<<< HEAD
 	nseg = s->req.operation == BLKIF_OP_INDIRECT ?
 		s->req.u.indirect.nr_segments : s->req.u.rw.nr_segments;
+=======
+	nseg = s->req.u.rw.nr_segments;
+>>>>>>> p9x
 
 	if (bret->operation == BLKIF_OP_READ && info->feature_persistent) {
 		/*
@@ -1082,6 +1110,7 @@ static void blkif_completion(struct blk_shadow *s, struct blkfront_info *info,
 			s->grants_used[i]->gref = GRANT_INVALID_REF;
 			list_add_tail(&s->grants_used[i]->node, &info->grants);
 		}
+<<<<<<< HEAD
 	}
 	if (s->req.operation == BLKIF_OP_INDIRECT) {
 		for (i = 0; i < INDIRECT_GREFS(nseg); i++) {
@@ -1107,6 +1136,8 @@ static void blkif_completion(struct blk_shadow *s, struct blkfront_info *info,
 				list_add_tail(&s->indirect_grants[i]->node, &info->grants);
 			}
 		}
+=======
+>>>>>>> p9x
 	}
 }
 
@@ -1229,7 +1260,7 @@ static int setup_blkring(struct xenbus_device *dev,
 			 struct blkfront_info *info)
 {
 	struct blkif_sring *sring;
-	int err;
+	int err, i;
 
 	info->ring_ref = GRANT_INVALID_REF;
 
@@ -1241,6 +1272,12 @@ static int setup_blkring(struct xenbus_device *dev,
 	SHARED_RING_INIT(sring);
 	FRONT_RING_INIT(&info->ring, sring, PAGE_SIZE);
 
+<<<<<<< HEAD
+=======
+	for (i = 0; i < BLK_RING_SIZE; i++)
+		sg_init_table(info->shadow[i].sg, BLKIF_MAX_SEGMENTS_PER_REQUEST);
+
+>>>>>>> p9x
 	err = xenbus_grant_ring(dev, virt_to_mfn(info->ring.sring));
 	if (err < 0) {
 		free_page((unsigned long)sring);
@@ -1400,7 +1437,10 @@ static int blkfront_probe(struct xenbus_device *dev,
 	info->xbdev = dev;
 	info->vdevice = vdevice;
 	INIT_LIST_HEAD(&info->grants);
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&info->indirect_pages);
+=======
+>>>>>>> p9x
 	info->persistent_gnts_c = 0;
 	info->connected = BLKIF_STATE_DISCONNECTED;
 	INIT_WORK(&info->work, blkif_restart_queue);
@@ -1443,6 +1483,7 @@ static int blkif_recover(struct blkfront_info *info)
 	int i;
 	struct request *req, *n;
 	struct blk_shadow *copy;
+<<<<<<< HEAD
 	int rc;
 	struct bio *bio, *cloned_bio;
 	struct bio_list bio_list, merge_bio;
@@ -1450,6 +1491,10 @@ static int blkif_recover(struct blkfront_info *info)
 	int pending, size;
 	struct split_bio *split_bio;
 	struct list_head requests;
+=======
+	unsigned int persistent;
+	int j, rc;
+>>>>>>> p9x
 
 	/* Stage 1: Make a safe copy of the shadow state. */
 	copy = kmemdup(info->shadow, sizeof(info->shadow),
@@ -1464,16 +1509,37 @@ static int blkif_recover(struct blkfront_info *info)
 	info->shadow_free = info->ring.req_prod_pvt;
 	info->shadow[BLK_RING_SIZE-1].req.u.rw.id = 0x0fffffff;
 
+<<<<<<< HEAD
 	rc = blkfront_setup_indirect(info);
 	if (rc) {
+=======
+	/* Check if the backend supports persistent grants */
+	rc = xenbus_gather(XBT_NIL, info->xbdev->otherend,
+			   "feature-persistent", "%u", &persistent,
+			   NULL);
+	if (rc)
+		info->feature_persistent = 0;
+	else
+		info->feature_persistent = persistent;
+
+	/* Allocate memory for grants */
+	rc = fill_grant_buffer(info, BLK_RING_SIZE *
+	                             BLKIF_MAX_SEGMENTS_PER_REQUEST);
+	if (rc) {
+		xenbus_dev_fatal(info->xbdev, rc, "setting grant buffer failed");
+>>>>>>> p9x
 		kfree(copy);
 		return rc;
 	}
 
+<<<<<<< HEAD
 	segs = info->max_indirect_segments ? : BLKIF_MAX_SEGMENTS_PER_REQUEST;
 	blk_queue_max_segments(info->rq, segs);
 	bio_list_init(&bio_list);
 	INIT_LIST_HEAD(&requests);
+=======
+	/* Stage 3: Find pending requests and requeue them. */
+>>>>>>> p9x
 	for (i = 0; i < BLK_RING_SIZE; i++) {
 		/* Not in use? */
 		if (!copy[i].request)
@@ -1768,14 +1834,23 @@ static void blkfront_connect(struct blkfront_info *info)
 		       sectors);
 		set_capacity(info->gd, sectors);
 		revalidate_disk(info->gd);
-
 		return;
+
+<<<<<<< HEAD
+		return;
+=======
+>>>>>>> p9x
 	case BLKIF_STATE_SUSPENDED:
 		/*
 		 * If we are recovering from suspension, we need to wait
 		 * for the backend to announce it's features before
+<<<<<<< HEAD
 		 * reconnecting, at least we need to know if the backend
 		 * supports indirect descriptors, and how many.
+=======
+		 * reconnecting, we need to know if the backend supports
+		 * persistent grants.
+>>>>>>> p9x
 		 */
 		blkif_recover(info);
 		return;
@@ -1855,6 +1930,7 @@ static void blkfront_connect(struct blkfront_info *info)
 	else
 		info->feature_persistent = persistent;
 
+<<<<<<< HEAD
 	err = blkfront_setup_indirect(info);
 	if (err) {
 		xenbus_dev_fatal(info->xbdev, err, "setup_indirect at %s",
@@ -1864,6 +1940,17 @@ static void blkfront_connect(struct blkfront_info *info)
 
 	err = xlvbd_alloc_gendisk(sectors, info, binfo, sector_size,
 				  physical_sector_size);
+=======
+	/* Allocate memory for grants */
+	err = fill_grant_buffer(info, BLK_RING_SIZE *
+	                              BLKIF_MAX_SEGMENTS_PER_REQUEST);
+	if (err) {
+		xenbus_dev_fatal(info->xbdev, err, "setting grant buffer failed");
+		return;
+	}
+
+	err = xlvbd_alloc_gendisk(sectors, info, binfo, sector_size);
+>>>>>>> p9x
 	if (err) {
 		xenbus_dev_fatal(info->xbdev, err, "xlvbd_add at %s",
 				 info->xbdev->otherend);

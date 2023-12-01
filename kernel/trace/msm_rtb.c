@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -27,7 +31,10 @@
 #include <linux/io.h>
 #include <asm-generic/sizes.h>
 #include <linux/msm_rtb.h>
+<<<<<<< HEAD
 #include <asm/timex.h>
+=======
+>>>>>>> p9x
 
 #define SENTINEL_BYTE_1 0xFF
 #define SENTINEL_BYTE_2 0xAA
@@ -42,9 +49,14 @@
  * 4) 4 bytes index
  * 4) 8 bytes extra data from the caller
  * 5) 8 bytes of timestamp
+<<<<<<< HEAD
  * 6) 8 bytes of cyclecount
  *
  * Total = 40 bytes.
+=======
+ *
+ * Total = 32 bytes.
+>>>>>>> p9x
  */
 struct msm_rtb_layout {
 	unsigned char sentinel[3];
@@ -53,7 +65,10 @@ struct msm_rtb_layout {
 	uint64_t caller;
 	uint64_t data;
 	uint64_t timestamp;
+<<<<<<< HEAD
 	uint64_t cycle_count;
+=======
+>>>>>>> p9x
 } __attribute__ ((__packed__));
 
 
@@ -91,7 +106,10 @@ static int msm_rtb_panic_notifier(struct notifier_block *this,
 
 static struct notifier_block msm_rtb_panic_blk = {
 	.notifier_call  = msm_rtb_panic_notifier,
+<<<<<<< HEAD
 	.priority = INT_MAX,
+=======
+>>>>>>> p9x
 };
 
 int notrace msm_rtb_event_should_log(enum logk_event_type log_type)
@@ -135,11 +153,14 @@ static void msm_rtb_write_timestamp(struct msm_rtb_layout *start)
 	start->timestamp = sched_clock();
 }
 
+<<<<<<< HEAD
 static void msm_rtb_write_cyclecount(struct msm_rtb_layout *start)
 {
 	start->cycle_count = get_cycles();
 }
 
+=======
+>>>>>>> p9x
 static void uncached_logk_pc_idx(enum logk_event_type log_type, uint64_t caller,
 				 uint64_t data, int idx)
 {
@@ -153,7 +174,10 @@ static void uncached_logk_pc_idx(enum logk_event_type log_type, uint64_t caller,
 	msm_rtb_write_idx(idx, start);
 	msm_rtb_write_data(data, start);
 	msm_rtb_write_timestamp(start);
+<<<<<<< HEAD
 	msm_rtb_write_cyclecount(start);
+=======
+>>>>>>> p9x
 	mb();
 
 	return;
@@ -170,10 +194,26 @@ static void uncached_logk_timestamp(int idx)
 }
 
 #if defined(CONFIG_MSM_RTB_SEPARATE_CPUS)
+<<<<<<< HEAD
+=======
+/*
+ * Since it is not necessarily true that nentries % step_size == 0,
+ * must make appropriate adjustments to the index when a "wraparound"
+ * occurs to ensure that msm_rtb.rtb[x] always belongs to the same cpu.
+ * It is desired to give all cpus the same number of entries; this leaves
+ * (nentries % step_size) dead space at the end of the buffer.
+ */
+>>>>>>> p9x
 static int msm_rtb_get_idx(void)
 {
 	int cpu, i, offset;
 	atomic_t *index;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+	u32 unused_buffer_size = msm_rtb.nentries % msm_rtb.step_size;
+	int adjusted_size;
+>>>>>>> p9x
 
 	/*
 	 * ideally we would use get_cpu but this is a close enough
@@ -183,6 +223,7 @@ static int msm_rtb_get_idx(void)
 
 	index = &per_cpu(msm_rtb_idx_cpu, cpu);
 
+<<<<<<< HEAD
 	i = atomic_add_return(msm_rtb.step_size, index);
 	i -= msm_rtb.step_size;
 
@@ -194,6 +235,26 @@ static int msm_rtb_get_idx(void)
 		i = atomic_add_return(msm_rtb.step_size, index);
 		i -= msm_rtb.step_size;
 	}
+=======
+	local_irq_save(flags);
+	i = atomic_add_return(msm_rtb.step_size, index);
+	i -= msm_rtb.step_size;
+
+	/*
+	 * Check if index has wrapped around or is in the unused region at the
+	 * end of the buffer
+	 */
+	adjusted_size = atomic_read(index) + unused_buffer_size;
+	offset = (adjusted_size & (msm_rtb.nentries - 1)) -
+		 ((adjusted_size - msm_rtb.step_size) & (msm_rtb.nentries - 1));
+	if (offset < 0) {
+		uncached_logk_timestamp(i);
+		i = atomic_add_return(msm_rtb.step_size + unused_buffer_size,
+									index);
+		i -= msm_rtb.step_size;
+	}
+	local_irq_restore(flags);
+>>>>>>> p9x
 
 	return i;
 }

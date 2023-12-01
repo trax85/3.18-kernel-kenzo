@@ -485,8 +485,12 @@ static int magicmouse_input_configured(struct hid_device *hdev,
 		msc->input = NULL;
 		return ret;
 	}
+<<<<<<< HEAD
 
 	return 0;
+=======
+	return ret;
+>>>>>>> p9x
 }
 
 

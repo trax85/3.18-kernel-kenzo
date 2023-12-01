@@ -30,14 +30,19 @@
 #include <linux/mempolicy.h>
 #include <linux/vmalloc.h>
 #include <linux/security.h>
+#include <linux/backing-dev.h>
 #include <linux/memcontrol.h>
 #include <linux/syscalls.h>
 #include <linux/hugetlb.h>
 #include <linux/hugetlb_cgroup.h>
 #include <linux/gfp.h>
 #include <linux/balloon_compaction.h>
+<<<<<<< HEAD
 #include <linux/mmu_notifier.h>
 #include <linux/ptrace.h>
+=======
+#include <trace/events/kmem.h>
+>>>>>>> p9x
 
 #include <asm/tlbflush.h>
 
@@ -145,8 +150,11 @@ static int remove_migration_pte(struct page *new, struct vm_area_struct *vma,
 
 	get_page(new);
 	pte = pte_mkold(mk_pte(new, vma->vm_page_prot));
+<<<<<<< HEAD
 	if (pte_swp_soft_dirty(*ptep))
 		pte = pte_mksoft_dirty(pte);
+=======
+>>>>>>> p9x
 
 	/* Recheck VMA as permissions can change since migration started  */
 	if (is_write_migration_entry(entry))
@@ -343,7 +351,13 @@ int migrate_page_move_mapping(struct address_space *mapping,
 		struct buffer_head *head, enum migrate_mode mode,
 		int extra_count)
 {
+<<<<<<< HEAD
 	int expected_count = 1 + extra_count;
+=======
+	struct zone *oldzone, *newzone;
+	int dirty;
+	int expected_count = 0;
+>>>>>>> p9x
 	void **pslot;
 
 	if (!mapping) {
@@ -352,6 +366,9 @@ int migrate_page_move_mapping(struct address_space *mapping,
 			return -EAGAIN;
 		return MIGRATEPAGE_SUCCESS;
 	}
+
+	oldzone = page_zone(page);
+	newzone = page_zone(newpage);
 
 	spin_lock_irq(&mapping->tree_lock);
 
@@ -393,6 +410,13 @@ int migrate_page_move_mapping(struct address_space *mapping,
 		set_page_private(newpage, page_private(page));
 	}
 
+	/* Move dirty while page refs frozen and newpage not yet exposed */
+	dirty = PageDirty(page);
+	if (dirty) {
+		ClearPageDirty(page);
+		SetPageDirty(newpage);
+	}
+
 	radix_tree_replace_slot(pslot, newpage);
 
 	/*
@@ -401,6 +425,9 @@ int migrate_page_move_mapping(struct address_space *mapping,
 	 * We know this isn't the last reference.
 	 */
 	page_unfreeze_refs(page, expected_count - 1);
+
+	spin_unlock(&mapping->tree_lock);
+	/* Leave irq disabled to prevent preemption while updating stats */
 
 	/*
 	 * If moved to a different zone then also account
@@ -412,13 +439,19 @@ int migrate_page_move_mapping(struct address_space *mapping,
 	 * via NR_FILE_PAGES and NR_ANON_PAGES if they
 	 * are mapped to swap space.
 	 */
-	__dec_zone_page_state(page, NR_FILE_PAGES);
-	__inc_zone_page_state(newpage, NR_FILE_PAGES);
-	if (!PageSwapCache(page) && PageSwapBacked(page)) {
-		__dec_zone_page_state(page, NR_SHMEM);
-		__inc_zone_page_state(newpage, NR_SHMEM);
+	if (newzone != oldzone) {
+		__dec_zone_state(oldzone, NR_FILE_PAGES);
+		__inc_zone_state(newzone, NR_FILE_PAGES);
+		if (PageSwapBacked(page) && !PageSwapCache(page)) {
+			__dec_zone_state(oldzone, NR_SHMEM);
+			__inc_zone_state(newzone, NR_SHMEM);
+		}
+		if (dirty && mapping_cap_account_dirty(mapping)) {
+			__dec_zone_state(oldzone, NR_FILE_DIRTY);
+			__inc_zone_state(newzone, NR_FILE_DIRTY);
+		}
 	}
-	spin_unlock_irq(&mapping->tree_lock);
+	local_irq_enable();
 
 	return MIGRATEPAGE_SUCCESS;
 }
@@ -543,20 +576,9 @@ void migrate_page_copy(struct page *newpage, struct page *page)
 	if (PageMappedToDisk(page))
 		SetPageMappedToDisk(newpage);
 
-	if (PageDirty(page)) {
-		clear_page_dirty_for_io(page);
-		/*
-		 * Want to mark the page and the radix tree as dirty, and
-		 * redo the accounting that clear_page_dirty_for_io undid,
-		 * but we can't use set_page_dirty because that function
-		 * is actually a signal that all of the page has become dirty.
-		 * Whereas only part of our page may be dirty.
-		 */
-		if (PageSwapBacked(page))
-			SetPageDirty(newpage);
-		else
-			__set_page_dirty_nobuffers(newpage);
- 	}
+	/* Move dirty on pages not done by migrate_page_move_mapping() */
+	if (PageDirty(page))
+		SetPageDirty(newpage);
 
 	/*
 	 * Copy NUMA information to the new page, to prevent over-eager
@@ -1034,12 +1056,18 @@ static int unmap_and_move_huge_page(new_page_t get_new_page,
 	 * tables or check whether the hugepage is pmd-based or not before
 	 * kicking migration.
 	 */
+<<<<<<< HEAD
 	if (!hugepage_migration_supported(page_hstate(hpage))) {
 		putback_active_hugepage(hpage);
 		return -ENOSYS;
 	}
 
 	new_hpage = get_new_page(hpage, private, &result);
+=======
+	if (!hugepage_migration_support(page_hstate(hpage)))
+		return -ENOSYS;
+
+>>>>>>> p9x
 	if (!new_hpage)
 		return -ENOMEM;
 
@@ -1138,8 +1166,12 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
 	int swapwrite = current->flags & PF_SWAPWRITE;
 	int rc;
 
+<<<<<<< HEAD
 	trace_mm_migrate_pages_start(mode, reason);
 
+=======
+	trace_migrate_pages_start(mode);
+>>>>>>> p9x
 	if (!swapwrite)
 		current->flags |= PF_SWAPWRITE;
 
@@ -1162,6 +1194,7 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
 				goto out;
 			case -EAGAIN:
 				retry++;
+				trace_migrate_retry(retry);
 				break;
 			case MIGRATEPAGE_SUCCESS:
 				nr_succeeded++;
@@ -1189,6 +1222,7 @@ out:
 	if (!swapwrite)
 		current->flags &= ~PF_SWAPWRITE;
 
+	trace_migrate_pages_end(mode);
 	return rc;
 }
 
@@ -1861,6 +1895,14 @@ fail_putback:
 	entry = pmd_mkhuge(entry);
 	entry = maybe_pmd_mkwrite(pmd_mkdirty(entry), vma);
 
+<<<<<<< HEAD
+=======
+	pmdp_clear_flush(vma, haddr, pmd);
+	set_pmd_at(mm, haddr, pmd, entry);
+	page_add_new_anon_rmap(new_page, vma, haddr);
+	update_mmu_cache_pmd(vma, address, &entry);
+	page_remove_rmap(page);
+>>>>>>> p9x
 	/*
 	 * Clear the old entry under pagetable lock and establish the new PTE.
 	 * Any parallel GUP will either observe the old page blocking on the
@@ -1910,6 +1952,7 @@ fail_putback:
 out_fail:
 	count_vm_events(PGMIGRATE_FAIL, HPAGE_PMD_NR);
 out_dropref:
+<<<<<<< HEAD
 	ptl = pmd_lock(mm, pmd);
 	if (pmd_same(*pmd, entry)) {
 		entry = pmd_mknonnuma(entry);
@@ -1917,6 +1960,11 @@ out_dropref:
 		update_mmu_cache_pmd(vma, address, &entry);
 	}
 	spin_unlock(ptl);
+=======
+	entry = pmd_mknonnuma(entry);
+	set_pmd_at(mm, haddr, pmd, entry);
+	update_mmu_cache_pmd(vma, address, &entry);
+>>>>>>> p9x
 
 out_unlock:
 	unlock_page(page);

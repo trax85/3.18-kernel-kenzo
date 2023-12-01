@@ -54,6 +54,29 @@
 	};
 };
 
+<<<<<<< HEAD
+=======
+&i2c_5 { /* BLSP2 QUP1 */
+	nq@28 {
+		compatible = "qcom,nq-nci";
+		reg = <0x28>;
+		qcom,nq-irq = <&msm_gpio 17 0x00>;
+		qcom,nq-ven = <&msm_gpio 16 0x00>;
+		qcom,nq-firm = <&pm8950_gpios 5 0x00>;
+		qcom,nq-clkreq = <&msm_gpio 129 0x00>;
+		interrupt-parent = <&msm_gpio>;
+		qcom,clk-src = "BBCLK2";
+		interrupts = <17 0>;
+		interrupt-names = "nfc_irq";
+		pinctrl-names = "nfc_active", "nfc_suspend";
+		pinctrl-0 = <&nfc_int_active &nfc_disable_active>;
+		pinctrl-1 = <&nfc_int_suspend &nfc_disable_suspend>;
+		clocks = <&clock_gcc clk_bb_clk2_pin>;
+		clock-names = "ref_clk";
+	};
+};
+
+>>>>>>> p9x
 &soc {
 	gen-vkeys {
 		compatible = "qcom,gen-vkeys";
@@ -210,6 +233,7 @@
 					"wsa_clk_vi",
 					"wsa_active_vi",
 					"wsa_all";
+<<<<<<< HEAD
 			pinctrl-0 = <&wsa_clk_off &wsa_reset_off &wsa_vi_off>;
 			pinctrl-1 = <&wsa_clk_on &wsa_reset_off &wsa_vi_off>;
 			pinctrl-2 = <&wsa_clk_off &wsa_reset_on &wsa_vi_off>;
@@ -218,6 +242,16 @@
 			pinctrl-5 = <&wsa_clk_on &wsa_reset_off &wsa_vi_on>;
 			pinctrl-6 = <&wsa_clk_off &wsa_reset_on &wsa_vi_on>;
 			pinctrl-7 = <&wsa_clk_on &wsa_reset_on &wsa_vi_on>;
+=======
+			pinctrl-0 = <&wsa_clk_off &wsa_suspend &wsa_vi_sus>;
+			pinctrl-1 = <&wsa_clk_on &wsa_suspend &wsa_vi_sus>;
+			pinctrl-2 = <&wsa_clk_off &wsa_active &wsa_vi_sus>;
+			pinctrl-3 = <&wsa_clk_on &wsa_active &wsa_vi_sus>;
+			pinctrl-4 = <&wsa_clk_off &wsa_suspend &wsa_vi_act>;
+			pinctrl-5 = <&wsa_clk_on &wsa_suspend &wsa_vi_act>;
+			pinctrl-6 = <&wsa_clk_off &wsa_active &wsa_vi_act>;
+			pinctrl-7 = <&wsa_clk_on &wsa_active &wsa_vi_act>;
+>>>>>>> p9x
 		};
 		wsa881x-i2c-codec@44 {
 			compatible = "qcom,wsa881x-i2c-codec";
@@ -245,6 +279,7 @@
 					"wsa_clk_vi",
 					"wsa_active_vi",
 					"wsa_all";
+<<<<<<< HEAD
 			pinctrl-0 = <&wsa_clk_off &wsa_reset_off &wsa_vi_off>;
 			pinctrl-1 = <&wsa_clk_on &wsa_reset_off &wsa_vi_off>;
 			pinctrl-2 = <&wsa_clk_off &wsa_reset_on &wsa_vi_off>;
@@ -253,6 +288,16 @@
 			pinctrl-5 = <&wsa_clk_on &wsa_reset_off &wsa_vi_on>;
 			pinctrl-6 = <&wsa_clk_off &wsa_reset_on &wsa_vi_on>;
 			pinctrl-7 = <&wsa_clk_on &wsa_reset_on &wsa_vi_on>;
+=======
+			pinctrl-0 = <&wsa_clk_off &wsa_suspend &wsa_vi_sus>;
+			pinctrl-1 = <&wsa_clk_on &wsa_suspend &wsa_vi_sus>;
+			pinctrl-2 = <&wsa_clk_off &wsa_active &wsa_vi_sus>;
+			pinctrl-3 = <&wsa_clk_on &wsa_active &wsa_vi_sus>;
+			pinctrl-4 = <&wsa_clk_off &wsa_suspend &wsa_vi_act>;
+			pinctrl-5 = <&wsa_clk_on &wsa_suspend &wsa_vi_act>;
+			pinctrl-6 = <&wsa_clk_off &wsa_active &wsa_vi_act>;
+			pinctrl-7 = <&wsa_clk_on &wsa_active &wsa_vi_act>;
+>>>>>>> p9x
 		};
 		wsa881x-i2c-codec@45 {
 			compatible = "qcom,wsa881x-i2c-codec";
@@ -261,6 +306,22 @@
 	};
 };
 
+<<<<<<< HEAD
+=======
+&pm8950_gpios {
+	gpio@c400 {
+		qcom,mode = <1>;
+		qcom,output-type = <0>;
+		qcom,pull = <0>;
+		qcom,vin-sel = <2>;
+		qcom,out-strength = <3>;
+		qcom,src-sel = <0>;
+		qcom,master-en = <1>;
+		status = "okay";
+	};
+};
+
+>>>>>>> p9x
 &blsp1_uart2 {
 	status = "ok";
 	pinctrl-names = "default";
@@ -281,12 +342,21 @@
 
 &pmi8950_charger {
 	qcom,battery-data = <&mtp_batterydata>;
+<<<<<<< HEAD
+=======
+	qcom,chg-led-support;
+	qcom,chg-led-sw-controls;
+>>>>>>> p9x
 };
 
 &spmi_bus {
 	qcom,pm8950@0 {
 		qcom,leds@a300 {
+<<<<<<< HEAD
 			status = "ok";
+=======
+			status = "okay";
+>>>>>>> p9x
 			qcom,led_mpp_4 {
 				label = "mpp";
 				linux,name = "button-backlight";
@@ -303,6 +373,7 @@
 	};
 
 	qcom,pmi8950@3 {
+<<<<<<< HEAD
 		qcom,leds@d800 {
 			qcom,cons-sync-write-delay-us = <1000>;
 			qcom,fs-curr-ua = <30000>;
@@ -311,6 +382,11 @@
 		qcom,leds@d300 {
 			compatible = "qcom,qpnp-flash-led";
 			status = "ok";
+=======
+		qcom,leds@d300 {
+			compatible = "qcom,qpnp-flash-led";
+			status = "okay";
+>>>>>>> p9x
 			reg = <0xd300 0x100>;
 			pinctrl-names = "flash_led_enable","flash_led_disable";
 			pinctrl-0 = <&flash_led_enable>;
@@ -377,6 +453,7 @@
 	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
 };
 
+<<<<<<< HEAD
 &msm_gpio {
 	pmx_mdss {
 		mdss_dsi_active: mdss_dsi_active {
@@ -421,6 +498,16 @@
 			};
 		};
 	};
+=======
+&pmx_mdss {
+	qcom,num-grp-pins = <3>;
+	qcom,pins = <&gp 90>, <&gp 0>, <&gp 91>;
+};
+
+&pmx_mdss_te {
+	qcom,num-grp-pins = <1>;
+	qcom,pins = <&gp 24>;
+>>>>>>> p9x
 };
 
 &mdss_dsi0 {
@@ -436,6 +523,11 @@
 
 &dsi_truly_1080_cmd {
 	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+<<<<<<< HEAD
+=======
+	qcom,ulps-enabled;
+	qcom,panel-roi-alignment = <2 2 4 2 1080 2>;
+>>>>>>> p9x
 };
 
 &labibb {
@@ -443,6 +535,13 @@
 	qpnp,qpnp-labibb-mode = "lcd";
 };
 
+<<<<<<< HEAD
+=======
+&ibb_regulator {
+	qcom,qpnp-ibb-discharge-resistor = <32>;
+};
+
+>>>>>>> p9x
 /* CoreSight */
 &tpiu {
 	pinctrl-names = "sdcard", "trace", "swduart",

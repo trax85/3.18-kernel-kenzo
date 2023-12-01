@@ -246,10 +246,13 @@ static inline int pmd_same(pmd_t pmd_a, pmd_t pmd_b)
 
 #ifndef pte_accessible
 # define pte_accessible(mm, pte)	((void)(pte), 1)
+<<<<<<< HEAD
 #endif
 
 #ifndef pte_present_nonuma
 #define pte_present_nonuma(pte) pte_present(pte)
+=======
+>>>>>>> p9x
 #endif
 
 #ifndef flush_tlb_fix_spurious_fault
@@ -754,12 +757,16 @@ static inline pte_t pte_mknuma(pte_t pte)
 {
 	pteval_t val = pte_val(pte);
 
+<<<<<<< HEAD
 	VM_BUG_ON(!(val & _PAGE_PRESENT));
 
+=======
+>>>>>>> p9x
 	val &= ~_PAGE_PRESENT;
 	val |= _PAGE_NUMA;
 
 	return __pte(val);
+<<<<<<< HEAD
 }
 #endif
 
@@ -772,6 +779,8 @@ static inline void ptep_set_numa(struct mm_struct *mm, unsigned long addr,
 	ptent = pte_mknuma(ptent);
 	set_pte_at(mm, addr, ptep, ptent);
 	return;
+=======
+>>>>>>> p9x
 }
 #endif
 
@@ -784,6 +793,7 @@ static inline pmd_t pmd_mknuma(pmd_t pmd)
 	val |= _PAGE_NUMA;
 
 	return __pmd(val);
+<<<<<<< HEAD
 }
 #endif
 
@@ -796,6 +806,8 @@ static inline void pmdp_set_numa(struct mm_struct *mm, unsigned long addr,
 	pmd = pmd_mknuma(pmd);
 	set_pmd_at(mm, addr, pmdp, pmd);
 	return;
+=======
+>>>>>>> p9x
 }
 #endif
 #else

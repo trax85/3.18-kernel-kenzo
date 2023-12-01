@@ -16,6 +16,11 @@
 #ifndef __ASM_PERCPU_H
 #define __ASM_PERCPU_H
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SMP
+
+>>>>>>> p9x
 static inline void set_my_cpu_offset(unsigned long off)
 {
 	asm volatile("msr tpidr_el1, %0" :: "r" (off) : "memory");
@@ -24,18 +29,35 @@ static inline void set_my_cpu_offset(unsigned long off)
 static inline unsigned long __my_cpu_offset(void)
 {
 	unsigned long off;
+<<<<<<< HEAD
+=======
+	register unsigned long *sp asm ("sp");
+>>>>>>> p9x
 
 	/*
 	 * We want to allow caching the value, so avoid using volatile and
 	 * instead use a fake stack read to hazard against barrier().
 	 */
+<<<<<<< HEAD
 	asm("mrs %0, tpidr_el1" : "=r" (off) :
 		"Q" (*(const unsigned long *)current_stack_pointer));
+=======
+	asm("mrs %0, tpidr_el1" : "=r" (off) : "Q" (*sp));
+>>>>>>> p9x
 
 	return off;
 }
 #define __my_cpu_offset __my_cpu_offset()
 
+<<<<<<< HEAD
+=======
+#else	/* !CONFIG_SMP */
+
+#define set_my_cpu_offset(x)	do { } while (0)
+
+#endif /* CONFIG_SMP */
+
+>>>>>>> p9x
 #include <asm-generic/percpu.h>
 
 #endif /* __ASM_PERCPU_H */

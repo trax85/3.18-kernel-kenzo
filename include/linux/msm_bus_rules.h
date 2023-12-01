@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -39,6 +43,7 @@ struct rule_apply_rcm_info {
 
 struct bus_rule_type {
 	int num_src;
+<<<<<<< HEAD
 	int combo_op;
 	int num_thresh;
 	int num_dst;
@@ -51,6 +56,17 @@ struct bus_rule_type {
 	int *op;
 	u64 *thresh;
 	int *dst_node;
+=======
+	int *src_id;
+	int src_field;
+	int op;
+	u64 thresh;
+	int num_dst;
+	int *dst_node;
+	u64 dst_bw;
+	int mode;
+	void *client_data;
+>>>>>>> p9x
 };
 
 #if (defined(CONFIG_BUS_TOPOLOGY_ADHOC))
@@ -58,6 +74,7 @@ void msm_rule_register(int num_rules, struct bus_rule_type *rule,
 				struct notifier_block *nb);
 void msm_rule_unregister(int num_rules, struct bus_rule_type *rule,
 						struct notifier_block *nb);
+<<<<<<< HEAD
 bool msm_rule_update(struct bus_rule_type *old_rule,
 				struct bus_rule_type *new_rule,
 				struct notifier_block *nb);
@@ -66,6 +83,10 @@ void print_rules_buf(char *buf, int count);
 bool msm_rule_are_rules_registered(void);
 int msm_rule_query_bandwidth(struct bus_rule_type *rule,
 			u64 *bw, struct notifier_block *nb);
+=======
+void print_rules_buf(char *buf, int count);
+bool msm_rule_are_rules_registered(void);
+>>>>>>> p9x
 #else
 static inline void msm_rule_register(int num_rules, struct bus_rule_type *rule,
 				struct notifier_block *nb)
@@ -83,6 +104,7 @@ static inline bool msm_rule_are_rules_registered(void)
 {
 	return false;
 }
+<<<<<<< HEAD
 static inline bool msm_rule_update(struct bus_rule_type *old_rule,
 					struct bus_rule_type *new_rule,
 					struct notifier_block *nb)
@@ -97,5 +119,7 @@ static inline int msm_rule_query_bandwidth(struct bus_rule_type *rule,
 {
 	return false;
 }
+=======
+>>>>>>> p9x
 #endif /* defined(CONFIG_BUS_TOPOLOGY_ADHOC) */
 #endif /* _ARCH_ARM_MACH_MSM_BUS_RULES_H */

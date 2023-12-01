@@ -57,6 +57,10 @@
 			device_type = "cpu";
 			compatible = "arm,armv8";
 			reg = <0x0>;
+<<<<<<< HEAD
+=======
+			clock-frequency = <1401600000>;
+>>>>>>> p9x
 			enable-method = "psci";
 			qcom,limits-info = <&mitigation_profile0>;
 			efficiency = <1024>;
@@ -74,6 +78,10 @@
 			device_type = "cpu";
 			compatible = "arm,armv8";
 			reg = <0x1>;
+<<<<<<< HEAD
+=======
+			clock-frequency = <1401600000>;
+>>>>>>> p9x
 			enable-method = "psci";
 			qcom,limits-info = <&mitigation_profile0>;
 			efficiency = <1024>;
@@ -86,6 +94,10 @@
 			device_type = "cpu";
 			compatible = "arm,armv8";
 			reg = <0x2>;
+<<<<<<< HEAD
+=======
+			clock-frequency = <1401600000>;
+>>>>>>> p9x
 			enable-method = "psci";
 			qcom,limits-info = <&mitigation_profile0>;
 			efficiency = <1024>;
@@ -98,6 +110,10 @@
 			device_type = "cpu";
 			compatible = "arm,armv8";
 			reg = <0x3>;
+<<<<<<< HEAD
+=======
+			clock-frequency = <1401600000>;
+>>>>>>> p9x
 			enable-method = "psci";
 			qcom,limits-info = <&mitigation_profile0>;
 			efficiency = <1024>;
@@ -110,6 +126,10 @@
 			device_type = "cpu";
 			compatible = "arm,armv8";
 			reg = <0x100>;
+<<<<<<< HEAD
+=======
+			clock-frequency = <1804800000>;
+>>>>>>> p9x
 			enable-method = "psci";
 			qcom,limits-info = <&mitigation_profile1>;
 			efficiency = <1830>;
@@ -128,6 +148,10 @@
 			device_type = "cpu";
 			compatible = "arm,armv8";
 			reg = <0x101>;
+<<<<<<< HEAD
+=======
+			clock-frequency = <1804800000>;
+>>>>>>> p9x
 			enable-method = "psci";
 			qcom,limits-info = <&mitigation_profile2>;
 			efficiency = <1830>;
@@ -141,6 +165,10 @@
 			device_type = "cpu";
 			compatible = "arm,armv8";
 			reg = <0x102>;
+<<<<<<< HEAD
+=======
+			clock-frequency = <1804800000>;
+>>>>>>> p9x
 			enable-method = "psci";
 			qcom,limits-info = <&mitigation_profile3>;
 			efficiency = <1830>;
@@ -154,6 +182,10 @@
 			device_type = "cpu";
 			compatible = "arm,armv8";
 			reg = <0x103>;
+<<<<<<< HEAD
+=======
+			clock-frequency = <1804800000>;
+>>>>>>> p9x
 			enable-method = "psci";
 			qcom,limits-info = <&mitigation_profile4>;
 			efficiency = <1830>;

@@ -89,8 +89,11 @@ static inline struct inode *wb_inode(struct list_head *head)
 #define CREATE_TRACE_POINTS
 #include <trace/events/writeback.h>
 
+<<<<<<< HEAD
 EXPORT_TRACEPOINT_SYMBOL_GPL(wbc_writepage);
 
+=======
+>>>>>>> p9x
 static void bdi_wakeup_thread(struct backing_dev_info *bdi)
 {
 	spin_lock_bh(&bdi->wb_lock);
@@ -499,6 +502,7 @@ __writeback_single_inode(struct inode *inode, struct writeback_control *wbc)
 	spin_lock(&inode->i_lock);
 
 	dirty = inode->i_state & I_DIRTY;
+<<<<<<< HEAD
 	if (((dirty & (I_DIRTY_SYNC | I_DIRTY_DATASYNC)) &&
 	     (inode->i_state & I_DIRTY_TIME)) ||
 	    (inode->i_state & I_DIRTY_TIME_EXPIRED)) {
@@ -506,6 +510,9 @@ __writeback_single_inode(struct inode *inode, struct writeback_control *wbc)
 		trace_writeback_lazytime(inode);
 	}
 	inode->i_state &= ~dirty;
+=======
+	inode->i_state &= ~I_DIRTY;
+>>>>>>> p9x
 
 	/*
 	 * Paired with smp_mb() in __mark_inode_dirty().  This allows
@@ -525,8 +532,11 @@ __writeback_single_inode(struct inode *inode, struct writeback_control *wbc)
 
 	spin_unlock(&inode->i_lock);
 
+<<<<<<< HEAD
 	if (dirty & I_DIRTY_TIME)
 		mark_inode_dirty_sync(inode);
+=======
+>>>>>>> p9x
 	/* Don't write the inode if only I_DIRTY_PAGES was set */
 	if (dirty & ~I_DIRTY_PAGES) {
 		int err = write_inode(inode, wbc);
@@ -576,7 +586,11 @@ writeback_single_inode(struct inode *inode, struct bdi_writeback *wb,
 	 * make sure inode is on some writeback list and leave it there unless
 	 * we have completely cleaned the inode.
 	 */
+<<<<<<< HEAD
 	if (!(inode->i_state & I_DIRTY_ALL) &&
+=======
+	if (!(inode->i_state & I_DIRTY) &&
+>>>>>>> p9x
 	    (wbc->sync_mode != WB_SYNC_ALL ||
 	     !mapping_tagged(inode->i_mapping, PAGECACHE_TAG_WRITEBACK)))
 		goto out;
@@ -1217,8 +1231,12 @@ void __mark_inode_dirty(struct inode *inode, int flags)
 	 */
 	smp_mb();
 
+<<<<<<< HEAD
 	if (((inode->i_state & flags) == flags) ||
 	    (dirtytime && (inode->i_state & I_DIRTY_INODE)))
+=======
+	if ((inode->i_state & flags) == flags)
+>>>>>>> p9x
 		return;
 
 	if (unlikely(block_dump > 1))
@@ -1337,7 +1355,12 @@ static void wait_sb_inodes(struct super_block *sb)
 		iput(old_inode);
 		old_inode = inode;
 
-		filemap_fdatawait(mapping);
+		/*
+		 * We keep the error status of individual mapping so that
+		 * applications can catch the writeback error using fsync(2).
+		 * See filemap_fdatawait_keep_errors() for details.
+		 */
+		filemap_fdatawait_keep_errors(mapping);
 
 		cond_resched();
 

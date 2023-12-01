@@ -322,12 +322,15 @@ static struct usbmix_name_map hercules_usb51_map[] = {
 	{ 0 }				/* terminator */
 };
 
+<<<<<<< HEAD
 /* Plantronics Gamecom 780 has a broken volume control, better to disable it */
 static struct usbmix_name_map gamecom780_map[] = {
 	{ 9, NULL }, /* FU, speaker out */
 	{}
 };
 
+=======
+>>>>>>> p9x
 /* some (all?) SCMS USB3318 devices are affected by a firmware lock up
  * when anything attempts to access FU 10 (control)
  */
@@ -343,6 +346,7 @@ static struct usbmix_name_map bose_companion5_map[] = {
 	{ 0 }	/* terminator */
 };
 
+<<<<<<< HEAD
 /*
  * Dell usb dock with ALC4020 codec had a firmware problem where it got
  * screwed up when zero volume is passed; just skip it as a workaround
@@ -354,6 +358,13 @@ static const struct usbmix_name_map dell_alc4020_map[] = {
 	{ 16, NULL },
 	{ 19, NULL },
 	{ 0 }
+=======
+/* Dragonfly DAC 1.2, the dB conversion factor is 1 instead of 256 */
+static struct usbmix_dB_map dragonfly_1_2_dB = {0, 5000};
+static struct usbmix_name_map dragonfly_1_2_map[] = {
+	{ 7, NULL, .dB = &dragonfly_1_2_dB },
+	{ 0 }	/* terminator */
+>>>>>>> p9x
 };
 
 /*
@@ -471,6 +482,14 @@ static struct usbmix_ctl_map usbmix_ctl_maps[] = {
 		.id = USB_ID(0x05a7, 0x1020),
 		.map = bose_companion5_map,
 	},
+<<<<<<< HEAD
+=======
+	{
+		/* Dragonfly DAC 1.2 */
+		.id = USB_ID(0x21b4, 0x0081),
+		.map = dragonfly_1_2_map,
+	},
+>>>>>>> p9x
 	{ 0 } /* terminator */
 };
 

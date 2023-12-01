@@ -57,6 +57,17 @@ SUBSYS(hugetlb)
 #if IS_ENABLED(CONFIG_CGROUP_DEBUG)
 SUBSYS(debug)
 #endif
+<<<<<<< HEAD
 /*
  * DO NOT ADD ANY SUBSYSTEM WITHOUT EXPLICIT ACKS FROM CGROUP MAINTAINERS.
  */
+=======
+
+/* */
+
+#if IS_SUBSYS_ENABLED(CONFIG_CGROUP_BFQIO)
+SUBSYS(bfqio)
+#endif
+
+/* */
+>>>>>>> p9x

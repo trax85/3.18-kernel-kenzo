@@ -363,9 +363,13 @@ void ieee80211_sw_roc_work(struct work_struct *work)
 		 * treat it as though the ROC operation started properly, so
 		 * other ROC operations won't interfere with this one.
 		 */
+<<<<<<< HEAD
 		roc->on_channel = roc->chan == local->_oper_chandef.chan &&
 				  local->_oper_chandef.width != NL80211_CHAN_WIDTH_5 &&
 				  local->_oper_chandef.width != NL80211_CHAN_WIDTH_10;
+=======
+		roc->on_channel = roc->chan == local->_oper_chandef.chan;
+>>>>>>> p9x
 
 		/* start this ROC */
 		ieee80211_recalc_idle(local);

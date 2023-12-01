@@ -479,12 +479,18 @@ int pstore_register(struct pstore_info *psi)
 		pstore_get_records(0);
 
 	kmsg_dump_register(&pstore_dumper);
+<<<<<<< HEAD
 
 	if ((psi->flags & PSTORE_FLAGS_FRAGILE) == 0) {
 		pstore_register_console();
 		pstore_register_ftrace();
 		pstore_register_pmsg();
 	}
+=======
+	pstore_register_console();
+	pstore_register_ftrace();
+	pstore_register_pmsg();
+>>>>>>> p9x
 
 	if (pstore_update_ms >= 0) {
 		pstore_timer.expires = jiffies +

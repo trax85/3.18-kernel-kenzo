@@ -17,12 +17,21 @@
  * sync points.
  *
  * Sync points are events that need to expire before the
+<<<<<<< HEAD
  * cmdbatch can be queued to the hardware. All synpoints are contained in an
  * array of kgsl_cmdbatch_sync_event structs in the command batch. There can be
  * multiple types of events both internal ones (GPU events) and external
  * triggers. As the events expire bits are cleared in a pending bitmap stored
  * in the command batch. The GPU will submit the command as soon as the bitmap
  * goes to zero indicating no more pending events.
+=======
+ * cmdbatch can be queued to the hardware. For each sync point a
+ * kgsl_cmdbatch_sync_event struct is created and added to a list in the
+ * cmdbatch. There can be multiple types of events both internal ones (GPU
+ * events) and external triggers. As the events expire the struct is deleted
+ * from the list. The GPU will submit the command batch as soon as the list
+ * goes empty indicating that all the sync points have been met.
+>>>>>>> p9x
  */
 
 #include <linux/uaccess.h>
@@ -35,6 +44,10 @@
 #include "kgsl_sync.h"
 #include "kgsl_trace.h"
 #include "kgsl_compat.h"
+<<<<<<< HEAD
+=======
+#include "adreno.h"
+>>>>>>> p9x
 
 /*
  * Define an kmem cache for the memobj structures since we allocate and free
@@ -52,10 +65,29 @@ static inline void kgsl_cmdbatch_put(struct kgsl_cmdbatch *cmdbatch)
 		kref_put(&cmdbatch->refcount, kgsl_cmdbatch_destroy_object);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * KGSL command batch management
+ * A command batch is a single submission from userland.  The cmdbatch
+ * encapsulates everything about the submission : command buffers, flags and
+ * sync points.
+ *
+ * Sync points are events that need to expire before the
+ * cmdbatch can be queued to the hardware. For each sync point a
+ * kgsl_cmdbatch_sync_event struct is created and added to a list in the
+ * cmdbatch. There can be multiple types of events both internal ones (GPU
+ * events) and external triggers. As the events expire the struct is deleted
+ * from the list. The GPU will submit the command batch as soon as the list
+ * goes empty indicating that all the sync points have been met.
+ */
+
+>>>>>>> p9x
 void kgsl_dump_syncpoints(struct kgsl_device *device,
 	struct kgsl_cmdbatch *cmdbatch)
 {
 	struct kgsl_cmdbatch_sync_event *event;
+<<<<<<< HEAD
 	unsigned int i;
 	unsigned long flags;
 
@@ -64,6 +96,11 @@ void kgsl_dump_syncpoints(struct kgsl_device *device,
 
 		if (!kgsl_cmdbatch_event_pending(cmdbatch, i))
 			continue;
+=======
+
+	/* Print all the pending sync objects */
+	list_for_each_entry(event, &cmdbatch->synclist, node) {
+>>>>>>> p9x
 
 		switch (event->type) {
 		case KGSL_CMD_SYNCPOINT_TYPE_TIMESTAMP: {
@@ -80,16 +117,22 @@ void kgsl_dump_syncpoints(struct kgsl_device *device,
 			break;
 		}
 		case KGSL_CMD_SYNCPOINT_TYPE_FENCE:
+<<<<<<< HEAD
 			spin_lock_irqsave(&event->handle_lock, flags);
 
+=======
+>>>>>>> p9x
 			if (event->handle)
 				dev_err(device->dev, "  fence: [%pK] %s\n",
 					event->handle->fence,
 					event->handle->name);
 			else
 				dev_err(device->dev, "  fence: invalid\n");
+<<<<<<< HEAD
 
 			spin_unlock_irqrestore(&event->handle_lock, flags);
+=======
+>>>>>>> p9x
 			break;
 		}
 	}
@@ -100,7 +143,10 @@ static void _kgsl_cmdbatch_timer(unsigned long data)
 	struct kgsl_device *device;
 	struct kgsl_cmdbatch *cmdbatch = (struct kgsl_cmdbatch *) data;
 	struct kgsl_cmdbatch_sync_event *event;
+<<<<<<< HEAD
 	unsigned int i;
+=======
+>>>>>>> p9x
 	unsigned long flags;
 
 	if (cmdbatch == NULL || cmdbatch->context == NULL)
@@ -116,6 +162,7 @@ static void _kgsl_cmdbatch_timer(unsigned long data)
 	kgsl_context_dump(cmdbatch->context);
 	clear_bit(CMDBATCH_FLAG_FENCE_LOG, &cmdbatch->priv);
 
+<<<<<<< HEAD
 	dev_err(device->dev, "      pending events:\n");
 
 	for (i = 0; i < cmdbatch->numsyncs; i++) {
@@ -144,10 +191,50 @@ static void _kgsl_cmdbatch_timer(unsigned long data)
 		}
 	}
 
+=======
+	spin_lock_irqsave(&cmdbatch->lock, flags);
+	/* Print all the fences */
+	list_for_each_entry(event, &cmdbatch->synclist, node) {
+		if (KGSL_CMD_SYNCPOINT_TYPE_FENCE == event->type &&
+			event->handle && event->handle->fence)
+			kgsl_sync_fence_log(event->handle->fence);
+	}
+	spin_unlock_irqrestore(&cmdbatch->lock, flags);
+>>>>>>> p9x
 	dev_err(device->dev, "--gpu syncpoint deadlock print end--\n");
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * kgsl_cmdbatch_sync_event_destroy() - Destroy a sync event object
+ * @kref: Pointer to the kref structure for this object
+ *
+ * Actually destroy a sync event object.  Called from
+ * kgsl_cmdbatch_sync_event_put.
+ */
+static void kgsl_cmdbatch_sync_event_destroy(struct kref *kref)
+{
+	struct kgsl_cmdbatch_sync_event *event = container_of(kref,
+		struct kgsl_cmdbatch_sync_event, refcount);
+
+	kgsl_cmdbatch_put(event->cmdbatch);
+	kfree(event);
+}
+
+/**
+ * kgsl_cmdbatch_sync_event_put() - Decrement the refcount for a
+ *                                  sync event object
+ * @event: Pointer to the sync event object
+ */
+static inline void kgsl_cmdbatch_sync_event_put(
+	struct kgsl_cmdbatch_sync_event *event)
+{
+	kref_put(&event->refcount, kgsl_cmdbatch_sync_event_destroy);
+}
+
+/**
+>>>>>>> p9x
  * kgsl_cmdbatch_destroy_object() - Destroy a cmdbatch object
  * @kref: Pointer to the kref structure for this object
  *
@@ -160,7 +247,10 @@ void kgsl_cmdbatch_destroy_object(struct kref *kref)
 
 	kgsl_context_put(cmdbatch->context);
 
+<<<<<<< HEAD
 	kfree(cmdbatch->synclist);
+=======
+>>>>>>> p9x
 	kfree(cmdbatch);
 }
 EXPORT_SYMBOL(kgsl_cmdbatch_destroy_object);
@@ -172,6 +262,7 @@ EXPORT_SYMBOL(kgsl_cmdbatch_destroy_object);
 static void kgsl_cmdbatch_sync_expire(struct kgsl_device *device,
 	struct kgsl_cmdbatch_sync_event *event)
 {
+<<<<<<< HEAD
 	/*
 	 * Clear the event from the pending mask - if it is already clear, then
 	 * leave without doing anything useful
@@ -190,6 +281,51 @@ static void kgsl_cmdbatch_sync_expire(struct kgsl_device *device,
 			device->ftbl->drawctxt_sched(device,
 				event->cmdbatch->context);
 	}
+=======
+	struct kgsl_cmdbatch_sync_event *e, *tmp;
+	unsigned long flags;
+	int sched = 0;
+	int removed = 0;
+
+	/*
+	 * cmdbatch timer or event callback might run at this time in interrupt
+	 * context and uses same lock. So use irq-save version of spin lock.
+	 */
+	spin_lock_irqsave(&event->cmdbatch->lock, flags);
+
+	/*
+	 * sync events that are contained by a cmdbatch which has been
+	 * destroyed may have already been removed from the synclist
+	 */
+
+	list_for_each_entry_safe(e, tmp, &event->cmdbatch->synclist, node) {
+		if (e == event) {
+			list_del_init(&event->node);
+			removed = 1;
+			break;
+		}
+	}
+
+	event->handle = NULL;
+	sched = list_empty(&event->cmdbatch->synclist) ? 1 : 0;
+	spin_unlock_irqrestore(&event->cmdbatch->lock, flags);
+
+	/* If the list is empty delete the canary timer */
+	if (sched)
+		del_timer_sync(&event->cmdbatch->timer);
+
+	/*
+	 * if this is the last event in the list then tell
+	 * the GPU device that the cmdbatch can be submitted
+	 */
+
+	if (sched && device->ftbl->drawctxt_sched)
+		device->ftbl->drawctxt_sched(device, event->cmdbatch->context);
+
+	/* Put events that have been removed from the synclist */
+	if (removed)
+		kgsl_cmdbatch_sync_event_put(event);
+>>>>>>> p9x
 }
 
 /*
@@ -206,7 +342,12 @@ static void kgsl_cmdbatch_sync_func(struct kgsl_device *device,
 
 	kgsl_cmdbatch_sync_expire(device, event);
 	kgsl_context_put(event->context);
+<<<<<<< HEAD
 	kgsl_cmdbatch_put(event->cmdbatch);
+=======
+	/* Put events that have signaled */
+	kgsl_cmdbatch_sync_event_put(event);
+>>>>>>> p9x
 }
 
 static inline void _free_memobj_list(struct list_head *list)
@@ -230,9 +371,16 @@ static inline void _free_memobj_list(struct list_head *list)
  */
 void kgsl_cmdbatch_destroy(struct kgsl_cmdbatch *cmdbatch)
 {
+<<<<<<< HEAD
 	unsigned int i;
 	unsigned long pending, flags;
 
+=======
+	struct kgsl_cmdbatch_sync_event *event, *tmpsync;
+	LIST_HEAD(cancel_synclist);
+	int sched = 0;
+	unsigned long flags;
+>>>>>>> p9x
 	if (IS_ERR_OR_NULL(cmdbatch))
 		return;
 
@@ -240,6 +388,7 @@ void kgsl_cmdbatch_destroy(struct kgsl_cmdbatch *cmdbatch)
 	del_timer_sync(&cmdbatch->timer);
 
 	/*
+<<<<<<< HEAD
 	 * Copy off the pending list and clear all pending events - this will
 	 * render any subsequent asynchronous callback harmless
 	 */
@@ -278,6 +427,51 @@ void kgsl_cmdbatch_destroy(struct kgsl_cmdbatch *cmdbatch)
 			}
 			break;
 		}
+=======
+	 * callback might run in interrupt context
+	 * so need to use irqsave version of spinlocks.
+	 */
+	spin_lock_irqsave(&cmdbatch->lock, flags);
+
+	/* Empty the synclist before canceling events */
+	list_splice_init(&cmdbatch->synclist, &cancel_synclist);
+	spin_unlock_irqrestore(&cmdbatch->lock, flags);
+
+	/*
+	 * Finish canceling events outside the cmdbatch spinlock and
+	 * require the cancel function to return if the event was
+	 * successfully canceled meaning that the event is guaranteed
+	 * not to signal the callback. This guarantee ensures that
+	 * the reference count for the event and cmdbatch is correct.
+	 */
+	list_for_each_entry_safe(event, tmpsync, &cancel_synclist, node) {
+
+		sched = 1;
+		if (event->type == KGSL_CMD_SYNCPOINT_TYPE_TIMESTAMP) {
+			/*
+			 * Timestamp events are guaranteed to signal
+			 * when canceled
+			 */
+			kgsl_cancel_event(cmdbatch->device,
+				&event->context->events, event->timestamp,
+				kgsl_cmdbatch_sync_func, event);
+		} else if (event->type == KGSL_CMD_SYNCPOINT_TYPE_FENCE) {
+			/* Put events that are successfully canceled */
+			spin_lock_irqsave(&cmdbatch->lock, flags);
+
+			if (kgsl_sync_fence_async_cancel(event->handle)) {
+				event->handle = NULL;
+				spin_unlock_irqrestore(&cmdbatch->lock, flags);
+				kgsl_cmdbatch_sync_event_put(event);
+			} else {
+				spin_unlock_irqrestore(&cmdbatch->lock, flags);
+			}
+		}
+
+		/* Put events that have been removed from the synclist */
+		list_del_init(&event->node);
+		kgsl_cmdbatch_sync_event_put(event);
+>>>>>>> p9x
 	}
 
 	/*
@@ -297,8 +491,12 @@ void kgsl_cmdbatch_destroy(struct kgsl_cmdbatch *cmdbatch)
 	 * If we cancelled an event, there's a good chance that the context is
 	 * on a dispatcher queue, so schedule to get it removed.
 	 */
+<<<<<<< HEAD
 	if (!bitmap_empty(&pending, KGSL_MAX_SYNCPOINTS) &&
 		cmdbatch->device->ftbl->drawctxt_sched)
+=======
+	if (sched && cmdbatch->device->ftbl->drawctxt_sched)
+>>>>>>> p9x
 		cmdbatch->device->ftbl->drawctxt_sched(cmdbatch->device,
 							cmdbatch->context);
 
@@ -312,6 +510,7 @@ EXPORT_SYMBOL(kgsl_cmdbatch_destroy);
  */
 static void kgsl_cmdbatch_sync_fence_func(void *priv)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 	struct kgsl_cmdbatch_sync_event *event = priv;
 
@@ -331,6 +530,16 @@ static void kgsl_cmdbatch_sync_fence_func(void *priv)
 	spin_unlock_irqrestore(&event->handle_lock, flags);
 
 	kgsl_cmdbatch_put(event->cmdbatch);
+=======
+	struct kgsl_cmdbatch_sync_event *event = priv;
+
+	trace_syncpoint_fence_expire(event->cmdbatch,
+		event->handle ? event->handle->name : "unknown");
+
+	kgsl_cmdbatch_sync_expire(event->device, event);
+	/* Put events that have signaled */
+	kgsl_cmdbatch_sync_event_put(event);
+>>>>>>> p9x
 }
 
 /* kgsl_cmdbatch_add_sync_fence() - Add a new sync fence syncpoint
@@ -345,6 +554,7 @@ static int kgsl_cmdbatch_add_sync_fence(struct kgsl_device *device,
 {
 	struct kgsl_cmd_syncpoint_fence *sync = priv;
 	struct kgsl_cmdbatch_sync_event *event;
+<<<<<<< HEAD
 	struct sync_fence *fence = NULL;
 	unsigned int id;
 	unsigned long flags;
@@ -361,22 +571,60 @@ static int kgsl_cmdbatch_add_sync_fence(struct kgsl_device *device,
 	event = &cmdbatch->synclist[id];
 
 	event->id = id;
+=======
+	unsigned long flags;
+	event = kzalloc(sizeof(*event), GFP_KERNEL);
+	if (event == NULL)
+		return -ENOMEM;
+
+	kref_get(&cmdbatch->refcount);
+
+>>>>>>> p9x
 	event->type = KGSL_CMD_SYNCPOINT_TYPE_FENCE;
 	event->cmdbatch = cmdbatch;
 	event->device = device;
 	event->context = NULL;
 
+<<<<<<< HEAD
 	spin_lock_init(&event->handle_lock);
 	set_bit(event->id, &cmdbatch->pending);
 
 	trace_syncpoint_fence(cmdbatch, fence->name);
 
 	spin_lock_irqsave(&event->handle_lock, flags);
+=======
+	/*
+	 * Initial kref is to ensure async callback does not free the
+	 * event before this function sets the event handle
+	 */
+	kref_init(&event->refcount);
+
+	/*
+	 * Add it to the list first to account for the possiblity that the
+	 * callback will happen immediately after the call to
+	 * kgsl_sync_fence_async_wait. Decrement the event refcount when
+	 * removing from the synclist.
+	 */
+
+	kref_get(&event->refcount);
+
+	/*
+	 * Increment the reference count for the async callback.
+	 * Decrement when the callback is successfully canceled, when
+	 * the callback is signaled or if the async wait fails.
+	 */
+
+	kref_get(&event->refcount);
+
+	spin_lock_irqsave(&cmdbatch->lock, flags);
+	list_add(&event->node, &cmdbatch->synclist);
+>>>>>>> p9x
 
 	event->handle = kgsl_sync_fence_async_wait(sync->fd,
 		kgsl_cmdbatch_sync_fence_func, event);
 
 	if (IS_ERR_OR_NULL(event->handle)) {
+<<<<<<< HEAD
 		ret = PTR_ERR(event->handle);
 
 		event->handle = NULL;
@@ -398,6 +646,41 @@ static int kgsl_cmdbatch_add_sync_fence(struct kgsl_device *device,
 
 	sync_fence_put(fence);
 	return ret;
+=======
+		int ret = PTR_ERR(event->handle);
+
+		event->handle = NULL;
+		/* Remove event from the synclist */
+		list_del(&event->node);
+		spin_unlock_irqrestore(&cmdbatch->lock, flags);
+		/* Put for event removal from the synclist */
+		kgsl_cmdbatch_sync_event_put(event);
+		/* Unable to add event to the async callback so a put */
+		kgsl_cmdbatch_sync_event_put(event);
+		/* Put since event no longer needed by this function */
+		kgsl_cmdbatch_sync_event_put(event);
+
+		/*
+		 * If ret == 0 the fence was already signaled - print a trace
+		 * message so we can track that
+		 */
+		if (ret == 0)
+			trace_syncpoint_fence_expire(cmdbatch, "signaled");
+
+		return ret;
+	}
+
+	trace_syncpoint_fence(cmdbatch, event->handle->name);
+	spin_unlock_irqrestore(&cmdbatch->lock, flags);
+
+	/*
+	 * Event was successfully added to the synclist, the async
+	 * callback and handle to cancel event has been set.
+	 */
+	kgsl_cmdbatch_sync_event_put(event);
+
+	return 0;
+>>>>>>> p9x
 }
 
 /* kgsl_cmdbatch_add_sync_timestamp() - Add a new sync point for a cmdbatch
@@ -415,7 +698,10 @@ static int kgsl_cmdbatch_add_sync_timestamp(struct kgsl_device *device,
 		sync->context_id);
 	struct kgsl_cmdbatch_sync_event *event;
 	int ret = -EINVAL;
+<<<<<<< HEAD
 	unsigned int id;
+=======
+>>>>>>> p9x
 
 	if (context == NULL)
 		return -EINVAL;
@@ -440,6 +726,7 @@ static int kgsl_cmdbatch_add_sync_timestamp(struct kgsl_device *device,
 		}
 	}
 
+<<<<<<< HEAD
 	kref_get(&cmdbatch->refcount);
 
 	id = cmdbatch->numsyncs++;
@@ -447,20 +734,57 @@ static int kgsl_cmdbatch_add_sync_timestamp(struct kgsl_device *device,
 	event = &cmdbatch->synclist[id];
 	event->id = id;
 
+=======
+	event = kzalloc(sizeof(*event), GFP_KERNEL);
+	if (event == NULL) {
+		ret = -ENOMEM;
+		goto done;
+	}
+
+	kref_get(&cmdbatch->refcount);
+
+>>>>>>> p9x
 	event->type = KGSL_CMD_SYNCPOINT_TYPE_TIMESTAMP;
 	event->cmdbatch = cmdbatch;
 	event->context = context;
 	event->timestamp = sync->timestamp;
 	event->device = device;
 
+<<<<<<< HEAD
 	set_bit(event->id, &cmdbatch->pending);
+=======
+	/*
+	 * Two krefs are required to support events. The first kref is for
+	 * the synclist which holds the event in the cmdbatch. The second
+	 * kref is for the callback which can be asynchronous and be called
+	 * after kgsl_cmdbatch_destroy. The kref should be put when the event
+	 * is removed from the synclist, if the callback is successfully
+	 * canceled or when the callback is signaled.
+	 */
+	kref_init(&event->refcount);
+	kref_get(&event->refcount);
+
+	/* non-bh because, we haven't started cmdbatch timer yet */
+	spin_lock(&cmdbatch->lock);
+	list_add(&event->node, &cmdbatch->synclist);
+	spin_unlock(&cmdbatch->lock);
+>>>>>>> p9x
 
 	ret = kgsl_add_event(device, &context->events, sync->timestamp,
 		kgsl_cmdbatch_sync_func, event);
 
 	if (ret) {
+<<<<<<< HEAD
 		clear_bit(event->id, &cmdbatch->pending);
 		kgsl_cmdbatch_put(cmdbatch);
+=======
+		spin_lock(&cmdbatch->lock);
+		list_del(&event->node);
+		spin_unlock(&cmdbatch->lock);
+
+		kgsl_cmdbatch_put(cmdbatch);
+		kfree(event);
+>>>>>>> p9x
 	} else {
 		trace_syncpoint_timestamp(cmdbatch, context, sync->timestamp);
 	}
@@ -541,6 +865,7 @@ static void add_profiling_buffer(struct kgsl_device *device,
 	if (cmdbatch->profiling_buf_entry != NULL)
 		return;
 
+<<<<<<< HEAD
 	if (id != 0)
 		entry = kgsl_sharedmem_find_id(cmdbatch->context->proc_priv,
 				id);
@@ -553,6 +878,20 @@ static void add_profiling_buffer(struct kgsl_device *device,
 			kgsl_mem_entry_put(entry);
 			entry = NULL;
 		}
+=======
+	if (id != 0) {
+		entry = kgsl_sharedmem_find_id(cmdbatch->context->proc_priv,
+				id);
+
+		/* Make sure the offset is in range */
+		if (entry && offset > entry->memdesc.size) {
+			kgsl_mem_entry_put(entry);
+			entry = NULL;
+		}
+	} else {
+		entry = kgsl_sharedmem_find_region(cmdbatch->context->proc_priv,
+			gpuaddr, size);
+>>>>>>> p9x
 	}
 
 	if (entry == NULL) {
@@ -582,16 +921,33 @@ static void add_profiling_buffer(struct kgsl_device *device,
 int kgsl_cmdbatch_add_ibdesc(struct kgsl_device *device,
 	struct kgsl_cmdbatch *cmdbatch, struct kgsl_ibdesc *ibdesc)
 {
+<<<<<<< HEAD
 	uint64_t gpuaddr = (uint64_t) ibdesc->gpuaddr;
 	uint64_t size = (uint64_t) ibdesc->sizedwords << 2;
 	struct kgsl_memobj_node *mem;
 
+=======
+	struct kgsl_memobj_node *mem;
+
+	mem = kmem_cache_alloc(memobjs_cache, GFP_KERNEL);
+	if (mem == NULL)
+		return -ENOMEM;
+
+	mem->gpuaddr = (uint64_t) ibdesc->gpuaddr;
+	mem->size = (uint64_t) ibdesc->sizedwords << 2;
+	mem->priv = 0;
+	mem->id = 0;
+	mem->offset = 0;
+	mem->flags = 0;
+
+>>>>>>> p9x
 	/* sanitize the ibdesc ctrl flags */
 	ibdesc->ctrl &= KGSL_IBDESC_MEMLIST | KGSL_IBDESC_PROFILING_BUFFER;
 
 	if (cmdbatch->flags & KGSL_CMDBATCH_MEMLIST &&
 			ibdesc->ctrl & KGSL_IBDESC_MEMLIST) {
 		if (ibdesc->ctrl & KGSL_IBDESC_PROFILING_BUFFER) {
+<<<<<<< HEAD
 			add_profiling_buffer(device, cmdbatch,
 					gpuaddr, size, 0, 0);
 			return 0;
@@ -617,6 +973,43 @@ int kgsl_cmdbatch_add_ibdesc(struct kgsl_device *device,
 		/* add to the memlist */
 		list_add_tail(&mem->node, &cmdbatch->memlist);
 	} else {
+=======
+			add_profiling_buffer(device, cmdbatch, mem->gpuaddr,
+					mem->size, 0, 0);
+			return 0;
+		}
+
+		/* add to the memlist */
+		list_add_tail(&mem->node, &cmdbatch->memlist);
+
+		/*
+		 * If the memlist contains a cmdbatch profiling buffer, store
+		 * the mem_entry containing the buffer and the gpuaddr at
+		 * which the buffer can be found
+		 */
+		if (cmdbatch->flags & KGSL_CMDBATCH_PROFILING &&
+			ibdesc->ctrl & KGSL_IBDESC_PROFILING_BUFFER &&
+			!cmdbatch->profiling_buf_entry) {
+			cmdbatch->profiling_buf_entry =
+				kgsl_sharedmem_find_region(
+				cmdbatch->context->proc_priv, mem->gpuaddr,
+				mem->size);
+			if (!cmdbatch->profiling_buf_entry) {
+				WARN_ONCE(1,
+				"No mem entry for profiling buf, gpuaddr=%llx\n",
+				mem->gpuaddr);
+				return 0;
+			}
+
+			cmdbatch->profiling_buffer_gpuaddr = mem->gpuaddr;
+		}
+	} else {
+		/* Ignore if SYNC or MARKER is specified */
+		if (cmdbatch->flags &
+			(KGSL_CMDBATCH_SYNC | KGSL_CMDBATCH_MARKER))
+			return 0;
+
+>>>>>>> p9x
 		/* set the preamble flag if directed to */
 		if (cmdbatch->context->flags & KGSL_CONTEXT_PREAMBLE &&
 			list_empty(&cmdbatch->cmdlist))
@@ -656,7 +1049,13 @@ struct kgsl_cmdbatch *kgsl_cmdbatch_create(struct kgsl_device *device,
 
 	kref_init(&cmdbatch->refcount);
 	INIT_LIST_HEAD(&cmdbatch->cmdlist);
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&cmdbatch->memlist);
+=======
+	INIT_LIST_HEAD(&cmdbatch->synclist);
+	INIT_LIST_HEAD(&cmdbatch->memlist);
+	spin_lock_init(&cmdbatch->lock);
+>>>>>>> p9x
 
 	cmdbatch->device = device;
 	cmdbatch->context = context;
@@ -667,8 +1066,12 @@ struct kgsl_cmdbatch *kgsl_cmdbatch_create(struct kgsl_device *device,
 				| KGSL_CMDBATCH_SYNC
 				| KGSL_CMDBATCH_PWR_CONSTRAINT
 				| KGSL_CMDBATCH_MEMLIST
+<<<<<<< HEAD
 				| KGSL_CMDBATCH_PROFILING
 				| KGSL_CMDBATCH_PROFILING_KTIME);
+=======
+				| KGSL_CMDBATCH_PROFILING);
+>>>>>>> p9x
 
 	/* Add a timer to help debug sync deadlocks */
 	setup_timer(&cmdbatch->timer, _kgsl_cmdbatch_timer,
@@ -780,6 +1183,7 @@ int kgsl_cmdbatch_add_syncpoints(struct kgsl_device *device,
 	struct kgsl_cmd_syncpoint sync;
 	int i, ret;
 
+<<<<<<< HEAD
 	if (count == 0)
 		return 0;
 
@@ -792,6 +1196,8 @@ int kgsl_cmdbatch_add_syncpoints(struct kgsl_device *device,
 	if (cmdbatch->synclist == NULL)
 		return -ENOMEM;
 
+=======
+>>>>>>> p9x
 	if (is_compat_task())
 		return add_syncpoints_compat(device, cmdbatch, ptr, count);
 
@@ -943,6 +1349,7 @@ int kgsl_cmdbatch_add_synclist(struct kgsl_device *device,
 	if (count == 0 || ptr == NULL || size == 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (count > KGSL_MAX_SYNCPOINTS)
 		return -EINVAL;
 
@@ -952,6 +1359,8 @@ int kgsl_cmdbatch_add_synclist(struct kgsl_device *device,
 	if (cmdbatch->synclist == NULL)
 		return -ENOMEM;
 
+=======
+>>>>>>> p9x
 	for (i = 0; i < count; i++) {
 		memset(&syncpoint, 0, sizeof(syncpoint));
 

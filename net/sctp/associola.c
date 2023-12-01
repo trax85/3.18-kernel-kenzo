@@ -1246,6 +1246,7 @@ void sctp_assoc_update(struct sctp_association *asoc,
  * SCTP_UNKNOWN, etc. You get the picture.
  */
 static const u8 sctp_trans_state_to_prio_map[] = {
+<<<<<<< HEAD
 	[SCTP_ACTIVE]	= 3,	/* best case */
 	[SCTP_UNKNOWN]	= 2,
 	[SCTP_PF]	= 1,
@@ -1399,6 +1400,71 @@ static void sctp_select_active_and_retran_path(struct sctp_association *asoc)
 	asoc->peer.retran_path = trans_sec;
 }
 
+=======
+	[SCTP_ACTIVE]   = 3,    /* best case */
+	[SCTP_UNKNOWN]  = 2,
+	[SCTP_PF]       = 1,
+	[SCTP_INACTIVE] = 0,    /* worst case */
+};
+
+static u8 sctp_trans_score(const struct sctp_transport *trans)
+{
+	return sctp_trans_state_to_prio_map[trans->state];
+}
+
+static struct sctp_transport *sctp_trans_elect_best(struct sctp_transport *curr,
+                                                    struct sctp_transport *best)
+{
+	if (best == NULL)
+		return curr;
+
+	return sctp_trans_score(curr) > sctp_trans_score(best) ? curr : best;
+}
+
+void sctp_assoc_update_retran_path(struct sctp_association *asoc)
+{
+	struct sctp_transport *trans = asoc->peer.retran_path;
+	struct sctp_transport *trans_next = NULL;
+
+	/* We're done as we only have the one and only path. */
+	if (asoc->peer.transport_count == 1)
+		return;
+	/* If active_path and retran_path are the same and active,
+	 * then this is the only active path. Use it.
+	 */
+	if (asoc->peer.active_path == asoc->peer.retran_path &&
+	    asoc->peer.active_path->state == SCTP_ACTIVE)
+		return;
+
+	/* Iterate from retran_path's successor back to retran_path. */
+	for (trans = list_next_entry(trans, transports); 1;
+	     trans = list_next_entry(trans, transports)) {
+		/* Manually skip the head element. */
+		if (&trans->transports == &asoc->peer.transport_addr_list)
+			continue;
+		if (trans->state == SCTP_UNCONFIRMED)
+			continue;
+		trans_next = sctp_trans_elect_best(trans, trans_next);
+		/* Active is good enough for immediate return. */
+		if (trans_next->state == SCTP_ACTIVE)
+			break;
+		/* We've reached the end, time to update path. */
+		if (trans == asoc->peer.retran_path)
+			break;
+	}
+
+	if (trans_next != NULL)
+		asoc->peer.retran_path = trans_next;
+
+	SCTP_DEBUG_PRINTK_IPADDR("sctp_assoc_update_retran_path:association"
+				 " %p updated new path to addr: ",
+				 " port: %d\n",
+				 asoc,
+				 (&asoc->peer.retran_path->ipaddr),
+				 ntohs(asoc->peer.retran_path->ipaddr.v4.sin_port));
+}
+
+>>>>>>> p9x
 struct sctp_transport *
 sctp_assoc_choose_alter_transport(struct sctp_association *asoc,
 				  struct sctp_transport *last_sent_to)

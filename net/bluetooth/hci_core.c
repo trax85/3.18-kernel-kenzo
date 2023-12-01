@@ -2349,6 +2349,13 @@ static int hci_dev_do_open(struct hci_dev *hdev)
 {
 	int ret = 0;
 
+<<<<<<< HEAD
+=======
+	hdev = hci_dev_get(dev);
+	if (!hdev)
+		return -ENODEV;
+
+>>>>>>> p9x
 	BT_DBG("%s %pK", hdev->name, hdev);
 
 	hci_req_lock(hdev);
@@ -2358,6 +2365,7 @@ static int hci_dev_do_open(struct hci_dev *hdev)
 		goto done;
 	}
 
+<<<<<<< HEAD
 	if (!test_bit(HCI_SETUP, &hdev->dev_flags) &&
 	    !test_bit(HCI_CONFIG, &hdev->dev_flags)) {
 		/* Check for rfkill but allow the HCI setup stage to
@@ -2387,6 +2395,15 @@ static int hci_dev_do_open(struct hci_dev *hdev)
 			ret = -EADDRNOTAVAIL;
 			goto done;
 		}
+=======
+	/* Check for rfkill but allow the HCI setup stage to proceed
+	 * (which in itself doesn't cause any RF activity).
+	 */
+	if (test_bit(HCI_RFKILLED, &hdev->dev_flags) &&
+	    !test_bit(HCI_SETUP, &hdev->dev_flags)) {
+		ret = -ERFKILL;
+		goto done;
+>>>>>>> p9x
 	}
 
 	if (test_bit(HCI_UP, &hdev->flags)) {
@@ -2566,6 +2583,11 @@ static void hci_pend_le_actions_clear(struct hci_dev *hdev)
 static int hci_dev_do_close(struct hci_dev *hdev)
 {
 	BT_DBG("%s %pK", hdev->name, hdev);
+<<<<<<< HEAD
+=======
+
+	cancel_work_sync(&hdev->le_scan);
+>>>>>>> p9x
 
 	/* do not call cancel_delayed_work_sync for power_off here as
 	 * hci_dev_do_close function is called from work handler which might
@@ -2615,8 +2637,12 @@ static int hci_dev_do_close(struct hci_dev *hdev)
 	/* Reset device */
 	skb_queue_purge(&hdev->cmd_q);
 	atomic_set(&hdev->cmd_cnt, 1);
+<<<<<<< HEAD
 	if (!test_bit(HCI_AUTO_OFF, &hdev->dev_flags) &&
 	    !test_bit(HCI_UNCONFIGURED, &hdev->dev_flags)) {
+=======
+	if (!test_bit(HCI_RAW, &hdev->flags)) {
+>>>>>>> p9x
 		set_bit(HCI_INIT, &hdev->flags);
 		__hci_req_sync(hdev, hci_reset_req, 0, HCI_CMD_TIMEOUT);
 		clear_bit(HCI_INIT, &hdev->flags);
@@ -3017,6 +3043,7 @@ static int hci_rfkill_set_block(void *data, bool blocked)
 
 	BT_DBG("%pK name %s blocked %d", hdev, hdev->name, blocked);
 
+<<<<<<< HEAD
 	if (test_bit(HCI_USER_CHANNEL, &hdev->dev_flags))
 		return -EBUSY;
 
@@ -3028,6 +3055,15 @@ static int hci_rfkill_set_block(void *data, bool blocked)
 	} else {
 		clear_bit(HCI_RFKILLED, &hdev->dev_flags);
 	}
+=======
+	if (blocked) {
+		set_bit(HCI_RFKILLED, &hdev->dev_flags);
+		if (!test_bit(HCI_SETUP, &hdev->dev_flags))
+			hci_dev_do_close(hdev);
+	} else {
+		clear_bit(HCI_RFKILLED, &hdev->dev_flags);
+}
+>>>>>>> p9x
 
 	return 0;
 }
@@ -3049,6 +3085,7 @@ static void hci_power_on(struct work_struct *work)
 		return;
 	}
 
+<<<<<<< HEAD
 	/* During the HCI setup phase, a few error conditions are
 	 * ignored and they need to be checked now. If they are still
 	 * valid, it is important to turn the device back off.
@@ -3058,6 +3095,9 @@ static void hci_power_on(struct work_struct *work)
 	    (hdev->dev_type == HCI_BREDR &&
 	     !bacmp(&hdev->bdaddr, BDADDR_ANY) &&
 	     !bacmp(&hdev->static_addr, BDADDR_ANY))) {
+=======
+	if (test_bit(HCI_RFKILLED, &hdev->dev_flags)) {
+>>>>>>> p9x
 		clear_bit(HCI_AUTO_OFF, &hdev->dev_flags);
 		hci_dev_do_close(hdev);
 	} else if (test_bit(HCI_AUTO_OFF, &hdev->dev_flags)) {
@@ -3999,9 +4039,13 @@ struct hci_dev *hci_alloc_dev(void)
 	hdev->pkt_type  = (HCI_DM1 | HCI_DH1 | HCI_HV1);
 	hdev->esco_type = (ESCO_HV1);
 	hdev->link_mode = (HCI_LM_MASTER); /* Allow DUT to be in MASTER role */
+<<<<<<< HEAD
 	hdev->num_iac = 0x01;		/* One IAC support is mandatory */
 	hdev->io_capability = 0x03;	/* No Input No Output */
 	hdev->manufacturer = 0xffff;	/* Default to internal use */
+=======
+	hdev->io_capability = 0x03; /* No Input No Output */
+>>>>>>> p9x
 	hdev->inq_tx_power = HCI_TX_POWER_INVALID;
 	hdev->adv_tx_power = HCI_TX_POWER_INVALID;
 
@@ -4097,13 +4141,18 @@ int hci_register_dev(struct hci_dev *hdev)
 	if (id < 0)
 		return id;
 
-	sprintf(hdev->name, "hci%d", id);
+	snprintf(hdev->name, sizeof(hdev->name), "hci%d", id);
 	hdev->id = id;
 
 	BT_DBG("%pK name %s bus %d", hdev, hdev->name, hdev->bus);
 
+<<<<<<< HEAD
 	hdev->workqueue = alloc_workqueue("%s", WQ_HIGHPRI | WQ_UNBOUND |
 					  WQ_MEM_RECLAIM, 1, hdev->name);
+=======
+	hdev->workqueue = alloc_workqueue(hdev->name, WQ_HIGHPRI | WQ_UNBOUND |
+					  WQ_MEM_RECLAIM, 1);
+>>>>>>> p9x
 	if (!hdev->workqueue) {
 		error = -ENOMEM;
 		goto err;
@@ -4138,6 +4187,11 @@ int hci_register_dev(struct hci_dev *hdev)
 
 	if (hdev->rfkill && rfkill_blocked(hdev->rfkill))
 		set_bit(HCI_RFKILLED, &hdev->dev_flags);
+<<<<<<< HEAD
+=======
+
+	set_bit(HCI_SETUP, &hdev->dev_flags);
+>>>>>>> p9x
 
 	set_bit(HCI_SETUP, &hdev->dev_flags);
 	set_bit(HCI_AUTO_OFF, &hdev->dev_flags);
@@ -4158,6 +4212,10 @@ int hci_register_dev(struct hci_dev *hdev)
 	 */
 	if (test_bit(HCI_QUIRK_RAW_DEVICE, &hdev->quirks))
 		set_bit(HCI_UNCONFIGURED, &hdev->dev_flags);
+
+	write_lock(&hci_dev_list_lock);
+	list_add(&hdev->list, &hci_dev_list);
+	write_unlock(&hci_dev_list_lock);
 
 	hci_notify(hdev, HCI_DEV_REG);
 	hci_dev_hold(hdev);
@@ -4709,6 +4767,11 @@ void hci_send_acl(struct hci_chan *chan, struct sk_buff *skb, __u16 flags)
 	struct hci_dev *hdev = chan->conn->hdev;
 
 	BT_DBG("%s chan %pK flags 0x%4.4x", hdev->name, chan, flags);
+<<<<<<< HEAD
+=======
+
+	skb->dev = (void *) hdev;
+>>>>>>> p9x
 
 	hci_queue_acl(chan, &chan->data_q, skb, flags);
 
@@ -5099,7 +5162,11 @@ static void hci_sched_sco(struct hci_dev *hdev)
 	while (hdev->sco_cnt && (conn = hci_low_sent(hdev, SCO_LINK, &quote))) {
 		while (quote-- && (skb = skb_dequeue(&conn->data_q))) {
 			BT_DBG("skb %pK len %d", skb, skb->len);
+<<<<<<< HEAD
 			hci_send_frame(hdev, skb);
+=======
+			hci_send_frame(skb);
+>>>>>>> p9x
 
 			conn->sent++;
 			if (conn->sent == ~0)
@@ -5123,7 +5190,11 @@ static void hci_sched_esco(struct hci_dev *hdev)
 						     &quote))) {
 		while (quote-- && (skb = skb_dequeue(&conn->data_q))) {
 			BT_DBG("skb %pK len %d", skb, skb->len);
+<<<<<<< HEAD
 			hci_send_frame(hdev, skb);
+=======
+			hci_send_frame(skb);
+>>>>>>> p9x
 
 			conn->sent++;
 			if (conn->sent == ~0)

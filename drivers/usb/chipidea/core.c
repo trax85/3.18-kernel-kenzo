@@ -42,7 +42,15 @@
  * - Not Supported: 15 & 16 (ISO)
  *
  * TODO List
+<<<<<<< HEAD
  * - Suspend & Remote Wakeup
+=======
+ * - OTG
+ * - Isochronous & Interrupt Traffic
+ * - Handle requests which spawns into several TDs
+ * - GET_STATUS(device) - always reports 0
+ * - Gadget API (majority of optional features)
+>>>>>>> p9x
  */
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -73,6 +81,7 @@
 #include "otg_fsm.h"
 
 /* Controller register map */
+<<<<<<< HEAD
 static const u8 ci_regs_nolpm[] = {
 	[CAP_CAPLENGTH]		= 0x00U,
 	[CAP_HCCPARAMS]		= 0x08U,
@@ -115,6 +124,52 @@ static const u8 ci_regs_lpm[] = {
 	[OP_ENDPTSTAT]		= 0xE4U,
 	[OP_ENDPTCOMPLETE]	= 0xE8U,
 	[OP_ENDPTCTRL]		= 0xECU,
+=======
+static uintptr_t ci_regs_nolpm[] = {
+	[CAP_CAPLENGTH]		= 0x000UL,
+	[CAP_HCCPARAMS]		= 0x008UL,
+	[CAP_DCCPARAMS]		= 0x024UL,
+	[CAP_TESTMODE]		= 0x038UL,
+	[OP_USBCMD]		= 0x000UL,
+	[OP_USBSTS]		= 0x004UL,
+	[OP_USBINTR]		= 0x008UL,
+	[OP_DEVICEADDR]		= 0x014UL,
+	[OP_ENDPTLISTADDR]	= 0x018UL,
+	[OP_PORTSC]		= 0x044UL,
+	[OP_DEVLC]		= 0x084UL,
+	[OP_OTGSC]		= 0x064UL,
+	[OP_USBMODE]		= 0x068UL,
+	[OP_ENDPTSETUPSTAT]	= 0x06CUL,
+	[OP_ENDPTPRIME]		= 0x070UL,
+	[OP_ENDPTFLUSH]		= 0x074UL,
+	[OP_ENDPTSTAT]		= 0x078UL,
+	[OP_ENDPTCOMPLETE]	= 0x07CUL,
+	[OP_ENDPTCTRL]		= 0x080UL,
+	[OP_ENDPTPIPEID]	= 0x0BCUL,
+};
+
+static uintptr_t ci_regs_lpm[] = {
+	[CAP_CAPLENGTH]		= 0x000UL,
+	[CAP_HCCPARAMS]		= 0x008UL,
+	[CAP_DCCPARAMS]		= 0x024UL,
+	[CAP_TESTMODE]		= 0x0FCUL,
+	[OP_USBCMD]		= 0x000UL,
+	[OP_USBSTS]		= 0x004UL,
+	[OP_USBINTR]		= 0x008UL,
+	[OP_DEVICEADDR]		= 0x014UL,
+	[OP_ENDPTLISTADDR]	= 0x018UL,
+	[OP_PORTSC]		= 0x044UL,
+	[OP_DEVLC]		= 0x084UL,
+	[OP_OTGSC]		= 0x0C4UL,
+	[OP_USBMODE]		= 0x0C8UL,
+	[OP_ENDPTSETUPSTAT]	= 0x0D8UL,
+	[OP_ENDPTPRIME]		= 0x0DCUL,
+	[OP_ENDPTFLUSH]		= 0x0E0UL,
+	[OP_ENDPTSTAT]		= 0x0E4UL,
+	[OP_ENDPTCOMPLETE]	= 0x0E8UL,
+	[OP_ENDPTCTRL]		= 0x0ECUL,
+	[OP_ENDPTPIPEID]	= 0x0BCUL,
+>>>>>>> p9x
 };
 
 static int hw_alloc_regmap(struct ci_hdrc *ci, bool is_lpm)
@@ -339,18 +394,28 @@ static int ci_usb_phy_init(struct ci_hdrc *ci)
  */
 int hw_device_reset(struct ci_hdrc *ci, u32 mode)
 {
+	int delay_count = 25; /* 250 usec */
+
 	/* should flush & stop before reset */
 	hw_write(ci, OP_ENDPTFLUSH, ~0, ~0);
 	hw_write(ci, OP_USBCMD, USBCMD_RS, 0);
 
 	hw_write(ci, OP_USBCMD, USBCMD_RST, USBCMD_RST);
+<<<<<<< HEAD
 	while (hw_read(ci, OP_USBCMD, USBCMD_RST))
 		udelay(10);		/* not RTOS friendly */
+=======
+	while (delay_count-- && hw_read(ci, OP_USBCMD, USBCMD_RST))
+		udelay(10);
+	if (delay_count < 0)
+		pr_err("USB controller reset failed\n");
+>>>>>>> p9x
 
 	if (ci->platdata->notify_event)
 		ci->platdata->notify_event(ci,
 			CI_HDRC_CONTROLLER_RESET_EVENT);
 
+<<<<<<< HEAD
 	if (ci->platdata->flags & CI_HDRC_DISABLE_STREAMING)
 		hw_write(ci, OP_USBMODE, USBMODE_CI_SDIS, USBMODE_CI_SDIS);
 
@@ -361,11 +426,28 @@ int hw_device_reset(struct ci_hdrc *ci, u32 mode)
 			hw_write(ci, OP_PORTSC, PORTSC_PFSC, PORTSC_PFSC);
 	}
 
+=======
+>>>>>>> p9x
 	/* USBMODE should be configured step by step */
 	hw_write(ci, OP_USBMODE, USBMODE_CM, USBMODE_CM_IDLE);
 	hw_write(ci, OP_USBMODE, USBMODE_CM, mode);
 	/* HW >= 2.3 */
 	hw_write(ci, OP_USBMODE, USBMODE_SLOM, USBMODE_SLOM);
+
+	/*
+	 * ITC (Interrupt Threshold Control) field is to set the maximum
+	 * rate at which the device controller will issue interrupts.
+	 * The maximum interrupt interval measured in micro frames.
+	 * Valid values are 0, 1, 2, 4, 8, 16, 32, 64. The default value is
+	 * 8 micro frames. If CPU can handle interrupts at faster rate, ITC
+	 * can be set to lesser value to gain performance.
+	 */
+	if (ci->platdata->nz_itc)
+		hw_write(ci, OP_USBCMD, USBCMD_ITC_MASK,
+			USBCMD_ITC(ci->platdata->nz_itc));
+	if (ci->platdata->flags & CI13XXX_ZERO_ITC)
+		hw_write(ci, OP_USBCMD, USBCMD_ITC_MASK, USBCMD_ITC(0));
+
 
 	if (hw_read(ci, OP_USBMODE, USBMODE_CM) != mode) {
 		pr_err("cannot enter in %s mode", ci_role(ci)->name);
@@ -594,10 +676,13 @@ static int ci_hdrc_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
+	spin_lock_init(&ci->lock);
 	ci->dev = dev;
 	ci->platdata = dev_get_platdata(dev);
 	ci->imx28_write_fix = !!(ci->platdata->flags &
 		CI_HDRC_IMX28_WRITE_FIX);
+
+	ci->gadget.l1_supported = ci->platdata->l1_supported;
 
 	ci->gadget.l1_supported = ci->platdata->l1_supported;
 

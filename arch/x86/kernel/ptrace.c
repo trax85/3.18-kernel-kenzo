@@ -1441,6 +1441,7 @@ void send_sigtrap(struct task_struct *tsk, struct pt_regs *regs,
 	force_sig_info(SIGTRAP, &info, tsk);
 }
 
+<<<<<<< HEAD
 static void do_audit_syscall_entry(struct pt_regs *regs, u32 arch)
 {
 #ifdef CONFIG_X86_64
@@ -1455,6 +1456,8 @@ static void do_audit_syscall_entry(struct pt_regs *regs, u32 arch)
 	}
 }
 
+=======
+>>>>>>> p9x
 /*
  * We can return 0 to resume the syscall or anything else to go to phase
  * 2.  If we resume the syscall, we need to put something appropriate in
@@ -1593,7 +1596,22 @@ long syscall_trace_enter_phase2(struct pt_regs *regs, u32 arch,
 	if (unlikely(test_thread_flag(TIF_SYSCALL_TRACEPOINT)))
 		trace_sys_enter(regs, regs->orig_ax);
 
+<<<<<<< HEAD
 	do_audit_syscall_entry(regs, arch);
+=======
+	if (is_ia32_task())
+		audit_syscall_entry(AUDIT_ARCH_I386,
+				    regs->orig_ax,
+				    regs->bx, regs->cx,
+				    regs->dx, regs->si);
+#ifdef CONFIG_X86_64
+	else
+		audit_syscall_entry(AUDIT_ARCH_X86_64,
+				    regs->orig_ax,
+				    regs->di, regs->si,
+				    regs->dx, regs->r10);
+#endif
+>>>>>>> p9x
 
 	return ret ?: regs->orig_ax;
 }

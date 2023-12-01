@@ -1147,7 +1147,21 @@ __do_page_fault(struct pt_regs *regs, unsigned long error_code,
 			local_irq_enable();
 	}
 
+<<<<<<< HEAD
+=======
+	if (unlikely(error_code & PF_RSVD))
+		pgtable_bad(regs, error_code, address);
+
+	if (unlikely(smap_violation(error_code, regs))) {
+		bad_area_nosemaphore(regs, error_code, address);
+		return;
+	}
+
+>>>>>>> p9x
 	perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
+
+	if (error_code & PF_WRITE)
+		flags |= FAULT_FLAG_WRITE;
 
 	if (error_code & PF_WRITE)
 		flags |= FAULT_FLAG_WRITE;

@@ -5,7 +5,11 @@
 #include <linux/threads.h>
 #include <asm/irq.h>
 
+<<<<<<< HEAD
 #define NR_IPI	9
+=======
+#define NR_IPI	7
+>>>>>>> p9x
 
 typedef struct {
 	unsigned int __softirq_pending;

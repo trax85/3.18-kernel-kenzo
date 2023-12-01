@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -25,7 +29,12 @@ enum usb_bam_mode {
 };
 
 enum peer_bam {
+<<<<<<< HEAD
 	QDSS_P_BAM = 0,
+=======
+	A2_P_BAM = 0,
+	QDSS_P_BAM,
+>>>>>>> p9x
 	IPA_P_BAM,
 	MAX_PEER_BAMS,
 };
@@ -37,6 +46,10 @@ enum usb_bam_pipe_dir {
 
 enum usb_pipe_mem_type {
 	SPS_PIPE_MEM = 0,	/* Default, SPS dedicated pipe memory */
+<<<<<<< HEAD
+=======
+	USB_PRIVATE_MEM,	/* USB's private memory */
+>>>>>>> p9x
 	SYSTEM_MEM,		/* System RAM, requires allocation */
 	OCI_MEM,		/* Shared memory among peripherals */
 };
@@ -194,14 +207,21 @@ struct usb_bam_pipe_connect {
  * struct msm_usb_bam_platform_data: pipe connection information
  * between USB/HSIC BAM and another BAM. USB/HSIC BAM can be
  * either src BAM or dst BAM
+<<<<<<< HEAD
+=======
+ * @connections: holds all pipe connections data.
+>>>>>>> p9x
  * @usb_bam_num_pipes: max number of pipes to use.
  * @active_conn_num: number of active pipe connections.
  * @usb_bam_fifo_baseaddr: base address for bam pipe's data and descriptor
  *                         fifos. This can be on chip memory (ocimem) or usb
  *                         private memory.
  * @ignore_core_reset_ack: BAM can ignore ACK from USB core during PIPE RESET
+<<<<<<< HEAD
  * @reset_on_connect: BAM must be reset before its first pipe connect
  * @reset_on_disconnect: BAM must be reset after its last pipe disconnect
+=======
+>>>>>>> p9x
  * @disable_clk_gating: Disable clock gating
  * @override_threshold: Override the default threshold value for Read/Write
  *                         event generation by the BAM towards another BAM.
@@ -209,19 +229,35 @@ struct usb_bam_pipe_connect {
  *		can work at in bam2bam mode when connected to HS host.
  * @max_mbps_superspeed: Maximum Mbits per seconds that the USB core
  *		can work at in bam2bam mode when connected to SS host.
+<<<<<<< HEAD
  */
 struct msm_usb_bam_platform_data {
+=======
+ * @enable_hsusb_bam_on_boot: Enable HSUSB BAM (non-NDP) on bootup itself
+ */
+struct msm_usb_bam_platform_data {
+	struct usb_bam_pipe_connect *connections;
+>>>>>>> p9x
 	u8 max_connections;
 	int usb_bam_num_pipes;
 	phys_addr_t usb_bam_fifo_baseaddr;
 	bool ignore_core_reset_ack;
+<<<<<<< HEAD
 	bool reset_on_connect;
 	bool reset_on_disconnect;
+=======
+	bool reset_on_connect[MAX_BAMS];
+	bool reset_on_disconnect[MAX_BAMS];
+>>>>>>> p9x
 	bool disable_clk_gating;
 	u32 override_threshold;
 	u32 max_mbps_highspeed;
 	u32 max_mbps_superspeed;
+<<<<<<< HEAD
 	enum usb_ctrl bam_type;
+=======
+	bool enable_hsusb_bam_on_boot;
+>>>>>>> p9x
 };
 
 #ifdef CONFIG_USB_BAM
@@ -230,8 +266,11 @@ struct msm_usb_bam_platform_data {
  *
  * This function returns the allocated pipe number.
  *
+<<<<<<< HEAD
  * @bam_type - USB BAM type - dwc3/CI/hsic
  *
+=======
+>>>>>>> p9x
  * @idx - Connection index.
  *
  * @bam_pipe_idx - allocated pipe index.
@@ -239,7 +278,11 @@ struct msm_usb_bam_platform_data {
  * @return 0 on success, negative value on error
  *
  */
+<<<<<<< HEAD
 int usb_bam_connect(enum usb_ctrl bam_type, int idx, u32 *bam_pipe_idx);
+=======
+int usb_bam_connect(int idx, u32 *bam_pipe_idx);
+>>>>>>> p9x
 
 /**
  * Connect USB-to-IPA SPS connection.
@@ -249,6 +292,7 @@ int usb_bam_connect(enum usb_ctrl bam_type, int idx, u32 *bam_pipe_idx);
  * and only after that consumer pipes, since that's the correct
  * sequence for the handshake with the IPA.
  *
+<<<<<<< HEAD
  * @bam_type - USB BAM type - dwc3/CI/hsic
  *
  * @ipa_params - in/out parameters
@@ -257,10 +301,19 @@ int usb_bam_connect(enum usb_ctrl bam_type, int idx, u32 *bam_pipe_idx);
  */
 int usb_bam_connect_ipa(enum usb_ctrl bam_type,
 			struct usb_bam_connect_ipa_params *ipa_params);
+=======
+ * @ipa_params - in/out parameters
+ *
+ * @return 0 on success, negative value on error
+ *
+ */
+int usb_bam_connect_ipa(struct usb_bam_connect_ipa_params *ipa_params);
+>>>>>>> p9x
 
 /**
  * Disconnect USB-to-IPA SPS connection.
  *
+<<<<<<< HEAD
  * @bam_type - USB BAM type - dwc3/CI/hsic
  *
  * @ipa_params - in/out parameters
@@ -268,18 +321,30 @@ int usb_bam_connect_ipa(enum usb_ctrl bam_type,
  * @return 0 on success, negative value on error
  */
 int usb_bam_disconnect_ipa(enum usb_ctrl bam_type,
+=======
+ * @ipa_params - in/out parameters
+ *
+ * @return 0 on success, negative value on error
+ *
+ */
+int usb_bam_disconnect_ipa(
+>>>>>>> p9x
 		struct usb_bam_connect_ipa_params *ipa_params);
 
 /**
  * Register a wakeup callback from peer BAM.
  *
+<<<<<<< HEAD
  * @bam_type - USB BAM type - dwc3/CI/hsic
  *
+=======
+>>>>>>> p9x
  * @idx - Connection index.
  *
  * @callback - the callback function
  *
  * @return 0 on success, negative value on error
+<<<<<<< HEAD
  */
 int usb_bam_register_wake_cb(enum usb_ctrl bam_type, u8 idx,
 	int (*callback)(void *), void *param);
@@ -288,6 +353,28 @@ int usb_bam_register_wake_cb(enum usb_ctrl bam_type, u8 idx,
  * Register callbacks for start/stop of transfers.
  *
  * @bam_type - USB BAM type - dwc3/CI/hsic
+=======
+ *
+ */
+int usb_bam_register_wake_cb(u8 idx,
+	int (*callback)(void *), void *param);
+
+/**
+ * Register a callback for peer BAM reset.
+ *
+ * @callback - the callback function that will be called in USB
+ *				driver upon a peer bam reset
+ *
+ * @param - context that the caller can supply
+ *
+ * @return 0 on success, negative value on error
+ *
+ */
+int usb_bam_register_peer_reset_cb(int (*callback)(void *), void *param);
+
+/**
+ * Register callbacks for start/stop of transfers.
+>>>>>>> p9x
  *
  * @idx - Connection index
  *
@@ -299,8 +386,14 @@ int usb_bam_register_wake_cb(enum usb_ctrl bam_type, u8 idx,
  * @param - context that the caller can supply
  *
  * @return 0 on success, negative value on error
+<<<<<<< HEAD
  */
 int usb_bam_register_start_stop_cbs(enum usb_ctrl bam_type,
+=======
+ *
+ */
+int usb_bam_register_start_stop_cbs(
+>>>>>>> p9x
 	u8 idx,
 	void (*start)(void *, enum usb_bam_pipe_dir),
 	void (*stop)(void *, enum usb_bam_pipe_dir),
@@ -311,14 +404,20 @@ int usb_bam_register_start_stop_cbs(enum usb_ctrl bam_type,
  *
  * @ipa_params -  in/out parameters
  *
+<<<<<<< HEAD
  * @bam_type - USB BAM type - dwc3/CI/hsic
  */
 void usb_bam_suspend(enum usb_ctrl bam_type,
 		     struct usb_bam_connect_ipa_params *ipa_params);
+=======
+ */
+void usb_bam_suspend(struct usb_bam_connect_ipa_params *ipa_params);
+>>>>>>> p9x
 
 /**
  * Start usb resume sequence
  *
+<<<<<<< HEAD
  * @bam_type - USB BAM type - dwc3/CI/hsic
  *
  * @ipa_params -  in/out parameters
@@ -330,15 +429,29 @@ void usb_bam_resume(enum usb_ctrl bam_type,
  *
  * @bam_type - USB BAM type - dwc3/CI/hsic
  *
+=======
+ * @ipa_params -  in/out parameters
+ *
+ */
+void usb_bam_resume(struct usb_bam_connect_ipa_params *ipa_params);
+/**
+ * Disconnect USB-to-Periperal SPS connection.
+ *
+>>>>>>> p9x
  * @idx - Connection index.
  *
  * @return 0 on success, negative value on error
  */
+<<<<<<< HEAD
 int usb_bam_disconnect_pipe(enum usb_ctrl bam_type, u8 idx);
+=======
+int usb_bam_disconnect_pipe(u8 idx);
+>>>>>>> p9x
 
 /**
  * Returns usb bam connection parameters.
  *
+<<<<<<< HEAD
  * @bam_type - USB BAM type - dwc3/CI/hsic
  *
  * @idx - Connection index.
@@ -365,15 +478,77 @@ int get_bam2bam_connection_info(enum usb_ctrl bam_type, u8 idx,
  * @return pipe index on success, negative value on error.
  */
 int get_qdss_bam_connection_info(
+=======
+ * @idx - Connection index.
+ *
+ * @usb_bam_handle - Usb bam handle.
+ *
+ * @usb_bam_pipe_idx - Usb bam pipe index.
+ *
+ * @peer_pipe_idx - Peer pipe index.
+ *
+ * @desc_fifo - Descriptor fifo parameters.
+ *
+ * @data_fifo - Data fifo parameters.
+ *
+ * @return pipe index on success, negative value on error.
+ */
+int get_bam2bam_connection_info(u8 idx,
+>>>>>>> p9x
 	unsigned long *usb_bam_handle, u32 *usb_bam_pipe_idx,
 	u32 *peer_pipe_idx, struct sps_mem_buffer *desc_fifo,
 	struct sps_mem_buffer *data_fifo, enum usb_pipe_mem_type *mem_type);
 
 /**
+<<<<<<< HEAD
 * Indicates if the client of the USB BAM is ready to start
 * sending/receiving transfers.
 *
 *@bam_type - USB BAM type - dwc3/CI/hsic
+=======
+ * Resets the USB BAM that has A2 pipes
+ *
+ */
+int usb_bam_a2_reset(bool to_reconnect);
+
+/**
+ * Indicates if the client of the USB BAM is ready to start
+ * sending/receiving transfers.
+ *
+ * @ready - TRUE to enable, FALSE to disable.
+ *
+ */
+int usb_bam_client_ready(bool ready);
+
+/**
+* Returns upon reset completion if reset is in progress
+* immediately otherwise.
+*
+*/
+void usb_bam_reset_complete(void);
+
+/**
+* Returns qdss index from the connections array.
+*
+* @num - The qdss pipe number.
+*
+* @return pipe index on success, negative value on error
+*/
+int usb_bam_get_qdss_idx(u8 num);
+
+/**
+* Saves qdss core number.
+*
+* @qdss_core - The qdss core name.
+*/
+void usb_bam_set_qdss_core(const char *qdss_core);
+
+/**
+* Indicates if the client of the USB BAM is ready to start
+* sending/receiving transfers.
+*
+* @name - Core name (ssusb/hsusb/hsic).
+>>>>>>> p9x
 *
 * @client - Usb pipe peer (a2, ipa, qdss...)
 *
@@ -383,37 +558,57 @@ int get_qdss_bam_connection_info(
 *
 * @return 0 on success, negative value on error
 */
+<<<<<<< HEAD
 int usb_bam_get_connection_idx(enum usb_ctrl bam_type, enum peer_bam client,
+=======
+int usb_bam_get_connection_idx(const char *name, enum peer_bam client,
+>>>>>>> p9x
 	enum usb_bam_pipe_dir dir, enum usb_bam_mode bam_mode, u32 num);
 
 /**
 * return the usb controller bam type used for the supplied connection index
 *
+<<<<<<< HEAD
 * @core_name - Core name (ssusb/hsusb/hsic).
 *
 * @return usb control bam type
 */
 int usb_bam_get_bam_type(const char *core_name);
+=======
+* @connection_idx - Connection index
+*
+* @return usb control bam type
+*/
+int usb_bam_get_bam_type(int connection_idx);
+>>>>>>> p9x
 
 /**
 * Indicates the type of connection the USB side of the connection is.
 *
+<<<<<<< HEAD
 * @bam_type - USB BAM type - dwc3/CI/hsic
 *
+=======
+>>>>>>> p9x
 * @idx - Pipe number.
 *
 * @type - Type of connection
 *
 * @return 0 on success, negative value on error
 */
+<<<<<<< HEAD
 int usb_bam_get_pipe_type(enum usb_ctrl bam_type,
 			  u8 idx, enum usb_bam_pipe_type *type);
+=======
+int usb_bam_get_pipe_type(u8 idx, enum usb_bam_pipe_type *type);
+>>>>>>> p9x
 
 /**
 * Indicates whether USB producer is granted to IPA resource manager.
 *
 * @return true when producer granted, false when prodcuer is released.
 */
+<<<<<<< HEAD
 bool usb_bam_get_prod_granted(enum usb_ctrl bam_type, u8 idx);
 
 /**
@@ -428,17 +623,31 @@ int usb_bam_free_fifos(enum usb_ctrl cur_bam, u8 idx);
 
 #else
 static inline int usb_bam_connect(enum usb_ctrl bam, u8 idx, u32 *bam_pipe_idx)
+=======
+bool usb_bam_get_prod_granted(u8 idx);
+
+#else
+static inline int usb_bam_connect(u8 idx, u32 *bam_pipe_idx)
+>>>>>>> p9x
 {
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static inline int usb_bam_connect_ipa(enum usb_ctrl bam_type,
+=======
+static inline int usb_bam_connect_ipa(
+>>>>>>> p9x
 			struct usb_bam_connect_ipa_params *ipa_params)
 {
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static inline int usb_bam_disconnect_ipa(enum usb_ctrl bam_type,
+=======
+static inline int usb_bam_disconnect_ipa(
+>>>>>>> p9x
 			struct usb_bam_connect_ipa_params *ipa_params)
 {
 	return -ENODEV;
@@ -450,13 +659,28 @@ static inline void usb_bam_wait_for_cons_granted(
 	return;
 }
 
+<<<<<<< HEAD
 static inline int usb_bam_register_wake_cb(enum usb_ctrl bam_type, u8 idx,
+=======
+static inline int usb_bam_register_wake_cb(u8 idx,
+	int (*callback)(void *), void* param)
+{
+	return -ENODEV;
+}
+
+static inline int usb_bam_register_peer_reset_cb(
+>>>>>>> p9x
 	int (*callback)(void *), void *param)
 {
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static inline int usb_bam_register_start_stop_cbs(enum usb_ctrl bam, u8 idx,
+=======
+static inline int usb_bam_register_start_stop_cbs(
+	u8 idx,
+>>>>>>> p9x
 	void (*start)(void *, enum usb_bam_pipe_dir),
 	void (*stop)(void *, enum usb_bam_pipe_dir),
 	void *param)
@@ -464,6 +688,7 @@ static inline int usb_bam_register_start_stop_cbs(enum usb_ctrl bam, u8 idx,
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static inline void usb_bam_suspend(enum usb_ctrl bam_type,
 	struct usb_bam_connect_ipa_params *ipa_params){}
 
@@ -471,10 +696,20 @@ static inline void usb_bam_resume(enum usb_ctrl bam_type,
 	struct usb_bam_connect_ipa_params *ipa_params) {}
 
 static inline int usb_bam_disconnect_pipe(enum usb_ctrl bam_type, u8 idx)
+=======
+static inline void usb_bam_suspend(
+	struct usb_bam_connect_ipa_params *ipa_params){}
+
+static inline void usb_bam_resume(
+	struct usb_bam_connect_ipa_params *ipa_params) {}
+
+static inline int usb_bam_disconnect_pipe(u8 idx)
+>>>>>>> p9x
 {
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static inline int get_bam2bam_connection_info(enum usb_ctrl bam_type, u8 idx,
 	u32 *usb_bam_pipe_idx, struct sps_mem_buffer *desc_fifo,
 	struct sps_mem_buffer *data_fifo, enum usb_pipe_mem_type *mem_type)
@@ -483,6 +718,9 @@ static inline int get_bam2bam_connection_info(enum usb_ctrl bam_type, u8 idx,
 }
 
 static inline int get_qdss_bam_connection_info(
+=======
+static inline int get_bam2bam_connection_info(u8 idx,
+>>>>>>> p9x
 	unsigned long *usb_bam_handle, u32 *usb_bam_pipe_idx,
 	u32 *peer_pipe_idx, struct sps_mem_buffer *desc_fifo,
 	struct sps_mem_buffer *data_fifo, enum usb_pipe_mem_type *mem_type)
@@ -490,24 +728,62 @@ static inline int get_qdss_bam_connection_info(
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static inline int usb_bam_get_connection_idx(enum usb_ctrl bam_type,
+=======
+static inline int usb_bam_a2_reset(bool to_reconnect)
+{
+	return -ENODEV;
+}
+
+static inline int usb_bam_client_ready(bool ready)
+{
+	return -ENODEV;
+}
+
+static inline void usb_bam_reset_complete(void)
+{
+	return;
+}
+
+static inline int usb_bam_get_qdss_idx(u8 num)
+{
+	return -ENODEV;
+}
+
+static inline void usb_bam_set_qdss_core(const char *qdss_core)
+{
+	return;
+}
+
+static inline int usb_bam_get_connection_idx(const char *name,
+>>>>>>> p9x
 		enum peer_bam client, enum usb_bam_pipe_dir dir,
 		enum usb_bam_mode bam_mode, u32 num)
 {
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static inline int usb_bam_get_bam_type(const char *core_nam)
+=======
+static inline int usb_bam_get_bam_type(int connection_idx)
+>>>>>>> p9x
 {
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static inline int usb_bam_get_pipe_type(enum usb_ctrl bam_type, u8 idx,
 					enum usb_bam_pipe_type *type)
+=======
+static inline int usb_bam_get_pipe_type(u8 idx, enum usb_bam_pipe_type *type)
+>>>>>>> p9x
 {
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static inline bool usb_bam_get_prod_granted(enum usb_ctrl bam_type, u8 idx)
 {
 	return false;
@@ -519,6 +795,9 @@ int usb_bam_alloc_fifos(enum usb_ctrl cur_bam, u8 idx)
 }
 
 int usb_bam_free_fifos(enum usb_ctrl cur_bam, u8 idx)
+=======
+static inline bool usb_bam_get_prod_granted(u8 idx)
+>>>>>>> p9x
 {
 	return false;
 }

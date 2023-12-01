@@ -14,10 +14,17 @@
 #include <linux/clk.h>
 #include <linux/err.h>
 #include <linux/irq.h>
+<<<<<<< HEAD:drivers/clocksource/timer-u300.c
 #include <linux/delay.h>
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
 #include <linux/sched_clock.h>
+=======
+#include <linux/sched_clock.h>
+
+#include <mach/hardware.h>
+#include <mach/irqs.h>
+>>>>>>> p9x:arch/arm/mach-u300/timer.c
 
 /* Generic stuff */
 #include <asm/mach/map.h>

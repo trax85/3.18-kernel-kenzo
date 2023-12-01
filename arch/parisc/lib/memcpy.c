@@ -161,7 +161,11 @@ static inline void prefetch_dst(const void *addr)
 /* Copy from a not-aligned src to an aligned dst, using shifts. Handles 4 words
  * per loop.  This code is derived from glibc. 
  */
+<<<<<<< HEAD
 static noinline unsigned long copy_dstaligned(unsigned long dst,
+=======
+static inline unsigned long copy_dstaligned(unsigned long dst,
+>>>>>>> p9x
 					unsigned long src, unsigned long len)
 {
 	/* gcc complains that a2 and a3 may be uninitialized, but actually
@@ -276,7 +280,11 @@ handle_store_error:
 /* Returns PA_MEMCPY_OK, PA_MEMCPY_LOAD_ERROR or PA_MEMCPY_STORE_ERROR.
  * In case of an access fault the faulty address can be read from the per_cpu
  * exception data struct. */
+<<<<<<< HEAD
 static noinline unsigned long pa_memcpy_internal(void *dstp, const void *srcp,
+=======
+static unsigned long pa_memcpy_internal(void *dstp, const void *srcp,
+>>>>>>> p9x
 					unsigned long len)
 {
 	register unsigned long src, dst, t1, t2, t3;
@@ -470,7 +478,11 @@ static unsigned long pa_memcpy(void *dstp, const void *srcp, unsigned long len)
 		return 0;
 
 	/* if a load or store fault occured we can get the faulty addr */
+<<<<<<< HEAD
 	d = this_cpu_ptr(&exception_data);
+=======
+	d = &__get_cpu_var(exception_data);
+>>>>>>> p9x
 	fault_addr = d->fault_addr;
 
 	/* error in load or store? */

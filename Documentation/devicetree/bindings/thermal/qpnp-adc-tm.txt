@@ -12,12 +12,16 @@ VADC_TM node
 
 Required properties:
 - compatible : should be "qcom,qpnp-adc-tm" for thermal ADC driver.
+<<<<<<< HEAD
 	     : should be "qcom,qpnp-adc-tm-hc" for thermal ADC driver using
 	       refreshed BTM peripheral.
+=======
+>>>>>>> p9x
 - reg : offset and length of the PMIC Aribter register map.
 - address-cells : Must be one.
 - size-cells : Must be zero.
 - interrupts : The thermal ADC bank peripheral interrupts for eoc, high and low interrupts.
+<<<<<<< HEAD
 - interrupt-names : Should be "eoc-int-en-set", "high-thr-en-set" and "low-thr-en-set"
 		    for qcom,qpnp-adc-tm type.
 		  : Should be "eoc-int-en-set" for qcom,qpnp-adc-tm-hc type.
@@ -47,6 +51,12 @@ The following properties are required in the main node for qcom,qpnp-adc-tm-hc p
 			7 : 128
 			8 : 256
 
+=======
+- interrupt-names : Should be "eoc-int-en-set", "high-thr-en-set" and "low-thr-en-set".
+- qcom,adc-bit-resolution : Bit resolution of the ADC.
+- qcom,adc-vdd-reference : Voltage reference used by the ADC.
+
+>>>>>>> p9x
 Optional properties:
 - qcom,thermal-node : If present a thermal node is created and the channel is registered as
 		part of the thermal sysfs which allows clients to use the thermal framework
@@ -81,8 +91,11 @@ Required properties:
 		    1 : 1K
 		    2 : 2K
 		    3 : 4K
+<<<<<<< HEAD
 		    Note: This property is not required in the channel node in qcom,qpnp-adc-tm-hc
 		    peripheral.
+=======
+>>>>>>> p9x
 - qcom,pre-div-channel-scaling : Pre-div used for the channel before the signal is being measured.
 				 Select from the following unsigned int for the corresponding
 				 numerator/denominator pre-div ratio.
@@ -112,7 +125,12 @@ Required properties:
 			5 : Scaling to perform reverse calibration for absolute voltage from uV
 			    to raw ADC code.
 			6 : Scaling to convert qrd skuh battery decidegC to raw ADC code.
+<<<<<<< HEAD
 			7 : Scaling to convert qrd skue battery decidegC to raw ADC code.
+=======
+			7 : Scaling to convert qrd skut1 battery decidegC to raw ADC code.
+			8 : Scaling to convert qrd skue battery decidegC to raw ADC code.
+>>>>>>> p9x
 - qcom,hw-settle-time : Settling period for the channel before ADC read.
 			Select from the following unsigned int.
 			0 : 0us
@@ -144,8 +162,11 @@ Required properties:
 			6 : 64
 			7 : 128
 			8 : 256
+<<<<<<< HEAD
 			Note: This property is not required in the channel node in
 			qcom,qpnp-adc-tm-hc peripheral.
+=======
+>>>>>>> p9x
 - qcom,btm-channel-number : Depending on the PMIC version, a max of upto 8 BTM channels.
 			    The BTM channel numbers are statically allocated to the
 			    corresponding channel node.
@@ -157,7 +178,11 @@ client_node {
 	qcom,client-adc_tm = <&pm8941_adc_tm>;
 };
 
+<<<<<<< HEAD
 Example for "qcom,qpnp-adc-tm" device:
+=======
+Example:
+>>>>>>> p9x
 	/* Main Node */
 	qcom,vadc@3400 {
                         compatible = "qcom,qpnp-adc-tm";
@@ -201,6 +226,7 @@ Example for "qcom,qpnp-adc-tm" device:
 				qcom,btm-channel-number = <0x78>;
 			};
 	};
+<<<<<<< HEAD
 
 Example for "qcom,qpnp-adc-tm-hc" device:
 	/* Main Node */
@@ -240,3 +266,5 @@ Example for "qcom,qpnp-adc-tm-hc" device:
 				qcom,btm-channel-number = <0x78>;
 			};
 	};
+=======
+>>>>>>> p9x

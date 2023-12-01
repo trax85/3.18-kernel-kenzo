@@ -69,7 +69,6 @@ config SND_SOC_ALL_CODECS
 	select SND_SOC_MAX98090 if I2C
 	select SND_SOC_MAX98095 if I2C
 	select SND_SOC_MAX9850 if I2C
-	select SND_SOC_MAX9768 if I2C
 	select SND_SOC_MAX9877 if I2C
 	select SND_SOC_MC13783 if MFD_MC13XXX
 	select SND_SOC_ML26124 if I2C
@@ -117,7 +116,6 @@ config SND_SOC_ALL_CODECS
 	select SND_SOC_WM0010 if SPI_MASTER
 	select SND_SOC_WM1250_EV1 if I2C
 	select SND_SOC_WM2000 if I2C
-	select SND_SOC_WM2200 if I2C
 	select SND_SOC_WM5100 if I2C
 	select SND_SOC_WM5102 if MFD_WM5102
 	select SND_SOC_WM5110 if MFD_WM5110
@@ -620,12 +618,18 @@ config SND_SOC_UDA134X
 config SND_SOC_UDA1380
         tristate
 
+<<<<<<< HEAD
 config SND_SOC_WCD9306
         tristate
+=======
+config SND_SOC_WCD9310
+	tristate
+>>>>>>> p9x
 
 config SND_SOC_WCD9320
         tristate
 
+<<<<<<< HEAD
 config SND_SOC_WCD9330
         tristate
 
@@ -638,20 +642,45 @@ config SND_SOC_BG_CODEC
 
 config SND_SOC_WSA881X_SENSORS
 	tristate
+=======
+config SND_SOC_WCD9306
+        tristate
+
+config SND_SOC_WCD9330
+        tristate
+
+config SND_SOC_WSA881X
+        tristate
+
+config SND_SOC_WCD9335
+        tristate
+>>>>>>> p9x
 
 config SND_SOC_WSA881X
         tristate
 	select REGMAP_SWR
+<<<<<<< HEAD
 	select SND_SOC_WSA881X_SENSORS
 
 config SND_SOC_WSA881X_ANALOG
         tristate
 	select REGMAP_I2C
 	select SND_SOC_WSA881X_SENSORS
+=======
+
+config SND_SOC_WCD9XXX
+	tristate
+	default y if SND_SOC_WCD9320=y || SND_SOC_WCD9306=y || SND_SOC_WCD9330=y
+	default y if SND_SOC_WCD9335=y
+
+config SND_SOC_MSM8X10_WCD
+	tristate
+>>>>>>> p9x
 
 config SND_SOC_MSM8X16_WCD
 	tristate
 
+<<<<<<< HEAD
 config SND_SOC_DIGITAL_CDC
 	tristate
 	select REGMAP_MMIO
@@ -668,6 +697,14 @@ config SND_SOC_WCD9XXX_V2
 config SND_SOC_WCD_CPE
 	tristate
 	default y if SND_SOC_WCD9330=y || SND_SOC_WCD9335=y
+=======
+config SND_SOC_WCD_CPE
+	tristate
+	default y if SND_SOC_WCD9330=y || SND_SOC_WCD9335=y || SND_SOC_MSM8X16_WCD=y
+
+config SND_SOC_MSM8909_WCD
+	tristate
+>>>>>>> p9x
 
 config AUDIO_EXT_CLK
 	tristate
@@ -675,7 +712,11 @@ config AUDIO_EXT_CLK
 
 config SND_SOC_WCD_MBHC
 	tristate
+<<<<<<< HEAD
 	default y if (SND_SOC_MSM8909_WCD=y || SND_SOC_MSM8X16_WCD=y || SND_SOC_WCD9335=y) && SND_SOC_MDM9650!=y
+=======
+	default y if SND_SOC_MSM8909_WCD=y || SND_SOC_MSM8X16_WCD=y
+>>>>>>> p9x
 
 config SND_SOC_WL1273
 	tristate
@@ -850,9 +891,6 @@ config SND_SOC_WM9713
 config SND_SOC_LM4857
 	tristate
 
-config SND_SOC_MAX9768
-	tristate
-
 config SND_SOC_MAX9877
 	tristate
 
@@ -869,14 +907,28 @@ config SND_SOC_TPA6130A2
 config SND_SOC_MSM_STUB
 	tristate
 
+<<<<<<< HEAD
 config SND_SOC_MSM_HDMI_CODEC_RX
 	bool "HDMI Audio Playback"
 	depends on FB_MSM_MDSS_HDMI_PANEL && (SND_SOC_APQ8084 || SND_SOC_MSM8994 || SND_SOC_MSM8996)
+=======
+config SND_SOC_MSM_STUB
+	tristate
+
+config SND_SOC_MSM_HDMI_CODEC_RX
+	bool "HDMI Audio Playback"
+	depends on FB_MSM_MDSS_HDMI_PANEL && (SND_SOC_MSM8974 || SND_SOC_APQ8084 || SND_SOC_MSM8994)
+>>>>>>> p9x
 	help
 	HDMI audio drivers should be built only if the platform
         supports hdmi panel.
 
+<<<<<<< HEAD
 config SND_SOC_MSM_HDMI_DBA_CODEC_RX
 	bool "HDMI DBA Audio Playback"
 	depends on MSM_DBA
 endmenu
+=======
+config SOUND_CONTROL
+	bool "Sound control for wcd9335"
+>>>>>>> p9x

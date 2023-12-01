@@ -347,10 +347,27 @@ static int hidinput_get_battery_property(struct power_supply *psy,
 		break;
 
 	case POWER_SUPPLY_PROP_CAPACITY:
+<<<<<<< HEAD
 
 		buf = kmalloc(2 * sizeof(__u8), GFP_KERNEL);
 		if (!buf) {
 			ret = -ENOMEM;
+=======
+
+		buf = kmalloc(2 * sizeof(__u8), GFP_KERNEL);
+		if (!buf) {
+			ret = -ENOMEM;
+			break;
+		}
+		ret = dev->hid_get_raw_report(dev, dev->battery_report_id,
+					      buf, 2,
+					      dev->battery_report_type);
+
+		if (ret != 2) {
+			if (ret >= 0)
+				ret = -EINVAL;
+			kfree(buf);
+>>>>>>> p9x
 			break;
 		}
 		ret = hid_hw_raw_request(dev, dev->battery_report_id, buf, 2,
@@ -745,10 +762,13 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 		case 0x074: map_key_clear(KEY_BRIGHTNESS_MAX);		break;
 		case 0x075: map_key_clear(KEY_BRIGHTNESS_AUTO);		break;
 
+<<<<<<< HEAD
 		case 0x079: map_key_clear(KEY_KBDILLUMUP);	break;
 		case 0x07a: map_key_clear(KEY_KBDILLUMDOWN);	break;
 		case 0x07c: map_key_clear(KEY_KBDILLUMTOGGLE);	break;
 
+=======
+>>>>>>> p9x
 		case 0x082: map_key_clear(KEY_VIDEO_NEXT);	break;
 		case 0x083: map_key_clear(KEY_LAST);		break;
 		case 0x084: map_key_clear(KEY_ENTER);		break;

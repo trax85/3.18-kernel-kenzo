@@ -584,6 +584,9 @@ static int radeon_info_ioctl(struct drm_device *dev, void *data, struct drm_file
 	case RADEON_INFO_GPU_RESET_COUNTER:
 		*value = atomic_read(&rdev->gpu_reset_counter);
 		break;
+	case RADEON_INFO_SI_CP_DMA_COMPUTE:
+		*value = 1;
+		break;
 	default:
 		DRM_DEBUG_KMS("Invalid request %d\n", info->request);
 		return -EINVAL;
@@ -653,6 +656,7 @@ int radeon_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv)
 				return r;
 			}
 
+<<<<<<< HEAD
 			r = radeon_bo_reserve(rdev->ring_tmp_bo.bo, false);
 			if (r) {
 				radeon_vm_fini(rdev, vm);
@@ -673,6 +677,25 @@ int radeon_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv)
 				kfree(fpriv);
 				return r;
 			}
+=======
+		r = radeon_bo_reserve(rdev->ring_tmp_bo.bo, false);
+		if (r)
+			return r;
+
+		/* map the ib pool buffer read only into
+		 * virtual address space */
+		bo_va = radeon_vm_bo_add(rdev, &fpriv->vm,
+					 rdev->ring_tmp_bo.bo);
+		r = radeon_vm_bo_set_addr(rdev, bo_va, RADEON_VA_IB_OFFSET,
+					  RADEON_VM_PAGE_READABLE |
+					  RADEON_VM_PAGE_SNOOPED);
+
+		radeon_bo_unreserve(rdev->ring_tmp_bo.bo);
+		if (r) {
+			radeon_vm_fini(rdev, &fpriv->vm);
+			kfree(fpriv);
+			return r;
+>>>>>>> p9x
 		}
 		file_priv->driver_priv = fpriv;
 	}

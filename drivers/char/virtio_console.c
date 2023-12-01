@@ -1586,9 +1586,16 @@ static void unplug_port(struct port *port)
 	device_destroy(pdrvdata.class, port->dev->devt);
 	cdev_del(port->cdev);
 
+<<<<<<< HEAD
 	debugfs_remove(port->debugfs_file);
 	kfree(port->name);
 
+=======
+	kfree(port->name);
+
+	debugfs_remove(port->debugfs_file);
+
+>>>>>>> p9x
 	/*
 	 * Locks around here are not necessary - a port can't be
 	 * opened after we removed the port struct from ports_list
@@ -2053,9 +2060,12 @@ static int virtcons_probe(struct virtio_device *vdev)
 	spin_lock_init(&portdev->ports_lock);
 	INIT_LIST_HEAD(&portdev->ports);
 
+<<<<<<< HEAD
 	virtio_device_ready(portdev->vdev);
 
 	INIT_WORK(&portdev->config_work, &config_work_handler);
+=======
+>>>>>>> p9x
 	INIT_WORK(&portdev->control_work, &control_work_handler);
 
 	if (multiport) {

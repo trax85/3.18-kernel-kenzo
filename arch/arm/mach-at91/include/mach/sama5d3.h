@@ -65,6 +65,7 @@
 #define SAMA5D3_ID_IRQ0		47	/* Advanced Interrupt Controller (IRQ0) */
 
 /*
+<<<<<<< HEAD
  * User Peripheral physical base addresses.
  */
 #define SAMA5D3_BASE_USART0	0xf001c000
@@ -73,6 +74,8 @@
 #define SAMA5D3_BASE_USART3	0xf8024000
 
 /*
+=======
+>>>>>>> p9x
  * System Peripherals
  */
 #define SAMA5D3_BASE_RTC	0xfffffeb0

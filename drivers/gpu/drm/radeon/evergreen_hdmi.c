@@ -209,6 +209,10 @@ void evergreen_set_avi_packet(struct radeon_device *rdev, u32 offset,
     unsigned char *buffer, size_t size)
 {
 	uint8_t *frame = buffer + 3;
+<<<<<<< HEAD
+=======
+	uint8_t *header = buffer;
+>>>>>>> p9x
 
 	WREG32(AFMT_AVI_INFO0 + offset,
 		frame[0x0] | (frame[0x1] << 8) | (frame[0x2] << 16) | (frame[0x3] << 24));
@@ -217,11 +221,15 @@ void evergreen_set_avi_packet(struct radeon_device *rdev, u32 offset,
 	WREG32(AFMT_AVI_INFO2 + offset,
 		frame[0x8] | (frame[0x9] << 8) | (frame[0xA] << 16) | (frame[0xB] << 24));
 	WREG32(AFMT_AVI_INFO3 + offset,
+<<<<<<< HEAD
 		frame[0xC] | (frame[0xD] << 8) | (buffer[1] << 24));
 
 	WREG32_P(HDMI_INFOFRAME_CONTROL1 + offset,
 		 HDMI_AVI_INFO_LINE(2),	/* anything other than 0 */
 		 ~HDMI_AVI_INFO_LINE_MASK);
+=======
+		frame[0xC] | (frame[0xD] << 8) | (header[1] << 24));
+>>>>>>> p9x
 }
 
 void dce4_hdmi_audio_set_dto(struct radeon_device *rdev,
@@ -263,8 +271,14 @@ void dce4_hdmi_audio_set_dto(struct radeon_device *rdev,
 	 * number (coefficient of two integer numbers.  DCCG_AUDIO_DTOx_PHASE
 	 * is the numerator, DCCG_AUDIO_DTOx_MODULE is the denominator
 	 */
+<<<<<<< HEAD
 	WREG32(DCCG_AUDIO_DTO0_PHASE, dto_phase);
 	WREG32(DCCG_AUDIO_DTO0_MODULE, clock);
+=======
+	WREG32(DCCG_AUDIO_DTO_SOURCE, DCCG_AUDIO_DTO0_SOURCE_SEL(radeon_crtc->crtc_id));
+	WREG32(DCCG_AUDIO_DTO0_PHASE, base_rate * 100);
+	WREG32(DCCG_AUDIO_DTO0_MODULE, clock * 100);
+>>>>>>> p9x
 }
 
 void dce4_dp_audio_set_dto(struct radeon_device *rdev,
@@ -307,6 +321,25 @@ void dce4_set_vbi_packet(struct drm_encoder *encoder, u32 offset)
 {
 	struct drm_device *dev = encoder->dev;
 	struct radeon_device *rdev = dev->dev_private;
+<<<<<<< HEAD
+=======
+	struct radeon_encoder *radeon_encoder = to_radeon_encoder(encoder);
+	struct radeon_encoder_atom_dig *dig = radeon_encoder->enc_priv;
+	u8 buffer[HDMI_INFOFRAME_HEADER_SIZE + HDMI_AVI_INFOFRAME_SIZE];
+	struct hdmi_avi_infoframe frame;
+	uint32_t offset;
+	ssize_t err;
+
+	if (!dig || !dig->afmt)
+		return;
+
+	/* Silent, r600_hdmi_enable will raise WARN for us */
+	if (!dig->afmt->enabled)
+		return;
+	offset = dig->afmt->offset;
+
+	evergreen_audio_set_dto(encoder, mode->clock);
+>>>>>>> p9x
 
 	WREG32(HDMI_VBI_PACKET_CONTROL + offset,
 		HDMI_NULL_SEND |	/* send null packets when required */
@@ -380,7 +413,64 @@ void dce4_set_audio_packet(struct drm_encoder *encoder, u32 offset)
 	       HDMI_AUDIO_DELAY_EN(1) | /* set the default audio delay */
 	       HDMI_AUDIO_PACKETS_PER_LINE(3)); /* should be suffient for all audio modes and small enough for all hblanks */
 
+<<<<<<< HEAD
 	/* allow 60958 channel status and send audio packets fields to be updated */
+=======
+	WREG32(AFMT_AUDIO_PACKET_CONTROL + offset,
+	       AFMT_60958_CS_UPDATE); /* allow 60958 channel status fields to be updated */
+
+	/* fglrx clears sth in AFMT_AUDIO_PACKET_CONTROL2 here */
+
+	WREG32(HDMI_ACR_PACKET_CONTROL + offset,
+	       HDMI_ACR_AUTO_SEND); /* allow hw to sent ACR packets when required */
+
+	evergreen_hdmi_update_ACR(encoder, mode->clock);
+
+	WREG32(AFMT_60958_0 + offset,
+	       AFMT_60958_CS_CHANNEL_NUMBER_L(1));
+
+	WREG32(AFMT_60958_1 + offset,
+	       AFMT_60958_CS_CHANNEL_NUMBER_R(2));
+
+	WREG32(AFMT_60958_2 + offset,
+	       AFMT_60958_CS_CHANNEL_NUMBER_2(3) |
+	       AFMT_60958_CS_CHANNEL_NUMBER_3(4) |
+	       AFMT_60958_CS_CHANNEL_NUMBER_4(5) |
+	       AFMT_60958_CS_CHANNEL_NUMBER_5(6) |
+	       AFMT_60958_CS_CHANNEL_NUMBER_6(7) |
+	       AFMT_60958_CS_CHANNEL_NUMBER_7(8));
+
+	/* fglrx sets 0x0001005f | (x & 0x00fc0000) in 0x5f78 here */
+
+	WREG32(AFMT_AUDIO_PACKET_CONTROL2 + offset,
+	       AFMT_AUDIO_CHANNEL_ENABLE(0xff));
+
+	/* fglrx sets 0x40 in 0x5f80 here */
+	evergreen_hdmi_write_sad_regs(encoder);
+
+	err = drm_hdmi_avi_infoframe_from_display_mode(&frame, mode);
+	if (err < 0) {
+		DRM_ERROR("failed to setup AVI infoframe: %zd\n", err);
+		return;
+	}
+
+	err = hdmi_avi_infoframe_pack(&frame, buffer, sizeof(buffer));
+	if (err < 0) {
+		DRM_ERROR("failed to pack AVI infoframe: %zd\n", err);
+		return;
+	}
+
+	evergreen_hdmi_update_avi_infoframe(encoder, buffer, sizeof(buffer));
+
+	WREG32_OR(HDMI_INFOFRAME_CONTROL0 + offset,
+		  HDMI_AVI_INFO_SEND | /* enable AVI info frames */
+		  HDMI_AVI_INFO_CONT); /* required for audio info values to be updated */
+
+	WREG32_P(HDMI_INFOFRAME_CONTROL1 + offset,
+		 HDMI_AVI_INFO_LINE(2), /* anything other than 0 */
+		 ~HDMI_AVI_INFO_LINE_MASK);
+
+>>>>>>> p9x
 	WREG32_OR(AFMT_AUDIO_PACKET_CONTROL + offset,
 		  AFMT_RESET_FIFO_WHEN_AUDIO_DIS | AFMT_60958_CS_UPDATE);
 }
@@ -405,6 +495,15 @@ void evergreen_hdmi_enable(struct drm_encoder *encoder, bool enable)
 	struct radeon_encoder_atom_dig *dig = radeon_encoder->enc_priv;
 
 	if (!dig || !dig->afmt)
+<<<<<<< HEAD
+=======
+		return;
+
+	/* Silent, r600_hdmi_enable will raise WARN for us */
+	if (enable && dig->afmt->enabled)
+		return;
+	if (!enable && !dig->afmt->enabled)
+>>>>>>> p9x
 		return;
 
 	if (enable) {

@@ -23,7 +23,11 @@
 #define STACK_TOP	(TASK_SIZE - PAGE_SIZE)
 #define STACK_TOP_MAX	STACK_TOP
 /* Maximum virtual space for stack */
+<<<<<<< HEAD
 #define STACK_SIZE_MAX	(CONFIG_MAX_STACK_SIZE_MB*1024*1024)
+=======
+#define STACK_SIZE_MAX	(1 << 28)	/* 256 MB */
+>>>>>>> p9x
 
 /* This decides where the kernel will search for a free chunk of vm
  * space during mmap's.

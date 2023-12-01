@@ -27,6 +27,213 @@
 #define ENDPT_MAX          32
 
 /******************************************************************************
+<<<<<<< HEAD
+=======
+ * STRUCTURES
+ *****************************************************************************/
+/**
+ * struct ci13xxx_ep - endpoint representation
+ * @ep: endpoint structure for gadget drivers
+ * @dir: endpoint direction (TX/RX)
+ * @num: endpoint number
+ * @type: endpoint type
+ * @name: string description of the endpoint
+ * @qh: queue head for this endpoint
+ * @wedge: is the endpoint wedged
+ * @ci: pointer to the controller
+ * @lock: pointer to controller's spinlock
+ * @td_pool: pointer to controller's TD pool
+ */
+struct ci13xxx_ep {
+	struct usb_ep				ep;
+	u8					dir;
+	u8					num;
+	u8					type;
+	char					name[16];
+	struct {
+		struct list_head	queue;
+		struct ci13xxx_qh	*ptr;
+		dma_addr_t		dma;
+	}					qh;
+	int					wedge;
+
+	/* global resources */
+	struct ci13xxx				*ci;
+	spinlock_t				*lock;
+	struct dma_pool				*td_pool;
+	struct ci13xxx_td			*last_zptr;
+	dma_addr_t				last_zdma;
+	unsigned long dTD_update_fail_count;
+	unsigned long			      prime_fail_count;
+	int				      prime_timer_count;
+	struct timer_list		      prime_timer;
+	bool                                  multi_req;
+};
+
+enum ci_role {
+	CI_ROLE_HOST = 0,
+	CI_ROLE_GADGET,
+	CI_ROLE_END,
+};
+
+/**
+ * struct ci_role_driver - host/gadget role driver
+ * start: start this role
+ * stop: stop this role
+ * irq: irq handler for this role
+ * name: role name string (host/gadget)
+ */
+struct ci_role_driver {
+	int		(*start)(struct ci13xxx *);
+	void		(*stop)(struct ci13xxx *);
+	irqreturn_t	(*irq)(struct ci13xxx *);
+	const char	*name;
+};
+
+struct ci13xxx_ebi_err_entry {
+	u32 *usb_req_buf;
+	u32 usb_req_length;
+	u32 ep_info;
+	struct ci13xxx_ebi_err_entry *next;
+};
+
+struct ci13xxx_ebi_err_data {
+	u32 ebi_err_addr;
+	u32 apkt0;
+	u32 apkt1;
+	struct ci13xxx_ebi_err_entry *ebi_err_entry;
+};
+
+/**
+ * struct hw_bank - hardware register mapping representation
+ * @lpm: set if the device is LPM capable
+ * @phys: physical address of the controller's registers
+ * @abs: absolute address of the beginning of register window
+ * @cap: capability registers
+ * @op: operational registers
+ * @size: size of the register window
+ * @regmap: register lookup table
+ */
+struct hw_bank {
+	unsigned	lpm;
+	resource_size_t	phys;
+	void __iomem	*abs;
+	void __iomem	*cap;
+	void __iomem	*op;
+	size_t		size;
+	void __iomem	**regmap;
+};
+
+/**
+ * struct ci13xxx - chipidea device representation
+ * @dev: pointer to parent device
+ * @lock: access synchronization
+ * @hw_bank: hardware register mapping
+ * @irq: IRQ number
+ * @roles: array of supported roles for this controller
+ * @role: current role
+ * @is_otg: if the device is otg-capable
+ * @work: work for role changing
+ * @wq: workqueue thread
+ * @qh_pool: allocation pool for queue heads
+ * @td_pool: allocation pool for transfer descriptors
+ * @gadget: device side representation for peripheral controller
+ * @driver: gadget driver
+ * @hw_ep_max: total number of endpoints supported by hardware
+ * @ci13xxx_ep: array of endpoints
+ * @ep0_dir: ep0 direction
+ * @ep0out: pointer to ep0 OUT endpoint
+ * @ep0in: pointer to ep0 IN endpoint
+ * @status: ep0 status request
+ * @setaddr: if we should set the address on status completion
+ * @address: usb address received from the host
+ * @remote_wakeup: host-enabled remote wakeup
+ * @suspended: suspended by host
+ * @test_mode: the selected test mode
+ * @platdata: platform specific information supplied by parent device
+ * @vbus_active: is VBUS active
+ * @transceiver: pointer to USB PHY, if any
+ * @hcd: pointer to usb_hcd for ehci host driver
+ * @debugfs: root dentry for this controller in debugfs
+ */
+struct ci13xxx {
+	struct device			*dev;
+	spinlock_t			lock;
+	struct hw_bank			hw_bank;
+	int				irq;
+	struct ci_role_driver		*roles[CI_ROLE_END];
+	enum ci_role			role;
+	bool				is_otg;
+	struct work_struct		work;
+	struct workqueue_struct		*wq;
+
+	struct dma_pool			*qh_pool;
+	struct dma_pool			*td_pool;
+
+	struct usb_gadget		gadget;
+	struct usb_gadget_driver	*driver;
+	unsigned			hw_ep_max;
+	struct ci13xxx_ep		ci13xxx_ep[ENDPT_MAX];
+	u32				ep0_dir;
+	struct ci13xxx_ep		*ep0out, *ep0in;
+
+	struct usb_request		*status;
+	void				*status_buf;/* GET_STATUS buffer */
+	bool				setaddr;
+	u8				address;
+	u8				remote_wakeup;
+	u8				suspended;
+	u8				configured; /* is device configured */
+	u8				test_mode;
+
+	struct delayed_work		rw_work; /* remote wakeup */
+	struct ci13xxx_platform_data	*platdata;
+	int				vbus_active;
+	/* FIXME: some day, we'll not use global phy */
+	bool				global_phy;
+	unsigned long dTD_update_fail_count;
+	struct usb_phy			*transceiver;
+	struct usb_hcd			*hcd;
+	struct dentry			*debugfs;
+	bool                      skip_flush; /* skip flushing remaining EP */
+};
+
+static inline struct ci_role_driver *ci_role(struct ci13xxx *ci)
+{
+	BUG_ON(ci->role >= CI_ROLE_END || !ci->roles[ci->role]);
+	return ci->roles[ci->role];
+}
+
+static inline int ci_role_start(struct ci13xxx *ci, enum ci_role role)
+{
+	int ret;
+
+	if (role >= CI_ROLE_END)
+		return -EINVAL;
+
+	if (!ci->roles[role])
+		return -ENXIO;
+
+	ret = ci->roles[role]->start(ci);
+	if (!ret)
+		ci->role = role;
+	return ret;
+}
+
+static inline void ci_role_stop(struct ci13xxx *ci)
+{
+	enum ci_role role = ci->role;
+
+	if (role == CI_ROLE_END)
+		return;
+
+	ci->role = CI_ROLE_END;
+
+	ci->roles[role]->stop(ci);
+}
+
+/******************************************************************************
+>>>>>>> p9x
  * REGISTERS
  *****************************************************************************/
 /* register indices */
@@ -50,6 +257,7 @@ enum ci_hw_regs {
 	OP_ENDPTFLUSH,
 	OP_ENDPTSTAT,
 	OP_ENDPTCOMPLETE,
+	OP_ENDPTPIPEID,
 	OP_ENDPTCTRL,
 	/* endptctrl1..15 follow */
 	OP_LAST = OP_ENDPTCTRL + ENDPT_MAX / 2,
@@ -356,5 +564,7 @@ u8 hw_port_test_get(struct ci_hdrc *ci);
 
 int hw_wait_reg(struct ci_hdrc *ci, enum ci_hw_regs reg, u32 mask,
 				u32 value, unsigned int timeout_ms);
+
+int ci13xxx_wakeup(struct usb_gadget *_gadget);
 
 #endif	/* __DRIVERS_USB_CHIPIDEA_CI_H */

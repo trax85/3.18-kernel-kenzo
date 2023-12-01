@@ -65,6 +65,7 @@ extern int sysctl_sctp_wmem[3];
 static int proc_sctp_do_hmac_alg(struct ctl_table *ctl, int write,
 				void __user *buffer, size_t *lenp,
 				loff_t *ppos);
+<<<<<<< HEAD
 static int proc_sctp_do_rto_min(struct ctl_table *ctl, int write,
 				void __user *buffer, size_t *lenp,
 				loff_t *ppos);
@@ -74,11 +75,17 @@ static int proc_sctp_do_rto_max(struct ctl_table *ctl, int write,
 static int proc_sctp_do_alpha_beta(struct ctl_table *ctl, int write,
 				   void __user *buffer, size_t *lenp,
 				   loff_t *ppos);
+=======
+>>>>>>> p9x
 static int proc_sctp_do_auth(struct ctl_table *ctl, int write,
 			     void __user *buffer, size_t *lenp,
 			     loff_t *ppos);
 
+<<<<<<< HEAD
 static struct ctl_table sctp_table[] = {
+=======
+static ctl_table sctp_table[] = {
+>>>>>>> p9x
 	{
 		.procname	= "sctp_mem",
 		.data		= &sysctl_sctp_mem,
@@ -362,6 +369,7 @@ static int proc_sctp_do_hmac_alg(struct ctl_table *ctl, int write,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int proc_sctp_do_rto_min(struct ctl_table *ctl, int write,
 				void __user *buffer, size_t *lenp,
 				loff_t *ppos)
@@ -431,6 +439,8 @@ static int proc_sctp_do_alpha_beta(struct ctl_table *ctl, int write,
 	return proc_dointvec_minmax(ctl, write, buffer, lenp, ppos);
 }
 
+=======
+>>>>>>> p9x
 static int proc_sctp_do_auth(struct ctl_table *ctl, int write,
 			     void __user *buffer, size_t *lenp,
 			     loff_t *ppos)

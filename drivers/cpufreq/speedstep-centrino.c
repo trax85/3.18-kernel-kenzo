@@ -459,7 +459,11 @@ static int centrino_target(struct cpufreq_policy *policy, unsigned int index)
 			break;
 		}
 
+<<<<<<< HEAD
 		msr = op_points->driver_data;
+=======
+		msr = per_cpu(centrino_model, cpu)->op_points[newstate].driver_data;
+>>>>>>> p9x
 
 		if (first_cpu) {
 			rdmsr_on_cpu(good_cpu, MSR_IA32_PERF_CTL, &oldmsr, &h);
@@ -510,7 +514,11 @@ static struct cpufreq_driver centrino_driver = {
 	.verify		= cpufreq_generic_frequency_table_verify,
 	.target_index	= centrino_target,
 	.get		= get_cur_freq,
+<<<<<<< HEAD
 	.attr		= cpufreq_generic_attr,
+=======
+	.attr           = centrino_attr,
+>>>>>>> p9x
 };
 
 /*

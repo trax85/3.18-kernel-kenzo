@@ -719,6 +719,7 @@ static inline int iwl_trans_send_cmd(struct iwl_trans *trans,
 {
 	int ret;
 
+<<<<<<< HEAD
 	if (unlikely(!(cmd->flags & CMD_SEND_IN_RFKILL) &&
 		     test_bit(STATUS_RFKILL, &trans->status)))
 		return -ERFKILL;
@@ -728,6 +729,10 @@ static inline int iwl_trans_send_cmd(struct iwl_trans *trans,
 
 	if (unlikely(trans->state != IWL_TRANS_FW_ALIVE)) {
 		IWL_ERR(trans, "%s bad state = %d\n", __func__, trans->state);
+=======
+	if (trans->state != IWL_TRANS_FW_ALIVE) {
+		IWL_ERR(trans, "%s bad state = %d", __func__, trans->state);
+>>>>>>> p9x
 		return -EIO;
 	}
 

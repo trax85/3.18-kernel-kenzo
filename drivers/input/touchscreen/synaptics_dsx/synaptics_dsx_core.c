@@ -5,7 +5,11 @@
  *
  * Copyright (C) 2012 Alexandra Chin <alexandra.chin@tw.synaptics.com>
  * Copyright (C) 2012 Scott Lin <scott.lin@tw.synaptics.com>
+<<<<<<< HEAD
  * Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +38,7 @@
 #endif
 #if defined(CONFIG_SECURE_TOUCH)
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <soc/qcom/scm.h>
 enum subsystem {
 	TZ = 1,
@@ -41,6 +46,8 @@ enum subsystem {
 };
 
 #define TZ_BLSP_MODIFY_OWNERSHIP_ID 3
+=======
+>>>>>>> p9x
 #endif
 
 #define INPUT_PHYS_NAME "synaptics_dsx/input0"
@@ -98,9 +105,12 @@ enum subsystem {
 #define SYNA_F11_MAX		4096
 #define SYNA_F12_MAX		65536
 
+<<<<<<< HEAD
 #define SYNA_S332U_PACKAGE_ID		332
 #define SYNA_S332U_PACKAGE_ID_REV		85
 
+=======
+>>>>>>> p9x
 static int synaptics_rmi4_f12_set_enables(struct synaptics_rmi4_data *rmi4_data,
 		unsigned short ctrl28);
 
@@ -115,7 +125,10 @@ static ssize_t synaptics_rmi4_full_pm_cycle_store(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count);
 
 #if defined(CONFIG_FB)
+<<<<<<< HEAD
 static void fb_notify_resume_work(struct work_struct *work);
+=======
+>>>>>>> p9x
 static int fb_notifier_callback(struct notifier_block *self,
 				unsigned long event, void *data);
 #elif defined(CONFIG_HAS_EARLYSUSPEND)
@@ -468,6 +481,7 @@ DEFINE_SIMPLE_ATTRIBUTE(debug_suspend_fops, synaptics_rmi4_debug_suspend_get,
 			synaptics_rmi4_debug_suspend_set, "%lld\n");
 
 #if defined(CONFIG_SECURE_TOUCH)
+<<<<<<< HEAD
 static int synaptics_i2c_change_pipe_owner(
 	struct synaptics_rmi4_data *rmi4_data, enum subsystem subsystem)
 {
@@ -492,25 +506,52 @@ static int synaptics_i2c_change_pipe_owner(
 
 static void synaptics_secure_touch_init(struct synaptics_rmi4_data *data)
 {
+=======
+static void synaptics_secure_touch_init(struct synaptics_rmi4_data *data)
+{
+	int ret = 0;
+>>>>>>> p9x
 	data->st_initialized = 0;
 	init_completion(&data->st_powerdown);
 	init_completion(&data->st_irq_processed);
 	/* Get clocks */
 	data->core_clk = clk_get(data->pdev->dev.parent, "core_clk");
 	if (IS_ERR(data->core_clk)) {
+<<<<<<< HEAD
 		data->core_clk = NULL;
 		dev_warn(data->pdev->dev.parent,
 			"%s: core_clk is not defined\n", __func__);
+=======
+		ret = PTR_ERR(data->core_clk);
+		dev_err(data->pdev->dev.parent,
+			"%s: error on clk_get(core_clk):%d\n", __func__, ret);
+		return;
+>>>>>>> p9x
 	}
 
 	data->iface_clk = clk_get(data->pdev->dev.parent, "iface_clk");
 	if (IS_ERR(data->iface_clk)) {
+<<<<<<< HEAD
 		data->iface_clk = NULL;
 		dev_warn(data->pdev->dev.parent,
 			"%s: iface_clk is not defined\n", __func__);
 	}
 
 	data->st_initialized = 1;
+=======
+		ret = PTR_ERR(data->iface_clk);
+		dev_err(data->pdev->dev.parent,
+			"%s: error on clk_get(iface_clk):%d\n", __func__, ret);
+		goto err_iface_clk;
+	}
+
+	data->st_initialized = 1;
+	return;
+
+err_iface_clk:
+		clk_put(data->core_clk);
+		data->core_clk = NULL;
+>>>>>>> p9x
 }
 static void synaptics_secure_touch_notify(struct synaptics_rmi4_data *rmi4_data)
 {
@@ -521,7 +562,10 @@ static irqreturn_t synaptics_filter_interrupt(
 {
 	if (atomic_read(&rmi4_data->st_enabled)) {
 		if (atomic_cmpxchg(&rmi4_data->st_pending_irqs, 0, 1) == 0) {
+<<<<<<< HEAD
 			reinit_completion(&rmi4_data->st_irq_processed);
+=======
+>>>>>>> p9x
 			synaptics_secure_touch_notify(rmi4_data);
 			wait_for_completion_interruptible(
 				&rmi4_data->st_irq_processed);
@@ -606,7 +650,10 @@ static ssize_t synaptics_secure_touch_enable_store(struct device *dev,
 		if (atomic_read(&rmi4_data->st_enabled) == 0)
 			break;
 
+<<<<<<< HEAD
 		synaptics_i2c_change_pipe_owner(rmi4_data, APSS);
+=======
+>>>>>>> p9x
 		synaptics_rmi4_bus_put(rmi4_data);
 		atomic_set(&rmi4_data->st_enabled, 0);
 		synaptics_secure_touch_notify(rmi4_data);
@@ -630,9 +677,15 @@ static ssize_t synaptics_secure_touch_enable_store(struct device *dev,
 			err = -EIO;
 			break;
 		}
+<<<<<<< HEAD
 		synaptics_i2c_change_pipe_owner(rmi4_data, TZ);
 		reinit_completion(&rmi4_data->st_powerdown);
 		reinit_completion(&rmi4_data->st_irq_processed);
+=======
+
+		INIT_COMPLETION(rmi4_data->st_powerdown);
+		INIT_COMPLETION(rmi4_data->st_irq_processed);
+>>>>>>> p9x
 		atomic_set(&rmi4_data->st_enabled, 1);
 		atomic_set(&rmi4_data->st_pending_irqs,  0);
 		break;
@@ -1064,6 +1117,7 @@ static int synaptics_rmi4_f12_abs_report(struct synaptics_rmi4_data *rmi4_data,
 
 		/* Start checking from the highest bit */
 		temp = extra_data->data15_size - 1; /* Highest byte */
+<<<<<<< HEAD
 		if ((temp >= 0) && (fingers_to_process > 0) &&
 		    (temp < ((F12_FINGERS_TO_SUPPORT + 7) / 8))) {
 			finger = (fingers_to_process - 1) % 8; /* Highest bit */
@@ -1083,6 +1137,23 @@ static int synaptics_rmi4_f12_abs_report(struct synaptics_rmi4_data *rmi4_data,
 				fingers_to_process--;
 			} while (fingers_to_process && (temp >= 0));
 		}
+=======
+		finger = (fingers_to_process - 1) % 8; /* Highest bit */
+		do {
+			if (extra_data->data15_data[temp] & (1 << finger))
+				break;
+
+			if (finger) {
+				finger--;
+			} else {
+				temp--; /* Move to the next lower byte */
+				finger = 7;
+			}
+
+			fingers_to_process--;
+		} while (fingers_to_process);
+
+>>>>>>> p9x
 		dev_dbg(rmi4_data->pdev->dev.parent,
 			"%s: Number of fingers to process = %d\n",
 			__func__, fingers_to_process);
@@ -3144,10 +3215,15 @@ static int synaptics_dsx_gpio_configure(struct synaptics_rmi4_data *rmi4_data,
 					bool on)
 {
 	int retval = 0;
+<<<<<<< HEAD
 	struct synaptics_rmi4_device_info *rmi;
 	const struct synaptics_dsx_board_data *bdata =
 			rmi4_data->hw_if->board_data;
 	rmi = &(rmi4_data->rmi4_mod_info);
+=======
+	const struct synaptics_dsx_board_data *bdata =
+			rmi4_data->hw_if->board_data;
+>>>>>>> p9x
 
 	if (on) {
 		if (gpio_is_valid(bdata->irq_gpio)) {
@@ -3208,6 +3284,7 @@ static int synaptics_dsx_gpio_configure(struct synaptics_rmi4_data *rmi4_data,
 				 * fails, only leakage current will be more but
 				 * functionality will not be affected.
 				 */
+<<<<<<< HEAD
 				if (rmi->package_id ==
 						SYNA_S332U_PACKAGE_ID &&
 					rmi->package_id_rev ==
@@ -3224,6 +3301,14 @@ static int synaptics_dsx_gpio_configure(struct synaptics_rmi4_data *rmi4_data,
 						"unable to set direction for gpio [%d]\n",
 						bdata->irq_gpio);
 					}
+=======
+				retval = gpio_direction_input(
+							bdata->reset_gpio);
+				if (retval) {
+					dev_err(rmi4_data->pdev->dev.parent,
+					"unable to set direction for gpio "
+					"[%d]\n", bdata->irq_gpio);
+>>>>>>> p9x
 				}
 				gpio_free(bdata->reset_gpio);
 			}
@@ -3607,11 +3692,18 @@ static int synaptics_rmi4_probe(struct platform_device *pdev)
 	rmi4_data->fingers_on_2d = false;
 	rmi4_data->update_coords = true;
 
+<<<<<<< HEAD
 	rmi4_data->write_buf = kzalloc(I2C_WRITE_BUF_MAX_LEN, GFP_KERNEL);
 	if (!rmi4_data->write_buf) {
 		retval = -ENOMEM;
 		goto err_write_buf_alloc;
 	}
+=======
+	rmi4_data->write_buf = devm_kzalloc(&pdev->dev, I2C_WRITE_BUF_MAX_LEN,
+					GFP_KERNEL);
+	if (!rmi4_data->write_buf)
+		return -ENOMEM;
+>>>>>>> p9x
 	rmi4_data->write_buf_len = I2C_WRITE_BUF_MAX_LEN;
 
 	rmi4_data->irq_enable = synaptics_rmi4_irq_enable;
@@ -3688,7 +3780,10 @@ static int synaptics_rmi4_probe(struct platform_device *pdev)
 	}
 
 #ifdef CONFIG_FB
+<<<<<<< HEAD
 	INIT_WORK(&rmi4_data->fb_notify_work, fb_notify_resume_work);
+=======
+>>>>>>> p9x
 	rmi4_data->fb_notif.notifier_call = fb_notifier_callback;
 
 	retval = fb_register_client(&rmi4_data->fb_notif);
@@ -3704,12 +3799,15 @@ static int synaptics_rmi4_probe(struct platform_device *pdev)
 
 	rmi4_data->irq = gpio_to_irq(bdata->irq_gpio);
 
+<<<<<<< HEAD
 	if (!exp_data.initialized) {
 		mutex_init(&exp_data.mutex);
 		INIT_LIST_HEAD(&exp_data.list);
 		exp_data.initialized = true;
 	}
 
+=======
+>>>>>>> p9x
 	retval = synaptics_rmi4_irq_enable(rmi4_data, true);
 	if (retval < 0) {
 		dev_err(&pdev->dev,
@@ -3718,6 +3816,15 @@ static int synaptics_rmi4_probe(struct platform_device *pdev)
 		goto err_enable_irq;
 	}
 
+<<<<<<< HEAD
+=======
+	if (!exp_data.initialized) {
+		mutex_init(&exp_data.mutex);
+		INIT_LIST_HEAD(&exp_data.list);
+		exp_data.initialized = true;
+	}
+
+>>>>>>> p9x
 	exp_data.workqueue = create_singlethread_workqueue("dsx_exp_workqueue");
 	INIT_DELAYED_WORK(&exp_data.work, synaptics_rmi4_exp_fn_work);
 	exp_data.rmi4_data = rmi4_data;
@@ -3770,10 +3877,16 @@ err_create_debugfs_file:
 	debugfs_remove_recursive(rmi4_data->dir);
 err_create_debugfs_dir:
 	cancel_delayed_work_sync(&exp_data.work);
+<<<<<<< HEAD
 	if (exp_data.workqueue != NULL) {
 		flush_workqueue(exp_data.workqueue);
 		destroy_workqueue(exp_data.workqueue);
 	}
+=======
+	flush_workqueue(exp_data.workqueue);
+	destroy_workqueue(exp_data.workqueue);
+
+>>>>>>> p9x
 	synaptics_rmi4_irq_enable(rmi4_data, false);
 	free_irq(rmi4_data->irq, rmi4_data);
 
@@ -3831,8 +3944,11 @@ err_regulator_enable:
 	regulator_put(rmi4_data->regulator_vdd);
 	regulator_put(rmi4_data->regulator_avdd);
 err_regulator_configure:
+<<<<<<< HEAD
 	kfree(rmi4_data->write_buf);
 err_write_buf_alloc:
+=======
+>>>>>>> p9x
 	kfree(rmi4_data);
 
 	return retval;
@@ -3927,13 +4043,17 @@ static int synaptics_rmi4_remove(struct platform_device *pdev)
 		regulator_put(rmi4_data->regulator_avdd);
 	}
 
+<<<<<<< HEAD
 	kfree(rmi4_data->write_buf);
+=======
+>>>>>>> p9x
 	kfree(rmi4_data);
 
 	return 0;
 }
 
 #if defined(CONFIG_FB)
+<<<<<<< HEAD
 static void fb_notify_resume_work(struct work_struct *work)
 {
 	struct synaptics_rmi4_data *rmi4_data =
@@ -3941,6 +4061,8 @@ static void fb_notify_resume_work(struct work_struct *work)
 	synaptics_rmi4_resume(&(rmi4_data->input_dev->dev));
 }
 
+=======
+>>>>>>> p9x
 static int fb_notifier_callback(struct notifier_block *self,
 				unsigned long event, void *data)
 {
@@ -3950,6 +4072,7 @@ static int fb_notifier_callback(struct notifier_block *self,
 		container_of(self, struct synaptics_rmi4_data, fb_notif);
 
 	if (evdata && evdata->data && rmi4_data) {
+<<<<<<< HEAD
 		blank = evdata->data;
 		if (rmi4_data->hw_if->board_data->resume_in_workqueue) {
 			if (event == FB_EARLY_EVENT_BLANK) {
@@ -3975,6 +4098,18 @@ static int fb_notifier_callback(struct notifier_block *self,
 					synaptics_rmi4_suspend(
 						&(rmi4_data->input_dev->dev));
 			}
+=======
+		if (event == FB_EARLY_EVENT_BLANK)
+			synaptics_secure_touch_stop(rmi4_data, 0);
+		else if (event == FB_EVENT_BLANK) {
+			blank = evdata->data;
+			if (*blank == FB_BLANK_UNBLANK)
+				synaptics_rmi4_resume(
+					&(rmi4_data->input_dev->dev));
+			else if (*blank == FB_BLANK_POWERDOWN)
+				synaptics_rmi4_suspend(
+					&(rmi4_data->input_dev->dev));
+>>>>>>> p9x
 		}
 	}
 
@@ -4279,6 +4414,7 @@ static int synaptics_rmi4_resume(struct device *dev)
 	int retval;
 	struct synaptics_rmi4_exp_fhandler *exp_fhandler;
 	struct synaptics_rmi4_data *rmi4_data = dev_get_drvdata(dev);
+<<<<<<< HEAD
 	struct synaptics_rmi4_device_info *rmi;
 	const struct synaptics_dsx_board_data *bdata =
 			rmi4_data->hw_if->board_data;
@@ -4289,6 +4425,11 @@ static int synaptics_rmi4_resume(struct device *dev)
 		synaptics_rmi4_reset_device(rmi4_data);
 	}
 
+=======
+	const struct synaptics_dsx_board_data *bdata =
+			rmi4_data->hw_if->board_data;
+
+>>>>>>> p9x
 	if (rmi4_data->staying_awake)
 		return 0;
 

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -161,6 +165,7 @@ do { \
 #define QPNP_LO_INDEX_MASK			0x3F
 
 /* LPG DTEST */
+<<<<<<< HEAD
 #define QPNP_LPG_DTEST_LINE_MAX			4
 #define QPNP_LPG_DTEST_OUTPUT_MAX		5
 #define QPNP_LPG_DTEST_OUTPUT_MASK		0x07
@@ -169,6 +174,11 @@ do { \
 #define QPNP_PWM_DTEST_LINE_MAX			2
 #define QPNP_PWM_DTEST_OUTPUT_MAX		2
 #define QPNP_PWM_DTEST_OUTPUT_MASK		0x03
+=======
+#define QPNP_LPG_DTEST_LINE_MAX		4
+#define QPNP_LPG_DTEST_OUTPUT_MAX		5
+#define QPNP_DTEST_OUTPUT_MASK			0x07
+>>>>>>> p9x
 
 #define NUM_CLOCKS				3
 #define QPNP_PWM_M_MAX				7
@@ -203,6 +213,7 @@ do { \
 #define QPNP_PWM_SIZE_7_8_BIT		0x6
 #define QPNP_PWM_SIZE_6_7_9_BIT		0xB
 
+<<<<<<< HEAD
 /*
  * Registers that don't need to be cached are defined below from an offset
  * of SPMI_LPG_REG_BASE_OFFSET.
@@ -210,6 +221,8 @@ do { \
 #define QPNP_LPG_SEC_ACCESS		0x90
 #define QPNP_LPG_DTEST			0xA2
 
+=======
+>>>>>>> p9x
 /* Supported time levels */
 enum time_level {
 	LVL_NSEC,
@@ -252,6 +265,11 @@ enum qpnp_lpg_registers_list {
 	QPNP_PAUSE_LO_MULTIPLIER_MSB,
 	QPNP_HI_INDEX,
 	QPNP_LO_INDEX,
+<<<<<<< HEAD
+=======
+	QPNP_LPG_SEC_ACCESS = QPNP_LO_INDEX + 121,
+	QPNP_LPG_DTEST = QPNP_LO_INDEX + 139,
+>>>>>>> p9x
 	QPNP_TOTAL_LPG_SPMI_REGISTERS
 };
 
@@ -572,7 +590,10 @@ static void qpnp_lpg_calc_pwm_value(struct _qpnp_pwm_config *pwm_config,
 	max_pwm_value = (1 << pwm_config->period.pwm_size) - 1;
 	if (pwm_config->pwm_value > max_pwm_value)
 		pwm_config->pwm_value = max_pwm_value;
+<<<<<<< HEAD
 	pr_debug("pwm_value: %d\n", pwm_config->pwm_value);
+=======
+>>>>>>> p9x
 }
 
 static int qpnp_lpg_change_table(struct qpnp_pwm_chip *chip,
@@ -691,7 +712,10 @@ static int qpnp_lpg_save_pwm_value(struct qpnp_pwm_chip *chip)
 	value = pwm_config->pwm_value;
 	mask = QPNP_PWM_VALUE_LSB_MASK;
 
+<<<<<<< HEAD
 	pr_debug("pwm_lsb value:%d\n", value & mask);
+=======
+>>>>>>> p9x
 	rc = qpnp_lpg_save_and_write(value, mask,
 			&chip->qpnp_lpg_registers[QPNP_PWM_VALUE_LSB],
 			SPMI_LPG_REG_ADDR(lpg_config->base_addr,
@@ -704,7 +728,10 @@ static int qpnp_lpg_save_pwm_value(struct qpnp_pwm_chip *chip)
 
 	mask = QPNP_PWM_VALUE_MSB_MASK;
 
+<<<<<<< HEAD
 	pr_debug("pwm_msb value:%d\n", value);
+=======
+>>>>>>> p9x
 	rc = qpnp_lpg_save_and_write(value, mask,
 			&chip->qpnp_lpg_registers[QPNP_PWM_VALUE_MSB],
 			SPMI_LPG_REG_ADDR(lpg_config->base_addr,
@@ -742,6 +769,7 @@ static int qpnp_lpg_configure_pattern(struct qpnp_pwm_chip *chip)
 		QPNP_LPG_PATTERN_CONFIG), 1, chip);
 }
 
+<<<<<<< HEAD
 static int qpnp_lpg_glitch_removal(struct qpnp_pwm_chip *chip, bool enable)
 {
 	struct qpnp_lpg_config	*lpg_config = &chip->lpg_config;
@@ -766,6 +794,14 @@ static int qpnp_lpg_configure_pwm(struct qpnp_pwm_chip *chip)
 
 	pr_debug("pwm_size_clk: %d\n",
 		chip->qpnp_lpg_registers[QPNP_LPG_PWM_SIZE_CLK]);
+=======
+static int qpnp_lpg_configure_pwm(struct qpnp_pwm_chip *chip)
+{
+	struct qpnp_lpg_config	*lpg_config = &chip->lpg_config;
+	int			rc;
+	u8			value, mask;
+
+>>>>>>> p9x
 	rc = spmi_ext_register_writel(chip->spmi_dev->ctrl, chip->spmi_dev->sid,
 		SPMI_LPG_REG_ADDR(lpg_config->base_addr, QPNP_LPG_PWM_SIZE_CLK),
 		&chip->qpnp_lpg_registers[QPNP_LPG_PWM_SIZE_CLK], 1);
@@ -773,8 +809,11 @@ static int qpnp_lpg_configure_pwm(struct qpnp_pwm_chip *chip)
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
 	pr_debug("pwm_freq_prediv_clk: %d\n",
 		chip->qpnp_lpg_registers[QPNP_LPG_PWM_FREQ_PREDIV_CLK]);
+=======
+>>>>>>> p9x
 	rc = spmi_ext_register_writel(chip->spmi_dev->ctrl, chip->spmi_dev->sid,
 		SPMI_LPG_REG_ADDR(lpg_config->base_addr,
 		QPNP_LPG_PWM_FREQ_PREDIV_CLK),
@@ -782,6 +821,7 @@ static int qpnp_lpg_configure_pwm(struct qpnp_pwm_chip *chip)
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
 	/* Disable glitch removal when LPG/PWM is configured */
 	rc = qpnp_lpg_glitch_removal(chip, false);
 	if (rc) {
@@ -789,6 +829,17 @@ static int qpnp_lpg_configure_pwm(struct qpnp_pwm_chip *chip)
 		return rc;
 	}
 	return rc;
+=======
+	qpnp_set_pwm_type_config(&value, 1, 0, 0, 0);
+
+	mask = QPNP_EN_GLITCH_REMOVAL_MASK | QPNP_EN_FULL_SCALE_MASK |
+			QPNP_EN_PHASE_STAGGER_MASK | QPNP_PHASE_STAGGER_MASK;
+
+	return qpnp_lpg_save_and_write(value, mask,
+		&chip->qpnp_lpg_registers[QPNP_LPG_PWM_TYPE_CONFIG],
+		SPMI_LPG_REG_ADDR(lpg_config->base_addr,
+		QPNP_LPG_PWM_TYPE_CONFIG), 1, chip);
+>>>>>>> p9x
 }
 
 static int qpnp_configure_pwm_control(struct qpnp_pwm_chip *chip)
@@ -1024,10 +1075,29 @@ static int qpnp_dtest_config(struct qpnp_pwm_chip *chip, bool enable)
 {
 	struct qpnp_lpg_config	*lpg_config = &chip->lpg_config;
 	u8			value;
+<<<<<<< HEAD
 	u8			mask;
 	u16			addr;
 	int			rc = 0;
 
+=======
+	u16			addr;
+	int			rc = 0;
+
+	if (!chip->dtest_output) {
+		pr_err("DTEST output not configured for channel %d\n",
+			chip->channel_id);
+		return -EPERM;
+	}
+
+	if (chip->dtest_line > QPNP_LPG_DTEST_LINE_MAX ||
+		chip->dtest_output > QPNP_LPG_DTEST_OUTPUT_MAX) {
+		pr_err("DTEST line/output values are improper for channel %d\n",
+			chip->channel_id);
+		return -EINVAL;
+	}
+
+>>>>>>> p9x
 	value = 0xA5;
 
 	addr = SPMI_LPG_REG_ADDR(lpg_config->base_addr, QPNP_LPG_SEC_ACCESS);
@@ -1043,6 +1113,7 @@ static int qpnp_dtest_config(struct qpnp_pwm_chip *chip, bool enable)
 	addr = SPMI_LPG_REG_ADDR(lpg_config->base_addr,
 			QPNP_LPG_DTEST + chip->dtest_line - 1);
 
+<<<<<<< HEAD
 	if (chip->sub_type == QPNP_PWM_MODE_ONLY_SUB_TYPE)
 		mask = QPNP_PWM_DTEST_OUTPUT_MASK;
 	else
@@ -1050,6 +1121,10 @@ static int qpnp_dtest_config(struct qpnp_pwm_chip *chip, bool enable)
 
 	if (enable)
 		value = chip->dtest_output & mask;
+=======
+	if (enable)
+		value = chip->dtest_output & QPNP_DTEST_OUTPUT_MASK;
+>>>>>>> p9x
 	else
 		value = 0;
 
@@ -1175,7 +1250,10 @@ static int qpnp_lpg_configure_pwm_state(struct qpnp_pwm_chip *chip,
 			pr_err("Failed to configure TEST mode\n");
 	}
 
+<<<<<<< HEAD
 	pr_debug("pwm_enable_control: %d\n", value);
+=======
+>>>>>>> p9x
 	rc = qpnp_lpg_save_and_write(value, mask,
 		&chip->qpnp_lpg_registers[QPNP_ENABLE_CONTROL],
 		SPMI_LPG_REG_ADDR(lpg_config->base_addr,
@@ -1215,6 +1293,7 @@ static int _pwm_config(struct qpnp_pwm_chip *chip,
 	if (rc)
 		goto out;
 
+<<<<<<< HEAD
 	if (!rc && chip->enabled) {
 		rc = qpnp_lpg_configure_pwm_state(chip, QPNP_PWM_ENABLE);
 		if (rc) {
@@ -1229,6 +1308,10 @@ static int _pwm_config(struct qpnp_pwm_chip *chip,
 			return rc;
 		}
 	}
+=======
+	if (!rc && chip->enabled)
+		rc = qpnp_lpg_configure_pwm_state(chip, QPNP_PWM_ENABLE);
+>>>>>>> p9x
 
 	pr_debug("duty/period=%u/%u %s: pwm_value=%d (of %d)\n",
 		 (unsigned)duty_value, (unsigned)period_value,
@@ -1720,6 +1803,7 @@ static int qpnp_parse_pwm_dt_config(struct device_node *of_pwm_node,
 		return rc;
 	}
 
+<<<<<<< HEAD
 	if (period < chip->pwm_config.pwm_duty || period > PM_PWM_PERIOD_MAX ||
 		period < PM_PWM_PERIOD_MIN) {
 		pr_err("Invalid pwm period(%d) or duty(%d)\n", period,
@@ -1731,6 +1815,8 @@ static int qpnp_parse_pwm_dt_config(struct device_node *of_pwm_node,
 	qpnp_lpg_save_period(chip);
 	chip->pwm_config.pwm_period = period;
 
+=======
+>>>>>>> p9x
 	rc = _pwm_config(chip, LVL_USEC, chip->pwm_config.pwm_duty, period);
 
 	return rc;
@@ -1995,15 +2081,24 @@ static int qpnp_parse_dt_config(struct spmi_device *spmi,
 		}
 	}
 
+<<<<<<< HEAD
 	rc = of_property_read_u32(of_node, "qcom,dtest-line",
+=======
+	rc = of_property_read_u32(of_node, "qcom,lpg-dtest-line",
+>>>>>>> p9x
 		&chip->dtest_line);
 	if (rc) {
 		chip->in_test_mode = 0;
 	} else {
+<<<<<<< HEAD
+=======
+		chip->in_test_mode = 1;
+>>>>>>> p9x
 		rc = of_property_read_u32(of_node, "qcom,dtest-output",
 			&chip->dtest_output);
 		if (rc) {
 			pr_err("Missing DTEST output configuration\n");
+<<<<<<< HEAD
 			return rc;
 		}
 		chip->in_test_mode = 1;
@@ -2021,6 +2116,9 @@ static int qpnp_parse_dt_config(struct spmi_device *spmi,
 			pr_err("DTEST line/output values are improper for LPG channel %d\n",
 				chip->channel_id);
 			return -EINVAL;
+=======
+			chip->dtest_output = 0;
+>>>>>>> p9x
 		}
 	}
 
@@ -2060,8 +2158,18 @@ static int qpnp_parse_dt_config(struct spmi_device *spmi,
 	}
 
 	_pwm_change_mode(chip, enable);
+<<<<<<< HEAD
 	if (chip->dtest_line != 1)
 			_pwm_enable(chip);
+=======
+#ifdef CONFIG_MACH_XIAOMI_KENZO
+	if (chip->dtest_line != 1)
+		_pwm_enable(chip);
+#else
+	_pwm_enable(chip);
+#endif
+
+>>>>>>> p9x
 read_opt_props:
 	/* Initialize optional config parameters from DT if provided */
 	of_property_read_string(node, "qcom,channel-owner",
@@ -2100,10 +2208,15 @@ static int qpnp_pwm_probe(struct spmi_device *spmi)
 
 	rc = qpnp_parse_dt_config(spmi, pwm_chip);
 
+<<<<<<< HEAD
 	if (rc) {
 		pr_err("Failed parsing DT parameters, rc=%d\n", rc);
 		goto failed_config;
 	}
+=======
+	if (rc)
+		goto failed_config;
+>>>>>>> p9x
 
 	pwm_chip->chip.dev = &spmi->dev;
 	pwm_chip->chip.ops = &qpnp_pwm_ops;
@@ -2119,8 +2232,11 @@ static int qpnp_pwm_probe(struct spmi_device *spmi)
 	if (pwm_chip->channel_owner)
 		pwm_chip->chip.pwms[0].label = pwm_chip->channel_owner;
 
+<<<<<<< HEAD
 	pr_debug("PWM device sid:%d channel:%d probed successfully\n",
 		spmi->sid, pwm_chip->channel_id);
+=======
+>>>>>>> p9x
 	return 0;
 
 failed_insert:

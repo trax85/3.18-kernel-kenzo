@@ -18,6 +18,7 @@
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/profile.h>
 #include <linux/sched.h>
@@ -27,6 +28,12 @@
 #include <linux/timex.h>
 #include <linux/timer.h>
 
+=======
+#include <linux/sched_clock.h>
+
+#include <asm/thread_info.h>
+#include <asm/stacktrace.h>
+>>>>>>> p9x
 #include <asm/mach/arch.h>
 #include <asm/mach/time.h>
 #include <asm/stacktrace.h>
@@ -121,5 +128,8 @@ void __init time_init(void)
 		of_clk_init(NULL);
 #endif
 		clocksource_of_init();
+<<<<<<< HEAD
 	}
+=======
+>>>>>>> p9x
 }

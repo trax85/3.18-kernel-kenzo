@@ -234,9 +234,14 @@ smb2_negotiate_wsize(struct cifs_tcon *tcon, struct smb_vol *volume_info)
 	/* start with specified wsize, or default */
 	wsize = volume_info->wsize ? volume_info->wsize : CIFS_DEFAULT_IOSIZE;
 	wsize = min_t(unsigned int, wsize, server->max_write);
+<<<<<<< HEAD
 
 	if (!(server->capabilities & SMB2_GLOBAL_CAP_LARGE_MTU))
 		wsize = min_t(unsigned int, wsize, SMB2_MAX_BUFFER_SIZE);
+=======
+	/* set it to the maximum buffer size value we can send with 1 credit */
+	wsize = min_t(unsigned int, wsize, SMB2_MAX_BUFFER_SIZE);
+>>>>>>> p9x
 
 	return wsize;
 }
@@ -250,9 +255,14 @@ smb2_negotiate_rsize(struct cifs_tcon *tcon, struct smb_vol *volume_info)
 	/* start with specified rsize, or default */
 	rsize = volume_info->rsize ? volume_info->rsize : CIFS_DEFAULT_IOSIZE;
 	rsize = min_t(unsigned int, rsize, server->max_read);
+<<<<<<< HEAD
 
 	if (!(server->capabilities & SMB2_GLOBAL_CAP_LARGE_MTU))
 		rsize = min_t(unsigned int, rsize, SMB2_MAX_BUFFER_SIZE);
+=======
+	/* set it to the maximum buffer size value we can send with 1 credit */
+	rsize = min_t(unsigned int, rsize, SMB2_MAX_BUFFER_SIZE);
+>>>>>>> p9x
 
 	return rsize;
 }
@@ -984,6 +994,7 @@ smb2_new_lease_key(struct cifs_fid *fid)
 	get_random_bytes(fid->lease_key, SMB2_LEASE_KEY_SIZE);
 }
 
+<<<<<<< HEAD
 #define SMB2_SYMLINK_STRUCT_SIZE \
 	(sizeof(struct smb2_err_rsp) - 1 + sizeof(struct smb2_symlink_err_rsp))
 
@@ -1369,13 +1380,19 @@ smb2_wp_retry_size(struct inode *inode)
 		     SMB2_MAX_BUFFER_SIZE);
 }
 
+=======
+>>>>>>> p9x
 static bool
 smb2_dir_needs_close(struct cifsFileInfo *cfile)
 {
 	return !cfile->invalidHandle;
 }
 
+<<<<<<< HEAD
 struct smb_version_operations smb20_operations = {
+=======
+struct smb_version_operations smb21_operations = {
+>>>>>>> p9x
 	.compare_fids = smb2_compare_fids,
 	.setup_request = smb2_setup_request,
 	.setup_async_request = smb2_setup_async_request,
@@ -1446,12 +1463,15 @@ struct smb_version_operations smb20_operations = {
 	.set_lease_key = smb2_set_lease_key,
 	.new_lease_key = smb2_new_lease_key,
 	.calc_signature = smb2_calc_signature,
+<<<<<<< HEAD
 	.is_read_op = smb2_is_read_op,
 	.set_oplock_level = smb2_set_oplock_level,
 	.create_lease_buf = smb2_create_lease_buf,
 	.parse_lease_buf = smb2_parse_lease_buf,
 	.clone_range = smb2_clone_range,
 	.wp_retry_size = smb2_wp_retry_size,
+=======
+>>>>>>> p9x
 	.dir_needs_close = smb2_dir_needs_close,
 };
 
@@ -1612,6 +1632,7 @@ struct smb_version_operations smb30_operations = {
 	.new_lease_key = smb2_new_lease_key,
 	.generate_signingkey = generate_smb3signingkey,
 	.calc_signature = smb3_calc_signature,
+<<<<<<< HEAD
 	.is_read_op = smb21_is_read_op,
 	.set_oplock_level = smb3_set_oplock_level,
 	.create_lease_buf = smb3_create_lease_buf,
@@ -1621,6 +1642,9 @@ struct smb_version_operations smb30_operations = {
 	.wp_retry_size = smb2_wp_retry_size,
 	.dir_needs_close = smb2_dir_needs_close,
 	.fallocate = smb3_fallocate,
+=======
+	.dir_needs_close = smb2_dir_needs_close,
+>>>>>>> p9x
 };
 
 struct smb_version_values smb20_values = {

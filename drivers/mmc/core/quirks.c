@@ -31,10 +31,13 @@
 #define SDIO_DEVICE_ID_STE_CW1200	0x2280
 #endif
 
+<<<<<<< HEAD
 #ifndef SDIO_DEVICE_ID_MARVELL_8797_F0
 #define SDIO_DEVICE_ID_MARVELL_8797_F0	0x9128
 #endif
 
+=======
+>>>>>>> p9x
 #ifndef SDIO_VENDOR_ID_MSM
 #define SDIO_VENDOR_ID_MSM		0x0070
 #endif
@@ -79,6 +82,7 @@
 #define SDIO_DEVICE_ID_QCA9377		0x701
 #endif
 
+<<<<<<< HEAD
 #ifndef SDIO_VENDOR_ID_QCA9379
 #define SDIO_VENDOR_ID_QCA9379		0x271
 #endif
@@ -87,6 +91,8 @@
 #define SDIO_DEVICE_ID_QCA9379		0x801
 #endif
 
+=======
+>>>>>>> p9x
 /*
  * This hook just adds a quirk for all sdio devices
  */
@@ -130,17 +136,23 @@ static const struct mmc_fixup mmc_fixup_methods[] = {
 	SDIO_FIXUP(SDIO_VENDOR_ID_STE, SDIO_DEVICE_ID_STE_CW1200,
 		   add_quirk, MMC_QUIRK_BROKEN_BYTE_MODE_512),
 
+<<<<<<< HEAD
 	SDIO_FIXUP(SDIO_VENDOR_ID_MARVELL, SDIO_DEVICE_ID_MARVELL_8797_F0,
 		   add_quirk, MMC_QUIRK_BROKEN_IRQ_POLLING),
 
+=======
+>>>>>>> p9x
 	SDIO_FIXUP(SDIO_VENDOR_ID_QCA6574, SDIO_DEVICE_ID_QCA6574,
 		   add_quirk, MMC_QUIRK_QCA6574_SETTINGS),
 
 	SDIO_FIXUP(SDIO_VENDOR_ID_QCA9377, SDIO_DEVICE_ID_QCA9377,
 		add_quirk, MMC_QUIRK_QCA9377_SETTINGS),
+<<<<<<< HEAD
 
 	SDIO_FIXUP(SDIO_VENDOR_ID_QCA9379, SDIO_DEVICE_ID_QCA9379,
 		add_quirk, MMC_QUIRK_QCA9379_SETTINGS),
+=======
+>>>>>>> p9x
 	END_FIXUP
 };
 

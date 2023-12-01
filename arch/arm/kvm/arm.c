@@ -432,6 +432,7 @@ static int kvm_vcpu_first_run_init(struct kvm_vcpu *vcpu)
 			return ret;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * Enable the arch timers only if we have an in-kernel VGIC
 	 * and it has been properly initialized, since we cannot handle
@@ -440,6 +441,8 @@ static int kvm_vcpu_first_run_init(struct kvm_vcpu *vcpu)
 	if (irqchip_in_kernel(kvm) && vgic_initialized(kvm))
 		kvm_timer_enable(kvm);
 
+=======
+>>>>>>> p9x
 	return 0;
 }
 
@@ -660,6 +663,7 @@ static int kvm_arch_vcpu_ioctl_vcpu_init(struct kvm_vcpu *vcpu,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	vcpu_reset_hcr(vcpu);
 
 	/*
@@ -678,6 +682,13 @@ static int kvm_arch_vcpu_ioctl_vcpu_init(struct kvm_vcpu *vcpu,
 		vcpu->arch.pause = true;
 	else
 		vcpu->arch.pause = false;
+=======
+	/*
+	 * Handle the "start in power-off" case by marking the VCPU as paused.
+	 */
+	if (__test_and_clear_bit(KVM_ARM_VCPU_POWER_OFF, vcpu->arch.features))
+		vcpu->arch.pause = true;
+>>>>>>> p9x
 
 	return 0;
 }
@@ -808,8 +819,13 @@ static void cpu_init_hyp_mode(void *dummy)
 	/* Switch from the HYP stub to our own HYP init vector */
 	__hyp_set_vectors(kvm_get_idmap_vector());
 
+<<<<<<< HEAD
 	boot_pgd_ptr = kvm_mmu_get_boot_httbr();
 	pgd_ptr = kvm_mmu_get_httbr();
+=======
+	boot_pgd_ptr = (unsigned long long)kvm_mmu_get_boot_httbr();
+	pgd_ptr = (unsigned long long)kvm_mmu_get_httbr();
+>>>>>>> p9x
 	stack_page = __this_cpu_read(kvm_arm_hyp_stack_page);
 	hyp_stack_ptr = stack_page + PAGE_SIZE;
 	vector_ptr = (unsigned long)__kvm_hyp_vector;
@@ -1025,8 +1041,11 @@ int kvm_arch_init(void *opaque)
 		goto out_err;
 	}
 
+<<<<<<< HEAD
 	cpu_notifier_register_done();
 
+=======
+>>>>>>> p9x
 	hyp_cpu_pm_init();
 
 	kvm_coproc_table_init();

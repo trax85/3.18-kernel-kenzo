@@ -241,10 +241,42 @@ static int hih6130_probe(struct i2c_client *client,
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_QUICK))
 		hih6130->write_length = 1;
 
+<<<<<<< HEAD
 	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
 							   hih6130,
 							   hih6130_groups);
 	return PTR_ERR_OR_ZERO(hwmon_dev);
+=======
+	hih6130->hwmon_dev = hwmon_device_register(&client->dev);
+	if (IS_ERR(hih6130->hwmon_dev)) {
+		dev_dbg(&client->dev, "unable to register hwmon device\n");
+		err = PTR_ERR(hih6130->hwmon_dev);
+		goto fail_remove_sysfs;
+	}
+
+	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_QUICK))
+		hih6130->write_length = 1;
+
+	return 0;
+
+fail_remove_sysfs:
+	sysfs_remove_group(&client->dev.kobj, &hih6130_attr_group);
+	return err;
+}
+
+/**
+ * hih6130_remove() - remove device
+ * @client: I2C client device
+ */
+static int hih6130_remove(struct i2c_client *client)
+{
+	struct hih6130 *hih6130 = i2c_get_clientdata(client);
+
+	hwmon_device_unregister(hih6130->hwmon_dev);
+	sysfs_remove_group(&client->dev.kobj, &hih6130_attr_group);
+
+	return 0;
+>>>>>>> p9x
 }
 
 /* Device ID table */

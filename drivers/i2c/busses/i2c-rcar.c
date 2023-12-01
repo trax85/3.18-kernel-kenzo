@@ -580,6 +580,7 @@ static int rcar_i2c_probe(struct platform_device *pdev)
 	ret = devm_request_irq(dev, irq, rcar_i2c_irq, 0,
 			       dev_name(dev), priv);
 	if (ret < 0) {
+<<<<<<< HEAD
 		dev_err(dev, "cannot get irq %d\n", irq);
 		return ret;
 	}
@@ -594,6 +595,22 @@ static int rcar_i2c_probe(struct platform_device *pdev)
 		return ret;
 	}
 
+=======
+		dev_err(dev, "cannot get irq %d\n", priv->irq);
+		return ret;
+	}
+
+	pm_runtime_enable(dev);
+	platform_set_drvdata(pdev, priv);
+
+	ret = i2c_add_numbered_adapter(adap);
+	if (ret < 0) {
+		dev_err(dev, "reg adap failed: %d\n", ret);
+		pm_runtime_disable(dev);
+		return ret;
+	}
+
+>>>>>>> p9x
 	dev_info(dev, "probed\n");
 
 	return 0;

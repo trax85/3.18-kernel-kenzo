@@ -358,6 +358,29 @@ static void tp_module_going_check_quiescent(struct tracepoint * const *begin,
 		WARN_ON_ONCE((*iter)->funcs);
 }
 
+<<<<<<< HEAD
+=======
+void tracepoint_iter_stop(struct tracepoint_iter *iter)
+{
+}
+EXPORT_SYMBOL_GPL(tracepoint_iter_stop);
+
+void tracepoint_iter_reset(struct tracepoint_iter *iter)
+{
+#ifdef CONFIG_MODULES
+	iter->module = NULL;
+#endif /* CONFIG_MODULES */
+	iter->tracepoint = NULL;
+}
+EXPORT_SYMBOL_GPL(tracepoint_iter_reset);
+
+#ifdef CONFIG_MODULES
+bool trace_module_has_bad_taint(struct module *mod)
+{
+	return mod->taints & ~((1 << TAINT_OOT_MODULE) | (1 << TAINT_CRAP));
+}
+
+>>>>>>> p9x
 static int tracepoint_module_coming(struct module *mod)
 {
 	struct tp_module *tp_mod;
@@ -393,6 +416,7 @@ static void tracepoint_module_going(struct module *mod)
 	struct tp_module *tp_mod;
 
 	if (!mod->num_tracepoints)
+<<<<<<< HEAD
 		return;
 
 	mutex_lock(&tracepoint_module_list_mutex);
@@ -408,6 +432,17 @@ static void tracepoint_module_going(struct module *mod)
 			 */
 			tp_module_going_check_quiescent(mod->tracepoints_ptrs,
 				mod->tracepoints_ptrs + mod->num_tracepoints);
+=======
+		return 0;
+
+	mutex_lock(&tracepoints_mutex);
+	tracepoint_update_probe_range(mod->tracepoints_ptrs,
+		mod->tracepoints_ptrs + mod->num_tracepoints);
+	list_for_each_entry(pos, &tracepoint_module_list, list) {
+		if (pos->tracepoints_ptrs == mod->tracepoints_ptrs) {
+			list_del(&pos->list);
+			kfree(pos);
+>>>>>>> p9x
 			break;
 		}
 	}

@@ -98,10 +98,13 @@
  *  - add FUSE_WRITEBACK_CACHE
  *  - add time_gran to fuse_init_out
  *  - add reserved space to fuse_init_out
+<<<<<<< HEAD
  *  - add FATTR_CTIME
  *  - add ctime and ctimensec to fuse_setattr_in
  *  - add FUSE_RENAME2 request
  *  - add FUSE_NO_OPEN_SUPPORT flag
+=======
+>>>>>>> p9x
  */
 
 #ifndef _LINUX_FUSE_H
@@ -230,7 +233,10 @@ struct fuse_file_lock {
  * FUSE_READDIRPLUS_AUTO: adaptive readdirplus
  * FUSE_ASYNC_DIO: asynchronous direct I/O submission
  * FUSE_WRITEBACK_CACHE: use writeback cache for buffered writes
+<<<<<<< HEAD
  * FUSE_NO_OPEN_SUPPORT: kernel supports zero-message opens
+=======
+>>>>>>> p9x
  */
 #define FUSE_ASYNC_READ		(1 << 0)
 #define FUSE_POSIX_LOCKS	(1 << 1)
@@ -249,7 +255,10 @@ struct fuse_file_lock {
 #define FUSE_READDIRPLUS_AUTO	(1 << 14)
 #define FUSE_ASYNC_DIO		(1 << 15)
 #define FUSE_WRITEBACK_CACHE	(1 << 16)
+<<<<<<< HEAD
 #define FUSE_NO_OPEN_SUPPORT	(1 << 17)
+=======
+>>>>>>> p9x
 
 #define FUSE_SHORTCIRCUIT	(1 << 31)
 
@@ -359,7 +368,10 @@ enum fuse_opcode {
 	FUSE_BATCH_FORGET  = 42,
 	FUSE_FALLOCATE     = 43,
 	FUSE_READDIRPLUS   = 44,
+<<<<<<< HEAD
 	FUSE_RENAME2       = 45,
+=======
+>>>>>>> p9x
 	FUSE_CANONICAL_PATH= 2016,
 
 	/* CUSE specific operations */

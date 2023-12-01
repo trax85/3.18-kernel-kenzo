@@ -364,9 +364,12 @@ struct regulator_dev {
 
 	struct regulator_enable_gpio *ena_pin;
 	unsigned int ena_gpio_state:1;
+<<<<<<< HEAD
 
 	/* time when this regulator was disabled last time */
 	unsigned long last_off_jiffy;
+=======
+>>>>>>> p9x
 	struct proxy_consumer *proxy_consumer;
 	struct regulator *debug_consumer;
 };

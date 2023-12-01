@@ -25,14 +25,27 @@
 #include <linux/if_ether.h>
 
 /* platform_device configuration data, should be assigned to
- * the platform_device's dev.platform_data */
+ * the platform_device's dev.platform_data
+ * Provides 2 GPIO-related fields
+ * reset_gpio to map the ETHERNET_RESET GPIO pin
+ * has_reset_gpio - to indicate if the GPIO is being set(1) or not(0)
+ * and remain compatible with architectures not using GPIOs
+ * Default would be zero if its not being assigned any value.
+ * Both values would need to set in the appropriate board file
+ */
 struct smsc911x_platform_config {
 	unsigned int irq_polarity;
 	unsigned int irq_type;
 	unsigned int flags;
 	unsigned int shift;
 	phy_interface_t phy_interface;
+<<<<<<< HEAD
 	unsigned char mac[ETH_ALEN];
+=======
+	unsigned char mac[6];
+	unsigned char has_reset_gpio;
+	unsigned int reset_gpio;
+>>>>>>> p9x
 };
 
 /* Constants for platform_device irq polarity configuration */

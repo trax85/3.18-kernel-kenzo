@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012, 2014-2016, 2018 The Linux Foundation. All rights
  * reserved.
+=======
+/* Copyright (c) 2012,2014-2016 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -12,16 +16,23 @@
  */
 #include <linux/module.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/seq_file.h>
+=======
+>>>>>>> p9x
 #include <linux/err.h>
 #include <linux/stacktrace.h>
 #include <linux/wcnss_wlan.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 #ifdef	CONFIG_WCNSS_SKB_PRE_ALLOC
 #include <linux/skbuff.h>
 #endif
 #include <linux/debugfs.h>
 #include <net/cnss_prealloc.h>
+=======
+#include <linux/skbuff.h>
+>>>>>>> p9x
 
 static DEFINE_SPINLOCK(alloc_lock);
 
@@ -29,6 +40,7 @@ static DEFINE_SPINLOCK(alloc_lock);
 #define WCNSS_MAX_STACK_TRACE			64
 #endif
 
+<<<<<<< HEAD
 #define PRE_ALLOC_DEBUGFS_DIR		"cnss-prealloc"
 #define PRE_ALLOC_DEBUGFS_FILE_OBJ	"status"
 
@@ -37,6 +49,11 @@ static struct dentry *debug_base;
 struct wcnss_prealloc {
 	int occupied;
 	size_t size;
+=======
+struct wcnss_prealloc {
+	int occupied;
+	unsigned int size;
+>>>>>>> p9x
 	void *ptr;
 #ifdef CONFIG_SLUB_DEBUG
 	unsigned long stack_trace[WCNSS_MAX_STACK_TRACE];
@@ -44,15 +61,22 @@ struct wcnss_prealloc {
 #endif
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_WCNSS_SKB_PRE_ALLOC
 /* pre-alloced memory for skb */
+=======
+/* pre-alloced mem for WLAN driver */
+>>>>>>> p9x
 static struct wcnss_prealloc wcnss_skb_allocs[] = {
 	{0, 64 * 1024, NULL},
 	{0, 64 * 1024, NULL},
 	{0, 128 * 1024, NULL},
 	{0, 128 * 1024, NULL},
 };
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> p9x
 
 /* pre-alloced mem for WLAN driver */
 static struct wcnss_prealloc wcnss_allocs[] = {
@@ -120,15 +144,19 @@ static struct wcnss_prealloc wcnss_allocs[] = {
 	{0, 64 * 1024, NULL},
 	{0, 64 * 1024, NULL},
 	{0, 64 * 1024, NULL},
+<<<<<<< HEAD
 	{0, 64 * 1024, NULL},
 	{0, 64 * 1024, NULL},
 	{0, 64 * 1024, NULL},
 	{0, 64 * 1024, NULL},
 	{0, 64 * 1024, NULL},
+=======
+>>>>>>> p9x
 	{0, 128 * 1024, NULL},
 	{0, 128 * 1024, NULL},
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_WCNSS_SKB_PRE_ALLOC
 int cnss_skb_prealloc_init(void)
 {
@@ -154,6 +182,11 @@ int cnss_skb_prealloc_init(void)
 int wcnss_prealloc_init(void)
 {
 	int i, ret;
+=======
+int wcnss_prealloc_init(void)
+{
+	int i;
+>>>>>>> p9x
 
 	for (i = 0; i < ARRAY_SIZE(wcnss_allocs); i++) {
 		wcnss_allocs[i].occupied = 0;
@@ -161,6 +194,7 @@ int wcnss_prealloc_init(void)
 		if (wcnss_allocs[i].ptr == NULL)
 			return -ENOMEM;
 	}
+<<<<<<< HEAD
 	ret = cnss_skb_prealloc_init();
 
 	return ret;
@@ -179,6 +213,18 @@ void cnss_skb_prealloc_deinit(void)
 #else
 void cnss_skb_prealloc_deinit(void) {}
 #endif
+=======
+
+	for (i = 0; i < ARRAY_SIZE(wcnss_skb_allocs); i++) {
+		wcnss_skb_allocs[i].occupied = 0;
+		wcnss_skb_allocs[i].ptr =
+				dev_alloc_skb(wcnss_skb_allocs[i].size);
+		if (wcnss_skb_allocs[i].ptr == NULL)
+			return -ENOMEM;
+	}
+	return 0;
+}
+>>>>>>> p9x
 
 void wcnss_prealloc_deinit(void)
 {
@@ -189,7 +235,14 @@ void wcnss_prealloc_deinit(void)
 		wcnss_allocs[i].ptr = NULL;
 	}
 
+<<<<<<< HEAD
 	cnss_skb_prealloc_deinit();
+=======
+	for (i = 0; i < ARRAY_SIZE(wcnss_skb_allocs); i++) {
+		dev_kfree_skb(wcnss_skb_allocs[i].ptr);
+		wcnss_skb_allocs[i].ptr = NULL;
+	}
+>>>>>>> p9x
 }
 
 #ifdef CONFIG_SLUB_DEBUG
@@ -214,7 +267,11 @@ static inline void wcnss_prealloc_save_stack_trace(struct wcnss_prealloc *entry)
 }
 #endif
 
+<<<<<<< HEAD
 void *wcnss_prealloc_get(size_t size)
+=======
+void *wcnss_prealloc_get(unsigned int size)
+>>>>>>> p9x
 {
 	int i = 0;
 	unsigned long flags;
@@ -234,8 +291,13 @@ void *wcnss_prealloc_get(size_t size)
 	}
 	spin_unlock_irqrestore(&alloc_lock, flags);
 
+<<<<<<< HEAD
 	pr_err("wcnss: %s: prealloc not available for size: %zu\n",
 	       __func__, size);
+=======
+	pr_err("wcnss: %s: prealloc not available for size: %d\n",
+			__func__, size);
+>>>>>>> p9x
 
 	return NULL;
 }
@@ -260,7 +322,10 @@ int wcnss_prealloc_put(void *ptr)
 }
 EXPORT_SYMBOL(wcnss_prealloc_put);
 
+<<<<<<< HEAD
 #ifdef CONFIG_WCNSS_SKB_PRE_ALLOC
+=======
+>>>>>>> p9x
 struct sk_buff *wcnss_skb_prealloc_get(unsigned int size)
 {
 	int i = 0;
@@ -306,18 +371,26 @@ int wcnss_skb_prealloc_put(struct sk_buff *skb)
 	return 0;
 }
 EXPORT_SYMBOL(wcnss_skb_prealloc_put);
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> p9x
 
 #ifdef CONFIG_SLUB_DEBUG
 void wcnss_prealloc_check_memory_leak(void)
 {
+<<<<<<< HEAD
 	int i;
 	bool leak_detected = false;
+=======
+	int i, j = 0;
+>>>>>>> p9x
 
 	for (i = 0; i < ARRAY_SIZE(wcnss_allocs); i++) {
 		if (!wcnss_allocs[i].occupied)
 			continue;
 
+<<<<<<< HEAD
 		if (!leak_detected) {
 			pr_err("wcnss_prealloc: Memory leak detected\n");
 			leak_detected = true;
@@ -325,12 +398,22 @@ void wcnss_prealloc_check_memory_leak(void)
 
 		pr_err("Size: %zu, addr: %pK, backtrace:\n",
 		       wcnss_allocs[i].size, wcnss_allocs[i].ptr);
+=======
+		if (j == 0) {
+			pr_err("wcnss_prealloc: Memory leak detected\n");
+			j++;
+		}
+
+		pr_err("Size: %u, addr: %pK, backtrace:\n",
+				wcnss_allocs[i].size, wcnss_allocs[i].ptr);
+>>>>>>> p9x
 		print_stack_trace(&wcnss_allocs[i].trace, 1);
 	}
 
 }
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_WCNSS_SKB_PRE_ALLOC) && defined(CONFIG_SLUB_DEBUG)
 /* Check memory leak for socket buffer pre-alloc memeory pool */
 void wcnss_skb_prealloc_check_memory_leak(void)
@@ -380,6 +463,8 @@ int wcnss_skb_pre_alloc_reset(void)
 }
 #endif
 
+=======
+>>>>>>> p9x
 int wcnss_pre_alloc_reset(void)
 {
 	int i, n = 0;
@@ -395,6 +480,7 @@ int wcnss_pre_alloc_reset(void)
 	return n;
 }
 
+<<<<<<< HEAD
 int prealloc_memory_stats_show(struct seq_file *fp, void *data)
 {
 	int i = 0;
@@ -472,12 +558,20 @@ static int __init wcnss_pre_alloc_init(void)
 	}
 
 	return ret;
+=======
+static int __init wcnss_pre_alloc_init(void)
+{
+	return wcnss_prealloc_init();
+>>>>>>> p9x
 }
 
 static void __exit wcnss_pre_alloc_exit(void)
 {
 	wcnss_prealloc_deinit();
+<<<<<<< HEAD
 	debugfs_remove_recursive(debug_base);
+=======
+>>>>>>> p9x
 }
 
 module_init(wcnss_pre_alloc_init);

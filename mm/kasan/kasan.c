@@ -4,7 +4,11 @@
  * Copyright (c) 2014 Samsung Electronics Co., Ltd.
  * Author: Andrey Ryabinin <a.ryabinin@samsung.com>
  *
+<<<<<<< HEAD
  * Some code borrowed from https://github.com/xairy/kasan-prototype by
+=======
+ * Some of code borrowed from https://github.com/xairy/linux by
+>>>>>>> p9x
  *        Andrey Konovalov <adech.fo@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,8 +23,11 @@
 #include <linux/export.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/kmemleak.h>
 #include <linux/linkage.h>
+=======
+>>>>>>> p9x
 #include <linux/memblock.h>
 #include <linux/memory.h>
 #include <linux/mm.h>
@@ -61,6 +68,7 @@ void kasan_unpoison_shadow(const void *address, size_t size)
 	}
 }
 
+<<<<<<< HEAD
 static void __kasan_unpoison_stack(struct task_struct *task, void *sp)
 {
 	void *base = task_stack_page(task);
@@ -80,6 +88,8 @@ asmlinkage void kasan_unpoison_remaining_stack(void *sp)
 {
 	__kasan_unpoison_stack(current, sp);
 }
+=======
+>>>>>>> p9x
 
 /*
  * All functions below always inlined so compiler could
@@ -107,11 +117,14 @@ static __always_inline bool memory_is_poisoned_2(unsigned long addr)
 		if (memory_is_poisoned_1(addr + 1))
 			return true;
 
+<<<<<<< HEAD
 		/*
 		 * If single shadow byte covers 2-byte access, we don't
 		 * need to do anything more. Otherwise, test the first
 		 * shadow byte.
 		 */
+=======
+>>>>>>> p9x
 		if (likely(((addr + 1) & KASAN_SHADOW_MASK) != 0))
 			return false;
 
@@ -129,11 +142,14 @@ static __always_inline bool memory_is_poisoned_4(unsigned long addr)
 		if (memory_is_poisoned_1(addr + 3))
 			return true;
 
+<<<<<<< HEAD
 		/*
 		 * If single shadow byte covers 4-byte access, we don't
 		 * need to do anything more. Otherwise, test the first
 		 * shadow byte.
 		 */
+=======
+>>>>>>> p9x
 		if (likely(((addr + 3) & KASAN_SHADOW_MASK) >= 3))
 			return false;
 
@@ -151,12 +167,16 @@ static __always_inline bool memory_is_poisoned_8(unsigned long addr)
 		if (memory_is_poisoned_1(addr + 7))
 			return true;
 
+<<<<<<< HEAD
 		/*
 		 * If single shadow byte covers 8-byte access, we don't
 		 * need to do anything more. Otherwise, test the first
 		 * shadow byte.
 		 */
 		if (likely(IS_ALIGNED(addr, KASAN_SHADOW_SCALE_SIZE)))
+=======
+		if (likely(((addr + 7) & KASAN_SHADOW_MASK) >= 7))
+>>>>>>> p9x
 			return false;
 
 		return unlikely(*(u8 *)shadow_addr);
@@ -171,16 +191,24 @@ static __always_inline bool memory_is_poisoned_16(unsigned long addr)
 
 	if (unlikely(*shadow_addr)) {
 		u16 shadow_first_bytes = *(u16 *)shadow_addr;
+<<<<<<< HEAD
+=======
+		s8 last_byte = (addr + 15) & KASAN_SHADOW_MASK;
+>>>>>>> p9x
 
 		if (unlikely(shadow_first_bytes))
 			return true;
 
+<<<<<<< HEAD
 		/*
 		 * If two shadow bytes covers 16-byte access, we don't
 		 * need to do anything more. Otherwise, test the last
 		 * shadow byte.
 		 */
 		if (likely(IS_ALIGNED(addr, KASAN_SHADOW_SCALE_SIZE)))
+=======
+		if (likely(!last_byte))
+>>>>>>> p9x
 			return false;
 
 		return memory_is_poisoned_1(addr + 15);
@@ -244,7 +272,11 @@ static __always_inline bool memory_is_poisoned_n(unsigned long addr,
 		s8 *last_shadow = (s8 *)kasan_mem_to_shadow((void *)last_byte);
 
 		if (unlikely(ret != (unsigned long)last_shadow ||
+<<<<<<< HEAD
 			((long)(last_byte & KASAN_SHADOW_MASK) >= *last_shadow)))
+=======
+			((last_byte & KASAN_SHADOW_MASK) >= *last_shadow)))
+>>>>>>> p9x
 			return true;
 	}
 	return false;
@@ -276,12 +308,25 @@ static __always_inline bool memory_is_poisoned(unsigned long addr, size_t size)
 static __always_inline void check_memory_region(unsigned long addr,
 						size_t size, bool write)
 {
+<<<<<<< HEAD
+=======
+	struct kasan_access_info info;
+
+>>>>>>> p9x
 	if (unlikely(size == 0))
 		return;
 
 	if (unlikely((void *)addr <
 		kasan_shadow_to_mem((void *)KASAN_SHADOW_START))) {
+<<<<<<< HEAD
 		kasan_report(addr, size, write, _RET_IP_);
+=======
+		info.access_addr = (void *)addr;
+		info.access_size = size;
+		info.is_write = write;
+		info.ip = _RET_IP_;
+		kasan_report_user_access(&info);
+>>>>>>> p9x
 		return;
 	}
 
@@ -423,6 +468,7 @@ void kasan_krealloc(const void *object, size_t size)
 		kasan_kmalloc(page->slab_cache, object, size);
 }
 
+<<<<<<< HEAD
 void kasan_kfree(void *ptr)
 {
 	struct page *page;
@@ -436,6 +482,8 @@ void kasan_kfree(void *ptr)
 		kasan_slab_free(page->slab_cache, ptr);
 }
 
+=======
+>>>>>>> p9x
 void kasan_kfree_large(const void *ptr)
 {
 	struct page *page = virt_to_page(ptr);
@@ -465,7 +513,10 @@ int kasan_module_alloc(void *addr, size_t size)
 
 	if (ret) {
 		find_vm_area(addr)->flags |= VM_KASAN;
+<<<<<<< HEAD
 		kmemleak_ignore(ret);
+=======
+>>>>>>> p9x
 		return 0;
 	}
 
@@ -560,7 +611,11 @@ static int kasan_mem_notifier(struct notifier_block *nb,
 
 static int __init kasan_memhotplug_init(void)
 {
+<<<<<<< HEAD
 	pr_err("WARNING: KASAN doesn't support memory hot-add\n");
+=======
+	pr_err("WARNING: KASan doesn't support memory hot-add\n");
+>>>>>>> p9x
 	pr_err("Memory hot-add will be disabled\n");
 
 	hotplug_memory_notifier(kasan_mem_notifier, 0);

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -25,6 +29,7 @@
 #include <soc/qcom/subsystem_restart.h>
 #include "glink_private.h"
 
+<<<<<<< HEAD
 #define GLINK_SSR_REPLY_TIMEOUT	HZ
 #define GLINK_SSR_INTENT_REQ_TIMEOUT_MS 500
 #define GLINK_SSR_EVENT_INIT ~0
@@ -41,6 +46,10 @@
 } while (0)
 
 static void *glink_ssr_log_ctx;
+=======
+#define GLINK_SSR_REPLY_TIMEOUT	1000
+#define GLINK_SSR_EVENT_INIT ~0
+>>>>>>> p9x
 
 /* Global restart counter */
 static uint32_t sequence_number;
@@ -80,6 +89,7 @@ struct configure_and_open_ch_work {
 };
 
 /**
+<<<<<<< HEAD
  * struct rx_done_ch_work - Work structure used for sending rx_done on
  *				glink_ssr channels
  * handle:	G-Link channel handle to be used for sending rx_done
@@ -93,6 +103,8 @@ struct rx_done_ch_work {
 };
 
 /**
+=======
+>>>>>>> p9x
  * struct close_ch_work - Work structure for used for closing glink_ssr channels
  * edge:	The G-Link edge name for the channel being closed
  * handle:	G-Link channel handle to be closed
@@ -115,6 +127,7 @@ static LIST_HEAD(subsystem_list);
 static atomic_t responses_remaining = ATOMIC_INIT(0);
 static wait_queue_head_t waitqueue;
 
+<<<<<<< HEAD
 static void rx_done_cb_worker(struct work_struct *work)
 {
 	struct rx_done_ch_work *rx_done_work =
@@ -124,6 +137,8 @@ static void rx_done_cb_worker(struct work_struct *work)
 	kfree(rx_done_work);
 }
 
+=======
+>>>>>>> p9x
 static void link_state_cb_worker(struct work_struct *work)
 {
 	unsigned long flags;
@@ -131,7 +146,11 @@ static void link_state_cb_worker(struct work_struct *work)
 		container_of(work, struct configure_and_open_ch_work, work);
 	struct subsys_info *ss_info = ch_open_work->ss_info;
 
+<<<<<<< HEAD
 	GLINK_SSR_LOG("<SSR> %s: LINK STATE[%d] %s:%s\n", __func__,
+=======
+	GLINK_INFO("<SSR> %s: LINK STATE[%d] %s:%s\n", __func__,
+>>>>>>> p9x
 			ch_open_work->link_state, ch_open_work->edge,
 			ch_open_work->transport);
 
@@ -156,7 +175,11 @@ static void link_state_cb_worker(struct work_struct *work)
 			spin_unlock_irqrestore(&ss_info->link_up_lock, flags);
 			ss_info->handle = NULL;
 		} else {
+<<<<<<< HEAD
 			GLINK_SSR_ERR("<SSR> %s: ss_info is NULL\n", __func__);
+=======
+			GLINK_ERR("<SSR> %s: ss_info is NULL\n", __func__);
+>>>>>>> p9x
 		}
 	}
 
@@ -179,7 +202,11 @@ static void glink_ssr_link_state_cb(struct glink_link_state_cb_info *cb_info,
 	struct configure_and_open_ch_work *open_ch_work;
 
 	if (!cb_info) {
+<<<<<<< HEAD
 		GLINK_SSR_ERR("<SSR> %s: Missing cb_data\n", __func__);
+=======
+		GLINK_ERR("<SSR> %s: Missing cb_data\n", __func__);
+>>>>>>> p9x
 		return;
 	}
 
@@ -187,7 +214,11 @@ static void glink_ssr_link_state_cb(struct glink_link_state_cb_info *cb_info,
 
 	open_ch_work = kmalloc(sizeof(*open_ch_work), GFP_KERNEL);
 	if (!open_ch_work) {
+<<<<<<< HEAD
 		GLINK_SSR_ERR("<SSR> %s: Could not allocate open_ch_work\n",
+=======
+		GLINK_ERR("<SSR> %s: Could not allocate open_ch_work\n",
+>>>>>>> p9x
 				__func__);
 		return;
 	}
@@ -218,6 +249,7 @@ void glink_ssr_notify_rx(void *handle, const void *priv, const void *pkt_priv,
 {
 	struct ssr_notify_data *cb_data = (struct ssr_notify_data *)priv;
 	struct cleanup_done_msg *resp = (struct cleanup_done_msg *)ptr;
+<<<<<<< HEAD
 	struct rx_done_ch_work *rx_done_work;
 
 	rx_done_work = kmalloc(sizeof(*rx_done_work), GFP_ATOMIC);
@@ -237,11 +269,24 @@ void glink_ssr_notify_rx(void *handle, const void *priv, const void *pkt_priv,
 	if (unlikely(resp->seq_num != cb_data->do_cleanup_data->seq_num))
 		goto invalid_seq_number;
 	if (unlikely(resp->response != GLINK_SSR_CLEANUP_DONE))
+=======
+
+	if (!cb_data)
+		goto missing_cb_data;
+	if (!resp)
+		goto missing_response;
+	if (resp->version != cb_data->version)
+		goto version_mismatch;
+	if (resp->seq_num != cb_data->seq_num)
+		goto invalid_seq_number;
+	if (resp->response != GLINK_SSR_CLEANUP_DONE)
+>>>>>>> p9x
 		goto wrong_response;
 
 	cb_data->responded = true;
 	atomic_dec(&responses_remaining);
 
+<<<<<<< HEAD
 	GLINK_SSR_LOG(
 		"<SSR> %s: Response from %s resp[%d] version[%d] seq_num[%d] restarted[%s]\n",
 			__func__, cb_data->edge, resp->response,
@@ -254,10 +299,19 @@ void glink_ssr_notify_rx(void *handle, const void *priv, const void *pkt_priv,
 	rx_done_work->handle = handle;
 	INIT_WORK(&rx_done_work->work, rx_done_cb_worker);
 	queue_work(glink_ssr_wq, &rx_done_work->work);
+=======
+	GLINK_DBG("<SSR> %s: responses remaining after dec[%d]\n",
+			__func__, atomic_read(&responses_remaining));
+	GLINK_INFO("<SSR> %s: %s resp[%d] version[%d] seq_num[%d]\n",
+			__func__, "Response received.", resp->response,
+			resp->version, resp->seq_num);
+
+>>>>>>> p9x
 	wake_up(&waitqueue);
 	return;
 
 missing_cb_data:
+<<<<<<< HEAD
 	panic("%s: Missing cb_data!\n", __func__);
 	return;
 missing_do_cleanup_data:
@@ -279,6 +333,25 @@ invalid_seq_number:
 	return;
 wrong_response:
 	GLINK_SSR_ERR("<SSR> %s: Not a cleaup_done message. %s[%d]\n", __func__,
+=======
+	GLINK_ERR("<SSR> %s: Missing cb_data\n", __func__);
+	return;
+missing_response:
+	GLINK_ERR("<SSR> %s: Missing response data\n", __func__);
+	return;
+version_mismatch:
+	GLINK_ERR("<SSR> %s: Version mismatch. %s[%d], %s[%d]\n", __func__,
+			"do_cleanup version", cb_data->version,
+			"cleanup_done version", resp->version);
+	return;
+invalid_seq_number:
+	GLINK_ERR("<SSR> %s: Invalid seq. number. %s[%d], %s[%d]\n", __func__,
+			"do_cleanup seq num", cb_data->seq_num,
+			"cleanup_done seq_num", resp->seq_num);
+	return;
+wrong_response:
+	GLINK_ERR("<SSR> %s: Not a cleaup_done message. %s[%d]\n", __func__,
+>>>>>>> p9x
 			"cleanup_done response", resp->response);
 	return;
 }
@@ -298,6 +371,7 @@ void glink_ssr_notify_tx_done(void *handle, const void *priv,
 {
 	struct ssr_notify_data *cb_data = (struct ssr_notify_data *)priv;
 
+<<<<<<< HEAD
 	if (unlikely(!cb_data)) {
 		panic("%s: cb_data is NULL!\n", __func__);
 		return;
@@ -307,6 +381,15 @@ void glink_ssr_notify_tx_done(void *handle, const void *priv,
 		__func__, cb_data->edge);
 
 	cb_data->tx_done = true;
+=======
+	if (!cb_data) {
+		GLINK_ERR("<SSR> %s: Could not allocate data for cb_data\n",
+				__func__);
+	} else {
+		GLINK_INFO("<SSR> %s: tx_done notification\n", __func__);
+		cb_data->tx_done = true;
+	}
+>>>>>>> p9x
 }
 
 void close_ch_worker(struct work_struct *work)
@@ -331,14 +414,21 @@ void close_ch_worker(struct work_struct *work)
 			NULL);
 
 	if (IS_ERR_OR_NULL(link_state_handle))
+<<<<<<< HEAD
 		GLINK_SSR_ERR("<SSR> %s: %s, ret[%d]\n", __func__,
+=======
+		GLINK_ERR("<SSR> %s: %s, ret[%d]\n", __func__,
+>>>>>>> p9x
 				"Couldn't register link state cb",
 				(int)PTR_ERR(link_state_handle));
 	else
 		ss_info->link_state_handle = link_state_handle;
 
+<<<<<<< HEAD
 	BUG_ON(!ss_info->cb_data);
 	kfree(ss_info->cb_data);
+=======
+>>>>>>> p9x
 	kfree(close_work);
 }
 
@@ -357,10 +447,17 @@ void glink_ssr_notify_state(void *handle, const void *priv, unsigned event)
 	struct close_ch_work *close_work;
 
 	if (!cb_data) {
+<<<<<<< HEAD
 		GLINK_SSR_ERR("<SSR> %s: Could not allocate data for cb_data\n",
 				__func__);
 	} else {
 		GLINK_SSR_LOG("<SSR> %s: event[%d]\n",
+=======
+		GLINK_ERR("<SSR> %s: Could not allocate data for cb_data\n",
+				__func__);
+	} else {
+		GLINK_INFO("<SSR> %s: event[%d]\n",
+>>>>>>> p9x
 				__func__, event);
 		cb_data->event = event;
 		if (event == GLINK_REMOTE_DISCONNECTED) {
@@ -368,8 +465,12 @@ void glink_ssr_notify_state(void *handle, const void *priv, unsigned event)
 				kmalloc(sizeof(struct close_ch_work),
 						GFP_KERNEL);
 			if (!close_work) {
+<<<<<<< HEAD
 				GLINK_SSR_ERR(
 					"<SSR> %s: Could not allocate %s\n",
+=======
+				GLINK_ERR("<SSR> %s: Could not allocate %s\n",
+>>>>>>> p9x
 						__func__, "close work");
 				return;
 			}
@@ -401,12 +502,21 @@ bool glink_ssr_notify_rx_intent_req(void *handle, const void *priv,
 	struct ssr_notify_data *cb_data = (struct ssr_notify_data *)priv;
 
 	if (!cb_data) {
+<<<<<<< HEAD
 		GLINK_SSR_ERR("<SSR> %s: Could not allocate data for cb_data\n",
 				__func__);
 		return false;
 	} else {
 		GLINK_SSR_LOG("<SSR> %s: rx_intent_req of size %zu\n",
 				__func__, req_size);
+=======
+		GLINK_ERR("<SSR> %s: Could not allocate data for cb_data\n",
+				__func__);
+		return false;
+	} else {
+		GLINK_INFO("<SSR> %s: rx_intent_req of size %zu\n", __func__,
+				req_size);
+>>>>>>> p9x
 		return true;
 	}
 }
@@ -432,12 +542,21 @@ static int glink_ssr_restart_notifier_cb(struct notifier_block *this,
 		container_of(this, struct restart_notifier_block, nb);
 
 	if (code == SUBSYS_AFTER_SHUTDOWN) {
+<<<<<<< HEAD
 		GLINK_SSR_LOG("<SSR> %s: %s: subsystem restart for %s\n",
 				__func__, "SUBSYS_AFTER_SHUTDOWN",
 				notifier->subsystem);
 		ss_info = get_info_for_subsystem(notifier->subsystem);
 		if (ss_info == NULL) {
 			GLINK_SSR_ERR("<SSR> %s: ss_info is NULL\n", __func__);
+=======
+		GLINK_INFO("<SSR> %s: %s: subsystem restart for %s\n", __func__,
+				"SUBSYS_AFTER_SHUTDOWN",
+				notifier->subsystem);
+		ss_info = get_info_for_subsystem(notifier->subsystem);
+		if (ss_info == NULL) {
+			GLINK_ERR("<SSR> %s: ss_info is NULL\n", __func__);
+>>>>>>> p9x
 			return -EINVAL;
 		}
 
@@ -445,7 +564,11 @@ static int glink_ssr_restart_notifier_cb(struct notifier_block *this,
 		ret = notify_for_subsystem(ss_info);
 
 		if (ret) {
+<<<<<<< HEAD
 			GLINK_SSR_ERR("<SSR>: %s: %s, ret[%d]\n", __func__,
+=======
+			GLINK_ERR("<SSR>: %s: %s, ret[%d]\n", __func__,
+>>>>>>> p9x
 					"Subsystem notification failed", ret);
 			return ret;
 		}
@@ -476,8 +599,12 @@ int notify_for_subsystem(struct subsys_info *ss_info)
 	unsigned long flags;
 
 	if (!ss_info) {
+<<<<<<< HEAD
 		GLINK_SSR_ERR("<SSR> %s: ss_info structure invalid\n",
 				__func__);
+=======
+		GLINK_ERR("<SSR> %s: ss_info structure invalid\n", __func__);
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
@@ -489,6 +616,7 @@ int notify_for_subsystem(struct subsys_info *ss_info)
 	init_waitqueue_head(&waitqueue);
 	notifications_successful = true;
 
+<<<<<<< HEAD
 	list_for_each_entry(ss_leaf_entry, &ss_info->notify_list,
 			notify_list_node) {
 		GLINK_SSR_LOG(
@@ -496,12 +624,28 @@ int notify_for_subsystem(struct subsys_info *ss_info)
 				__func__, ss_leaf_entry->edge,
 				ss_leaf_entry->xprt, ss_info->edge,
 				sequence_number);
+=======
+	GLINK_DBG("<SSR> %s: responses remaining at start[%d]\n",
+			__func__, atomic_read(&responses_remaining));
+
+	list_for_each_entry(ss_leaf_entry, &ss_info->notify_list,
+			notify_list_node) {
+		GLINK_INFO("<SSR> %s: Notifying: %s -> %s:%s:%s\n",
+				__func__, "subsys:edge:xprt",
+				ss_leaf_entry->ssr_name,
+				ss_leaf_entry->edge,
+				ss_leaf_entry->xprt);
+>>>>>>> p9x
 
 		ss_info_channel =
 			get_info_for_subsystem(ss_leaf_entry->ssr_name);
 		if (ss_info_channel == NULL) {
+<<<<<<< HEAD
 			GLINK_SSR_ERR(
 				"<SSR> %s: unable to find subsystem name\n",
+=======
+			GLINK_ERR("<SSR> %s: unable to find subsystem name\n",
+>>>>>>> p9x
 					__func__);
 			return -ENODEV;
 		}
@@ -515,8 +659,12 @@ int notify_for_subsystem(struct subsys_info *ss_info)
 				ss_info_channel->cb_data->event
 						!= GLINK_CONNECTED) {
 
+<<<<<<< HEAD
 			GLINK_SSR_LOG(
 				"<SSR> %s: %s:%s %s[%d], %s[%p], %s[%d]\n",
+=======
+			GLINK_INFO("<SSR> %s: %s:%s %s[%d], %s[%p], %s[%d]\n",
+>>>>>>> p9x
 				__func__, ss_leaf_entry->edge, "Not connected",
 				"resp. remaining",
 				atomic_read(&responses_remaining), "handle",
@@ -532,9 +680,14 @@ int notify_for_subsystem(struct subsys_info *ss_info)
 		do_cleanup_data = kmalloc(sizeof(struct do_cleanup_msg),
 				GFP_KERNEL);
 		if (!do_cleanup_data) {
+<<<<<<< HEAD
 			GLINK_SSR_ERR(
 				"%s %s: Could not allocate do_cleanup_msg\n",
 				"<SSR>", __func__);
+=======
+			GLINK_ERR("%s %s: Could not allocate do_cleanup_msg\n",
+					"<SSR>", __func__);
+>>>>>>> p9x
 			return -ENOMEM;
 		}
 
@@ -544,12 +697,18 @@ int notify_for_subsystem(struct subsys_info *ss_info)
 		do_cleanup_data->name_len = strlen(ss_info->edge);
 		strlcpy(do_cleanup_data->name, ss_info->edge,
 				do_cleanup_data->name_len + 1);
+<<<<<<< HEAD
 		ss_leaf_entry->cb_data->do_cleanup_data = do_cleanup_data;
+=======
+		ss_leaf_entry->cb_data->version = 0;
+		ss_leaf_entry->cb_data->seq_num = sequence_number;
+>>>>>>> p9x
 
 		ret = glink_queue_rx_intent(handle,
 				(void *)ss_leaf_entry->cb_data,
 				sizeof(struct cleanup_done_msg));
 		if (ret) {
+<<<<<<< HEAD
 			GLINK_SSR_ERR(
 				"%s %s: %s, ret[%d], resp. remaining[%d]\n",
 				"<SSR>", __func__,
@@ -564,11 +723,22 @@ int notify_for_subsystem(struct subsys_info *ss_info)
 			} else {
 				panic("%s: Could not queue intent for RPM!\n",
 						__func__);
+=======
+			GLINK_ERR("%s %s: %s, ret[%d], resp. remaining[%d]\n",
+					"<SSR>", __func__,
+					"queue_rx_intent failed", ret,
+					atomic_read(&responses_remaining));
+			kfree(do_cleanup_data);
+			if (strcmp(ss_leaf_entry->ssr_name, "rpm")) {
+				subsystem_restart(ss_leaf_entry->ssr_name);
+				ss_leaf_entry->restarted = true;
+>>>>>>> p9x
 			}
 			atomic_dec(&responses_remaining);
 			continue;
 		}
 
+<<<<<<< HEAD
 		if (strcmp(ss_leaf_entry->ssr_name, "rpm"))
 			ret = glink_tx(handle, ss_leaf_entry->cb_data,
 					do_cleanup_data,
@@ -593,6 +763,19 @@ int notify_for_subsystem(struct subsys_info *ss_info)
 			} else {
 				panic("%s: glink_tx() to RPM failed!\n",
 						__func__);
+=======
+		ret = glink_tx(handle, (void *)ss_leaf_entry->cb_data,
+				(void *)do_cleanup_data,
+				sizeof(struct do_cleanup_msg), true);
+		if (ret) {
+			GLINK_ERR("<SSR> %s: tx failed, ret[%d], %s[%d]\n",
+					__func__, ret, "resp. remaining",
+					atomic_read(&responses_remaining));
+			kfree(do_cleanup_data);
+			if (strcmp(ss_leaf_entry->ssr_name, "rpm")) {
+				subsystem_restart(ss_leaf_entry->ssr_name);
+				ss_leaf_entry->restarted = true;
+>>>>>>> p9x
 			}
 			atomic_dec(&responses_remaining);
 			continue;
@@ -603,19 +786,28 @@ int notify_for_subsystem(struct subsys_info *ss_info)
 
 	wait_ret = wait_event_timeout(waitqueue,
 			atomic_read(&responses_remaining) == 0,
+<<<<<<< HEAD
 			GLINK_SSR_REPLY_TIMEOUT);
+=======
+			msecs_to_jiffies(GLINK_SSR_REPLY_TIMEOUT));
+>>>>>>> p9x
 
 	list_for_each_entry(ss_leaf_entry, &ss_info->notify_list,
 			notify_list_node) {
 		if (!wait_ret && !IS_ERR_OR_NULL(ss_leaf_entry->cb_data)
 				&& !ss_leaf_entry->cb_data->responded) {
+<<<<<<< HEAD
 			GLINK_SSR_ERR("%s %s: Subsystem %s %s\n",
+=======
+			GLINK_ERR("%s %s: Subsystem %s %s\n",
+>>>>>>> p9x
 				"<SSR>", __func__, ss_leaf_entry->edge,
 				"failed to respond. Restarting.");
 
 			notifications_successful = false;
 
 			/* Check for RPM, as it can't be restarted */
+<<<<<<< HEAD
 			if (!strcmp(ss_leaf_entry->ssr_name, "rpm"))
 				panic("%s: RPM failed to respond!\n", __func__);
 			else if (!ss_leaf_entry->restarted)
@@ -625,6 +817,13 @@ int notify_for_subsystem(struct subsys_info *ss_info)
 
 		if (!IS_ERR_OR_NULL(ss_leaf_entry->cb_data))
 			ss_leaf_entry->cb_data->responded = false;
+=======
+			if (strcmp(ss_leaf_entry->ssr_name, "rpm") &&
+					!ss_leaf_entry->restarted)
+				subsystem_restart(ss_leaf_entry->ssr_name);
+		}
+		ss_leaf_entry->restarted = false;
+>>>>>>> p9x
 	}
 	complete(&notifications_successful_complete);
 	return 0;
@@ -645,15 +844,23 @@ static int configure_and_open_channel(struct subsys_info *ss_info)
 	void *handle = NULL;
 
 	if (!ss_info) {
+<<<<<<< HEAD
 		GLINK_SSR_ERR("<SSR> %s: ss_info structure invalid\n",
 				__func__);
+=======
+		GLINK_ERR("<SSR> %s: ss_info structure invalid\n", __func__);
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
 	cb_data = kmalloc(sizeof(struct ssr_notify_data), GFP_KERNEL);
 	if (!cb_data) {
+<<<<<<< HEAD
 		GLINK_SSR_ERR("<SSR> %s: Could not allocate cb_data\n",
 				__func__);
+=======
+		GLINK_ERR("<SSR> %s: Could not allocate cb_data\n", __func__);
+>>>>>>> p9x
 		return -ENOMEM;
 	}
 	cb_data->responded = false;
@@ -676,12 +883,19 @@ static int configure_and_open_channel(struct subsys_info *ss_info)
 	open_cfg.notify_state = glink_ssr_notify_state;
 	open_cfg.notify_rx_intent_req = glink_ssr_notify_rx_intent_req;
 	open_cfg.priv = ss_info->cb_data;
+<<<<<<< HEAD
 	open_cfg.rx_intent_req_timeout_ms = GLINK_SSR_INTENT_REQ_TIMEOUT_MS;
 
 	handle = glink_open(&open_cfg);
 	if (IS_ERR_OR_NULL(handle)) {
 		GLINK_SSR_ERR(
 			"<SSR> %s:%s %s: unable to open channel, ret[%d]\n",
+=======
+
+	handle = glink_open(&open_cfg);
+	if (IS_ERR_OR_NULL(handle)) {
+		GLINK_ERR("<SSR> %s:%s %s: unable to open channel, ret[%d]\n",
+>>>>>>> p9x
 				 open_cfg.edge, open_cfg.name, __func__,
 				 (int)PTR_ERR(handle));
 		kfree(cb_data);
@@ -775,7 +989,12 @@ bool glink_ssr_wait_cleanup_done(unsigned ssr_timeout_multiplier)
 {
 	int wait_ret =
 		wait_for_completion_timeout(&notifications_successful_complete,
+<<<<<<< HEAD
 			ssr_timeout_multiplier * GLINK_SSR_REPLY_TIMEOUT);
+=======
+			ssr_timeout_multiplier *
+			msecs_to_jiffies(GLINK_SSR_REPLY_TIMEOUT));
+>>>>>>> p9x
 	reinit_completion(&notifications_successful_complete);
 
 	if (!notifications_successful || !wait_ret)
@@ -802,7 +1021,11 @@ static int glink_ssr_probe(struct platform_device *pdev)
 	struct device_node *phandle_node;
 	struct restart_notifier_block *nb;
 	struct subsys_info *ss_info;
+<<<<<<< HEAD
 	struct subsys_info_leaf *ss_info_leaf = NULL;
+=======
+	struct subsys_info_leaf *ss_info_leaf;
+>>>>>>> p9x
 	struct glink_link_info *link_info;
 	char *key;
 	const char *edge;
@@ -814,7 +1037,11 @@ static int glink_ssr_probe(struct platform_device *pdev)
 	int ret = 0;
 
 	if (!pdev) {
+<<<<<<< HEAD
 		GLINK_SSR_ERR("<SSR> %s: pdev is NULL\n", __func__);
+=======
+		GLINK_ERR("<SSR> %s: pdev is NULL\n", __func__);
+>>>>>>> p9x
 		ret = -EINVAL;
 		goto pdev_null_or_ss_info_alloc_failed;
 	}
@@ -823,7 +1050,11 @@ static int glink_ssr_probe(struct platform_device *pdev)
 
 	ss_info = kmalloc(sizeof(*ss_info), GFP_KERNEL);
 	if (!ss_info) {
+<<<<<<< HEAD
 		GLINK_SSR_ERR("<SSR> %s: %s\n", __func__,
+=======
+		GLINK_ERR("<SSR> %s: %s\n", __func__,
+>>>>>>> p9x
 			"Could not allocate subsystem info structure\n");
 		ret = -ENOMEM;
 		goto pdev_null_or_ss_info_alloc_failed;
@@ -833,7 +1064,11 @@ static int glink_ssr_probe(struct platform_device *pdev)
 	link_info = kmalloc(sizeof(struct glink_link_info),
 			GFP_KERNEL);
 	if (!link_info) {
+<<<<<<< HEAD
 		GLINK_SSR_ERR("<SSR> %s: %s\n", __func__,
+=======
+		GLINK_ERR("<SSR> %s: %s\n", __func__,
+>>>>>>> p9x
 			"Could not allocate link info structure\n");
 		ret = -ENOMEM;
 		goto link_info_alloc_failed;
@@ -843,7 +1078,11 @@ static int glink_ssr_probe(struct platform_device *pdev)
 	key = "label";
 	subsys_name = of_get_property(node, key, NULL);
 	if (!subsys_name) {
+<<<<<<< HEAD
 		GLINK_SSR_ERR("<SSR> %s: missing key %s\n", __func__, key);
+=======
+		GLINK_ERR("<SSR> %s: missing key %s\n", __func__, key);
+>>>>>>> p9x
 		ret = -ENODEV;
 		goto label_or_edge_missing;
 	}
@@ -851,7 +1090,11 @@ static int glink_ssr_probe(struct platform_device *pdev)
 	key = "qcom,edge";
 	edge = of_get_property(node, key, NULL);
 	if (!edge) {
+<<<<<<< HEAD
 		GLINK_SSR_ERR("<SSR> %s: missing key %s\n", __func__, key);
+=======
+		GLINK_ERR("<SSR> %s: missing key %s\n", __func__, key);
+>>>>>>> p9x
 		ret = -ENODEV;
 		goto label_or_edge_missing;
 	}
@@ -859,9 +1102,14 @@ static int glink_ssr_probe(struct platform_device *pdev)
 	key = "qcom,xprt";
 	xprt = of_get_property(node, key, NULL);
 	if (!xprt)
+<<<<<<< HEAD
 		GLINK_SSR_LOG(
 			"%s %s: no transport present for subys/edge %s/%s\n",
 			"<SSR>", __func__, subsys_name, edge);
+=======
+		GLINK_INFO("%s %s: no transport present for subys/edge %s/%s\n",
+				"<SSR>", __func__, subsys_name, edge);
+>>>>>>> p9x
 
 	ss_info->ssr_name = subsys_name;
 	ss_info->edge = edge;
@@ -878,7 +1126,11 @@ static int glink_ssr_probe(struct platform_device *pdev)
 
 	nb = kmalloc(sizeof(struct restart_notifier_block), GFP_KERNEL);
 	if (!nb) {
+<<<<<<< HEAD
 		GLINK_SSR_ERR("<SSR> %s: Could not allocate notifier block\n",
+=======
+		GLINK_ERR("<SSR> %s: Could not allocate notifier block\n",
+>>>>>>> p9x
 				__func__);
 		ret = -ENOMEM;
 		goto label_or_edge_missing;
@@ -889,7 +1141,11 @@ static int glink_ssr_probe(struct platform_device *pdev)
 
 	handle = subsys_notif_register_notifier(nb->subsystem, &nb->nb);
 	if (IS_ERR_OR_NULL(handle)) {
+<<<<<<< HEAD
 		GLINK_SSR_ERR("<SSR> %s: Could not register SSR notifier cb\n",
+=======
+		GLINK_ERR("<SSR> %s: Could not register SSR notifier cb\n",
+>>>>>>> p9x
 				__func__);
 		ret = -EINVAL;
 		goto nb_registration_fail;
@@ -899,9 +1155,14 @@ static int glink_ssr_probe(struct platform_device *pdev)
 	while (true) {
 		phandle_node = of_parse_phandle(node, key, phandle_index++);
 		if (!phandle_node && phandle_index == 0) {
+<<<<<<< HEAD
 			GLINK_SSR_ERR(
 				"<SSR> %s: qcom,notify-edges is not present",
 				__func__);
+=======
+			GLINK_ERR("<SSR> %s: %s", __func__,
+					"qcom,notify-edges is not present but is required");
+>>>>>>> p9x
 			ret = -ENODEV;
 			goto notify_edges_not_present;
 		}
@@ -912,9 +1173,15 @@ static int glink_ssr_probe(struct platform_device *pdev)
 		ss_info_leaf = kmalloc(sizeof(struct subsys_info_leaf),
 				GFP_KERNEL);
 		if (!ss_info_leaf) {
+<<<<<<< HEAD
 			GLINK_SSR_ERR(
 				"<SSR> %s: Could not allocate subsys_info_leaf\n",
 				__func__);
+=======
+			GLINK_ERR("<SSR> %s: Could not allocate %s\n",
+					"subsys_info_leaf structure",
+					__func__);
+>>>>>>> p9x
 			ret = -ENOMEM;
 			goto notify_edges_not_present;
 		}
@@ -926,9 +1193,14 @@ static int glink_ssr_probe(struct platform_device *pdev)
 		of_node_put(phandle_node);
 
 		if (!subsys_name || !edge) {
+<<<<<<< HEAD
 			GLINK_SSR_ERR(
 				"%s, %s: Found DT node with invalid data!\n",
 				"<SSR>", __func__);
+=======
+			GLINK_ERR("%s, %s: Found DT node with invalid data!\n",
+					"<SSR>", __func__);
+>>>>>>> p9x
 			ret = -EINVAL;
 			goto invalid_dt_node;
 		}
@@ -947,7 +1219,11 @@ static int glink_ssr_probe(struct platform_device *pdev)
 	link_state_handle = glink_register_link_state_cb(ss_info->link_info,
 			NULL);
 	if (IS_ERR_OR_NULL(link_state_handle)) {
+<<<<<<< HEAD
 		GLINK_SSR_ERR("<SSR> %s: Could not register link state cb\n",
+=======
+		GLINK_ERR("<SSR> %s: Could not register link state cb\n",
+>>>>>>> p9x
 				__func__);
 		ret = PTR_ERR(link_state_handle);
 		goto link_state_register_fail;
@@ -991,12 +1267,19 @@ static int glink_ssr_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	glink_ssr_log_ctx =
 		ipc_log_context_create(NUM_LOG_PAGES, "glink_ssr", 0);
 	glink_ssr_wq = create_singlethread_workqueue("glink_ssr_wq");
 	ret = platform_driver_register(&glink_ssr_driver);
 	if (ret)
 		GLINK_SSR_ERR("<SSR> %s: %s ret: %d\n", __func__,
+=======
+	glink_ssr_wq = create_singlethread_workqueue("glink_ssr_wq");
+	ret = platform_driver_register(&glink_ssr_driver);
+	if (ret)
+		GLINK_ERR("<SSR> %s: %s ret: %d\n", __func__,
+>>>>>>> p9x
 				"glink_ssr driver registration failed", ret);
 
 	notifications_successful = false;

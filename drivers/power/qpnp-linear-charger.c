@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2015, 2017-2018, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -206,7 +210,10 @@ static enum power_supply_property msm_batt_power_props[] = {
 	POWER_SUPPLY_PROP_VOLTAGE_NOW,
 	POWER_SUPPLY_PROP_CAPACITY,
 	POWER_SUPPLY_PROP_CURRENT_NOW,
+<<<<<<< HEAD
 	POWER_SUPPLY_PROP_CHARGE_COUNTER,
+=======
+>>>>>>> p9x
 	POWER_SUPPLY_PROP_TEMP,
 	POWER_SUPPLY_PROP_COOL_TEMP,
 	POWER_SUPPLY_PROP_WARM_TEMP,
@@ -1349,6 +1356,7 @@ static int get_prop_capacity(struct qpnp_lbc_chip *chip)
 	return DEFAULT_CAPACITY;
 }
 
+<<<<<<< HEAD
 static int get_prop_charge_count(struct qpnp_lbc_chip *chip)
 {
 	union power_supply_propval ret = {0,};
@@ -1366,6 +1374,8 @@ static int get_prop_charge_count(struct qpnp_lbc_chip *chip)
 	return ret.intval;
 }
 
+=======
+>>>>>>> p9x
 #define DEFAULT_TEMP		250
 static int get_prop_batt_temp(struct qpnp_lbc_chip *chip)
 {
@@ -1737,9 +1747,12 @@ static int qpnp_batt_power_get_property(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_CURRENT_NOW:
 		val->intval = get_prop_current_now(chip);
 		break;
+<<<<<<< HEAD
 	case POWER_SUPPLY_PROP_CHARGE_COUNTER:
 		val->intval = get_prop_charge_count(chip);
 		break;
+=======
+>>>>>>> p9x
 	case POWER_SUPPLY_PROP_CHARGING_ENABLED:
 		val->intval = !(chip->cfg_charging_disabled);
 		break;
@@ -3155,8 +3168,13 @@ static int qpnp_lbc_parallel_probe(struct spmi_device *spmi)
 		return rc;
 	}
 
+<<<<<<< HEAD
 	chip->parallel_psy.name		= "parallel";
 	chip->parallel_psy.type		= POWER_SUPPLY_TYPE_PARALLEL;
+=======
+	chip->parallel_psy.name		= "usb-parallel";
+	chip->parallel_psy.type		= POWER_SUPPLY_TYPE_USB_PARALLEL;
+>>>>>>> p9x
 	chip->parallel_psy.get_property	= qpnp_lbc_parallel_get_property;
 	chip->parallel_psy.set_property	= qpnp_lbc_parallel_set_property;
 	chip->parallel_psy.properties	= qpnp_lbc_parallel_properties;

@@ -8,7 +8,11 @@
 #include <asm/thread_info.h>
 #include <asm/memory.h>
 #include <asm/page.h>
+<<<<<<< HEAD
 #ifdef CONFIG_ARM_KERNMEM_PERMS
+=======
+#ifdef CONFIG_STRICT_MEMORY_RWX
+>>>>>>> p9x
 #include <asm/pgtable.h>
 #endif
 
@@ -93,8 +97,12 @@ SECTIONS
 		_text = .;
 		HEAD_TEXT
 	}
+<<<<<<< HEAD
 
 #ifdef CONFIG_ARM_KERNMEM_PERMS
+=======
+#ifdef CONFIG_STRICT_MEMORY_RWX
+>>>>>>> p9x
 	. = ALIGN(1<<SECTION_SHIFT);
 #endif
 
@@ -120,11 +128,17 @@ SECTIONS
 			ARM_CPU_KEEP(PROC_INFO)
 	}
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_RODATA
 	. = ALIGN(1<<SECTION_SHIFT);
 #endif
 	_etext = .;			/* End of text section */
 
+=======
+#ifdef CONFIG_STRICT_MEMORY_RWX
+	. = ALIGN(1<<SECTION_SHIFT);
+#endif
+>>>>>>> p9x
 	RO_DATA(PAGE_SIZE)
 
 	. = ALIGN(4);
@@ -156,11 +170,19 @@ SECTIONS
 	NOTES
 
 #ifndef CONFIG_XIP_KERNEL
+<<<<<<< HEAD
 # ifdef CONFIG_ARM_KERNMEM_PERMS
 	. = ALIGN(1<<SECTION_SHIFT);
 # else
 	. = ALIGN(PAGE_SIZE);
 # endif
+=======
+#ifdef CONFIG_STRICT_MEMORY_RWX
+	. = ALIGN(1<<SECTION_SHIFT);
+#else
+	. = ALIGN(PAGE_SIZE);
+#endif
+>>>>>>> p9x
 	__init_begin = .;
 #endif
 	/*
@@ -188,6 +210,9 @@ SECTIONS
 	.init.proc.info : {
 		ARM_CPU_DISCARD(PROC_INFO)
 	}
+#ifdef CONFIG_STRICT_MEMORY_RWX
+	. = ALIGN(1<<SECTION_SHIFT);
+#endif
 	.init.arch.info : {
 		__arch_info_begin = .;
 		*(.arch.info.init)
@@ -217,6 +242,7 @@ SECTIONS
 		INIT_SETUP(16)
 		INIT_CALLS
 		CON_INITCALL
+		COMPAT_EXPORTS
 		SECURITY_INITCALL
 		INIT_RAM_FS
 	}

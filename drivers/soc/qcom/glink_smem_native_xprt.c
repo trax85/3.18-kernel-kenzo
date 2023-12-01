@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2017, 2019 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -111,6 +115,7 @@ struct channel_desc {
 };
 
 /**
+<<<<<<< HEAD
  * struct mailbox_config_info - description of a mailbox tranposrt channel
  * @tx_read_index:	Offset into the tx fifo where data should be read from.
  * @tx_write_index:	Offset into the tx fifo where new data will be placed.
@@ -131,6 +136,8 @@ struct mailbox_config_info {
 };
 
 /**
+=======
+>>>>>>> p9x
  * struct edge_info - local information for managing a single complete edge
  * @xprt_if:			The transport interface registered with the
  *				glink core associated with this edge.
@@ -140,8 +147,11 @@ struct mailbox_config_info {
  * @irq_disabled:		Flag indicating the whether interrupt is enabled
  *				or disabled.
  * @remote_proc_id:		The SMEM processor id for the remote side.
+<<<<<<< HEAD
  * @rx_reset_reg:		Reference to the register to reset the rx irq
  *				line, if applicable.
+=======
+>>>>>>> p9x
  * @out_irq_reg:		Reference to the register to send an irq to the
  *				remote side.
  * @out_irq_mask:		Mask written to @out_irq_reg to trigger the
@@ -169,10 +179,14 @@ struct mailbox_config_info {
  *				been sent, and a response is pending from the
  *				remote side.  Protected by @write_lock.
  * @kwork:			Work to be executed when an irq is received.
+<<<<<<< HEAD
  * @kworker:			Handle to the entity processing of
 				deferred commands.
  * @tasklet			Handle to tasklet to process incoming data
 				packets in atomic manner.
+=======
+ * @kworker:			Handle to the entity processing @kwork.
+>>>>>>> p9x
  * @task:			Handle to the task context used to run @kworker.
  * @use_ref:			Active uses of this transport use this to grab
  *				a reference.  Used for ssr synchronization.
@@ -181,10 +195,13 @@ struct mailbox_config_info {
  *				processing.
  * @deferred_cmds:		List of deferred commands that need to be
  *				processed in process context.
+<<<<<<< HEAD
  * @num_pw_states:		Size of @ramp_time_us.
  * @ramp_time_us:		Array of ramp times in microseconds where array
  *				index position represents a power state.
  * @mailbox:			Mailbox transport channel description reference.
+=======
+>>>>>>> p9x
  */
 struct edge_info {
 	struct glink_transport_if xprt_if;
@@ -192,7 +209,10 @@ struct edge_info {
 	bool intentless;
 	bool irq_disabled;
 	uint32_t remote_proc_id;
+<<<<<<< HEAD
 	void __iomem *rx_reset_reg;
+=======
+>>>>>>> p9x
 	void __iomem *out_irq_reg;
 	uint32_t out_irq_mask;
 	uint32_t irq_line;
@@ -213,14 +233,20 @@ struct edge_info {
 	struct kthread_work kwork;
 	struct kthread_worker kworker;
 	struct task_struct *task;
+<<<<<<< HEAD
 	struct tasklet_struct tasklet;
+=======
+>>>>>>> p9x
 	struct srcu_struct use_ref;
 	bool in_ssr;
 	spinlock_t rx_lock;
 	struct list_head deferred_cmds;
+<<<<<<< HEAD
 	uint32_t num_pw_states;
 	unsigned long *ramp_time_us;
 	struct mailbox_config_info *mailbox;
+=======
+>>>>>>> p9x
 };
 
 /**
@@ -441,8 +467,11 @@ static int fifo_read(struct edge_info *einfo, void *_data, int len)
 	uint32_t fifo_size = einfo->rx_fifo_size;
 	uint32_t n;
 
+<<<<<<< HEAD
 	if (read_index >= fifo_size || write_index >= fifo_size)
 		return 0;
+=======
+>>>>>>> p9x
 	while (len) {
 		ptr = einfo->rx_fifo + read_index;
 		if (read_index <= write_index)
@@ -486,8 +515,11 @@ static uint32_t fifo_write_body(struct edge_info *einfo, const void *_data,
 	uint32_t fifo_size = einfo->tx_fifo_size;
 	uint32_t n;
 
+<<<<<<< HEAD
 	if (read_index >= fifo_size || *write_index >= fifo_size)
 		return 0;
+=======
+>>>>>>> p9x
 	while (len) {
 		ptr = einfo->tx_fifo + *write_index;
 		if (*write_index < read_index) {
@@ -626,17 +658,25 @@ static int fifo_tx(struct edge_info *einfo, const void *data, int len)
 	unsigned long flags;
 	int ret;
 
+<<<<<<< HEAD
 	DEFINE_WAIT(wait);
 
+=======
+>>>>>>> p9x
 	spin_lock_irqsave(&einfo->write_lock, flags);
 	while (fifo_write_avail(einfo) < len) {
 		send_tx_blocked_signal(einfo);
 		spin_unlock_irqrestore(&einfo->write_lock, flags);
+<<<<<<< HEAD
 		prepare_to_wait(&einfo->tx_blocked_queue, &wait,
 							TASK_UNINTERRUPTIBLE);
 		if (fifo_write_avail(einfo) < len && !einfo->in_ssr)
 			schedule();
 		finish_wait(&einfo->tx_blocked_queue, &wait);
+=======
+		wait_event(einfo->tx_blocked_queue,
+				fifo_write_avail(einfo) < len || einfo->in_ssr);
+>>>>>>> p9x
 		spin_lock_irqsave(&einfo->write_lock, flags);
 		if (einfo->in_ssr) {
 			spin_unlock_irqrestore(&einfo->write_lock, flags);
@@ -777,6 +817,7 @@ static bool queue_cmd(struct edge_info *einfo, void *cmd, void *data)
 }
 
 /**
+<<<<<<< HEAD
  * get_rx_fifo() - Find the rx fifo for an edge
  * @einfo:	Edge to find the fifo for.
  *
@@ -806,6 +847,8 @@ static bool get_rx_fifo(struct edge_info *einfo)
 }
 
 /**
+=======
+>>>>>>> p9x
  * __rx_worker() - process received commands on a specific edge
  * @einfo:	Edge to process commands on.
  * @atomic_ctx:	Indicates if the caller is in atomic context and requires any
@@ -841,7 +884,15 @@ static void __rx_worker(struct edge_info *einfo, bool atomic_ctx)
 	rcu_id = srcu_read_lock(&einfo->use_ref);
 
 	if (unlikely(!einfo->rx_fifo)) {
+<<<<<<< HEAD
 		if (!get_rx_fifo(einfo)) {
+=======
+		einfo->rx_fifo = smem_get_entry(SMEM_GLINK_NATIVE_XPRT_FIFO_1,
+							&einfo->rx_fifo_size,
+							einfo->remote_proc_id,
+							SMEM_ITEM_CACHED_FLAG);
+		if (!einfo->rx_fifo) {
+>>>>>>> p9x
 			srcu_read_unlock(&einfo->use_ref, rcu_id);
 			return;
 		}
@@ -853,14 +904,23 @@ static void __rx_worker(struct edge_info *einfo, bool atomic_ctx)
 		srcu_read_unlock(&einfo->use_ref, rcu_id);
 		return;
 	}
+<<<<<<< HEAD
 	if (!atomic_ctx) {
 		if (einfo->tx_resume_needed && fifo_write_avail(einfo)) {
+=======
+	if (!atomic_ctx && fifo_write_avail(einfo)) {
+		if (einfo->tx_resume_needed) {
+>>>>>>> p9x
 			einfo->tx_resume_needed = false;
 			einfo->xprt_if.glink_core_if_ptr->tx_resume(
 							&einfo->xprt_if);
 		}
 		spin_lock_irqsave(&einfo->write_lock, flags);
+<<<<<<< HEAD
 		if (waitqueue_active(&einfo->tx_blocked_queue)) {
+=======
+		if (einfo->tx_blocked_signal_sent) {
+>>>>>>> p9x
 			einfo->tx_blocked_signal_sent = false;
 			trigger_wakeup = true;
 		}
@@ -1159,6 +1219,7 @@ static void __rx_worker(struct edge_info *einfo, bool atomic_ctx)
 }
 
 /**
+<<<<<<< HEAD
  * rx_worker_atomic() - worker function to process received command in atomic
  *			context.
  * @param:	The param parameter passed during initialization of the tasklet.
@@ -1171,6 +1232,8 @@ static void rx_worker_atomic(unsigned long param)
 }
 
 /**
+=======
+>>>>>>> p9x
  * rx_worker() - worker function to process received commands
  * @work:	kwork associated with the edge to process commands on.
  */
@@ -1186,10 +1249,14 @@ irqreturn_t irq_handler(int irq, void *priv)
 {
 	struct edge_info *einfo = (struct edge_info *)priv;
 
+<<<<<<< HEAD
 	if (einfo->rx_reset_reg)
 		writel_relaxed(einfo->out_irq_mask, einfo->rx_reset_reg);
 
 	tasklet_hi_schedule(&einfo->tasklet);
+=======
+	queue_kthread_work(&einfo->kworker, &einfo->kwork);
+>>>>>>> p9x
 	einfo->rx_irq_count++;
 
 	return IRQ_HANDLED;
@@ -1975,6 +2042,7 @@ static int tx_data(struct glink_transport_if *if_ptr, uint16_t cmd_id,
 		cmd.size_left);
 	spin_unlock_irqrestore(&einfo->write_lock, flags);
 
+<<<<<<< HEAD
 	/* Fake tx_done for intentless since its not supported over the wire */
 	if (einfo->intentless) {
 		spin_lock_irqsave(&einfo->rx_lock, flags);
@@ -1984,6 +2052,8 @@ static int tx_data(struct glink_transport_if *if_ptr, uint16_t cmd_id,
 		spin_unlock_irqrestore(&einfo->rx_lock, flags);
 	}
 
+=======
+>>>>>>> p9x
 	srcu_read_unlock(&einfo->use_ref, rcu_id);
 	return cmd.size;
 }
@@ -2017,6 +2087,7 @@ static int tx_cmd_tracer_pkt(struct glink_transport_if *if_ptr, uint32_t lcid,
 }
 
 /**
+<<<<<<< HEAD
  * get_power_vote_ramp_time() - Get the ramp time required for the power
  *				votes to be applied
  * @if_ptr:	The transport interface on which power voting is requested.
@@ -2062,6 +2133,8 @@ static int power_unvote(struct glink_transport_if *if_ptr)
 }
 
 /**
+=======
+>>>>>>> p9x
  * negotiate_features_v1() - determine what features of a version can be used
  * @if_ptr:	The transport for which features are negotiated for.
  * @version:	The version negotiated.
@@ -2103,9 +2176,12 @@ static void init_xprt_if(struct edge_info *einfo)
 	einfo->xprt_if.mask_rx_irq = mask_rx_irq;
 	einfo->xprt_if.wait_link_down = wait_link_down;
 	einfo->xprt_if.tx_cmd_tracer_pkt = tx_cmd_tracer_pkt;
+<<<<<<< HEAD
 	einfo->xprt_if.get_power_vote_ramp_time = get_power_vote_ramp_time;
 	einfo->xprt_if.power_vote = power_vote;
 	einfo->xprt_if.power_unvote = power_unvote;
+=======
+>>>>>>> p9x
 }
 
 /**
@@ -2124,6 +2200,7 @@ static void init_xprt_cfg(struct edge_info *einfo, const char *name)
 }
 
 /**
+<<<<<<< HEAD
  * parse_qos_dt_params() - Parse the power states from DT
  * @dev:	Reference to the platform device for a specific edge.
  * @einfo:	Edge information for the edge probe function is called.
@@ -2177,6 +2254,8 @@ mem_alloc_fail:
 }
 
 /**
+=======
+>>>>>>> p9x
  * subsys_name_to_id() - translate a subsystem name to a processor id
  * @name:	The subsystem name to look up.
  *
@@ -2199,15 +2278,21 @@ static int subsys_name_to_id(const char *name)
 		return SMEM_RPM;
 	if (!strcmp(name, "wcnss"))
 		return SMEM_WCNSS;
+<<<<<<< HEAD
 	if (!strcmp(name, "spss"))
 		return SMEM_SPSS;
+=======
+>>>>>>> p9x
 	return -ENODEV;
 }
 
 static int glink_smem_native_probe(struct platform_device *pdev)
 {
 	struct device_node *node;
+<<<<<<< HEAD
 	struct device_node *phandle_node;
+=======
+>>>>>>> p9x
 	struct edge_info *einfo;
 	int rc;
 	char *key;
@@ -2270,7 +2355,10 @@ static int glink_smem_native_probe(struct platform_device *pdev)
 	init_waitqueue_head(&einfo->tx_blocked_queue);
 	init_kthread_work(&einfo->kwork, rx_worker);
 	init_kthread_worker(&einfo->kworker);
+<<<<<<< HEAD
 	tasklet_init(&einfo->tasklet, rx_worker_atomic, (unsigned long)einfo);
+=======
+>>>>>>> p9x
 	einfo->read_from_fifo = read_from_fifo;
 	einfo->write_to_fifo = write_to_fifo;
 	init_srcu_struct(&einfo->use_ref);
@@ -2323,19 +2411,26 @@ static int glink_smem_native_probe(struct platform_device *pdev)
 	einfo->tx_fifo = smem_alloc(SMEM_GLINK_NATIVE_XPRT_FIFO_0,
 							einfo->tx_fifo_size,
 							einfo->remote_proc_id,
+<<<<<<< HEAD
 							0);
+=======
+							SMEM_ITEM_CACHED_FLAG);
+>>>>>>> p9x
 	if (!einfo->tx_fifo) {
 		pr_err("%s: smem alloc of tx fifo failed\n", __func__);
 		rc = -ENOMEM;
 		goto smem_alloc_fail;
 	}
 
+<<<<<<< HEAD
 	key = "qcom,qos-config";
 	phandle_node = of_parse_phandle(node, key, 0);
 	if (phandle_node && !(of_get_glink_core_qos_cfg(phandle_node,
 							&einfo->xprt_cfg)))
 		parse_qos_dt_params(node, einfo);
 
+=======
+>>>>>>> p9x
 	rc = glink_core_register_transport(&einfo->xprt_if, &einfo->xprt_cfg);
 	if (rc == -EPROBE_DEFER)
 		goto reg_xprt_fail;
@@ -2371,7 +2466,10 @@ smem_alloc_fail:
 	flush_kthread_worker(&einfo->kworker);
 	kthread_stop(einfo->task);
 	einfo->task = NULL;
+<<<<<<< HEAD
 	tasklet_kill(&einfo->tasklet);
+=======
+>>>>>>> p9x
 kthread_fail:
 	iounmap(einfo->out_irq_reg);
 ioremap_fail:
@@ -2457,7 +2555,10 @@ static int glink_rpm_native_probe(struct platform_device *pdev)
 	init_waitqueue_head(&einfo->tx_blocked_queue);
 	init_kthread_work(&einfo->kwork, rx_worker);
 	init_kthread_worker(&einfo->kworker);
+<<<<<<< HEAD
 	tasklet_init(&einfo->tasklet, rx_worker_atomic, (unsigned long)einfo);
+=======
+>>>>>>> p9x
 	einfo->intentless = true;
 	einfo->read_from_fifo = memcpy32_fromio;
 	einfo->write_to_fifo = memcpy32_toio;
@@ -2504,17 +2605,30 @@ static int glink_rpm_native_probe(struct platform_device *pdev)
 								RPM_TOC_SIZE);
 	tocp = (uint32_t *)toc;
 	if (*tocp != RPM_TOC_ID) {
+<<<<<<< HEAD
 		rc = -ENODEV;
 		pr_err("%s: TOC id %d is not valid\n", __func__, *tocp);
 		goto toc_init_fail;
+=======
+		rc = ENODEV;
+		pr_err("%s: TOC id %d is not valid\n", __func__, *tocp);
+		goto kthread_fail;
+>>>>>>> p9x
 	}
 	++tocp;
 	num_toc_entries = *tocp;
 	if (num_toc_entries > RPM_MAX_TOC_ENTRIES) {
+<<<<<<< HEAD
 		rc = -ENODEV;
 		pr_err("%s: %d is too many toc entries\n", __func__,
 							num_toc_entries);
 		goto toc_init_fail;
+=======
+		rc = ENODEV;
+		pr_err("%s: %d is too many toc entries\n", __func__,
+							num_toc_entries);
+		goto kthread_fail;
+>>>>>>> p9x
 	}
 	++tocp;
 
@@ -2544,9 +2658,15 @@ static int glink_rpm_native_probe(struct platform_device *pdev)
 		break;
 	}
 	if (!einfo->tx_fifo) {
+<<<<<<< HEAD
 		rc = -ENODEV;
 		pr_err("%s: tx fifo not found\n", __func__);
 		goto toc_init_fail;
+=======
+		rc = ENODEV;
+		pr_err("%s: tx fifo not found\n", __func__);
+		goto kthread_fail;
+>>>>>>> p9x
 	}
 
 	tocp = (uint32_t *)toc;
@@ -2577,9 +2697,15 @@ static int glink_rpm_native_probe(struct platform_device *pdev)
 		break;
 	}
 	if (!einfo->rx_fifo) {
+<<<<<<< HEAD
 		rc = -ENODEV;
 		pr_err("%s: rx fifo not found\n", __func__);
 		goto toc_init_fail;
+=======
+		rc = ENODEV;
+		pr_err("%s: rx fifo not found\n", __func__);
+		goto kthread_fail;
+>>>>>>> p9x
 	}
 
 	einfo->tx_ch_desc->write_index = 0;
@@ -2615,11 +2741,17 @@ static int glink_rpm_native_probe(struct platform_device *pdev)
 request_irq_fail:
 	glink_core_unregister_transport(&einfo->xprt_if);
 reg_xprt_fail:
+<<<<<<< HEAD
 toc_init_fail:
 	flush_kthread_worker(&einfo->kworker);
 	kthread_stop(einfo->task);
 	einfo->task = NULL;
 	tasklet_kill(&einfo->tasklet);
+=======
+	flush_kthread_worker(&einfo->kworker);
+	kthread_stop(einfo->task);
+	einfo->task = NULL;
+>>>>>>> p9x
 kthread_fail:
 	iounmap(msgram);
 msgram_ioremap_fail:
@@ -2635,6 +2767,7 @@ edge_info_alloc_fail:
 	return rc;
 }
 
+<<<<<<< HEAD
 static int glink_mailbox_probe(struct platform_device *pdev)
 {
 	struct device_node *node;
@@ -2890,6 +3023,8 @@ edge_info_alloc_fail:
 	return rc;
 }
 
+=======
+>>>>>>> p9x
 #if defined(CONFIG_DEBUG_FS)
 /**
  * debug_edge() - generates formatted text output displaying current edge state
@@ -3013,6 +3148,7 @@ static struct platform_driver glink_rpm_native_driver = {
 	},
 };
 
+<<<<<<< HEAD
 static struct of_device_id mailbox_match_table[] = {
 	{ .compatible = "qcom,glink-mailbox-xprt" },
 	{},
@@ -3027,6 +3163,8 @@ static struct platform_driver glink_mailbox_driver = {
 	},
 };
 
+=======
+>>>>>>> p9x
 static int __init glink_smem_native_xprt_init(void)
 {
 	int rc;
@@ -3045,6 +3183,7 @@ static int __init glink_smem_native_xprt_init(void)
 		return rc;
 	}
 
+<<<<<<< HEAD
 	rc = platform_driver_register(&glink_mailbox_driver);
 	if (rc) {
 		pr_err("%s: glink_mailbox_driver register failed %d\n",
@@ -3052,6 +3191,8 @@ static int __init glink_smem_native_xprt_init(void)
 		return rc;
 	}
 
+=======
+>>>>>>> p9x
 	return 0;
 }
 arch_initcall(glink_smem_native_xprt_init);

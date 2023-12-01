@@ -322,6 +322,7 @@ config HAVE_ARCH_SECCOMP_FILTER
 	  - secure_computing return value is checked and a return value of -1
 	    results in the system call being skipped immediately.
 	  - seccomp syscall wired up
+<<<<<<< HEAD
 
 	  For best performance, an arch should use seccomp_phase1 and
 	  seccomp_phase2 directly.  It should call seccomp_phase1 for all
@@ -333,6 +334,8 @@ config HAVE_ARCH_SECCOMP_FILTER
 	  As an additional optimization, an arch may provide seccomp_data
 	  directly to seccomp_phase1; this avoids multiple calls
 	  to the syscall_xyz helpers for every syscall.
+=======
+>>>>>>> p9x
 
 config SECCOMP_FILTER
 	def_bool y
@@ -411,6 +414,7 @@ config CC_STACKPROTECTOR_STRONG
 
 endchoice
 
+<<<<<<< HEAD
 config HAVE_ARCH_WITHIN_STACK_FRAMES
 	bool
 	help
@@ -420,6 +424,8 @@ config HAVE_ARCH_WITHIN_STACK_FRAMES
 	  and similar) by implementing an inline arch_within_stack_frames(),
 	  which is used by CONFIG_HARDENED_USERCOPY.
 
+=======
+>>>>>>> p9x
 config HAVE_CONTEXT_TRACKING
 	bool
 	help
@@ -483,6 +489,7 @@ config HAVE_UNDERSCORE_SYMBOL_PREFIX
 	  Some architectures generate an _ in front of C symbols; things like
 	  module loading and assembly files need to know about this.
 
+<<<<<<< HEAD
 config HAVE_IRQ_EXIT_ON_IRQ_STACK
 	bool
 	help
@@ -493,6 +500,8 @@ config HAVE_IRQ_EXIT_ON_IRQ_STACK
 	  This spares a stack switch and improves cache usage on softirq
 	  processing.
 
+=======
+>>>>>>> p9x
 config HAVE_ARCH_MMAP_RND_BITS
 	bool
 	help
@@ -561,6 +570,7 @@ config ARCH_MMAP_RND_COMPAT_BITS
 	  This value can be changed after boot using the
 	  /proc/sys/vm/mmap_rnd_compat_bits tunable
 
+<<<<<<< HEAD
 config ARCH_HAS_ELF_RANDOMIZE
 	bool
 	help
@@ -568,6 +578,8 @@ config ARCH_HAS_ELF_RANDOMIZE
 	  stack, mmap, brk, and ET_DYN. Defined functions:
 	  - arch_mmap_rnd()
 
+=======
+>>>>>>> p9x
 #
 # ABI hall of shame
 #

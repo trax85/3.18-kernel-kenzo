@@ -30,7 +30,10 @@ struct netns_sysctl_ipv6 {
 	int flowlabel_consistency;
 	int auto_flowlabels;
 	int icmpv6_time;
+<<<<<<< HEAD
 	int anycast_src_echo_reply;
+=======
+>>>>>>> p9x
 	int fwmark_reflect;
 };
 

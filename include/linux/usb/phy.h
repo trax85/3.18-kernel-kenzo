@@ -105,6 +105,12 @@ struct usb_phy {
 	/* enable/disable VBUS */
 	int	(*set_vbus)(struct usb_phy *x, int on);
 
+	/* set additional settings parameters post-init */
+	int	(*set_params)(struct usb_phy *x);
+
+	/* do additional settings after complete initialization */
+	int	(*post_init)(struct usb_phy *x);
+
 	/* effective for B devices, ignored for A-peripheral */
 	int	(*set_power)(struct usb_phy *x,
 				unsigned mA);
@@ -130,12 +136,17 @@ struct usb_phy {
 	int	(*reset)(struct usb_phy *x);
 
 	/* for notification of usb_phy_dbg_events */
+<<<<<<< HEAD
 	void    (*dbg_event)(struct usb_phy *x,
 			char *event, int msg1, int msg2);
 	/* update DP/DM state */
 	int	(*change_dpdm)(struct usb_phy *x, int dpdm);
 	/* return linestate with Idp_src (used for DCD with USB2 PHY) */
 	int	(*dpdm_with_idp_src)(struct usb_phy *x);
+=======
+	void	(*dbg_event)(struct usb_phy *x,
+			char *event, int msg1, int msg2);
+>>>>>>> p9x
 };
 
 /**
@@ -211,6 +222,27 @@ usb_phy_vbus_off(struct usb_phy *x)
 }
 
 static inline int
+<<<<<<< HEAD
+=======
+usb_phy_set_params(struct usb_phy *x)
+{
+	if (x && x->set_params)
+		return x->set_params(x);
+
+	return 0;
+}
+
+static inline int
+usb_phy_post_init(struct usb_phy *x)
+{
+	if (x && x->post_init)
+		return x->post_init(x);
+
+	return 0;
+}
+
+static inline int
+>>>>>>> p9x
 usb_phy_reset(struct usb_phy *x)
 {
 	if (x && x->reset)
@@ -336,6 +368,7 @@ usb_phy_dbg_events(struct usb_phy *x,
 		x->dbg_event(x, event, msg1, msg2);
 }
 
+<<<<<<< HEAD
 static inline int
 usb_phy_dpdm_with_idp_src(struct usb_phy *x)
 {
@@ -344,6 +377,8 @@ usb_phy_dpdm_with_idp_src(struct usb_phy *x)
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 /* notifiers */
 static inline int
 usb_register_notifier(struct usb_phy *x, struct notifier_block *nb)

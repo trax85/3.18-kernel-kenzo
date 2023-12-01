@@ -40,6 +40,7 @@ struct wm5110_priv {
 	struct arizona_fll fll[2];
 };
 
+<<<<<<< HEAD
 static const struct wm_adsp_region wm5110_dsp1_regions[] = {
 	{ .type = WMFW_ADSP2_PM, .base = 0x100000 },
 	{ .type = WMFW_ADSP2_ZM, .base = 0x180000 },
@@ -75,6 +76,8 @@ static const struct wm_adsp_region *wm5110_dsp_regions[] = {
 	wm5110_dsp4_regions,
 };
 
+=======
+>>>>>>> p9x
 static const struct reg_default wm5110_sysclk_revd_patch[] = {
 	{ 0x3093, 0x1001 },
 	{ 0x30E3, 0x1301 },
@@ -136,7 +139,11 @@ static int wm5110_sysclk_ev(struct snd_soc_dapm_widget *w,
 {
 	struct snd_soc_codec *codec = w->codec;
 	struct arizona *arizona = dev_get_drvdata(codec->dev->parent);
+<<<<<<< HEAD
 	struct regmap *regmap = arizona->regmap;
+=======
+	struct regmap *regmap = codec->control_data;
+>>>>>>> p9x
 	const struct reg_default *patch = NULL;
 	int i, patch_size;
 
@@ -153,8 +160,13 @@ static int wm5110_sysclk_ev(struct snd_soc_dapm_widget *w,
 	case SND_SOC_DAPM_POST_PMU:
 		if (patch)
 			for (i = 0; i < patch_size; i++)
+<<<<<<< HEAD
 				regmap_write_async(regmap, patch[i].reg,
 						   patch[i].def);
+=======
+				regmap_write(regmap, patch[i].reg,
+					     patch[i].def);
+>>>>>>> p9x
 		break;
 
 	default:

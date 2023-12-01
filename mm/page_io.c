@@ -25,8 +25,16 @@
 #include <linux/ratelimit.h>
 #include <asm/pgtable.h>
 
+<<<<<<< HEAD
 #define ERROR_LOG_RATE_MS 1000
 static unsigned long error_time;
+=======
+/*
+ * We don't need to see swap errors more than once every 1 second to know
+ * that a problem is occurring.
+ */
+#define SWAP_ERROR_LOG_RATE_MS 1000
+>>>>>>> p9x
 
 static struct bio *get_swap_bio(gfp_t gfp_flags,
 				struct page *page, bio_end_io_t end_io)
@@ -51,6 +59,7 @@ void end_swap_bio_write(struct bio *bio, int err)
 {
 	const int uptodate = test_bit(BIO_UPTODATE, &bio->bi_flags);
 	struct page *page = bio->bi_io_vec[0].bv_page;
+	static unsigned long swap_error_rs_time;
 
 	if (!uptodate) {
 		SetPageError(page);
@@ -63,8 +72,14 @@ void end_swap_bio_write(struct bio *bio, int err)
 		 * Also clear PG_reclaim to avoid rotate_reclaimable_page()
 		 */
 		set_page_dirty(page);
+<<<<<<< HEAD
 		if (printk_timed_ratelimit(&error_time, ERROR_LOG_RATE_MS))
 			pr_info("Write-error on swap-device (%u:%u:%llu)\n",
+=======
+		if (printk_timed_ratelimit(&swap_error_rs_time,
+					   SWAP_ERROR_LOG_RATE_MS))
+			printk(KERN_ALERT "Write-error on swap-device (%u:%u:%Lu)\n",
+>>>>>>> p9x
 				imajor(bio->bi_bdev->bd_inode),
 				iminor(bio->bi_bdev->bd_inode),
 				(unsigned long long)bio->bi_iter.bi_sector);
@@ -86,7 +101,11 @@ void end_swap_bio_read(struct bio *bio, int err)
 			pr_info("Read-error on swap-device (%u:%u:%llu)\n",
 				imajor(bio->bi_bdev->bd_inode),
 				iminor(bio->bi_bdev->bd_inode),
+<<<<<<< HEAD
 				(unsigned long long)bio->bi_iter.bi_sector);
+=======
+				(unsigned long long)bio->bi_sector);
+>>>>>>> p9x
 		goto out;
 	}
 

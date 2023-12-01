@@ -81,6 +81,12 @@ enum {
 };
 
 static struct dentry *debugfs_dir;
+<<<<<<< HEAD
+=======
+
+/* Translate memory window 0,1 to BAR 2,4 */
+#define MW_TO_BAR(mw)	(mw * 2 + 2)
+>>>>>>> p9x
 
 #define BWD_LINK_RECOVERY_TIME	500
 
@@ -961,10 +967,36 @@ static int ntb_xeon_setup(struct ntb_device *ndev)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	if (val & SNB_PPD_DEV_TYPE)
+		ndev->dev_type = NTB_DEV_USD;
+	else
+		ndev->dev_type = NTB_DEV_DSD;
+
+	ndev->reg_ofs.pdb = ndev->reg_base + SNB_PDOORBELL_OFFSET;
+	ndev->reg_ofs.pdb_mask = ndev->reg_base + SNB_PDBMSK_OFFSET;
+	ndev->reg_ofs.sbar2_xlat = ndev->reg_base + SNB_SBAR2XLAT_OFFSET;
+	ndev->reg_ofs.sbar4_xlat = ndev->reg_base + SNB_SBAR4XLAT_OFFSET;
+>>>>>>> p9x
 	ndev->reg_ofs.lnk_cntl = ndev->reg_base + SNB_NTBCNTL_OFFSET;
 	ndev->reg_ofs.lnk_stat = ndev->reg_base + SNB_SLINK_STATUS_OFFSET;
 	ndev->reg_ofs.spci_cmd = ndev->reg_base + SNB_PCICMD_OFFSET;
 
+<<<<<<< HEAD
+=======
+	if (ndev->conn_type == NTB_CONN_B2B) {
+		ndev->reg_ofs.sdb = ndev->reg_base + SNB_B2B_DOORBELL_OFFSET;
+		ndev->reg_ofs.spad_write = ndev->reg_base + SNB_B2B_SPAD_OFFSET;
+		ndev->limits.max_spads = SNB_MAX_B2B_SPADS;
+	} else {
+		ndev->reg_ofs.sdb = ndev->reg_base + SNB_SDOORBELL_OFFSET;
+		ndev->reg_ofs.spad_write = ndev->reg_base + SNB_SPAD_OFFSET;
+		ndev->limits.max_spads = SNB_MAX_COMPAT_SPADS;
+	}
+
+	ndev->limits.max_db_bits = SNB_MAX_DB_BITS;
+>>>>>>> p9x
 	ndev->limits.msix_cnt = SNB_MSIX_CNT;
 	ndev->bits_per_vector = SNB_DB_BITS_PER_VEC;
 
@@ -1040,12 +1072,22 @@ static int ntb_device_setup(struct ntb_device *ndev)
 
 	if (rc)
 		return rc;
+<<<<<<< HEAD
 
 	if (ndev->conn_type == NTB_CONN_B2B)
 		/* Enable Bus Master and Memory Space on the secondary side */
 		writew(PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER,
 		       ndev->reg_ofs.spci_cmd);
 
+=======
+
+	dev_info(&ndev->pdev->dev, "Device Type = %s\n",
+		 ndev->dev_type == NTB_DEV_USD ? "USD/DSP" : "DSD/USP");
+
+	/* Enable Bus Master and Memory Space on the secondary side */
+	writew(PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER, ndev->reg_ofs.spci_cmd);
+
+>>>>>>> p9x
 	return 0;
 }
 
@@ -1425,6 +1467,7 @@ static void ntb_free_callbacks(struct ntb_device *ndev)
 	kfree(ndev->db_cb);
 }
 
+<<<<<<< HEAD
 static ssize_t ntb_debugfs_read(struct file *filp, char __user *ubuf,
 				size_t count, loff_t *offp)
 {
@@ -1520,6 +1563,8 @@ static const struct file_operations ntb_debugfs_info = {
 	.read = ntb_debugfs_read,
 };
 
+=======
+>>>>>>> p9x
 static void ntb_setup_debugfs(struct ntb_device *ndev)
 {
 	if (!debugfs_initialized())
@@ -1530,11 +1575,14 @@ static void ntb_setup_debugfs(struct ntb_device *ndev)
 
 	ndev->debugfs_dir = debugfs_create_dir(pci_name(ndev->pdev),
 					       debugfs_dir);
+<<<<<<< HEAD
 	if (ndev->debugfs_dir)
 		ndev->debugfs_info = debugfs_create_file("info", S_IRUSR,
 							 ndev->debugfs_dir,
 							 ndev,
 							 &ntb_debugfs_info);
+=======
+>>>>>>> p9x
 }
 
 static void ntb_free_debugfs(struct ntb_device *ndev)
@@ -1547,6 +1595,7 @@ static void ntb_free_debugfs(struct ntb_device *ndev)
 	}
 }
 
+<<<<<<< HEAD
 static void ntb_hw_link_up(struct ntb_device *ndev)
 {
 	if (ndev->conn_type == NTB_CONN_TRANSPARENT)
@@ -1701,6 +1750,8 @@ static int ntb_device_detect(struct ntb_device *ndev)
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 static int ntb_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 {
 	struct ntb_device *ndev;

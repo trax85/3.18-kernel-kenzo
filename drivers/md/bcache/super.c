@@ -725,7 +725,8 @@ static void bcache_device_detach(struct bcache_device *d)
 		bch_uuid_write(d->c);
 	}
 
-	bcache_device_unlink(d);
+	if (!d->flush_done)
+		bcache_device_unlink(d);
 
 	d->c->devices[d->id] = NULL;
 	closure_put(&d->c->caching);
@@ -1121,7 +1122,15 @@ static void cached_dev_flush(struct closure *cl)
 	struct bcache_device *d = &dc->disk;
 
 	mutex_lock(&bch_register_lock);
+<<<<<<< HEAD
 	bcache_device_unlink(d);
+=======
+	d->flush_done = 1;
+
+	if (d->c)
+		bcache_device_unlink(d);
+
+>>>>>>> p9x
 	mutex_unlock(&bch_register_lock);
 
 	bch_cache_accounting_destroy(&dc->accounting);
@@ -1414,6 +1423,9 @@ static void cache_set_flush(struct closure *cl)
 	struct cache *ca;
 	struct btree *b;
 	unsigned i;
+
+	if (!c)
+		closure_return(cl);
 
 	if (!c)
 		closure_return(cl);
@@ -2158,7 +2170,10 @@ static int __init bcache_init(void)
 	bcache_major = register_blkdev(0, "bcache");
 	if (bcache_major < 0) {
 		unregister_reboot_notifier(&reboot);
+<<<<<<< HEAD
 		mutex_destroy(&bch_register_lock);
+=======
+>>>>>>> p9x
 		return bcache_major;
 	}
 

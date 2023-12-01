@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, 2017, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -50,9 +54,12 @@ struct module;
  * @sysmon_shutdown_ret: Return value for the call to sysmon_send_shutdown
  * @system_debug: If "set", triggers a device restart when the
  * subsystem's wdog bite handler is invoked.
+<<<<<<< HEAD
  * @ignore_ssr_failure: SSR failures are usually fatal and results in panic. If
  * set will ignore failure.
  * @edge: GLINK logical name of the subsystem
+=======
+>>>>>>> p9x
  */
 struct subsys_desc {
 	const char *name;
@@ -69,14 +76,20 @@ struct subsys_desc {
 	irqreturn_t (*err_fatal_handler) (int irq, void *dev_id);
 	irqreturn_t (*stop_ack_handler) (int irq, void *dev_id);
 	irqreturn_t (*wdog_bite_handler) (int irq, void *dev_id);
+<<<<<<< HEAD
 	irqreturn_t (*generic_handler)(int irq, void *dev_id);
+=======
+>>>>>>> p9x
 	int is_not_loadable;
 	int err_fatal_gpio;
 	unsigned int err_fatal_irq;
 	unsigned int err_ready_irq;
 	unsigned int stop_ack_irq;
 	unsigned int wdog_bite_irq;
+<<<<<<< HEAD
 	unsigned int generic_irq;
+=======
+>>>>>>> p9x
 	int force_stop_gpio;
 	int ramdump_disable_gpio;
 	int shutdown_ack_gpio;
@@ -87,8 +100,11 @@ struct subsys_desc {
 	u32 sysmon_pid;
 	int sysmon_shutdown_ret;
 	bool system_debug;
+<<<<<<< HEAD
 	bool ignore_ssr_failure;
 	const char *edge;
+=======
+>>>>>>> p9x
 };
 
 /**
@@ -125,10 +141,15 @@ extern void subsys_unregister(struct subsys_device *dev);
 extern void subsys_default_online(struct subsys_device *dev);
 extern void subsys_set_crash_status(struct subsys_device *dev, bool crashed);
 extern bool subsys_get_crash_status(struct subsys_device *dev);
+<<<<<<< HEAD
 extern void subsys_set_error(struct subsys_device *dev, const char *error_msg);
 void notify_proxy_vote(struct device *device);
 void notify_proxy_unvote(struct device *device);
 void complete_err_ready(struct subsys_device *subsys);
+=======
+void notify_proxy_vote(struct device *device);
+void notify_proxy_unvote(struct device *device);
+>>>>>>> p9x
 extern int wait_for_shutdown_ack(struct subsys_desc *desc);
 #else
 

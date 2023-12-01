@@ -127,6 +127,7 @@ struct ceph_mdsmap *ceph_mdsmap_decode(void **p, void *end)
 		     i+1, n, global_id, mds, inc,
 		     ceph_pr_addr(&addr.in_addr),
 		     ceph_mds_state_name(state));
+<<<<<<< HEAD
 
 		if (mds < 0 || mds >= m->m_max_mds || state <= 0)
 			continue;
@@ -148,6 +149,28 @@ struct ceph_mdsmap *ceph_mdsmap_decode(void **p, void *end)
 				       ceph_decode_32(&pexport_targets);
 		} else {
 			info->export_targets = NULL;
+=======
+		if (mds >= 0 && mds < m->m_max_mds && state > 0) {
+			m->m_info[mds].global_id = global_id;
+			m->m_info[mds].state = state;
+			m->m_info[mds].addr = addr;
+			m->m_info[mds].laggy =
+				(laggy_since.tv_sec != 0 ||
+				 laggy_since.tv_nsec != 0);
+			m->m_info[mds].num_export_targets = num_export_targets;
+			if (num_export_targets) {
+				m->m_info[mds].export_targets =
+					kcalloc(num_export_targets, sizeof(u32),
+						GFP_NOFS);
+				if (m->m_info[mds].export_targets == NULL)
+					goto badmem;
+				for (j = 0; j < num_export_targets; j++)
+					m->m_info[mds].export_targets[j] =
+					       ceph_decode_32(&pexport_targets);
+			} else {
+				m->m_info[mds].export_targets = NULL;
+			}
+>>>>>>> p9x
 		}
 	}
 

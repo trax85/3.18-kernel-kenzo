@@ -27,6 +27,7 @@
 #include <asm/mach/arch.h>
 #include <asm/mach-types.h>
 
+<<<<<<< HEAD
 
 #ifdef CONFIG_SMP
 extern struct of_cpu_method __cpu_method_of_table[];
@@ -53,12 +54,18 @@ static int __init set_smp_ops_by_method(struct device_node *node)
 }
 #else
 static inline int set_smp_ops_by_method(struct device_node *node)
+=======
+void * __init early_init_dt_alloc_memory_arch(u64 size, u64 align)
+>>>>>>> p9x
 {
 	return 1;
 }
 #endif
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 /*
  * arm_dt_init_cpu_maps - Function retrieves cpu nodes from the device tree
  * and builds the cpu logical map array containing MPIDR values related to
@@ -87,6 +94,8 @@ void __init arm_dt_init_cpu_maps(void)
 		return;
 
 	for_each_child_of_node(cpus, cpu) {
+		const __be32 *cell;
+		int prop_bytes;
 		u32 hwid;
 
 		if (of_node_cmp(cpu->type, "cpu"))
@@ -98,17 +107,23 @@ void __init arm_dt_init_cpu_maps(void)
 		 * properties is considered invalid to build the
 		 * cpu_logical_map.
 		 */
-		if (of_property_read_u32(cpu, "reg", &hwid)) {
+		cell = of_get_property(cpu, "reg", &prop_bytes);
+		if (!cell || prop_bytes < sizeof(*cell)) {
 			pr_debug(" * %s missing reg property\n",
 				     cpu->full_name);
 			return;
 		}
 
 		/*
-		 * 8 MSBs must be set to 0 in the DT since the reg property
+		 * Bits n:24 must be set to 0 in the DT since the reg property
 		 * defines the MPIDR[23:0].
 		 */
-		if (hwid & ~MPIDR_HWID_BITMASK)
+		do {
+			hwid = be32_to_cpu(*cell++);
+			prop_bytes -= sizeof(*cell);
+		} while (!hwid && prop_bytes > 0);
+
+		if (prop_bytes || (hwid & ~MPIDR_HWID_BITMASK))
 			return;
 
 		/*
@@ -169,10 +184,14 @@ void __init arm_dt_init_cpu_maps(void)
 	 * a reg property, the DT CPU list can be considered valid and the
 	 * logical map created in smp_setup_processor_id() can be overridden
 	 */
-	for (i = 0; i < cpuidx; i++) {
-		set_cpu_possible(i, true);
-		cpu_logical_map(i) = tmp_map[i];
-		pr_debug("cpu logical map 0x%x\n", cpu_logical_map(i));
+	for (i = 0; i < nr_cpu_ids; i++) {
+		if (i < cpuidx) {
+			set_cpu_possible(i, true);
+			cpu_logical_map(i) = tmp_map[i];
+			pr_debug("cpu logical map 0x%x\n", cpu_logical_map(i));
+		} else {
+			set_cpu_possible(i, false);
+		}
 	}
 }
 
@@ -181,6 +200,7 @@ bool arch_match_cpu_phys_id(int cpu, u64 phys_id)
 	return phys_id == cpu_logical_map(cpu);
 }
 
+<<<<<<< HEAD
 static const void * __init arch_get_next_mach(const char *const **match)
 {
 	static const struct machine_desc *mdesc = __arch_info_begin;
@@ -194,6 +214,8 @@ static const void * __init arch_get_next_mach(const char *const **match)
 	return m;
 }
 
+=======
+>>>>>>> p9x
 /**
  * setup_machine_fdt - Machine setup when an dtb was passed to the kernel
  * @dt_phys: physical address of dt blob
@@ -203,7 +225,15 @@ static const void * __init arch_get_next_mach(const char *const **match)
  */
 const struct machine_desc * __init setup_machine_fdt(unsigned int dt_phys)
 {
+<<<<<<< HEAD
 	const struct machine_desc *mdesc, *mdesc_best = NULL;
+=======
+	struct boot_param_header *devtree;
+	const struct machine_desc *mdesc, *mdesc_best = NULL;
+	unsigned int score, mdesc_score = ~1;
+	unsigned long dt_root;
+	const char *model;
+>>>>>>> p9x
 
 #ifdef CONFIG_ARCH_MULTIPLATFORM
 	DT_MACHINE_START(GENERIC_DT, "Generic DT based system")
@@ -220,7 +250,10 @@ const struct machine_desc * __init setup_machine_fdt(unsigned int dt_phys)
 	if (!mdesc) {
 		const char *prop;
 		int size;
+<<<<<<< HEAD
 		unsigned long dt_root;
+=======
+>>>>>>> p9x
 
 		early_print("\nError: unrecognized/unsupported "
 			    "device tree compatible list:\n[ ");

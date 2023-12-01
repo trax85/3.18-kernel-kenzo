@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2010-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2010-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -19,6 +23,12 @@
 #include "kgsl_device.h"
 #include "kgsl_trace.h"
 
+<<<<<<< HEAD
+=======
+#define FAST_BUS 1
+#define SLOW_BUS -1
+
+>>>>>>> p9x
 /*
  * "SLEEP" is generic counting both NAP & SLUMBER
  * PERIODS generally won't exceed 9 for the relavent 150msec
@@ -127,7 +137,10 @@ EXPORT_SYMBOL(kgsl_pwrscale_busy);
  */
 void kgsl_pwrscale_update_stats(struct kgsl_device *device)
 {
+<<<<<<< HEAD
 	struct kgsl_pwrctrl *pwrctrl = &device->pwrctrl;
+=======
+>>>>>>> p9x
 	struct kgsl_pwrscale *psc = &device->pwrscale;
 	BUG_ON(!mutex_is_locked(&device->mutex));
 
@@ -151,8 +164,11 @@ void kgsl_pwrscale_update_stats(struct kgsl_device *device)
 		device->pwrscale.accum_stats.busy_time += stats.busy_time;
 		device->pwrscale.accum_stats.ram_time += stats.ram_time;
 		device->pwrscale.accum_stats.ram_wait += stats.ram_wait;
+<<<<<<< HEAD
 		pwrctrl->clock_times[pwrctrl->active_pwrlevel] +=
 				stats.busy_time;
+=======
+>>>>>>> p9x
 	}
 }
 EXPORT_SYMBOL(kgsl_pwrscale_update_stats);
@@ -189,21 +205,32 @@ EXPORT_SYMBOL(kgsl_pwrscale_update);
 /*
  * kgsl_pwrscale_disable - temporarily disable the governor
  * @device: The device
+<<<<<<< HEAD
  * @turbo: Indicates if pwrlevel should be forced to turbo
+=======
+>>>>>>> p9x
  *
  * Temporarily disable the governor, to prevent interference
  * with profiling tools that expect a fixed clock frequency.
  * This function must be called with the device mutex locked.
  */
+<<<<<<< HEAD
 void kgsl_pwrscale_disable(struct kgsl_device *device, bool turbo)
+=======
+void kgsl_pwrscale_disable(struct kgsl_device *device)
+>>>>>>> p9x
 {
 	BUG_ON(!mutex_is_locked(&device->mutex));
 	if (device->pwrscale.devfreqptr)
 		queue_work(device->pwrscale.devfreq_wq,
 			&device->pwrscale.devfreq_suspend_ws);
 	device->pwrscale.enabled = false;
+<<<<<<< HEAD
 	if (turbo)
 		kgsl_pwrctrl_pwrlevel_change(device, KGSL_PWRLEVEL_TURBO);
+=======
+	kgsl_pwrctrl_pwrlevel_change(device, KGSL_PWRLEVEL_TURBO);
+>>>>>>> p9x
 }
 EXPORT_SYMBOL(kgsl_pwrscale_disable);
 
@@ -273,7 +300,11 @@ static bool popp_stable(struct kgsl_device *device)
 	if (test_bit(POPP_PUSH, &psc->popp_state))
 		return false;
 	if (!psc->popp_level &&
+<<<<<<< HEAD
 			(pwr->active_pwrlevel == pwr->min_pwrlevel))
+=======
+			pwr->active_pwrlevel != 0)
+>>>>>>> p9x
 		return false;
 	if (psc->history[KGSL_PWREVENT_STATE].events == NULL)
 		return false;
@@ -449,8 +480,12 @@ int kgsl_devfreq_target(struct device *dev, unsigned long *freq, u32 flags)
 	struct kgsl_device *device = dev_get_drvdata(dev);
 	struct kgsl_pwrctrl *pwr;
 	struct kgsl_pwrlevel *pwr_level;
+<<<<<<< HEAD
 	int level;
 	unsigned int i;
+=======
+	int level, i;
+>>>>>>> p9x
 	unsigned long cur_freq;
 
 	if (device == NULL)
@@ -478,12 +513,16 @@ int kgsl_devfreq_target(struct device *dev, unsigned long *freq, u32 flags)
 	/* If the governor recommends a new frequency, update it here */
 	if (*freq != cur_freq) {
 		level = pwr->max_pwrlevel;
+<<<<<<< HEAD
 		/*
 		 * Array index of pwrlevels[] should be within the permitted
 		 * power levels, i.e., from max_pwrlevel to min_pwrlevel.
 		 */
 		for (i = pwr->min_pwrlevel; (i >= pwr->max_pwrlevel
 					&& i <= pwr->min_pwrlevel); i--)
+=======
+		for (i = pwr->min_pwrlevel; i >= pwr->max_pwrlevel; i--)
+>>>>>>> p9x
 			if (*freq <= pwr->pwrlevels[i].gpu_freq) {
 				if (pwr->thermal_cycle == CYCLE_ACTIVE)
 					level = _thermal_adjust(pwr, i);
@@ -518,7 +557,11 @@ int kgsl_devfreq_get_dev_status(struct device *dev,
 	struct kgsl_device *device = dev_get_drvdata(dev);
 	struct kgsl_pwrctrl *pwrctrl;
 	struct kgsl_pwrscale *pwrscale;
+<<<<<<< HEAD
 	ktime_t tmp1, tmp2;
+=======
+	ktime_t tmp;
+>>>>>>> p9x
 
 	if (device == NULL)
 		return -ENODEV;
@@ -529,8 +572,11 @@ int kgsl_devfreq_get_dev_status(struct device *dev,
 	pwrctrl = &device->pwrctrl;
 
 	mutex_lock(&device->mutex);
+<<<<<<< HEAD
 
 	tmp1 = ktime_get();
+=======
+>>>>>>> p9x
 	/*
 	 * If the GPU clock is on grab the latest power counter
 	 * values.  Otherwise the most recent ACTIVE values will
@@ -538,16 +584,25 @@ int kgsl_devfreq_get_dev_status(struct device *dev,
 	 */
 	kgsl_pwrscale_update_stats(device);
 
+<<<<<<< HEAD
 	tmp2 = ktime_get();
 	stat->total_time = ktime_us_delta(tmp2, pwrscale->time);
 	pwrscale->time = tmp1;
+=======
+	tmp = ktime_get();
+	stat->total_time = ktime_us_delta(tmp, pwrscale->time);
+	pwrscale->time = tmp;
+>>>>>>> p9x
 
 	stat->busy_time = pwrscale->accum_stats.busy_time;
 
 	stat->current_frequency = kgsl_pwrctrl_active_freq(&device->pwrctrl);
 
+<<<<<<< HEAD
 	stat->private_data = &device->active_context_count;
 
+=======
+>>>>>>> p9x
 	/*
 	 * keep the latest devfreq_dev_status values
 	 * and vbif counters data
@@ -567,8 +622,12 @@ int kgsl_devfreq_get_dev_status(struct device *dev,
 	}
 
 	kgsl_pwrctrl_busy_time(device, stat->total_time, stat->busy_time);
+<<<<<<< HEAD
 	trace_kgsl_pwrstats(device, stat->total_time,
 		&pwrscale->accum_stats, device->active_context_count);
+=======
+	trace_kgsl_pwrstats(device, stat->total_time, &pwrscale->accum_stats);
+>>>>>>> p9x
 	memset(&pwrscale->accum_stats, 0, sizeof(pwrscale->accum_stats));
 
 	mutex_unlock(&device->mutex);
@@ -756,6 +815,10 @@ int kgsl_pwrscale_init(struct device *dev, const char *governor)
 {
 	struct kgsl_device *device;
 	struct kgsl_pwrscale *pwrscale;
+<<<<<<< HEAD
+=======
+	struct kgsl_device_platform_data *pdata;
+>>>>>>> p9x
 	struct kgsl_pwrctrl *pwr;
 	struct devfreq *devfreq;
 	struct devfreq *bus_devfreq;
@@ -769,6 +832,10 @@ int kgsl_pwrscale_init(struct device *dev, const char *governor)
 	if (device == NULL)
 		return -ENODEV;
 
+<<<<<<< HEAD
+=======
+	pdata = dev_get_platdata(&device->pdev->dev);
+>>>>>>> p9x
 	pwrscale = &device->pwrscale;
 	pwr = &device->pwrctrl;
 	gpu_profile = &pwrscale->gpu_profile;
@@ -799,6 +866,7 @@ int kgsl_pwrscale_init(struct device *dev, const char *governor)
 
 	/* initialize msm-adreno-tz governor specific data here */
 	data = gpu_profile->private_data;
+<<<<<<< HEAD
 
 	data->disable_busy_time_burst = of_property_read_bool(
 		device->pdev->dev.of_node, "qcom,disable-busy-time-burst");
@@ -824,6 +892,8 @@ int kgsl_pwrscale_init(struct device *dev, const char *governor)
 			data->bin.ctxt_aware_busy_penalty = 12000;
 	}
 
+=======
+>>>>>>> p9x
 	/*
 	 * If there is a separate GX power rail, allow
 	 * independent modification to its voltage through
@@ -883,6 +953,7 @@ int kgsl_pwrscale_init(struct device *dev, const char *governor)
 				sizeof(struct kgsl_pwr_event), GFP_KERNEL);
 		pwrscale->history[i].type = i;
 	}
+<<<<<<< HEAD
 
 	/* Add links to the devfreq sysfs nodes */
 	kgsl_gpu_sysfs_add_link(device->gpu_sysfs_kobj,
@@ -891,6 +962,14 @@ int kgsl_pwrscale_init(struct device *dev, const char *governor)
 	kgsl_gpu_sysfs_add_link(device->gpu_sysfs_kobj,
 			 &pwrscale->devfreqptr->dev.kobj,
 			"available_governors", "gpu_available_governor");
+=======
+	/*
+	 * Enable POPP feature if target supports it, by default
+	 * it is disabled.
+	 */
+	if (pdata->popp_enable)
+		set_bit(POPP_ON, &pwrscale->popp_state);
+>>>>>>> p9x
 
 	return 0;
 }

@@ -23,7 +23,10 @@
 #include <linux/uaccess.h>
 #include <soc/qcom/memory_dump.h>
 #include <soc/qcom/rpm-smd.h>
+<<<<<<< HEAD
 #include <soc/qcom/scm.h>
+=======
+>>>>>>> p9x
 
 #define RPM_MISC_REQ_TYPE	0x6373696d
 #define RPM_MISC_DDR_DCC_ENABLE 0x32726464
@@ -65,8 +68,11 @@
 #define MAX_DCC_OFFSET		(0xFF * 4)
 #define MAX_DCC_LEN		0x7F
 
+<<<<<<< HEAD
 #define SCM_SVC_DISABLE_XPU	0x23
 
+=======
+>>>>>>> p9x
 enum dcc_func_type {
 	DCC_FUNC_TYPE_CAPTURE,
 	DCC_FUNC_TYPE_CRC,
@@ -125,6 +131,7 @@ struct dcc_drvdata {
 	struct msm_dump_data	sram_data;
 	struct rpm_trig_req	rpm_trig_req;
 	struct msm_rpm_kvp	rpm_kvp;
+<<<<<<< HEAD
 	bool			xpu_scm_avail;
 	uint64_t		xpu_addr;
 	uint32_t		xpu_unlock_count;
@@ -201,6 +208,10 @@ err:
 	return ret;
 }
 
+=======
+};
+
+>>>>>>> p9x
 static bool dcc_ready(struct dcc_drvdata *drvdata)
 {
 	uint32_t val;
@@ -253,7 +264,11 @@ static int __dcc_ll_cfg(struct dcc_drvdata *drvdata)
 	uint32_t prev_addr, addr;
 	uint32_t prev_off = 0, off;
 	uint32_t link;
+<<<<<<< HEAD
 	uint32_t pos, total_len = 0;
+=======
+	uint32_t pos;
+>>>>>>> p9x
 	struct dcc_config_entry *entry;
 
 	if (list_empty(&drvdata->config_head)) {
@@ -272,7 +287,10 @@ static int __dcc_ll_cfg(struct dcc_drvdata *drvdata)
 		addr = (entry->base >> 4) & BM(0, 27);
 		addr |= BIT(31);
 		off = entry->offset/4;
+<<<<<<< HEAD
 		total_len += entry->len * 4;
+=======
+>>>>>>> p9x
 
 		if (!prev_addr || prev_addr != addr || prev_off > off) {
 			/* Check if we need to write link of prev entry */
@@ -290,7 +308,11 @@ static int __dcc_ll_cfg(struct dcc_drvdata *drvdata)
 			prev_off = 0;
 		}
 
+<<<<<<< HEAD
 		if ((off - prev_off) > 0xFF || entry->len > MAX_DCC_LEN) {
+=======
+		if ((off - prev_off) > 0xFF || entry->len > 0x7F) {
+>>>>>>> p9x
 			dev_err(drvdata->dev,
 				"DCC: Progamming error! Base: 0x%x, offset 0x%x.\n",
 				entry->base, entry->offset);
@@ -340,6 +362,7 @@ static int __dcc_ll_cfg(struct dcc_drvdata *drvdata)
 	dcc_sram_writel(drvdata, 0, sram_offset);
 	sram_offset += 4;
 
+<<<<<<< HEAD
 	/* check if the data will overstep */
 	if (drvdata->data_sink == DCC_DATA_SINK_SRAM
 	    && drvdata->func_type == DCC_FUNC_TYPE_CAPTURE) {
@@ -359,6 +382,10 @@ overstep:
 	memset_io(drvdata->ram_base, 0, drvdata->ram_size);
 	dev_err(drvdata->dev, "DCC SRAM oversteps, 0x%x (0x%x)\n",
 		sram_offset, drvdata->ram_size);
+=======
+	drvdata->ram_cfg = (sram_offset  / 4);
+
+>>>>>>> p9x
 err:
 	return ret;
 }
@@ -635,6 +662,7 @@ static ssize_t dcc_store_trigger(struct device *dev,
 	if (val != 1)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	ret = dcc_xpu_unlock(drvdata);
 	if (ret)
 		return ret;
@@ -645,6 +673,13 @@ static ssize_t dcc_store_trigger(struct device *dev,
 
 	dcc_xpu_lock(drvdata);
 	return ret;
+=======
+	ret = dcc_sw_trigger(drvdata);
+	if (ret)
+		return ret;
+
+	return size;
+>>>>>>> p9x
 }
 static DEVICE_ATTR(trigger, S_IWUSR, NULL, dcc_store_trigger);
 
@@ -667,20 +702,29 @@ static ssize_t dcc_store_enable(struct device *dev,
 	if (sscanf(buf, "%lx", &val) != 1)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	ret = dcc_xpu_unlock(drvdata);
 	if (ret)
 		return ret;
 
+=======
+>>>>>>> p9x
 	if (val)
 		ret = dcc_enable(drvdata);
 	else
 		dcc_disable(drvdata);
 
+<<<<<<< HEAD
 	if (!ret)
 		ret = size;
 
 	dcc_xpu_lock(drvdata);
 	return ret;
+=======
+	if (ret)
+		return ret;
+	return size;
+>>>>>>> p9x
 
 }
 static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR, dcc_show_enable,
@@ -735,8 +779,13 @@ static int dcc_config_add(struct dcc_drvdata *drvdata, unsigned addr,
 	base = addr & BM(4, 31);
 
 	if (!list_empty(&drvdata->config_head)) {
+<<<<<<< HEAD
 		pentry = list_last_entry(&drvdata->config_head,
 					 struct dcc_config_entry, list);
+=======
+		pentry = list_entry(drvdata->config_head.prev,
+				    struct dcc_config_entry, list);
+>>>>>>> p9x
 
 		if (addr >= (pentry->base + pentry->offset) &&
 		    addr <= (pentry->base + pentry->offset + MAX_DCC_OFFSET)) {
@@ -867,10 +916,13 @@ static ssize_t dcc_show_crc_error(struct device *dev,
 	int ret;
 	struct dcc_drvdata *drvdata = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	ret = dcc_xpu_unlock(drvdata);
 	if (ret)
 		return ret;
 
+=======
+>>>>>>> p9x
 	mutex_lock(&drvdata->mutex);
 	if (!drvdata->enable) {
 		ret = -EINVAL;
@@ -881,7 +933,10 @@ static ssize_t dcc_show_crc_error(struct device *dev,
 			(unsigned)BVAL(dcc_readl(drvdata, DCC_STATUS), 0));
 err:
 	mutex_unlock(&drvdata->mutex);
+<<<<<<< HEAD
 	dcc_xpu_lock(drvdata);
+=======
+>>>>>>> p9x
 	return ret;
 }
 static DEVICE_ATTR(crc_error, S_IRUGO, dcc_show_crc_error, NULL);
@@ -892,10 +947,13 @@ static ssize_t dcc_show_ready(struct device *dev,
 	int ret;
 	struct dcc_drvdata *drvdata = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	ret = dcc_xpu_unlock(drvdata);
 	if (ret)
 		return ret;
 
+=======
+>>>>>>> p9x
 	mutex_lock(&drvdata->mutex);
 	if (!drvdata->enable) {
 		ret = -EINVAL;
@@ -906,7 +964,10 @@ static ssize_t dcc_show_ready(struct device *dev,
 			(unsigned)BVAL(dcc_readl(drvdata, DCC_STATUS), 4));
 err:
 	mutex_unlock(&drvdata->mutex);
+<<<<<<< HEAD
 	dcc_xpu_lock(drvdata);
+=======
+>>>>>>> p9x
 	return ret;
 }
 static DEVICE_ATTR(ready, S_IRUGO, dcc_show_ready, NULL);
@@ -965,6 +1026,7 @@ static ssize_t dcc_store_rpm_sw_trigger_on(struct device *dev,
 static DEVICE_ATTR(rpm_sw_trigger_on, S_IRUGO | S_IWUSR,
 		   dcc_show_rpm_sw_trigger_on, dcc_store_rpm_sw_trigger_on);
 
+<<<<<<< HEAD
 static ssize_t dcc_store_xpu_unlock(struct device *dev,
 				    struct device_attribute *attr,
 				    const char *buf, size_t size)
@@ -984,6 +1046,8 @@ static ssize_t dcc_store_xpu_unlock(struct device *dev,
 }
 static DEVICE_ATTR(xpu_unlock, S_IWUSR, NULL, dcc_store_xpu_unlock);
 
+=======
+>>>>>>> p9x
 static const struct device_attribute *dcc_attrs[] = {
 	&dev_attr_func_type,
 	&dev_attr_data_sink,
@@ -995,7 +1059,10 @@ static const struct device_attribute *dcc_attrs[] = {
 	&dev_attr_crc_error,
 	&dev_attr_interrupt_disable,
 	&dev_attr_rpm_sw_trigger_on,
+<<<<<<< HEAD
 	&dev_attr_xpu_unlock,
+=======
+>>>>>>> p9x
 	NULL,
 };
 
@@ -1021,8 +1088,12 @@ static int dcc_sram_open(struct inode *inode, struct file *file)
 						   struct dcc_drvdata,
 						   sram_dev);
 	file->private_data = drvdata;
+<<<<<<< HEAD
 
 	return  dcc_xpu_unlock(drvdata);
+=======
+	return 0;
+>>>>>>> p9x
 }
 
 static ssize_t dcc_sram_read(struct file *file, char __user *data,
@@ -1072,9 +1143,13 @@ static ssize_t dcc_sram_read(struct file *file, char __user *data,
 
 static int dcc_sram_release(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	struct dcc_drvdata *drvdata = file->private_data;
 
 	return dcc_xpu_lock(drvdata);
+=======
+	return 0;
+>>>>>>> p9x
 }
 
 static const struct file_operations dcc_sram_fops = {
@@ -1221,7 +1296,11 @@ static int dcc_probe(struct platform_device *pdev)
 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "dcc-base");
 	if (!res)
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return -ENODEV;
+>>>>>>> p9x
 
 	drvdata->reg_size = resource_size(res);
 	drvdata->base = devm_ioremap(dev, res->start, resource_size(res));
@@ -1231,7 +1310,11 @@ static int dcc_probe(struct platform_device *pdev)
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
 					   "dcc-ram-base");
 	if (!res)
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return -ENODEV;
+>>>>>>> p9x
 
 	drvdata->ram_size = resource_size(res);
 	drvdata->ram_base = devm_ioremap(dev, res->start, resource_size(res));
@@ -1251,6 +1334,7 @@ static int dcc_probe(struct platform_device *pdev)
 
 	INIT_LIST_HEAD(&drvdata->config_head);
 	drvdata->nr_config = 0;
+<<<<<<< HEAD
 	drvdata->xpu_scm_avail = 0;
 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
@@ -1282,6 +1366,15 @@ static int dcc_probe(struct platform_device *pdev)
 
 	dcc_xpu_lock(drvdata);
 
+=======
+
+	ret = clk_prepare_enable(drvdata->clk);
+	if (ret)
+		goto err;
+
+	memset_io(drvdata->ram_base, 0, drvdata->ram_size);
+
+>>>>>>> p9x
 	clk_disable_unprepare(drvdata->clk);
 
 	drvdata->data_sink = DCC_DATA_SINK_SRAM;

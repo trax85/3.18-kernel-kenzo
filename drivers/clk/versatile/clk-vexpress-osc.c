@@ -78,7 +78,11 @@ static int vexpress_osc_probe(struct platform_device *pdev)
 
 	osc = devm_kzalloc(&pdev->dev, sizeof(*osc), GFP_KERNEL);
 	if (!osc)
+<<<<<<< HEAD
 		return -ENOMEM;
+=======
+		return;
+>>>>>>> p9x
 
 	osc->reg = devm_regmap_init_vexpress_config(&pdev->dev);
 	if (IS_ERR(osc->reg))

@@ -307,7 +307,11 @@ const char * const *v4l2_ctrl_get_menu(u32 id)
 	static const char * const header_mode[] = {
 		"Separate Buffer",
 		"Joined With 1st Frame",
+<<<<<<< HEAD
 		"Joined With I frame",
+=======
+		"Joined With I-Frames",
+>>>>>>> p9x
 		NULL,
 	};
 	static const char * const multi_slice[] = {
@@ -434,6 +438,22 @@ const char * const *v4l2_ctrl_get_menu(u32 id)
 		"Use Previous Specific Frame",
 		NULL,
 	};
+	static const char * const mpeg_mpeg2_level[] = {
+		"1",
+		"2",
+		"4",
+		"8",
+		NULL,
+	};
+	static const char * const mpeg2_profile[] = {
+		"Simple",
+		"Main",
+		"422",
+		"SNR Scalable",
+		"Spatial Scalable",
+		"High",
+		NULL,
+	};
 
 	static const char * const flash_led_mode[] = {
 		"Off",
@@ -467,6 +487,7 @@ const char * const *v4l2_ctrl_get_menu(u32 id)
 		"RGB full range (0-255)",
 		NULL,
 	};
+<<<<<<< HEAD
 	static const char * const detect_md_mode[] = {
 		"Disabled",
 		"Global",
@@ -475,6 +496,15 @@ const char * const *v4l2_ctrl_get_menu(u32 id)
 		NULL,
 	};
 
+=======
+	static const char *const mpeg_video_intra_refresh_mode[] = {
+		"No Intra Refresh",
+		"AIR MBS",
+		"AIR REF",
+		"CIR MBS",
+		NULL
+	};
+>>>>>>> p9x
 
 	switch (id) {
 	case V4L2_CID_MPEG_AUDIO_SAMPLING_FREQ:
@@ -565,9 +595,18 @@ const char * const *v4l2_ctrl_get_menu(u32 id)
 	case V4L2_CID_DV_TX_RGB_RANGE:
 	case V4L2_CID_DV_RX_RGB_RANGE:
 		return dv_rgb_range;
+<<<<<<< HEAD
 	case V4L2_CID_DETECT_MD_MODE:
 		return detect_md_mode;
 
+=======
+	case V4L2_CID_MPEG_VIDC_VIDEO_INTRA_REFRESH_MODE:
+		return mpeg_video_intra_refresh_mode;
+	case V4L2_CID_MPEG_VIDC_VIDEO_MPEG2_LEVEL:
+		return mpeg_mpeg2_level;
+	case V4L2_CID_MPEG_VIDC_VIDEO_MPEG2_PROFILE:
+		return mpeg2_profile;
+>>>>>>> p9x
 	default:
 		return NULL;
 	}
@@ -741,7 +780,13 @@ const char *v4l2_ctrl_get_name(u32 id)
 	case V4L2_CID_MPEG_VIDEO_MPEG4_MAX_QP:			return "MPEG4 Maximum QP Value";
 	case V4L2_CID_MPEG_VIDEO_MPEG4_LEVEL:			return "MPEG4 Level";
 	case V4L2_CID_MPEG_VIDEO_MPEG4_PROFILE:			return "MPEG4 Profile";
+	case V4L2_CID_MPEG_VIDC_VIDEO_MPEG2_LEVEL:
+		return "MPEG2 Level";
+	case V4L2_CID_MPEG_VIDC_VIDEO_MPEG2_PROFILE:
+		return "MPEG2 Profile";
 	case V4L2_CID_MPEG_VIDEO_MPEG4_QPEL:			return "Quarter Pixel Search Enable";
+	case V4L2_CID_QCOM_VIDEO_SYNC_FRAME_SEQ_HDR:
+		return "CodecConfig with sync frame";
 	case V4L2_CID_MPEG_VIDEO_MULTI_SLICE_MAX_BYTES:		return "Maximum Bytes in a Slice";
 	case V4L2_CID_MPEG_VIDEO_MULTI_SLICE_MAX_MB:		return "Number of MBs in a Slice";
 	case V4L2_CID_MPEG_VIDEO_MULTI_SLICE_MODE:		return "Slice Partitioning Method";
@@ -752,6 +797,23 @@ const char *v4l2_ctrl_get_name(u32 id)
 	case V4L2_CID_MPEG_VIDEO_MV_H_SEARCH_RANGE:		return "Horizontal MV Search Range";
 	case V4L2_CID_MPEG_VIDEO_MV_V_SEARCH_RANGE:		return "Vertical MV Search Range";
 	case V4L2_CID_MPEG_VIDEO_REPEAT_SEQ_HEADER:		return "Repeat Sequence Header";
+	case V4L2_CID_MPEG_VIDC_VIDEO_ROTATION: return "Rotation";
+	case V4L2_CID_MPEG_VIDC_VIDEO_RATE_CONTROL: return "Rate Control";
+	case V4L2_CID_MPEG_VIDC_VIDEO_H264_CABAC_MODEL: return "CABAC Model";
+	case V4L2_CID_MPEG_VIDC_VIDEO_INTRA_REFRESH_MODE:
+		return "Intra Refresh Mode";
+	case V4L2_CID_MPEG_VIDC_VIDEO_AIR_MBS: return "Intra Refresh AIR MBS";
+	case V4L2_CID_MPEG_VIDC_VIDEO_AIR_REF: return "Intra Refresh AIR REF";
+	case V4L2_CID_MPEG_VIDC_VIDEO_CIR_MBS: return "Intra Refresh CIR MBS";
+	case V4L2_CID_MPEG_VIDC_VIDEO_VP8_PROFILE_LEVEL:
+		return "VP8 Profile Level";
+	case V4L2_CID_MPEG_VIDC_VIDEO_DEINTERLACE:
+		return "Deinterlace for encoder";
+	case V4L2_CID_MPEG_VIDC_VIDEO_MPEG4_TIME_RESOLUTION:
+		return "Vop time increment resolution";
+	case V4L2_CID_MPEG_VIDC_VIDEO_HEVC_PROFILE:	return "HEVC Profile";
+	case V4L2_CID_MPEG_VIDC_VIDEO_HEVC_TIER_LEVEL:
+		return "HEVC Tier and Level";
 
 	/* VPX controls */
 	case V4L2_CID_MPEG_VIDEO_VPX_NUM_PARTITIONS:		return "VPX Number of Partitions";
@@ -1035,6 +1097,8 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
 	case V4L2_CID_MPEG_VIDEO_H264_FMO_MAP_TYPE:
 	case V4L2_CID_MPEG_VIDEO_MPEG4_LEVEL:
 	case V4L2_CID_MPEG_VIDEO_MPEG4_PROFILE:
+	case V4L2_CID_MPEG_VIDC_VIDEO_MPEG2_LEVEL:
+	case V4L2_CID_MPEG_VIDC_VIDEO_MPEG2_PROFILE:
 	case V4L2_CID_JPEG_CHROMA_SUBSAMPLING:
 	case V4L2_CID_ISO_SENSITIVITY_AUTO:
 	case V4L2_CID_EXPOSURE_METERING:
@@ -1044,8 +1108,14 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
 	case V4L2_CID_DV_RX_RGB_RANGE:
 	case V4L2_CID_TEST_PATTERN:
 	case V4L2_CID_TUNE_DEEMPHASIS:
+<<<<<<< HEAD
 	case V4L2_CID_MPEG_VIDEO_VPX_GOLDEN_FRAME_SEL:
 	case V4L2_CID_DETECT_MD_MODE:
+=======
+	case V4L2_CID_MPEG_VIDC_VIDEO_ROTATION:
+	case V4L2_CID_MPEG_VIDC_VIDEO_RATE_CONTROL:
+	case V4L2_CID_MPEG_VIDC_VIDEO_H264_CABAC_MODEL:
+>>>>>>> p9x
 		*type = V4L2_CTRL_TYPE_MENU;
 		break;
 	case V4L2_CID_LINK_FREQ:
@@ -1081,7 +1151,12 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
 		*min = *max = *step = *def = 0;
 		break;
 	case V4L2_CID_BG_COLOR:
-		*type = V4L2_CTRL_TYPE_INTEGER;
+	case V4L2_CID_MPEG_VIDEO_H264_I_FRAME_QP:
+	case V4L2_CID_MPEG_VIDEO_H264_P_FRAME_QP:
+	case V4L2_CID_MPEG_VIDEO_H264_B_FRAME_QP:
+	case V4L2_CID_MPEG_VIDEO_MULTI_SLICE_MAX_BYTES:
+	case V4L2_CID_MPEG_VIDEO_MULTI_SLICE_MAX_MB:
+	*type = V4L2_CTRL_TYPE_INTEGER;
 		*step = 1;
 		*min = 0;
 		/* Max is calculated as RGB888 that is 2^24 */
@@ -1128,6 +1203,21 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
 		break;
 	case V4L2_CID_RDS_TX_ALT_FREQS:
 		*type = V4L2_CTRL_TYPE_U32;
+		break;
+	case V4L2_CID_QCOM_VIDEO_SYNC_FRAME_SEQ_HDR:
+		*type = V4L2_CTRL_TYPE_BOOLEAN;
+		*min = 0;
+		*max = *step = 1;
+		break;
+	case V4L2_CID_MPEG_VIDC_VIDEO_DEINTERLACE:
+		*type = V4L2_CTRL_TYPE_BOOLEAN;
+		*min = 0;
+		*max = *step = 1;
+		break;
+	case V4L2_CID_MPEG_VIDC_VIDEO_STREAM_OUTPUT_MODE:
+		*type = V4L2_CTRL_TYPE_BOOLEAN;
+		*min = 0;
+		*max = *step = 1;
 		break;
 	default:
 		*type = V4L2_CTRL_TYPE_INTEGER;

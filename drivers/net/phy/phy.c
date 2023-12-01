@@ -496,6 +496,11 @@ EXPORT_SYMBOL(phy_start_aneg);
  */
 void phy_start_machine(struct phy_device *phydev)
 {
+<<<<<<< HEAD
+=======
+	phydev->adjust_state = handler;
+
+>>>>>>> p9x
 	queue_delayed_work(system_power_efficient_wq, &phydev->state_queue, HZ);
 }
 
@@ -688,6 +693,10 @@ void phy_change(struct work_struct *work)
 	/* reschedule state queue work to run as soon as possible */
 	cancel_delayed_work_sync(&phydev->state_queue);
 	queue_delayed_work(system_power_efficient_wq, &phydev->state_queue, 0);
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 	return;
 
 ignore:
@@ -953,7 +962,11 @@ void phy_state_machine(struct work_struct *work)
 		phy_error(phydev);
 
 	queue_delayed_work(system_power_efficient_wq, &phydev->state_queue,
+<<<<<<< HEAD
 			   PHY_STATE_TIME * HZ);
+=======
+			PHY_STATE_TIME * HZ);
+>>>>>>> p9x
 }
 
 void phy_mac_interrupt(struct phy_device *phydev, int new_link)
@@ -1062,9 +1075,14 @@ int phy_init_eee(struct phy_device *phydev, bool clk_stop_enable)
 	if ((phydev->duplex == DUPLEX_FULL) &&
 	    ((phydev->interface == PHY_INTERFACE_MODE_MII) ||
 	    (phydev->interface == PHY_INTERFACE_MODE_GMII) ||
+<<<<<<< HEAD
 	    (phydev->interface >= PHY_INTERFACE_MODE_RGMII &&
 	     phydev->interface <= PHY_INTERFACE_MODE_RGMII_TXID) ||
 	     phy_is_internal(phydev))) {
+=======
+	     (phydev->interface >= PHY_INTERFACE_MODE_RGMII &&
+	      phydev->interface <= PHY_INTERFACE_MODE_RGMII_TXID))) {
+>>>>>>> p9x
 		int eee_lp, eee_cap, eee_adv;
 		u32 lp, cap, adv;
 		int status;
@@ -1100,7 +1118,11 @@ int phy_init_eee(struct phy_device *phydev, bool clk_stop_enable)
 		adv = mmd_eee_adv_to_ethtool_adv_t(eee_adv);
 		lp = mmd_eee_adv_to_ethtool_adv_t(eee_lp);
 		if (!phy_check_valid(phydev->speed, phydev->duplex, lp & adv))
+<<<<<<< HEAD
 			goto eee_exit_err;
+=======
+			goto eee_exit;
+>>>>>>> p9x
 
 		if (clk_stop_enable) {
 			/* Configure the PHY to stop receiving xMII

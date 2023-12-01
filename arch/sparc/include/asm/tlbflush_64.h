@@ -57,8 +57,13 @@ static inline void global_flush_tlb_page(struct mm_struct *mm, unsigned long vad
 
 #else /* CONFIG_SMP */
 
+<<<<<<< HEAD
 void smp_flush_tlb_kernel_range(unsigned long start, unsigned long end);
 void smp_flush_tlb_page(struct mm_struct *mm, unsigned long vaddr);
+=======
+extern void smp_flush_tlb_kernel_range(unsigned long start, unsigned long end);
+extern void smp_flush_tlb_page(struct mm_struct *mm, unsigned long vaddr);
+>>>>>>> p9x
 
 #define global_flush_tlb_page(mm, vaddr) \
 	smp_flush_tlb_page(mm, vaddr)

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2015-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -24,7 +28,10 @@
  * @chip_name: Name of the device registered with DBA
  * @client_name: Name of the client registering with DBA
  * @pinfo: Detailed panel information
+<<<<<<< HEAD
  * @cont_splash_enabled: Flag to check if cont splash was enabled on bridge
+=======
+>>>>>>> p9x
  *
  * This structure's instance is needed to be passed as parameter
  * to register API to let the DBA utils module configure and
@@ -37,7 +44,10 @@ struct mdss_dba_utils_init_data {
 	char *chip_name;
 	char *client_name;
 	struct mdss_panel_info *pinfo;
+<<<<<<< HEAD
 	bool cont_splash_enabled;
+=======
+>>>>>>> p9x
 };
 
 int mdss_dba_utils_video_on(void *data, struct mdss_panel_info *pinfo);
@@ -46,5 +56,8 @@ void mdss_dba_utils_hdcp_enable(void *data, bool enable);
 
 void *mdss_dba_utils_init(struct mdss_dba_utils_init_data *init_data);
 void mdss_dba_utils_deinit(void *data);
+<<<<<<< HEAD
 void mdss_dba_update_lane_cfg(struct mdss_panel_info *pinfo);
+=======
+>>>>>>> p9x
 #endif /* __MDSS_DBA_UTILS__ */

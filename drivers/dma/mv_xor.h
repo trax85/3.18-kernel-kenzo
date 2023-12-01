@@ -34,7 +34,11 @@
 /* Values for the XOR_CONFIG register */
 #define XOR_OPERATION_MODE_XOR		0
 #define XOR_OPERATION_MODE_MEMCPY	2
+<<<<<<< HEAD
 #define XOR_DESCRIPTOR_SWAP		BIT(14)
+=======
+#define XOR_OPERATION_MODE_MEMSET	4
+>>>>>>> p9x
 #define XOR_DESC_SUCCESS		0x40000000
 
 #define XOR_DESC_DMA_OWNED		BIT(31)

@@ -42,9 +42,12 @@ extern void of_fdt_unflatten_tree(unsigned long *blob,
 extern int __initdata dt_root_addr_cells;
 extern int __initdata dt_root_size_cells;
 extern void *initial_boot_params;
+<<<<<<< HEAD
 
 extern char __dtb_start[];
 extern char __dtb_end[];
+=======
+>>>>>>> p9x
 
 /* For scanning the flat device-tree at boot time */
 extern int of_scan_flat_dt(int (*it)(unsigned long node, const char *uname,
@@ -56,6 +59,8 @@ extern int of_flat_dt_is_compatible(unsigned long node, const char *name);
 extern int of_flat_dt_match(unsigned long node, const char *const *matches);
 extern unsigned long of_get_flat_dt_root(void);
 extern int of_get_flat_dt_size(void);
+<<<<<<< HEAD
+=======
 
 /*
  * early_init_dt_scan_chosen - scan the device tree for ramdisk and bootargs
@@ -80,6 +85,7 @@ extern int of_get_flat_dt_size(void);
  */
 extern int early_init_dt_scan_chosen(unsigned long node, const char *uname,
 				     int depth, void *data);
+extern void early_init_dt_check_for_initrd(unsigned long node);
 extern int early_init_dt_scan_memory(unsigned long node, const char *uname,
 				     int depth, void *data);
 extern void early_init_fdt_scan_reserved_mem(void);
@@ -88,14 +94,56 @@ extern int early_init_dt_reserve_memory_arch(phys_addr_t base, phys_addr_t size,
 					     bool no_map);
 extern void * early_init_dt_alloc_memory_arch(u64 size, u64 align);
 extern u64 dt_mem_next_cell(int s, const __be32 **cellp);
+>>>>>>> p9x
+
+/*
+ * early_init_dt_scan_chosen - scan the device tree for ramdisk and bootargs
+ *
+ * The boot arguments will be placed into the memory pointed to by @data.
+ * That memory should be COMMAND_LINE_SIZE big and initialized to be a valid
+ * (possibly empty) string.  Logic for what will be in @data after this
+ * function finishes:
+ *
+ * - CONFIG_CMDLINE_FORCE=true
+ *     CONFIG_CMDLINE
+ * - CONFIG_CMDLINE_EXTEND=true, @data is non-empty string
+ *     @data + dt bootargs (even if dt bootargs are empty)
+ * - CONFIG_CMDLINE_EXTEND=true, @data is empty string
+ *     CONFIG_CMDLINE + dt bootargs (even if dt bootargs are empty)
+ * - CMDLINE_FROM_BOOTLOADER=true, dt bootargs=non-empty:
+ *     dt bootargs
+ * - CMDLINE_FROM_BOOTLOADER=true, dt bootargs=empty, @data is non-empty string
+ *     @data is left unchanged
+ * - CMDLINE_FROM_BOOTLOADER=true, dt bootargs=empty, @data is empty string
+ *     CONFIG_CMDLINE (or "" if that's not defined)
+ */
+<<<<<<< HEAD
+extern int early_init_dt_scan_chosen(unsigned long node, const char *uname,
+				     int depth, void *data);
+extern int early_init_dt_scan_memory(unsigned long node, const char *uname,
+				     int depth, void *data);
+extern void early_init_fdt_scan_reserved_mem(void);
+extern void early_init_dt_add_memory_arch(u64 base, u64 size);
+extern int early_init_dt_reserve_memory_arch(phys_addr_t base, phys_addr_t size,
+					     bool no_map);
+extern void * early_init_dt_alloc_memory_arch(u64 size, u64 align);
+extern u64 dt_mem_next_cell(int s, const __be32 **cellp);
+=======
+#ifdef CONFIG_BLK_DEV_INITRD
+extern void early_init_dt_setup_initrd_arch(u64 start, u64 end);
+#endif
+>>>>>>> p9x
 
 /* Early flat tree scan hooks */
 extern int early_init_dt_scan_root(unsigned long node, const char *uname,
 				   int depth, void *data);
 
 extern bool early_init_dt_scan(void *params);
+<<<<<<< HEAD
 extern bool early_init_dt_verify(void *params);
 extern void early_init_dt_scan_nodes(void);
+=======
+>>>>>>> p9x
 
 extern const char *of_flat_dt_get_machine_name(void);
 extern const void *of_flat_dt_match_machine(const void *default_match,
@@ -113,6 +161,14 @@ static inline void early_init_fdt_scan_reserved_mem(void) {}
 static inline const char *of_flat_dt_get_machine_name(void) { return NULL; }
 static inline void unflatten_device_tree(void) {}
 static inline void unflatten_and_copy_device_tree(void) {}
+<<<<<<< HEAD
+=======
+static inline void *of_get_flat_dt_prop(unsigned long node, const char *name,
+				 unsigned long *size) { return NULL; }
+
+static inline int of_flat_dt_is_compatible(unsigned long node,
+				const char *name) { return 0; }
+>>>>>>> p9x
 #endif /* CONFIG_OF_FLATTREE */
 
 #endif /* __ASSEMBLY__ */

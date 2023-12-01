@@ -1894,7 +1894,12 @@ SYSCALL_DEFINE1(swapoff, const char __user *, specialfile)
 	struct address_space *mapping;
 	struct inode *inode;
 	struct filename *pathname;
+<<<<<<< HEAD
 	int err, found = 0;
+=======
+	int i, type, prev;
+	int err;
+>>>>>>> p9x
 	unsigned int old_block_size;
 
 	if (!capable(CAP_SYS_ADMIN))
@@ -1991,8 +1996,11 @@ SYSCALL_DEFINE1(swapoff, const char __user *, specialfile)
 	p->max = 0;
 	swap_map = p->swap_map;
 	p->swap_map = NULL;
+<<<<<<< HEAD
 	cluster_info = p->cluster_info;
 	p->cluster_info = NULL;
+=======
+>>>>>>> p9x
 	frontswap_map = frontswap_map_get(p);
 	spin_unlock(&p->lock);
 	spin_unlock(&swap_lock);
@@ -2591,6 +2599,13 @@ SYSCALL_DEFINE2(swapon, const char __user *, specialfile, int, swap_flags)
 				pr_err("swapon: discard_swap(%p): %d\n",
 					p, err);
 		}
+<<<<<<< HEAD
+=======
+		if ((swap_flags & SWAP_FLAG_DISCARD) && discard_swap(p) == 0)
+			p->flags |= SWP_DISCARDABLE;
+		if (blk_queue_fast(bdev_get_queue(p->bdev)))
+			p->flags |= SWP_FAST;
+>>>>>>> p9x
 	}
 
 	if (p->bdev && blk_queue_fast(bdev_get_queue(p->bdev)))

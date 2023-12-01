@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2011-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2011-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -94,6 +98,7 @@ static uint32_t msm_spm_reg_offsets_saw2_v3_0[MSM_SPM_REG_NR] = {
 	[MSM_SPM_REG_SAW_VERSION]		= 0xFD0,
 };
 
+<<<<<<< HEAD
 static uint32_t msm_spm_reg_offsets_saw2_v4_1[MSM_SPM_REG_NR] = {
 	[MSM_SPM_REG_SAW_SECURE]		= 0xC00,
 	[MSM_SPM_REG_SAW_ID]			= 0xC04,
@@ -121,6 +126,8 @@ static uint32_t msm_spm_reg_offsets_saw2_v4_1[MSM_SPM_REG_NR] = {
 	[MSM_SPM_REG_SAW_VERSION]		= 0xFD0,
 };
 
+=======
+>>>>>>> p9x
 static struct saw2_data saw2_info[] = {
 	[0] = {
 		"SAW_v2.1",
@@ -140,12 +147,15 @@ static struct saw2_data saw2_info[] = {
 		0x0,
 		msm_spm_reg_offsets_saw2_v3_0,
 	},
+<<<<<<< HEAD
 	[3] = {
 		"SAW_v4.0",
 		0x4,
 		0x1,
 		msm_spm_reg_offsets_saw2_v4_1,
 	},
+=======
+>>>>>>> p9x
 };
 
 static uint32_t num_pmic_data;
@@ -157,7 +167,11 @@ static void msm_spm_drv_flush_shadow(struct msm_spm_driver_data *dev,
 
 	BUG_ON(!dev->reg_shadow);
 
+<<<<<<< HEAD
 	__raw_writel(dev->reg_shadow[reg_index],
+=======
+	spm_raw_write(dev->reg_shadow[reg_index],
+>>>>>>> p9x
 		dev->reg_base_addr + dev->reg_offsets[reg_index]);
 }
 
@@ -177,10 +191,49 @@ static inline uint32_t msm_spm_drv_get_num_spm_entry(
 	return (dev->reg_shadow[MSM_SPM_REG_SAW_ID] >> 24) & 0xFF;
 }
 
+<<<<<<< HEAD
 static inline void msm_spm_drv_set_start_addr(
 		struct msm_spm_driver_data *dev, uint32_t ctl)
 {
 	dev->reg_shadow[MSM_SPM_REG_SAW_SPM_CTL] = ctl;
+=======
+static inline void msm_spm_drv_set_notify_rpm(
+		struct msm_spm_driver_data *dev, bool notify_rpm)
+{
+	if (dev->major != 0x3)
+		return;
+
+	dev->reg_shadow[MSM_SPM_REG_SAW_SPM_CTL] &= ~BIT(17);
+	dev->reg_shadow[MSM_SPM_REG_SAW_SPM_CTL] |= notify_rpm << 17;
+}
+
+static inline void msm_spm_drv_set_start_addr2(
+		struct msm_spm_driver_data *dev, uint32_t addr, bool pc_mode)
+{
+	addr &= 0x1FF;
+	addr <<= 4;
+	dev->reg_shadow[MSM_SPM_REG_SAW_SPM_CTL] &= 0xFFFFF80F;
+	dev->reg_shadow[MSM_SPM_REG_SAW_SPM_CTL] |= addr;
+
+	if (dev->major != 0x3)
+		return;
+
+	dev->reg_shadow[MSM_SPM_REG_SAW_SPM_CTL] &= 0xFFFEFFFF;
+	if (pc_mode)
+		dev->reg_shadow[MSM_SPM_REG_SAW_SPM_CTL] |= 0x00010000;
+}
+
+static inline void msm_spm_drv_set_start_addr(
+		struct msm_spm_driver_data *dev, uint32_t addr, bool pc_mode)
+{
+	if (dev->major == 0x3)
+		return msm_spm_drv_set_start_addr2(dev, addr, pc_mode);
+
+	addr &= 0x7F;
+	addr <<= 4;
+	dev->reg_shadow[MSM_SPM_REG_SAW_SPM_CTL] &= 0xFFFFF80F;
+	dev->reg_shadow[MSM_SPM_REG_SAW_SPM_CTL] |= addr;
+>>>>>>> p9x
 }
 
 static inline bool msm_spm_pmic_arb_present(struct msm_spm_driver_data *dev)
@@ -190,12 +243,27 @@ static inline bool msm_spm_pmic_arb_present(struct msm_spm_driver_data *dev)
 }
 
 static inline void msm_spm_drv_set_vctl2(struct msm_spm_driver_data *dev,
+<<<<<<< HEAD
 				uint32_t vlevel, uint32_t vctl_port)
 {
 	unsigned int pmic_data = 0;
 
 	pmic_data |= vlevel;
 	pmic_data |= (vctl_port & 0x7) << 16;
+=======
+		uint32_t vlevel)
+{
+	unsigned int pmic_data = 0;
+
+	/**
+	 * VCTL_PORT has to be 0, for PMIC_STS register to be updated.
+	 * Ensure that vctl_port is always set to 0.
+	 */
+	WARN_ON(dev->vctl_port);
+
+	pmic_data |= vlevel;
+	pmic_data |= (dev->vctl_port & 0x7) << 16;
+>>>>>>> p9x
 
 	dev->reg_shadow[MSM_SPM_REG_SAW_VCTL] &= ~0x700FF;
 	dev->reg_shadow[MSM_SPM_REG_SAW_VCTL] |= pmic_data;
@@ -258,6 +326,7 @@ inline int msm_spm_drv_set_spm_enable(
 		dev->reg_shadow[MSM_SPM_REG_SAW_SPM_CTL] |= value;
 
 		msm_spm_drv_flush_shadow(dev, MSM_SPM_REG_SAW_SPM_CTL);
+<<<<<<< HEAD
 		wmb();
 	}
 	return 0;
@@ -362,6 +431,11 @@ int msm_spm_drv_avs_clear_irq(struct msm_spm_driver_data *dev,
 	return 0;
 }
 
+=======
+	}
+	return 0;
+}
+>>>>>>> p9x
 void msm_spm_drv_flush_seq_entry(struct msm_spm_driver_data *dev)
 {
 	int i;
@@ -373,12 +447,19 @@ void msm_spm_drv_flush_seq_entry(struct msm_spm_driver_data *dev)
 	}
 
 	for (i = 0; i < num_spm_entry; i++) {
+<<<<<<< HEAD
 		__raw_writel(dev->reg_seq_entry_shadow[i],
+=======
+		spm_raw_write(dev->reg_seq_entry_shadow[i],
+>>>>>>> p9x
 			dev->reg_base_addr
 			+ dev->reg_offsets[MSM_SPM_REG_SAW_SEQ_ENTRY]
 			+ 4 * i);
 	}
+<<<<<<< HEAD
 	mb();
+=======
+>>>>>>> p9x
 }
 
 void dump_regs(struct msm_spm_driver_data *dev, int cpu)
@@ -426,7 +507,11 @@ int msm_spm_drv_write_seq_data(struct msm_spm_driver_data *dev,
 }
 
 int msm_spm_drv_set_low_power_mode(struct msm_spm_driver_data *dev,
+<<<<<<< HEAD
 		uint32_t ctl)
+=======
+		uint32_t addr, bool pc_mode, bool notify_rpm)
+>>>>>>> p9x
 {
 
 	/* SPM is configured to reset start address to zero after end of Program
@@ -434,10 +519,17 @@ int msm_spm_drv_set_low_power_mode(struct msm_spm_driver_data *dev,
 	if (!dev)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	msm_spm_drv_set_start_addr(dev, ctl);
 
 	msm_spm_drv_flush_shadow(dev, MSM_SPM_REG_SAW_SPM_CTL);
 	wmb();
+=======
+	msm_spm_drv_set_start_addr(dev, addr, pc_mode);
+	msm_spm_drv_set_notify_rpm(dev, notify_rpm);
+
+	msm_spm_drv_flush_shadow(dev, MSM_SPM_REG_SAW_SPM_CTL);
+>>>>>>> p9x
 
 	if (msm_spm_debug_mask & MSM_SPM_DEBUG_SHADOW) {
 		int i;
@@ -450,12 +542,15 @@ int msm_spm_drv_set_low_power_mode(struct msm_spm_driver_data *dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 uint32_t msm_spm_drv_get_vdd(struct msm_spm_driver_data *dev)
 {
 	msm_spm_drv_load_shadow(dev, MSM_SPM_REG_SAW_PMIC_STS);
 	return dev->reg_shadow[MSM_SPM_REG_SAW_PMIC_STS] & 0xFF;
 }
 
+=======
+>>>>>>> p9x
 #ifdef CONFIG_MSM_AVS_HW
 static bool msm_spm_drv_is_avs_enabled(struct msm_spm_driver_data *dev)
 {
@@ -500,6 +595,7 @@ static void msm_spm_drv_set_avs_vlevel(struct msm_spm_driver_data *dev,
 		unsigned int vlevel) { }
 #endif
 
+<<<<<<< HEAD
 static inline int msm_spm_drv_validate_data(struct msm_spm_driver_data *dev,
 					unsigned int vlevel, int vctl_port)
 {
@@ -539,6 +635,12 @@ int msm_spm_drv_set_vdd(struct msm_spm_driver_data *dev, unsigned int vlevel)
 	uint32_t vlevel_set = vlevel;
 	bool avs_enabled;
 	int ret = 0;
+=======
+int msm_spm_drv_set_vdd(struct msm_spm_driver_data *dev, unsigned int vlevel)
+{
+	uint32_t timeout_us, new_level;
+	bool avs_enabled;
+>>>>>>> p9x
 
 	if (!dev)
 		return -EINVAL;
@@ -554,6 +656,7 @@ int msm_spm_drv_set_vdd(struct msm_spm_driver_data *dev, unsigned int vlevel)
 	if (avs_enabled)
 		msm_spm_drv_disable_avs(dev);
 
+<<<<<<< HEAD
 	if (dev->vctl_port_ub >= 0) {
 		/**
 		 * VCTL can send 8bit voltage level at once.
@@ -563,10 +666,13 @@ int msm_spm_drv_set_vdd(struct msm_spm_driver_data *dev, unsigned int vlevel)
 		vlevel = vlevel_set & 0xFF;
 	}
 
+=======
+>>>>>>> p9x
 	/* Kick the state machine back to idle */
 	dev->reg_shadow[MSM_SPM_REG_SAW_RST] = 1;
 	msm_spm_drv_flush_shadow(dev, MSM_SPM_REG_SAW_RST);
 
+<<<<<<< HEAD
 	msm_spm_drv_set_vctl2(dev, vlevel, dev->vctl_port);
 
 	ret = msm_spm_drv_validate_data(dev, vlevel, dev->vctl_port);
@@ -604,13 +710,48 @@ int msm_spm_drv_set_vdd(struct msm_spm_driver_data *dev, unsigned int vlevel)
 	}
 
 	return ret;
+=======
+	msm_spm_drv_set_vctl2(dev, vlevel);
+
+	timeout_us = dev->vctl_timeout_us;
+	/* Confirm the voltage we set was what hardware sent */
+	do {
+		udelay(1);
+		new_level = msm_spm_drv_get_sts_curr_pmic_data(dev);
+		/* FSM is idle */
+		if (((new_level & 0x30000) == 0) &&
+				((new_level & 0xFF) == vlevel))
+			break;
+	} while (--timeout_us);
+	if (!timeout_us) {
+		pr_info("Wrong level %#x\n", new_level);
+		goto set_vdd_bail;
+	}
+
+	if (msm_spm_debug_mask & MSM_SPM_DEBUG_VCTL)
+		pr_info("%s: done, remaining timeout %u us\n",
+			__func__, timeout_us);
+
+	/* Set AVS min/max */
+	if (avs_enabled) {
+		msm_spm_drv_set_avs_vlevel(dev, vlevel);
+		msm_spm_drv_enable_avs(dev);
+	}
+
+	return 0;
+>>>>>>> p9x
 
 set_vdd_bail:
 	if (avs_enabled)
 		msm_spm_drv_enable_avs(dev);
 
+<<<<<<< HEAD
 	pr_err("%s: failed %#x vlevel setting in timeout %uus\n",
 			__func__, vlevel_set, dev->vctl_timeout_us);
+=======
+	pr_err("%s: failed %#x, remaining timeout %uus, vlevel %#x\n",
+		__func__, vlevel, timeout_us, new_level);
+>>>>>>> p9x
 	return -EIO;
 }
 
@@ -656,7 +797,10 @@ int msm_spm_drv_set_pmic_data(struct msm_spm_driver_data *dev,
 	dev->reg_shadow[MSM_SPM_REG_SAW_VCTL] &= ~0x700FF;
 	dev->reg_shadow[MSM_SPM_REG_SAW_VCTL] |= pmic_data;
 	msm_spm_drv_flush_shadow(dev, MSM_SPM_REG_SAW_VCTL);
+<<<<<<< HEAD
 	mb();
+=======
+>>>>>>> p9x
 
 	timeout_us = dev->vctl_timeout_us;
 	/**
@@ -739,7 +883,10 @@ int msm_spm_drv_init(struct msm_spm_driver_data *dev,
 	BUG_ON(!dev || !data);
 
 	dev->vctl_port = data->vctl_port;
+<<<<<<< HEAD
 	dev->vctl_port_ub = data->vctl_port_ub;
+=======
+>>>>>>> p9x
 	dev->phase_port = data->phase_port;
 	dev->pfm_port = data->pfm_port;
 	dev->reg_base_addr = data->reg_base_addr;

@@ -1009,9 +1009,13 @@ enum intel_sbi_destination {
 #define QUIRK_PIPEA_FORCE (1<<0)
 #define QUIRK_LVDS_SSC_DISABLE (1<<1)
 #define QUIRK_INVERT_BRIGHTNESS (1<<2)
+<<<<<<< HEAD
 #define QUIRK_BACKLIGHT_PRESENT (1<<3)
 #define QUIRK_PIPEB_FORCE (1<<4)
 #define QUIRK_PIN_SWIZZLED_PAGES (1<<5)
+=======
+#define QUIRK_NO_PCH_PWM_ENABLE (1<<3)
+>>>>>>> p9x
 
 struct intel_fbdev;
 struct intel_fbc_work;
@@ -2714,9 +2718,17 @@ __printf(3, 4)
 void i915_handle_error(struct drm_device *dev, bool wedged,
 		       const char *fmt, ...);
 
+<<<<<<< HEAD
 extern void intel_irq_init(struct drm_i915_private *dev_priv);
 int intel_irq_install(struct drm_i915_private *dev_priv);
 void intel_irq_uninstall(struct drm_i915_private *dev_priv);
+=======
+extern void intel_irq_init(struct drm_device *dev);
+extern void intel_pm_init(struct drm_device *dev);
+extern void intel_hpd_init(struct drm_device *dev);
+extern void intel_gt_init(struct drm_device *dev);
+extern void intel_gt_sanitize(struct drm_device *dev);
+>>>>>>> p9x
 
 extern void intel_uncore_sanitize(struct drm_device *dev);
 extern void intel_uncore_early_sanitize(struct drm_device *dev,
@@ -3300,8 +3312,15 @@ void i915_teardown_sysfs(struct drm_device *dev_priv);
 /* intel_i2c.c */
 extern int intel_setup_gmbus(struct drm_device *dev);
 extern void intel_teardown_gmbus(struct drm_device *dev);
+<<<<<<< HEAD
 extern bool intel_gmbus_is_valid_pin(struct drm_i915_private *dev_priv,
 				     unsigned int pin);
+=======
+static inline bool intel_gmbus_is_port_valid(unsigned port)
+{
+	return (port >= GMBUS_PORT_SSC && port <= GMBUS_PORT_DPD);
+}
+>>>>>>> p9x
 
 extern struct i2c_adapter *
 intel_gmbus_get_adapter(struct drm_i915_private *dev_priv, unsigned int pin);

@@ -54,6 +54,35 @@ static cpumask_t tlb_flush_pending;
 #ifdef CONFIG_ARM_ERRATA_798181
 void a15_erratum_get_cpumask(int this_cpu, struct mm_struct *mm,
 			     cpumask_t *mask)
+<<<<<<< HEAD
+=======
+{
+	int cpu;
+	unsigned long flags;
+	u64 context_id, asid;
+
+	raw_spin_lock_irqsave(&cpu_asid_lock, flags);
+	context_id = mm->context.id.counter;
+	for_each_online_cpu(cpu) {
+		if (cpu == this_cpu)
+			continue;
+		/*
+		 * We only need to send an IPI if the other CPUs are
+		 * running the same ASID as the one being invalidated.
+		 */
+		asid = per_cpu(active_asids, cpu).counter;
+		if (asid == 0)
+			asid = per_cpu(reserved_asids, cpu);
+		if (context_id == asid)
+			cpumask_set_cpu(cpu, mask);
+	}
+	raw_spin_unlock_irqrestore(&cpu_asid_lock, flags);
+}
+#endif
+
+#ifdef CONFIG_ARM_LPAE
+static void cpu_set_reserved_ttbr0(void)
+>>>>>>> p9x
 {
 	int cpu;
 	unsigned long flags;
@@ -146,6 +175,7 @@ static void flush_context(unsigned int cpu)
 	/* Update the list of reserved ASIDs and the ASID bitmap. */
 	bitmap_clear(asid_map, 0, NUM_USER_ASIDS);
 	for_each_possible_cpu(i) {
+<<<<<<< HEAD
 		asid = atomic64_xchg(&per_cpu(active_asids, i), 0);
 		/*
 		 * If this CPU has already been through a
@@ -157,6 +187,23 @@ static void flush_context(unsigned int cpu)
 		if (asid == 0)
 			asid = per_cpu(reserved_asids, i);
 		__set_bit(asid & ~ASID_MASK, asid_map);
+=======
+		if (i == cpu) {
+			asid = 0;
+		} else {
+			asid = atomic64_xchg(&per_cpu(active_asids, i), 0);
+			/*
+			 * If this CPU has already been through a
+			 * rollover, but hasn't run another task in
+			 * the meantime, we must preserve its reserved
+			 * ASID, as this is the only trace we have of
+			 * the process it is still running.
+			 */
+			if (asid == 0)
+				asid = per_cpu(reserved_asids, i);
+			__set_bit(asid & ~ASID_MASK, asid_map);
+		}
+>>>>>>> p9x
 		per_cpu(reserved_asids, i) = asid;
 	}
 
@@ -208,12 +255,31 @@ static u64 new_context(struct mm_struct *mm, unsigned int cpu)
 			return newasid;
 
 		/*
+<<<<<<< HEAD
 		 * We had a valid ASID in a previous life, so try to re-use
 		 * it if possible.,
 		 */
 		asid &= ~ASID_MASK;
 		if (!__test_and_set_bit(asid, asid_map))
 			return newasid;
+=======
+		 * Allocate a free ASID. If we can't find one, take a
+		 * note of the currently active ASIDs and mark the TLBs
+		 * as requiring flushes. We always count from ASID #1,
+		 * as we reserve ASID #0 to switch via TTBR0 and indicate
+		 * rollover events.
+		 */
+		asid = find_next_zero_bit(asid_map, NUM_USER_ASIDS, 1);
+		if (asid == NUM_USER_ASIDS) {
+			generation = atomic64_add_return(ASID_FIRST_VERSION,
+							 &asid_generation);
+			flush_context(cpu);
+			asid = find_next_zero_bit(asid_map, NUM_USER_ASIDS, 1);
+		}
+		__set_bit(asid, asid_map);
+		asid |= generation;
+		cpumask_clear(mm_cpumask(mm));
+>>>>>>> p9x
 	}
 
 	/*

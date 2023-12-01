@@ -233,9 +233,28 @@ certainly invest a bit more effort into libata core layer).
   6. List of managed interfaces
   -----------------------------
 
+<<<<<<< HEAD
 CLOCK
   devm_clk_get()
   devm_clk_put()
+=======
+MEM
+  devm_kzalloc()
+  devm_kfree()
+  devm_kmemdup()
+  devm_get_free_pages()
+  devm_free_pages()
+
+IO region
+  devm_request_region()
+  devm_request_mem_region()
+  devm_release_region()
+  devm_release_mem_region()
+
+IRQ
+  devm_request_irq()
+  devm_free_irq()
+>>>>>>> p9x
 
 DMA
   dmam_alloc_coherent()

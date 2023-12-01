@@ -386,7 +386,10 @@ static inline __must_check
 void **radix_tree_iter_retry(struct radix_tree_iter *iter)
 {
 	iter->next_index = iter->index;
+<<<<<<< HEAD
 	iter->tags = 0;
+=======
+>>>>>>> p9x
 	return NULL;
 }
 

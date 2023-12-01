@@ -950,7 +950,11 @@ static void bgmac_chip_reset(struct bgmac *bgmac)
 		u8 et_swtype = 0;
 		u8 sw_type = BGMAC_CHIPCTL_1_SW_TYPE_EPHY |
 			     BGMAC_CHIPCTL_1_IF_TYPE_MII;
+<<<<<<< HEAD
 		char buf[4];
+=======
+		char buf[2];
+>>>>>>> p9x
 
 		if (bcm47xx_nvram_getenv("et_swtype", buf, sizeof(buf)) > 0) {
 			if (kstrtou8(buf, 0, &et_swtype))

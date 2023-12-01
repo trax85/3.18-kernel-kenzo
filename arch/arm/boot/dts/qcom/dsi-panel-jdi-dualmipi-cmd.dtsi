@@ -38,7 +38,10 @@
 		qcom,mdss-dsi-traffic-mode = "non_burst_sync_event";
 		qcom,mdss-dsi-bllp-eof-power-mode;
 		qcom,mdss-dsi-bllp-power-mode;
+<<<<<<< HEAD
 		qcom,cmd-sync-wait-broadcast;
+=======
+>>>>>>> p9x
 		qcom,mdss-dsi-lane-0-state;
 		qcom,mdss-dsi-lane-1-state;
 		qcom,mdss-dsi-lane-2-state;
@@ -85,6 +88,7 @@
 			05 01 00 00 10 00 01 29];
 			/* Set display on, wait 16ms */
 		qcom,mdss-dsi-on-command-state = "dsi_lp_mode";
+<<<<<<< HEAD
 		qcom,mdss-dsi-post-mode-switch-on-command =
 					[05 01 00 00 0a 00 01 00
 						/* Soft reset, wait 10ms */
@@ -131,5 +135,10 @@
 			[23 00 00 00 00 00 02 b0 00
 			29 00 00 00 00 00 02 b3 1c
 			23 01 00 00 00 00 02 b0 03];
+=======
+		qcom,mdss-dsi-off-command = [05 01 00 00 32 00 02 28 00
+					05 01 00 00 78 00 02 10 00];
+		qcom,mdss-dsi-off-command-state = "dsi_hs_mode";
+>>>>>>> p9x
 	};
 };

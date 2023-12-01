@@ -209,7 +209,11 @@
 	.info = snd_soc_info_volsw, \
 	.get = xhandler_get, .put = xhandler_put, \
 	.private_value = \
+<<<<<<< HEAD
 		SOC_DOUBLE_VALUE(reg, shift_left, shift_right, max, invert, 0) }
+=======
+		SOC_DOUBLE_VALUE(reg, shift_left, shift_right, max, invert) }
+>>>>>>> p9x
 #define SOC_SINGLE_MULTI_EXT(xname, xreg, xshift, xmax, xinvert, xcount,\
 	xhandler_get, xhandler_put) \
 {	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname, \
@@ -472,6 +476,8 @@ int soc_dai_hw_params(struct snd_pcm_substream *substream,
 int snd_soc_jack_new(struct snd_soc_codec *codec, const char *id, int type,
 		     struct snd_soc_jack *jack);
 void snd_soc_jack_report(struct snd_soc_jack *jack, int status, int mask);
+void snd_soc_jack_report_no_dapm(struct snd_soc_jack *jack, int status,
+				 int mask);
 int snd_soc_jack_add_pins(struct snd_soc_jack *jack, int count,
 			  struct snd_soc_jack_pin *pins);
 void snd_soc_jack_notifier_register(struct snd_soc_jack *jack,
@@ -526,10 +532,13 @@ void snd_soc_free_ac97_codec(struct snd_soc_codec *codec);
 void snd_soc_card_change_online_state(struct snd_soc_card *soc_card,
 				      int online);
 
+<<<<<<< HEAD
 int snd_soc_set_ac97_ops(struct snd_ac97_bus_ops *ops);
 int snd_soc_set_ac97_ops_of_reset(struct snd_ac97_bus_ops *ops,
 		struct platform_device *pdev);
 
+=======
+>>>>>>> p9x
 /*
  *Controls
  */
@@ -603,6 +612,26 @@ int snd_soc_put_strobe(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol);
 int snd_soc_info_multi_ext(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_info *uinfo);
+<<<<<<< HEAD
+=======
+
+
+/**
+ * struct snd_soc_reg_access - Describes whether a given register is
+ * readable, writable or volatile.
+ *
+ * @reg: the register number
+ * @read: whether this register is readable
+ * @write: whether this register is writable
+ * @vol: whether this register is volatile
+ */
+struct snd_soc_reg_access {
+	u16 reg;
+	u16 read;
+	u16 write;
+	u16 vol;
+};
+>>>>>>> p9x
 
 /**
  * struct snd_soc_jack_pin - Describes a pin to update based on jack detection
@@ -691,7 +720,11 @@ struct snd_soc_pcm_stream {
 	unsigned int channels_min;	/* min channels */
 	unsigned int channels_max;	/* max channels */
 	unsigned int sig_bits;		/* number of bits of content */
+<<<<<<< HEAD
 	const char *aif_name;		/* DAPM AIF widget name */
+=======
+	const char *aif_name;	/* DAPM AIF widget name */
+>>>>>>> p9x
 };
 
 /* SoC audio ops */
@@ -952,6 +985,14 @@ enum snd_soc_async_ops {
 	ASYNC_DPCM_SND_SOC_FREE = 1 << 4,
 };
 
+enum snd_soc_async_ops {
+	ASYNC_DPCM_SND_SOC_OPEN = 1 << 0,
+	ASYNC_DPCM_SND_SOC_CLOSE = 1 << 1,
+	ASYNC_DPCM_SND_SOC_PREPARE = 1 << 2,
+	ASYNC_DPCM_SND_SOC_HW_PARAMS = 1 << 3,
+	ASYNC_DPCM_SND_SOC_FREE = 1 << 4,
+};
+
 struct snd_soc_dai_link {
 	/* config - must be set by machine driver */
 	const char *name;			/* Codec name */
@@ -1015,10 +1056,13 @@ struct snd_soc_dai_link {
 	/* This DAI can support no host IO (no pcm data is copied to from host) */
 	unsigned int no_host_mode:2;
 
+<<<<<<< HEAD
 	/* DPCM capture and Playback support */
 	unsigned int dpcm_capture:1;
 	unsigned int dpcm_playback:1;
 
+=======
+>>>>>>> p9x
 	/* pmdown_time is ignored at stop */
 	unsigned int ignore_pmdown_time:1;
 
@@ -1033,10 +1077,13 @@ struct snd_soc_dai_link {
 	const struct snd_soc_ops *ops;
 	const struct snd_soc_compr_ops *compr_ops;
 
+<<<<<<< HEAD
 	/* For unidirectional dai links */
 	bool playback_only;
 	bool capture_only;
 
+=======
+>>>>>>> p9x
 	/* this value determines what all ops can be started asynchronously */
 	enum snd_soc_async_ops async_ops;
 };
@@ -1181,6 +1228,10 @@ struct snd_soc_pcm_runtime {
 
 	/* err in case of ops failed */
 	int err_ops;
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 	/* runtime devices */
 	struct snd_pcm *pcm;
 	struct snd_compr *compr;
@@ -1513,11 +1564,16 @@ int snd_soc_of_parse_tdm_slot(struct device_node *np,
 int snd_soc_of_parse_audio_routing(struct snd_soc_card *card,
 				   const char *propname);
 unsigned int snd_soc_of_parse_daifmt(struct device_node *np,
+<<<<<<< HEAD
 				     const char *prefix,
 				     struct device_node **bitclkmaster,
 				     struct device_node **framemaster);
 int snd_soc_of_get_dai_name(struct device_node *of_node,
 			    const char **dai_name);
+=======
+				     const char *prefix);
+int soc_check_aux_dev_byname(struct snd_soc_card *card, const char *codec_name);
+>>>>>>> p9x
 
 #include <sound/soc-dai.h>
 

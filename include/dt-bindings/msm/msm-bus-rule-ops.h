@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -21,9 +25,13 @@
 #define OP_LT	1
 #define OP_GE	2
 #define OP_GT	3
+<<<<<<< HEAD
 #define OP_NOOP 4
 #define OP_AND	5
 #define OP_OR	6
+=======
+#define OP_NOOP	4
+>>>>>>> p9x
 
 #define RULE_STATE_NOT_APPLIED	0
 #define RULE_STATE_APPLIED	1

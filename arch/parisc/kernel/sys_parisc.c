@@ -83,10 +83,34 @@ static unsigned long mmap_upper_limit(void)
 	return PAGE_ALIGN(STACK_TOP - stack_base);
 }
 
+<<<<<<< HEAD
+=======
+static unsigned long shared_align_offset(struct file *filp, unsigned long pgoff)
+{
+	struct address_space *mapping = filp ? filp->f_mapping : NULL;
+
+	return (get_offset(mapping) + pgoff) << PAGE_SHIFT;
+}
+
+static unsigned long get_shared_area(struct file *filp, unsigned long addr,
+		unsigned long len, unsigned long pgoff)
+{
+	struct vm_unmapped_area_info info;
+
+	info.flags = 0;
+	info.length = len;
+	info.low_limit = PAGE_ALIGN(addr);
+	info.high_limit = TASK_SIZE;
+	info.align_mask = PAGE_MASK & (SHMLBA - 1);
+	info.align_offset = shared_align_offset(filp, pgoff);
+	return vm_unmapped_area(&info);
+}
+>>>>>>> p9x
 
 unsigned long arch_get_unmapped_area(struct file *filp, unsigned long addr,
 		unsigned long len, unsigned long pgoff, unsigned long flags)
 {
+<<<<<<< HEAD
 	struct mm_struct *mm = current->mm;
 	struct vm_area_struct *vma, *prev;
 	unsigned long task_size = TASK_SIZE;
@@ -133,6 +157,23 @@ unsigned long arch_get_unmapped_area(struct file *filp, unsigned long addr,
 found_addr:
 	if (do_color_align && !last_mmap && !(addr & ~PAGE_MASK))
 		SET_LAST_MMAP(filp, addr - (pgoff << PAGE_SHIFT));
+=======
+	if (len > TASK_SIZE)
+		return -ENOMEM;
+	if (flags & MAP_FIXED) {
+		if ((flags & MAP_SHARED) &&
+		    (addr - shared_align_offset(filp, pgoff)) & (SHMLBA - 1))
+			return -EINVAL;
+		return addr;
+	}
+	if (!addr)
+		addr = TASK_UNMAPPED_BASE;
+
+	if (filp || (flags & MAP_SHARED))
+		addr = get_shared_area(filp, addr, len, pgoff);
+	else
+		addr = get_unshared_area(addr, len);
+>>>>>>> p9x
 
 	return addr;
 }

@@ -97,7 +97,10 @@ config ARM_ARCH_TIMER
 config ARM_ARCH_TIMER_EVTSTREAM
 	bool "Support for ARM architected timer event stream generation"
 	default y if ARM_ARCH_TIMER
+<<<<<<< HEAD
 	depends on ARM_ARCH_TIMER
+=======
+>>>>>>> p9x
 	help
 	  This option enables support for event stream generation based on
 	  the ARM architected timer. It is used for waking up CPUs executing
@@ -112,12 +115,17 @@ config ARM_ARCH_TIMER_EVTSTREAM
 
 config ARM_ARCH_TIMER_VCT_ACCESS
 	bool "Support for ARM architected timer virtual counter access in userspace"
+<<<<<<< HEAD
 	default !ARM64
+=======
+	default n
+>>>>>>> p9x
 	depends on ARM_ARCH_TIMER
 	help
 	  This option enables support for reading the ARM architected timer's
 	  virtual counter in userspace.
 
+<<<<<<< HEAD
 config ARM_GLOBAL_TIMER
 	bool
 	select CLKSRC_OF if OF
@@ -135,6 +143,8 @@ config ATMEL_PIT
 	select CLKSRC_OF if OF
 	def_bool SOC_AT91SAM9 || SOC_SAMA5
 
+=======
+>>>>>>> p9x
 config CLKSRC_METAG_GENERIC
 	def_bool y if METAG
 	help

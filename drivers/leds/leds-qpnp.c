@@ -1,5 +1,9 @@
 
+<<<<<<< HEAD
 /* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -680,7 +684,11 @@ static int qpnp_wled_set(struct qpnp_led_data *led)
 				return rc;
 			}
 
+<<<<<<< HEAD
 			usleep_range(WLED_OVP_DELAY, WLED_OVP_DELAY);
+=======
+			usleep(WLED_OVP_DELAY);
+>>>>>>> p9x
 		} else if (led->wled_cfg->pmic_version == PMIC_VER_8941) {
 			if (led->wled_cfg->num_physical_strings <=
 					WLED_THREE_STRINGS) {
@@ -715,7 +723,11 @@ static int qpnp_wled_set(struct qpnp_led_data *led)
 						"WLED write sink reg failed");
 					return rc;
 				}
+<<<<<<< HEAD
 				usleep_range(WLED_OVP_DELAY, WLED_OVP_DELAY);
+=======
+				usleep(WLED_OVP_DELAY);
+>>>>>>> p9x
 			} else {
 				val = WLED_DISABLE_ALL_SINKS;
 				rc = spmi_ext_register_writel(
@@ -746,7 +758,11 @@ static int qpnp_wled_set(struct qpnp_led_data *led)
 					msleep(WLED_OVP_DELAY_LOOP);
 					tries++;
 				}
+<<<<<<< HEAD
 				usleep_range(WLED_OVP_DELAY, WLED_OVP_DELAY);
+=======
+				usleep(WLED_OVP_DELAY);
+>>>>>>> p9x
 			}
 		}
 
@@ -1251,7 +1267,11 @@ regulator_turn_off:
 
 static int qpnp_flash_set(struct qpnp_led_data *led)
 {
+<<<<<<< HEAD
 	int rc = 0, error;
+=======
+	int rc, error;
+>>>>>>> p9x
 	int val = led->cdev.brightness;
 
 	if (led->flash_cfg->torch_enable)
@@ -1289,8 +1309,13 @@ static int qpnp_flash_set(struct qpnp_led_data *led)
 				}
 			}
 
+<<<<<<< HEAD
 			rc = qpnp_led_masked_write(led,
 				FLASH_MAX_CURR(led->base), FLASH_CURRENT_MASK,
+=======
+			qpnp_led_masked_write(led, FLASH_MAX_CURR(led->base),
+				FLASH_CURRENT_MASK,
+>>>>>>> p9x
 				TORCH_MAX_LEVEL);
 			if (rc) {
 				dev_err(&led->spmi_dev->dev,
@@ -1299,7 +1324,11 @@ static int qpnp_flash_set(struct qpnp_led_data *led)
 				goto error_reg_write;
 			}
 
+<<<<<<< HEAD
 			rc = qpnp_led_masked_write(led,
+=======
+			qpnp_led_masked_write(led,
+>>>>>>> p9x
 				FLASH_LED_TMR_CTRL(led->base),
 				FLASH_TMR_MASK,
 				FLASH_TMR_WATCHDOG);
@@ -1331,7 +1360,11 @@ static int qpnp_flash_set(struct qpnp_led_data *led)
 				goto error_reg_write;
 			}
 
+<<<<<<< HEAD
 			rc = qpnp_led_masked_write(led,
+=======
+			qpnp_led_masked_write(led,
+>>>>>>> p9x
 				FLASH_WATCHDOG_TMR(led->base),
 				FLASH_WATCHDOG_MASK,
 				led->flash_cfg->duration);
@@ -1379,7 +1412,11 @@ static int qpnp_flash_set(struct qpnp_led_data *led)
 				goto error_flash_set;
 			}
 
+<<<<<<< HEAD
 			rc = qpnp_led_masked_write(led,
+=======
+			qpnp_led_masked_write(led,
+>>>>>>> p9x
 				FLASH_LED_TMR_CTRL(led->base),
 				FLASH_TMR_MASK,
 				FLASH_TMR_SAFETY);
@@ -1448,7 +1485,11 @@ static int qpnp_flash_set(struct qpnp_led_data *led)
 			/*
 			 * Add 1ms delay for bharger enter stable state
 			 */
+<<<<<<< HEAD
 			usleep_range(FLASH_RAMP_UP_DELAY_US, FLASH_RAMP_UP_DELAY_US);
+=======
+			usleep(FLASH_RAMP_UP_DELAY_US);
+>>>>>>> p9x
 
 			if (!led->flash_cfg->strobe_type)
 				led->flash_cfg->trigger_flash &=
@@ -1512,7 +1553,11 @@ static int qpnp_flash_set(struct qpnp_led_data *led)
 			 * Disable module after ramp down complete for stable
 			 * behavior
 			 */
+<<<<<<< HEAD
 			usleep_range(FLASH_RAMP_UP_DELAY_US, FLASH_RAMP_UP_DELAY_US);
+=======
+			usleep(FLASH_RAMP_DN_DELAY_US);
+>>>>>>> p9x
 
 			rc = qpnp_led_masked_write(led,
 				FLASH_ENABLE_CONTROL(led->base),

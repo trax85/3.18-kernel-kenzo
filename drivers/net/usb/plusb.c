@@ -139,6 +139,7 @@ static const struct usb_device_id	products [] = {
 					 * Host-to-Host Cable
 					 */
 	.driver_info =  (unsigned long) &prolific_info,
+<<<<<<< HEAD
 
 },
 
@@ -150,6 +151,8 @@ static const struct usb_device_id	products [] = {
 					 * Unitek Y-3501
 					 */
 	.driver_info =  (unsigned long) &prolific_info,
+=======
+>>>>>>> p9x
 },
 
 	{ },		// END

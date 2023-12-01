@@ -449,6 +449,23 @@ static void xhci_reinit_cached_ring(struct xhci_hcd *xhci,
 	INIT_LIST_HEAD(&ring->td_list);
 }
 
+/* Zero an endpoint ring (except for link TRBs clear only cycle bit) and move
+ * the enqueue and dequeue pointers to the beginning of the ring.
+ */
+void xhci_reinit_xfer_ring(struct xhci_ring *ring, unsigned int cycle_state)
+{
+	struct xhci_segment	*seg = ring->first_seg;
+
+	do {
+		memset(seg->trbs, 0,
+				sizeof(union xhci_trb)*(TRBS_PER_SEGMENT - 1));
+		seg->trbs[TRBS_PER_SEGMENT - 1].link.control &= ~TRB_CYCLE;
+		seg = seg->next;
+	} while (seg != ring->first_seg);
+
+	xhci_initialize_ring_info(ring, cycle_state);
+}
+
 /*
  * Expand an existing ring.
  * Look for a cached ring or allocate a new ring which has same segment numbers
@@ -643,6 +660,61 @@ struct xhci_ring *xhci_stream_id_to_ring(
 	return ep->stream_info->stream_rings[stream_id];
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_USB_XHCI_HCD_DEBUGGING
+static int xhci_test_radix_tree(struct xhci_hcd *xhci,
+		unsigned int num_streams,
+		struct xhci_stream_info *stream_info)
+{
+	u32 cur_stream;
+	struct xhci_ring *cur_ring;
+	u64 addr;
+
+	for (cur_stream = 1; cur_stream < num_streams; cur_stream++) {
+		struct xhci_ring *mapped_ring;
+		int trb_size = sizeof(union xhci_trb);
+
+		cur_ring = stream_info->stream_rings[cur_stream];
+		for (addr = cur_ring->first_seg->dma;
+				addr < cur_ring->first_seg->dma + TRB_SEGMENT_SIZE;
+				addr += trb_size) {
+			mapped_ring = dma_to_stream_ring(stream_info, addr);
+			if (cur_ring != mapped_ring) {
+				xhci_warn(xhci, "WARN: DMA address 0x%08llx "
+						"didn't map to stream ID %u; "
+						"mapped to ring %pK\n",
+						(unsigned long long) addr,
+						cur_stream,
+						mapped_ring);
+				return -EINVAL;
+			}
+		}
+		/* One TRB after the end of the ring segment shouldn't return a
+		 * pointer to the current ring (although it may be a part of a
+		 * different ring).
+		 */
+		mapped_ring = dma_to_stream_ring(stream_info, addr);
+		if (mapped_ring != cur_ring) {
+			/* One TRB before should also fail */
+			addr = cur_ring->first_seg->dma - trb_size;
+			mapped_ring = dma_to_stream_ring(stream_info, addr);
+		}
+		if (mapped_ring == cur_ring) {
+			xhci_warn(xhci, "WARN: Bad DMA address 0x%08llx "
+					"mapped to valid stream ID %u; "
+					"mapped ring = %pK\n",
+					(unsigned long long) addr,
+					cur_stream,
+					mapped_ring);
+			return -EINVAL;
+		}
+	}
+	return 0;
+}
+#endif	/* CONFIG_USB_XHCI_HCD_DEBUGGING */
+
+>>>>>>> p9x
 /*
  * Change an endpoint's internal structure so it supports stream IDs.  The
  * number of requested streams includes stream 0, which cannot be used by device
@@ -964,6 +1036,47 @@ void xhci_free_virt_device(struct xhci_hcd *xhci, int slot_id)
 
 	kfree(xhci->devs[slot_id]);
 	xhci->devs[slot_id] = NULL;
+}
+
+/*
+ * Free a virt_device structure.
+ * If the virt_device added a tt_info (a hub) and has children pointing to
+ * that tt_info, then free the child first. Recursive.
+ * We can't rely on udev at this point to find child-parent relationships.
+ */
+void xhci_free_virt_devices_depth_first(struct xhci_hcd *xhci, int slot_id)
+{
+	struct xhci_virt_device *vdev;
+	struct list_head *tt_list_head;
+	struct xhci_tt_bw_info *tt_info, *next;
+	int i;
+
+	vdev = xhci->devs[slot_id];
+	if (!vdev)
+		return;
+
+	if (vdev->real_port == 0 ||
+			vdev->real_port > HCS_MAX_PORTS(xhci->hcs_params1)) {
+		xhci_dbg(xhci, "Bad vdev->real_port.\n");
+		goto out;
+	}
+
+	tt_list_head = &(xhci->rh_bw[vdev->real_port - 1].tts);
+	list_for_each_entry_safe(tt_info, next, tt_list_head, tt_list) {
+		/* is this a hub device that added a tt_info to the tts list */
+		if (tt_info->slot_id == slot_id) {
+			/* are any devices using this tt_info? */
+			for (i = 1; i < HCS_MAX_SLOTS(xhci->hcs_params1); i++) {
+				vdev = xhci->devs[i];
+				if (vdev && (vdev->tt_info == tt_info))
+					xhci_free_virt_devices_depth_first(
+						xhci, i);
+			}
+		}
+	}
+out:
+	/* we are now at a leaf device */
+	xhci_free_virt_device(xhci, slot_id);
 }
 
 int xhci_alloc_virt_device(struct xhci_hcd *xhci, int slot_id,
@@ -1504,10 +1617,10 @@ int xhci_endpoint_init(struct xhci_hcd *xhci,
 	 * use Event Data TRBs, and we don't chain in a link TRB on short
 	 * transfers, we're basically dividing by 1.
 	 *
-	 * xHCI 1.0 specification indicates that the Average TRB Length should
-	 * be set to 8 for control endpoints.
+	 * xHCI 1.0 and 1.1 specification indicates that the Average TRB Length
+	 * should be set to 8 for control endpoints.
 	 */
-	if (usb_endpoint_xfer_control(&ep->desc) && xhci->hci_version == 0x100)
+	if (usb_endpoint_xfer_control(&ep->desc) && xhci->hci_version >= 0x100)
 		ep_ctx->tx_info |= cpu_to_le32(AVG_TRB_LENGTH_FOR_EP(8));
 	else
 		ep_ctx->tx_info |=
@@ -1831,8 +1944,18 @@ void xhci_mem_cleanup(struct xhci_hcd *xhci)
 		}
 	}
 
-	for (i = 1; i < MAX_HC_SLOTS; ++i)
-		xhci_free_virt_device(xhci, i);
+	num_ports = HCS_MAX_PORTS(xhci->hcs_params1);
+	for (i = 0; i < num_ports && xhci->rh_bw; i++) {
+		struct xhci_interval_bw_table *bwt = &xhci->rh_bw[i].bw_table;
+		for (j = 0; j < XHCI_MAX_INTERVAL; j++) {
+			struct list_head *ep = &bwt->interval_bw[j].endpoints;
+			while (!list_empty(ep))
+				list_del_init(ep->next);
+		}
+	}
+
+	for (i = HCS_MAX_SLOTS(xhci->hcs_params1); i > 0; i--)
+		xhci_free_virt_devices_depth_first(xhci, i);
 
 	if (xhci->segment_pool)
 		dma_pool_destroy(xhci->segment_pool);
@@ -1884,6 +2007,11 @@ no_bw:
 	kfree(xhci->port_array);
 	kfree(xhci->rh_bw);
 	kfree(xhci->ext_caps);
+
+	xhci->usb2_ports = NULL;
+	xhci->usb3_ports = NULL;
+	xhci->port_array = NULL;
+	xhci->rh_bw = NULL;
 
 	xhci->page_size = 0;
 	xhci->page_shift = 0;
@@ -2091,9 +2219,14 @@ static void xhci_add_in_port(struct xhci_hcd *xhci, unsigned int num_ports,
 	temp = readl(addr + 2);
 	port_offset = XHCI_EXT_PORT_OFF(temp);
 	port_count = XHCI_EXT_PORT_COUNT(temp);
+<<<<<<< HEAD
 	xhci_dbg_trace(xhci, trace_xhci_dbg_init,
 			"Ext Cap %pK, port offset = %u, "
 			"count = %u, revision = 0x%x",
+=======
+	xhci_dbg(xhci, "Ext Cap %pK, port offset = %u, "
+			"count = %u, revision = 0x%x\n",
+>>>>>>> p9x
 			addr, port_offset, port_count, major_revision);
 	/* Port count includes the current port offset */
 	if (port_offset == 0 || (port_offset + port_count - 1) > num_ports)
@@ -2281,9 +2414,14 @@ static int xhci_setup_port_arrays(struct xhci_hcd *xhci, gfp_t flags)
 			xhci->usb2_ports[port_index] =
 				&xhci->op_regs->port_status_base +
 				NUM_PORT_REGS*i;
+<<<<<<< HEAD
 			xhci_dbg_trace(xhci, trace_xhci_dbg_init,
 					"USB 2.0 port at index %u, "
 					"addr = %pK", i,
+=======
+			xhci_dbg(xhci, "USB 2.0 port at index %u, "
+					"addr = %pK\n", i,
+>>>>>>> p9x
 					xhci->usb2_ports[port_index]);
 			port_index++;
 			if (port_index == xhci->num_usb2_ports)
@@ -2302,9 +2440,14 @@ static int xhci_setup_port_arrays(struct xhci_hcd *xhci, gfp_t flags)
 				xhci->usb3_ports[port_index] =
 					&xhci->op_regs->port_status_base +
 					NUM_PORT_REGS*i;
+<<<<<<< HEAD
 				xhci_dbg_trace(xhci, trace_xhci_dbg_init,
 						"USB 3.0 port at index %u, "
 						"addr = %pK", i,
+=======
+				xhci_dbg(xhci, "USB 3.0 port at index %u, "
+						"addr = %pK\n", i,
+>>>>>>> p9x
 						xhci->usb3_ports[port_index]);
 				port_index++;
 				if (port_index == xhci->num_usb3_ports)
@@ -2363,13 +2506,17 @@ int xhci_mem_init(struct xhci_hcd *xhci, gfp_t flags)
 	 * "physically contiguous and 64-byte (cache line) aligned".
 	 */
 	xhci->dcbaa = dma_alloc_coherent(dev, sizeof(*xhci->dcbaa), &dma,
-			GFP_KERNEL);
+			flags);
 	if (!xhci->dcbaa)
 		goto fail;
 	memset(xhci->dcbaa, 0, sizeof *(xhci->dcbaa));
 	xhci->dcbaa->dma = dma;
+<<<<<<< HEAD
 	xhci_dbg_trace(xhci, trace_xhci_dbg_init,
 			"// Device context base array address = 0x%llx (DMA), %pK (virt)",
+=======
+	xhci_dbg(xhci, "// Device context base array address = 0x%llx (DMA), %pK (virt)\n",
+>>>>>>> p9x
 			(unsigned long long)xhci->dcbaa->dma, xhci->dcbaa);
 	xhci_write_64(xhci, dma, &xhci->op_regs->dcbaa_ptr);
 
@@ -2409,9 +2556,14 @@ int xhci_mem_init(struct xhci_hcd *xhci, gfp_t flags)
 	xhci->cmd_ring = xhci_ring_alloc(xhci, 1, 1, TYPE_COMMAND, flags);
 	if (!xhci->cmd_ring)
 		goto fail;
+<<<<<<< HEAD
 	xhci_dbg_trace(xhci, trace_xhci_dbg_init,
 			"Allocated command ring at %pK", xhci->cmd_ring);
 	xhci_dbg_trace(xhci, trace_xhci_dbg_init, "First segment DMA is 0x%llx",
+=======
+	xhci_dbg(xhci, "Allocated command ring at %pK\n", xhci->cmd_ring);
+	xhci_dbg(xhci, "First segment DMA is 0x%llx\n",
+>>>>>>> p9x
 			(unsigned long long)xhci->cmd_ring->first_seg->dma);
 
 	/* Set the address in the Command Ring Control register */
@@ -2459,7 +2611,7 @@ int xhci_mem_init(struct xhci_hcd *xhci, gfp_t flags)
 
 	xhci->erst.entries = dma_alloc_coherent(dev,
 			sizeof(struct xhci_erst_entry) * ERST_NUM_SEGS, &dma,
-			GFP_KERNEL);
+			flags);
 	if (!xhci->erst.entries)
 		goto fail;
 	xhci_dbg_trace(xhci, trace_xhci_dbg_init,
@@ -2469,8 +2621,12 @@ int xhci_mem_init(struct xhci_hcd *xhci, gfp_t flags)
 	memset(xhci->erst.entries, 0, sizeof(struct xhci_erst_entry)*ERST_NUM_SEGS);
 	xhci->erst.num_entries = ERST_NUM_SEGS;
 	xhci->erst.erst_dma_addr = dma;
+<<<<<<< HEAD
 	xhci_dbg_trace(xhci, trace_xhci_dbg_init,
 			"Set ERST to 0; private num segs = %i, virt addr = %pK, dma addr = 0x%llx",
+=======
+	xhci_dbg(xhci, "Set ERST to 0; private num segs = %i, virt addr = %pK, dma addr = 0x%llx\n",
+>>>>>>> p9x
 			xhci->erst.num_entries,
 			xhci->erst.entries,
 			(unsigned long long)xhci->erst.erst_dma_addr);

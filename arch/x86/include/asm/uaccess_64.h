@@ -107,7 +107,7 @@ int __copy_from_user_nocheck(void *dst, const void __user *src, unsigned size)
 }
 
 static __always_inline __must_check
-int __copy_from_user(void *dst, const void __user *src, unsigned size)
+int __copy_from_user_nocheck(void *dst, const void __user *src, unsigned size)
 {
 	might_fault();
 	return __copy_from_user_nocheck(dst, src, size);
@@ -118,7 +118,10 @@ int __copy_to_user_nocheck(void __user *dst, const void *src, unsigned size)
 {
 	int ret = 0;
 
+<<<<<<< HEAD
 	check_object_size(src, size, true);
+=======
+>>>>>>> p9x
 	if (!__builtin_constant_p(size))
 		return copy_user_generic((__force void *)dst, src, size);
 	switch (size) {
@@ -171,6 +174,61 @@ int __copy_to_user_nocheck(void __user *dst, const void *src, unsigned size)
 	default:
 		return copy_user_generic((__force void *)dst, src, size);
 	}
+}
+
+static __always_inline __must_check
+int __copy_from_user(void *dst, const void __user *src, unsigned size)
+{
+	might_fault();
+	return __copy_from_user_nocheck(dst, src, size);
+}
+
+static __always_inline __must_check
+int __copy_to_user_nocheck(void __user *dst, const void *src, unsigned size)
+{
+<<<<<<< HEAD
+	might_fault();
+	return __copy_to_user_nocheck(dst, src, size);
+=======
+	int ret = 0;
+
+	if (!__builtin_constant_p(size))
+		return copy_user_generic((__force void *)dst, src, size);
+	switch (size) {
+	case 1:__put_user_asm(*(u8 *)src, (u8 __user *)dst,
+			      ret, "b", "b", "iq", 1);
+		return ret;
+	case 2:__put_user_asm(*(u16 *)src, (u16 __user *)dst,
+			      ret, "w", "w", "ir", 2);
+		return ret;
+	case 4:__put_user_asm(*(u32 *)src, (u32 __user *)dst,
+			      ret, "l", "k", "ir", 4);
+		return ret;
+	case 8:__put_user_asm(*(u64 *)src, (u64 __user *)dst,
+			      ret, "q", "", "er", 8);
+		return ret;
+	case 10:
+		__put_user_asm(*(u64 *)src, (u64 __user *)dst,
+			       ret, "q", "", "er", 10);
+		if (unlikely(ret))
+			return ret;
+		asm("":::"memory");
+		__put_user_asm(4[(u16 *)src], 4 + (u16 __user *)dst,
+			       ret, "w", "w", "ir", 2);
+		return ret;
+	case 16:
+		__put_user_asm(*(u64 *)src, (u64 __user *)dst,
+			       ret, "q", "", "er", 16);
+		if (unlikely(ret))
+			return ret;
+		asm("":::"memory");
+		__put_user_asm(1[(u64 *)src], 1 + (u64 __user *)dst,
+			       ret, "q", "", "er", 8);
+		return ret;
+	default:
+		return copy_user_generic((__force void *)dst, src, size);
+	}
+>>>>>>> p9x
 }
 
 static __always_inline __must_check
@@ -244,13 +302,21 @@ int __copy_in_user(void __user *dst, const void __user *src, unsigned size)
 static __must_check __always_inline int
 __copy_from_user_inatomic(void *dst, const void __user *src, unsigned size)
 {
+<<<<<<< HEAD
 	return __copy_from_user_nocheck(dst, src, size);
+=======
+	return __copy_from_user_nocheck(dst, (__force const void *)src, size);
+>>>>>>> p9x
 }
 
 static __must_check __always_inline int
 __copy_to_user_inatomic(void __user *dst, const void *src, unsigned size)
 {
+<<<<<<< HEAD
 	return __copy_to_user_nocheck(dst, src, size);
+=======
+	return __copy_to_user_nocheck((__force void *)dst, src, size);
+>>>>>>> p9x
 }
 
 extern long __copy_user_nocache(void *dst, const void __user *src,

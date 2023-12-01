@@ -129,6 +129,7 @@ kvp_work_func(struct work_struct *dummy)
 
 static void poll_channel(struct vmbus_channel *channel)
 {
+<<<<<<< HEAD
 	if (channel->target_cpu != smp_processor_id())
 		smp_call_function_single(channel->target_cpu,
 					 hv_kvp_onchannelcallback,
@@ -138,6 +139,15 @@ static void poll_channel(struct vmbus_channel *channel)
 }
 
 
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&channel->inbound_lock, flags);
+	hv_kvp_onchannelcallback(channel);
+	spin_unlock_irqrestore(&channel->inbound_lock, flags);
+}
+
+>>>>>>> p9x
 static int kvp_handle_handshake(struct hv_kvp_msg *msg)
 {
 	int ret = 1;
@@ -580,6 +590,10 @@ response_done:
 	vmbus_sendpacket(channel, recv_buffer, buf_len, req_id,
 				VM_PKT_DATA_INBAND, 0);
 	poll_channel(channel);
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 }
 
 /*

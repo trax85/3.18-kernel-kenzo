@@ -1296,9 +1296,12 @@ static void atmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	if (ios->clock) {
 		unsigned int clock_min = ~0U;
 		int clkdiv;
+<<<<<<< HEAD
 
 		clk_prepare(host->mck);
 		unprepare_clk = true;
+=======
+>>>>>>> p9x
 
 		spin_lock_bh(&host->lock);
 		if (!host->mode_reg) {

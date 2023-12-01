@@ -1198,7 +1198,11 @@ xfs_da3_node_toosmall(
 			return error;
 
 		node = bp->b_addr;
+<<<<<<< HEAD:fs/xfs/libxfs/xfs_da_btree.c
 		dp->d_ops->node_hdr_from_disk(&thdr, node);
+=======
+		xfs_da3_node_hdr_from_disk(&thdr, node);
+>>>>>>> p9x:fs/xfs/xfs_da_btree.c
 		xfs_trans_brelse(state->args->trans, bp);
 
 		if (count - thdr.count >= 0)
@@ -1296,8 +1300,13 @@ xfs_da3_fixhashpath(
 		struct xfs_da3_icnode_hdr nodehdr;
 
 		node = blk->bp->b_addr;
+<<<<<<< HEAD:fs/xfs/libxfs/xfs_da_btree.c
 		dp->d_ops->node_hdr_from_disk(&nodehdr, node);
 		btree = dp->d_ops->node_tree_p(node);
+=======
+		xfs_da3_node_hdr_from_disk(&nodehdr, node);
+		btree = xfs_da3_node_tree_p(node);
+>>>>>>> p9x:fs/xfs/xfs_da_btree.c
 		if (be32_to_cpu(btree[blk->index].hashval) == lasthash)
 			break;
 		blk->hashval = lasthash;

@@ -35,6 +35,10 @@ enum {
 	INET6_IFADDR_STATE_DAD,
 	INET6_IFADDR_STATE_POSTDAD,
 	INET6_IFADDR_STATE_ERRDAD,
+<<<<<<< HEAD
+=======
+	INET6_IFADDR_STATE_UP,
+>>>>>>> p9x
 	INET6_IFADDR_STATE_DEAD,
 };
 
@@ -51,8 +55,13 @@ struct inet6_ifaddr {
 
 	int			state;
 
+<<<<<<< HEAD
 	__u32			flags;
 	__u8			dad_probes;
+=======
+	__u8			dad_probes;
+	__u8			flags;
+>>>>>>> p9x
 
 	__u16			scope;
 
@@ -201,10 +210,15 @@ struct inet6_dev {
 	struct ipv6_devstat	stats;
 
 	struct timer_list	rs_timer;
+<<<<<<< HEAD
 	__s32			rs_interval;	/* in jiffies */
 	__u8			rs_probes;
 
 	__u8			addr_gen_mode;
+=======
+	__u8			rs_probes;
+
+>>>>>>> p9x
 	unsigned long		tstamp; /* ipv6InterfaceTable update timestamp */
 	struct rcu_head		rcu;
 };

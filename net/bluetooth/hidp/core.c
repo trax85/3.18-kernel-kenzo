@@ -224,6 +224,29 @@ static void hidp_input_report(struct hidp_session *session, struct sk_buff *skb)
 	input_sync(dev);
 }
 
+<<<<<<< HEAD
+=======
+static int hidp_send_report(struct hidp_session *session, struct hid_report *report)
+{
+	unsigned char hdr;
+	u8 *buf;
+	int rsize, ret;
+
+	buf = hid_alloc_report_buf(report, GFP_ATOMIC);
+	if (!buf)
+		return -EIO;
+
+	hid_output_report(report, buf);
+	hdr = HIDP_TRANS_DATA | HIDP_DATA_RTYPE_OUPUT;
+
+	rsize = ((report->size - 1) >> 3) + 1 + (report->id > 0);
+	ret = hidp_send_intr_message(session, hdr, buf, rsize);
+
+	kfree(buf);
+	return ret;
+}
+
+>>>>>>> p9x
 static int hidp_get_raw_report(struct hid_device *hid,
 		unsigned char report_number,
 		unsigned char *data, size_t count,
@@ -400,6 +423,20 @@ static int hidp_raw_request(struct hid_device *hid, unsigned char reportnum,
 static void hidp_idle_timeout(unsigned long arg)
 {
 	struct hidp_session *session = (struct hidp_session *) arg;
+
+	/* The HIDP user-space API only contains calls to add and remove
+	 * devices. There is no way to forward events of any kind. Therefore,
+	 * we have to forcefully disconnect a device on idle-timeouts. This is
+	 * unfortunate and weird API design, but it is spec-compliant and
+	 * required for backwards-compatibility. Hence, on idle-timeout, we
+	 * signal driver-detach events, so poll() will be woken up with an
+	 * error-condition on both sockets.
+	 */
+
+	session->intr_sock->sk->sk_err = EUNATCH;
+	session->ctrl_sock->sk->sk_err = EUNATCH;
+	wake_up_interruptible(sk_sleep(session->intr_sock->sk));
+	wake_up_interruptible(sk_sleep(session->ctrl_sock->sk));
 
 	hidp_session_terminate(session);
 }
@@ -1328,7 +1365,7 @@ int hidp_connection_add(struct hidp_connadd_req *req,
 			struct socket *ctrl_sock,
 			struct socket *intr_sock)
 {
-	struct hidp_session *session;
+	struct hidp_session *session = NULL;
 	struct l2cap_conn *conn;
 	struct l2cap_chan *chan = l2cap_pi(ctrl_sock->sk)->chan;
 	int ret;

@@ -98,13 +98,28 @@ static inline void local_flush_tlb_all(void)
 static inline void flush_tlb_all(void)
 {
 	dsb(ishst);
+<<<<<<< HEAD
 	__tlbi(vmalle1is);
+=======
+	asm("tlbi	vmalle1is");
+>>>>>>> p9x
 	dsb(ish);
 	isb();
 }
 
+static inline bool msm8994_needs_tlbi_wa(void)
+{
+#ifdef CONFIG_ARCH_MSM8994_V1_TLBI_WA
+	extern int msm8994_req_tlbi_wa;
+	return msm8994_req_tlbi_wa;
+#else
+	return false;
+#endif
+}
+
 static inline void flush_tlb_mm(struct mm_struct *mm)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_MSM8994_V1_TLBI_WA
 	dsb();
 	__tlbi(vmalle1is);
@@ -118,11 +133,26 @@ static inline void flush_tlb_mm(struct mm_struct *mm)
 	__tlbi_user(aside1is, asid);
 	dsb(ish);
 #endif
+=======
+	if (msm8994_needs_tlbi_wa()) {
+		dsb(ishst);
+		asm("tlbi	vmalle1is");
+		dsb(ish);
+		isb();
+	} else {
+		unsigned long asid = (unsigned long)ASID(mm) << 48;
+
+		dsb(ishst);
+		asm("tlbi	aside1is, %0" : : "r" (asid));
+		dsb(ish);
+	}
+>>>>>>> p9x
 }
 
 static inline void flush_tlb_page(struct vm_area_struct *vma,
 				  unsigned long uaddr)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_MSM8994_V1_TLBI_WA
 	dsb();
 	__tlbi(vmalle1is);
@@ -137,6 +167,60 @@ static inline void flush_tlb_page(struct vm_area_struct *vma,
 	__tlbi_user(vale1is, addr);
 	dsb(ish);
 #endif
+=======
+	if (msm8994_needs_tlbi_wa()) {
+		dsb(ishst);
+		asm("tlbi	vmalle1is");
+		dsb(ish);
+		isb();
+	} else {
+		unsigned long addr = uaddr >> 12 |
+			((unsigned long)ASID(vma->vm_mm) << 48);
+
+		dsb(ishst);
+		asm("tlbi	vae1is, %0" : : "r" (addr));
+		dsb(ish);
+	}
+}
+
+static inline void __flush_tlb_range(struct vm_area_struct *vma,
+				     unsigned long start, unsigned long end)
+{
+	if (msm8994_needs_tlbi_wa()) {
+		asm("tlbi	vmalle1is");
+		dsb(sy);
+		isb();
+	} else {
+		unsigned long asid = (unsigned long)ASID(vma->vm_mm) << 48;
+		unsigned long addr;
+		start = asid | (start >> 12);
+		end = asid | (end >> 12);
+
+		dsb(ishst);
+		for (addr = start; addr < end; addr += 1 << (PAGE_SHIFT - 12))
+			asm("tlbi vae1is, %0" : : "r"(addr));
+		dsb(ish);
+	}
+}
+
+static inline void __flush_tlb_kernel_range(unsigned long start, unsigned long end)
+{
+	if (msm8994_needs_tlbi_wa()) {
+		asm("tlbi	vmalle1is");
+		dsb(sy);
+		isb();
+	} else {
+		unsigned long addr;
+		start >>= 12;
+		end >>= 12;
+
+		dsb(ishst);
+		for (addr = start; addr < end; addr += 1 << (PAGE_SHIFT - 12))
+			asm("tlbi vaae1is, %0" : : "r"(addr));
+		dsb(ish);
+		isb();
+	}
+>>>>>>> p9x
 }
 
 /*
@@ -144,11 +228,32 @@ static inline void flush_tlb_page(struct vm_area_struct *vma,
  * necessarily a performance improvement.
  */
 #define MAX_TLB_RANGE	(1024UL << PAGE_SHIFT)
+<<<<<<< HEAD
+=======
+
+static inline void flush_tlb_range(struct vm_area_struct *vma,
+				   unsigned long start, unsigned long end)
+{
+	if ((end - start) <= MAX_TLB_RANGE)
+		__flush_tlb_range(vma, start, end);
+	else
+		flush_tlb_mm(vma->vm_mm);
+}
+
+static inline void flush_tlb_kernel_range(unsigned long start, unsigned long end)
+{
+	if ((end - start) <= MAX_TLB_RANGE)
+		__flush_tlb_kernel_range(start, end);
+	else
+		flush_tlb_all();
+}
+>>>>>>> p9x
 
 static inline void __flush_tlb_range(struct vm_area_struct *vma,
 				     unsigned long start, unsigned long end,
 				     bool last_level)
 {
+<<<<<<< HEAD
 	unsigned long asid = ASID(vma->vm_mm) << 48;
 	unsigned long addr;
 
@@ -210,7 +315,16 @@ static inline void __flush_tlb_pgtable(struct mm_struct *mm,
 	__tlbi(vae1is, addr);
 	__tlbi_user(vae1is, addr);
 	dsb(ish);
+=======
+	/*
+	 * set_pte() does not have a DSB for user mappings, so make sure that
+	 * the page table write is visible.
+	 */
+	dsb(ishst);
+>>>>>>> p9x
 }
+
+#define update_mmu_cache_pmd(vma, address, pmd) do { } while (0)
 
 #endif
 

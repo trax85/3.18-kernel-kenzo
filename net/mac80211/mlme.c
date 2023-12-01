@@ -378,9 +378,14 @@ static int ieee80211_config_bw(struct ieee80211_sub_if_data *sdata,
 	sband = local->hw.wiphy->bands[chan->band];
 
 	/* calculate new channel (type) based on HT/VHT operation IEs */
+<<<<<<< HEAD
 	flags = ieee80211_determine_chantype(sdata, sband, chan,
 					     ht_cap, ht_oper, vht_oper,
 					     &chandef, true);
+=======
+	flags = ieee80211_determine_chantype(sdata, sband, chan, ht_oper,
+					     vht_oper, &chandef, true);
+>>>>>>> p9x
 
 	/*
 	 * Downgrade the new channel if we associated with restricted
@@ -3134,7 +3139,7 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_sub_if_data *sdata,
 
 	if (ifmgd->rssi_min_thold != ifmgd->rssi_max_thold &&
 	    ifmgd->count_beacon_signal >= IEEE80211_SIGNAL_AVE_MIN_COUNT) {
-		int sig = ifmgd->ave_beacon_signal;
+		int sig = ifmgd->ave_beacon_signal / 16;
 		int last_sig = ifmgd->last_ave_beacon_signal;
 
 		/*
@@ -3518,6 +3523,7 @@ static int ieee80211_probe_auth(struct ieee80211_sub_if_data *sdata)
 	}
 
 	if (tx_flags == 0) {
+<<<<<<< HEAD
 		if (auth_data->algorithm == WLAN_AUTH_SAE)
 			auth_data->timeout = jiffies +
 				IEEE80211_AUTH_TIMEOUT_SAE;
@@ -3526,6 +3532,16 @@ static int ieee80211_probe_auth(struct ieee80211_sub_if_data *sdata)
 	} else {
 		auth_data->timeout =
 			round_jiffies_up(jiffies + IEEE80211_AUTH_TIMEOUT_LONG);
+=======
+		auth_data->timeout = jiffies + IEEE80211_AUTH_TIMEOUT;
+		auth_data->timeout_started = true;
+		run_again(ifmgd, auth_data->timeout);
+	} else {
+		auth_data->timeout =
+			round_jiffies_up(jiffies + IEEE80211_AUTH_TIMEOUT_LONG);
+		auth_data->timeout_started = true;
+		run_again(ifmgd, auth_data->timeout);
+>>>>>>> p9x
 	}
 
 	auth_data->timeout_started = true;
@@ -3569,7 +3585,11 @@ static int ieee80211_do_assoc(struct ieee80211_sub_if_data *sdata)
 			round_jiffies_up(jiffies +
 					 IEEE80211_ASSOC_TIMEOUT_LONG);
 		assoc_data->timeout_started = true;
+<<<<<<< HEAD
 		run_again(sdata, assoc_data->timeout);
+=======
+		run_again(&sdata->u.mgd, assoc_data->timeout);
+>>>>>>> p9x
 	}
 
 	return 0;
@@ -3788,6 +3808,7 @@ void ieee80211_mgd_quiesce(struct ieee80211_sub_if_data *sdata)
 	struct ieee80211_if_managed *ifmgd = &sdata->u.mgd;
 	u8 frame_buf[IEEE80211_DEAUTH_FRAME_LEN];
 
+<<<<<<< HEAD
 	sdata_lock(sdata);
 
 	if (ifmgd->auth_data || ifmgd->assoc_data) {
@@ -3813,6 +3834,27 @@ void ieee80211_mgd_quiesce(struct ieee80211_sub_if_data *sdata)
 	}
 
 	sdata_unlock(sdata);
+=======
+	mutex_lock(&ifmgd->mtx);
+
+	if (ifmgd->auth_data) {
+		/*
+		 * If we are trying to authenticate while suspending, cfg80211
+		 * won't know and won't actually abort those attempts, thus we
+		 * need to do that ourselves.
+		 */
+		ieee80211_send_deauth_disassoc(sdata,
+					       ifmgd->auth_data->bss->bssid,
+					       IEEE80211_STYPE_DEAUTH,
+					       WLAN_REASON_DEAUTH_LEAVING,
+					       false, frame_buf);
+		ieee80211_destroy_auth_data(sdata, false);
+		cfg80211_send_deauth(sdata->dev, frame_buf,
+				     IEEE80211_DEAUTH_FRAME_LEN);
+	}
+
+	mutex_unlock(&ifmgd->mtx);
+>>>>>>> p9x
 }
 
 void ieee80211_sta_restart(struct ieee80211_sub_if_data *sdata)
@@ -4011,7 +4053,11 @@ static int ieee80211_prep_channel(struct ieee80211_sub_if_data *sdata,
 
 	ifmgd->flags |= ieee80211_determine_chantype(sdata, sband,
 						     cbss->channel,
+<<<<<<< HEAD
 						     ht_cap, ht_oper, vht_oper,
+=======
+						     ht_oper, vht_oper,
+>>>>>>> p9x
 						     &chandef, false);
 
 	sdata->needed_rx_chains = min(ieee80211_ht_vht_rx_chains(sdata, cbss),

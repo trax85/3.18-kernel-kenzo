@@ -965,7 +965,11 @@ static struct radeon_asic r600_asic = {
 		.blit_ring_index = RADEON_RING_TYPE_GFX_INDEX,
 		.dma = &r600_copy_dma,
 		.dma_ring_index = R600_RING_TYPE_DMA_INDEX,
+<<<<<<< HEAD
 		.copy = &r600_copy_cpdma,
+=======
+		.copy = &r600_copy_blit,
+>>>>>>> p9x
 		.copy_ring_index = RADEON_RING_TYPE_GFX_INDEX,
 	},
 	.surface = {
@@ -1144,7 +1148,11 @@ static struct radeon_asic rs780_asic = {
 		.blit_ring_index = RADEON_RING_TYPE_GFX_INDEX,
 		.dma = &r600_copy_dma,
 		.dma_ring_index = R600_RING_TYPE_DMA_INDEX,
+<<<<<<< HEAD
 		.copy = &r600_copy_cpdma,
+=======
+		.copy = &r600_copy_blit,
+>>>>>>> p9x
 		.copy_ring_index = RADEON_RING_TYPE_GFX_INDEX,
 	},
 	.surface = {

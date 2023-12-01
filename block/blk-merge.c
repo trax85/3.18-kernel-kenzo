@@ -293,7 +293,11 @@ EXPORT_SYMBOL(blk_rq_map_sg);
 int blk_rq_map_sg_no_cluster(struct request_queue *q, struct request *rq,
 		  struct scatterlist *sglist)
 {
+<<<<<<< HEAD
 	struct bio_vec bvec, bvprv = { NULL };
+=======
+	struct bio_vec *bvec, *bvprv;
+>>>>>>> p9x
 	struct req_iterator iter;
 	struct scatterlist *sg;
 	int nsegs, cluster = 0;
@@ -303,16 +307,26 @@ int blk_rq_map_sg_no_cluster(struct request_queue *q, struct request *rq,
 	/*
 	 * for each bio in rq
 	 */
+<<<<<<< HEAD
 	sg = NULL;
 	rq_for_each_segment(bvec, rq, iter) {
 		__blk_segment_map_sg(q, &bvec, sglist, &bvprv, &sg,
+=======
+	bvprv = NULL;
+	sg = NULL;
+	rq_for_each_segment(bvec, rq, iter) {
+		__blk_segment_map_sg(q, bvec, sglist, &bvprv, &sg,
+>>>>>>> p9x
 				     &nsegs, &cluster);
 	} /* segments in rq */
 
 
+<<<<<<< HEAD
 	if (!sg)
 		return nsegs;
 
+=======
+>>>>>>> p9x
 	if (unlikely(rq->cmd_flags & REQ_COPY_USER) &&
 	    (blk_rq_bytes(rq) & q->dma_pad_mask)) {
 		unsigned int pad_len =
@@ -665,6 +679,7 @@ bool blk_rq_merge_ok(struct request *rq, struct bio *bio)
 	    !blk_write_same_mergeable(rq->bio, bio))
 		return false;
 
+<<<<<<< HEAD
 	if (q->queue_flags & (1 << QUEUE_FLAG_SG_GAPS)) {
 		struct bio_vec *bprev;
 
@@ -673,6 +688,8 @@ bool blk_rq_merge_ok(struct request *rq, struct bio *bio)
 			return false;
 	}
 
+=======
+>>>>>>> p9x
 	/* Don't merge bios of files with different encryption */
 	if (!security_allow_merge_bio(rq->bio, bio))
 		return false;

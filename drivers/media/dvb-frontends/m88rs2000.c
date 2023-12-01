@@ -325,7 +325,11 @@ static struct inittab m88rs2000_shutdown[] = {
 	{0xff, 0xaa, 0xff}
 };
 
+<<<<<<< HEAD
 static struct inittab fe_reset[] = {
+=======
+struct inittab fe_reset[] = {
+>>>>>>> p9x
 	{DEMOD_WRITE, 0x00, 0x01},
 	{DEMOD_WRITE, 0x20, 0x81},
 	{DEMOD_WRITE, 0x21, 0x80},
@@ -644,6 +648,19 @@ static int m88rs2000_set_frontend(struct dvb_frontend *fe)
 		ret = m88rs2000_writereg(state, 0x86, 0xc6);
 
 	ret |= m88rs2000_set_carrieroffset(fe, offset);
+<<<<<<< HEAD
+=======
+	if (ret < 0)
+		return -ENODEV;
+
+	/* Reset demod by symbol rate */
+	if (c->symbol_rate > 27500000)
+		ret = m88rs2000_writereg(state, 0xf1, 0xa4);
+	else
+		ret = m88rs2000_writereg(state, 0xf1, 0xbf);
+
+	ret |= m88rs2000_tab_set(state, fe_reset);
+>>>>>>> p9x
 	if (ret < 0)
 		return -ENODEV;
 

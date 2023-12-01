@@ -1064,7 +1064,11 @@ static ssize_t gfs2_direct_IO(int rw, struct kiocb *iocb,
 	 */
 	if (mapping->nrpages) {
 		loff_t lstart = offset & (PAGE_CACHE_SIZE - 1);
+<<<<<<< HEAD
 		loff_t len = iov_iter_count(iter);
+=======
+		loff_t len = iov_length(iov, nr_segs);
+>>>>>>> p9x
 		loff_t end = PAGE_ALIGN(offset + len) - 1;
 
 		rv = 0;
@@ -1074,6 +1078,7 @@ static ssize_t gfs2_direct_IO(int rw, struct kiocb *iocb,
 			unmap_shared_mapping_range(ip->i_inode.i_mapping, offset, len);
 		rv = filemap_write_and_wait_range(mapping, lstart, end);
 		if (rv)
+<<<<<<< HEAD
 			goto out;
 		if (rw == WRITE)
 			truncate_inode_pages_range(mapping, lstart, end);
@@ -1082,6 +1087,15 @@ static ssize_t gfs2_direct_IO(int rw, struct kiocb *iocb,
 	rv = __blockdev_direct_IO(rw, iocb, inode, inode->i_sb->s_bdev,
 				  iter, offset,
 				  gfs2_get_block_direct, NULL, NULL, 0);
+=======
+			return rv;
+		truncate_inode_pages_range(mapping, lstart, end);
+	}
+
+	rv = __blockdev_direct_IO(rw, iocb, inode, inode->i_sb->s_bdev, iov,
+				  offset, nr_segs, gfs2_get_block_direct,
+				  NULL, NULL, 0);
+>>>>>>> p9x
 out:
 	gfs2_glock_dq(&gh);
 	gfs2_holder_uninit(&gh);

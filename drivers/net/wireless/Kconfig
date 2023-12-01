@@ -270,6 +270,29 @@ config WIFI_CONTROL_FUNC
 	help
 	  Enables Power/Reset/Carddetect function abstraction
 
+<<<<<<< HEAD
+=======
+config LIBRA_SDIOIF
+	tristate "Qualcomm libra wlan SDIO driver"
+	select WIRELESS_EXT
+	select WEXT_PRIV
+	select WEXT_CORE
+	select WEXT_SPY
+	depends on MMC_SDHCI_MSM
+	---help---
+	  A driver for Qualcomm WLAN SDIO Libra chipset.
+
+config ATH6K_LEGACY_EXT
+	tristate "QCA AR6003 wlan SDIO driver - External"
+	depends on MMC_SDHCI_MSM && WLAN
+	select WIRELESS_EXT
+	select WEXT_PRIV
+	---help---
+	  This module adds support for wireless adapters based on QCA AR6003 chipset
+	  running over SDIO. Driver is built outside of kernel tree, this config
+	  only enables configurations required for QCA AR6003 wlan driver.
+
+>>>>>>> p9x
 config WCNSS_CORE
 	tristate "Qualcomm WCNSS CORE driver"
 	select WIRELESS_EXT
@@ -285,6 +308,7 @@ config WCNSS_CORE_PRONTO
 	---help---
 	  Pronto Support for the Qualcomm WCNSS triple play connectivity subsystem
 
+<<<<<<< HEAD
 config WCNSS_REGISTER_DUMP_ON_BITE
 	bool "Enable/disable WCNSS register dump when there is a WCNSS bite"
 	depends on WCNSS_CORE_PRONTO
@@ -327,6 +351,23 @@ config CNSS_CRYPTO
 
 source "drivers/net/wireless/ath/Kconfig"
 source "drivers/net/wireless/b43/Kconfig"
+=======
+config WCNSS_MEM_PRE_ALLOC
+	tristate "WCNSS pre-alloc memory support"
+	---help---
+	  Pre-allocate memory for the WLAN driver module
+
+config WCNSS_REGISTER_DUMP_ON_BITE
+	bool "Enable/disable WCNSS register dump when there is a WCNSS bite"
+	depends on WCNSS_CORE_PRONTO
+	help
+	 When Apps recieves a WDOG bite from WCNSS, collecting a register dump
+	 of WCNSS is helpful to root cause the failure. WCNSS may not be
+	 properly clocked in some WCNSS bite cases, and that may cause unclocked
+	 register access failures. So this feature is to enable/disable the
+	 register dump on WCNSS WDOG bite.
+
+>>>>>>> p9x
 source "drivers/net/wireless/b43legacy/Kconfig"
 source "drivers/net/wireless/brcm80211/Kconfig"
 source "drivers/net/wireless/hostap/Kconfig"
@@ -341,10 +382,14 @@ source "drivers/net/wireless/rtlwifi/Kconfig"
 source "drivers/net/wireless/ti/Kconfig"
 source "drivers/net/wireless/zd1211rw/Kconfig"
 source "drivers/net/wireless/mwifiex/Kconfig"
+<<<<<<< HEAD
 source "drivers/net/wireless/cw1200/Kconfig"
 source "drivers/net/wireless/rsi/Kconfig"
 source "drivers/net/wireless/cnss/Kconfig"
 source "drivers/net/wireless/cnss2/Kconfig"
 source "drivers/net/wireless/cnss_utils/Kconfig"
 
+=======
+source "drivers/net/wireless/cnss/Kconfig"
+>>>>>>> p9x
 endif # WLAN

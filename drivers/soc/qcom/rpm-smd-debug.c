@@ -26,6 +26,12 @@
 #define MAX_KEY_VALUE_PAIRS 20
 
 static struct dentry *rpm_debugfs_dir;
+<<<<<<< HEAD
+=======
+static unsigned long magic = 0xdeadbeef;
+static bool rpm_send_msg_enabled;
+static unsigned long rpm_send_msg_usage_count;
+>>>>>>> p9x
 
 static u32 string_to_uint(const u8 *str)
 {
@@ -49,6 +55,15 @@ static ssize_t rsc_ops_write(struct file *fp, const char __user *user_buffer,
 	uint32_t rsc_type = 0, rsc_id = 0, key = 0, data = 0;
 	struct msm_rpm_request *req;
 
+<<<<<<< HEAD
+=======
+	rpm_send_msg_usage_count++;
+	if (!rpm_send_msg_enabled) {
+		WARN(1, "rpm_send_msg is not enabled.\n");
+		return count;
+	}
+
+>>>>>>> p9x
 	count = min(count, sizeof(buf) - 1);
 	if (copy_from_user(&buf, user_buffer, count))
 		return -EFAULT;
@@ -116,8 +131,11 @@ static ssize_t rsc_ops_write(struct file *fp, const char __user *user_buffer,
 
 	if (msm_rpm_wait_for_ack(msm_rpm_send_request(req)))
 		pr_err("Sending the RPM message failed\n");
+<<<<<<< HEAD
 	else
 		pr_info("RPM message sent succesfully\n");
+=======
+>>>>>>> p9x
 
 err_request:
 	msm_rpm_free_request(req);
@@ -129,6 +147,38 @@ static const struct file_operations rsc_ops = {
 	.write = rsc_ops_write,
 };
 
+<<<<<<< HEAD
+=======
+/*
+ * Once the debug node is enabled, it cannot be disabled.
+ * This is useful to find out if anyone ever enables this node,
+ * regardless if he/she uses it or not. This debug functionality
+ * shouldn't be touched unless one knows exactly what he/she is doing.
+ */
+static int rpm_msg_debug_enable_set(void *data, u64 val)
+{
+	if (rpm_send_msg_enabled)
+		return 0;
+
+	if (val != magic) {
+		pr_err("Enable request rejected. Wrong magic.\n");
+		return -EINVAL;
+	}
+	pr_warn("rpm_send_msg is enabled for manual debugging only.\n");
+	rpm_send_msg_enabled = true;
+	return 0;
+}
+
+static int rpm_msg_debug_enable_get(void *data, u64 *val)
+{
+	*val = rpm_send_msg_enabled ? 1 : 0;
+	return 0;
+}
+
+DEFINE_SIMPLE_ATTRIBUTE(rpm_msg_debug_enable_ops, rpm_msg_debug_enable_get,
+			rpm_msg_debug_enable_set, "%lld\n");
+
+>>>>>>> p9x
 static int __init rpm_smd_debugfs_init(void)
 {
 	rpm_debugfs_dir = debugfs_create_dir("rpm_send_msg", NULL);
@@ -139,6 +189,13 @@ static int __init rpm_smd_debugfs_init(void)
 								&rsc_ops))
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	if (!debugfs_create_file("enable", S_IRUSR, rpm_debugfs_dir,
+			&rpm_send_msg_enabled, &rpm_msg_debug_enable_ops))
+		return -ENOMEM;
+
+>>>>>>> p9x
 	return 0;
 }
 late_initcall(rpm_smd_debugfs_init);

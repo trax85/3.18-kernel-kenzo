@@ -184,9 +184,10 @@ void put_page_bootmem(struct page *page)
 #ifndef CONFIG_SPARSEMEM_VMEMMAP
 static void register_page_bootmem_info_section(unsigned long start_pfn)
 {
-	unsigned long *usemap, mapsize, section_nr, i;
+	unsigned long *usemap, mapsize, page_mapsize, section_nr, i, j;
 	struct mem_section *ms;
-	struct page *page, *memmap;
+	struct page *page, *memmap, *page_page;
+	int memmap_page_valid;
 
 	section_nr = pfn_to_section_nr(start_pfn);
 	ms = __nr_to_section(section_nr);
@@ -202,9 +203,21 @@ static void register_page_bootmem_info_section(unsigned long start_pfn)
 	mapsize = sizeof(struct page) * PAGES_PER_SECTION;
 	mapsize = PAGE_ALIGN(mapsize) >> PAGE_SHIFT;
 
-	/* remember memmap's page */
-	for (i = 0; i < mapsize; i++, page++)
-		get_page_bootmem(section_nr, page, SECTION_INFO);
+	page_mapsize = PAGE_SIZE/sizeof(struct page);
+
+	/* remember memmap's page, except those that reference only holes */
+	for (i = 0; i < mapsize; i++, page++) {
+		memmap_page_valid = 0;
+		page_page = __va(page_to_pfn(page) << PAGE_SHIFT);
+		for (j = 0; j < page_mapsize; j++, page_page++) {
+			if (early_pfn_valid(page_to_pfn(page_page))) {
+				memmap_page_valid = 1;
+				break;
+			}
+		}
+		if (memmap_page_valid)
+			get_page_bootmem(section_nr, page, SECTION_INFO);
+	}
 
 	usemap = __nr_to_section(section_nr)->pageblock_flags;
 	page = virt_to_page(usemap);
@@ -520,7 +533,7 @@ EXPORT_SYMBOL_GPL(__add_pages);
 
 #ifdef CONFIG_MEMORY_HOTREMOVE
 /* find the smallest valid pfn in the range [start_pfn, end_pfn) */
-static int find_smallest_section_pfn(int nid, struct zone *zone,
+static unsigned long find_smallest_section_pfn(int nid, struct zone *zone,
 				     unsigned long start_pfn,
 				     unsigned long end_pfn)
 {
@@ -545,7 +558,7 @@ static int find_smallest_section_pfn(int nid, struct zone *zone,
 }
 
 /* find the biggest valid pfn in the range [start_pfn, end_pfn). */
-static int find_biggest_section_pfn(int nid, struct zone *zone,
+static unsigned long find_biggest_section_pfn(int nid, struct zone *zone,
 				    unsigned long start_pfn,
 				    unsigned long end_pfn)
 {
@@ -735,7 +748,7 @@ static int __remove_section(struct zone *zone, struct mem_section *ms)
 		return ret;
 
 	scn_nr = __section_nr(ms);
-	start_pfn = section_nr_to_pfn(scn_nr);
+	start_pfn = section_nr_to_pfn((unsigned long)scn_nr);
 	__remove_zone(zone, start_pfn);
 
 	sparse_remove_one_section(zone, ms);
@@ -829,6 +842,18 @@ EXPORT_SYMBOL_GPL(restore_online_page_callback);
 
 void __online_page_set_limits(struct page *page)
 {
+<<<<<<< HEAD
+=======
+	unsigned long pfn = page_to_pfn(page);
+
+	totalram_pages++;
+#ifdef CONFIG_FIX_MOVABLE_ZONE
+	if (zone_idx(page_zone(page)) != ZONE_MOVABLE)
+		total_unmovable_pages++;
+#endif
+	if (pfn >= num_physpages)
+		num_physpages = pfn + 1;
+>>>>>>> p9x
 }
 EXPORT_SYMBOL_GPL(__online_page_set_limits);
 
@@ -1041,6 +1066,7 @@ int __ref online_pages(unsigned long pfn, unsigned long nr_pages, int online_typ
 	pgdat_resize_unlock(zone->zone_pgdat, &flags);
 
 	if (onlined_pages) {
+		drain_all_pages();
 		node_states_set_node(zone_to_nid(zone), &arg);
 		if (need_zonelists_rebuild)
 			build_all_zonelists(NULL, NULL);
@@ -1286,6 +1312,54 @@ out:
 }
 EXPORT_SYMBOL_GPL(add_memory);
 
+int __ref physical_remove_memory(u64 start, u64 size)
+{
+	int ret;
+	struct resource *res, *res_old;
+	res = kzalloc(sizeof(struct resource), GFP_KERNEL);
+	BUG_ON(!res);
+
+	ret = arch_physical_remove_memory(start, size);
+	if (!ret) {
+		kfree(res);
+		return 0;
+	}
+
+	res->name = "System RAM";
+	res->start = start;
+	res->end = start + size - 1;
+	res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
+
+	res_old = locate_resource(&iomem_resource, res);
+	if (res_old) {
+		release_resource(res_old);
+		if (PageSlab(virt_to_head_page(res_old)))
+			kfree(res_old);
+	}
+	kfree(res);
+
+	return ret;
+}
+EXPORT_SYMBOL_GPL(physical_remove_memory);
+
+int __ref physical_active_memory(u64 start, u64 size)
+{
+	int ret;
+
+	ret = arch_physical_active_memory(start, size);
+	return ret;
+}
+EXPORT_SYMBOL_GPL(physical_active_memory);
+
+int __ref physical_low_power_memory(u64 start, u64 size)
+{
+	int ret;
+
+	ret = arch_physical_low_power_memory(start, size);
+	return ret;
+}
+EXPORT_SYMBOL_GPL(physical_low_power_memory);
+
 #ifdef CONFIG_MEMORY_HOTREMOVE
 /*
  * A free page on the buddy free lists (not the per-cpu lists) has PageBuddy
@@ -1336,29 +1410,40 @@ int is_mem_section_removable(unsigned long start_pfn, unsigned long nr_pages)
 }
 
 /*
- * Confirm all pages in a range [start, end) is belongs to the same zone.
+ * Confirm all pages in a range [start, end) belong to the same zone.
  */
 int test_pages_in_a_zone(unsigned long start_pfn, unsigned long end_pfn)
 {
-	unsigned long pfn;
+	unsigned long pfn, sec_end_pfn;
 	struct zone *zone = NULL;
 	struct page *page;
 	int i;
-	for (pfn = start_pfn;
+	for (pfn = start_pfn, sec_end_pfn = SECTION_ALIGN_UP(start_pfn + 1);
 	     pfn < end_pfn;
-	     pfn += MAX_ORDER_NR_PAGES) {
-		i = 0;
-		/* This is just a CONFIG_HOLES_IN_ZONE check.*/
-		while ((i < MAX_ORDER_NR_PAGES) && !pfn_valid_within(pfn + i))
-			i++;
-		if (i == MAX_ORDER_NR_PAGES)
+	     pfn = sec_end_pfn, sec_end_pfn += PAGES_PER_SECTION) {
+		/* Make sure the memory section is present first */
+		if (!present_section_nr(pfn_to_section_nr(pfn)))
 			continue;
-		page = pfn_to_page(pfn + i);
-		if (zone && page_zone(page) != zone)
-			return 0;
-		zone = page_zone(page);
+		for (; pfn < sec_end_pfn && pfn < end_pfn;
+		     pfn += MAX_ORDER_NR_PAGES) {
+			i = 0;
+			/* This is just a CONFIG_HOLES_IN_ZONE check.*/
+			while ((i < MAX_ORDER_NR_PAGES) &&
+				!pfn_valid_within(pfn + i))
+				i++;
+			if (i == MAX_ORDER_NR_PAGES)
+				continue;
+			page = pfn_to_page(pfn + i);
+			if (zone && page_zone(page) != zone)
+				return 0;
+			zone = page_zone(page);
+		}
 	}
-	return 1;
+
+	if (zone)
+		return 1;
+	else
+		return 0;
 }
 
 /*
@@ -1772,12 +1857,24 @@ repeat:
 	undo_isolate_page_range(start_pfn, end_pfn, MIGRATE_MOVABLE);
 	/* removal success */
 	adjust_managed_page_count(pfn_to_page(start_pfn), -offlined_pages);
+<<<<<<< HEAD
 	zone->present_pages -= offlined_pages;
 
 	pgdat_resize_lock(zone->zone_pgdat, &flags);
 	zone->zone_pgdat->node_present_pages -= offlined_pages;
 	pgdat_resize_unlock(zone->zone_pgdat, &flags);
+=======
+	if (offlined_pages > zone->present_pages)
+		zone->present_pages = 0;
+	else
+		zone->present_pages -= offlined_pages;
+	zone->zone_pgdat->node_present_pages -= offlined_pages;
+>>>>>>> p9x
 
+#ifdef CONFIG_FIX_MOVABLE_ZONE
+	if (zone_idx(zone) != ZONE_MOVABLE)
+		total_unmovable_pages -= offlined_pages;
+#endif
 	init_per_zone_wmark_min();
 
 	if (!populated_zone(zone)) {
@@ -2021,5 +2118,19 @@ void __ref remove_memory(int nid, u64 start, u64 size)
 
 	mem_hotplug_done();
 }
+<<<<<<< HEAD
+=======
+
+#else
+int offline_pages(unsigned long start_pfn, unsigned long nr_pages)
+{
+	return -EINVAL;
+}
+int remove_memory(int nid, u64 start, u64 size)
+{
+	return -EINVAL;
+}
+#endif /* CONFIG_MEMORY_HOTREMOVE */
+>>>>>>> p9x
 EXPORT_SYMBOL_GPL(remove_memory);
 #endif /* CONFIG_MEMORY_HOTREMOVE */

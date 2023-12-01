@@ -119,11 +119,16 @@ config I2C_I801
 	    Avoton (SOC)
 	    Wellsburg (PCH)
 	    Coleto Creek (PCH)
+<<<<<<< HEAD
 	    Wildcat Point (PCH)
 	    Wildcat Point-LP (PCH)
 	    BayTrail (SOC)
 	    Sunrise Point-H (PCH)
 	    Sunrise Point-LP (PCH)
+=======
+	    Wildcat Point-LP (PCH)
+	    BayTrail (SOC)
+>>>>>>> p9x
 
 	  This driver can also be built as a module.  If so, the module
 	  will be called i2c-i801.
@@ -166,7 +171,10 @@ config I2C_PIIX4
 	    ATI SB700/SP5100
 	    ATI SB800
 	    AMD Hudson-2
+<<<<<<< HEAD
 	    AMD ML
+=======
+>>>>>>> p9x
 	    AMD CZ
 	    Serverworks OSB4
 	    Serverworks CSB5
@@ -564,6 +572,24 @@ config I2C_MPC
 
 	  This driver can also be built as a module.  If so, the module
 	  will be called i2c-mpc.
+
+config I2C_QUP
+	tristate "I2C_QUP"
+	depends on ARCH_MSM
+	help
+	  If you say yes to this option, support will be included for the
+	  built-in I2C interface on the MSM family processors.
+
+config I2C_MSM_V2
+	tristate "I2C_MSM_V2"
+	depends on ARCH_MSM
+	help
+	  If you say yes to this option, support will be included for the
+	  built-in I2C interface and its DMA engine on the MSM family
+	  processors.
+
+	  This driver can also be built as a module.  If so, the module
+	  will be called i2c-msm-v2.
 
 config I2C_MV64XXX
 	tristate "Marvell mv64xxx I2C Controller"

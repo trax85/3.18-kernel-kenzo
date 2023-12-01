@@ -10,7 +10,10 @@ pwm(pulse width modulation) and audio.
 Required Properties:
  - compatible: must be "qcom,qpnp-haptic"
  - reg: address of device
+<<<<<<< HEAD
  - qcom,pmic-revid : phandle to fetch PMIC revid
+=======
+>>>>>>> p9x
  - qcom,actuator-type: must be one of "erm" or "lra"
  - qcom,play-mode : must be one of "buffer", "direct", "pwm" or "audio"
 
@@ -64,6 +67,7 @@ Optional properties when qcom,actuator-type is "lra"
 			"max-qwd" : Maximum QWD
 			"zxd-eop" : ZXD + End of pattern (This is the Default)
  - qcom,lra-high-z : High Z configuration for auto resonance. Possible string values are
+<<<<<<< HEAD
 			"none", "opt1", "opt2" and "opt3" (default). For PM660,
 			"opt0" is valid value for 1 LRA period.
  - qcom,lra-hw-auto-resonance : boolean, enable Hardware auto-resonance for PM660.
@@ -98,6 +102,11 @@ Optional properties when qcom,actuator-type is "lra"
                         The default value is 25, which means if the drive period code resulting
                         from AUTO_RES register's is less than 25 percent of the existing drive
                         period code, then driver does not update RATE_CFG registers.
+=======
+			"none", "opt1", "opt2" and "opt3" (default)
+ - qcom,lra-res-cal-period : Auto resonance calibration period. The values range from
+			4 to 32(default)
+>>>>>>> p9x
 
 Optional properties when qcom,lra-auto-res-mode is "qwd"
  - qcom,time-required-to-generate-back-emf-us: Time period required to generate sufficient
@@ -119,7 +128,10 @@ Example:
 			interrupts = <0x3 0xc0 0x0>,
 				     <0x3 0xc0 0x1>;
 			interrupt-names = "sc-irq", "play-irq";
+<<<<<<< HEAD
 			qcom,pmic-revid = <&pm660_revid>;
+=======
+>>>>>>> p9x
 			vcc_pon-supply = <&pon_perph_reg>;
 			qcom,play-mode = "direct";
 			qcom,wave-play-rate-us = <5263>;
@@ -139,5 +151,9 @@ Example:
 			qcom,lra-high-z = "opt1";
 			qcom,lra-auto-res-mode = "qwd";
 			qcom,lra-res-cal-period = <4>;
+<<<<<<< HEAD
 			qcom,time-required-to-generate-back-emf-us = <20000>;
+=======
+			qcom,time-req-for-back-emf-generation-us = <20000>;
+>>>>>>> p9x
 		};

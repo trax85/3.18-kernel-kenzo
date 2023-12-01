@@ -297,6 +297,11 @@ static int msm_pcm_hw_params(struct snd_pcm_substream *substream,
 		break;
 	}
 
+<<<<<<< HEAD
+=======
+	sample_word_size = (bits_per_sample == 16) ? 16 : 32;
+
+>>>>>>> p9x
 	config.format = FORMAT_LINEAR_PCM;
 	config.bits_per_sample = bits_per_sample;
 	config.rate = params_rate(params);
@@ -375,11 +380,14 @@ static int msm_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 		q6asm_cmd(prtd->audio_client, CMD_PAUSE);
 		q6asm_cmd(prtd->audio_client, CMD_FLUSH);
 		buf = q6asm_shared_io_buf(prtd->audio_client, dir);
+<<<<<<< HEAD
 		if (buf == NULL) {
 			pr_err("%s: shared IO buffer is null\n", __func__);
 			ret = -EINVAL;
 			break;
 		}
+=======
+>>>>>>> p9x
 		memset(buf->data, 0, buf->actual_size);
 		break;
 	case SNDRV_PCM_TRIGGER_SUSPEND:
@@ -395,6 +403,7 @@ static int msm_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int msm_pcm_ioctl(struct snd_pcm_substream *substream,
 			 unsigned int cmd, void *arg)
 {
@@ -419,6 +428,8 @@ static int msm_pcm_ioctl(struct snd_pcm_substream *substream,
 	return snd_pcm_lib_ioctl(substream, cmd, arg);
 }
 
+=======
+>>>>>>> p9x
 static snd_pcm_uframes_t msm_pcm_pointer(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -726,7 +737,10 @@ static int msm_pcm_add_chmap_control(struct snd_soc_pcm_runtime *rtd)
 static int msm_asoc_pcm_new(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_card *card = rtd->card->snd_card;
+<<<<<<< HEAD
 	struct snd_pcm *pcm = rtd->pcm;
+=======
+>>>>>>> p9x
 	int ret;
 
 	pr_debug("%s , register new control\n", __func__);
@@ -743,7 +757,10 @@ static int msm_asoc_pcm_new(struct snd_soc_pcm_runtime *rtd)
 		pr_err("%s: Could not add pcm Volume Control %d\n",
 			__func__, ret);
 	}
+<<<<<<< HEAD
 	pcm->nonatomic = true;
+=======
+>>>>>>> p9x
 exit:
 	return ret;
 }
@@ -754,7 +771,11 @@ static struct snd_pcm_ops msm_pcm_ops = {
 	.prepare        = msm_pcm_prepare,
 	.copy           = msm_pcm_copy,
 	.hw_params	= msm_pcm_hw_params,
+<<<<<<< HEAD
 	.ioctl          = msm_pcm_ioctl,
+=======
+	.ioctl          = snd_pcm_lib_ioctl,
+>>>>>>> p9x
 	.trigger        = msm_pcm_trigger,
 	.pointer        = msm_pcm_pointer,
 	.mmap           = msm_pcm_mmap,

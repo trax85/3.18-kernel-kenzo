@@ -201,6 +201,7 @@ static inline const char *cache_name(struct kmem_cache *s)
 static inline struct kmem_cache *
 cache_from_memcg_idx(struct kmem_cache *s, int idx)
 {
+<<<<<<< HEAD
 	struct kmem_cache *cachep;
 	struct memcg_cache_params *params;
 
@@ -219,6 +220,11 @@ cache_from_memcg_idx(struct kmem_cache *s, int idx)
 	 */
 	smp_read_barrier_depends();
 	return cachep;
+=======
+	if (!s->memcg_params)
+		return NULL;
+	return s->memcg_params->memcg_caches[idx];
+>>>>>>> p9x
 }
 
 static inline struct kmem_cache *memcg_root_cache(struct kmem_cache *s)

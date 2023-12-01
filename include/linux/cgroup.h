@@ -247,7 +247,51 @@ struct cgroup {
 
 /* cgroup_root->flags */
 enum {
+<<<<<<< HEAD
 	CGRP_ROOT_SANE_BEHAVIOR	= (1 << 0), /* __DEVEL__sane_behavior specified */
+=======
+	/*
+	 * Unfortunately, cgroup core and various controllers are riddled
+	 * with idiosyncrasies and pointless options.  The following flag,
+	 * when set, will force sane behavior - some options are forced on,
+	 * others are disallowed, and some controllers will change their
+	 * hierarchical or other behaviors.
+	 *
+	 * The set of behaviors affected by this flag are still being
+	 * determined and developed and the mount option for this flag is
+	 * prefixed with __DEVEL__.  The prefix will be dropped once we
+	 * reach the point where all behaviors are compatible with the
+	 * planned unified hierarchy, which will automatically turn on this
+	 * flag.
+	 *
+	 * The followings are the behaviors currently affected this flag.
+	 *
+	 * - Mount options "noprefix" and "clone_children" are disallowed.
+	 *   Also, cgroupfs file cgroup.clone_children is not created.
+	 *
+	 * - When mounting an existing superblock, mount options should
+	 *   match.
+	 *
+	 * - Remount is disallowed.
+	 *
+	 * - cpuset: tasks will be kept in empty cpusets when hotplug happens
+	 *   and take masks of ancestors with non-empty cpus/mems, instead of
+	 *   being moved to an ancestor.
+	 *
+	 * - cpuset: a task can be moved into an empty cpuset, and again it
+	 *   takes masks of ancestors.
+	 *
+	 * - memcg: use_hierarchy is on by default and the cgroup file for
+	 *   the flag is not created.
+	 *
+	 * The followings are planned changes.
+	 *
+	 * - release_agent will be disallowed once replacement notification
+	 *   mechanism is implemented.
+	 */
+	CGRP_ROOT_SANE_BEHAVIOR	= (1 << 0),
+
+>>>>>>> p9x
 	CGRP_ROOT_NOPREFIX	= (1 << 1), /* mounted subsystems have no named prefix */
 	CGRP_ROOT_XATTR		= (1 << 2), /* supports extended attributes */
 };
@@ -609,6 +653,7 @@ struct task_struct *cgroup_taskset_next(struct cgroup_taskset *tset);
  */
 
 struct cgroup_subsys {
+<<<<<<< HEAD
 	struct cgroup_subsys_state *(*css_alloc)(struct cgroup_subsys_state *parent_css);
 	int (*css_online)(struct cgroup_subsys_state *css);
 	void (*css_offline)(struct cgroup_subsys_state *css);
@@ -623,6 +668,16 @@ struct cgroup_subsys {
 			      struct cgroup_taskset *tset);
 	void (*attach)(struct cgroup_subsys_state *css,
 		       struct cgroup_taskset *tset);
+=======
+	struct cgroup_subsys_state *(*css_alloc)(struct cgroup *cgrp);
+	int (*css_online)(struct cgroup *cgrp);
+	void (*css_offline)(struct cgroup *cgrp);
+	void (*css_free)(struct cgroup *cgrp);
+        int (*allow_attach)(struct cgroup *cgrp, struct cgroup_taskset *tset);
+	int (*can_attach)(struct cgroup *cgrp, struct cgroup_taskset *tset);
+	void (*cancel_attach)(struct cgroup *cgrp, struct cgroup_taskset *tset);
+	void (*attach)(struct cgroup *cgrp, struct cgroup_taskset *tset);
+>>>>>>> p9x
 	void (*fork)(struct task_struct *task);
 	void (*exit)(struct cgroup_subsys_state *css,
 		     struct cgroup_subsys_state *old_css,
@@ -685,6 +740,15 @@ struct cgroup_subsys {
 #include <linux/cgroup_subsys.h>
 #undef SUBSYS
 
+<<<<<<< HEAD
+=======
+static inline struct cgroup_subsys_state *cgroup_subsys_state(
+	struct cgroup *cgrp, int subsys_id)
+{
+	return cgrp->subsys[subsys_id];
+}
+
+>>>>>>> p9x
 /**
  * task_css_set_check - obtain a task's css_set with extra access conditions
  * @task: the task to obtain css_set for
@@ -700,17 +764,69 @@ struct cgroup_subsys {
  */
 #ifdef CONFIG_PROVE_RCU
 extern struct mutex cgroup_mutex;
+<<<<<<< HEAD
 extern struct rw_semaphore css_set_rwsem;
 #define task_css_set_check(task, __c)					\
 	rcu_dereference_check((task)->cgroups,				\
 		lockdep_is_held(&cgroup_mutex) ||			\
 		lockdep_is_held(&css_set_rwsem) ||			\
 		((task)->flags & PF_EXITING) || (__c))
+=======
+#define task_css_set_check(task, __c)					\
+	rcu_dereference_check((task)->cgroups,				\
+		lockdep_is_held(&(task)->alloc_lock) ||			\
+		lockdep_is_held(&cgroup_mutex) || (__c))
+>>>>>>> p9x
 #else
 #define task_css_set_check(task, __c)					\
 	rcu_dereference((task)->cgroups)
 #endif
 
+<<<<<<< HEAD
+=======
+/**
+ * task_subsys_state_check - obtain css for (task, subsys) w/ extra access conds
+ * @task: the target task
+ * @subsys_id: the target subsystem ID
+ * @__c: extra condition expression to be passed to rcu_dereference_check()
+ *
+ * Return the cgroup_subsys_state for the (@task, @subsys_id) pair.  The
+ * synchronization rules are the same as task_css_set_check().
+ */
+#define task_subsys_state_check(task, subsys_id, __c)			\
+	task_css_set_check((task), (__c))->subsys[(subsys_id)]
+
+/**
+ * task_css_set - obtain a task's css_set
+ * @task: the task to obtain css_set for
+ *
+ * See task_css_set_check().
+ */
+static inline struct css_set *task_css_set(struct task_struct *task)
+{
+	return task_css_set_check(task, false);
+}
+
+/**
+ * task_subsys_state - obtain css for (task, subsys)
+ * @task: the target task
+ * @subsys_id: the target subsystem ID
+ *
+ * See task_subsys_state_check().
+ */
+static inline struct cgroup_subsys_state *
+task_subsys_state(struct task_struct *task, int subsys_id)
+{
+	return task_subsys_state_check(task, subsys_id, false);
+}
+
+static inline struct cgroup* task_cgroup(struct task_struct *task,
+					       int subsys_id)
+{
+	return task_subsys_state(task, subsys_id)->cgroup;
+}
+
+>>>>>>> p9x
 /**
  * task_css_check - obtain css for (task, subsys) w/ extra access conds
  * @task: the target task
@@ -921,7 +1037,25 @@ int cgroup_attach_task_to_root(struct task_struct *tsk, int wait);
  * running as root.
  * Returns 0 if this is allowed, or -EACCES otherwise.
  */
+<<<<<<< HEAD
 int subsys_cgroup_allow_attach(struct cgroup_subsys_state *css,
+=======
+void free_css_id(struct cgroup_subsys *ss, struct cgroup_subsys_state *css);
+
+/* Find a cgroup_subsys_state which has given ID */
+
+struct cgroup_subsys_state *css_lookup(struct cgroup_subsys *ss, int id);
+
+/* Returns true if root is ancestor of cg */
+bool css_is_ancestor(struct cgroup_subsys_state *cg,
+		     const struct cgroup_subsys_state *root);
+
+/* Get id and depth of css */
+unsigned short css_id(struct cgroup_subsys_state *css);
+unsigned short css_depth(struct cgroup_subsys_state *css);
+struct cgroup_subsys_state *cgroup_css_from_dir(struct file *f, int id);
+int subsys_cgroup_allow_attach(struct cgroup *cgrp,
+>>>>>>> p9x
 			       struct cgroup_taskset *tset);
 
 #else /* !CONFIG_CGROUPS */

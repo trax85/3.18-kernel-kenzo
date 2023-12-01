@@ -1,6 +1,10 @@
 /*
  *
+<<<<<<< HEAD
  * Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014-2015, 2018 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -15,15 +19,19 @@
 
 #include <linux/slab.h>
 #include <linux/msm_ion.h>
+<<<<<<< HEAD
 #include <soc/qcom/secure_buffer.h>
 #include <linux/workqueue.h>
 #include <linux/uaccess.h>
+=======
+>>>>>>> p9x
 #include "ion.h"
 #include "ion_priv.h"
 
 struct ion_system_secure_heap {
 	struct ion_heap *sys_heap;
 	struct ion_heap heap;
+<<<<<<< HEAD
 
 	spinlock_t work_lock;
 	bool destroy_heap;
@@ -36,6 +44,17 @@ struct prefetch_info {
 	int vmid;
 	size_t size;
 };
+=======
+};
+
+#define VMID_HLOS 0x3
+#define VMID_CP_TOUCH 0x8
+#define VMID_CP_BITSTREAM 0x9
+#define VMID_CP_PIXEL 0xA
+#define VMID_CP_NON_PIXEL 0xB
+#define VMID_CP_CAMERA 0xD
+#define VMID_HLOS_FREE 0xE
+>>>>>>> p9x
 
 static bool is_cp_flag_present(unsigned long flags)
 {
@@ -46,6 +65,7 @@ static bool is_cp_flag_present(unsigned long flags)
 			ION_FLAG_CP_CAMERA);
 }
 
+<<<<<<< HEAD
 int ion_system_secure_heap_unassign_sg(struct sg_table *sgt, int source_vmid)
 {
 	u32 dest_vmid = VMID_HLOS;
@@ -84,14 +104,52 @@ int ion_system_secure_heap_assign_sg(struct sg_table *sgt, int dest_vmid)
 	for_each_sg(sgt->sgl, sg, sgt->nents, i)
 		SetPagePrivate(sg_page(sg));
 	return 0;
+=======
+int get_secure_vmid(unsigned long flags)
+{
+	if (flags & ION_FLAG_CP_TOUCH)
+		return VMID_CP_TOUCH;
+	if (flags & ION_FLAG_CP_BITSTREAM)
+		return VMID_CP_BITSTREAM;
+	if (flags & ION_FLAG_CP_PIXEL)
+		return VMID_CP_PIXEL;
+	if (flags & ION_FLAG_CP_NON_PIXEL)
+		return VMID_CP_NON_PIXEL;
+	if (flags & ION_FLAG_CP_CAMERA)
+		return VMID_CP_CAMERA;
+
+	return -EINVAL;
+>>>>>>> p9x
 }
 
 static void ion_system_secure_heap_free(struct ion_buffer *buffer)
 {
+<<<<<<< HEAD
+=======
+	int ret;
+	u32 source_vm;
+	u32 dest_vm;
+>>>>>>> p9x
 	struct ion_heap *heap = buffer->heap;
 	struct ion_system_secure_heap *secure_heap = container_of(heap,
 						struct ion_system_secure_heap,
 						heap);
+<<<<<<< HEAD
+=======
+
+	source_vm = get_secure_vmid(buffer->flags);
+	dest_vm = VMID_HLOS;
+
+	ret = msm_ion_hyp_assign_call(buffer->priv_virt, &source_vm,
+					sizeof(source_vm), &dest_vm,
+					sizeof(dest_vm));
+
+	if (ret) {
+		pr_err("%s: Not freeing memory since assign call failed\n",
+								__func__);
+		return;
+	}
+>>>>>>> p9x
 	buffer->heap = secure_heap->sys_heap;
 	secure_heap->sys_heap->ops->free(buffer);
 }
@@ -101,7 +159,13 @@ static int ion_system_secure_heap_allocate(struct ion_heap *heap,
 					unsigned long size, unsigned long align,
 					unsigned long flags)
 {
+<<<<<<< HEAD
 	int ret = 0;
+=======
+	int ret;
+	u32 source_vm;
+	u32 dest_vm;
+>>>>>>> p9x
 	struct ion_system_secure_heap *secure_heap = container_of(heap,
 						struct ion_system_secure_heap,
 						heap);
@@ -113,6 +177,16 @@ static int ion_system_secure_heap_allocate(struct ion_heap *heap,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	source_vm = VMID_HLOS;
+	dest_vm = get_secure_vmid(flags);
+	if (dest_vm < 0) {
+		pr_info("%s: Unable to get secure VMID\n", __func__);
+		return -EINVAL;
+	}
+
+>>>>>>> p9x
 	ret = secure_heap->sys_heap->ops->allocate(secure_heap->sys_heap,
 						buffer, size, align, flags);
 	if (ret) {
@@ -120,6 +194,7 @@ static int ion_system_secure_heap_allocate(struct ion_heap *heap,
 			__func__, heap->name, ret);
 		return ret;
 	}
+<<<<<<< HEAD
 	return ret;
 }
 
@@ -242,6 +317,15 @@ out_free:
 		list_del(&info->list);
 		kfree(info);
 	}
+=======
+	ret = msm_ion_hyp_assign_call(buffer->priv_virt, &source_vm,
+					sizeof(source_vm), &dest_vm,
+					sizeof(dest_vm));
+
+	if (ret)
+		ion_system_secure_heap_free(buffer);
+
+>>>>>>> p9x
 	return ret;
 }
 
@@ -263,7 +347,11 @@ static void ion_system_secure_heap_unmap_dma(struct ion_heap *heap,
 						struct ion_system_secure_heap,
 						heap);
 
+<<<<<<< HEAD
 	secure_heap->sys_heap->ops->unmap_dma(secure_heap->sys_heap,
+=======
+	secure_heap->sys_heap->ops->map_dma(secure_heap->sys_heap,
+>>>>>>> p9x
 							buffer);
 }
 
@@ -320,17 +408,23 @@ struct ion_heap *ion_system_secure_heap_create(struct ion_platform_heap *unused)
 		return ERR_PTR(-ENOMEM);
 	heap->heap.ops = &system_secure_heap_ops;
 	heap->heap.type = ION_HEAP_TYPE_SYSTEM_SECURE;
+<<<<<<< HEAD
 	heap->sys_heap = get_ion_heap(ION_SYSTEM_HEAP_ID);
 
 	heap->destroy_heap = false;
 	heap->work_lock = __SPIN_LOCK_UNLOCKED(heap->work_lock);
 	INIT_LIST_HEAD(&heap->prefetch_list);
 	INIT_WORK(&heap->prefetch_work, ion_system_secure_heap_prefetch_work);
+=======
+	heap->heap.flags = ION_HEAP_FLAG_DEFER_FREE;
+	heap->sys_heap = get_ion_heap(ION_SYSTEM_HEAP_ID);
+>>>>>>> p9x
 	return &heap->heap;
 }
 
 void ion_system_secure_heap_destroy(struct ion_heap *heap)
 {
+<<<<<<< HEAD
 	struct ion_system_secure_heap *secure_heap = container_of(heap,
 						struct ion_system_secure_heap,
 						heap);
@@ -351,5 +445,7 @@ void ion_system_secure_heap_destroy(struct ion_heap *heap)
 		kfree(info);
 	}
 
+=======
+>>>>>>> p9x
 	kfree(heap);
 }

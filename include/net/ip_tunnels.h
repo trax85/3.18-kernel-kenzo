@@ -142,7 +142,7 @@ struct ip_tunnel *ip_tunnel_lookup(struct ip_tunnel_net *itn,
 				   __be32 key);
 
 int ip_tunnel_rcv(struct ip_tunnel *tunnel, struct sk_buff *skb,
-		  const struct tnl_ptk_info *tpi, bool log_ecn_error);
+		  const struct tnl_ptk_info *tpi, int hdr_len, bool log_ecn_error);
 int ip_tunnel_changelink(struct net_device *dev, struct nlattr *tb[],
 			 struct ip_tunnel_parm *p);
 int ip_tunnel_newlink(struct net_device *dev, struct nlattr *tb[],
@@ -173,6 +173,7 @@ static inline u8 ip_tunnel_ecn_encap(u8 tos, const struct iphdr *iph,
 	return INET_ECN_encapsulate(tos, inner);
 }
 
+<<<<<<< HEAD
 int iptunnel_pull_header(struct sk_buff *skb, int hdr_len, __be16 inner_proto);
 int iptunnel_xmit(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
 		  __be32 src, __be32 dst, __u8 proto,
@@ -188,6 +189,18 @@ static inline void iptunnel_xmit_stats(int err,
 	if (err > 0) {
 		struct pcpu_sw_netstats *tstats = get_cpu_ptr(stats);
 
+=======
+static inline void iptunnel_xmit(struct sk_buff *skb, struct net_device *dev)
+{
+	int err;
+	int pkt_len = skb->len - skb_transport_offset(skb);
+	struct pcpu_tstats *tstats = this_cpu_ptr(dev->tstats);
+
+	nf_reset(skb);
+
+	err = ip_local_out(skb);
+	if (likely(net_xmit_eval(err) == 0)) {
+>>>>>>> p9x
 		u64_stats_update_begin(&tstats->syncp);
 		tstats->tx_bytes += err;
 		tstats->tx_packets++;

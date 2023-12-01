@@ -88,6 +88,18 @@ static inline size_t sizeof_pwm_leds_priv(int num_leds)
 }
 
 static void led_pwm_cleanup(struct led_pwm_priv *priv)
+<<<<<<< HEAD
+=======
+{
+	while (priv->num_leds--) {
+		led_classdev_unregister(&priv->leds[priv->num_leds].cdev);
+		if (priv->leds[priv->num_leds].can_sleep)
+			cancel_work_sync(&priv->leds[priv->num_leds].work);
+	}
+}
+
+static struct led_pwm_priv *led_pwm_create_of(struct platform_device *pdev)
+>>>>>>> p9x
 {
 	while (priv->num_leds--) {
 		led_classdev_unregister(&priv->leds[priv->num_leds].cdev);
@@ -121,8 +133,14 @@ static int led_pwm_add(struct device *dev, struct led_pwm_priv *priv,
 		return ret;
 	}
 
+<<<<<<< HEAD
 	if (child)
 		led_data->period = pwm_get_period(led_data->pwm);
+=======
+	return priv;
+err:
+	led_pwm_cleanup(priv);
+>>>>>>> p9x
 
 	led_data->can_sleep = pwm_can_sleep(led_data->pwm);
 	if (led_data->can_sleep)
@@ -210,6 +228,15 @@ static int led_pwm_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, priv);
 
 	return 0;
+<<<<<<< HEAD
+=======
+
+err:
+	priv->num_leds = i;
+	led_pwm_cleanup(priv);
+
+	return ret;
+>>>>>>> p9x
 }
 
 static int led_pwm_remove(struct platform_device *pdev)

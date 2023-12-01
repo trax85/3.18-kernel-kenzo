@@ -98,7 +98,12 @@ static void __uart_start(struct tty_struct *tty)
 	if (port->ops->wake_peer)
 		port->ops->wake_peer(port);
 
+<<<<<<< HEAD
 	if (!uart_tx_stopped(port))
+=======
+	if (!uart_circ_empty(&state->xmit) && state->xmit.buf &&
+	    !tty->stopped && !tty->hw_stopped)
+>>>>>>> p9x
 		port->ops->start_tx(port);
 }
 

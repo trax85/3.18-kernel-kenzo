@@ -16,6 +16,10 @@
 #include <media/msm_jpeg.h>
 #include "msm_jpeg_hw_reg.h"
 #include <linux/ion.h>
+<<<<<<< HEAD
+=======
+#include <linux/msm_iommu_domains.h>
+>>>>>>> p9x
 
 struct msm_jpeg_hw_buf {
 	struct msm_jpeg_buf vbuf;
@@ -115,6 +119,7 @@ void msm_jpegdma_hw_we_buffer_update(struct msm_jpeg_hw_buf *p_input,
 
 void msm_jpeg_hw_we_buffer_cfg(uint8_t is_realtime);
 
+<<<<<<< HEAD
 void msm_jpeg_hw_fe_mmu_prefetch(struct msm_jpeg_hw_buf *buf, void *,
 	uint8_t decode_flag);
 void msm_jpeg_hw_we_mmu_prefetch(struct msm_jpeg_hw_buf *buf, void *,
@@ -122,6 +127,8 @@ void msm_jpeg_hw_we_mmu_prefetch(struct msm_jpeg_hw_buf *buf, void *,
 void msm_jpegdma_hw_fe_mmu_prefetch(struct msm_jpeg_hw_buf *buf, void *);
 void msm_jpegdma_hw_we_mmu_prefetch(struct msm_jpeg_hw_buf *buf, void *);
 
+=======
+>>>>>>> p9x
 void msm_jpeg_hw_fe_start(void *);
 void msm_jpeg_hw_clk_cfg(void);
 

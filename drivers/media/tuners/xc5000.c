@@ -721,8 +721,91 @@ static int xc5000_tune_digital(struct dvb_frontend *fe)
 	int ret;
 	u32 bw = fe->dtv_property_cache.bandwidth_hz;
 
+<<<<<<< HEAD
 	ret = xc_set_signal_source(priv, priv->rf_mode);
 	if (ret != 0) {
+=======
+	if (xc_load_fw_and_init_tuner(fe, 0) != XC_RESULT_SUCCESS) {
+		dprintk(1, "Unable to load firmware and init tuner\n");
+		return -EINVAL;
+	}
+
+	dprintk(1, "%s() frequency=%d (Hz)\n", __func__, freq);
+
+	switch (delsys) {
+	case SYS_ATSC:
+		dprintk(1, "%s() VSB modulation\n", __func__);
+		priv->rf_mode = XC_RF_MODE_AIR;
+		priv->freq_offset = 1750000;
+		priv->video_standard = DTV6;
+		break;
+	case SYS_DVBC_ANNEX_B:
+		dprintk(1, "%s() QAM modulation\n", __func__);
+		priv->rf_mode = XC_RF_MODE_CABLE;
+		priv->freq_offset = 1750000;
+		priv->video_standard = DTV6;
+		break;
+	case SYS_ISDBT:
+		/* All ISDB-T are currently for 6 MHz bw */
+		if (!bw)
+			bw = 6000000;
+		/* fall to OFDM handling */
+	case SYS_DMBTH:
+	case SYS_DVBT:
+	case SYS_DVBT2:
+		dprintk(1, "%s() OFDM\n", __func__);
+		switch (bw) {
+		case 6000000:
+			priv->video_standard = DTV6;
+			priv->freq_offset = 1750000;
+			break;
+		case 7000000:
+			priv->video_standard = DTV7;
+			priv->freq_offset = 2250000;
+			break;
+		case 8000000:
+			priv->video_standard = DTV8;
+			priv->freq_offset = 2750000;
+			break;
+		default:
+			printk(KERN_ERR "xc5000 bandwidth not set!\n");
+			return -EINVAL;
+		}
+		priv->rf_mode = XC_RF_MODE_AIR;
+		break;
+	case SYS_DVBC_ANNEX_A:
+	case SYS_DVBC_ANNEX_C:
+		dprintk(1, "%s() QAM modulation\n", __func__);
+		priv->rf_mode = XC_RF_MODE_CABLE;
+		if (bw <= 6000000) {
+			priv->video_standard = DTV6;
+			priv->freq_offset = 1750000;
+			b = 6;
+		} else if (bw <= 7000000) {
+			priv->video_standard = DTV7;
+			priv->freq_offset = 2250000;
+			b = 7;
+		} else {
+			priv->video_standard = DTV7_8;
+			priv->freq_offset = 2750000;
+			b = 8;
+		}
+		dprintk(1, "%s() Bandwidth %dMHz (%d)\n", __func__,
+			b, bw);
+		break;
+	default:
+		printk(KERN_ERR "xc5000: delivery system is not supported!\n");
+		return -EINVAL;
+	}
+
+	priv->freq_hz = freq - priv->freq_offset;
+
+	dprintk(1, "%s() frequency=%d (compensated to %d)\n",
+		__func__, freq, priv->freq_hz);
+
+	ret = xc_SetSignalSource(priv, priv->rf_mode);
+	if (ret != XC_RESULT_SUCCESS) {
+>>>>>>> p9x
 		printk(KERN_ERR
 			"xc5000: xc_set_signal_source(%d) failed\n",
 			priv->rf_mode);

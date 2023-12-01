@@ -54,7 +54,11 @@ static int dt_init_opp_table(struct device *cpu_dev)
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	ret = dev_pm_opp_of_add_table(cpu_dev);
+=======
+	ret = of_init_opp_table(cpu_dev);
+>>>>>>> p9x
 	of_node_put(np);
 
 	return ret;

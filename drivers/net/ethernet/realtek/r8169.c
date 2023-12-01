@@ -3715,7 +3715,11 @@ static void rtl8168g_1_hw_phy_config(struct rtl8169_private *tp)
 	/* Check ALDPS bit, disable it if enabled */
 	rtl_writephy(tp, 0x1f, 0x0a43);
 	if (rtl_readphy(tp, 0x10) & 0x0004)
+<<<<<<< HEAD
 		rtl_w0w1_phy(tp, 0x10, 0x0000, 0x0004);
+=======
+		rtl_w1w0_phy(tp, 0x10, 0x0000, 0x0004);
+>>>>>>> p9x
 
 	rtl_writephy(tp, 0x1f, 0x0000);
 }
@@ -7117,6 +7121,10 @@ err_dma_1:
 	rtl8169_unmap_tx_skb(d, tp->tx_skb + entry, txd);
 err_dma_0:
 	dev_kfree_skb_any(skb);
+<<<<<<< HEAD
+=======
+err_update_stats:
+>>>>>>> p9x
 	dev->stats.tx_dropped++;
 	return NETDEV_TX_OK;
 

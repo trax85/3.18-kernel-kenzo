@@ -425,6 +425,7 @@ static int read_data_block(struct squashfs_read_request *req, int length,
  * generated a larger block - this does occasionally happen with compression
  * algorithms).
  */
+<<<<<<< HEAD
 static int __squashfs_read_data(struct super_block *sb, u64 index, int length,
 	u64 *next_index, struct squashfs_page_actor *output, bool sync)
 {
@@ -453,6 +454,118 @@ static int __squashfs_read_data(struct super_block *sb, u64 index, int length,
 		ERROR("squashfs_read_data failed to read block 0x%llx\n",
 		      (unsigned long long)index);
 		return -EIO;
+=======
+int squashfs_read_data(struct super_block *sb, u64 index, int length,
+		u64 *next_index, struct squashfs_page_actor *output)
+{
+	struct squashfs_sb_info *msblk = sb->s_fs_info;
+	struct buffer_head **bh;
+	int offset = index & ((1 << msblk->devblksize_log2) - 1);
+	u64 cur_index = index >> msblk->devblksize_log2;
+	int bytes, compressed, b = 0, k = 0, avail, i;
+
+	bh = kcalloc(((output->length + msblk->devblksize - 1)
+		>> msblk->devblksize_log2) + 1, sizeof(*bh), GFP_KERNEL);
+	if (bh == NULL)
+		return -ENOMEM;
+
+	if (length) {
+		/*
+		 * Datablock.
+		 */
+		bytes = -offset;
+		compressed = SQUASHFS_COMPRESSED_BLOCK(length);
+		length = SQUASHFS_COMPRESSED_SIZE_BLOCK(length);
+		if (next_index)
+			*next_index = index + length;
+
+		TRACE("Block @ 0x%llx, %scompressed size %d, src size %d\n",
+			index, compressed ? "" : "un", length, output->length);
+
+		if (length < 0 || length > output->length ||
+				(index + length) > msblk->bytes_used)
+			goto read_failure;
+
+		for (b = 0; bytes < length; b++, cur_index++) {
+			bh[b] = sb_getblk(sb, cur_index);
+			if (bh[b] == NULL)
+				goto block_release;
+			bytes += msblk->devblksize;
+		}
+		ll_rw_block(READ, b, bh);
+	} else {
+		/*
+		 * Metadata block.
+		 */
+		if ((index + 2) > msblk->bytes_used)
+			goto read_failure;
+
+		bh[0] = get_block_length(sb, &cur_index, &offset, &length);
+		if (bh[0] == NULL)
+			goto read_failure;
+		b = 1;
+
+		bytes = msblk->devblksize - offset;
+		compressed = SQUASHFS_COMPRESSED(length);
+		length = SQUASHFS_COMPRESSED_SIZE(length);
+		if (next_index)
+			*next_index = index + length + 2;
+
+		TRACE("Block @ 0x%llx, %scompressed size %d\n", index,
+				compressed ? "" : "un", length);
+
+		if (length < 0 || length > output->length ||
+					(index + length) > msblk->bytes_used)
+			goto block_release;
+
+		for (; bytes < length; b++) {
+			bh[b] = sb_getblk(sb, ++cur_index);
+			if (bh[b] == NULL)
+				goto block_release;
+			bytes += msblk->devblksize;
+		}
+		ll_rw_block(READ, b - 1, bh + 1);
+	}
+
+	for (i = 0; i < b; i++) {
+		wait_on_buffer(bh[i]);
+		if (!buffer_uptodate(bh[i]))
+			goto block_release;
+	}
+
+	if (compressed) {
+		length = squashfs_decompress(msblk, bh, b, offset, length,
+			output);
+		if (length < 0)
+			goto read_failure;
+	} else {
+		/*
+		 * Block is uncompressed.
+		 */
+		int in, pg_offset = 0;
+		void *data = squashfs_first_page(output);
+
+		for (bytes = length; k < b; k++) {
+			in = min(bytes, msblk->devblksize - offset);
+			bytes -= in;
+			while (in) {
+				if (pg_offset == PAGE_CACHE_SIZE) {
+					data = squashfs_next_page(output);
+					pg_offset = 0;
+				}
+				avail = min_t(int, in, PAGE_CACHE_SIZE -
+						pg_offset);
+				memcpy(data + pg_offset, bh[k]->b_data + offset,
+						avail);
+				in -= avail;
+				pg_offset += avail;
+				offset += avail;
+			}
+			offset = 0;
+			put_bh(bh[k]);
+		}
+		squashfs_finish_page(output);
+>>>>>>> p9x
 	}
 
 	return length;

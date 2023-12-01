@@ -35,6 +35,7 @@
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <linux/suspend.h>
+#include <linux/delay.h>
 #include <asm/unaligned.h>
 
 #ifdef CONFIG_ACPI_PROCFS_POWER
@@ -71,7 +72,10 @@ MODULE_DESCRIPTION("ACPI Battery Driver");
 MODULE_LICENSE("GPL");
 
 static int battery_bix_broken_package;
+<<<<<<< HEAD
 static int battery_notification_delay_ms;
+=======
+>>>>>>> p9x
 static unsigned int cache_time = 1000;
 module_param(cache_time, uint, 0644);
 MODULE_PARM_DESC(cache_time, "cache time in milliseconds");
@@ -1119,6 +1123,7 @@ static int battery_notify(struct notifier_block *nb,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int battery_bix_broken_package_quirk(const struct dmi_system_id *d)
 {
 	battery_bix_broken_package = 1;
@@ -1134,12 +1139,17 @@ static int battery_notification_delay_quirk(const struct dmi_system_id *d)
 static struct dmi_system_id bat_dmi_table[] = {
 	{
 		.callback = battery_bix_broken_package_quirk,
+=======
+static struct dmi_system_id bat_dmi_table[] = {
+	{
+>>>>>>> p9x
 		.ident = "NEC LZ750/LS",
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "NEC"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "PC-LZ750LS"),
 		},
 	},
+<<<<<<< HEAD
 	{
 		.callback = battery_notification_delay_quirk,
 		.ident = "Acer Aspire V5-573G",
@@ -1148,6 +1158,8 @@ static struct dmi_system_id bat_dmi_table[] = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "Aspire V5-573G"),
 		},
 	},
+=======
+>>>>>>> p9x
 	{},
 };
 
@@ -1164,7 +1176,11 @@ static int acpi_battery_update_retry(struct acpi_battery *battery)
 	int retry, ret;
 
 	for (retry = 5; retry; retry--) {
+<<<<<<< HEAD
 		ret = acpi_battery_update(battery, false);
+=======
+		ret = acpi_battery_update(battery);
+>>>>>>> p9x
 		if (!ret)
 			break;
 
@@ -1292,6 +1308,8 @@ static void __init acpi_battery_init_async(void *unused, async_cookie_t cookie)
 	if (!acpi_battery_dir)
 		return;
 #endif
+	if (dmi_check_system(bat_dmi_table))
+		battery_bix_broken_package = 1;
 	if (acpi_bus_register_driver(&acpi_battery_driver) < 0) {
 #ifdef CONFIG_ACPI_PROCFS_POWER
 		acpi_unlock_battery_dir(acpi_battery_dir);

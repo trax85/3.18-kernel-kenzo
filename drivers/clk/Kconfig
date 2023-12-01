@@ -158,6 +158,10 @@ endmenu
 
 source "drivers/clk/bcm/Kconfig"
 source "drivers/clk/mvebu/Kconfig"
+<<<<<<< HEAD
 
 source "drivers/clk/samsung/Kconfig"
 source "drivers/clk/msm/Kconfig"
+=======
+source "drivers/clk/qcom/Kconfig"
+>>>>>>> p9x

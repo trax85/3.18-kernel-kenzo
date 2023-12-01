@@ -170,7 +170,11 @@ have_snum:
 				hashinfo->bhash_size)];
 		spin_lock(&head->lock);
 
+<<<<<<< HEAD
 		if (inet_is_local_reserved_port(net, snum) &&
+=======
+		if (inet_is_reserved_local_port(snum) &&
+>>>>>>> p9x
 		    !sysctl_reserved_port_bind) {
 			ret = 1;
 			goto fail_unlock;
@@ -416,8 +420,13 @@ struct dst_entry *inet_csk_route_req(struct sock *sk,
 			   RT_CONN_FLAGS(sk), RT_SCOPE_UNIVERSE,
 			   sk->sk_protocol,
 			   flags,
+<<<<<<< HEAD
 			   (opt && opt->opt.srr) ? opt->opt.faddr : ireq->ir_rmt_addr,
 			   ireq->ir_loc_addr, ireq->ir_rmt_port, inet_sk(sk)->inet_sport,
+=======
+			   (opt && opt->opt.srr) ? opt->opt.faddr : ireq->rmt_addr,
+			   ireq->loc_addr, ireq->rmt_port, inet_sk(sk)->inet_sport,
+>>>>>>> p9x
 			   sk->sk_uid);
 	security_req_classify_flow(req, flowi4_to_flowi(fl4));
 	rt = ip_route_output_flow(net, fl4, sk);
@@ -453,8 +462,13 @@ struct dst_entry *inet_csk_route_child_sock(struct sock *sk,
 	flowi4_init_output(fl4, sk->sk_bound_dev_if, inet_rsk(req)->ir_mark,
 			   RT_CONN_FLAGS(sk), RT_SCOPE_UNIVERSE,
 			   sk->sk_protocol, inet_sk_flowi_flags(sk),
+<<<<<<< HEAD
 			   (opt && opt->opt.srr) ? opt->opt.faddr : ireq->ir_rmt_addr,
 			   ireq->ir_loc_addr, ireq->ir_rmt_port, inet_sk(sk)->inet_sport,
+=======
+			   (opt && opt->opt.srr) ? opt->opt.faddr : ireq->rmt_addr,
+			   ireq->loc_addr, ireq->rmt_port, inet_sk(sk)->inet_sport,
+>>>>>>> p9x
 			   sk->sk_uid);
 	security_req_classify_flow(req, flowi4_to_flowi(fl4));
 	rt = ip_route_output_flow(net, fl4, sk);
@@ -687,9 +701,12 @@ struct sock *inet_csk_clone_lock(const struct sock *sk,
 		newsk->sk_write_space = sk_stream_write_space;
 
 		inet_sk(newsk)->mc_list = NULL;
+<<<<<<< HEAD
 
 		inet_sk(newsk)->mc_list = NULL;
 
+=======
+>>>>>>> p9x
 		newsk->sk_mark = inet_rsk(req)->ir_mark;
 
 		newicsk->icsk_retransmits = 0;

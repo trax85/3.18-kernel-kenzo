@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -43,25 +47,45 @@ struct hwevent_drvdata {
 	struct regulator			**hreg;
 	int					nr_hmux;
 	struct hwevent_mux			*hmux;
+<<<<<<< HEAD
+=======
+	bool					enable;
+>>>>>>> p9x
 };
 
 static int hwevent_enable(struct hwevent_drvdata *drvdata)
 {
 	int ret, i, j;
 
+<<<<<<< HEAD
 	ret = clk_prepare_enable(drvdata->clk);
 	if (ret)
 		return ret;
+=======
+	mutex_lock(&drvdata->mutex);
+
+	if (drvdata->enable)
+		goto out;
+
+	ret = clk_prepare_enable(drvdata->clk);
+	if (ret)
+		goto err0;
+>>>>>>> p9x
 
 	for (i = 0; i < drvdata->nr_hreg; i++) {
 		ret = regulator_enable(drvdata->hreg[i]);
 		if (ret)
+<<<<<<< HEAD
 			goto err0;
+=======
+			goto err1;
+>>>>>>> p9x
 	}
 
 	for (j = 0; j < drvdata->nr_hclk; j++) {
 		ret = clk_prepare_enable(drvdata->hclk[j]);
 		if (ret)
+<<<<<<< HEAD
 			goto err1;
 	}
 	return 0;
@@ -69,10 +93,28 @@ err1:
 	for (j--; j >= 0; j--)
 		clk_disable_unprepare(drvdata->hclk[j]);
 err0:
+=======
+			goto err2;
+	}
+	drvdata->enable = true;
+	dev_info(drvdata->dev, "Hardware Event driver enabled\n");
+out:
+	mutex_unlock(&drvdata->mutex);
+	return 0;
+err2:
+	for (j--; j >= 0; j--)
+		clk_disable_unprepare(drvdata->hclk[j]);
+err1:
+>>>>>>> p9x
 	for (i--; i >= 0; i--)
 		regulator_disable(drvdata->hreg[i]);
 
 	clk_disable_unprepare(drvdata->clk);
+<<<<<<< HEAD
+=======
+err0:
+	mutex_unlock(&drvdata->mutex);
+>>>>>>> p9x
 	return ret;
 }
 
@@ -80,13 +122,62 @@ static void hwevent_disable(struct hwevent_drvdata *drvdata)
 {
 	int i;
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&drvdata->mutex);
+
+	if (!drvdata->enable)
+		goto out;
+
+	drvdata->enable = false;
+>>>>>>> p9x
 	clk_disable_unprepare(drvdata->clk);
 	for (i = 0; i < drvdata->nr_hclk; i++)
 		clk_disable_unprepare(drvdata->hclk[i]);
 	for (i = 0; i < drvdata->nr_hreg; i++)
 		regulator_disable(drvdata->hreg[i]);
+<<<<<<< HEAD
 }
 
+=======
+	dev_info(drvdata->dev, "Hardware Event driver disabled\n");
+out:
+	mutex_unlock(&drvdata->mutex);
+}
+
+static ssize_t hwevent_show_enable(struct device *dev,
+				   struct device_attribute *attr, char *buf)
+{
+	struct hwevent_drvdata *drvdata = dev_get_drvdata(dev->parent);
+	unsigned long val = drvdata->enable;
+
+	return scnprintf(buf, PAGE_SIZE, "%#lx\n", val);
+}
+
+static ssize_t hwevent_store_enable(struct device *dev,
+				    struct device_attribute *attr,
+				    const char *buf, size_t size)
+{
+	struct hwevent_drvdata *drvdata = dev_get_drvdata(dev->parent);
+	unsigned long val;
+	int ret = 0;
+
+	if (sscanf(buf, "%lx", &val) != 1)
+		return -EINVAL;
+
+	if (val)
+		ret = hwevent_enable(drvdata);
+	else
+		hwevent_disable(drvdata);
+
+	if (ret)
+		return ret;
+	return size;
+}
+static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR, hwevent_show_enable,
+		   hwevent_store_enable);
+
+>>>>>>> p9x
 static ssize_t hwevent_store_setreg(struct device *dev,
 				    struct device_attribute *attr,
 				    const char *buf, size_t size)
@@ -101,10 +192,18 @@ static ssize_t hwevent_store_setreg(struct device *dev,
 		return -EINVAL;
 
 	mutex_lock(&drvdata->mutex);
+<<<<<<< HEAD
 	ret = hwevent_enable(drvdata);
 	if (ret) {
 		mutex_unlock(&drvdata->mutex);
 		return ret;
+=======
+
+	if (!drvdata->enable) {
+		dev_err(dev, "Hardware Event driver not enabled\n");
+		ret = -EINVAL;
+		goto err;
+>>>>>>> p9x
 	}
 
 	for (i = 0; i < drvdata->nr_hmux; i++) {
@@ -140,17 +239,27 @@ static ssize_t hwevent_store_setreg(struct device *dev,
 		}
 	}
 
+<<<<<<< HEAD
 	hwevent_disable(drvdata);
 	mutex_unlock(&drvdata->mutex);
 	return size;
 err:
 	hwevent_disable(drvdata);
+=======
+	mutex_unlock(&drvdata->mutex);
+	return size;
+err:
+>>>>>>> p9x
 	mutex_unlock(&drvdata->mutex);
 	return ret;
 }
 static DEVICE_ATTR(setreg, S_IWUSR, NULL, hwevent_store_setreg);
 
 static struct attribute *hwevent_attrs[] = {
+<<<<<<< HEAD
+=======
+	&dev_attr_enable.attr,
+>>>>>>> p9x
 	&dev_attr_setreg.attr,
 	NULL,
 };
@@ -174,10 +283,22 @@ static int hwevent_probe(struct platform_device *pdev)
 	int ret, i;
 	const char *hmux_name, *hclk_name, *hreg_name;
 
+<<<<<<< HEAD
 	pdata = of_get_coresight_platform_data(dev, pdev->dev.of_node);
 	if (IS_ERR(pdata))
 		return PTR_ERR(pdata);
 	pdev->dev.platform_data = pdata;
+=======
+	if (coresight_fuse_access_disabled())
+		return -EPERM;
+
+	if (pdev->dev.of_node) {
+		pdata = of_get_coresight_platform_data(dev, pdev->dev.of_node);
+		if (IS_ERR(pdata))
+			return PTR_ERR(pdata);
+		pdev->dev.platform_data = pdata;
+	}
+>>>>>>> p9x
 
 	drvdata = devm_kzalloc(dev, sizeof(*drvdata), GFP_KERNEL);
 	if (!drvdata)
@@ -185,8 +306,14 @@ static int hwevent_probe(struct platform_device *pdev)
 	drvdata->dev = &pdev->dev;
 	platform_set_drvdata(pdev, drvdata);
 
+<<<<<<< HEAD
 	drvdata->nr_hmux = of_property_count_strings(pdev->dev.of_node,
 						     "reg-names");
+=======
+	if (pdev->dev.of_node)
+		drvdata->nr_hmux = of_property_count_strings(pdev->dev.of_node,
+							     "reg-names");
+>>>>>>> p9x
 
 	if (drvdata->nr_hmux > 0) {
 		drvdata->hmux = devm_kzalloc(dev, drvdata->nr_hmux *
@@ -224,11 +351,20 @@ static int hwevent_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	drvdata->nr_hclk = of_property_count_strings(pdev->dev.of_node,
 						     "qcom,hwevent-clks");
 	drvdata->nr_hreg = of_property_count_strings(pdev->dev.of_node,
 						     "qcom,hwevent-regs");
 
+=======
+	if (pdev->dev.of_node) {
+		drvdata->nr_hclk = of_property_count_strings(pdev->dev.of_node,
+							     "qcom,hwevent-clks");
+		drvdata->nr_hreg = of_property_count_strings(pdev->dev.of_node,
+							     "qcom,hwevent-regs");
+	}
+>>>>>>> p9x
 	if (drvdata->nr_hclk > 0) {
 		drvdata->hclk = devm_kzalloc(dev, drvdata->nr_hclk *
 					     sizeof(*drvdata->hclk),

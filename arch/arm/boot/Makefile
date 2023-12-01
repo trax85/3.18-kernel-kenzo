@@ -18,6 +18,12 @@ ifneq ($(DTSSUBDIR),)
 DTSSUBDIR_INCS=$(foreach DIR, $(DTSSUBDIR), $(addsuffix /Makefile, $(addprefix $(srctree)/arch/arm/boot/dts/, $(DIR))))
 include $(DTSSUBDIR_INCS)
 endif
+include $(srctree)/arch/arm/boot/dts/qcom/Makefile
+
+ifneq ($(DTSSUBDIR),)
+DTSSUBDIR_INCS=$(foreach DIR, $(DTSSUBDIR), $(addsuffix /Makefile, $(addprefix $(srctree)/arch/arm/boot/dts/, $(DIR))))
+include $(DTSSUBDIR_INCS)
+endif
 
 # Note: the following conditions must always be true:
 #   ZRELADDR == virt_to_phys(PAGE_OFFSET + TEXT_OFFSET)
@@ -37,7 +43,11 @@ DTB_LIST := $(addsuffix .dtb,$(DTB_NAMES))
 else
 DTB_LIST := $(dtb-y)
 endif
+<<<<<<< HEAD
 DTB_OBJS := $(addprefix $(obj)/dts/qcom/,$(DTB_LIST))
+=======
+DTB_OBJS := $(addprefix $(obj)/dts/,$(DTB_LIST))
+>>>>>>> p9x
 
 ifeq ($(CONFIG_XIP_KERNEL),y)
 

@@ -21,7 +21,10 @@
 #include <linux/reboot.h>
 #include <linux/pm.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/slab.h>
+=======
+>>>>>>> p9x
 #include <uapi/linux/psci.h>
 
 #include <asm/compiler.h>
@@ -29,6 +32,7 @@
 #include <asm/errno.h>
 #include <asm/psci.h>
 #include <asm/smp_plat.h>
+<<<<<<< HEAD
 #include <asm/suspend.h>
 #include <asm/system_misc.h>
 #include <asm/suspend.h>
@@ -37,14 +41,43 @@
 #define PSCI_POWER_STATE_TYPE_POWER_DOWN	1
 
 #define PSCI_POWER_STATE_BIT	BIT(30)
+=======
+#include <asm/system_misc.h>
+#include <asm/suspend.h>
+>>>>>>> p9x
 
-struct psci_operations psci_ops;
+#define PSCI_POWER_STATE_TYPE_STANDBY		0
+#define PSCI_POWER_STATE_TYPE_POWER_DOWN	1
+
+#define PSCI_POWER_STATE_BIT	BIT(30)
+
+struct psci_power_state {
+	u16	id;
+	u8	type;
+	u8	affinity_level;
+};
+
+struct psci_operations {
+	int (*cpu_suspend)(unsigned long state_id,
+			   unsigned long entry_point);
+	int (*cpu_off)(struct psci_power_state state);
+	int (*cpu_on)(unsigned long cpuid, unsigned long entry_point);
+	int (*migrate)(unsigned long cpuid);
+	int (*affinity_info)(unsigned long target_affinity,
+			unsigned long lowest_affinity_level);
+	int (*migrate_info_type)(void);
+};
+
+static struct psci_operations psci_ops;
 
 static int (*invoke_psci_fn)(u64, u64, u64, u64);
 typedef int (*psci_initcall_t)(const struct device_node *);
+<<<<<<< HEAD
 
 asmlinkage int __invoke_psci_fn_hvc(u64, u64, u64, u64);
 asmlinkage int __invoke_psci_fn_smc(u64, u64, u64, u64);
+=======
+>>>>>>> p9x
 
 enum psci_function {
 	PSCI_FN_CPU_SUSPEND,
@@ -58,8 +91,11 @@ enum psci_function {
 
 static DEFINE_PER_CPU_READ_MOSTLY(struct psci_power_state *, psci_power_state);
 
+<<<<<<< HEAD
 static u32 psci_function_id[PSCI_FN_MAX];
 
+=======
+>>>>>>> p9x
 static int psci_to_linux_errno(int errno)
 {
 	switch (errno) {
@@ -106,6 +142,17 @@ static int psci_get_version(void)
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+static int psci_get_version(void)
+{
+	int err;
+
+	err = invoke_psci_fn(PSCI_0_2_FN_PSCI_VERSION, 0, 0, 0);
+	return err;
+}
+
+>>>>>>> p9x
 static int psci_cpu_suspend(unsigned long  state_id,
 			    unsigned long entry_point)
 {
@@ -150,6 +197,7 @@ static int psci_migrate(unsigned long cpuid)
 
 static int psci_affinity_info(unsigned long target_affinity,
 		unsigned long lowest_affinity_level)
+<<<<<<< HEAD
 {
 	int err;
 	u32 fn;
@@ -230,6 +278,31 @@ static int get_set_conduit_method(struct device_node *np)
 {
 	const char *method;
 
+=======
+{
+	int err;
+	u32 fn;
+
+	fn = psci_function_id[PSCI_FN_AFFINITY_INFO];
+	err = invoke_psci_fn(fn, target_affinity, lowest_affinity_level, 0);
+	return err;
+}
+
+static int psci_migrate_info_type(void)
+{
+	int err;
+	u32 fn;
+
+	fn = psci_function_id[PSCI_FN_MIGRATE_INFO_TYPE];
+	err = invoke_psci_fn(fn, 0, 0, 0);
+	return err;
+}
+
+static int get_set_conduit_method(struct device_node *np)
+{
+	const char *method;
+
+>>>>>>> p9x
 	pr_info("probing for conduit method from DT.\n");
 
 	if (of_property_read_string(np, "method", &method)) {
@@ -262,7 +335,11 @@ static void psci_sys_poweroff(void)
  * PSCI Function IDs for v0.2+ are well defined so use
  * standard values.
  */
+<<<<<<< HEAD
 static int __init psci_1_0_init(struct device_node *np)
+=======
+static int psci_1_0_init(struct device_node *np)
+>>>>>>> p9x
 {
 	int err, ver;
 
@@ -290,7 +367,10 @@ static int __init psci_1_0_init(struct device_node *np)
 	}
 
 	pr_info("Using standard PSCI v0.2 function IDs\n");
+<<<<<<< HEAD
 	psci_ops.get_version = psci_get_version;
+=======
+>>>>>>> p9x
 	psci_function_id[PSCI_FN_CPU_SUSPEND] = PSCI_0_2_FN64_CPU_SUSPEND;
 	psci_ops.cpu_suspend = psci_cpu_suspend;
 
@@ -315,7 +395,15 @@ out_put_node:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __init psci_0_2_init(struct device_node *np)
+=======
+/*
+ * PSCI Function IDs for v0.2+ are well defined so use
+ * standard values.
+ */
+static int psci_0_2_init(struct device_node *np)
+>>>>>>> p9x
 {
 	int err, ver;
 
@@ -344,7 +432,10 @@ static int __init psci_0_2_init(struct device_node *np)
 	}
 
 	pr_info("Using standard PSCI v0.2 function IDs\n");
+<<<<<<< HEAD
 	psci_ops.get_version = psci_get_version;
+=======
+>>>>>>> p9x
 	psci_function_id[PSCI_FN_CPU_SUSPEND] = PSCI_0_2_FN64_CPU_SUSPEND;
 	psci_ops.cpu_suspend = psci_cpu_suspend;
 
@@ -376,7 +467,11 @@ out_put_node:
 /*
  * PSCI < v0.2 get PSCI Function IDs via DT.
  */
+<<<<<<< HEAD
 static int __init psci_0_1_init(struct device_node *np)
+=======
+static int psci_0_1_init(struct device_node *np)
+>>>>>>> p9x
 {
 	u32 id;
 	int err;
@@ -387,7 +482,10 @@ static int __init psci_0_1_init(struct device_node *np)
 		goto out_put_node;
 
 	pr_info("Using PSCI v0.1 Function IDs from DT\n");
+<<<<<<< HEAD
 	psci_ops.get_version = psci_get_version;
+=======
+>>>>>>> p9x
 
 	if (!of_property_read_u32(np, "cpu_suspend", &id)) {
 		psci_function_id[PSCI_FN_CPU_SUSPEND] = id;
@@ -436,9 +534,17 @@ int __init psci_init(void)
 	return init_fn(np);
 }
 
+<<<<<<< HEAD
 static int __init cpu_psci_cpu_init(struct device_node *dn, unsigned int cpu)
 {
 	pr_info("Initializing psci_cpu_init\n");
+=======
+#ifdef CONFIG_SMP
+
+static int __init cpu_psci_cpu_init(struct device_node *dn, unsigned int cpu)
+{
+	pr_info("Initializing psco_cpu_init\n");
+>>>>>>> p9x
 	return 0;
 }
 
@@ -501,12 +607,20 @@ static int cpu_psci_cpu_kill(unsigned int cpu)
 	for (i = 0; i < 10; i++) {
 		err = psci_ops.affinity_info(cpu_logical_map(cpu), 0);
 		if (err == PSCI_0_2_AFFINITY_LEVEL_OFF) {
+<<<<<<< HEAD
 			pr_debug("CPU%d killed.\n", cpu);
+=======
+			pr_info("CPU%d killed.\n", cpu);
+>>>>>>> p9x
 			return 1;
 		}
 
 		msleep(10);
+<<<<<<< HEAD
 		pr_debug("Retrying again to check for CPU kill\n");
+=======
+		pr_info("Retrying again to check for CPU kill\n");
+>>>>>>> p9x
 	}
 
 	pr_warn("CPU%d may not have shut down cleanly (AFFINITY_INFO reports %d)\n",
@@ -521,7 +635,17 @@ static int psci_suspend_finisher(unsigned long state_id)
 	return psci_ops.cpu_suspend(state_id, virt_to_phys(cpu_resume));
 }
 
+<<<<<<< HEAD
 static int __maybe_unused cpu_psci_cpu_suspend(unsigned long state_id)
+=======
+/*
+ * The PSCI changes are to support Os initiated low power mode where the
+ * cluster mode aggregation happens in HLOS. In this case, the cpuidle
+ * driver aggregates the cluster low power mode will provide in the
+ * composite stateID to be passed down to the PSCI layer.
+ */
+static int cpu_psci_cpu_suspend(unsigned long state_id)
+>>>>>>> p9x
 {
 	if (WARN_ON_ONCE(!state_id))
 		return -EINVAL;
@@ -532,12 +656,17 @@ static int __maybe_unused cpu_psci_cpu_suspend(unsigned long state_id)
 		return  psci_ops.cpu_suspend(state_id, 0);
 }
 
+<<<<<<< HEAD
 static struct cpu_operations cpu_psci_ops = {
 	.name		= "psci",
 #ifdef CONFIG_CPU_IDLE
 	.cpu_init_idle	= cpu_psci_cpu_init_idle,
 	.cpu_suspend	= cpu_psci_cpu_suspend,
 #endif
+=======
+static const struct cpu_operations cpu_psci_ops = {
+	.name		= "psci",
+>>>>>>> p9x
 	.cpu_init	= cpu_psci_cpu_init,
 #ifdef CONFIG_ARM64_CPU_SUSPEND
 	.cpu_suspend	= cpu_psci_cpu_suspend,
@@ -550,4 +679,10 @@ static struct cpu_operations cpu_psci_ops = {
 	.cpu_kill	= cpu_psci_cpu_kill,
 #endif
 };
+<<<<<<< HEAD
 CPU_METHOD_OF_DECLARE(psci, "psci", &cpu_psci_ops);
+=======
+
+CPU_METHOD_OF_DECLARE(psci, &cpu_psci_ops);
+#endif
+>>>>>>> p9x

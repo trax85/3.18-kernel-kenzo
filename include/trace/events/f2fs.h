@@ -45,12 +45,15 @@
 		{ REQ_PRIO, 		"(P)" },			\
 		{ REQ_META | REQ_PRIO,	"(MP)" },			\
 		{ 0, " \b" })
+<<<<<<< HEAD
 
 #define show_block_temp(temp)						\
 	__print_symbolic(temp,						\
 		{ HOT,		"HOT" },				\
 		{ WARM,		"WARM" },				\
 		{ COLD,		"COLD" })
+=======
+>>>>>>> p9x
 
 #define show_data_type(type)						\
 	__print_symbolic(type,						\
@@ -91,6 +94,7 @@
 		{ CP_DISCARD,	"Discard" },				\
 		{ CP_UMOUNT | CP_TRIMMED,	"Umount,Trimmed" })
 
+<<<<<<< HEAD
 #define show_fsync_cpreason(type)					\
 	__print_symbolic(type,						\
 		{ CP_NO_NEEDED,		"no needed" },			\
@@ -104,6 +108,8 @@
 		{ CP_SPEC_LOG_NUM,	"log type is 2" },		\
 		{ CP_RECOVER_DIR,	"dir needs recovery" })
 
+=======
+>>>>>>> p9x
 struct victim_sel_policy;
 struct f2fs_map_blocks;
 
@@ -178,14 +184,22 @@ DEFINE_EVENT(f2fs__inode, f2fs_sync_file_enter,
 
 TRACE_EVENT(f2fs_sync_file_exit,
 
+<<<<<<< HEAD
 	TP_PROTO(struct inode *inode, int cp_reason, int datasync, int ret),
+=======
+	TP_PROTO(struct inode *inode, int need_cp, int datasync, int ret),
+>>>>>>> p9x
 
 	TP_ARGS(inode, cp_reason, datasync, ret),
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
 		__field(ino_t,	ino)
+<<<<<<< HEAD
 		__field(int,	cp_reason)
+=======
+		__field(int,	need_cp)
+>>>>>>> p9x
 		__field(int,	datasync)
 		__field(int,	ret)
 	),
@@ -511,14 +525,22 @@ TRACE_EVENT(f2fs_map_blocks,
 
 TRACE_EVENT(f2fs_background_gc,
 
+<<<<<<< HEAD
 	TP_PROTO(struct super_block *sb, unsigned int wait_ms,
+=======
+	TP_PROTO(struct super_block *sb, long wait_ms,
+>>>>>>> p9x
 			unsigned int prefree, unsigned int free),
 
 	TP_ARGS(sb, wait_ms, prefree, free),
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
+<<<<<<< HEAD
 		__field(unsigned int,	wait_ms)
+=======
+		__field(long,	wait_ms)
+>>>>>>> p9x
 		__field(unsigned int,	prefree)
 		__field(unsigned int,	free)
 	),
@@ -530,13 +552,18 @@ TRACE_EVENT(f2fs_background_gc,
 		__entry->free		= free;
 	),
 
+<<<<<<< HEAD
 	TP_printk("dev = (%d,%d), wait_ms = %u, prefree = %u, free = %u",
+=======
+	TP_printk("dev = (%d,%d), wait_ms = %ld, prefree = %u, free = %u",
+>>>>>>> p9x
 		show_dev(__entry->dev),
 		__entry->wait_ms,
 		__entry->prefree,
 		__entry->free)
 );
 
+<<<<<<< HEAD
 TRACE_EVENT(f2fs_gc_begin,
 
 	TP_PROTO(struct super_block *sb, bool sync, bool background,
@@ -644,6 +671,8 @@ TRACE_EVENT(f2fs_gc_end,
 		__entry->prefree_seg)
 );
 
+=======
+>>>>>>> p9x
 TRACE_EVENT(f2fs_get_victim,
 
 	TP_PROTO(struct super_block *sb, int type, int gc_type,
@@ -922,7 +951,10 @@ DECLARE_EVENT_CLASS(f2fs__submit_page_bio,
 		__field(block_t, new_blkaddr)
 		__field(int, op)
 		__field(int, op_flags)
+<<<<<<< HEAD
 		__field(int, temp)
+=======
+>>>>>>> p9x
 		__field(int, type)
 	),
 
@@ -934,18 +966,28 @@ DECLARE_EVENT_CLASS(f2fs__submit_page_bio,
 		__entry->new_blkaddr	= fio->new_blkaddr;
 		__entry->op		= fio->op;
 		__entry->op_flags	= fio->op_flags;
+<<<<<<< HEAD
 		__entry->temp		= fio->temp;
+=======
+>>>>>>> p9x
 		__entry->type		= fio->type;
 	),
 
 	TP_printk("dev = (%d,%d), ino = %lu, page_index = 0x%lx, "
+<<<<<<< HEAD
 		"oldaddr = 0x%llx, newaddr = 0x%llx, rw = %s(%s), type = %s_%s",
+=======
+		"oldaddr = 0x%llx, newaddr = 0x%llx rw = %s%s, type = %s",
+>>>>>>> p9x
 		show_dev_ino(__entry),
 		(unsigned long)__entry->index,
 		(unsigned long long)__entry->old_blkaddr,
 		(unsigned long long)__entry->new_blkaddr,
 		show_bio_type(__entry->op, __entry->op_flags),
+<<<<<<< HEAD
 		show_block_temp(__entry->temp),
+=======
+>>>>>>> p9x
 		show_block_type(__entry->type))
 );
 
@@ -958,7 +1000,11 @@ DEFINE_EVENT_CONDITION(f2fs__submit_page_bio, f2fs_submit_page_bio,
 	TP_CONDITION(page->mapping)
 );
 
+<<<<<<< HEAD
 DEFINE_EVENT_CONDITION(f2fs__submit_page_bio, f2fs_submit_page_write,
+=======
+DEFINE_EVENT_CONDITION(f2fs__submit_page_bio, f2fs_submit_page_mbio,
+>>>>>>> p9x
 
 	TP_PROTO(struct page *page, struct f2fs_io_info *fio),
 
@@ -989,8 +1035,13 @@ DECLARE_EVENT_CLASS(f2fs__bio,
 		__entry->op		= bio_op(bio);
 		__entry->op_flags	= bio->bi_rw;
 		__entry->type		= type;
+<<<<<<< HEAD
 		__entry->sector		= bio->bi_iter.bi_sector;
 		__entry->size		= bio->bi_iter.bi_size;
+=======
+		__entry->sector		= bio->bi_sector;
+		__entry->size		= bio->bi_size;
+>>>>>>> p9x
 	),
 
 	TP_printk("dev = (%d,%d)/(%d,%d), rw = %s%s, %s, sector = %lld, size = %u",
@@ -1205,7 +1256,10 @@ TRACE_EVENT(f2fs_writepages,
 		__field(char,	tagged_writepages)
 		__field(char,	for_reclaim)
 		__field(char,	range_cyclic)
+<<<<<<< HEAD
 		__field(char,	for_sync)
+=======
+>>>>>>> p9x
 	),
 
 	TP_fast_assign(
@@ -1224,12 +1278,19 @@ TRACE_EVENT(f2fs_writepages,
 		__entry->tagged_writepages	= wbc->tagged_writepages;
 		__entry->for_reclaim	= wbc->for_reclaim;
 		__entry->range_cyclic	= wbc->range_cyclic;
+<<<<<<< HEAD
 		__entry->for_sync	= wbc->for_sync;
+=======
+>>>>>>> p9x
 	),
 
 	TP_printk("dev = (%d,%d), ino = %lu, %s, %s, nr_to_write %ld, "
 		"skipped %ld, start %lld, end %lld, wb_idx %lu, sync_mode %d, "
+<<<<<<< HEAD
 		"kupdate %u background %u tagged %u reclaim %u cyclic %u sync %u",
+=======
+		"kupdate %u background %u tagged %u reclaim %u cyclic %u",
+>>>>>>> p9x
 		show_dev_ino(__entry),
 		show_block_type(__entry->type),
 		show_file_type(__entry->dir),
@@ -1243,8 +1304,12 @@ TRACE_EVENT(f2fs_writepages,
 		__entry->for_background,
 		__entry->tagged_writepages,
 		__entry->for_reclaim,
+<<<<<<< HEAD
 		__entry->range_cyclic,
 		__entry->for_sync)
+=======
+		__entry->range_cyclic)
+>>>>>>> p9x
 );
 
 TRACE_EVENT(f2fs_readpages,
@@ -1335,6 +1400,7 @@ DEFINE_EVENT(f2fs_discard, f2fs_issue_discard,
 	TP_ARGS(dev, blkstart, blklen)
 );
 
+<<<<<<< HEAD
 DEFINE_EVENT(f2fs_discard, f2fs_remove_discard,
 
 	TP_PROTO(struct block_device *dev, block_t blkstart, block_t blklen),
@@ -1342,6 +1408,8 @@ DEFINE_EVENT(f2fs_discard, f2fs_remove_discard,
 	TP_ARGS(dev, blkstart, blklen)
 );
 
+=======
+>>>>>>> p9x
 TRACE_EVENT(f2fs_issue_reset_zone,
 
 	TP_PROTO(struct block_device *dev, block_t blkstart),

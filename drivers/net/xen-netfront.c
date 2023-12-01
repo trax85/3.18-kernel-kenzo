@@ -314,7 +314,11 @@ no_skb:
 		}
 
 		skb_add_rx_frag(skb, 0, page, 0, 0, PAGE_SIZE);
+<<<<<<< HEAD
 		__skb_queue_tail(&queue->rx_batch, skb);
+=======
+		__skb_queue_tail(&np->rx_batch, skb);
+>>>>>>> p9x
 	}
 
 	/* Is the batch large enough to be worthwhile? */
@@ -425,10 +429,17 @@ static void xennet_tx_buf_gc(struct netfront_queue *queue)
 			gnttab_end_foreign_access_ref(
 				queue->grant_tx_ref[id], GNTMAP_readonly);
 			gnttab_release_grant_reference(
+<<<<<<< HEAD
 				&queue->gref_tx_head, queue->grant_tx_ref[id]);
 			queue->grant_tx_ref[id] = GRANT_INVALID_REF;
 			queue->grant_tx_page[id] = NULL;
 			add_id_to_freelist(&queue->tx_skb_freelist, queue->tx_skbs, id);
+=======
+				&np->gref_tx_head, np->grant_tx_ref[id]);
+			np->grant_tx_ref[id] = GRANT_INVALID_REF;
+			np->grant_tx_page[id] = NULL;
+			add_id_to_freelist(&np->tx_skb_freelist, np->tx_skbs, id);
+>>>>>>> p9x
 			dev_kfree_skb_irq(skb);
 		}
 
@@ -483,8 +494,13 @@ static void xennet_make_frags(struct sk_buff *skb, struct netfront_queue *queue,
 		gnttab_grant_foreign_access_ref(ref, queue->info->xbdev->otherend_id,
 						mfn, GNTMAP_readonly);
 
+<<<<<<< HEAD
 		queue->grant_tx_page[id] = virt_to_page(data);
 		tx->gref = queue->grant_tx_ref[id] = ref;
+=======
+		np->grant_tx_page[id] = virt_to_page(data);
+		tx->gref = np->grant_tx_ref[id] = ref;
+>>>>>>> p9x
 		tx->offset = offset;
 		tx->size = len;
 		tx->flags = 0;
@@ -524,8 +540,13 @@ static void xennet_make_frags(struct sk_buff *skb, struct netfront_queue *queue,
 							queue->info->xbdev->otherend_id,
 							mfn, GNTMAP_readonly);
 
+<<<<<<< HEAD
 			queue->grant_tx_page[id] = page;
 			tx->gref = queue->grant_tx_ref[id] = ref;
+=======
+			np->grant_tx_page[id] = page;
+			tx->gref = np->grant_tx_ref[id] = ref;
+>>>>>>> p9x
 			tx->offset = offset;
 			tx->size = bytes;
 			tx->flags = 0;
@@ -655,9 +676,15 @@ static int xennet_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	BUG_ON((signed short)ref < 0);
 	mfn = virt_to_mfn(data);
 	gnttab_grant_foreign_access_ref(
+<<<<<<< HEAD
 		ref, queue->info->xbdev->otherend_id, mfn, GNTMAP_readonly);
 	queue->grant_tx_page[id] = virt_to_page(data);
 	tx->gref = queue->grant_tx_ref[id] = ref;
+=======
+		ref, np->xbdev->otherend_id, mfn, GNTMAP_readonly);
+	np->grant_tx_page[id] = virt_to_page(data);
+	tx->gref = np->grant_tx_ref[id] = ref;
+>>>>>>> p9x
 	tx->offset = offset;
 	tx->size = len;
 
@@ -902,7 +929,12 @@ static RING_IDX xennet_fill_frags(struct netfront_queue *queue,
 				  struct sk_buff *skb,
 				  struct sk_buff_head *list)
 {
+<<<<<<< HEAD
 	RING_IDX cons = queue->rx.rsp_cons;
+=======
+	struct skb_shared_info *shinfo = skb_shinfo(skb);
+	RING_IDX cons = np->rx.rsp_cons;
+>>>>>>> p9x
 	struct sk_buff *nskb;
 
 	while ((nskb = __skb_dequeue(list))) {
@@ -910,6 +942,7 @@ static RING_IDX xennet_fill_frags(struct netfront_queue *queue,
 			RING_GET_RESPONSE(&queue->rx, ++cons);
 		skb_frag_t *nfrag = &skb_shinfo(nskb)->frags[0];
 
+<<<<<<< HEAD
 		if (skb_shinfo(skb)->nr_frags == MAX_SKB_FRAGS) {
 			unsigned int pull_to = NETFRONT_SKB_CB(skb)->pull_to;
 
@@ -920,6 +953,17 @@ static RING_IDX xennet_fill_frags(struct netfront_queue *queue,
 
 		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
 				skb_frag_page(nfrag),
+=======
+		if (shinfo->nr_frags == MAX_SKB_FRAGS) {
+			unsigned int pull_to = NETFRONT_SKB_CB(skb)->pull_to;
+
+			BUG_ON(pull_to <= skb_headlen(skb));
+			__pskb_pull_tail(skb, pull_to - skb_headlen(skb));
+		}
+		BUG_ON(shinfo->nr_frags >= MAX_SKB_FRAGS);
+
+		skb_add_rx_frag(skb, shinfo->nr_frags, skb_frag_page(nfrag),
+>>>>>>> p9x
 				rx->offset, rx->status, PAGE_SIZE);
 
 		skb_shinfo(nskb)->nr_frags = 0;
@@ -1053,7 +1097,11 @@ err:
 		skb->data_len = rx->status;
 		skb->len += rx->status;
 
+<<<<<<< HEAD
 		i = xennet_fill_frags(queue, skb, &tmpq);
+=======
+		i = xennet_fill_frags(np, skb, &tmpq);
+>>>>>>> p9x
 
 		if (rx->flags & XEN_NETRXF_csum_blank)
 			skb->ip_summed = CHECKSUM_PARTIAL;
@@ -1150,6 +1198,7 @@ static void xennet_release_tx_bufs(struct netfront_queue *queue)
 		if (skb_entry_is_link(&queue->tx_skbs[i]))
 			continue;
 
+<<<<<<< HEAD
 		skb = queue->tx_skbs[i].skb;
 		get_page(queue->grant_tx_page[i]);
 		gnttab_end_foreign_access(queue->grant_tx_ref[i],
@@ -1158,6 +1207,16 @@ static void xennet_release_tx_bufs(struct netfront_queue *queue)
 		queue->grant_tx_page[i] = NULL;
 		queue->grant_tx_ref[i] = GRANT_INVALID_REF;
 		add_id_to_freelist(&queue->tx_skb_freelist, queue->tx_skbs, i);
+=======
+		skb = np->tx_skbs[i].skb;
+		get_page(np->grant_tx_page[i]);
+		gnttab_end_foreign_access(np->grant_tx_ref[i],
+					  GNTMAP_readonly,
+					  (unsigned long)page_address(np->grant_tx_page[i]));
+		np->grant_tx_page[i] = NULL;
+		np->grant_tx_ref[i] = GRANT_INVALID_REF;
+		add_id_to_freelist(&np->tx_skb_freelist, np->tx_skbs, i);
+>>>>>>> p9x
 		dev_kfree_skb_irq(skb);
 	}
 }
@@ -1166,17 +1225,30 @@ static void xennet_release_rx_bufs(struct netfront_queue *queue)
 {
 	int id, ref;
 
+<<<<<<< HEAD
 	spin_lock_bh(&queue->rx_lock);
+=======
+	spin_lock_bh(&np->rx_lock);
+>>>>>>> p9x
 
 	for (id = 0; id < NET_RX_RING_SIZE; id++) {
 		struct sk_buff *skb;
 		struct page *page;
+<<<<<<< HEAD
 
 		skb = queue->rx_skbs[id];
 		if (!skb)
 			continue;
 
 		ref = queue->grant_rx_ref[id];
+=======
+
+		skb = np->rx_skbs[id];
+		if (!skb)
+			continue;
+
+		ref = np->grant_rx_ref[id];
+>>>>>>> p9x
 		if (ref == GRANT_INVALID_REF)
 			continue;
 
@@ -1188,12 +1260,29 @@ static void xennet_release_rx_bufs(struct netfront_queue *queue)
 		get_page(page);
 		gnttab_end_foreign_access(ref, 0,
 					  (unsigned long)page_address(page));
+<<<<<<< HEAD
 		queue->grant_rx_ref[id] = GRANT_INVALID_REF;
+=======
+		np->grant_rx_ref[id] = GRANT_INVALID_REF;
+>>>>>>> p9x
 
 		kfree_skb(skb);
 	}
 
+<<<<<<< HEAD
 	spin_unlock_bh(&queue->rx_lock);
+=======
+	spin_unlock_bh(&np->rx_lock);
+}
+
+static void xennet_uninit(struct net_device *dev)
+{
+	struct netfront_info *np = netdev_priv(dev);
+	xennet_release_tx_bufs(np);
+	xennet_release_rx_bufs(np);
+	gnttab_free_grant_references(np->gref_tx_head);
+	gnttab_free_grant_references(np->gref_rx_head);
+>>>>>>> p9x
 }
 
 static netdev_features_t xennet_fix_features(struct net_device *dev,
@@ -1335,6 +1424,38 @@ static struct net_device *xennet_create_dev(struct xenbus_device *dev)
 	if (np->stats == NULL)
 		goto exit;
 
+<<<<<<< HEAD
+=======
+	/* Initialise tx_skbs as a free chain containing every entry. */
+	np->tx_skb_freelist = 0;
+	for (i = 0; i < NET_TX_RING_SIZE; i++) {
+		skb_entry_set_link(&np->tx_skbs[i], i+1);
+		np->grant_tx_ref[i] = GRANT_INVALID_REF;
+	}
+
+	/* Clear out rx_skbs */
+	for (i = 0; i < NET_RX_RING_SIZE; i++) {
+		np->rx_skbs[i] = NULL;
+		np->grant_rx_ref[i] = GRANT_INVALID_REF;
+		np->grant_tx_page[i] = NULL;
+	}
+
+	/* A grant for every tx ring slot */
+	if (gnttab_alloc_grant_references(TX_MAX_TARGET,
+					  &np->gref_tx_head) < 0) {
+		printk(KERN_ALERT "#### netfront can't alloc tx grant refs\n");
+		err = -ENOMEM;
+		goto exit_free_stats;
+	}
+	/* A grant for every rx ring slot */
+	if (gnttab_alloc_grant_references(RX_MAX_TARGET,
+					  &np->gref_rx_head) < 0) {
+		printk(KERN_ALERT "#### netfront can't alloc rx grant refs\n");
+		err = -ENOMEM;
+		goto exit_free_tx;
+	}
+
+>>>>>>> p9x
 	netdev->netdev_ops	= &xennet_netdev_ops;
 
 	netdev->features        = NETIF_F_IP_CSUM | NETIF_F_RXCSUM |

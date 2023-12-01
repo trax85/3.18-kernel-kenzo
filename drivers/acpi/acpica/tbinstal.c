@@ -411,11 +411,30 @@ void acpi_tb_override_table(struct acpi_table_desc *old_table_desc)
 
 	/* (2) Attempt physical override (returns a physical address) */
 
+<<<<<<< HEAD
 	status = acpi_os_physical_table_override(old_table_desc->pointer,
 						 &address, &length);
 	if (ACPI_SUCCESS(status) && address && length) {
 		acpi_tb_acquire_temp_table(&new_table_desc, address,
 					   ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL);
+=======
+	status = acpi_os_physical_table_override(table_header,
+						 &new_address,
+						 &new_table_length);
+	if (ACPI_SUCCESS(status) && new_address && new_table_length) {
+
+		/* Map the entire new table */
+
+		new_table = acpi_os_map_memory(new_address, new_table_length);
+		if (!new_table) {
+			ACPI_EXCEPTION((AE_INFO, AE_NO_MEMORY,
+					"%4.4s %p Attempted physical table override failed",
+					table_header->signature,
+					ACPI_PHYSADDR_TO_PTR(table_desc->address)));
+			return (NULL);
+		}
+
+>>>>>>> p9x
 		override_type = "Physical";
 		goto finish_override;
 	}
@@ -424,7 +443,15 @@ void acpi_tb_override_table(struct acpi_table_desc *old_table_desc)
 
 finish_override:
 
+<<<<<<< HEAD
 	/* Validate and verify a table before overriding */
+=======
+	ACPI_INFO((AE_INFO,
+		   "%4.4s %p %s table override, new table: %p",
+		   table_header->signature,
+		   ACPI_PHYSADDR_TO_PTR(table_desc->address),
+		   override_type, new_table));
+>>>>>>> p9x
 
 	status = acpi_tb_verify_temp_table(&new_table_desc, NULL);
 	if (ACPI_FAILURE(status)) {

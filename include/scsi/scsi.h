@@ -10,7 +10,10 @@
 
 #include <linux/types.h>
 #include <linux/scatterlist.h>
+<<<<<<< HEAD
 #include <linux/kernel.h>
+=======
+>>>>>>> p9x
 #include <linux/device.h>
 
 struct scsi_cmnd;
@@ -333,7 +336,10 @@ static inline int scsi_status_is_good(int status)
 #define TYPE_ENCLOSURE      0x0d    /* Enclosure Services Device */
 #define TYPE_RBC	    0x0e
 #define TYPE_OSD            0x11
+<<<<<<< HEAD
 #define TYPE_ZBC            0x14
+=======
+>>>>>>> p9x
 #define TYPE_WLUN           0x1e    /* well-known logical unit */
 #define TYPE_NO_LUN         0x7f
 

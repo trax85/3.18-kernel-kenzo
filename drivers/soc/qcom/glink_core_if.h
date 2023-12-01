@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -12,7 +16,10 @@
 #ifndef _SOC_QCOM_GLINK_CORE_IF_H_
 #define _SOC_QCOM_GLINK_CORE_IF_H_
 
+<<<<<<< HEAD
 #include <linux/of.h>
+=======
+>>>>>>> p9x
 #include <linux/types.h>
 #include "glink_private.h"
 
@@ -64,7 +71,10 @@ struct glink_core_version {
  * iovec:	Pointer to vector buffer if the transport passes a vector buffer
  * vprovider:	Virtual address-space buffer provider for a vector buffer
  * pprovider:	Physical address-space buffer provider for a vector buffer
+<<<<<<< HEAD
  * cookie:	Private transport specific cookie
+=======
+>>>>>>> p9x
  * pkt_priv:	G-Link core owned packet-private data
  * list:	G-Link core owned list node
  * bounce_buf:	Pointer to the temporary/internal bounce buffer
@@ -79,7 +89,10 @@ struct glink_core_rx_intent {
 	void *iovec;
 	void * (*vprovider)(void *iovec, size_t offset, size_t *size);
 	void * (*pprovider)(void *iovec, size_t offset, size_t *size);
+<<<<<<< HEAD
 	void *cookie;
+=======
+>>>>>>> p9x
 
 	/* G-Link-Core-owned elements - please ignore */
 	struct list_head list;
@@ -88,6 +101,7 @@ struct glink_core_rx_intent {
 };
 
 /**
+<<<<<<< HEAD
  * struct glink_core_flow_info - Flow specific Information
  * @mtu_tx_time_us:	Time to transmit an MTU in microseconds.
  * @power_state:	Power state associated with the traffic flow.
@@ -109,6 +123,15 @@ struct glink_core_flow_info {
  * @num_flows:		Number of traffic flows/priority buckets.
  * @flow_info:		Information about each flow/priority.
  * @token_count:	Number of tokens per assignment.
+=======
+ * struct glink_core_transport_cfg - configuration of a new transport
+ * @name:		name of the transport
+ * @edge:		what the transport connects to
+ * @versions:		array of transport versions supported
+ * @versions_entries:	number of entries in @versions
+ * @max_cid:		maximum number of channel identifiers supported
+ * @max_iid:		maximum number of intent identifiers supported
+>>>>>>> p9x
  */
 struct glink_core_transport_cfg {
 	const char *name;
@@ -117,11 +140,14 @@ struct glink_core_transport_cfg {
 	size_t versions_entries;
 	uint32_t max_cid;
 	uint32_t max_iid;
+<<<<<<< HEAD
 
 	size_t mtu;
 	uint32_t num_flows;
 	struct glink_core_flow_info *flow_info;
 	uint32_t token_count;
+=======
+>>>>>>> p9x
 };
 
 struct glink_core_if {
@@ -153,9 +179,12 @@ struct glink_core_if {
 			struct glink_core_rx_intent *intent_ptr, bool complete);
 	void (*rx_cmd_remote_rx_intent_put)(struct glink_transport_if *if_ptr,
 			uint32_t rcid, uint32_t riid, size_t size);
+<<<<<<< HEAD
 	void (*rx_cmd_remote_rx_intent_put_cookie)(
 			struct glink_transport_if *if_ptr, uint32_t rcid,
 			uint32_t riid, size_t size, void *cookie);
+=======
+>>>>>>> p9x
 	void (*rx_cmd_tx_done)(struct glink_transport_if *if_ptr, uint32_t rcid,
 			uint32_t riid, bool reuse);
 	void (*rx_cmd_remote_rx_intent_req)(struct glink_transport_if *if_ptr,
@@ -175,6 +204,7 @@ int glink_core_register_transport(struct glink_transport_if *if_ptr,
 void glink_core_unregister_transport(struct glink_transport_if *if_ptr);
 
 /**
+<<<<<<< HEAD
  * of_get_glink_core_qos_cfg() - Parse the qos related dt entries
  * @phandle:	The handle to the qos related node in DT.
  * @cfg:	The transport configuration to be filled.
@@ -185,6 +215,8 @@ int of_get_glink_core_qos_cfg(struct device_node *phandle,
 				struct glink_core_transport_cfg *cfg);
 
 /**
+=======
+>>>>>>> p9x
  * rx_linear_vbuf_provider() - Virtual Buffer Provider for linear buffers
  * iovec:	Pointer to the beginning of the linear buffer.
  * offset:	Offset into the buffer whose address is needed.

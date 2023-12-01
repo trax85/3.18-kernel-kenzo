@@ -32,7 +32,10 @@
 #include <linux/i2c/twl.h>
 #include <linux/i2c-omap.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
 #include <linux/irqchip/irq-omap-intc.h>
+=======
+>>>>>>> p9x
 
 #include <asm/proc-fns.h>
 
@@ -163,8 +166,12 @@ static inline void omap3xxx_restart(enum reboot_mode mode, const char *cmd)
 }
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_ARCH_OMAP4) || defined(CONFIG_SOC_OMAP5) || \
 	defined(CONFIG_SOC_DRA7XX) || defined(CONFIG_SOC_AM43XX)
+=======
+#if defined(CONFIG_ARCH_OMAP4) || defined(CONFIG_SOC_OMAP5)
+>>>>>>> p9x
 void omap44xx_restart(enum reboot_mode mode, const char *cmd);
 #else
 static inline void omap44xx_restart(enum reboot_mode mode, const char *cmd)

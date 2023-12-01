@@ -1434,7 +1434,10 @@ static void vnet_cleanup(void)
 		vp = list_first_entry(&vnet_list, struct vnet, list);
 		list_del(&vp->list);
 		dev = vp->dev;
+<<<<<<< HEAD
 		tasklet_kill(&vp->vnet_tx_wakeup);
+=======
+>>>>>>> p9x
 		/* vio_unregister_driver() should have cleaned up port_list */
 		BUG_ON(!list_empty(&vp->port_list));
 		unregister_netdev(dev);

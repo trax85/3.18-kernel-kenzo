@@ -472,6 +472,10 @@ static int __ext4_ext_check(const char *function, unsigned int line,
 		error_msg = "invalid extent entries";
 		goto corrupted;
 	}
+	if (unlikely(depth > 32)) {
+		error_msg = "too large eh_depth";
+		goto corrupted;
+	}
 	/* Verify checksum on non-root extent tree nodes */
 	if (ext_depth(inode) != depth &&
 	    !ext4_extent_block_csum_verify(inode, eh)) {
@@ -1851,7 +1855,8 @@ static void ext4_ext_try_to_merge_up(handle_t *handle,
 
 	brelse(path[1].p_bh);
 	ext4_free_blocks(handle, inode, NULL, blk, 1,
-			 EXT4_FREE_BLOCKS_METADATA | EXT4_FREE_BLOCKS_FORGET);
+			 EXT4_FREE_BLOCKS_METADATA | EXT4_FREE_BLOCKS_FORGET |
+			 EXT4_FREE_BLOCKS_RESERVE);
 }
 
 /*
@@ -2566,9 +2571,14 @@ static int ext4_remove_blocks(handle_t *handle, struct inode *inode,
 		 * extent, we have to mark the cluster as used (store negative
 		 * cluster number in partial_cluster).
 		 */
+<<<<<<< HEAD
 		unaligned = EXT4_PBLK_COFF(sbi, pblk);
 		if (unaligned && (ee_len == num) &&
 		    (*partial_cluster != -((long long)EXT4_B2C(sbi, pblk))))
+=======
+		if (EXT4_PBLK_COFF(sbi, pblk) &&
+		    (ee_len == num))
+>>>>>>> p9x
 			*partial_cluster = EXT4_B2C(sbi, pblk);
 		else if (unaligned)
 			*partial_cluster = -((long long)EXT4_B2C(sbi, pblk));
@@ -3116,11 +3126,11 @@ static int ext4_ext_zeroout(struct inode *inode, struct ext4_extent *ex)
 {
 	ext4_fsblk_t ee_pblock;
 	unsigned int ee_len;
-	int ret;
 
 	ee_len    = ext4_ext_get_actual_len(ex);
 	ee_pblock = ext4_ext_pblock(ex);
 
+<<<<<<< HEAD
 	if (ext4_encrypted_inode(inode))
 		return ext4_encrypted_zeroout(inode, ex);
 
@@ -3129,6 +3139,10 @@ static int ext4_ext_zeroout(struct inode *inode, struct ext4_extent *ex)
 		ret = 0;
 
 	return ret;
+=======
+	return ext4_issue_zeroout(inode, le32_to_cpu(ex->ee_block), ee_pblock,
+				  ee_len);
+>>>>>>> p9x
 }
 
 /*
@@ -4349,14 +4363,23 @@ int ext4_ext_map_blocks(handle_t *handle, struct inode *inode,
 			} else if (!ext4_ext_is_unwritten(ex))
 				goto out;
 
+<<<<<<< HEAD
 			ret = ext4_ext_handle_unwritten_extents(
 				handle, inode, map, &path, flags,
+=======
+			ret = ext4_ext_handle_uninitialized_extents(
+				handle, inode, map, path, flags,
+>>>>>>> p9x
 				allocated, newblock);
 			if (ret < 0)
 				err = ret;
 			else
 				allocated = ret;
+<<<<<<< HEAD
 			goto out2;
+=======
+			goto out3;
+>>>>>>> p9x
 		}
 	}
 

@@ -616,6 +616,7 @@ u64 vnt_get_next_tbtt(u64 tsf, u16 beacon_interval)
 
 	beacon_int = beacon_interval * 1024;
 
+<<<<<<< HEAD
 	/* Next TBTT =
 	*	((local_current_TSF / beacon_interval) + 1) * beacon_interval
 	*/
@@ -624,6 +625,16 @@ u64 vnt_get_next_tbtt(u64 tsf, u16 beacon_interval)
 		tsf += 1;
 		tsf *= beacon_int;
 	}
+=======
+    uBeaconInterval = wBeaconInterval * 1024;
+    // Next TBTT = ((local_current_TSF / beacon_interval) + 1 ) * beacon_interval
+	uLowNextTBTT = ((qwTSF & 0xffffffffULL) >> 10) << 10;
+	uLowRemain = (uLowNextTBTT) % uBeaconInterval;
+	uHighRemain = ((0x80000000 % uBeaconInterval) * 2 * (u32)(qwTSF >> 32))
+		% uBeaconInterval;
+	uLowRemain = (uHighRemain + uLowRemain) % uBeaconInterval;
+	uLowRemain = uBeaconInterval - uLowRemain;
+>>>>>>> p9x
 
 	return tsf;
 }

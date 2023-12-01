@@ -588,7 +588,11 @@ static int mxs_i2c_xfer_msg(struct i2c_adapter *adap, struct i2c_msg *msg,
 		use_pio = 1;
 
 	i2c->cmd_err = 0;
+<<<<<<< HEAD
 	if (use_pio) {
+=======
+	if (0) {	/* disable PIO mode until a proper fix is made */
+>>>>>>> p9x
 		ret = mxs_i2c_pio_setup_xfer(adap, msg, flags);
 		/* No need to reset the block if NAK was received. */
 		if (ret && (ret != -ENXIO))

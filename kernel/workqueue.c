@@ -273,6 +273,7 @@ static bool wq_disable_numa;
 module_param_named(disable_numa, wq_disable_numa, bool, 0444);
 
 /* see the comment above the definition of WQ_POWER_EFFICIENT */
+<<<<<<< HEAD
 #ifdef CONFIG_WQ_POWER_EFFICIENT_DEFAULT
 static bool wq_power_efficient = true;
 #else
@@ -280,6 +281,10 @@ static bool wq_power_efficient;
 #endif
 
 module_param_named(power_efficient, wq_power_efficient, bool, 0444);
+=======
+static bool wq_power_efficient = IS_ENABLED(CONFIG_WQ_POWER_EFFICIENT_DEFAULT);
+module_param_named(power_efficient, wq_power_efficient, bool, 0644);
+>>>>>>> p9x
 
 static bool wq_numa_enabled;		/* unbound NUMA affinity enabled */
 
@@ -1470,8 +1475,6 @@ static void __queue_delayed_work(int cpu, struct workqueue_struct *wq,
 		return;
 	}
 
-	timer_stats_timer_set_start_info(&dwork->timer);
-
 	dwork->wq = wq;
 	dwork->cpu = cpu;
 	timer->expires = jiffies + delay;
@@ -1775,9 +1778,28 @@ static void destroy_worker(struct worker *worker)
 	pool->nr_workers--;
 	pool->nr_idle--;
 
+	/*
+	 * Once WORKER_DIE is set, the kworker may destroy itself at any
+	 * point.  Pin to ensure the task stays until we're done with it.
+	 */
+	get_task_struct(worker->task);
+
 	list_del_init(&worker->entry);
 	worker->flags |= WORKER_DIE;
+<<<<<<< HEAD
 	wake_up_process(worker->task);
+=======
+
+	idr_remove(&pool->worker_idr, worker->id);
+
+	spin_unlock_irq(&pool->lock);
+
+	kthread_stop(worker->task);
+	put_task_struct(worker->task);
+	kfree(worker);
+
+	spin_lock_irq(&pool->lock);
+>>>>>>> p9x
 }
 
 static void idle_worker_timeout(unsigned long __pool)
@@ -1875,6 +1897,11 @@ static void maybe_create_worker(struct worker_pool *pool)
 __releases(&pool->lock)
 __acquires(&pool->lock)
 {
+<<<<<<< HEAD
+=======
+	if (!need_to_create_worker(pool))
+		return;
+>>>>>>> p9x
 restart:
 	spin_unlock_irq(&pool->lock);
 
@@ -1882,7 +1909,23 @@ restart:
 	mod_timer(&pool->mayday_timer, jiffies + MAYDAY_INITIAL_TIMEOUT);
 
 	while (true) {
+<<<<<<< HEAD
 		if (create_worker(pool) || !need_to_create_worker(pool))
+=======
+		struct worker *worker;
+
+		worker = create_worker(pool);
+		if (worker) {
+			del_timer_sync(&pool->mayday_timer);
+			spin_lock_irq(&pool->lock);
+			start_worker(worker);
+			if (WARN_ON_ONCE(need_to_create_worker(pool)))
+				goto restart;
+			return;
+		}
+
+		if (!need_to_create_worker(pool))
+>>>>>>> p9x
 			break;
 
 		schedule_timeout_interruptible(CREATE_COOLDOWN);
@@ -1900,6 +1943,39 @@ restart:
 	 */
 	if (need_to_create_worker(pool))
 		goto restart;
+<<<<<<< HEAD
+=======
+	return;
+}
+
+/**
+ * maybe_destroy_worker - destroy workers which have been idle for a while
+ * @pool: pool to destroy workers for
+ *
+ * Destroy @pool workers which have been idle for longer than
+ * IDLE_WORKER_TIMEOUT.
+ *
+ * LOCKING:
+ * spin_lock_irq(pool->lock) which may be released and regrabbed
+ * multiple times.  Called only from manager.
+ */
+static void maybe_destroy_workers(struct worker_pool *pool)
+{
+	while (too_many_workers(pool)) {
+		struct worker *worker;
+		unsigned long expires;
+
+		worker = list_entry(pool->idle_list.prev, struct worker, entry);
+		expires = worker->last_active + IDLE_WORKER_TIMEOUT;
+
+		if (time_before(jiffies, expires)) {
+			mod_timer(&pool->idle_timer, expires);
+			break;
+		}
+
+		destroy_worker(worker);
+	}
+>>>>>>> p9x
 }
 
 /**
@@ -1918,7 +1994,11 @@ restart:
  * spin_lock_irq(pool->lock) which may be released and regrabbed
  * multiple times.  Does GFP_KERNEL allocations.
  *
+<<<<<<< HEAD
  * Return:
+=======
+ * RETURNS:
+>>>>>>> p9x
  * %false if the pool doesn't need management and the caller can safely
  * start processing works, %true if management function was performed and
  * the conditions that the caller verified before calling the function may
@@ -1941,8 +2021,31 @@ static bool manage_workers(struct worker *worker)
 	if (!mutex_trylock(&pool->manager_arb))
 		return false;
 
+<<<<<<< HEAD
 	maybe_create_worker(pool);
 
+=======
+	/*
+	 * With manager arbitration won, manager_mutex would be free in
+	 * most cases.  trylock first without dropping @pool->lock.
+	 */
+	if (unlikely(!mutex_trylock(&pool->manager_mutex))) {
+		spin_unlock_irq(&pool->lock);
+		mutex_lock(&pool->manager_mutex);
+		spin_lock_irq(&pool->lock);
+	}
+
+	pool->flags &= ~POOL_MANAGE_WORKERS;
+
+	/*
+	 * Destroy and then create so that may_start_working() is true
+	 * on return.
+	 */
+	maybe_destroy_workers(pool);
+	maybe_create_worker(pool);
+
+	mutex_unlock(&pool->manager_mutex);
+>>>>>>> p9x
 	mutex_unlock(&pool->manager_arb);
 	return true;
 }
@@ -2064,10 +2167,16 @@ __acquires(&pool->lock)
 	 * kernels, where a requeueing work item waiting for something to
 	 * happen could deadlock with stop_machine as such work item could
 	 * indefinitely requeue itself while all other CPUs are trapped in
+<<<<<<< HEAD
 	 * stop_machine. At the same time, report a quiescent RCU state so
 	 * the same condition doesn't freeze RCU.
 	 */
 	cond_resched_rcu_qs();
+=======
+	 * stop_machine.
+	 */
+	cond_resched();
+>>>>>>> p9x
 
 	spin_lock_irq(&pool->lock);
 
@@ -2274,7 +2383,31 @@ repeat:
 			if (get_work_pwq(work) == pwq)
 				move_linked_works(work, scheduled, &n);
 
-		process_scheduled_works(rescuer);
+		if (!list_empty(scheduled)) {
+			process_scheduled_works(rescuer);
+
+			/*
+			 * The above execution of rescued work items could
+			 * have created more to rescue through
+			 * pwq_activate_first_delayed() or chained
+			 * queueing.  Let's put @pwq back on mayday list so
+			 * that such back-to-back work items, which may be
+			 * being used to relieve memory pressure, don't
+			 * incur MAYDAY_INTERVAL delay inbetween.
+			 */
+			if (need_to_create_worker(pool)) {
+				spin_lock(&wq_mayday_lock);
+				get_pwq(pwq);
+				list_move_tail(&pwq->mayday_node, &wq->maydays);
+				spin_unlock(&wq_mayday_lock);
+			}
+		}
+
+		/*
+		 * Put the reference grabbed by send_mayday().  @pool won't
+		 * go away while we're holding its lock.
+		 */
+		put_pwq(pwq);
 
 		/*
 		 * Put the reference grabbed by send_mayday().  @pool won't
@@ -3834,6 +3967,12 @@ int apply_workqueue_attrs(struct workqueue_struct *wq,
 	if (!list_empty(&wq->pwqs)) {
 		if (WARN_ON(wq->flags & __WQ_ORDERED_EXPLICIT))
 			return -EINVAL;
+<<<<<<< HEAD
+=======
+
+		wq->flags &= ~__WQ_ORDERED;
+	}
+>>>>>>> p9x
 
 		wq->flags &= ~__WQ_ORDERED;
 	}
@@ -3996,8 +4135,13 @@ static void wq_update_unbound_numa(struct workqueue_struct *wq, int cpu,
 	/* create a new pwq */
 	pwq = alloc_unbound_pwq(wq, target_attrs);
 	if (!pwq) {
+<<<<<<< HEAD
 		pr_warn("workqueue: allocation failed while updating NUMA affinity of \"%s\"\n",
 			wq->name);
+=======
+		pr_warning("workqueue: allocation failed while updating NUMA affinity of \"%s\"\n",
+			   wq->name);
+>>>>>>> p9x
 		mutex_lock(&wq->mutex);
 		goto use_dfl_pwq;
 	}

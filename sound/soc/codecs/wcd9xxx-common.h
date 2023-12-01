@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -115,6 +119,10 @@ struct wcd9xxx_clsh_cdc_data {
 	int buck_users;
 	int ncp_users[NCP_FCLK_LEVEL_MAX];
 	struct wcd9xxx_resmgr *resmgr;
+<<<<<<< HEAD
+=======
+	bool mbhc_started;
+>>>>>>> p9x
 };
 
 struct wcd9xxx_anc_header {
@@ -193,6 +201,12 @@ extern void wcd9xxx_clsh_init(struct wcd9xxx_clsh_cdc_data *clsh,
 extern void wcd9xxx_clsh_imped_config(struct snd_soc_codec *codec,
 				  int imped);
 
+<<<<<<< HEAD
+=======
+void wcd9xxx_clsh_post_init(struct wcd9xxx_clsh_cdc_data *clsh,
+			    bool is_mbhc_started);
+
+>>>>>>> p9x
 enum wcd9xxx_codec_event {
 	WCD9XXX_CODEC_EVENT_CODEC_UP = 0,
 };

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -13,7 +17,10 @@
 #define _H_MHI_MACROS
 
 #define MHI_IPC_LOG_PAGES (100)
+<<<<<<< HEAD
 #define MAX_BOUNCE_BUF_SIZE 0x2000
+=======
+>>>>>>> p9x
 #define MHI_LOG_SIZE 0x1000
 #define MHI_LINK_STABILITY_WAIT_MS 100
 #define MHI_DEVICE_WAKE_DBOUNCE_TIMEOUT_MS 10
@@ -27,17 +34,26 @@
 #define CMD_EL_PER_RING 128
 #define ELEMENT_GAP 1
 #define MHI_EPID 4
+<<<<<<< HEAD
 #define MHI_MAX_STATE_TRANSITION_TIMEOUT 5000
+=======
+#define MHI_MAX_RESUME_TIMEOUT 5000
+#define MHI_MAX_SUSPEND_TIMEOUT 5000
+>>>>>>> p9x
 #define MHI_MAX_CMD_TIMEOUT 500
 #define MHI_RPM_AUTOSUSPEND_TMR_VAL_MS 1000
 #define MAX_BUF_SIZE 32
 
+<<<<<<< HEAD
 #define HW_EVENT_RINGS_ALLOCATED 2
 
+=======
+>>>>>>> p9x
 #define PRIMARY_CMD_RING 0
 #define MHI_WORK_Q_MAX_SIZE 128
 
 #define MAX_XFER_WORK_ITEMS 100
+<<<<<<< HEAD
 
 #define MHI_PCIE_VENDOR_ID 0x17CB
 #define MHI_PCIE_DEVICE_ID_9x35 0x0300
@@ -47,6 +63,24 @@
 #define MHI_M2_DEBOUNCE_TMR_US 10000
 
 #define MHI_EV_DB_INTERVAL 1
+=======
+#define MHI_MAX_SUPPORTED_DEVICES 1
+
+#define MAX_NR_TRBS_PER_SOFT_CHAN 10
+#define MAX_NR_TRBS_PER_HARD_CHAN (128 + 16)
+#define MHI_PCIE_VENDOR_ID 0x17CB
+#define MHI_PCIE_DEVICE_ID_9x35 0x0300
+#define MHI_PCIE_DEVICE_ID_9640 0x0301
+#define TRB_MAX_DATA_SIZE 0x1000
+
+
+#define MHI_DATA_SEG_WINDOW_START_ADDR 0x0ULL
+#define MHI_DATA_SEG_WINDOW_END_ADDR 0x3E800000ULL
+
+#define MHI_M2_DEBOUNCE_TMR_MS 10
+#define MHI_XFER_DB_INTERVAL 8
+#define MHI_EV_DB_INTERVAL 32
+>>>>>>> p9x
 
 #define MHI_DEV_WAKE_DB 127
 
@@ -68,6 +102,7 @@
 	 ((enum MHI_CLIENT_CHANNEL)(_CHAN_NR) < MHI_CLIENT_RESERVED_1_LOWER))
 
 #define IRQ_TO_MSI(_MHI_DEV_CTXT, _IRQ_NR) \
+<<<<<<< HEAD
 	((_IRQ_NR) - (_MHI_DEV_CTXT)->core.irq_base)
 #define MSI_TO_IRQ(_MHI_DEV_CTXT, _MSI_NR) \
 	((_MHI_DEV_CTXT)->core.irq_base + (_MSI_NR))
@@ -93,6 +128,27 @@
 #define IS_SW_EV_RING(_mhi_dev_ctxt, _EV_INDEX) (_EV_INDEX < \
 				((_mhi_dev_ctxt)->mmio_info.nr_event_rings - \
 				((_mhi_dev_ctxt)->mmio_info.nr_hw_event_rings)))
+=======
+	((_IRQ_NR) - (_MHI_DEV_CTXT)->dev_info->core.irq_base)
+#define MSI_TO_IRQ(_MHI_DEV_CTXT, _MSI_NR) \
+	((_MHI_DEV_CTXT)->dev_info->core.irq_base + (_MSI_NR))
+#define VALID_CHAN_NR(_CHAN_NR) (IS_HARDWARE_CHANNEL(_CHAN_NR) || \
+		IS_SOFTWARE_CHANNEL(_CHAN_NR))
+
+#define VALID_BUF(_BUF_ADDR, _BUF_LEN) \
+	(((uintptr_t)(_BUF_ADDR) >=  MHI_DATA_SEG_WINDOW_START_ADDR) && \
+		(((uintptr_t)(_BUF_ADDR) + (uintptr_t)(_BUF_LEN) < \
+		MHI_DATA_SEG_WINDOW_END_ADDR)))
+
+#define MHI_HW_INTMOD_VAL_MS 2
+/* Timeout Values */
+#define MHI_READY_STATUS_TIMEOUT_MS 50
+#define MHI_THREAD_SLEEP_TIMEOUT_MS 20
+#define MHI_RESUME_WAKE_RETRIES 20
+
+/* Debugging Capabilities*/
+#define MHI_DBG_MAX_EVENT_HISTORY 10
+>>>>>>> p9x
 
 /* MHI Transfer Ring Elements 7.4.1*/
 #define TX_TRB_LEN
@@ -109,7 +165,11 @@
 }
 #define MHI_TX_TRB_GET_LEN(_FIELD, _PKT) \
 	(((_PKT)->data_tx_pkt).buf_len & (((MHI_##_FIELD ## __MASK) << \
+<<<<<<< HEAD
 			MHI_##_FIELD ## __SHIFT))) \
+=======
+			MHI_##_FIELD ## __SHIFT))); \
+>>>>>>> p9x
 
 /* MHI Event Ring Elements 7.4.1*/
 #define EV_TRB_CODE
@@ -217,7 +277,11 @@
 	(_CTXT)->mhi_intmodt &= (~((MHI_##_FIELD ## __MASK) << \
 				MHI_##_FIELD ## __SHIFT)); \
 	(_CTXT)->mhi_intmodt |= new_val; \
+<<<<<<< HEAD
 }
+=======
+};
+>>>>>>> p9x
 
 #define MHI_GET_EV_CTXT(_FIELD, _CTXT) \
 	(((_CTXT)->mhi_intmodt >> MHI_##_FIELD ## __SHIFT) & \
@@ -241,6 +305,7 @@
 #define MHI_CHAN_TYPE__MASK (3)
 #define MHI_CHAN_TYPE__SHIFT (6)
 
+<<<<<<< HEAD
 #define PRESERVE_DB_STATE
 #define MHI_PRESERVE_DB_STATE__MASK (1)
 #define MHI_PRESERVE_DB_STATE__SHIFT (8)
@@ -256,6 +321,11 @@
 #define MHI_EV_BRSTMODE__MASK (3)
 #define MHI_EV_BRSTMODE__SHIFT (5)
 
+=======
+#define GET_CHAN_PROPS(_FIELD, _VAL) \
+	(((_VAL) >> MHI_##_FIELD ## __SHIFT) & MHI_##_FIELD ## __MASK)
+
+>>>>>>> p9x
 #define EV_TYPE
 #define MHI_EV_TYPE__MASK (3)
 #define MHI_EV_TYPE__SHIFT (3)

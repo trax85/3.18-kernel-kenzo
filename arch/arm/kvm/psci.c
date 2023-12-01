@@ -69,7 +69,10 @@ static unsigned long kvm_psci_vcpu_on(struct kvm_vcpu *source_vcpu)
 	struct kvm_vcpu *vcpu = NULL, *tmp;
 	wait_queue_head_t *wq;
 	unsigned long cpu_id;
+<<<<<<< HEAD
 	unsigned long context_id;
+=======
+>>>>>>> p9x
 	unsigned long mpidr;
 	phys_addr_t target_pc;
 	int i;
@@ -90,6 +93,7 @@ static unsigned long kvm_psci_vcpu_on(struct kvm_vcpu *source_vcpu)
 	 * Make sure the caller requested a valid CPU and that the CPU is
 	 * turned off.
 	 */
+<<<<<<< HEAD
 	if (!vcpu)
 		return PSCI_RET_INVALID_PARAMS;
 	if (!vcpu->arch.pause) {
@@ -101,6 +105,12 @@ static unsigned long kvm_psci_vcpu_on(struct kvm_vcpu *source_vcpu)
 
 	target_pc = *vcpu_reg(source_vcpu, 2);
 	context_id = *vcpu_reg(source_vcpu, 3);
+=======
+	if (!vcpu || !vcpu->arch.pause)
+		return PSCI_RET_INVALID_PARAMS;
+
+	target_pc = *vcpu_reg(source_vcpu, 2);
+>>>>>>> p9x
 
 	kvm_reset_vcpu(vcpu);
 
@@ -129,6 +139,7 @@ static unsigned long kvm_psci_vcpu_on(struct kvm_vcpu *source_vcpu)
 	return PSCI_RET_SUCCESS;
 }
 
+<<<<<<< HEAD
 static unsigned long kvm_psci_vcpu_affinity_info(struct kvm_vcpu *vcpu)
 {
 	int i;
@@ -199,6 +210,8 @@ static void kvm_psci_system_reset(struct kvm_vcpu *vcpu)
 	kvm_prepare_system_event(vcpu, KVM_SYSTEM_EVENT_RESET);
 }
 
+=======
+>>>>>>> p9x
 int kvm_psci_version(struct kvm_vcpu *vcpu)
 {
 	if (test_bit(KVM_ARM_VCPU_PSCI_0_2, vcpu->arch.features))
@@ -209,7 +222,10 @@ int kvm_psci_version(struct kvm_vcpu *vcpu)
 
 static int kvm_psci_0_2_call(struct kvm_vcpu *vcpu)
 {
+<<<<<<< HEAD
 	int ret = 1;
+=======
+>>>>>>> p9x
 	unsigned long psci_fn = *vcpu_reg(vcpu, 0) & ~((u32) 0);
 	unsigned long val;
 
@@ -221,10 +237,13 @@ static int kvm_psci_0_2_call(struct kvm_vcpu *vcpu)
 		 */
 		val = 2;
 		break;
+<<<<<<< HEAD
 	case PSCI_0_2_FN_CPU_SUSPEND:
 	case PSCI_0_2_FN64_CPU_SUSPEND:
 		val = kvm_psci_vcpu_suspend(vcpu);
 		break;
+=======
+>>>>>>> p9x
 	case PSCI_0_2_FN_CPU_OFF:
 		kvm_psci_vcpu_off(vcpu);
 		val = PSCI_RET_SUCCESS;
@@ -233,6 +252,7 @@ static int kvm_psci_0_2_call(struct kvm_vcpu *vcpu)
 	case PSCI_0_2_FN64_CPU_ON:
 		val = kvm_psci_vcpu_on(vcpu);
 		break;
+<<<<<<< HEAD
 	case PSCI_0_2_FN_AFFINITY_INFO:
 	case PSCI_0_2_FN64_AFFINITY_INFO:
 		val = kvm_psci_vcpu_affinity_info(vcpu);
@@ -276,6 +296,27 @@ static int kvm_psci_0_2_call(struct kvm_vcpu *vcpu)
 
 	*vcpu_reg(vcpu, 0) = val;
 	return ret;
+=======
+	case PSCI_0_2_FN_CPU_SUSPEND:
+	case PSCI_0_2_FN_AFFINITY_INFO:
+	case PSCI_0_2_FN_MIGRATE:
+	case PSCI_0_2_FN_MIGRATE_INFO_TYPE:
+	case PSCI_0_2_FN_MIGRATE_INFO_UP_CPU:
+	case PSCI_0_2_FN_SYSTEM_OFF:
+	case PSCI_0_2_FN_SYSTEM_RESET:
+	case PSCI_0_2_FN64_CPU_SUSPEND:
+	case PSCI_0_2_FN64_AFFINITY_INFO:
+	case PSCI_0_2_FN64_MIGRATE:
+	case PSCI_0_2_FN64_MIGRATE_INFO_UP_CPU:
+		val = PSCI_RET_NOT_SUPPORTED;
+		break;
+	default:
+		return -EINVAL;
+	}
+
+	*vcpu_reg(vcpu, 0) = val;
+	return 1;
+>>>>>>> p9x
 }
 
 static int kvm_psci_0_1_call(struct kvm_vcpu *vcpu)
@@ -291,9 +332,18 @@ static int kvm_psci_0_1_call(struct kvm_vcpu *vcpu)
 	case KVM_PSCI_FN_CPU_ON:
 		val = kvm_psci_vcpu_on(vcpu);
 		break;
+<<<<<<< HEAD
 	default:
 		val = PSCI_RET_NOT_SUPPORTED;
 		break;
+=======
+	case KVM_PSCI_FN_CPU_SUSPEND:
+	case KVM_PSCI_FN_MIGRATE:
+		val = PSCI_RET_NOT_SUPPORTED;
+		break;
+	default:
+		return -EINVAL;
+>>>>>>> p9x
 	}
 
 	*vcpu_reg(vcpu, 0) = val;

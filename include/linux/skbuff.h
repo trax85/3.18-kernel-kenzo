@@ -385,6 +385,7 @@ typedef unsigned int sk_buff_data_t;
 typedef unsigned char *sk_buff_data_t;
 #endif
 
+<<<<<<< HEAD
 /**
  * struct skb_mstamp - multi resolution time stamps
  * @stamp_us: timestamp in us resolution
@@ -436,6 +437,8 @@ static inline u32 skb_mstamp_us_delta(const struct skb_mstamp *t1,
 }
 
 
+=======
+>>>>>>> p9x
 /** 
  *	struct sk_buff - socket buffer
  *	@next: Next buffer in list
@@ -569,6 +572,7 @@ struct sk_buff {
 #else
 #define PKT_TYPE_MAX	7
 #endif
+<<<<<<< HEAD
 #define PKT_TYPE_OFFSET()	offsetof(struct sk_buff, __pkt_type_offset)
 
 	__u8			__pkt_type_offset[0];
@@ -594,6 +598,10 @@ struct sk_buff {
 	__u8			csum_bad:1;
 #ifdef CONFIG_IPV6_NDISC_NODETYPE
 	__u8			ndisc_nodetype:2;
+=======
+#ifdef CONFIG_BRIDGE_NETFILTER
+	struct nf_bridge_info	*nf_bridge;
+>>>>>>> p9x
 #endif
 	__u8			ipvs_property:1;
 
@@ -1565,6 +1573,11 @@ static inline int skb_pagelen(const struct sk_buff *skb)
 	return len + skb_headlen(skb);
 }
 
+static inline bool skb_has_frags(const struct sk_buff *skb)
+{
+	return skb_shinfo(skb)->nr_frags;
+}
+
 /**
  * __skb_fill_page_desc - initialise a paged fragment in an skb
  * @skb: buffer containing fragment to be initialised
@@ -1922,6 +1935,113 @@ static inline void skb_pop_mac_header(struct sk_buff *skb)
 	skb->mac_header = skb->network_header;
 }
 
+<<<<<<< HEAD
+=======
+static inline void skb_reset_inner_transport_header(struct sk_buff *skb)
+{
+	skb->inner_transport_header = skb->data;
+}
+
+static inline void skb_set_inner_transport_header(struct sk_buff *skb,
+						   const int offset)
+{
+	skb->inner_transport_header = skb->data + offset;
+}
+
+static inline unsigned char *skb_inner_network_header(const struct sk_buff *skb)
+{
+	return skb->inner_network_header;
+}
+
+static inline void skb_reset_inner_network_header(struct sk_buff *skb)
+{
+	skb->inner_network_header = skb->data;
+}
+
+static inline void skb_set_inner_network_header(struct sk_buff *skb,
+						const int offset)
+{
+	skb->inner_network_header = skb->data + offset;
+}
+
+static inline unsigned char *skb_inner_mac_header(const struct sk_buff *skb)
+{
+	return skb->inner_mac_header;
+}
+
+static inline void skb_reset_inner_mac_header(struct sk_buff *skb)
+{
+	skb->inner_mac_header = skb->data;
+}
+
+static inline void skb_set_inner_mac_header(struct sk_buff *skb,
+						const int offset)
+{
+	skb->inner_mac_header = skb->data + offset;
+}
+static inline bool skb_transport_header_was_set(const struct sk_buff *skb)
+{
+	return skb->transport_header != NULL;
+}
+
+static inline unsigned char *skb_transport_header(const struct sk_buff *skb)
+{
+	return skb->transport_header;
+}
+
+static inline void skb_reset_transport_header(struct sk_buff *skb)
+{
+	skb->transport_header = skb->data;
+}
+
+static inline void skb_set_transport_header(struct sk_buff *skb,
+					    const int offset)
+{
+	skb->transport_header = skb->data + offset;
+}
+
+static inline unsigned char *skb_network_header(const struct sk_buff *skb)
+{
+	return skb->network_header;
+}
+
+static inline void skb_reset_network_header(struct sk_buff *skb)
+{
+	skb->network_header = skb->data;
+}
+
+static inline void skb_set_network_header(struct sk_buff *skb, const int offset)
+{
+	skb->network_header = skb->data + offset;
+}
+
+static inline unsigned char *skb_mac_header(const struct sk_buff *skb)
+{
+	return skb->mac_header;
+}
+
+static inline int skb_mac_header_was_set(const struct sk_buff *skb)
+{
+	return skb->mac_header != NULL;
+}
+
+static inline void skb_reset_mac_header(struct sk_buff *skb)
+{
+	skb->mac_header = skb->data;
+}
+
+static inline void skb_set_mac_header(struct sk_buff *skb, const int offset)
+{
+	skb->mac_header = skb->data + offset;
+}
+#endif /* NET_SKBUFF_DATA_USES_OFFSET */
+
+static inline void skb_pop_mac_header(struct sk_buff *skb)
+{
+	skb->mac_header = skb->network_header;
+}
+
+>>>>>>> p9x
 static inline void skb_probe_transport_header(struct sk_buff *skb,
 					      const int offset_hint)
 {
@@ -2691,6 +2811,8 @@ static inline void *__skb_header_pointer(const struct sk_buff *skb, int offset,
 	return buffer;
 }
 
+unsigned int skb_gso_transport_seglen(const struct sk_buff *skb);
+
 static inline void *skb_header_pointer(const struct sk_buff *skb, int offset,
 				       int len, void *buffer)
 {
@@ -3087,7 +3209,11 @@ static inline void nf_conntrack_get(struct nf_conntrack *nfct)
 		atomic_inc(&nfct->use);
 }
 #endif
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+=======
+#ifdef CONFIG_BRIDGE_NETFILTER
+>>>>>>> p9x
 static inline void nf_bridge_put(struct nf_bridge_info *nf_bridge)
 {
 	if (nf_bridge && atomic_dec_and_test(&nf_bridge->use))
@@ -3105,7 +3231,11 @@ static inline void nf_reset(struct sk_buff *skb)
 	nf_conntrack_put(skb->nfct);
 	skb->nfct = NULL;
 #endif
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+=======
+#ifdef CONFIG_BRIDGE_NETFILTER
+>>>>>>> p9x
 	nf_bridge_put(skb->nf_bridge);
 	skb->nf_bridge = NULL;
 #endif
@@ -3135,7 +3265,11 @@ static inline void __nf_copy(struct sk_buff *dst, const struct sk_buff *src,
 	if (copy)
 		dst->nfctinfo = src->nfctinfo;
 #endif
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+=======
+#ifdef CONFIG_BRIDGE_NETFILTER
+>>>>>>> p9x
 	dst->nf_bridge  = src->nf_bridge;
 	nf_bridge_get(src->nf_bridge);
 #endif
@@ -3150,7 +3284,11 @@ static inline void nf_copy(struct sk_buff *dst, const struct sk_buff *src)
 #if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
 	nf_conntrack_put(dst->nfct);
 #endif
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+=======
+#ifdef CONFIG_BRIDGE_NETFILTER
+>>>>>>> p9x
 	nf_bridge_put(dst->nf_bridge);
 #endif
 	__nf_copy(dst, src, true);

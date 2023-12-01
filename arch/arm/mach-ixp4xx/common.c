@@ -29,8 +29,13 @@
 #include <linux/export.h>
 #include <linux/gpio.h>
 #include <linux/cpu.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
 #include <linux/sched_clock.h>
+=======
+#include <linux/sched_clock.h>
+
+>>>>>>> p9x
 #include <mach/udc.h>
 #include <mach/hardware.h>
 #include <mach/io.h>
@@ -569,7 +574,11 @@ static void __init ixp4xx_clockevent_init(void)
 
 void ixp4xx_restart(enum reboot_mode mode, const char *cmd)
 {
+<<<<<<< HEAD
 	if (mode == REBOOT_SOFT) {
+=======
+	if ( 1 && mode == REBOOT_SOFT) {
+>>>>>>> p9x
 		/* Jump into ROM at address 0 */
 		soft_restart(0);
 	} else {

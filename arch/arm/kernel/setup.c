@@ -73,10 +73,14 @@ static int __init fpe_setup(char *line)
 __setup("fpe=", fpe_setup);
 #endif
 
+<<<<<<< HEAD
 extern void init_default_cache_policy(unsigned long);
 extern void paging_init(const struct machine_desc *desc);
 extern void early_paging_init(const struct machine_desc *,
 			      struct proc_info_list *);
+=======
+extern void paging_init(const struct machine_desc *desc);
+>>>>>>> p9x
 extern void sanity_check_meminfo(void);
 extern enum reboot_mode reboot_mode;
 extern void setup_dma_zone(const struct machine_desc *desc);
@@ -102,17 +106,26 @@ EXPORT_SYMBOL(system_serial_high);
 unsigned int elf_hwcap __read_mostly;
 EXPORT_SYMBOL(elf_hwcap);
 
+<<<<<<< HEAD
 unsigned int elf_hwcap2 __read_mostly;
 EXPORT_SYMBOL(elf_hwcap2);
 
 char* (*arch_read_hardware_id)(void);
 EXPORT_SYMBOL(arch_read_hardware_id);
 
+=======
+>>>>>>> p9x
 unsigned int boot_reason;
 EXPORT_SYMBOL(boot_reason);
 
 unsigned int cold_boot;
 EXPORT_SYMBOL(cold_boot);
+<<<<<<< HEAD
+=======
+
+char* (*arch_read_hardware_id)(void);
+EXPORT_SYMBOL(arch_read_hardware_id);
+>>>>>>> p9x
 
 #ifdef MULTI_CPU
 struct processor processor __read_mostly;
@@ -690,14 +703,24 @@ int __init arm_add_memory(u64 start, u64 size)
 
 #ifndef CONFIG_ARCH_PHYS_ADDR_T_64BIT
 	if (aligned_start > ULONG_MAX) {
+<<<<<<< HEAD
 		pr_crit("Ignoring memory at 0x%08llx outside 32-bit physical address space\n",
 			(long long)start);
+=======
+		printk(KERN_CRIT "Ignoring memory at 0x%08llx outside "
+		       "32-bit physical address space\n", (long long)start);
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
 	if (aligned_start + size > ULONG_MAX) {
+<<<<<<< HEAD
 		pr_crit("Truncating memory at 0x%08llx to fit in 32-bit physical address space\n",
 			(long long)start);
+=======
+		printk(KERN_CRIT "Truncating memory at 0x%08llx to fit in "
+			"32-bit physical address space\n", (long long)start);
+>>>>>>> p9x
 		/*
 		 * To ensure bank->start + bank->size is representable in
 		 * 32 bits, we use ULONG_MAX as the upper limit rather than 4GB.
@@ -721,7 +744,10 @@ int __init arm_add_memory(u64 start, u64 size)
 		aligned_start = PHYS_OFFSET;
 	}
 
+<<<<<<< HEAD
 	start = aligned_start;
+=======
+>>>>>>> p9x
 	size = size & ~(phys_addr_t)(PAGE_SIZE - 1);
 
 	/*
@@ -931,6 +957,11 @@ void __init setup_arch(char **cmdline_p)
 	machine_desc = mdesc;
 	machine_name = mdesc->name;
 
+<<<<<<< HEAD
+=======
+	setup_dma_zone(mdesc);
+
+>>>>>>> p9x
 	if (mdesc->reboot_mode != REBOOT_HARD)
 		reboot_mode = mdesc->reboot_mode;
 
@@ -945,8 +976,12 @@ void __init setup_arch(char **cmdline_p)
 
 	parse_early_param();
 
+<<<<<<< HEAD
 	early_paging_init(mdesc, lookup_processor_type(read_cpuid_id()));
 	setup_dma_zone(mdesc);
+=======
+	/* XXX argh */
+>>>>>>> p9x
 	sanity_check_meminfo();
 	arm_memblock_init(mdesc);
 
@@ -958,6 +993,7 @@ void __init setup_arch(char **cmdline_p)
 
 	unflatten_device_tree();
 
+<<<<<<< HEAD
 	arm_dt_init_cpu_maps();
 	psci_init();
 #ifdef CONFIG_SMP
@@ -969,6 +1005,17 @@ void __init setup_arch(char **cmdline_p)
 				smp_set_ops(mdesc->smp);
 		}
 		smp_init_cpus();
+=======
+	psci_init();
+#ifdef CONFIG_SMP
+	if (is_smp()) {
+		if (psci_smp_available())
+			smp_set_ops(&psci_smp_ops);
+		else if (mdesc->smp)
+			smp_set_ops(mdesc->smp);
+		smp_init_cpus();
+		arm_dt_init_cpu_maps();
+>>>>>>> p9x
 		smp_build_mpidr_hash();
 	}
 #endif
@@ -1047,6 +1094,7 @@ static const char *hwcap_str[] = {
 	"vfpd32",
 	"lpae",
 	"evtstrm",
+<<<<<<< HEAD
 	NULL
 };
 
@@ -1056,6 +1104,8 @@ static const char *hwcap2_str[] = {
 	"sha1",
 	"sha2",
 	"crc32",
+=======
+>>>>>>> p9x
 	NULL
 };
 

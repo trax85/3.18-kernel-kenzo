@@ -54,15 +54,28 @@ static int set_cpu_freq(struct cpufreq_policy *policy, unsigned int new_freq,
 	freqs.new = new_freq;
 	freqs.cpu = policy->cpu;
 
+<<<<<<< HEAD
 	trace_cpu_frequency_switch_start(freqs.old, freqs.new, policy->cpu);
 	cpufreq_freq_transition_begin(policy, &freqs);
+=======
+	cpufreq_notify_transition(policy, &freqs, CPUFREQ_PRECHANGE);
+
+	trace_cpu_frequency_switch_start(freqs.old, freqs.new, policy->cpu);
+>>>>>>> p9x
 
 	rate = new_freq * 1000;
 	rate = clk_round_rate(cpu_clk[policy->cpu], rate);
 	ret = clk_set_rate(cpu_clk[policy->cpu], rate);
+<<<<<<< HEAD
 	cpufreq_freq_transition_end(policy, &freqs, ret);
 	if (!ret)
 		trace_cpu_frequency_switch_end(policy->cpu);
+=======
+	if (!ret) {
+		cpufreq_notify_transition(policy, &freqs, CPUFREQ_POSTCHANGE);
+		trace_cpu_frequency_switch_end(policy->cpu);
+	}
+>>>>>>> p9x
 
 	return ret;
 }
@@ -88,12 +101,15 @@ static int msm_cpufreq_target(struct cpufreq_policy *policy,
 	}
 
 	table = cpufreq_frequency_get_table(policy->cpu);
+<<<<<<< HEAD
 	if (!table) {
 		pr_err("cpufreq: Failed to get frequency table for CPU%u\n",
 		       policy->cpu);
 		ret = -ENODEV;
 		goto done;
 	}
+=======
+>>>>>>> p9x
 	if (cpufreq_frequency_table_target(policy, table, target_freq, relation,
 			&index)) {
 		pr_err("cpufreq: invalid target_freq: %d\n", target_freq);
@@ -167,7 +183,11 @@ static int msm_cpufreq_init(struct cpufreq_policy *policy)
 	pr_debug("cpufreq: cpu%d init at %d switching to %d\n",
 			policy->cpu, cur_freq, table[index].frequency);
 	policy->cur = table[index].frequency;
+<<<<<<< HEAD
 	policy->freq_table = table;
+=======
+	cpufreq_frequency_table_get_attr(table, policy->cpu);
+>>>>>>> p9x
 
 	return 0;
 }

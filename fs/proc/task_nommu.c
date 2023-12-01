@@ -123,6 +123,7 @@ unsigned long task_statm(struct mm_struct *mm,
 	return size;
 }
 
+<<<<<<< HEAD
 static int is_stack(struct proc_maps_private *priv,
 		    struct vm_area_struct *vma)
 {
@@ -137,6 +138,8 @@ static int is_stack(struct proc_maps_private *priv,
 		vma->vm_end >= mm->start_stack;
 }
 
+=======
+>>>>>>> p9x
 /*
  * display a single VMA to a sequenced file
  */
@@ -176,9 +179,27 @@ static int nommu_vma_show(struct seq_file *m, struct vm_area_struct *vma,
 	if (file) {
 		seq_pad(m, ' ');
 		seq_path(m, &file->f_path, "");
+<<<<<<< HEAD
 	} else if (mm && is_stack(priv, vma)) {
 		seq_pad(m, ' ');
 		seq_printf(m, "[stack]");
+=======
+	} else if (mm) {
+		pid_t tid = vm_is_stack(priv->task, vma, is_pid);
+
+		if (tid != 0) {
+			seq_pad(m, ' ');
+			/*
+			 * Thread stack in /proc/PID/task/TID/maps or
+			 * the main process stack.
+			 */
+			if (!is_pid || (vma->vm_start <= mm->start_stack &&
+			    vma->vm_end >= mm->start_stack))
+				seq_printf(m, "[stack]");
+			else
+				seq_printf(m, "[stack:%d]", tid);
+		}
+>>>>>>> p9x
 	}
 
 	seq_putc(m, '\n');
@@ -218,9 +239,19 @@ static void *m_start(struct seq_file *m, loff_t *pos)
 	if (!priv->task)
 		return ERR_PTR(-ESRCH);
 
+<<<<<<< HEAD
 	mm = priv->mm;
 	if (!mm || !atomic_inc_not_zero(&mm->mm_users))
 		return NULL;
+=======
+	mm = mm_access(priv->task, PTRACE_MODE_READ_FSCREDS);
+	if (!mm || IS_ERR(mm)) {
+		put_task_struct(priv->task);
+		priv->task = NULL;
+		return mm;
+	}
+	down_read(&mm->mmap_sem);
+>>>>>>> p9x
 
 	down_read(&mm->mmap_sem);
 	/* start from the Nth VMA */

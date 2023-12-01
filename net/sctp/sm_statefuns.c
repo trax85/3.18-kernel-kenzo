@@ -781,9 +781,42 @@ sctp_disposition_t sctp_sf_do_5_1D_ce(struct net *net,
 	if (error)
 		goto nomem_init;
 
+<<<<<<< HEAD
 	if (!sctp_auth_chunk_verify(net, chunk, new_asoc)) {
 		sctp_association_free(new_asoc);
 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+=======
+	/* SCTP-AUTH:  auth_chunk pointer is only set when the cookie-echo
+	 * is supposed to be authenticated and we have to do delayed
+	 * authentication.  We've just recreated the association using
+	 * the information in the cookie and now it's much easier to
+	 * do the authentication.
+	 */
+	if (chunk->auth_chunk) {
+		struct sctp_chunk auth;
+		sctp_ierror_t ret;
+
+		/* Make sure that we and the peer are AUTH capable */
+		if (!net->sctp.auth_enable || !new_asoc->peer.auth_capable) {
+			sctp_association_free(new_asoc);
+			return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+		}
+
+		/* set-up our fake chunk so that we can process it */
+		auth.skb = chunk->auth_chunk;
+		auth.asoc = chunk->asoc;
+		auth.sctp_hdr = chunk->sctp_hdr;
+		auth.chunk_hdr = (sctp_chunkhdr_t *)skb_push(chunk->auth_chunk,
+					    sizeof(sctp_chunkhdr_t));
+		skb_pull(chunk->auth_chunk, sizeof(sctp_chunkhdr_t));
+		auth.transport = chunk->transport;
+
+		ret = sctp_sf_authenticate(net, ep, new_asoc, type, &auth);
+		if (ret != SCTP_IERROR_NO_ERROR) {
+			sctp_association_free(new_asoc);
+			return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+		}
+>>>>>>> p9x
 	}
 
 	repl = sctp_make_cookie_ack(new_asoc, chunk);

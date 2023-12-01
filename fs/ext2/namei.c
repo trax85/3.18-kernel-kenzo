@@ -419,7 +419,10 @@ const struct inode_operations ext2_dir_inode_operations = {
 #endif
 	.setattr	= ext2_setattr,
 	.get_acl	= ext2_get_acl,
+<<<<<<< HEAD
 	.set_acl	= ext2_set_acl,
+=======
+>>>>>>> p9x
 	.tmpfile	= ext2_tmpfile,
 };
 

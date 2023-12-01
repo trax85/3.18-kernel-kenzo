@@ -103,7 +103,11 @@ static int mt312_write(struct mt312_state *state, const enum mt312_reg_addr reg,
 
 	if (1 + count > sizeof(buf)) {
 		printk(KERN_WARNING
+<<<<<<< HEAD
 		       "mt312: write: len=%zu is too big!\n", count);
+=======
+		       "mt312: write: len=%zd is too big!\n", count);
+>>>>>>> p9x
 		return -EINVAL;
 	}
 

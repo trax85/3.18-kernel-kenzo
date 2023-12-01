@@ -329,6 +329,7 @@ static const char *const iwl_mvm_cmd_strings[REPLY_MAX] = {
 	CMD(BT_PROFILE_NOTIFICATION),
 	CMD(BT_CONFIG),
 	CMD(MCAST_FILTER_CMD),
+<<<<<<< HEAD
 	CMD(BCAST_FILTER_CMD),
 	CMD(REPLY_SF_CFG_CMD),
 	CMD(REPLY_BEACON_FILTERING_CMD),
@@ -344,6 +345,9 @@ static const char *const iwl_mvm_cmd_strings[REPLY_MAX] = {
 	CMD(PSM_UAPSD_AP_MISBEHAVING_NOTIFICATION),
 	CMD(ANTENNA_COUPLING_NOTIFICATION),
 	CMD(SCD_QUEUE_CFG),
+=======
+	CMD(LTR_CONFIG),
+>>>>>>> p9x
 };
 #undef CMD
 

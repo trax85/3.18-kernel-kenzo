@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2014,2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -15,7 +19,10 @@
 #include <linux/io.h>
 #include <linux/init.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/slab.h>
+=======
+>>>>>>> p9x
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/clk.h>
@@ -23,6 +30,7 @@
 #include <linux/sched.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
+<<<<<<< HEAD
 #include <linux/export.h>
 #include <linux/types.h>
 #include <soc/qcom/boot_stats.h>
@@ -30,6 +38,19 @@
 static void __iomem *mpm_counter_base;
 static uint32_t mpm_counter_freq;
 struct boot_stats __iomem *boot_stats;
+=======
+
+struct boot_stats {
+	uint32_t bootloader_start;
+	uint32_t bootloader_end;
+	uint32_t bootloader_display;
+	uint32_t bootloader_load_kernel;
+};
+
+static void __iomem *mpm_counter_base;
+static uint32_t mpm_counter_freq;
+static struct boot_stats __iomem *boot_stats;
+>>>>>>> p9x
 
 static int mpm_parse_dt(void)
 {
@@ -85,6 +106,7 @@ static void print_boot_stats(void)
 		mpm_counter_freq);
 }
 
+<<<<<<< HEAD
 unsigned long long int msm_timer_get_sclk_ticks(void)
 {
 	unsigned long long int t1, t2;
@@ -121,6 +143,8 @@ unsigned long long int msm_timer_get_sclk_ticks(void)
 	return t1;
 }
 
+=======
+>>>>>>> p9x
 int boot_stats_init(void)
 {
 	int ret;
@@ -131,6 +155,7 @@ int boot_stats_init(void)
 
 	print_boot_stats();
 
+<<<<<<< HEAD
 	if (!(boot_marker_enabled()))
 		boot_stats_exit();
 	return 0;
@@ -142,3 +167,11 @@ int boot_stats_exit(void)
 	iounmap(mpm_counter_base);
 	return 0;
 }
+=======
+	iounmap(boot_stats);
+	iounmap(mpm_counter_base);
+
+	return 0;
+}
+
+>>>>>>> p9x

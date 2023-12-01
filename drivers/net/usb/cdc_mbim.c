@@ -250,6 +250,7 @@ static struct sk_buff *cdc_mbim_tx_fixup(struct usbnet *dev, struct sk_buff *skb
 			skb_pull(skb, ETH_HLEN);
 		}
 
+<<<<<<< HEAD
 		/* Is IP session <0> tagged too? */
 		if (info->flags & FLAG_IPS0_VLAN) {
 			/* drop all untagged packets */
@@ -260,6 +261,8 @@ static struct sk_buff *cdc_mbim_tx_fixup(struct usbnet *dev, struct sk_buff *skb
 				tci = 0;
 		}
 
+=======
+>>>>>>> p9x
 		/* mapping VLANs to MBIM sessions:
 		 *   no tag     => IPS session <0> if !FLAG_IPS0_VLAN
 		 *   1 - 255    => IPS session <vlanid>
@@ -267,7 +270,10 @@ static struct sk_buff *cdc_mbim_tx_fixup(struct usbnet *dev, struct sk_buff *skb
 		 *   512 - 4093 => unsupported, drop
 		 *   4094       => IPS session <0> if FLAG_IPS0_VLAN
 		 */
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 		switch (tci & 0x0f00) {
 		case 0x0000: /* VLAN ID 0 - 255 */
 			if (!is_ip)
@@ -593,8 +599,20 @@ static const struct usb_device_id mbim_devs[] = {
 	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_NCM, USB_CDC_PROTO_NONE),
 	  .driver_info = (unsigned long)&cdc_mbim_info,
 	},
+<<<<<<< HEAD
 	/* ZLP conformance whitelist: All Ericsson MBIM devices */
 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0bdb, USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
+=======
+	/* Sierra Wireless MC7710 need ZLPs */
+	{ USB_DEVICE_AND_INTERFACE_INFO(0x1199, 0x68a2, USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
+	  .driver_info = (unsigned long)&cdc_mbim_info_zlp,
+	},
+	/* HP hs2434 Mobile Broadband Module needs ZLPs */
+	{ USB_DEVICE_AND_INTERFACE_INFO(0x3f0, 0x4b1d, USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
+	  .driver_info = (unsigned long)&cdc_mbim_info_zlp,
+	},
+	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
+>>>>>>> p9x
 	  .driver_info = (unsigned long)&cdc_mbim_info,
 	},
 	/* default entry */

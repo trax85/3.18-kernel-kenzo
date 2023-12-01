@@ -28,7 +28,7 @@
 #include <linux/magic.h>
 #include <linux/slab.h>
 
-#define DEBUGFS_DEFAULT_MODE	0700
+#define DEBUGFS_DEFAULT_MODE	0755
 
 static struct vfsmount *debugfs_mount;
 static int debugfs_mount_count;
@@ -171,7 +171,11 @@ static int debugfs_show_options(struct seq_file *m, struct dentry *root)
 
 static void debugfs_evict_inode(struct inode *inode)
 {
+<<<<<<< HEAD
 	truncate_inode_pages_final(&inode->i_data);
+=======
+	truncate_inode_pages(&inode->i_data, 0);
+>>>>>>> p9x
 	clear_inode(inode);
 	if (S_ISLNK(inode->i_mode))
 		kfree(inode->i_private);
@@ -182,6 +186,7 @@ static const struct super_operations debugfs_super_operations = {
 	.remount_fs	= debugfs_remount,
 	.show_options	= debugfs_show_options,
 	.evict_inode	= debugfs_evict_inode,
+<<<<<<< HEAD
 };
 
 static struct vfsmount *debugfs_automount(struct path *path)
@@ -194,6 +199,8 @@ static struct vfsmount *debugfs_automount(struct path *path)
 static const struct dentry_operations debugfs_dops = {
 	.d_delete = always_delete_dentry,
 	.d_automount = debugfs_automount,
+=======
+>>>>>>> p9x
 };
 
 static int debug_fill_super(struct super_block *sb, void *data, int silent)
@@ -539,7 +546,11 @@ EXPORT_SYMBOL_GPL(debugfs_remove);
  */
 void debugfs_remove_recursive(struct dentry *dentry)
 {
+<<<<<<< HEAD
 	struct dentry *child, *parent;
+=======
+	struct dentry *child, *next, *parent;
+>>>>>>> p9x
 
 	if (IS_ERR_OR_NULL(dentry))
 		return;
@@ -551,6 +562,7 @@ void debugfs_remove_recursive(struct dentry *dentry)
 	parent = dentry;
  down:
 	mutex_lock(&parent->d_inode->i_mutex);
+<<<<<<< HEAD
  loop:
 	/*
 	 * The parent->d_subdirs is protected by the d_lock. Outside that
@@ -559,6 +571,9 @@ void debugfs_remove_recursive(struct dentry *dentry)
 	 */
 	spin_lock(&parent->d_lock);
 	list_for_each_entry(child, &parent->d_subdirs, d_child) {
+=======
+	list_for_each_entry_safe(child, next, &parent->d_subdirs, d_child) {
+>>>>>>> p9x
 		if (!debugfs_positive(child))
 			continue;
 
@@ -569,6 +584,7 @@ void debugfs_remove_recursive(struct dentry *dentry)
 			parent = child;
 			goto down;
 		}
+<<<<<<< HEAD
 
 		spin_unlock(&parent->d_lock);
 
@@ -583,6 +599,11 @@ void debugfs_remove_recursive(struct dentry *dentry)
 		 * debugfs_positive() check.
 		 */
 		goto loop;
+=======
+ up:
+		if (!__debugfs_remove(child, parent))
+			simple_release_fs(&debugfs_mount, &debugfs_mount_count);
+>>>>>>> p9x
 	}
 	spin_unlock(&parent->d_lock);
 
@@ -591,9 +612,17 @@ void debugfs_remove_recursive(struct dentry *dentry)
 	parent = parent->d_parent;
 	mutex_lock(&parent->d_inode->i_mutex);
 
+<<<<<<< HEAD
 	if (child != dentry)
 		/* go up */
 		goto loop;
+=======
+	if (child != dentry) {
+		next = list_entry(child->d_child.next, struct dentry,
+					d_child);
+		goto up;
+	}
+>>>>>>> p9x
 
 	if (!__debugfs_remove(child, parent))
 		simple_release_fs(&debugfs_mount, &debugfs_mount_count);

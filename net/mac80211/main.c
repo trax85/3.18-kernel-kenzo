@@ -258,6 +258,7 @@ static void ieee80211_restart_work(struct work_struct *work)
 	     "%s called with hardware scan in progress\n", __func__);
 
 	rtnl_lock();
+<<<<<<< HEAD
 	list_for_each_entry(sdata, &local->interfaces, list) {
 		/*
 		 * XXX: there may be more work for other vif types and even
@@ -279,6 +280,10 @@ static void ieee80211_restart_work(struct work_struct *work)
 		}
 		flush_delayed_work(&sdata->dec_tailroom_needed_wk);
 	}
+=======
+	list_for_each_entry(sdata, &local->interfaces, list)
+		flush_delayed_work(&sdata->dec_tailroom_needed_wk);
+>>>>>>> p9x
 	ieee80211_scan_cancel(local);
 	ieee80211_reconfig(local);
 	rtnl_unlock();

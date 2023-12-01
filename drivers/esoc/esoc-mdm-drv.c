@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2015, 2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -13,9 +17,13 @@
 #include <linux/delay.h>
 #include <linux/workqueue.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
 #include <linux/of.h>
 #include "esoc.h"
 #include "mdm-dbg.h"
+=======
+#include "esoc.h"
+>>>>>>> p9x
 
 enum {
 	 PWR_OFF = 0x1,
@@ -50,8 +58,11 @@ static int esoc_msm_restart_handler(struct notifier_block *nb,
 	struct esoc_clink *esoc_clink = mdm_drv->esoc_clink;
 	const struct esoc_clink_ops const *clink_ops = esoc_clink->clink_ops;
 	if (action == SYS_RESTART) {
+<<<<<<< HEAD
 		if (mdm_dbg_stall_notify(ESOC_PRIMARY_REBOOT))
 			return NOTIFY_OK;
+=======
+>>>>>>> p9x
 		dev_dbg(&esoc_clink->dev, "Notifying esoc of cold reboot\n");
 		clink_ops->notify(ESOC_PRIMARY_REBOOT, esoc_clink);
 	}
@@ -73,6 +84,7 @@ static void mdm_handle_clink_evt(enum esoc_evt evt,
 		break;
 	case ESOC_UNEXPECTED_RESET:
 	case ESOC_ERR_FATAL:
+<<<<<<< HEAD
 		/*
 		 * Modem can crash while we are waiting for boot_done during
 		 * a subsystem_get(). Setting mode to CRASH will prevent a
@@ -81,6 +93,9 @@ static void mdm_handle_clink_evt(enum esoc_evt evt,
 		 * running.
 		 */
 		if (mdm_drv->mode == CRASH || mdm_drv->mode != RUN)
+=======
+		if (mdm_drv->mode == CRASH)
+>>>>>>> p9x
 			return;
 		mdm_drv->mode = CRASH;
 		queue_work(mdm_drv->mdm_queue, &mdm_drv->ssr_work);
@@ -111,8 +126,11 @@ static void mdm_crash_shutdown(const struct subsys_desc *mdm_subsys)
 							struct esoc_clink,
 								subsys);
 	const struct esoc_clink_ops const *clink_ops = esoc_clink->clink_ops;
+<<<<<<< HEAD
 	if (mdm_dbg_stall_notify(ESOC_PRIMARY_CRASH))
 		return;
+=======
+>>>>>>> p9x
 	clink_ops->notify(ESOC_PRIMARY_CRASH, esoc_clink);
 }
 
@@ -126,12 +144,15 @@ static int mdm_subsys_shutdown(const struct subsys_desc *crashed_subsys,
 	const struct esoc_clink_ops const *clink_ops = esoc_clink->clink_ops;
 
 	if (mdm_drv->mode == CRASH || mdm_drv->mode == PEER_CRASH) {
+<<<<<<< HEAD
 		if (mdm_dbg_stall_cmd(ESOC_PREPARE_DEBUG))
 			/* We want to mask debug command.
 			 * In this case return success
 			 * to move to next stage
 			 */
 			return 0;
+=======
+>>>>>>> p9x
 		ret = clink_ops->cmd_exe(ESOC_PREPARE_DEBUG,
 							esoc_clink);
 		if (ret) {
@@ -143,6 +164,7 @@ static int mdm_subsys_shutdown(const struct subsys_desc *crashed_subsys,
 		if (esoc_clink->subsys.sysmon_shutdown_ret)
 			ret = clink_ops->cmd_exe(ESOC_FORCE_PWR_OFF,
 							esoc_clink);
+<<<<<<< HEAD
 		else {
 			if (mdm_dbg_stall_cmd(ESOC_PWR_OFF))
 				/* Since power off command is masked
@@ -152,6 +174,10 @@ static int mdm_subsys_shutdown(const struct subsys_desc *crashed_subsys,
 				return 0;
 			ret = clink_ops->cmd_exe(ESOC_PWR_OFF, esoc_clink);
 		}
+=======
+		else
+			ret = clink_ops->cmd_exe(ESOC_PWR_OFF, esoc_clink);
+>>>>>>> p9x
 		if (ret) {
 			dev_err(&esoc_clink->dev, "failed to exe power off\n");
 			return ret;
@@ -169,15 +195,23 @@ static int mdm_subsys_powerup(const struct subsys_desc *crashed_subsys)
 								subsys);
 	struct mdm_drv *mdm_drv = esoc_get_drv_data(esoc_clink);
 	const struct esoc_clink_ops const *clink_ops = esoc_clink->clink_ops;
+<<<<<<< HEAD
 	int timeout = INT_MAX;
 
 	if (!esoc_clink->auto_boot && !esoc_req_eng_enabled(esoc_clink)) {
+=======
+
+	if (!esoc_req_eng_enabled(esoc_clink)) {
+>>>>>>> p9x
 		dev_dbg(&esoc_clink->dev, "Wait for req eng registration\n");
 		wait_for_completion(&mdm_drv->req_eng_wait);
 	}
 	if (mdm_drv->mode == PWR_OFF) {
+<<<<<<< HEAD
 		if (mdm_dbg_stall_cmd(ESOC_PWR_ON))
 			return -EBUSY;
+=======
+>>>>>>> p9x
 		ret = clink_ops->cmd_exe(ESOC_PWR_ON, esoc_clink);
 		if (ret) {
 			dev_err(&esoc_clink->dev, "pwr on fail\n");
@@ -196,6 +230,7 @@ static int mdm_subsys_powerup(const struct subsys_desc *crashed_subsys)
 			return ret;
 		}
 	}
+<<<<<<< HEAD
 
 	/*
 	 * In autoboot case, it is possible that we can forever wait for
@@ -207,6 +242,10 @@ static int mdm_subsys_powerup(const struct subsys_desc *crashed_subsys)
 		timeout = 10 * HZ;
 	ret = wait_for_completion_timeout(&mdm_drv->boot_done, timeout);
 	if (mdm_drv->boot_fail || ret <= 0) {
+=======
+	wait_for_completion(&mdm_drv->boot_done);
+	if (mdm_drv->boot_fail) {
+>>>>>>> p9x
 		dev_err(&esoc_clink->dev, "booting failed\n");
 		return -EIO;
 	}
@@ -234,6 +273,7 @@ static int mdm_subsys_ramdumps(int want_dumps,
 
 static int mdm_register_ssr(struct esoc_clink *esoc_clink)
 {
+<<<<<<< HEAD
 	struct subsys_desc *subsys = &esoc_clink->subsys;
 
 	subsys->shutdown = mdm_subsys_shutdown;
@@ -244,6 +284,16 @@ static int mdm_register_ssr(struct esoc_clink *esoc_clink)
 }
 
 int esoc_ssr_probe(struct esoc_clink *esoc_clink, struct esoc_drv *drv)
+=======
+	esoc_clink->subsys.shutdown = mdm_subsys_shutdown;
+	esoc_clink->subsys.ramdump = mdm_subsys_ramdumps;
+	esoc_clink->subsys.powerup = mdm_subsys_powerup;
+	esoc_clink->subsys.crash_shutdown = mdm_crash_shutdown;
+	return esoc_clink_register_ssr(esoc_clink);
+}
+
+int esoc_ssr_probe(struct esoc_clink *esoc_clink)
+>>>>>>> p9x
 {
 	int ret;
 	struct mdm_drv *mdm_drv;
@@ -278,6 +328,7 @@ int esoc_ssr_probe(struct esoc_clink *esoc_clink, struct esoc_drv *drv)
 	ret = register_reboot_notifier(&mdm_drv->esoc_restart);
 	if (ret)
 		dev_err(&esoc_clink->dev, "register for reboot failed\n");
+<<<<<<< HEAD
 	ret = mdm_dbg_eng_init(drv, esoc_clink);
 	if (ret) {
 		debug_init_done = false;
@@ -286,6 +337,8 @@ int esoc_ssr_probe(struct esoc_clink *esoc_clink, struct esoc_drv *drv)
 		dev_dbg(&esoc_clink->dev, "dbg engine initialized\n");
 		debug_init_done = true;
 	}
+=======
+>>>>>>> p9x
 	return 0;
 queue_err:
 	esoc_clink_unregister_ssr(esoc_clink);
@@ -302,6 +355,7 @@ static struct esoc_compat compat_table[] = {
 		.name = "MDM9x35",
 		.data = NULL,
 	},
+<<<<<<< HEAD
 	{
 		.name = "MDM9x55",
 		.data = NULL,
@@ -314,6 +368,8 @@ static struct esoc_compat compat_table[] = {
 		.name = "APQ8096",
 		.data = NULL,
 	},
+=======
+>>>>>>> p9x
 };
 
 static struct esoc_drv esoc_ssr_drv = {

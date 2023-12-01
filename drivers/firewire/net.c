@@ -639,6 +639,12 @@ static int fwnet_incoming_packet(struct fwnet_device *dev, __be32 *buf, int len,
 
 	if (fg_off + len > dg_size)
 		return 0;
+<<<<<<< HEAD
+=======
+
+	if (fg_off + len > dg_size)
+		return 0;
+>>>>>>> p9x
 
 	spin_lock_irqsave(&dev->lock, flags);
 

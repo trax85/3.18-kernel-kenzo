@@ -210,12 +210,17 @@ int inet_frags_init(struct inet_frags *f)
 		INIT_HLIST_HEAD(&hb->chain);
 	}
 
+<<<<<<< HEAD
 	seqlock_init(&f->rnd_seqlock);
 	f->last_rebuild_jiffies = 0;
 	f->frags_cachep = kmem_cache_create(f->frags_cache_name, f->qsize, 0, 0,
 					    NULL);
 	if (!f->frags_cachep)
 		return -ENOMEM;
+=======
+	f->rnd = (u32) ((totalram_pages ^ (totalram_pages >> 7)) ^
+				   (jiffies ^ (jiffies >> 6)));
+>>>>>>> p9x
 
 	return 0;
 }
@@ -338,6 +343,50 @@ void inet_frag_destroy(struct inet_frag_queue *q, struct inet_frags *f)
 }
 EXPORT_SYMBOL(inet_frag_destroy);
 
+<<<<<<< HEAD
+=======
+int inet_frag_evictor(struct netns_frags *nf, struct inet_frags *f, bool force)
+{
+	struct inet_frag_queue *q;
+	int work, evicted = 0;
+
+	if (!force) {
+		if (frag_mem_limit(nf) <= nf->high_thresh)
+			return 0;
+	}
+
+	work = frag_mem_limit(nf) - nf->low_thresh;
+	while (work > 0 || force) {
+		spin_lock(&nf->lru_lock);
+
+		if (list_empty(&nf->lru_list)) {
+			spin_unlock(&nf->lru_lock);
+			break;
+		}
+
+		q = list_first_entry(&nf->lru_list,
+				struct inet_frag_queue, lru_list);
+		atomic_inc(&q->refcnt);
+		/* Remove q from list to avoid several CPUs grabbing it */
+		list_del_init(&q->lru_list);
+
+		spin_unlock(&nf->lru_lock);
+
+		spin_lock(&q->lock);
+		if (!(q->last_in & INET_FRAG_COMPLETE))
+			inet_frag_kill(q, f);
+		spin_unlock(&q->lock);
+
+		if (atomic_dec_and_test(&q->refcnt))
+			inet_frag_destroy(q, f, &work);
+		evicted++;
+	}
+
+	return evicted;
+}
+EXPORT_SYMBOL(inet_frag_evictor);
+
+>>>>>>> p9x
 static struct inet_frag_queue *inet_frag_intern(struct netns_frags *nf,
 						struct inet_frag_queue *qp_in,
 						struct inet_frags *f,
@@ -367,8 +416,14 @@ static struct inet_frag_queue *inet_frag_intern(struct netns_frags *nf,
 
 	atomic_inc(&qp->refcnt);
 	hlist_add_head(&qp->list, &hb->chain);
+<<<<<<< HEAD
 
 	spin_unlock(&hb->chain_lock);
+=======
+	inet_frag_lru_add(nf, qp);
+	spin_unlock(&hb->chain_lock);
+	read_unlock(&f->lock);
+>>>>>>> p9x
 
 	return qp;
 }

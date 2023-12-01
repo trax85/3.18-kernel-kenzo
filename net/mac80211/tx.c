@@ -416,11 +416,16 @@ ieee80211_tx_h_multicast_ps_buf(struct ieee80211_tx_data *tx)
 	if (ieee80211_is_probe_req(hdr->frame_control))
 		return TX_CONTINUE;
 
+<<<<<<< HEAD
 	if (tx->local->hw.flags & IEEE80211_HW_QUEUE_CONTROL)
 		info->hw_queue = tx->sdata->vif.cab_queue;
 
 	/* no stations in PS mode and no buffered packets */
 	if (!atomic_read(&ps->num_sta_ps) && skb_queue_empty(&ps->bc_buf))
+=======
+	/* no stations in PS mode */
+	if (!atomic_read(&ps->num_sta_ps))
+>>>>>>> p9x
 		return TX_CONTINUE;
 
 	info->flags |= IEEE80211_TX_CTL_SEND_AFTER_DTIM;
@@ -496,8 +501,12 @@ ieee80211_tx_h_unicast_ps_buf(struct ieee80211_tx_data *tx)
 		 * ahead and Tx the packet.
 		 */
 		if (!test_sta_flag(sta, WLAN_STA_PS_STA) &&
+<<<<<<< HEAD
 		    !test_sta_flag(sta, WLAN_STA_PS_DRIVER) &&
 		    !test_sta_flag(sta, WLAN_STA_PS_DELIVER)) {
+=======
+		    !test_sta_flag(sta, WLAN_STA_PS_DRIVER)) {
+>>>>>>> p9x
 			spin_unlock(&sta->ps_lock);
 			return TX_CONTINUE;
 		}
@@ -544,7 +553,6 @@ ieee80211_tx_h_ps_buf(struct ieee80211_tx_data *tx)
 {
 	if (unlikely(tx->flags & IEEE80211_TX_PS_BUFFERED))
 		return TX_CONTINUE;
-
 	if (tx->flags & IEEE80211_TX_UNICAST)
 		return ieee80211_tx_h_unicast_ps_buf(tx);
 	else

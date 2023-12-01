@@ -195,6 +195,7 @@ static void pcm_afe_process_tx_pkt(uint32_t opcode,
 				 * Multiplication by 1000000 is done in two
 				 * steps to keep the accuracy of poll time.
 				 */
+<<<<<<< HEAD
 				if (prtd->mmap_flag) {
 					period_bytes = ((uint64_t)(
 						(snd_pcm_lib_period_bytes(
@@ -210,6 +211,20 @@ static void pcm_afe_process_tx_pkt(uint32_t opcode,
 					pr_debug("prtd->poll_time: %d",
 							prtd->poll_time);
 				}
+=======
+				period_bytes = ((uint64_t)(
+					(snd_pcm_lib_period_bytes(
+						prtd->substream)) *
+						1000));
+				bytes_one_sec =
+					(runtime->rate * runtime->channels * 2);
+				bytes_one_sec =
+					div_u64(bytes_one_sec, 1000);
+				prtd->poll_time =
+					div_u64(period_bytes, bytes_one_sec);
+				pr_debug("prtd->poll_time: %d",
+						prtd->poll_time);
+>>>>>>> p9x
 				break;
 			}
 			case AFE_EVENT_RTPORT_STOP:
@@ -241,12 +256,15 @@ static void pcm_afe_process_tx_pkt(uint32_t opcode,
 		}
 		break;
 	}
+<<<<<<< HEAD
 	case RESET_EVENTS:
 		prtd->pcm_irq_pos += snd_pcm_lib_period_bytes
 						(prtd->substream);
 		prtd->reset_event = true;
 		snd_pcm_period_elapsed(prtd->substream);
 		break;
+=======
+>>>>>>> p9x
 	default:
 		break;
 	}
@@ -264,7 +282,10 @@ static void pcm_afe_process_rx_pkt(uint32_t opcode,
 	uint16_t event;
 	uint64_t period_bytes;
 	uint64_t bytes_one_sec;
+<<<<<<< HEAD
 	uint32_t mem_map_handle = 0;
+=======
+>>>>>>> p9x
 
 	if (prtd == NULL)
 		return;
@@ -286,6 +307,7 @@ static void pcm_afe_process_rx_pkt(uint32_t opcode,
 			 * Multiplication by 1000000 is done in two steps to
 			 * keep the accuracy of poll time.
 			 */
+<<<<<<< HEAD
 			if (prtd->mmap_flag) {
 				period_bytes = ((uint64_t)(
 					(snd_pcm_lib_period_bytes(
@@ -313,6 +335,16 @@ static void pcm_afe_process_rx_pkt(uint32_t opcode,
 						prtd->substream));
 				prtd->dsp_cnt++;
 			}
+=======
+			period_bytes = ((uint64_t)(
+				(snd_pcm_lib_period_bytes(prtd->substream)) *
+				 1000));
+			bytes_one_sec = (runtime->rate * runtime->channels * 2);
+			bytes_one_sec = div_u64(bytes_one_sec , 1000);
+			prtd->poll_time =
+				div_u64(period_bytes, bytes_one_sec);
+			pr_debug("prtd->poll_time : %d\n", prtd->poll_time);
+>>>>>>> p9x
 			break;
 		}
 		case AFE_EVENT_RTPORT_STOP:
@@ -334,6 +366,7 @@ static void pcm_afe_process_rx_pkt(uint32_t opcode,
 	case APR_BASIC_RSP_RESULT: {
 		switch (payload[0]) {
 		case AFE_PORT_DATA_CMD_RT_PROXY_PORT_READ_V2:
+<<<<<<< HEAD
 			pr_debug("%s :Read done\n", __func__);
 			prtd->pcm_irq_pos += snd_pcm_lib_period_bytes
 							(prtd->substream);
@@ -341,6 +374,11 @@ static void pcm_afe_process_rx_pkt(uint32_t opcode,
 				atomic_set(&prtd->rec_bytes_avail, 1);
 				wake_up(&prtd->read_wait);
 			}
+=======
+			pr_debug("Read done\n");
+			prtd->pcm_irq_pos += snd_pcm_lib_period_bytes
+							(prtd->substream);
+>>>>>>> p9x
 			snd_pcm_period_elapsed(prtd->substream);
 			break;
 		default:
@@ -348,6 +386,7 @@ static void pcm_afe_process_rx_pkt(uint32_t opcode,
 		}
 		break;
 	}
+<<<<<<< HEAD
 	case RESET_EVENTS:
 		prtd->pcm_irq_pos += snd_pcm_lib_period_bytes
 							(prtd->substream);
@@ -358,6 +397,8 @@ static void pcm_afe_process_rx_pkt(uint32_t opcode,
 		}
 		snd_pcm_period_elapsed(prtd->substream);
 		break;
+=======
+>>>>>>> p9x
 	default:
 		break;
 	}
@@ -453,9 +494,12 @@ static int msm_afe_open(struct snd_pcm_substream *substream)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	atomic_set(&prtd->rec_bytes_avail, 0);
 	init_waitqueue_head(&prtd->read_wait);
 
+=======
+>>>>>>> p9x
 	hrtimer_init(&prtd->hrt, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 		prtd->hrt.function = afe_hrtimer_callback;
@@ -486,6 +530,7 @@ static int msm_afe_open(struct snd_pcm_substream *substream)
 		}
 	}
 
+<<<<<<< HEAD
 	prtd->reset_event = false;
 	return 0;
 }
@@ -627,6 +672,11 @@ static int msm_afe_copy(struct snd_pcm_substream *substream, int channel,
 	return ret;
 }
 
+=======
+	return 0;
+}
+
+>>>>>>> p9x
 static int msm_afe_close(struct snd_pcm_substream *substream)
 {
 	int rc = 0;
@@ -661,8 +711,12 @@ static int msm_afe_close(struct snd_pcm_substream *substream)
 		if (ret < 0)
 			pr_err("AFE unregister for events failed\n");
 	}
+<<<<<<< HEAD
 	if (prtd->mmap_flag)
 		hrtimer_cancel(&prtd->hrt);
+=======
+	hrtimer_cancel(&prtd->hrt);
+>>>>>>> p9x
 
 	rc = afe_cmd_memory_unmap(afe_req_mmap_handle(prtd->audio_client));
 	if (rc < 0)
@@ -737,8 +791,12 @@ static int msm_afe_trigger(struct snd_pcm_substream *substream, int cmd)
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
 		pr_debug("%s: SNDRV_PCM_TRIGGER_START\n", __func__);
 		prtd->start = 1;
+<<<<<<< HEAD
 		if (prtd->mmap_flag)
 			hrtimer_start(&prtd->hrt, ns_to_ktime(0),
+=======
+		hrtimer_start(&prtd->hrt, ns_to_ktime(0),
+>>>>>>> p9x
 					HRTIMER_MODE_REL);
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
@@ -831,19 +889,25 @@ static snd_pcm_uframes_t msm_afe_pointer(struct snd_pcm_substream *substream)
 	if (prtd->pcm_irq_pos >= snd_pcm_lib_buffer_bytes(substream))
 		prtd->pcm_irq_pos = 0;
 
+<<<<<<< HEAD
 	if (prtd->reset_event) {
 		pr_debug("%s: reset events received from ADSP, return XRUN\n",
 			__func__);
 		return SNDRV_PCM_POS_XRUN;
 	}
 
+=======
+>>>>>>> p9x
 	pr_debug("pcm_irq_pos = %d\n", prtd->pcm_irq_pos);
 	return bytes_to_frames(runtime, (prtd->pcm_irq_pos));
 }
 
 static struct snd_pcm_ops msm_afe_ops = {
 	.open           = msm_afe_open,
+<<<<<<< HEAD
 	.copy           = msm_afe_copy,
+=======
+>>>>>>> p9x
 	.hw_params	= msm_afe_hw_params,
 	.trigger	= msm_afe_trigger,
 	.close          = msm_afe_close,

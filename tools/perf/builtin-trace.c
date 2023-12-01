@@ -1684,10 +1684,17 @@ static int trace__sys_enter(struct trace *trace, struct perf_evsel *evsel,
 	printed += syscall__scnprintf_args(sc, msg + printed, 1024 - printed,
 					   args, trace, thread);
 
+<<<<<<< HEAD
 	if (sc->is_exit) {
 		if (!trace->duration_filter && !trace->summary_only) {
 			trace__fprintf_entry_head(trace, thread, 1, sample->time, trace->output);
 			fprintf(trace->output, "%-70s\n", ttrace->entry_str);
+=======
+	if (!strcmp(sc->name, "exit_group") || !strcmp(sc->name, "exit")) {
+		if (!trace->duration_filter) {
+			trace__fprintf_entry_head(trace, thread, 1, ttrace->entry_time, stdout);
+			printf("%-70s\n", ttrace->entry_str);
+>>>>>>> p9x
 		}
 	} else
 		ttrace->entry_pending = true;
@@ -1737,10 +1744,14 @@ static int trace__sys_exit(struct trace *trace, struct perf_evsel *evsel,
 	} else if (trace->duration_filter)
 		goto out;
 
+<<<<<<< HEAD
 	if (trace->summary_only)
 		goto out;
 
 	trace__fprintf_entry_head(trace, thread, duration, sample->time, trace->output);
+=======
+	trace__fprintf_entry_head(trace, thread, duration, ttrace->entry_time, stdout);
+>>>>>>> p9x
 
 	if (ttrace->entry_pending) {
 		fprintf(trace->output, "%-70s", ttrace->entry_str);

@@ -156,11 +156,15 @@ enum {
 
 	/* Power - legacy power table command */
 	POWER_TABLE_CMD = 0x77,
+<<<<<<< HEAD
 	PSM_UAPSD_AP_MISBEHAVING_NOTIFICATION = 0x78,
 	LTR_CONFIG = 0xee,
 
 	/* Thermal Throttling*/
 	REPLY_THERMAL_MNG_BACKOFF = 0x7e,
+=======
+	LTR_CONFIG = 0xee,
+>>>>>>> p9x
 
 	/* Scanning */
 	SCAN_REQUEST_CMD = 0x80,

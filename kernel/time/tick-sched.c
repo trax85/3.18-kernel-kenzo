@@ -24,7 +24,10 @@
 #include <linux/irq_work.h>
 #include <linux/posix-timers.h>
 #include <linux/perf_event.h>
+<<<<<<< HEAD
 #include <linux/context_tracking.h>
+=======
+>>>>>>> p9x
 #include <linux/rq_stats.h>
 
 #include <asm/irq_regs.h>
@@ -54,7 +57,11 @@ u64 jiffy_to_ktime_ns(u64 *now, u64 *jiffy_ktime_ns)
 
 	do {
 		seq = read_seqbegin(&jiffies_lock);
+<<<<<<< HEAD
 		*now = ktime_get_ns();
+=======
+		*now = ktime_to_ns(ktime_get());
+>>>>>>> p9x
 		*jiffy_ktime_ns = ktime_to_ns(last_jiffies_update);
 		cur_jiffies = get_jiffies_64();
 	} while (read_seqretry(&jiffies_lock, seq));
@@ -735,7 +742,6 @@ static ktime_t tick_nohz_stop_sched_tick(struct tick_sched *ts,
 out:
 	ts->next_jiffies = next_jiffies;
 	ts->last_jiffies = last_jiffies;
-	ts->sleep_length = ktime_sub(dev->next_event, now);
 
 	return ret;
 }
@@ -817,11 +823,14 @@ static void __tick_nohz_idle_enter(struct tick_sched *ts)
 	int cpu = smp_processor_id();
 
 	now = tick_nohz_start_idle(ts);
+<<<<<<< HEAD
 
 #ifdef CONFIG_SMP
 	if (check_pending_deferrable_timers(cpu))
 		raise_softirq_irqoff(TIMER_SOFTIRQ);
 #endif
+=======
+>>>>>>> p9x
 
 	if (can_stop_idle_tick(cpu, ts)) {
 		int was_stopped = ts->tick_stopped;
@@ -899,9 +908,15 @@ void tick_nohz_irq_exit(void)
  */
 ktime_t tick_nohz_get_sleep_length(void)
 {
+<<<<<<< HEAD
 	struct tick_sched *ts = this_cpu_ptr(&tick_cpu_sched);
 
 	return ts->sleep_length;
+=======
+	struct tick_sched *ts = &__get_cpu_var(tick_cpu_sched);
+	struct clock_event_device *dev = __get_cpu_var(tick_cpu_device).evtdev;
+	return ktime_sub(dev->next_event, ts->idle_entrytime);
+>>>>>>> p9x
 }
 
 static void tick_nohz_restart(struct tick_sched *ts, ktime_t now)
@@ -977,7 +992,11 @@ static void tick_nohz_account_idle_ticks(struct tick_sched *ts)
  */
 void tick_nohz_idle_exit(void)
 {
+<<<<<<< HEAD
 	struct tick_sched *ts = this_cpu_ptr(&tick_cpu_sched);
+=======
+	struct tick_sched *ts = &__get_cpu_var(tick_cpu_sched);
+>>>>>>> p9x
 	ktime_t now;
 
 	local_irq_disable();
@@ -1092,9 +1111,15 @@ static void tick_nohz_kick_tick(struct tick_sched *ts, ktime_t now)
 #endif
 }
 
+<<<<<<< HEAD
 static inline void tick_nohz_irq_enter(void)
 {
 	struct tick_sched *ts = this_cpu_ptr(&tick_cpu_sched);
+=======
+static inline void tick_check_nohz_this_cpu(void)
+{
+	struct tick_sched *ts = &__get_cpu_var(tick_cpu_sched);
+>>>>>>> p9x
 	ktime_t now;
 
 	if (!ts->idle_active && !ts->tick_stopped)
@@ -1111,17 +1136,28 @@ static inline void tick_nohz_irq_enter(void)
 #else
 
 static inline void tick_nohz_switch_to_nohz(void) { }
+<<<<<<< HEAD
 static inline void tick_nohz_irq_enter(void) { }
+=======
+static inline void tick_check_nohz_this_cpu(void) { }
+>>>>>>> p9x
 
 #endif /* CONFIG_NO_HZ_COMMON */
 
 /*
  * Called from irq_enter to notify about the possible interruption of idle()
  */
+<<<<<<< HEAD
 void tick_irq_enter(void)
 {
 	tick_check_oneshot_broadcast_this_cpu();
 	tick_nohz_irq_enter();
+=======
+void tick_check_idle(void)
+{
+	tick_check_oneshot_broadcast_this_cpu();
+	tick_check_nohz_this_cpu();
+>>>>>>> p9x
 }
 
 /*
@@ -1172,7 +1208,10 @@ static void wakeup_user(void)
 		queue_work(rq_wq, &rq_info.def_timer_work);
 	}
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 /*
  * We rearm the timer until we get disabled by the idle code.
  * Called with interrupts disabled.
@@ -1207,10 +1246,13 @@ static enum hrtimer_restart tick_sched_timer(struct hrtimer *timer)
 		}
 	}
 
+<<<<<<< HEAD
 	/* No need to reprogram if we are in idle or full dynticks mode */
 	if (unlikely(ts->tick_stopped))
 		return HRTIMER_NORESTART;
 
+=======
+>>>>>>> p9x
 	hrtimer_forward(timer, now, tick_period);
 
 	return HRTIMER_RESTART;

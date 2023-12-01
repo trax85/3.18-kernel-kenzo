@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2015,2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -11,7 +15,10 @@
  *
  */
 
+<<<<<<< HEAD
 #include <asm/arch_timer.h>
+=======
+>>>>>>> p9x
 #include <linux/slab.h>
 #include <linux/uaccess.h>
 #include <linux/module.h>
@@ -421,6 +428,7 @@ int tsv_timestamp_write(struct encode_context *ectxt)
 EXPORT_SYMBOL(tsv_timestamp_write);
 
 /*
+<<<<<<< HEAD
  * Writes the current QTimer timestamp count.
  *
  * @ectxt   context initialized by calling msg_encode_start()
@@ -438,6 +446,8 @@ int tsv_qtimer_write(struct encode_context *ectxt)
 EXPORT_SYMBOL(tsv_qtimer_write);
 
 /*
+=======
+>>>>>>> p9x
  * Writes a data pointer.
  *
  * @ectxt   context initialized by calling msg_encode_start()
@@ -504,11 +514,18 @@ int ipc_log_string(void *ilctxt, const char *fmt, ...)
 
 	msg_encode_start(&ectxt, TSV_TYPE_STRING);
 	tsv_timestamp_write(&ectxt);
+<<<<<<< HEAD
 	tsv_qtimer_write(&ectxt);
 	avail_size = (MAX_MSG_SIZE - (ectxt.offset + hdr_size));
 	va_start(arg_list, fmt);
 	data_size = vscnprintf((ectxt.buff + ectxt.offset + hdr_size),
 				avail_size, fmt, arg_list);
+=======
+	avail_size = (MAX_MSG_SIZE - (ectxt.offset + hdr_size));
+	va_start(arg_list, fmt);
+	data_size = vsnprintf((ectxt.buff + ectxt.offset + hdr_size),
+			      avail_size, fmt, arg_list);
+>>>>>>> p9x
 	va_end(arg_list);
 	tsv_write_header(&ectxt, TSV_TYPE_BYTE_ARRAY, data_size);
 	ectxt.offset += data_size;
@@ -563,7 +580,11 @@ int ipc_log_extract(void *ctxt, char *buff, int size)
 		spin_lock(&ilctxt->context_lock_lhb1);
 	}
 	if ((size - dctxt.size) == 0)
+<<<<<<< HEAD
 		reinit_completion(&ilctxt->read_avail);
+=======
+		INIT_COMPLETION(ilctxt->read_avail);
+>>>>>>> p9x
 	spin_unlock(&ilctxt->context_lock_lhb1);
 	read_unlock_irqrestore(&context_list_lock_lha1, flags);
 	return size - dctxt.size;
@@ -605,7 +626,11 @@ static void tsv_read_header(struct encode_context *ectxt,
  *
  * @ectxt   context initialized by calling msg_read()
  * @dctxt   deserialization context
+<<<<<<< HEAD
  * @format output format (appended to %6u.09u timestamp format)
+=======
+ * @format output format (appended to %6u.%09u timestamp format)
+>>>>>>> p9x
  */
 void tsv_timestamp_read(struct encode_context *ectxt,
 			struct decode_context *dctxt, const char *format)
@@ -618,12 +643,17 @@ void tsv_timestamp_read(struct encode_context *ectxt,
 	BUG_ON(hdr.type != TSV_TYPE_TIMESTAMP);
 	tsv_read_data(ectxt, &val, sizeof(val));
 	nanosec_rem = do_div(val, 1000000000U);
+<<<<<<< HEAD
 	IPC_SPRINTF_DECODE(dctxt, "[%6u.%09lu%s/",
+=======
+	IPC_SPRINTF_DECODE(dctxt, "[%6u.%09lu]%s",
+>>>>>>> p9x
 			(unsigned)val, nanosec_rem, format);
 }
 EXPORT_SYMBOL(tsv_timestamp_read);
 
 /*
+<<<<<<< HEAD
  * Reads a QTimer timestamp.
  *
  * @ectxt   context initialized by calling msg_read()
@@ -649,6 +679,8 @@ void tsv_qtimer_read(struct encode_context *ectxt,
 EXPORT_SYMBOL(tsv_qtimer_read);
 
 /*
+=======
+>>>>>>> p9x
  * Reads a data pointer.
  *
  * @ectxt   context initialized by calling msg_read()
@@ -857,8 +889,11 @@ int ipc_log_context_destroy(void *ctxt)
 	list_del(&ilctxt->list);
 	write_unlock_irqrestore(&context_list_lock_lha1, flags);
 
+<<<<<<< HEAD
 	debugfs_remove_recursive(ilctxt->dent);
 
+=======
+>>>>>>> p9x
 	kfree(ilctxt);
 	return 0;
 }

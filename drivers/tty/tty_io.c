@@ -592,7 +592,11 @@ static int tty_signal_session_leader(struct tty_struct *tty, int exit_session)
  *		  redirect lock for undoing redirection
  *		  file list lock for manipulating list of ttys
  *		  tty_ldiscs_lock from called functions
+<<<<<<< HEAD
  *		  termios_rwsem resetting termios data
+=======
+ *		  termios_mutex resetting termios data
+>>>>>>> p9x
  *		  tasklist_lock to walk task list for hangup event
  *		    ->siglock to protect ->signal/->sighand
  */
@@ -1712,7 +1716,10 @@ int tty_release(struct inode *inode, struct file *filp)
 	int	idx;
 	char	buf[64];
 	long	timeout = 0;
+<<<<<<< HEAD
 	int	once = 1;
+=======
+>>>>>>> p9x
 
 	if (tty_paranoia_check(tty, inode, __func__))
 		return 0;
@@ -2720,8 +2727,11 @@ static int tty_tiocmset(struct tty_struct *tty, unsigned int cmd,
 		clear = ~val;
 		break;
 	}
-	set &= TIOCM_DTR|TIOCM_RTS|TIOCM_OUT1|TIOCM_OUT2|TIOCM_LOOP;
-	clear &= TIOCM_DTR|TIOCM_RTS|TIOCM_OUT1|TIOCM_OUT2|TIOCM_LOOP;
+
+	set &= TIOCM_DTR|TIOCM_RTS|TIOCM_OUT1|TIOCM_OUT2|TIOCM_LOOP|TIOCM_CD|
+		TIOCM_RI|TIOCM_DSR|TIOCM_CTS;
+	clear &= TIOCM_DTR|TIOCM_RTS|TIOCM_OUT1|TIOCM_OUT2|TIOCM_LOOP|TIOCM_CD|
+		TIOCM_RI|TIOCM_DSR|TIOCM_CTS;
 	return tty->ops->tiocmset(tty, set, clear);
 }
 
@@ -3067,9 +3077,13 @@ struct tty_struct *alloc_tty_struct(struct tty_driver *driver, int idx)
 	tty->session = NULL;
 	tty->pgrp = NULL;
 	mutex_init(&tty->legacy_mutex);
+<<<<<<< HEAD
 	mutex_init(&tty->throttle_mutex);
 	init_rwsem(&tty->termios_rwsem);
 	mutex_init(&tty->winsize_mutex);
+=======
+	mutex_init(&tty->termios_mutex);
+>>>>>>> p9x
 	init_ldsem(&tty->ldisc_sem);
 	init_waitqueue_head(&tty->write_wait);
 	init_waitqueue_head(&tty->read_wait);

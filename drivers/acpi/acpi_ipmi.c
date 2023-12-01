@@ -27,6 +27,11 @@
 #include <linux/module.h>
 #include <linux/acpi.h>
 #include <linux/ipmi.h>
+<<<<<<< HEAD
+=======
+#include <linux/device.h>
+#include <linux/pnp.h>
+>>>>>>> p9x
 #include <linux/spinlock.h>
 
 MODULE_AUTHOR("Zhao Yakui");
@@ -46,8 +51,12 @@ struct acpi_ipmi_device {
 
 	/* the IPMI request message list */
 	struct list_head tx_msg_list;
+<<<<<<< HEAD
 
 	spinlock_t tx_msg_lock;
+=======
+	spinlock_t	tx_msg_lock;
+>>>>>>> p9x
 	acpi_handle handle;
 	struct device *dev;
 	ipmi_user_t user_interface;
@@ -302,13 +311,19 @@ static int acpi_format_ipmi_request(struct acpi_ipmi_msg *tx_msg,
 
 	/* Get the msgid */
 	device = tx_msg->device;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	spin_lock_irqsave(&device->tx_msg_lock, flags);
 	device->curr_msgid++;
 	tx_msg->tx_msgid = device->curr_msgid;
 	spin_unlock_irqrestore(&device->tx_msg_lock, flags);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> p9x
 }
 
 static void acpi_format_ipmi_response(struct acpi_ipmi_msg *msg,
@@ -391,9 +406,15 @@ static void ipmi_cancel_tx_msg(struct acpi_ipmi_device *ipmi,
 static void ipmi_msg_handler(struct ipmi_recv_msg *msg, void *user_msg_data)
 {
 	struct acpi_ipmi_device *ipmi_device = user_msg_data;
+<<<<<<< HEAD
 	bool msg_found = false;
 	struct acpi_ipmi_msg *tx_msg, *temp;
 	struct device *dev = ipmi_device->dev;
+=======
+	int msg_found = 0;
+	struct acpi_ipmi_msg *tx_msg;
+	struct pnp_dev *pnp_dev = ipmi_device->pnp_dev;
+>>>>>>> p9x
 	unsigned long flags;
 
 	if (msg->user != ipmi_device->user_interface) {
@@ -402,9 +423,14 @@ static void ipmi_msg_handler(struct ipmi_recv_msg *msg, void *user_msg_data)
 			 msg->user, ipmi_device->user_interface);
 		goto out_msg;
 	}
+<<<<<<< HEAD
 
 	spin_lock_irqsave(&ipmi_device->tx_msg_lock, flags);
 	list_for_each_entry_safe(tx_msg, temp, &ipmi_device->tx_msg_list, head) {
+=======
+	spin_lock_irqsave(&ipmi_device->tx_msg_lock, flags);
+	list_for_each_entry(tx_msg, &ipmi_device->tx_msg_list, head) {
+>>>>>>> p9x
 		if (msg->msgid == tx_msg->tx_msgid) {
 			msg_found = true;
 			list_del(&tx_msg->head);
@@ -413,6 +439,10 @@ static void ipmi_msg_handler(struct ipmi_recv_msg *msg, void *user_msg_data)
 	}
 	spin_unlock_irqrestore(&ipmi_device->tx_msg_lock, flags);
 
+<<<<<<< HEAD
+=======
+	spin_unlock_irqrestore(&ipmi_device->tx_msg_lock, flags);
+>>>>>>> p9x
 	if (!msg_found) {
 		dev_warn(dev,
 			 "Unexpected response (msg id %ld) is returned.\n",
@@ -547,7 +577,10 @@ acpi_ipmi_space_handler(u32 function, acpi_physical_address address,
 	int err;
 	acpi_status status;
 	unsigned long flags;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	/*
 	 * IPMI opregion message.
 	 * IPMI message is firstly written to the BMC and system software
@@ -562,6 +595,7 @@ acpi_ipmi_space_handler(u32 function, acpi_physical_address address,
 		return AE_NOT_EXIST;
 	ipmi_device = tx_msg->device;
 
+<<<<<<< HEAD
 	if (acpi_format_ipmi_request(tx_msg, address, value) != 0) {
 		ipmi_msg_release(tx_msg);
 		return AE_TYPE;
@@ -580,6 +614,12 @@ acpi_ipmi_space_handler(u32 function, acpi_physical_address address,
 	spin_unlock_irqrestore(&ipmi_device->tx_msg_lock, flags);
 	mutex_unlock(&driver_data.ipmi_lock);
 
+=======
+	acpi_format_ipmi_msg(tx_msg, address, value);
+	spin_lock_irqsave(&ipmi_device->tx_msg_lock, flags);
+	list_add_tail(&tx_msg->head, &ipmi_device->tx_msg_list);
+	spin_unlock_irqrestore(&ipmi_device->tx_msg_lock, flags);
+>>>>>>> p9x
 	err = ipmi_request_settime(ipmi_device->user_interface,
 				   &tx_msg->addr,
 				   tx_msg->tx_msgid,
@@ -594,12 +634,85 @@ acpi_ipmi_space_handler(u32 function, acpi_physical_address address,
 	acpi_format_ipmi_response(tx_msg, value);
 	status = AE_OK;
 
+<<<<<<< HEAD
 out_msg:
 	ipmi_cancel_tx_msg(ipmi_device, tx_msg);
 	acpi_ipmi_msg_put(tx_msg);
 	return status;
 }
 
+=======
+end_label:
+	spin_lock_irqsave(&ipmi_device->tx_msg_lock, flags);
+	list_del(&tx_msg->head);
+	spin_unlock_irqrestore(&ipmi_device->tx_msg_lock, flags);
+	kfree(tx_msg);
+	return status;
+}
+
+static void ipmi_remove_space_handler(struct acpi_ipmi_device *ipmi)
+{
+	if (!test_bit(IPMI_FLAGS_HANDLER_INSTALL, &ipmi->flags))
+		return;
+
+	acpi_remove_address_space_handler(ipmi->handle,
+				ACPI_ADR_SPACE_IPMI, &acpi_ipmi_space_handler);
+
+	clear_bit(IPMI_FLAGS_HANDLER_INSTALL, &ipmi->flags);
+}
+
+static int ipmi_install_space_handler(struct acpi_ipmi_device *ipmi)
+{
+	acpi_status status;
+
+	if (test_bit(IPMI_FLAGS_HANDLER_INSTALL, &ipmi->flags))
+		return 0;
+
+	status = acpi_install_address_space_handler(ipmi->handle,
+						    ACPI_ADR_SPACE_IPMI,
+						    &acpi_ipmi_space_handler,
+						    NULL, ipmi);
+	if (ACPI_FAILURE(status)) {
+		struct pnp_dev *pnp_dev = ipmi->pnp_dev;
+		dev_warn(&pnp_dev->dev, "Can't register IPMI opregion space "
+			"handle\n");
+		return -EINVAL;
+	}
+	set_bit(IPMI_FLAGS_HANDLER_INSTALL, &ipmi->flags);
+	return 0;
+}
+
+static void acpi_add_ipmi_device(struct acpi_ipmi_device *ipmi_device)
+{
+
+	INIT_LIST_HEAD(&ipmi_device->head);
+
+	spin_lock_init(&ipmi_device->tx_msg_lock);
+	INIT_LIST_HEAD(&ipmi_device->tx_msg_list);
+	ipmi_install_space_handler(ipmi_device);
+
+	list_add_tail(&ipmi_device->head, &driver_data.ipmi_devices);
+}
+
+static void acpi_remove_ipmi_device(struct acpi_ipmi_device *ipmi_device)
+{
+	/*
+	 * If the IPMI user interface is created, it should be
+	 * destroyed.
+	 */
+	if (ipmi_device->user_interface) {
+		ipmi_destroy_user(ipmi_device->user_interface);
+		ipmi_device->user_interface = NULL;
+	}
+	/* flush the Tx_msg list */
+	if (!list_empty(&ipmi_device->tx_msg_list))
+		ipmi_flush_tx_msg(ipmi_device);
+
+	list_del(&ipmi_device->head);
+	ipmi_remove_space_handler(ipmi_device);
+}
+
+>>>>>>> p9x
 static int __init acpi_ipmi_init(void)
 {
 	int result;

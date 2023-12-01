@@ -273,10 +273,16 @@ struct bcache_device {
 #define BCACHE_DEV_DETACHING	1
 #define BCACHE_DEV_UNLINK_DONE	2
 
+<<<<<<< HEAD
 	unsigned		nr_stripes;
 	unsigned		stripe_size;
 	atomic_t		*stripe_sectors_dirty;
 	unsigned long		*full_dirty_stripes;
+=======
+	/* If nonzero, we're detaching/unregistering from cache set */
+	atomic_t		detaching;
+	int			flush_done;
+>>>>>>> p9x
 
 	unsigned long		sectors_dirty_last;
 	long			sectors_dirty_derivative;
@@ -347,8 +353,12 @@ struct cached_dev {
 
 	/* Limit number of writeback bios in flight */
 	struct semaphore	in_flight;
+<<<<<<< HEAD
 	struct task_struct	*writeback_thread;
 	struct workqueue_struct	*writeback_write_wq;
+=======
+	struct closure_with_timer writeback;
+>>>>>>> p9x
 
 	struct keybuf		writeback_keys;
 

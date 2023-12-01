@@ -1217,9 +1217,13 @@ M:	Daniel Walker <dwalker@fifo99.com>
 M:	Bryan Huntsman <bryanh@codeaurora.org>
 L:	linux-arm-msm@vger.kernel.org
 F:	arch/arm/mach-msm/
+<<<<<<< HEAD
 F:	drivers/video/fbdev/msm/
 F:	drivers/mmc/host/msm_sdcc.c
 F:	drivers/mmc/host/msm_sdcc.h
+=======
+F:	drivers/video/msm/
+>>>>>>> p9x
 F:	drivers/tty/serial/msm_serial.h
 F:	drivers/tty/serial/msm_serial.c
 F:	drivers/*/pm8???-*
@@ -4126,6 +4130,14 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/arnd/asm-generic.git
 S:	Maintained
 F:	include/asm-generic/
 F:	include/uapi/asm-generic/
+
+GENERIC PHY FRAMEWORK
+M:	Kishon Vijay Abraham I <kishon@ti.com>
+L:	linux-kernel@vger.kernel.org
+T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kishon/linux-phy.git
+S:	Supported
+F:	drivers/phy/
+F:	include/linux/phy/
 
 GENERIC PHY FRAMEWORK
 M:	Kishon Vijay Abraham I <kishon@ti.com>
@@ -7744,6 +7756,7 @@ L:	linux-kernel@vger.kernel.org
 S:	Supported
 T:	git git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git
 F:	Documentation/RCU/torture.txt
+<<<<<<< HEAD
 F:	kernel/rcu/rcutorture.c
 
 RCUTORTURE TEST FRAMEWORK
@@ -7756,6 +7769,9 @@ L:	linux-kernel@vger.kernel.org
 S:	Supported
 T:	git git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git
 F:	tools/testing/selftests/rcutorture
+=======
+F:	kernel/rcu/torture.c
+>>>>>>> p9x
 
 RDC R-321X SoC
 M:	Florian Fainelli <florian@openwrt.org>
@@ -7788,7 +7804,11 @@ X:	Documentation/RCU/torture.txt
 F:	include/linux/rcu*
 X:	include/linux/srcu.h
 F:	kernel/rcu/
+<<<<<<< HEAD
 X:	kernel/torture.c
+=======
+X:	kernel/rcu/torture.c
+>>>>>>> p9x
 
 REAL TIME CLOCK (RTC) SUBSYSTEM
 M:	Alessandro Zummo <a.zummo@towertech.it>
@@ -10469,7 +10489,11 @@ F:	drivers/net/hamradio/*scc.c
 F:	drivers/net/hamradio/z8530.h
 
 ZBUD COMPRESSED PAGE ALLOCATOR
+<<<<<<< HEAD
 M:	Seth Jennings <sjennings@variantweb.net>
+=======
+M:	Seth Jennings <sjenning@linux.vnet.ibm.com>
+>>>>>>> p9x
 L:	linux-mm@kvack.org
 S:	Maintained
 F:	mm/zbud.c
@@ -10515,7 +10539,11 @@ F:	include/linux/zsmalloc.h
 F:	Documentation/vm/zsmalloc.txt
 
 ZSWAP COMPRESSED SWAP CACHING
+<<<<<<< HEAD
 M:	Seth Jennings <sjennings@variantweb.net>
+=======
+M:	Seth Jennings <sjenning@linux.vnet.ibm.com>
+>>>>>>> p9x
 L:	linux-mm@kvack.org
 S:	Maintained
 F:	mm/zswap.c

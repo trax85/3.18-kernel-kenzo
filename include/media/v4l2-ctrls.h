@@ -35,6 +35,7 @@ struct v4l2_subdev;
 struct v4l2_subscribed_event;
 struct v4l2_fh;
 struct poll_table_struct;
+struct file;
 
 /** union v4l2_ctrl_ptr - A pointer to a control value.
  * @p_s32:	Pointer to a 32-bit signed value.

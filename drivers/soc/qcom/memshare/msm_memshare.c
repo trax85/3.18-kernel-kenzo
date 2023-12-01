@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -25,9 +29,12 @@
 #include "msm_memshare.h"
 #include "heap_mem_ext_v01.h"
 
+<<<<<<< HEAD
 #include <soc/qcom/secure_buffer.h>
 #include <soc/qcom/ramdump.h>
 
+=======
+>>>>>>> p9x
 /* Macros */
 #define MEMSHARE_DEV_NAME "memshare"
 #define MEMSHARE_CHILD_DEV_NAME "memshare_child"
@@ -38,8 +45,11 @@ static void mem_share_svc_recv_msg(struct work_struct *work);
 static DECLARE_DELAYED_WORK(work_recv_msg, mem_share_svc_recv_msg);
 static struct workqueue_struct *mem_share_svc_workqueue;
 static uint64_t bootup_request;
+<<<<<<< HEAD
 static bool ramdump_event;
 static void *memshare_ramdump_dev[MAX_CLIENTS];
+=======
+>>>>>>> p9x
 
 /* Memshare Driver Structure */
 struct memshare_driver {
@@ -117,6 +127,7 @@ static struct msg_desc mem_share_svc_size_query_resp_desc = {
 	.ei_array = mem_query_size_resp_msg_data_v01_ei,
 };
 
+<<<<<<< HEAD
 /*
  *  This API creates ramdump dev handlers
  *  for each of the memshare clients.
@@ -150,6 +161,13 @@ static int check_client(int client_id, int proc, int request)
 	int i = 0, rc;
 	int found = DHMS_MEM_CLIENT_INVALID;
 
+=======
+static int check_client(int client_id, int proc, int request)
+{
+
+	int i = 0;
+	int found = DHMS_MEM_CLIENT_INVALID;
+>>>>>>> p9x
 	for (i = 0; i < MAX_CLIENTS; i++) {
 		if (memblock[i].client_id == client_id &&
 				memblock[i].peripheral == proc) {
@@ -158,7 +176,11 @@ static int check_client(int client_id, int proc, int request)
 		}
 	}
 	if ((found == DHMS_MEM_CLIENT_INVALID) && !request) {
+<<<<<<< HEAD
 		pr_debug("memshare: No registered client, adding a new client\n");
+=======
+		pr_debug("No registered client, adding a new client\n");
+>>>>>>> p9x
 		/* Add a new client */
 		for (i = 0; i < MAX_CLIENTS; i++) {
 			if (memblock[i].client_id == DHMS_MEM_CLIENT_INVALID) {
@@ -167,6 +189,7 @@ static int check_client(int client_id, int proc, int request)
 				memblock[i].guarantee = 0;
 				memblock[i].peripheral = proc;
 				found = i;
+<<<<<<< HEAD
 
 				if (!memblock[i].file_created) {
 					rc = mem_share_configure_ramdump();
@@ -177,6 +200,8 @@ static int check_client(int client_id, int proc, int request)
 						memblock[i].file_created = 1;
 				}
 
+=======
+>>>>>>> p9x
 				break;
 			}
 		}
@@ -230,12 +255,16 @@ void initialize_client(void)
 		memblock[i].sequence_id = -1;
 		memblock[i].memory_type = MEMORY_CMA;
 		memblock[i].free_memory = 0;
+<<<<<<< HEAD
 		memblock[i].hyp_mapping = 0;
 		memblock[i].file_created = 0;
+=======
+>>>>>>> p9x
 	}
 	dma_set_attr(DMA_ATTR_NO_KERNEL_MAPPING, &attrs);
 }
 
+<<<<<<< HEAD
 /*
  *  This API initializes the ramdump segments
  *  with the physical address and size of
@@ -288,10 +317,13 @@ static int mem_share_do_ramdump(void)
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 static int modem_notifier_cb(struct notifier_block *this, unsigned long code,
 					void *_cmd)
 {
 	int i;
+<<<<<<< HEAD
 	int ret;
 	u32 source_vmlist[2] = {VMID_HLOS, VMID_MSS_MSA};
 	int dest_vmids[1] = {VMID_HLOS};
@@ -299,6 +331,8 @@ static int modem_notifier_cb(struct notifier_block *this, unsigned long code,
 	struct notif_data *notifdata = NULL;
 
 	mutex_lock(&memsh_drv->mem_share);
+=======
+>>>>>>> p9x
 
 	switch (code) {
 
@@ -306,6 +340,7 @@ static int modem_notifier_cb(struct notifier_block *this, unsigned long code,
 		bootup_request++;
 		break;
 
+<<<<<<< HEAD
 	case SUBSYS_RAMDUMP_NOTIFICATION:
 		ramdump_event = 1;
 		break;
@@ -328,6 +363,8 @@ static int modem_notifier_cb(struct notifier_block *this, unsigned long code,
 		}
 		break;
 
+=======
+>>>>>>> p9x
 	case SUBSYS_AFTER_POWERUP:
 		pr_debug("memshare: Modem has booted up\n");
 		for (i = 0; i < MAX_CLIENTS; i++) {
@@ -344,6 +381,7 @@ static int modem_notifier_cb(struct notifier_block *this, unsigned long code,
 					DHMS_MEM_PROC_MPSS_V01 &&
 					!memblock[i].guarantee &&
 					memblock[i].alloted) {
+<<<<<<< HEAD
 					pr_debug("memshare: Freeing memory for client id: %d\n",
 						memblock[i].client_id);
 					ret = hyp_assign_phys(
@@ -366,6 +404,10 @@ static int modem_notifier_cb(struct notifier_block *this, unsigned long code,
 					} else {
 						memblock[i].hyp_mapping = 0;
 					}
+=======
+					pr_err("memshare: Freeing memory for client id: %d\n",
+						memblock[i].client_id);
+>>>>>>> p9x
 					dma_free_attrs(memsh_drv->dev,
 						memblock[i].size,
 						memblock[i].virtual_addr,
@@ -383,7 +425,10 @@ static int modem_notifier_cb(struct notifier_block *this, unsigned long code,
 		break;
 	}
 
+<<<<<<< HEAD
 	mutex_unlock(&memsh_drv->mem_share);
+=======
+>>>>>>> p9x
 	return NOTIFY_DONE;
 }
 
@@ -391,6 +436,7 @@ static struct notifier_block nb = {
 	.notifier_call = modem_notifier_cb,
 };
 
+<<<<<<< HEAD
 static void shared_hyp_mapping(int client_id)
 {
 	int ret;
@@ -417,6 +463,8 @@ static void shared_hyp_mapping(int client_id)
 	memblock[client_id].hyp_mapping = 1;
 }
 
+=======
+>>>>>>> p9x
 static int handle_alloc_req(void *req_h, void *req, void *conn_h)
 {
 	struct mem_alloc_req_msg_v01 *alloc_req;
@@ -474,6 +522,11 @@ static int handle_alloc_generic_req(void *req_h, void *req, void *conn_h)
 	alloc_resp = kzalloc(sizeof(struct mem_alloc_generic_resp_msg_v01),
 					GFP_KERNEL);
 	if (!alloc_resp) {
+<<<<<<< HEAD
+=======
+		pr_err("In %s, error allocating memory to response structure\n",
+						__func__);
+>>>>>>> p9x
 		mutex_unlock(&memsh_drv->mem_share);
 		return -ENOMEM;
 	}
@@ -486,8 +539,11 @@ static int handle_alloc_generic_req(void *req_h, void *req, void *conn_h)
 		pr_err("memshare: %s client not found, requested client: %d, proc_id: %d\n",
 				__func__, alloc_req->client_id,
 				alloc_req->proc_id);
+<<<<<<< HEAD
 		kfree(alloc_resp);
 		alloc_resp = NULL;
+=======
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
@@ -512,6 +568,7 @@ static int handle_alloc_generic_req(void *req_h, void *req, void *conn_h)
 	memblock[client_id].sequence_id = alloc_req->sequence_id;
 
 	fill_alloc_response(alloc_resp, client_id, &resp);
+<<<<<<< HEAD
 	/*
 	 * Perform the Hypervisor mapping in order to avoid XPU viloation
 	 * to the allocated region for Modem Clients
@@ -521,6 +578,11 @@ static int handle_alloc_generic_req(void *req_h, void *req, void *conn_h)
 		shared_hyp_mapping(client_id);
 	mutex_unlock(&memsh_drv->mem_share);
 	pr_debug("memshare: alloc_resp.num_bytes :%d, alloc_resp.handle :%lx, alloc_resp.mem_req_result :%lx\n",
+=======
+
+	mutex_unlock(&memsh_drv->mem_share);
+	pr_debug("alloc_resp.num_bytes :%d, alloc_resp.handle :%lx, alloc_resp.mem_req_result :%lx\n",
+>>>>>>> p9x
 			  alloc_resp->dhms_mem_alloc_addr_info[0].num_bytes,
 			  (unsigned long int)
 			  alloc_resp->dhms_mem_alloc_addr_info[0].phy_addr,
@@ -533,8 +595,11 @@ static int handle_alloc_generic_req(void *req_h, void *req, void *conn_h)
 		pr_err("In %s, Error sending the alloc request: %d\n",
 							__func__, rc);
 
+<<<<<<< HEAD
 	kfree(alloc_resp);
 	alloc_resp = NULL;
+=======
+>>>>>>> p9x
 	return rc;
 }
 
@@ -584,7 +649,11 @@ static int handle_free_generic_req(void *req_h, void *req, void *conn_h)
 	memset(&free_resp, 0, sizeof(struct mem_free_generic_resp_msg_v01));
 	free_resp.resp.error = QMI_ERR_INTERNAL_V01;
 	free_resp.resp.result = QMI_RESULT_FAILURE_V01;
+<<<<<<< HEAD
 	pr_debug("memshare: Client id: %d proc id: %d\n", free_req->client_id,
+=======
+	pr_debug("Client id: %d proc id: %d\n", free_req->client_id,
+>>>>>>> p9x
 				free_req->proc_id);
 	client_id = check_client(free_req->client_id, free_req->proc_id, FREE);
 	if (client_id == DHMS_MEM_CLIENT_INVALID) {
@@ -640,6 +709,11 @@ static int handle_query_size_req(void *req_h, void *req, void *conn_h)
 	query_resp = kzalloc(sizeof(struct mem_query_size_rsp_msg_v01),
 					GFP_KERNEL);
 	if (!query_resp) {
+<<<<<<< HEAD
+=======
+		pr_err("In %s, error allocating memory to response structure\n",
+						__func__);
+>>>>>>> p9x
 		mutex_unlock(&memsh_drv->mem_share);
 		return -ENOMEM;
 	}
@@ -652,8 +726,11 @@ static int handle_query_size_req(void *req_h, void *req, void *conn_h)
 		pr_err("memshare: %s client not found, requested client: %d, proc_id: %d\n",
 				__func__, query_req->client_id,
 				query_req->proc_id);
+<<<<<<< HEAD
 		kfree(query_resp);
 		query_resp = NULL;
+=======
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
@@ -679,8 +756,11 @@ static int handle_query_size_req(void *req_h, void *req, void *conn_h)
 		pr_err("In %s, Error sending the query request: %d\n",
 							__func__, rc);
 
+<<<<<<< HEAD
 	kfree(query_resp);
 	query_resp = NULL;
+=======
+>>>>>>> p9x
 	return rc;
 }
 
@@ -927,9 +1007,12 @@ static int memshare_child_probe(struct platform_device *pdev)
 	memblock[num_clients].size = size;
 	memblock[num_clients].client_id = client_id;
 
+<<<<<<< HEAD
   /*
    *	Memshare allocation for guaranteed clients
    */
+=======
+>>>>>>> p9x
 	if (memblock[num_clients].guarantee) {
 		rc = memshare_alloc(memsh_child->dev,
 				memblock[num_clients].size,
@@ -942,6 +1025,7 @@ static int memshare_child_probe(struct platform_device *pdev)
 		memblock[num_clients].alloted = 1;
 	}
 
+<<<<<<< HEAD
 	/*
 	 *  call for creating ramdump dev handlers for
 	 *  memshare clients
@@ -957,6 +1041,8 @@ static int memshare_child_probe(struct platform_device *pdev)
 			memblock[num_clients].file_created = 1;
 	}
 
+=======
+>>>>>>> p9x
 	num_clients++;
 
 	return 0;

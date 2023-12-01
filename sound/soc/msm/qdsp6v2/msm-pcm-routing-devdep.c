@@ -133,3 +133,36 @@ int msm_pcm_routing_hwdep_new(struct snd_soc_pcm_runtime *runtime,
 	return rc;
 }
 #endif
+<<<<<<< HEAD
+=======
+
+int msm_pcm_create_generic_hwdep_node(struct snd_soc_platform *platform)
+{
+	struct snd_hwdep *hwdep;
+	int rc;
+
+	rc = snd_hwdep_new(platform->card->snd_card,
+			"GENERIC_AUDIO_DEP_NODE",
+			MSM_SNDCARD_GENERIC_HW_DEP, &hwdep);
+	if (hwdep == NULL) {
+		pr_err("%s: hwdep intf failed to create generic hwdep NULL\n",
+			__func__);
+		return rc;
+	}
+	if (IS_ERR_VALUE(rc)) {
+		pr_err("%s: hwdep intf failed to create generic hwdep rc %d\n",
+			 __func__, rc);
+		return rc;
+	}
+
+	hwdep->iface = SNDRV_HWDEP_IFACE_AUDIO_BE;
+	hwdep->private_data = NULL;
+	hwdep->ops.open = msm_pcm_routing_hwdep_open;
+	hwdep->ops.ioctl = msm_pcm_routing_hwdep_ioctl;
+	hwdep->ops.release = msm_pcm_routing_hwdep_release;
+#ifdef CONFIG_COMPAT
+	hwdep->ops.ioctl_compat = msm_pcm_routing_hwdep_compat_ioctl;
+#endif
+	return rc;
+}
+>>>>>>> p9x

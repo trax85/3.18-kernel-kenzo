@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -12,6 +16,7 @@
 
 #define VIDC_DBG_LABEL "venus_boot"
 
+<<<<<<< HEAD
 #include <asm/dma-iommu.h>
 #include <asm/page.h>
 #include <linux/clk.h>
@@ -31,6 +36,29 @@
 #include <linux/slab.h>
 #include <soc/qcom/subsystem_notif.h>
 #include <soc/qcom/subsystem_restart.h>
+=======
+#include <linux/kernel.h>
+#include <linux/err.h>
+#include <linux/io.h>
+#include <linux/delay.h>
+#include <linux/module.h>
+#include <linux/slab.h>
+#include <linux/platform_device.h>
+#include <linux/iommu.h>
+#include <linux/qcom_iommu.h>
+#include <linux/iopoll.h>
+#include <linux/of.h>
+#include <linux/msm_iommu_domains.h>
+#include <linux/platform_device.h>
+#include <linux/sizes.h>
+#include <linux/regulator/consumer.h>
+
+#include <asm/page.h>
+
+#include <soc/qcom/subsystem_restart.h>
+#include <soc/qcom/subsystem_notif.h>
+
+>>>>>>> p9x
 #include "msm_vidc_debug.h"
 #include "vidc_hfi_io.h"
 #include "venus_boot.h"
@@ -76,9 +104,15 @@ static struct {
 	struct regulator *gdsc;
 	const char *reg_name;
 	void __iomem *reg_base;
+<<<<<<< HEAD
 	struct device *iommu_ctx_bank_dev;
 	struct dma_iommu_mapping *mapping;
 	dma_addr_t fw_iova;
+=======
+	struct device *iommu_fw_ctx;
+	struct iommu_domain *iommu_fw_domain;
+	int venus_domain_num;
+>>>>>>> p9x
 	bool is_booted;
 	bool hw_ver_checked;
 	u32 fw_sz;
@@ -88,7 +122,11 @@ static struct {
 } *venus_data = NULL;
 
 /* Get venus clocks and set rates for rate-settable clocks */
+<<<<<<< HEAD
 static int venus_clock_setup(void)
+=======
+static int venus_clock_setup(struct device *dev)
+>>>>>>> p9x
 {
 	int i, rc = 0;
 	unsigned long rate;
@@ -98,7 +136,11 @@ static int venus_clock_setup(void)
 	for (i = 0; i < res->clock_set.count; i++) {
 		cl = &res->clock_set.clock_tbl[i];
 		/* Make sure rate-settable clocks' rates are set */
+<<<<<<< HEAD
 		if (!clk_get_rate(cl->clk) && cl->count) {
+=======
+		if (clk_get_rate(cl->clk) == 0 && cl->count) {
+>>>>>>> p9x
 			rate = clk_round_rate(cl->clk, 0);
 			rc = clk_set_rate(cl->clk, rate);
 			if (rc) {
@@ -113,7 +155,11 @@ static int venus_clock_setup(void)
 	return rc;
 }
 
+<<<<<<< HEAD
 static int venus_clock_prepare_enable(void)
+=======
+static int venus_clock_prepare_enable(struct device *dev)
+>>>>>>> p9x
 {
 	int i, rc = 0;
 	struct msm_vidc_platform_resources *res = venus_data->resources;
@@ -135,7 +181,11 @@ static int venus_clock_prepare_enable(void)
 	return rc;
 }
 
+<<<<<<< HEAD
 static void venus_clock_disable_unprepare(void)
+=======
+static void venus_clock_disable_unprepare(struct device *dev)
+>>>>>>> p9x
 {
 	int i;
 	struct msm_vidc_platform_resources *res = venus_data->resources;
@@ -147,6 +197,7 @@ static void venus_clock_disable_unprepare(void)
 	}
 }
 
+<<<<<<< HEAD
 static int venus_setup_cb(struct device *dev,
 				u32 size)
 {
@@ -192,17 +243,73 @@ static int pil_venus_auth_and_reset(void)
 
 	/* Need to enable this for new SMMU to set the device attribute */
 	bool disable_htw = true;
+=======
+static int venus_register_domain(u32 fw_max_sz)
+{
+	struct msm_iova_partition venus_fw_partition = {
+		.start = 0,
+		.size = fw_max_sz,
+	};
+	struct msm_iova_layout venus_fw_layout = {
+		.partitions = &venus_fw_partition,
+		.npartitions = 1,
+		.client_name = "pil_venus",
+		.domain_flags = 0,
+	};
+
+	return msm_register_domain(&venus_fw_layout);
+}
+
+static int pil_venus_mem_setup(struct platform_device *pdev, size_t size)
+{
+	int domain;
+
+	venus_data->iommu_fw_ctx  = msm_iommu_get_ctx("venus_fw");
+	if (!venus_data->iommu_fw_ctx) {
+		dprintk(VIDC_ERR, "No iommu fw context found\n");
+		return -ENODEV;
+	}
+
+	if (!venus_data->venus_domain_num) {
+		size = round_up(size, SZ_4K);
+		domain = venus_register_domain(size);
+		if (domain < 0) {
+			dprintk(VIDC_ERR,
+				"Venus fw iommu domain register failed\n");
+			return -ENODEV;
+		}
+		venus_data->iommu_fw_domain = msm_get_iommu_domain(domain);
+		if (!venus_data->iommu_fw_domain) {
+			dprintk(VIDC_ERR, "No iommu fw domain found\n");
+			return -ENODEV;
+		}
+		venus_data->venus_domain_num = domain;
+		venus_data->fw_sz = size;
+	}
+	return 0;
+}
+
+static int pil_venus_auth_and_reset(struct platform_device *pdev)
+{
+	int rc;
+>>>>>>> p9x
 	phys_addr_t fw_bias = venus_data->resources->firmware_base;
 	void __iomem *reg_base = venus_data->reg_base;
 	u32 ver;
 	bool iommu_present = is_iommu_present(venus_data->resources);
+<<<<<<< HEAD
 	struct device *dev = venus_data->iommu_ctx_bank_dev;
+=======
+>>>>>>> p9x
 
 	if (!fw_bias) {
 		dprintk(VIDC_ERR, "FW bias is not valid\n");
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	venus_data->fw_iova = (dma_addr_t)NULL;
+=======
+>>>>>>> p9x
 	/* Get Venus version number */
 	if (!venus_data->hw_ver_checked) {
 		ver = readl_relaxed(reg_base + VIDC_WRAPPER_HW_VERSION);
@@ -249,7 +356,11 @@ static int pil_venus_auth_and_reset(void)
 			goto err;
 		}
 
+<<<<<<< HEAD
 		rc = venus_clock_prepare_enable();
+=======
+		rc = venus_clock_prepare_enable(&pdev->dev);
+>>>>>>> p9x
 		if (rc) {
 			dprintk(VIDC_ERR, "Clock prepare and enable failed\n");
 			regulator_disable(venus_data->gdsc);
@@ -263,7 +374,11 @@ static int pil_venus_auth_and_reset(void)
 		writel_relaxed(fw_bias + VENUS_REGION_SIZE,
 				reg_base + VENUS_VBIF_AT_NEW_HIGH);
 		writel_relaxed(0x7F007F, reg_base + VENUS_VBIF_ADDR_TRANS_EN);
+<<<<<<< HEAD
 		venus_clock_disable_unprepare();
+=======
+		venus_clock_disable_unprepare(&pdev->dev);
+>>>>>>> p9x
 		regulator_disable(venus_data->gdsc);
 	}
 	/* Make sure all register writes are committed. */
@@ -277,6 +392,7 @@ static int pil_venus_auth_and_reset(void)
 
 	if (iommu_present) {
 		phys_addr_t pa = fw_bias;
+<<<<<<< HEAD
 
 		/* Enable this for new SMMU to set the device attribute */
 		rc = iommu_domain_set_attr(venus_data->mapping->domain,
@@ -314,6 +430,31 @@ static int pil_venus_auth_and_reset(void)
 			dprintk(VIDC_ERR, "%s - Failed to setup IOMMU\n",
 					dev_name(dev));
 			goto err_iommu_map;
+=======
+		dma_addr_t iova;
+
+		rc = iommu_attach_device(venus_data->iommu_fw_domain,
+				venus_data->iommu_fw_ctx);
+		if (rc) {
+			dprintk(VIDC_ERR,
+				"venus fw iommu attach failed %d\n", rc);
+			goto err;
+		}
+
+		/*
+		 * Map virtual addr space 0 - fw_sz to firmware physical
+		 * addr space
+		 */
+		rc = msm_iommu_map_contig_buffer(pa,
+				venus_data->venus_domain_num, 0,
+				venus_data->fw_sz, SZ_4K, 0, &iova);
+
+		if (rc || (iova != 0)) {
+			dprintk(VIDC_ERR, "Failed to setup IOMMU\n");
+			iommu_detach_device(venus_data->iommu_fw_domain,
+					venus_data->iommu_fw_ctx);
+			goto err;
+>>>>>>> p9x
 		}
 	}
 	/* Bring Arm9 out of reset */
@@ -322,17 +463,24 @@ static int pil_venus_auth_and_reset(void)
 	venus_data->is_booted = 1;
 	return 0;
 
+<<<<<<< HEAD
 err_iommu_map:
 	if (iommu_present)
 		arm_iommu_detach_device(dev);
 release_mapping:
 	if (iommu_present)
 		arm_iommu_release_mapping(venus_data->mapping);
+=======
+>>>>>>> p9x
 err:
 	return rc;
 }
 
+<<<<<<< HEAD
 static int pil_venus_shutdown(void)
+=======
+static int pil_venus_shutdown(struct platform_device *pdev)
+>>>>>>> p9x
 {
 	void __iomem *reg_base = venus_data->reg_base;
 	u32 reg;
@@ -350,9 +498,17 @@ static int pil_venus_shutdown(void)
 	mb();
 
 	if (is_iommu_present(venus_data->resources)) {
+<<<<<<< HEAD
 		iommu_unmap(venus_data->mapping->domain, venus_data->fw_iova,
 			venus_data->fw_sz);
 		arm_iommu_detach_device(venus_data->iommu_ctx_bank_dev);
+=======
+		msm_iommu_unmap_contig_buffer(0, venus_data->venus_domain_num,
+				0, venus_data->fw_sz);
+
+		iommu_detach_device(venus_data->iommu_fw_domain,
+				venus_data->iommu_fw_ctx);
+>>>>>>> p9x
 	}
 	/*
 	 * Force the VBIF clk to be on to avoid AXI bridge halt ack failure
@@ -395,7 +551,11 @@ static int venus_notifier_cb(struct notifier_block *this, unsigned long code,
 		return NOTIFY_DONE;
 
 	if (!venus_data_set) {
+<<<<<<< HEAD
 		ret = venus_clock_setup();
+=======
+		ret = venus_clock_setup(&data->pdev->dev);
+>>>>>>> p9x
 		if (ret)
 			return ret;
 
@@ -423,7 +583,11 @@ static int venus_notifier_cb(struct notifier_block *this, unsigned long code,
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = venus_clock_prepare_enable();
+=======
+	ret = venus_clock_prepare_enable(&data->pdev->dev);
+>>>>>>> p9x
 	if (ret) {
 		dprintk(VIDC_ERR, "Clock prepare and enable failed\n");
 		goto err_clks;
@@ -431,12 +595,21 @@ static int venus_notifier_cb(struct notifier_block *this, unsigned long code,
 
 	if (code == SUBSYS_AFTER_POWERUP) {
 		if (is_iommu_present(venus_data->resources))
+<<<<<<< HEAD
 			pil_venus_mem_setup(VENUS_REGION_SIZE);
 		pil_venus_auth_and_reset();
 	 } else if (code == SUBSYS_AFTER_SHUTDOWN)
 		pil_venus_shutdown();
 
 	venus_clock_disable_unprepare();
+=======
+			pil_venus_mem_setup(data->pdev, VENUS_REGION_SIZE);
+		pil_venus_auth_and_reset(data->pdev);
+	 } else if (code == SUBSYS_AFTER_SHUTDOWN)
+		pil_venus_shutdown(data->pdev);
+
+	venus_clock_disable_unprepare(&data->pdev->dev);
+>>>>>>> p9x
 	regulator_disable(venus_data->gdsc);
 
 	return NOTIFY_DONE;
@@ -449,12 +622,20 @@ static struct notifier_block venus_notifier = {
 	.notifier_call = venus_notifier_cb,
 };
 
+<<<<<<< HEAD
 int venus_boot_init(struct msm_vidc_platform_resources *res,
 			struct context_bank_info *cb)
 {
 	int rc = 0;
 
 	if (!res || !cb) {
+=======
+int venus_boot_init(struct msm_vidc_platform_resources *res)
+{
+	int rc = 0;
+
+	if (!res) {
+>>>>>>> p9x
 		dprintk(VIDC_ERR, "Invalid platform resource handle\n");
 		return -EINVAL;
 	}
@@ -463,16 +644,23 @@ int venus_boot_init(struct msm_vidc_platform_resources *res,
 		return -ENOMEM;
 
 	venus_data->resources = res;
+<<<<<<< HEAD
 	venus_data->iommu_ctx_bank_dev = cb->dev;
 	if (!venus_data->iommu_ctx_bank_dev) {
 		dprintk(VIDC_ERR, "Invalid venus context bank device\n");
 		return -ENODEV;
 	}
+=======
+>>>>>>> p9x
 	venus_data->reg_base = ioremap_nocache(res->register_base,
 			(unsigned long)res->register_size);
 	if (!venus_data->reg_base) {
 		dprintk(VIDC_ERR,
+<<<<<<< HEAD
 				"could not map reg addr %pa of size %d\n",
+=======
+				"could not map reg addr 0x%pa of size %d\n",
+>>>>>>> p9x
 				&res->register_base, res->register_size);
 		rc = -ENOMEM;
 		goto err_ioremap_fail;

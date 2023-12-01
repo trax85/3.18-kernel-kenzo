@@ -1,7 +1,11 @@
 /* drivers/soc/qcom/smd_debug.c
  *
  * Copyright (C) 2007 Google, Inc.
+<<<<<<< HEAD
  * Copyright (c) 2009-2015, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2009-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  * Author: Brian Swetland <swetland@google.com>
  *
  * This software is licensed under the terms of the GNU General Public
@@ -19,7 +23,10 @@
 #include <linux/list.h>
 #include <linux/ctype.h>
 #include <linux/jiffies.h>
+<<<<<<< HEAD
 #include <linux/err.h>
+=======
+>>>>>>> p9x
 
 #include <soc/qcom/smem.h>
 
@@ -325,11 +332,14 @@ static void debug_ch(struct seq_file *s)
 		return;
 	}
 
+<<<<<<< HEAD
 	if (IS_ERR(tbl) && PTR_ERR(tbl) == -EPROBE_DEFER) {
 		seq_puts(s, "SMEM is not initialized\n");
 		return;
 	}
 
+=======
+>>>>>>> p9x
 	seq_puts(s, "Primary allocation table:\n");
 	print_smd_ch_table(s, tbl, tbl_size / sizeof(*tbl), ID_SMD_CHANNELS,
 							SMEM_SMD_FIFO_BASE_ID,

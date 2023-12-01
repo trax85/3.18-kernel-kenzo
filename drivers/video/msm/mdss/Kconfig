@@ -21,6 +21,7 @@ config FB_MSM_MDSS_HDMI_MHL_SII8334
 	  MHL (Mobile High-Definition Link) technology
 	  uses USB connector to output HDMI content
 
+<<<<<<< HEAD
 config FB_MSM_MDSS_SPI_PANEL
 	depends on FB_MSM_MDSS
 	bool "Support SPI panel feature"
@@ -31,6 +32,8 @@ config FB_MSM_MDSS_SPI_PANEL
 	current max fps only reach to 27 fps, and limited by MDP hardware
 	architecture only supply on MDP3
 
+=======
+>>>>>>> p9x
 config FB_MSM_MDSS_MHL3
 	depends on FB_MSM_MDSS_HDMI_PANEL
 	bool "MHL3 SII8620 Support"
@@ -73,6 +76,7 @@ config FB_MSM_MDSS_XLOG_DEBUG
 	driver during fatal errors and enable some display-driver logging
 	into an internal buffer (this avoids logging overhead).
 
+<<<<<<< HEAD
 config FB_MSM_MDSS_FRC_DEBUG
 	depends on DEBUG_FS && FB_MSM_MDSS
 	bool "Enable Video FRC debugging"
@@ -82,3 +86,11 @@ config FB_MSM_MDSS_FRC_DEBUG
 	frame rate control (FRC) debugging features to: Collect video frame
 	statistics and check whether its output pattern matches expected
 	cadence.
+=======
+config FB_MSM_MDSS_KCAL_CTRL
+	depends on FB_MSM_MDSS
+	bool "MDSS color control"
+	---help---
+	  Enable sysfs for post-processing control of mdss-mdp5 display
+	  controllers in MDSS.
+>>>>>>> p9x

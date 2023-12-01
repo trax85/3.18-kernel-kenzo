@@ -48,6 +48,13 @@
 #define TOMTOM_IS_1_0(ver) \
 	((ver == TOMTOM_VERSION_1_0) ? 1 : 0)
 
+<<<<<<< HEAD
+=======
+#define TOMBAK_VERSION_1_0	0
+#define TOMBAK_IS_1_0(ver) \
+	((ver == TOMBAK_VERSION_1_0) ? 1 : 0)
+
+>>>>>>> p9x
 #define TASHA_VERSION_1_0     0
 #define TASHA_VERSION_1_1     1
 #define TASHA_VERSION_2_0     2
@@ -68,8 +75,11 @@ enum codec_variant {
 	WCD9330,
 	WCD9335,
 	WCD9326,
+<<<<<<< HEAD
 	WCD9302,
 	WCD9306,
+=======
+>>>>>>> p9x
 };
 
 enum {
@@ -308,7 +318,11 @@ int wcd9xxx_interface_reg_read(struct wcd9xxx *wcd9xxx, unsigned short reg);
 int wcd9xxx_interface_reg_write(struct wcd9xxx *wcd9xxx, unsigned short reg,
 		u8 val);
 int wcd9xxx_get_logical_addresses(u8 *pgd_la, u8 *inf_la);
+<<<<<<< HEAD
 int wcd9xxx_bus_write_repeat(struct wcd9xxx *wcd9xxx, unsigned short reg,
+=======
+int wcd9xxx_slim_write_repeat(struct wcd9xxx *wcd9xxx, unsigned short reg,
+>>>>>>> p9x
 			     int bytes, void *src);
 int wcd9xxx_slim_reserve_bw(struct wcd9xxx *wcd9xxx,
 			    u32 bw_ops, bool commit);
@@ -321,12 +335,30 @@ int wcd9xxx_slim_bulk_write(struct wcd9xxx *wcd9xxx,
 			    struct wcd9xxx_reg_val *bulk_reg,
 			    unsigned int size, bool interface);
 
+<<<<<<< HEAD
+=======
+void wcd9xxx_disable_supplies(struct wcd9xxx *wcd9xxx,
+				     void *pdata);
+
+int wcd9xxx_disable_static_supplies_to_optimum(struct wcd9xxx *wcd9xxx,
+						void *data);
+int wcd9xxx_enable_static_supplies_to_optimum(
+			struct wcd9xxx *wcd9xxx,
+			void *pdata);
+
+>>>>>>> p9x
 #if defined(CONFIG_WCD9310_CODEC) || \
 	defined(CONFIG_WCD9304_CODEC) || \
 	defined(CONFIG_WCD9320_CODEC) || \
 	defined(CONFIG_WCD9330_CODEC) || \
+<<<<<<< HEAD
 	defined(CONFIG_WCD9335_CODEC) || \
 	defined(CONFIG_WCD9306_CODEC)
+=======
+	defined(CONFIG_WCD9306_CODEC) || \
+	defined(CONFIG_WCD9335_CODEC) || \
+	defined(CONFIG_SND_SOC_MSM8X16_WCD)
+>>>>>>> p9x
 int __init wcd9xxx_irq_of_init(struct device_node *node,
 			       struct device_node *parent);
 #else

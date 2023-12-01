@@ -261,8 +261,14 @@ struct kvm_vcpu *kvm_arch_vcpu_create(struct kvm *kvm, unsigned int id)
 	 */
 	if (cpu_has_veic || cpu_has_vint)
 		size = 0x200 + VECTORSPACING * 64;
+<<<<<<< HEAD:arch/mips/kvm/mips.c
 	else
 		size = 0x4000;
+=======
+	} else {
+		size = 0x4000;
+	}
+>>>>>>> p9x:arch/mips/kvm/kvm_mips.c
 
 	/* Save Linux EBASE */
 	vcpu->arch.host_ebase = (void *)read_c0_ebase();
@@ -271,7 +277,7 @@ struct kvm_vcpu *kvm_arch_vcpu_create(struct kvm *kvm, unsigned int id)
 
 	if (!gebase) {
 		err = -ENOMEM;
-		goto out_free_cpu;
+		goto out_uninit_cpu;
 	}
 	kvm_debug("Allocated %d bytes for KVM Exception Handlers @ %p\n",
 		  ALIGN(size, PAGE_SIZE), gebase);
@@ -314,6 +320,12 @@ struct kvm_vcpu *kvm_arch_vcpu_create(struct kvm *kvm, unsigned int id)
 #else
 	vcpu->arch.vcpu_run = __kvm_mips_vcpu_run;
 #endif
+<<<<<<< HEAD:arch/mips/kvm/mips.c
+=======
+
+	/* Invalidate the icache for these ranges */
+	mips32_SyncICache((unsigned long) gebase, ALIGN(size, PAGE_SIZE));
+>>>>>>> p9x:arch/mips/kvm/kvm_mips.c
 
 	/* Invalidate the icache for these ranges */
 	local_flush_icache_range((unsigned long)gebase,
@@ -343,6 +355,9 @@ struct kvm_vcpu *kvm_arch_vcpu_create(struct kvm *kvm, unsigned int id)
 
 out_free_gebase:
 	kfree(gebase);
+
+out_uninit_cpu:
+	kvm_vcpu_uninit(vcpu);
 
 out_free_cpu:
 	kfree(vcpu);
@@ -398,6 +413,7 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu, struct kvm_run *run)
 
 	kvm_guest_enter();
 
+<<<<<<< HEAD:arch/mips/kvm/mips.c
 	/* Disable hardware page table walking while in guest */
 	htw_stop();
 
@@ -405,6 +421,9 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu, struct kvm_run *run)
 
 	/* Re-enable HTW before enabling interrupts */
 	htw_start();
+=======
+	r = vcpu->arch.vcpu_run(run, vcpu);
+>>>>>>> p9x:arch/mips/kvm/kvm_mips.c
 
 	kvm_guest_exit();
 	local_irq_enable();

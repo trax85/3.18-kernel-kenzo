@@ -1,4 +1,8 @@
+<<<<<<< HEAD
  /* Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+=======
+ /* Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -226,7 +230,11 @@
 #define MSM8X16_WCD_A_ANALOG_RX_COM_OCP_COUNT		(0x192)
 #define MSM8X16_WCD_A_ANALOG_RX_COM_OCP_COUNT__POR		(0x6E)
 #define MSM8X16_WCD_A_ANALOG_RX_COM_BIAS_DAC		(0x193)
+<<<<<<< HEAD
 #define MSM8X16_WCD_A_ANALOG_RX_COM_BIAS_DAC__POR		(0x18)
+=======
+#define MSM8X16_WCD_A_ANALOG_RX_COM_BIAS_DAC__POR		(0x10)
+>>>>>>> p9x
 #define MSM8X16_WCD_A_ANALOG_RX_HPH_BIAS_PA		(0x194)
 #define MSM8X16_WCD_A_ANALOG_RX_HPH_BIAS_PA__POR		(0x5A)
 #define MSM8X16_WCD_A_ANALOG_RX_HPH_BIAS_LDO_OCP	(0x195)
@@ -255,10 +263,13 @@
 #define MSM8X16_WCD_A_ANALOG_RX_HPH_STATUS__POR			(0x0C)
 #define MSM8X16_WCD_A_ANALOG_RX_EAR_STATUS		(0x1A1)
 #define MSM8X16_WCD_A_ANALOG_RX_EAR_STATUS__POR			(0x00)
+<<<<<<< HEAD
 #define MSM8X16_WCD_A_ANALOG_RX_LO_DAC_CTL		(0x1AC)
 #define MSM8X16_WCD_A_ANALOG_RX_LO_DAC_CTL__POR	(0x00)
 #define MSM8X16_WCD_A_ANALOG_RX_LO_EN_CTL	(0x1AD)
 #define MSM8X16_WCD_A_ANALOG_RX_RX_LO_EN_CTL__POR	(0x00)
+=======
+>>>>>>> p9x
 #define MSM8X16_WCD_A_ANALOG_SPKR_DAC_CTL		(0x1B0)
 #define MSM8X16_WCD_A_ANALOG_SPKR_DAC_CTL__POR			(0x83)
 #define MSM8X16_WCD_A_ANALOG_SPKR_DRV_CLIP_DET		(0x1B1)
@@ -350,8 +361,11 @@
 #define MSM8X16_WCD_A_CDC_CLK_SD_CTL__POR				(0x00)
 #define MSM8X16_WCD_A_CDC_CLK_WSA_VI_B1_CTL		(0x230)
 #define MSM8X16_WCD_A_CDC_CLK_WSA_VI_B1_CTL__POR			(0x00)
+<<<<<<< HEAD
 #define MSM8X16_WCD_A_CDC_CLK_RX_B2_CTL			(0x234)
 #define MSM8X16_WCD_A_CDC_CLK_RX_B2_CTL__POR				(0x00)
+=======
+>>>>>>> p9x
 #define MSM8X16_WCD_A_CDC_RX1_B1_CTL			(0x240)
 #define MSM8X16_WCD_A_CDC_RX1_B1_CTL__POR				(0x00)
 #define MSM8X16_WCD_A_CDC_RX2_B1_CTL			(0x260)
@@ -404,6 +418,7 @@
 #define MSM8X16_WCD_A_CDC_TOP_GAIN_UPDATE__POR				(0x00)
 #define MSM8X16_WCD_A_CDC_TOP_CTL				(0x2A4)
 #define MSM8X16_WCD_A_CDC_TOP_CTL__POR					(0x01)
+<<<<<<< HEAD
 #define MSM8X16_WCD_A_CDC_COMP0_B1_CTL				(0x2B0)
 #define MSM8X16_WCD_A_CDC_COMP0_B1_CTL__POR				(0x30)
 #define MSM8X16_WCD_A_CDC_COMP0_B2_CTL				(0x2B4)
@@ -422,6 +437,8 @@
 #define MSM8X16_WCD_A_CDC_COMP0_FS_CFG__POR				(0x03)
 #define MSM8X16_WCD_A_CDC_COMP0_DELAY_BUF_CTL			(0x2D0)
 #define MSM8X16_WCD_A_CDC_COMP0_DELAY_BUF_CTL__POR			(0x02)
+=======
+>>>>>>> p9x
 #define MSM8X16_WCD_A_CDC_DEBUG_DESER1_CTL			(0x2E0)
 #define MSM8X16_WCD_A_CDC_DEBUG_DESER1_CTL__POR				(0x00)
 #define MSM8X16_WCD_A_CDC_DEBUG_DESER2_CTL			(0x2E4)

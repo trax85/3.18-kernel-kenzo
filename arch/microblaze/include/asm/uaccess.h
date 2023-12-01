@@ -372,7 +372,11 @@ static inline long copy_from_user(void *to,
 		const void __user *from, unsigned long n)
 {
 	unsigned long res = n;
+<<<<<<< HEAD
 	might_fault();
+=======
+	might_sleep();
+>>>>>>> p9x
 	if (likely(access_ok(VERIFY_READ, from, n)))
 		res = __copy_from_user(to, from, n);
 	if (unlikely(res))

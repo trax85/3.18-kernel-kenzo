@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2015, 2018 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -18,9 +22,13 @@
 struct diag_log_mask_t {
 	uint8_t equip_id;
 	uint32_t num_items;
+<<<<<<< HEAD
 	uint32_t num_items_tools;
 	uint32_t range;
 	uint32_t range_tools;
+=======
+	uint32_t range;
+>>>>>>> p9x
 	struct mutex lock;
 	uint8_t *ptr;
 };
@@ -130,7 +138,10 @@ struct diag_log_mask_userspace_t {
 #define LOG_MASK_SIZE	(MAX_EQUIP_ID * sizeof(struct diag_log_mask_t))
 #define EVENT_MASK_SIZE 513
 #define MAX_ITEMS_PER_EQUIP_ID	512
+<<<<<<< HEAD
 #define MAX_ITEMS_ALLOWED	0xFFF
+=======
+>>>>>>> p9x
 
 #define LOG_MASK_CTRL_HEADER_LEN	11
 #define MSG_MASK_CTRL_HEADER_LEN	11
@@ -158,6 +169,7 @@ extern struct diag_mask_info event_mask;
 
 int diag_masks_init(void);
 void diag_masks_exit(void);
+<<<<<<< HEAD
 int diag_log_mask_copy(struct diag_mask_info *dest,
 		       struct diag_mask_info *src);
 int diag_msg_mask_copy(struct diag_md_session_t *new_session,
@@ -169,12 +181,20 @@ void diag_msg_mask_free(struct diag_mask_info *mask_info,
 	struct diag_md_session_t *session_info);
 void diag_event_mask_free(struct diag_mask_info *mask_info);
 int diag_process_apps_masks(unsigned char *buf, int len, int pid);
+=======
+int diag_process_apps_masks(unsigned char *buf, int len);
+>>>>>>> p9x
 void diag_send_updates_peripheral(uint8_t peripheral);
 
 extern int diag_create_msg_mask_table_entry(struct diag_msg_mask_t *msg_mask,
 					    struct diag_ssid_range_t *range);
+<<<<<<< HEAD
 extern int diag_copy_to_user_msg_mask(char __user *buf, size_t count,
 				      struct diag_md_session_t *info);
 extern int diag_copy_to_user_log_mask(char __user *buf, size_t count,
 				      struct diag_md_session_t *info);
+=======
+extern int diag_copy_to_user_msg_mask(char __user *buf, size_t count);
+extern int diag_copy_to_user_log_mask(char __user *buf, size_t count);
+>>>>>>> p9x
 #endif

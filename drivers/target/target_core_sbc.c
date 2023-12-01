@@ -981,7 +981,11 @@ sbc_parse_cdb(struct se_cmd *cmd, struct sbc_ops *ops)
 
 	if (cmd->se_cmd_flags & SCF_SCSI_DATA_CDB) {
 		unsigned long long end_lba;
+<<<<<<< HEAD
 check_lba:
+=======
+
+>>>>>>> p9x
 		end_lba = dev->transport->get_blocks(dev) + 1;
 		if (((cmd->t_task_lba + sectors) < cmd->t_task_lba) ||
 		    ((cmd->t_task_lba + sectors) > end_lba)) {

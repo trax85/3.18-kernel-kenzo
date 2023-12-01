@@ -126,8 +126,13 @@ static const struct prot_bits section_bits[] = {
 		.val	= PMD_SECT_USER,
 		.set	= "USR",
 	}, {
+<<<<<<< HEAD
 		.mask	= L_PMD_SECT_RDONLY | PMD_SECT_AP2,
 		.val	= L_PMD_SECT_RDONLY | PMD_SECT_AP2,
+=======
+		.mask	= PMD_SECT_RDONLY,
+		.val	= PMD_SECT_RDONLY,
+>>>>>>> p9x
 		.set	= "ro",
 		.clear	= "RW",
 #elif __LINUX_ARM_ARCH__ >= 6

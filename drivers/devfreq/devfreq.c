@@ -564,6 +564,10 @@ int devfreq_remove_device(struct devfreq *devfreq)
 		return -EINVAL;
 
 	device_unregister(&devfreq->dev);
+<<<<<<< HEAD
+=======
+	put_device(&devfreq->dev);
+>>>>>>> p9x
 
 	return 0;
 }
@@ -993,7 +997,11 @@ static ssize_t available_frequencies_show(struct device *d,
 {
 	struct devfreq *df = to_devfreq(d);
 	struct device *dev = df->dev.parent;
+<<<<<<< HEAD
 	struct dev_pm_opp *opp;
+=======
+	struct opp *opp;
+>>>>>>> p9x
 	unsigned int i = 0, max_state = df->profile->max_state;
 	bool use_opp;
 	ssize_t count = 0;

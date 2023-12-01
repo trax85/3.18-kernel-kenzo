@@ -130,8 +130,12 @@ struct snd_card {
 	int shutdown;			/* this card is going down */
 	struct completion *release_completion;
 	struct device *dev;		/* device assigned to this card */
+<<<<<<< HEAD
 	struct device card_dev;		/* cardX object for sysfs */
 	bool registered;		/* card_dev is registered? */
+=======
+	struct device *card_dev;	/* cardX object for sysfs */
+>>>>>>> p9x
 	int offline;			/* if this sound card is offline */
 	unsigned long offline_change;
 	wait_queue_head_t offline_poll_wait;
@@ -297,7 +301,11 @@ int snd_card_info_done(void);
 int snd_component_add(struct snd_card *card, const char *component);
 int snd_card_file_add(struct snd_card *card, struct file *file);
 int snd_card_file_remove(struct snd_card *card, struct file *file);
+<<<<<<< HEAD
 #define snd_card_unref(card)	put_device(&(card)->card_dev)
+=======
+void snd_card_unref(struct snd_card *card);
+>>>>>>> p9x
 void snd_card_change_online_state(struct snd_card *card, int online);
 bool snd_card_is_online_state(struct snd_card *card);
 

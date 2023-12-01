@@ -1077,7 +1077,10 @@ int rtl88ee_hw_init(struct ieee80211_hw *hw)
 	 */
 	local_save_flags(flags);
 	local_irq_enable();
+<<<<<<< HEAD
 	rtlhal->fw_ready = false;
+=======
+>>>>>>> p9x
 
 	rtlpriv->intf_ops->disable_aspm(hw);
 
@@ -1103,6 +1106,11 @@ int rtl88ee_hw_init(struct ieee80211_hw *hw)
 			 "Failed to download FW. Init HW without FW now..\n");
 		err = 1;
 		goto exit;
+<<<<<<< HEAD
+=======
+	} else {
+		rtlhal->fw_ready = true;
+>>>>>>> p9x
 	}
 	rtlhal->fw_ready = true;
 	/*fw related variable initialize */
@@ -1187,6 +1195,11 @@ int rtl88ee_hw_init(struct ieee80211_hw *hw)
 exit:
 	local_irq_restore(flags);
 	rtlpriv->rtlhal.being_init_adapter = false;
+<<<<<<< HEAD
+=======
+	RT_TRACE(rtlpriv, COMP_INIT, DBG_LOUD, "end of Rtl8188EE hw init %x\n",
+		 err);
+>>>>>>> p9x
 	return err;
 }
 

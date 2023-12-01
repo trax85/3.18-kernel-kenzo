@@ -155,12 +155,15 @@
 #define EVENT_IS_MARKED		(EVENT_MARKED_MASK << EVENT_MARKED_SHIFT)
 #define EVENT_PSEL_MASK		0xff	/* PMCxSEL value */
 
+<<<<<<< HEAD
 /* Bits defined by Linux */
 #define EVENT_LINUX_MASK	\
 	((EVENT_EBB_MASK  << EVENT_EBB_SHIFT)			|	\
 	 (EVENT_BHRB_MASK << EVENT_BHRB_SHIFT)			|	\
 	 (EVENT_IFM_MASK  << EVENT_IFM_SHIFT))
 
+=======
+>>>>>>> p9x
 #define EVENT_VALID_MASK	\
 	((EVENT_THRESH_MASK    << EVENT_THRESH_SHIFT)		|	\
 	 (EVENT_SAMPLE_MASK    << EVENT_SAMPLE_SHIFT)		|	\
@@ -169,7 +172,10 @@
 	 (EVENT_UNIT_MASK      << EVENT_UNIT_SHIFT)		|	\
 	 (EVENT_COMBINE_MASK   << EVENT_COMBINE_SHIFT)		|	\
 	 (EVENT_MARKED_MASK    << EVENT_MARKED_SHIFT)		|	\
+<<<<<<< HEAD
 	  EVENT_LINUX_MASK					|	\
+=======
+>>>>>>> p9x
 	  EVENT_PSEL_MASK)
 
 /* MMCRA IFM bits - POWER8 */
@@ -292,10 +298,16 @@ static int power8_get_constraint(u64 event, unsigned long *maskp, unsigned long 
 	if (event & ~EVENT_VALID_MASK)
 		return -1;
 
+<<<<<<< HEAD
 	pmc   = (event >> EVENT_PMC_SHIFT)        & EVENT_PMC_MASK;
 	unit  = (event >> EVENT_UNIT_SHIFT)       & EVENT_UNIT_MASK;
 	cache = (event >> EVENT_CACHE_SEL_SHIFT)  & EVENT_CACHE_SEL_MASK;
 	ebb   = (event >> EVENT_EBB_SHIFT)        & EVENT_EBB_MASK;
+=======
+	pmc   = (event >> EVENT_PMC_SHIFT)       & EVENT_PMC_MASK;
+	unit  = (event >> EVENT_UNIT_SHIFT)      & EVENT_UNIT_MASK;
+	cache = (event >> EVENT_CACHE_SEL_SHIFT) & EVENT_CACHE_SEL_MASK;
+>>>>>>> p9x
 
 	if (pmc) {
 		u64 base_event;

@@ -294,6 +294,63 @@ static int nfs41_setup_state_renewal(struct nfs_client *clp)
 	return status;
 }
 
+<<<<<<< HEAD
+=======
+static void nfs4_end_drain_slot_table(struct nfs4_slot_table *tbl)
+{
+	if (test_and_clear_bit(NFS4_SLOT_TBL_DRAINING, &tbl->slot_tbl_state)) {
+		spin_lock(&tbl->slot_tbl_lock);
+		nfs41_wake_slot_table(tbl);
+		spin_unlock(&tbl->slot_tbl_lock);
+	}
+}
+
+static void nfs4_end_drain_session(struct nfs_client *clp)
+{
+	struct nfs4_session *ses = clp->cl_session;
+
+	if (ses != NULL) {
+		nfs4_end_drain_slot_table(&ses->bc_slot_table);
+		nfs4_end_drain_slot_table(&ses->fc_slot_table);
+	}
+}
+
+/*
+ * Signal state manager thread if session fore channel is drained
+ */
+void nfs4_slot_tbl_drain_complete(struct nfs4_slot_table *tbl)
+{
+	if (nfs4_slot_tbl_draining(tbl))
+		complete(&tbl->complete);
+}
+
+static int nfs4_drain_slot_tbl(struct nfs4_slot_table *tbl)
+{
+	set_bit(NFS4_SLOT_TBL_DRAINING, &tbl->slot_tbl_state);
+	spin_lock(&tbl->slot_tbl_lock);
+	if (tbl->highest_used_slotid != NFS4_NO_SLOT) {
+		INIT_COMPLETION(tbl->complete);
+		spin_unlock(&tbl->slot_tbl_lock);
+		return wait_for_completion_interruptible(&tbl->complete);
+	}
+	spin_unlock(&tbl->slot_tbl_lock);
+	return 0;
+}
+
+static int nfs4_begin_drain_session(struct nfs_client *clp)
+{
+	struct nfs4_session *ses = clp->cl_session;
+	int ret = 0;
+
+	/* back channel */
+	ret = nfs4_drain_slot_tbl(&ses->bc_slot_table);
+	if (ret)
+		return ret;
+	/* fore channel */
+	return nfs4_drain_slot_tbl(&ses->fc_slot_table);
+}
+
+>>>>>>> p9x
 static void nfs41_finish_session_reset(struct nfs_client *clp)
 {
 	clear_bit(NFS4CLNT_LEASE_CONFIRM, &clp->cl_state);
@@ -1455,7 +1512,11 @@ restart:
 					spin_unlock(&state->state_lock);
 				}
 				nfs4_put_open_state(state);
+<<<<<<< HEAD
 				clear_bit(NFS4CLNT_RECLAIM_NOGRACE,
+=======
+				clear_bit(NFS_STATE_RECLAIM_NOGRACE,
+>>>>>>> p9x
 					&state->flags);
 				spin_lock(&sp->so_lock);
 				goto restart;
@@ -1467,6 +1528,9 @@ restart:
 					__func__, status);
 			case -ENOENT:
 			case -ENOMEM:
+			case -EACCES:
+			case -EROFS:
+			case -EIO:
 			case -ESTALE:
 				/* Open state on this file cannot be recovered */
 				nfs4_state_mark_recovery_failed(state, status);

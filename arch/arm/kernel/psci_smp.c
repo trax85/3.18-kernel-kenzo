@@ -47,7 +47,12 @@
 
 extern void secondary_startup(void);
 
+<<<<<<< HEAD
 static int psci_boot_secondary(unsigned int cpu, struct task_struct *idle)
+=======
+static int __cpuinit psci_boot_secondary(unsigned int cpu,
+					 struct task_struct *idle)
+>>>>>>> p9x
 {
 	if (psci_ops.cpu_on)
 		return psci_ops.cpu_on(cpu_logical_map(cpu),
@@ -92,12 +97,20 @@ int __ref psci_cpu_kill(unsigned int cpu)
 	for (i = 0; i < 10; i++) {
 		err = psci_ops.affinity_info(cpu_logical_map(cpu), 0);
 		if (err == PSCI_0_2_AFFINITY_LEVEL_OFF) {
+<<<<<<< HEAD
 			pr_debug("CPU%d killed.\n", cpu);
+=======
+			pr_info("CPU%d killed.\n", cpu);
+>>>>>>> p9x
 			return 1;
 		}
 
 		msleep(10);
+<<<<<<< HEAD
 		pr_debug("Retrying again to check for CPU kill\n");
+=======
+		pr_info("Retrying again to check for CPU kill\n");
+>>>>>>> p9x
 	}
 
 	pr_warn("CPU%d may not have shut down cleanly (AFFINITY_INFO reports %d)\n",

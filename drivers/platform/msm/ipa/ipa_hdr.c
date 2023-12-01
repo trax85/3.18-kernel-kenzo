@@ -480,7 +480,11 @@ static int __ipa_add_hdr_proc_ctx(struct ipa_hdr_proc_ctx_add *proc_ctx,
 {
 	struct ipa_hdr_entry *hdr_entry;
 	struct ipa_hdr_proc_ctx_entry *entry;
+<<<<<<< HEAD
 	struct ipa_hdr_proc_ctx_offset_entry *offset;
+=======
+	struct ipa_hdr_proc_ctx_offset_entry *offset = NULL;
+>>>>>>> p9x
 	u32 bin;
 	struct ipa_hdr_proc_ctx_tbl *htbl = &ipa_ctx->hdr_proc_ctx_tbl;
 	int id;
@@ -490,13 +494,22 @@ static int __ipa_add_hdr_proc_ctx(struct ipa_hdr_proc_ctx_add *proc_ctx,
 		proc_ctx->type, proc_ctx->hdr_hdl);
 
 	if (!HDR_PROC_TYPE_IS_VALID(proc_ctx->type)) {
+<<<<<<< HEAD
 		IPAERR("invalid processing type %d\n", proc_ctx->type);
+=======
+		IPAERR_RL("invalid processing type %d\n", proc_ctx->type);
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
 	hdr_entry = ipa_id_find(proc_ctx->hdr_hdl);
+<<<<<<< HEAD
 	if (!hdr_entry || (hdr_entry->cookie != IPA_COOKIE)) {
 		IPAERR("hdr_hdl is invalid\n");
+=======
+	if (!hdr_entry || (hdr_entry->cookie != IPA_HDR_COOKIE)) {
+		IPAERR_RL("hdr_hdl is invalid\n");
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
@@ -512,7 +525,11 @@ static int __ipa_add_hdr_proc_ctx(struct ipa_hdr_proc_ctx_add *proc_ctx,
 	entry->hdr = hdr_entry;
 	if (add_ref_hdr)
 		hdr_entry->ref_cnt++;
+<<<<<<< HEAD
 	entry->cookie = IPA_COOKIE;
+=======
+	entry->cookie = IPA_PROC_HDR_COOKIE;
+>>>>>>> p9x
 
 	needed_len = (proc_ctx->type == IPA_HDR_PROC_NONE) ?
 			sizeof(struct ipa_hdr_proc_ctx_add_hdr_seq) :
@@ -524,7 +541,11 @@ static int __ipa_add_hdr_proc_ctx(struct ipa_hdr_proc_ctx_add *proc_ctx,
 			ipa_hdr_proc_ctx_bin_sz[IPA_HDR_PROC_CTX_BIN1]) {
 		bin = IPA_HDR_PROC_CTX_BIN1;
 	} else {
+<<<<<<< HEAD
 		IPAERR("unexpected needed len %d\n", needed_len);
+=======
+		IPAERR_RL("unexpected needed len %d\n", needed_len);
+>>>>>>> p9x
 		WARN_ON(1);
 		goto bad_len;
 	}
@@ -564,6 +585,10 @@ static int __ipa_add_hdr_proc_ctx(struct ipa_hdr_proc_ctx_add *proc_ctx,
 	if (id < 0) {
 		IPAERR("failed to alloc id\n");
 		WARN_ON(1);
+<<<<<<< HEAD
+=======
+		goto ipa_insert_failed;
+>>>>>>> p9x
 	}
 	entry->id = id;
 	proc_ctx->proc_ctx_hdl = id;
@@ -571,8 +596,21 @@ static int __ipa_add_hdr_proc_ctx(struct ipa_hdr_proc_ctx_add *proc_ctx,
 
 	return 0;
 
+<<<<<<< HEAD
 bad_len:
 	hdr_entry->ref_cnt--;
+=======
+ipa_insert_failed:
+	if (offset)
+		list_move(&offset->link,
+		&htbl->head_free_offset_list[offset->bin]);
+	entry->offset_entry = NULL;
+	list_del(&entry->link);
+	htbl->proc_ctx_cnt--;
+bad_len:
+	if (add_ref_hdr)
+		hdr_entry->ref_cnt--;
+>>>>>>> p9x
 	entry->cookie = 0;
 	kmem_cache_free(ipa_ctx->hdr_proc_ctx_cache, entry);
 	return -EPERM;
@@ -582,19 +620,31 @@ bad_len:
 static int __ipa_add_hdr(struct ipa_hdr_add *hdr)
 {
 	struct ipa_hdr_entry *entry;
+<<<<<<< HEAD
 	struct ipa_hdr_offset_entry *offset;
+=======
+	struct ipa_hdr_offset_entry *offset = NULL;
+>>>>>>> p9x
 	u32 bin;
 	struct ipa_hdr_tbl *htbl = &ipa_ctx->hdr_tbl;
 	int id;
 	int mem_size;
 
 	if (hdr->hdr_len == 0 || hdr->hdr_len > IPA_HDR_MAX_SIZE) {
+<<<<<<< HEAD
 		IPAERR("bad parm\n");
+=======
+		IPAERR_RL("bad parm\n");
+>>>>>>> p9x
 		goto error;
 	}
 
 	if (!HDR_TYPE_IS_VALID(hdr->type)) {
+<<<<<<< HEAD
 		IPAERR("invalid hdr type %d\n", hdr->type);
+=======
+		IPAERR_RL("invalid hdr type %d\n", hdr->type);
+>>>>>>> p9x
 		goto error;
 	}
 
@@ -613,7 +663,11 @@ static int __ipa_add_hdr(struct ipa_hdr_add *hdr)
 	entry->type = hdr->type;
 	entry->is_eth2_ofst_valid = hdr->is_eth2_ofst_valid;
 	entry->eth2_ofst = hdr->eth2_ofst;
+<<<<<<< HEAD
 	entry->cookie = IPA_COOKIE;
+=======
+	entry->cookie = IPA_HDR_COOKIE;
+>>>>>>> p9x
 
 	if (hdr->hdr_len <= ipa_hdr_bin_sz[IPA_HDR_BIN0])
 		bin = IPA_HDR_BIN0;
@@ -626,7 +680,11 @@ static int __ipa_add_hdr(struct ipa_hdr_add *hdr)
 	else if (hdr->hdr_len <= ipa_hdr_bin_sz[IPA_HDR_BIN4])
 		bin = IPA_HDR_BIN4;
 	else {
+<<<<<<< HEAD
 		IPAERR("unexpected hdr len %d\n", hdr->hdr_len);
+=======
+		IPAERR_RL("unexpected hdr len %d\n", hdr->hdr_len);
+>>>>>>> p9x
 		goto bad_hdr_len;
 	}
 
@@ -696,6 +754,10 @@ static int __ipa_add_hdr(struct ipa_hdr_add *hdr)
 	if (id < 0) {
 		IPAERR("failed to alloc id\n");
 		WARN_ON(1);
+<<<<<<< HEAD
+=======
+		 goto ipa_insert_failed;
+>>>>>>> p9x
 	}
 	entry->id = id;
 	hdr->hdr_hdl = id;
@@ -720,10 +782,26 @@ fail_add_proc_ctx:
 	entry->ref_cnt--;
 	hdr->hdr_hdl = 0;
 	ipa_id_remove(id);
+<<<<<<< HEAD
 	htbl->hdr_cnt--;
 	list_del(&entry->link);
 	dma_unmap_single(ipa_ctx->pdev, entry->phys_base,
 			entry->hdr_len, DMA_TO_DEVICE);
+=======
+ipa_insert_failed:
+	 if (entry->is_hdr_proc_ctx) {
+		dma_unmap_single(ipa_ctx->pdev, entry->phys_base,
+			entry->hdr_len, DMA_TO_DEVICE);
+	} else {
+		if (offset)
+			list_move(&offset->link,
+			&htbl->head_free_offset_list[offset->bin]);
+		entry->offset_entry = NULL;
+	}
+
+	htbl->hdr_cnt--;
+	list_del(&entry->link);
+>>>>>>> p9x
 bad_hdr_len:
 	entry->cookie = 0;
 	kmem_cache_free(ipa_ctx->hdr_cache, entry);
@@ -738,8 +816,13 @@ static int __ipa_del_hdr_proc_ctx(u32 proc_ctx_hdl,
 	struct ipa_hdr_proc_ctx_tbl *htbl = &ipa_ctx->hdr_proc_ctx_tbl;
 
 	entry = ipa_id_find(proc_ctx_hdl);
+<<<<<<< HEAD
 	if (!entry || (entry->cookie != IPA_COOKIE)) {
 		IPAERR("bad parm\n");
+=======
+	if (!entry || (entry->cookie != IPA_PROC_HDR_COOKIE)) {
+		IPAERR_RL("bad parm\n");
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
@@ -747,7 +830,11 @@ static int __ipa_del_hdr_proc_ctx(u32 proc_ctx_hdl,
 		htbl->proc_ctx_cnt, entry->offset_entry->offset);
 
 	if (by_user && entry->user_deleted) {
+<<<<<<< HEAD
 		IPAERR("proc_ctx already deleted by user\n");
+=======
+		IPAERR_RL("proc_ctx already deleted by user\n");
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
@@ -785,12 +872,21 @@ int __ipa_del_hdr(u32 hdr_hdl, bool by_user)
 
 	entry = ipa_id_find(hdr_hdl);
 	if (entry == NULL) {
+<<<<<<< HEAD
 		IPAERR("lookup failed\n");
 		return -EINVAL;
 	}
 
 	if (!entry || (entry->cookie != IPA_COOKIE)) {
 		IPAERR("bad parm\n");
+=======
+		IPAERR_RL("lookup failed\n");
+		return -EINVAL;
+	}
+
+	if (!entry || (entry->cookie != IPA_HDR_COOKIE)) {
+		IPAERR_RL("bad parm\n");
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
@@ -802,8 +898,22 @@ int __ipa_del_hdr(u32 hdr_hdl, bool by_user)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (by_user)
 		entry->user_deleted = true;
+=======
+	if (by_user) {
+		if (!strcmp(entry->name, IPA_LAN_RX_HDR_NAME)) {
+			IPADBG("Trying to delete hdr %s offset=%u\n",
+				entry->name, entry->offset_entry->offset);
+			if (!entry->offset_entry->offset) {
+				IPAERR("User cannot delete default header\n");
+				return -EPERM;
+			}
+		}
+		entry->user_deleted = true;
+	}
+>>>>>>> p9x
 
 	if (--entry->ref_cnt) {
 		IPADBG("hdr_hdl %x ref_cnt %d\n", hdr_hdl, entry->ref_cnt);
@@ -852,7 +962,11 @@ int ipa_add_hdr(struct ipa_ioc_add_hdr *hdrs)
 	}
 
 	if (hdrs == NULL || hdrs->num_hdrs == 0) {
+<<<<<<< HEAD
 		IPAERR("bad parm\n");
+=======
+		IPAERR_RL("bad parm\n");
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
@@ -861,7 +975,11 @@ int ipa_add_hdr(struct ipa_ioc_add_hdr *hdrs)
 			hdrs->num_hdrs);
 	for (i = 0; i < hdrs->num_hdrs; i++) {
 		if (__ipa_add_hdr(&hdrs->hdr[i])) {
+<<<<<<< HEAD
 			IPAERR("failed to add hdr %d\n", i);
+=======
+			IPAERR_RL("failed to add hdr %d\n", i);
+>>>>>>> p9x
 			hdrs->hdr[i].status = -1;
 		} else {
 			hdrs->hdr[i].status = 0;
@@ -903,14 +1021,22 @@ int ipa_del_hdr_by_user(struct ipa_ioc_del_hdr *hdls, bool by_user)
 	}
 
 	if (hdls == NULL || hdls->num_hdls == 0) {
+<<<<<<< HEAD
 		IPAERR("bad parm\n");
+=======
+		IPAERR_RL("bad parm\n");
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
 	mutex_lock(&ipa_ctx->lock);
 	for (i = 0; i < hdls->num_hdls; i++) {
 		if (__ipa_del_hdr(hdls->hdl[i].hdl, by_user)) {
+<<<<<<< HEAD
 			IPAERR("failed to del hdr %i\n", i);
+=======
+			IPAERR_RL("failed to del hdr %i\n", i);
+>>>>>>> p9x
 			hdls->hdl[i].status = -1;
 		} else {
 			hdls->hdl[i].status = 0;
@@ -966,7 +1092,11 @@ int ipa_add_hdr_proc_ctx(struct ipa_ioc_add_hdr_proc_ctx *proc_ctxs)
 	}
 
 	if (proc_ctxs == NULL || proc_ctxs->num_proc_ctxs == 0) {
+<<<<<<< HEAD
 		IPAERR("bad parm\n");
+=======
+		IPAERR_RL("bad parm\n");
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
@@ -975,7 +1105,11 @@ int ipa_add_hdr_proc_ctx(struct ipa_ioc_add_hdr_proc_ctx *proc_ctxs)
 			proc_ctxs->num_proc_ctxs);
 	for (i = 0; i < proc_ctxs->num_proc_ctxs; i++) {
 		if (__ipa_add_hdr_proc_ctx(&proc_ctxs->proc_ctx[i], true)) {
+<<<<<<< HEAD
 			IPAERR("failed to add hdr pric ctx %d\n", i);
+=======
+			IPAERR_RL("failed to add hdr pric ctx %d\n", i);
+>>>>>>> p9x
 			proc_ctxs->proc_ctx[i].status = -1;
 		} else {
 			proc_ctxs->proc_ctx[i].status = 0;
@@ -1021,14 +1155,22 @@ int ipa_del_hdr_proc_ctx_by_user(struct ipa_ioc_del_hdr_proc_ctx *hdls,
 	}
 
 	if (hdls == NULL || hdls->num_hdls == 0) {
+<<<<<<< HEAD
 		IPAERR("bad parm\n");
+=======
+		IPAERR_RL("bad parm\n");
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
 	mutex_lock(&ipa_ctx->lock);
 	for (i = 0; i < hdls->num_hdls; i++) {
 		if (__ipa_del_hdr_proc_ctx(hdls->hdl[i].hdl, true, by_user)) {
+<<<<<<< HEAD
 			IPAERR("failed to del hdr %i\n", i);
+=======
+			IPAERR_RL("failed to del hdr %i\n", i);
+>>>>>>> p9x
 			hdls->hdl[i].status = -1;
 		} else {
 			hdls->hdl[i].status = 0;
@@ -1130,8 +1272,24 @@ int ipa_reset_hdr(void)
 			&ipa_ctx->hdr_tbl.head_hdr_entry_list, link) {
 
 		/* do not remove the default header */
+<<<<<<< HEAD
 		if (!strcmp(entry->name, IPA_LAN_RX_HDR_NAME))
 			continue;
+=======
+		if (!strcmp(entry->name, IPA_LAN_RX_HDR_NAME)) {
+			IPADBG("Trying to remove hdr %s offset=%u\n",
+				entry->name, entry->offset_entry->offset);
+			if (!entry->offset_entry->offset) {
+				if (entry->is_hdr_proc_ctx) {
+					mutex_unlock(&ipa_ctx->lock);
+					WARN_ON(1);
+					return -EFAULT;
+				}
+				IPADBG("skip default header\n");
+				continue;
+			}
+		}
+>>>>>>> p9x
 
 		if (ipa_id_find(entry->id) == NULL) {
 			WARN_ON(1);
@@ -1261,7 +1419,11 @@ int ipa_get_hdr(struct ipa_ioc_get_hdr *lookup)
 	}
 
 	if (lookup == NULL) {
+<<<<<<< HEAD
 		IPAERR("bad parm\n");
+=======
+		IPAERR_RL("bad parm\n");
+>>>>>>> p9x
 		return -EINVAL;
 	}
 	mutex_lock(&ipa_ctx->lock);
@@ -1349,13 +1511,22 @@ int ipa_put_hdr(u32 hdr_hdl)
 
 	entry = ipa_id_find(hdr_hdl);
 	if (entry == NULL) {
+<<<<<<< HEAD
 		IPAERR("lookup failed\n");
+=======
+		IPAERR_RL("lookup failed\n");
+>>>>>>> p9x
 		result = -EINVAL;
 		goto bail;
 	}
 
+<<<<<<< HEAD
 	if (entry == NULL || entry->cookie != IPA_COOKIE) {
 		IPAERR("bad params\n");
+=======
+	if (entry == NULL || entry->cookie != IPA_HDR_COOKIE) {
+		IPAERR_RL("bad params\n");
+>>>>>>> p9x
 		result = -EINVAL;
 		goto bail;
 	}
@@ -1384,7 +1555,11 @@ int ipa_copy_hdr(struct ipa_ioc_copy_hdr *copy)
 	int result = -EFAULT;
 
 	if (copy == NULL) {
+<<<<<<< HEAD
 		IPAERR("bad parm\n");
+=======
+		IPAERR_RL("bad parm\n");
+>>>>>>> p9x
 		return -EINVAL;
 	}
 	mutex_lock(&ipa_ctx->lock);

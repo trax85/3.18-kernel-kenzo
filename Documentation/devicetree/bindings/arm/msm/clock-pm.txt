@@ -17,6 +17,10 @@ Optional properties
 qcom,clock-pm {
 	compatible = "qcom,clock-pm";
 		clocks = <&clock_gcc clk_apss_axi_clk_sleep>,
+<<<<<<< HEAD
 				<&clock_gcc clk_bimc_apss_axi_clk_sleep>;
+=======
+			<&clock_gcc clk_bimc_apss_axi_clk_sleep>;
+>>>>>>> p9x
 		clock-names = "apss_axi", "bimc_apss_axi";
 };

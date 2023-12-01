@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -127,7 +131,11 @@ void *seemp_logk_kernel_start_record(char **buf)
 	blk->version = OBSERVER_VERSION;
 	blk->pid = current->tgid;
 	blk->tid = current->pid;
+<<<<<<< HEAD
 	blk->uid = (current_uid()).val;
+=======
+	blk->uid = current_uid();
+>>>>>>> p9x
 	blk->sec = now.tv_sec;
 	blk->nsec = now.tv_nsec;
 	strlcpy(blk->appname, current->comm, TASK_COMM_LEN);
@@ -151,7 +159,11 @@ void seemp_logk_kernel_end_record(void *blck)
 	if (blk) {
 		/*update status at the very end*/
 		blk->status |= 0x1;
+<<<<<<< HEAD
 		blk->uid =  (current_uid()).val;
+=======
+		blk->uid = current_uid();
+>>>>>>> p9x
 
 		ringbuf_finish_writer(slogk_dev, blk);
 	}

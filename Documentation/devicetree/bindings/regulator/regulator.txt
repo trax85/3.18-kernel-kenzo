@@ -12,6 +12,7 @@ Optional properties:
 - regulator-allow-bypass: allow the regulator to go into bypass mode
 - <name>-supply: phandle to the parent supply/regulator node
 - regulator-ramp-delay: ramp delay for regulator(in uV/uS)
+<<<<<<< HEAD
   For hardware which supports disabling ramp rate, it should be explicitly
   intialised to zero (regulator-ramp-delay = <0>) for disabling ramp delay.
 - regulator-enable-ramp-delay: The time taken, in microseconds, for the supply
@@ -19,6 +20,13 @@ Optional properties:
   design requires. This property describes the total system ramp time
   required due to the combination of internal ramping of the regulator itself,
   and board design issues such as trace capacitance and load on the supply.
+=======
+- qcom,consumer-supplies: flattened list of supply and dev_name pairs
+	This property is used to support regulator consumers that have no device
+	tree node.  An empty string, "", can be used to specify a null device
+	name.  A null device name is used to allow calls such as:
+	regulator_get(NULL, "pll_vdd").
+>>>>>>> p9x
 
 Deprecated properties:
 - regulator-compatible: If a regulator chip contains multiple
@@ -34,6 +42,7 @@ Example:
 		regulator-max-microvolt = <2500000>;
 		regulator-always-on;
 		vin-supply = <&vin>;
+		qcom,consumer-supplies = "pll_vdd", "", "lcd_vcc", "foo.1";
 	};
 
 Regulator Consumers:

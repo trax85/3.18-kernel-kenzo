@@ -154,8 +154,11 @@ static void hci_uart_write_work(struct work_struct *work)
 	struct hci_dev *hdev = hu->hdev;
 	struct sk_buff *skb;
 
+<<<<<<< HEAD
 	BT_DBG("hu %pK hdev %pK tty %pK", hu, hdev, tty);
 
+=======
+>>>>>>> p9x
 	/* REVISIT: should we cope with bad skbs or ->write() returning
 	 * and error value ?
 	 */
@@ -350,8 +353,20 @@ static void hci_uart_tty_close(struct tty_struct *tty)
 	hdev = hu->hdev;
 	if (hdev) {
 		hci_uart_close(hdev);
+<<<<<<< HEAD
 		if (test_bit(HCI_UART_REGISTERED, &hu->flags))
 			hci_unregister_dev(hdev);
+=======
+
+	if (test_and_clear_bit(HCI_UART_PROTO_SET, &hu->flags)) {
+		if (hdev) {
+			if (test_bit(HCI_UART_REGISTERED, &hu->flags))
+				hci_unregister_dev(hdev);
+			cancel_work_sync(&hu->write_work);
+			hci_free_dev(hdev);
+		}
+		hu->proto->close(hu);
+>>>>>>> p9x
 	}
 
 	if (test_and_clear_bit(HCI_UART_PROTO_SET, &hu->flags)) {

@@ -346,11 +346,37 @@ void netpoll_send_skb_on_dev(struct netpoll *np, struct sk_buff *skb,
 		/* try until next clock tick */
 		for (tries = jiffies_to_usecs(1)/USEC_PER_POLL;
 		     tries > 0; --tries) {
+<<<<<<< HEAD
 			if (HARD_TX_TRYLOCK(dev, txq)) {
 				if (!netif_xmit_stopped(txq))
 					status = netpoll_start_xmit(skb, dev, txq);
 
 				HARD_TX_UNLOCK(dev, txq);
+=======
+			if (__netif_tx_trylock(txq)) {
+				if (!netif_xmit_stopped(txq)) {
+					if (vlan_tx_tag_present(skb) &&
+					    !vlan_hw_offload_capable(netif_skb_features(skb),
+								     skb->vlan_proto)) {
+						skb = __vlan_put_tag(skb, skb->vlan_proto, vlan_tx_tag_get(skb));
+						if (unlikely(!skb)) {
+							/* This is actually a packet drop, but we
+							 * don't want the code at the end of this
+							 * function to try and re-queue a NULL skb.
+							 */
+							status = NETDEV_TX_OK;
+							goto unlock_txq;
+						}
+						skb->vlan_tci = 0;
+					}
+
+					status = ops->ndo_start_xmit(skb, dev);
+					if (status == NETDEV_TX_OK)
+						txq_trans_update(txq);
+				}
+			unlock_txq:
+				__netif_tx_unlock(txq);
+>>>>>>> p9x
 
 				if (status == NETDEV_TX_OK)
 					break;
@@ -477,6 +503,387 @@ void netpoll_send_udp(struct netpoll *np, const char *msg, int len)
 }
 EXPORT_SYMBOL(netpoll_send_udp);
 
+<<<<<<< HEAD
+=======
+static void netpoll_neigh_reply(struct sk_buff *skb, struct netpoll_info *npinfo)
+{
+	int size, type = ARPOP_REPLY;
+	__be32 sip, tip;
+	unsigned char *sha;
+	struct sk_buff *send_skb;
+	struct netpoll *np, *tmp;
+	unsigned long flags;
+	int hlen, tlen;
+	int hits = 0, proto;
+
+	if (list_empty(&npinfo->rx_np))
+		return;
+
+	/* Before checking the packet, we do some early
+	   inspection whether this is interesting at all */
+	spin_lock_irqsave(&npinfo->rx_lock, flags);
+	list_for_each_entry_safe(np, tmp, &npinfo->rx_np, rx) {
+		if (np->dev == skb->dev)
+			hits++;
+	}
+	spin_unlock_irqrestore(&npinfo->rx_lock, flags);
+
+	/* No netpoll struct is using this dev */
+	if (!hits)
+		return;
+
+	proto = ntohs(eth_hdr(skb)->h_proto);
+	if (proto == ETH_P_ARP) {
+		struct arphdr *arp;
+		unsigned char *arp_ptr;
+		/* No arp on this interface */
+		if (skb->dev->flags & IFF_NOARP)
+			return;
+
+		if (!pskb_may_pull(skb, arp_hdr_len(skb->dev)))
+			return;
+
+		skb_reset_network_header(skb);
+		skb_reset_transport_header(skb);
+		arp = arp_hdr(skb);
+
+		if ((arp->ar_hrd != htons(ARPHRD_ETHER) &&
+		     arp->ar_hrd != htons(ARPHRD_IEEE802)) ||
+		    arp->ar_pro != htons(ETH_P_IP) ||
+		    arp->ar_op != htons(ARPOP_REQUEST))
+			return;
+
+		arp_ptr = (unsigned char *)(arp+1);
+		/* save the location of the src hw addr */
+		sha = arp_ptr;
+		arp_ptr += skb->dev->addr_len;
+		memcpy(&sip, arp_ptr, 4);
+		arp_ptr += 4;
+		/* If we actually cared about dst hw addr,
+		   it would get copied here */
+		arp_ptr += skb->dev->addr_len;
+		memcpy(&tip, arp_ptr, 4);
+
+		/* Should we ignore arp? */
+		if (ipv4_is_loopback(tip) || ipv4_is_multicast(tip))
+			return;
+
+		size = arp_hdr_len(skb->dev);
+
+		spin_lock_irqsave(&npinfo->rx_lock, flags);
+		list_for_each_entry_safe(np, tmp, &npinfo->rx_np, rx) {
+			if (tip != np->local_ip.ip)
+				continue;
+
+			hlen = LL_RESERVED_SPACE(np->dev);
+			tlen = np->dev->needed_tailroom;
+			send_skb = find_skb(np, size + hlen + tlen, hlen);
+			if (!send_skb)
+				continue;
+
+			skb_reset_network_header(send_skb);
+			arp = (struct arphdr *) skb_put(send_skb, size);
+			send_skb->dev = skb->dev;
+			send_skb->protocol = htons(ETH_P_ARP);
+
+			/* Fill the device header for the ARP frame */
+			if (dev_hard_header(send_skb, skb->dev, ETH_P_ARP,
+					    sha, np->dev->dev_addr,
+					    send_skb->len) < 0) {
+				kfree_skb(send_skb);
+				continue;
+			}
+
+			/*
+			 * Fill out the arp protocol part.
+			 *
+			 * we only support ethernet device type,
+			 * which (according to RFC 1390) should
+			 * always equal 1 (Ethernet).
+			 */
+
+			arp->ar_hrd = htons(np->dev->type);
+			arp->ar_pro = htons(ETH_P_IP);
+			arp->ar_hln = np->dev->addr_len;
+			arp->ar_pln = 4;
+			arp->ar_op = htons(type);
+
+			arp_ptr = (unsigned char *)(arp + 1);
+			memcpy(arp_ptr, np->dev->dev_addr, np->dev->addr_len);
+			arp_ptr += np->dev->addr_len;
+			memcpy(arp_ptr, &tip, 4);
+			arp_ptr += 4;
+			memcpy(arp_ptr, sha, np->dev->addr_len);
+			arp_ptr += np->dev->addr_len;
+			memcpy(arp_ptr, &sip, 4);
+
+			netpoll_send_skb(np, send_skb);
+
+			/* If there are several rx_hooks for the same address,
+			   we're fine by sending a single reply */
+			break;
+		}
+		spin_unlock_irqrestore(&npinfo->rx_lock, flags);
+	} else if( proto == ETH_P_IPV6) {
+#if IS_ENABLED(CONFIG_IPV6)
+		struct nd_msg *msg;
+		u8 *lladdr = NULL;
+		struct ipv6hdr *hdr;
+		struct icmp6hdr *icmp6h;
+		const struct in6_addr *saddr;
+		const struct in6_addr *daddr;
+		struct inet6_dev *in6_dev = NULL;
+		struct in6_addr *target;
+
+		in6_dev = in6_dev_get(skb->dev);
+		if (!in6_dev || !in6_dev->cnf.accept_ra)
+			return;
+
+		if (!pskb_may_pull(skb, skb->len))
+			return;
+
+		msg = (struct nd_msg *)skb_transport_header(skb);
+
+		__skb_push(skb, skb->data - skb_transport_header(skb));
+
+		if (ipv6_hdr(skb)->hop_limit != 255)
+			return;
+		if (msg->icmph.icmp6_code != 0)
+			return;
+		if (msg->icmph.icmp6_type != NDISC_NEIGHBOUR_SOLICITATION)
+			return;
+
+		saddr = &ipv6_hdr(skb)->saddr;
+		daddr = &ipv6_hdr(skb)->daddr;
+
+		size = sizeof(struct icmp6hdr) + sizeof(struct in6_addr);
+
+		spin_lock_irqsave(&npinfo->rx_lock, flags);
+		list_for_each_entry_safe(np, tmp, &npinfo->rx_np, rx) {
+			if (!ipv6_addr_equal(daddr, &np->local_ip.in6))
+				continue;
+
+			hlen = LL_RESERVED_SPACE(np->dev);
+			tlen = np->dev->needed_tailroom;
+			send_skb = find_skb(np, size + hlen + tlen, hlen);
+			if (!send_skb)
+				continue;
+
+			send_skb->protocol = htons(ETH_P_IPV6);
+			send_skb->dev = skb->dev;
+
+			skb_reset_network_header(send_skb);
+			skb_put(send_skb, sizeof(struct ipv6hdr));
+			hdr = ipv6_hdr(send_skb);
+
+			*(__be32*)hdr = htonl(0x60000000);
+
+			hdr->payload_len = htons(size);
+			hdr->nexthdr = IPPROTO_ICMPV6;
+			hdr->hop_limit = 255;
+			hdr->saddr = *saddr;
+			hdr->daddr = *daddr;
+
+			send_skb->transport_header = send_skb->tail;
+			skb_put(send_skb, size);
+
+			icmp6h = (struct icmp6hdr *)skb_transport_header(skb);
+			icmp6h->icmp6_type = NDISC_NEIGHBOUR_ADVERTISEMENT;
+			icmp6h->icmp6_router = 0;
+			icmp6h->icmp6_solicited = 1;
+			target = (struct in6_addr *)(skb_transport_header(send_skb) + sizeof(struct icmp6hdr));
+			*target = msg->target;
+			icmp6h->icmp6_cksum = csum_ipv6_magic(saddr, daddr, size,
+							      IPPROTO_ICMPV6,
+							      csum_partial(icmp6h,
+									   size, 0));
+
+			if (dev_hard_header(send_skb, skb->dev, ETH_P_IPV6,
+					    lladdr, np->dev->dev_addr,
+					    send_skb->len) < 0) {
+				kfree_skb(send_skb);
+				continue;
+			}
+
+			netpoll_send_skb(np, send_skb);
+
+			/* If there are several rx_hooks for the same address,
+			   we're fine by sending a single reply */
+			break;
+		}
+		spin_unlock_irqrestore(&npinfo->rx_lock, flags);
+#endif
+	}
+}
+
+static bool pkt_is_ns(struct sk_buff *skb)
+{
+	struct nd_msg *msg;
+	struct ipv6hdr *hdr;
+
+	if (skb->protocol != htons(ETH_P_IPV6))
+		return false;
+	if (!pskb_may_pull(skb, sizeof(struct ipv6hdr) + sizeof(struct nd_msg)))
+		return false;
+
+	msg = (struct nd_msg *)skb_transport_header(skb);
+	__skb_push(skb, skb->data - skb_transport_header(skb));
+	hdr = ipv6_hdr(skb);
+
+	if (hdr->nexthdr != IPPROTO_ICMPV6)
+		return false;
+	if (hdr->hop_limit != 255)
+		return false;
+	if (msg->icmph.icmp6_code != 0)
+		return false;
+	if (msg->icmph.icmp6_type != NDISC_NEIGHBOUR_SOLICITATION)
+		return false;
+
+	return true;
+}
+
+int __netpoll_rx(struct sk_buff *skb, struct netpoll_info *npinfo)
+{
+	int proto, len, ulen;
+	int hits = 0;
+	const struct iphdr *iph;
+	struct udphdr *uh;
+	struct netpoll *np, *tmp;
+
+	if (list_empty(&npinfo->rx_np))
+		goto out;
+
+	if (skb->dev->type != ARPHRD_ETHER)
+		goto out;
+
+	/* check if netpoll clients need ARP */
+	if (skb->protocol == htons(ETH_P_ARP) && atomic_read(&trapped)) {
+		skb_queue_tail(&npinfo->neigh_tx, skb);
+		return 1;
+	} else if (pkt_is_ns(skb) && atomic_read(&trapped)) {
+		skb_queue_tail(&npinfo->neigh_tx, skb);
+		return 1;
+	}
+
+	if (skb->protocol == cpu_to_be16(ETH_P_8021Q)) {
+		skb = vlan_untag(skb);
+		if (unlikely(!skb))
+			goto out;
+	}
+
+	proto = ntohs(eth_hdr(skb)->h_proto);
+	if (proto != ETH_P_IP && proto != ETH_P_IPV6)
+		goto out;
+	if (skb->pkt_type == PACKET_OTHERHOST)
+		goto out;
+	if (skb_shared(skb))
+		goto out;
+
+	if (proto == ETH_P_IP) {
+		if (!pskb_may_pull(skb, sizeof(struct iphdr)))
+			goto out;
+		iph = (struct iphdr *)skb->data;
+		if (iph->ihl < 5 || iph->version != 4)
+			goto out;
+		if (!pskb_may_pull(skb, iph->ihl*4))
+			goto out;
+		iph = (struct iphdr *)skb->data;
+		if (ip_fast_csum((u8 *)iph, iph->ihl) != 0)
+			goto out;
+
+		len = ntohs(iph->tot_len);
+		if (skb->len < len || len < iph->ihl*4)
+			goto out;
+
+		/*
+		 * Our transport medium may have padded the buffer out.
+		 * Now We trim to the true length of the frame.
+		 */
+		if (pskb_trim_rcsum(skb, len))
+			goto out;
+
+		iph = (struct iphdr *)skb->data;
+		if (iph->protocol != IPPROTO_UDP)
+			goto out;
+
+		len -= iph->ihl*4;
+		uh = (struct udphdr *)(((char *)iph) + iph->ihl*4);
+		ulen = ntohs(uh->len);
+
+		if (ulen != len)
+			goto out;
+		if (checksum_udp(skb, uh, ulen, iph->saddr, iph->daddr))
+			goto out;
+		list_for_each_entry_safe(np, tmp, &npinfo->rx_np, rx) {
+			if (np->local_ip.ip && np->local_ip.ip != iph->daddr)
+				continue;
+			if (np->remote_ip.ip && np->remote_ip.ip != iph->saddr)
+				continue;
+			if (np->local_port && np->local_port != ntohs(uh->dest))
+				continue;
+
+			np->rx_hook(np, ntohs(uh->source),
+				       (char *)(uh+1),
+				       ulen - sizeof(struct udphdr));
+			hits++;
+		}
+	} else {
+#if IS_ENABLED(CONFIG_IPV6)
+		const struct ipv6hdr *ip6h;
+
+		if (!pskb_may_pull(skb, sizeof(struct ipv6hdr)))
+			goto out;
+		ip6h = (struct ipv6hdr *)skb->data;
+		if (ip6h->version != 6)
+			goto out;
+		len = ntohs(ip6h->payload_len);
+		if (!len)
+			goto out;
+		if (len + sizeof(struct ipv6hdr) > skb->len)
+			goto out;
+		if (pskb_trim_rcsum(skb, len + sizeof(struct ipv6hdr)))
+			goto out;
+		ip6h = ipv6_hdr(skb);
+		if (!pskb_may_pull(skb, sizeof(struct udphdr)))
+			goto out;
+		uh = udp_hdr(skb);
+		ulen = ntohs(uh->len);
+		if (ulen != skb->len)
+			goto out;
+		if (udp6_csum_init(skb, uh, IPPROTO_UDP))
+			goto out;
+		list_for_each_entry_safe(np, tmp, &npinfo->rx_np, rx) {
+			if (!ipv6_addr_equal(&np->local_ip.in6, &ip6h->daddr))
+				continue;
+			if (!ipv6_addr_equal(&np->remote_ip.in6, &ip6h->saddr))
+				continue;
+			if (np->local_port && np->local_port != ntohs(uh->dest))
+				continue;
+
+			np->rx_hook(np, ntohs(uh->source),
+				       (char *)(uh+1),
+				       ulen - sizeof(struct udphdr));
+			hits++;
+		}
+#endif
+	}
+
+	if (!hits)
+		goto out;
+
+	kfree_skb(skb);
+	return 1;
+
+out:
+	if (atomic_read(&trapped)) {
+		kfree_skb(skb);
+		return 1;
+	}
+
+	return 0;
+}
+
+>>>>>>> p9x
 void netpoll_print_options(struct netpoll *np)
 {
 	np_info(np, "local port %d\n", np->local_port);

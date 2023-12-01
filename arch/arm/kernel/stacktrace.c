@@ -154,6 +154,7 @@ static noinline void __save_stack_trace(struct task_struct *tsk,
 		trace->entries[trace->nr_entries++] = ULONG_MAX;
 }
 
+<<<<<<< HEAD
 void save_stack_trace_regs(struct pt_regs *regs, struct stack_trace *trace)
 {
 	struct stack_trace_data data;
@@ -173,11 +174,16 @@ void save_stack_trace_regs(struct pt_regs *regs, struct stack_trace *trace)
 		trace->entries[trace->nr_entries++] = ULONG_MAX;
 }
 
+=======
+>>>>>>> p9x
 void save_stack_trace_tsk(struct task_struct *tsk, struct stack_trace *trace)
 {
 	__save_stack_trace(tsk, trace, 1);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(save_stack_trace_tsk);
+=======
+>>>>>>> p9x
 
 void save_stack_trace(struct stack_trace *trace)
 {

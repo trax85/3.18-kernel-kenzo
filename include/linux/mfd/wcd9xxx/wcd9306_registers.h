@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2016, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -14,7 +18,10 @@
 #define WCD9306_REGISTERS_H
 
 #include <linux/mfd/wcd9xxx/wcd9xxx_registers.h>
+<<<<<<< HEAD
 #include <linux/types.h>
+=======
+>>>>>>> p9x
 
 #define TAPAN_A_CHIP_CTL			(0x000)
 #define TAPAN_A_CHIP_CTL__POR				(0x00)
@@ -1009,14 +1016,20 @@
 /* Macros for Packing Register Writes into a U32 */
 #define TAPAN_PACKED_REG_SIZE sizeof(u32)
 
+<<<<<<< HEAD
 #define TAPAN_CODEC_PACK_ENTRY(reg, mask, val) ((val & 0xff) | \
 	((mask & 0xff) << 8) | ((reg & 0xffff) << 16))
+=======
+#define TAPAN_CODEC_PACK_ENTRY(reg, mask, val) ((val & 0xff)|\
+	((mask & 0xff) << 8)|((reg & 0xffff) << 16))
+>>>>>>> p9x
 
 #define TAPAN_CODEC_UNPACK_ENTRY(packed, reg, mask, val) \
 	do { \
 		((reg) = ((packed >> 16) & (0xffff))); \
 		((mask) = ((packed >> 8) & (0xff))); \
 		((val) = ((packed) & (0xff))); \
+<<<<<<< HEAD
 	} while (0)
 #endif
 
@@ -1027,3 +1040,8 @@
 #define TAPAN_MAX_REGISTER         (TAPAN_NUM_REGISTERS-1)
 #define TAPAN_CACHE_SIZE            TAPAN_NUM_REGISTERS
 extern const u8 tapan_reg_readable[TAPAN_CACHE_SIZE];
+=======
+	} while (0);
+
+#endif
+>>>>>>> p9x

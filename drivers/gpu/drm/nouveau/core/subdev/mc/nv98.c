@@ -45,11 +45,35 @@ nv98_mc_intr[] = {
 	{},
 };
 
+<<<<<<< HEAD
 struct nouveau_oclass *
 nv98_mc_oclass = &(struct nouveau_mc_oclass) {
 	.base.handle = NV_SUBDEV(MC, 0x98),
 	.base.ofuncs = &(struct nouveau_ofuncs) {
 		.ctor = nv04_mc_ctor,
+=======
+static int
+nv98_mc_ctor(struct nouveau_object *parent, struct nouveau_object *engine,
+	     struct nouveau_oclass *oclass, void *data, u32 size,
+	     struct nouveau_object **pobject)
+{
+	struct nv98_mc_priv *priv;
+	int ret;
+
+	ret = nouveau_mc_create(parent, engine, oclass, nv98_mc_intr, &priv);
+	*pobject = nv_object(priv);
+	if (ret)
+		return ret;
+
+	return 0;
+}
+
+struct nouveau_oclass
+nv98_mc_oclass = {
+	.handle = NV_SUBDEV(MC, 0x98),
+	.ofuncs = &(struct nouveau_ofuncs) {
+		.ctor = nv98_mc_ctor,
+>>>>>>> p9x
 		.dtor = _nouveau_mc_dtor,
 		.init = nv50_mc_init,
 		.fini = _nouveau_mc_fini,

@@ -42,8 +42,13 @@ static int tda10071_wr_regs(struct tda10071_priv *priv, u8 reg, u8 *val,
 
 	if (1 + len > sizeof(buf)) {
 		dev_warn(&priv->i2c->dev,
+<<<<<<< HEAD
 				"%s: i2c wr reg=%04x: len=%d is too big!\n",
 				KBUILD_MODNAME, reg, len);
+=======
+			 "%s: i2c wr reg=%04x: len=%d is too big!\n",
+			 KBUILD_MODNAME, reg, len);
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
@@ -84,8 +89,13 @@ static int tda10071_rd_regs(struct tda10071_priv *priv, u8 reg, u8 *val,
 
 	if (len > sizeof(buf)) {
 		dev_warn(&priv->i2c->dev,
+<<<<<<< HEAD
 				"%s: i2c wr reg=%04x: len=%d is too big!\n",
 				KBUILD_MODNAME, reg, len);
+=======
+			 "%s: i2c wr reg=%04x: len=%d is too big!\n",
+			 KBUILD_MODNAME, reg, len);
+>>>>>>> p9x
 		return -EINVAL;
 	}
 

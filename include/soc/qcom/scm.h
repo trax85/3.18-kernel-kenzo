@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2010-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2010-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -28,9 +32,13 @@
 #define SCM_SVC_MDTP			0x12
 #define SCM_SVC_LMH			0x13
 #define SCM_SVC_SMMU_PROGRAM		0x15
+<<<<<<< HEAD
 #define SCM_SVC_QDSS			0x16
 #define SCM_SVC_TZSCHEDULER		0xFC
 #define SCM_SVC_BW			0xFD
+=======
+#define SCM_SVC_TZSCHEDULER		0xFC
+>>>>>>> p9x
 
 #define SCM_FUSE_READ			0x7
 #define SCM_CMD_HDCP			0x01
@@ -48,7 +56,10 @@ static char __n[PAGE_SIZE] __aligned(PAGE_SIZE);
 #define SCM_SIP_FNID(s, c) (((((s) & 0xFF) << 8) | ((c) & 0xFF)) | 0x02000000)
 #define SCM_QSEEOS_FNID(s, c) (((((s) & 0xFF) << 8) | ((c) & 0xFF)) | \
 			      0x32000000)
+<<<<<<< HEAD
 #define SCM_SVC_ID(s) (((s) & 0xFF00) >> 8)
+=======
+>>>>>>> p9x
 
 #define MAX_SCM_ARGS 10
 #define MAX_SCM_RETS 3
@@ -126,7 +137,10 @@ extern bool is_scm_armv8(void);
 extern int scm_restore_sec_cfg(u32 device_id, u32 spare, int *scm_ret);
 extern u32 scm_io_read(phys_addr_t address);
 extern int scm_io_write(phys_addr_t address, u32 val);
+<<<<<<< HEAD
 extern bool scm_is_secure_device(void);
+=======
+>>>>>>> p9x
 
 #define SCM_HDCP_MAX_REG 5
 
@@ -135,8 +149,11 @@ struct scm_hdcp_req {
 	u32 val;
 };
 
+<<<<<<< HEAD
 extern struct mutex scm_lmh_lock;
 
+=======
+>>>>>>> p9x
 #else
 
 static inline int scm_call(u32 svc_id, u32 cmd_id, const void *cmd_buf,
@@ -229,10 +246,13 @@ static inline int scm_io_write(phys_addr_t address, u32 val)
 {
 	return 0;
 }
+<<<<<<< HEAD
 
 inline bool scm_is_secure_device(void)
 {
 	return false;
 }
+=======
+>>>>>>> p9x
 #endif
 #endif

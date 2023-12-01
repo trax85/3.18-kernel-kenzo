@@ -1,5 +1,8 @@
 /* Copyright (c) 2015, The Linux Foundation. All rights reserved.
+<<<<<<< HEAD
  * Copyright (C) 2016 XiaoMi, Inc.
+=======
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -199,6 +202,7 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 
+<<<<<<< HEAD
 			qcom,iterm-ma = <100>;
 			qcom,float-voltage-mv = <4400>;
 			qcom,resume-delta-mv = <200>;
@@ -213,6 +217,19 @@
 			qcom,fastchg-current-comp = <900>;
 
 			/*11 for 4.2V, 16 for 4.1V*/
+=======
+			qcom,iterm-ma = <200>;
+			qcom,float-voltage-mv = <4400>;
+			qcom,resume-delta-mv = <200>;
+			qcom,chg-inhibit-fg;
+			qcom,rparasitic-uohm = <100000>;
+			qcom,bms-psy-name = "bms";
+			qcom,thermal-mitigation = <2000 1500 700 600 0>;
+			qcom,fastchg-current-comp = <900>;
+			qcom,float-voltage-comp = <11>;
+			/*11 for 4.2V, 16 for 4.1V*/
+
+>>>>>>> p9x
 			qcom,force-aicl-rerun;
 			qcom,aicl-rerun-period-s = <180>;
 			qcom,autoadjust-vfloat;
@@ -317,18 +334,32 @@
 			compatible = "qcom,qpnp-fg";
 			#address-cells = <1>;
 			#size-cells = <1>;
+<<<<<<< HEAD
             qcom,resume-soc = <99>;
             #qcom,resume-soc-raw = <254>;
+=======
+			qcom,resume-soc = <99>;
+			qcom,fg-delta-soc = <1>;
+>>>>>>> p9x
 			qcom,vbat-estimate-diff-mv = <100>;
 			status = "okay";
 			qcom,bcl-lm-threshold-ma = <127>;
 			qcom,bcl-mh-threshold-ma = <405>;
+<<<<<<< HEAD
 			qcom,fg-iterm-ma = <150>;
 			qcom,fg-chg-iterm-ma = <100>;
 			qcom,pmic-revid = <&pmi8950_revid>;
 			qcom,cycle-counter-en;
 			qcom,capacity-learning-on;
 			qcom,fg-cutoff-voltage-mv = <3200>;
+=======
+			qcom,fg-iterm-ma = <200>;
+			qcom,fg-chg-iterm-ma = <200>;
+			qcom,pmic-revid = <&pmi8950_revid>;
+			qcom,cycle-counter-en;
+			qcom,capacity-learning-on;
+			qcom,fg-cutoff-voltage-mv = <3400>;
+>>>>>>> p9x
 			qcom,cold-bat-decidegc = <0>;
 			qcom,cool-bat-decidegc = <100>;
 			qcom,warm-bat-decidegc = <450>;
@@ -495,7 +526,11 @@
 
 				qcom,qpnp-lab-min-voltage = <4600000>;
 				qcom,qpnp-lab-step-size = <100000>;
+<<<<<<< HEAD
 				qcom,qpnp-lab-slew-rate = <2000>;
+=======
+				qcom,qpnp-lab-slew-rate = <5000>;
+>>>>>>> p9x
 				qcom,qpnp-lab-use-default-voltage;
 				qcom,qpnp-lab-init-voltage = <5500000>;
 				qcom,qpnp-lab-init-amoled-voltage = <4600000>;
@@ -513,7 +548,11 @@
 				qcom,qpnp-lab-ps-enable;
 				qcom,qpnp-lab-nfet-size = <100>;
 				qcom,qpnp-lab-pfet-size = <100>;
+<<<<<<< HEAD
 				qcom,qpnp-lab-max-precharge-time = <500>;
+=======
+				qcom,qpnp-lab-max-precharge-time = <300>;
+>>>>>>> p9x
 			};
 
 		};

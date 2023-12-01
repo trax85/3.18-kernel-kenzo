@@ -1265,7 +1265,11 @@ read_again:
 			 * need another r10_bio.
 			 */
 			sectors_handled = (r10_bio->sector + max_sectors
+<<<<<<< HEAD
 					   - bio->bi_iter.bi_sector);
+=======
+					   - bio->bi_sector);
+>>>>>>> p9x
 			r10_bio->sectors = max_sectors;
 			spin_lock_irq(&conf->device_lock);
 			if (bio->bi_phys_segments == 0)
@@ -1711,10 +1715,14 @@ static void error(struct mddev *mddev, struct md_rdev *rdev)
 		 * Don't fail the drive, just return an IO error.
 		 */
 		spin_unlock_irqrestore(&conf->device_lock, flags);
+<<<<<<< HEAD
 		return;
 	}
 	if (test_and_clear_bit(In_sync, &rdev->flags))
 		mddev->degraded++;
+=======
+	}
+>>>>>>> p9x
 	/*
 	 * If recovery is running, make sure it aborts.
 	 */
@@ -4458,7 +4466,11 @@ read_more:
 	read_bio->bi_end_io = end_sync_read;
 	read_bio->bi_rw = READ;
 	read_bio->bi_flags &= (~0UL << BIO_RESET_BITS);
+<<<<<<< HEAD
 	__set_bit(BIO_UPTODATE, &read_bio->bi_flags);
+=======
+	read_bio->bi_flags |= 1 << BIO_UPTODATE;
+>>>>>>> p9x
 	read_bio->bi_vcnt = 0;
 	read_bio->bi_iter.bi_size = 0;
 	r10_bio->master_bio = read_bio;

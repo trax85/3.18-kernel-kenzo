@@ -19,8 +19,12 @@
 /*
  * zsmalloc mapping modes
  *
+<<<<<<< HEAD
  * NOTE: These only make a difference when a mapped object spans pages.
  * They also have no effect when PGTABLE_MAPPING is selected.
+=======
+ * NOTE: These only make a difference when a mapped object spans pages
+>>>>>>> p9x
  */
 enum zs_mapmode {
 	ZS_MM_RW, /* normal read-write mapping */

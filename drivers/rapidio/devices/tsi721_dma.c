@@ -332,6 +332,65 @@ static void tsi721_start_dma(struct tsi721_bdma_chan *bdma_chan)
 	bdma_chan->wr_count = bdma_chan->wr_count_next;
 }
 
+<<<<<<< HEAD
+=======
+static void tsi721_desc_put(struct tsi721_bdma_chan *bdma_chan,
+			    struct tsi721_tx_desc *desc)
+{
+	dev_dbg(bdma_chan->dchan.device->dev,
+		"Put desc: %p into free list\n", desc);
+
+	if (desc) {
+		spin_lock_bh(&bdma_chan->lock);
+		list_splice_init(&desc->tx_list, &bdma_chan->free_list);
+		list_add(&desc->desc_node, &bdma_chan->free_list);
+		bdma_chan->wr_count_next = bdma_chan->wr_count;
+		spin_unlock_bh(&bdma_chan->lock);
+	}
+}
+
+static
+struct tsi721_tx_desc *tsi721_desc_get(struct tsi721_bdma_chan *bdma_chan)
+{
+	struct tsi721_tx_desc *tx_desc, *_tx_desc;
+	struct tsi721_tx_desc *ret = NULL;
+	int i;
+
+	spin_lock_bh(&bdma_chan->lock);
+	list_for_each_entry_safe(tx_desc, _tx_desc,
+				 &bdma_chan->free_list, desc_node) {
+		if (async_tx_test_ack(&tx_desc->txd)) {
+			list_del(&tx_desc->desc_node);
+			ret = tx_desc;
+			break;
+		}
+		dev_dbg(bdma_chan->dchan.device->dev,
+			"desc %p not ACKed\n", tx_desc);
+	}
+
+	if (ret == NULL) {
+		dev_dbg(bdma_chan->dchan.device->dev,
+			"%s: unable to obtain tx descriptor\n", __func__);
+		goto err_out;
+	}
+
+	i = bdma_chan->wr_count_next % bdma_chan->bd_num;
+	if (i == bdma_chan->bd_num - 1) {
+		i = 0;
+		bdma_chan->wr_count_next++; /* skip link descriptor */
+	}
+
+	bdma_chan->wr_count_next++;
+	tx_desc->txd.phys = bdma_chan->bd_phys +
+				i * sizeof(struct tsi721_dma_desc);
+	tx_desc->hw_desc = &((struct tsi721_dma_desc *)bdma_chan->bd_base)[i];
+err_out:
+	spin_unlock_bh(&bdma_chan->lock);
+
+	return ret;
+}
+
+>>>>>>> p9x
 static int
 tsi721_desc_fill_init(struct tsi721_tx_desc *desc,
 		      struct tsi721_dma_desc *bd_ptr,
@@ -701,6 +760,7 @@ static void tsi721_sync_dma_irq(struct tsi721_bdma_chan *bdma_chan)
 
 #ifdef CONFIG_PCI_MSI
 	if (priv->flags & TSI721_USING_MSIX) {
+<<<<<<< HEAD
 		synchronize_irq(priv->msix[TSI721_VECT_DMA0_DONE +
 					   bdma_chan->id].vector);
 		synchronize_irq(priv->msix[TSI721_VECT_DMA0_INT +
@@ -708,11 +768,64 @@ static void tsi721_sync_dma_irq(struct tsi721_bdma_chan *bdma_chan)
 	} else
 #endif
 	synchronize_irq(priv->pdev->irq);
+=======
+		/* Request interrupt service if we are in MSI-X mode */
+		rc = request_irq(
+			priv->msix[TSI721_VECT_DMA0_DONE +
+				   bdma_chan->id].vector,
+			tsi721_bdma_msix, 0,
+			priv->msix[TSI721_VECT_DMA0_DONE +
+				   bdma_chan->id].irq_name,
+			(void *)bdma_chan);
+
+		if (rc) {
+			dev_dbg(dchan->device->dev,
+				"Unable to allocate MSI-X interrupt for "
+				"BDMA%d-DONE\n", bdma_chan->id);
+			goto err_out;
+		}
+
+		rc = request_irq(priv->msix[TSI721_VECT_DMA0_INT +
+					    bdma_chan->id].vector,
+				tsi721_bdma_msix, 0,
+				priv->msix[TSI721_VECT_DMA0_INT +
+					   bdma_chan->id].irq_name,
+				(void *)bdma_chan);
+
+		if (rc)	{
+			dev_dbg(dchan->device->dev,
+				"Unable to allocate MSI-X interrupt for "
+				"BDMA%d-INT\n", bdma_chan->id);
+			free_irq(
+				priv->msix[TSI721_VECT_DMA0_DONE +
+					   bdma_chan->id].vector,
+				(void *)bdma_chan);
+			rc = -EIO;
+			goto err_out;
+		}
+	}
+#endif /* CONFIG_PCI_MSI */
+
+	bdma_chan->active = true;
+	tsi721_bdma_interrupt_enable(bdma_chan, 1);
+
+	return bdma_chan->bd_num - 1;
+
+err_out:
+	kfree(desc);
+	tsi721_bdma_ch_free(bdma_chan);
+	return rc;
+>>>>>>> p9x
 }
 
 static void tsi721_free_chan_resources(struct dma_chan *dchan)
 {
 	struct tsi721_bdma_chan *bdma_chan = to_tsi721_chan(dchan);
+<<<<<<< HEAD
+=======
+	struct tsi721_device *priv = to_tsi721(dchan->device);
+	LIST_HEAD(list);
+>>>>>>> p9x
 
 	dev_dbg(dchan->device->dev, "%s: for channel %d\n",
 		__func__, bdma_chan->id);
@@ -725,9 +838,39 @@ static void tsi721_free_chan_resources(struct dma_chan *dchan)
 
 	tsi721_bdma_interrupt_enable(bdma_chan, 0);
 	bdma_chan->active = false;
+<<<<<<< HEAD
 	tsi721_sync_dma_irq(bdma_chan);
 	tasklet_kill(&bdma_chan->tasklet);
 	INIT_LIST_HEAD(&bdma_chan->free_list);
+=======
+
+#ifdef CONFIG_PCI_MSI
+	if (priv->flags & TSI721_USING_MSIX) {
+		synchronize_irq(priv->msix[TSI721_VECT_DMA0_DONE +
+					   bdma_chan->id].vector);
+		synchronize_irq(priv->msix[TSI721_VECT_DMA0_INT +
+					   bdma_chan->id].vector);
+	} else
+#endif
+	synchronize_irq(priv->pdev->irq);
+
+	tasklet_kill(&bdma_chan->tasklet);
+
+	spin_lock_bh(&bdma_chan->lock);
+	list_splice_init(&bdma_chan->free_list, &list);
+	spin_unlock_bh(&bdma_chan->lock);
+
+#ifdef CONFIG_PCI_MSI
+	if (priv->flags & TSI721_USING_MSIX) {
+		free_irq(priv->msix[TSI721_VECT_DMA0_DONE +
+				    bdma_chan->id].vector, (void *)bdma_chan);
+		free_irq(priv->msix[TSI721_VECT_DMA0_INT +
+				    bdma_chan->id].vector, (void *)bdma_chan);
+	}
+#endif /* CONFIG_PCI_MSI */
+
+	tsi721_bdma_ch_free(bdma_chan);
+>>>>>>> p9x
 	kfree(bdma_chan->tx_desc);
 	tsi721_bdma_ch_free(bdma_chan);
 }

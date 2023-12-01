@@ -476,9 +476,12 @@ efi_init (void)
 	u64 efi_desc_size;
 	char *cp, vendor[100] = "unknown";
 	int i;
+<<<<<<< HEAD
 
 	set_bit(EFI_BOOT, &efi.flags);
 	set_bit(EFI_64BIT, &efi.flags);
+=======
+>>>>>>> p9x
 
 	/*
 	 * It's too early to be able to use the standard kernel command line
@@ -532,8 +535,11 @@ efi_init (void)
 	       efi.systab->hdr.revision >> 16,
 	       efi.systab->hdr.revision & 0xffff, vendor);
 
+<<<<<<< HEAD
 	set_bit(EFI_SYSTEM_TABLES, &efi.flags);
 
+=======
+>>>>>>> p9x
 	palo_phys      = EFI_INVALID_TABLE_ADDR;
 
 	if (efi_config_init(arch_tables) != 0)

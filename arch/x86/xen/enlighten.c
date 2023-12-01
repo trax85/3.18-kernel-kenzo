@@ -33,7 +33,11 @@
 #include <linux/memblock.h>
 #include <linux/edd.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_KEXEC_CORE
+=======
+#ifdef CONFIG_KEXEC
+>>>>>>> p9x
 #include <linux/kexec.h>
 #endif
 
@@ -1863,7 +1867,11 @@ static struct notifier_block xen_hvm_cpu_notifier = {
 	.notifier_call	= xen_hvm_cpu_notify,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_KEXEC_CORE
+=======
+#ifdef CONFIG_KEXEC
+>>>>>>> p9x
 static void xen_hvm_shutdown(void)
 {
 	native_machine_shutdown();
@@ -1894,7 +1902,11 @@ static void __init xen_hvm_guest_init(void)
 	x86_init.irqs.intr_init = xen_init_IRQ;
 	xen_hvm_init_time_ops();
 	xen_hvm_init_mmu_ops();
+<<<<<<< HEAD
 #ifdef CONFIG_KEXEC_CORE
+=======
+#ifdef CONFIG_KEXEC
+>>>>>>> p9x
 	machine_ops.shutdown = xen_hvm_shutdown;
 	machine_ops.crash_shutdown = xen_hvm_crash_shutdown;
 #endif

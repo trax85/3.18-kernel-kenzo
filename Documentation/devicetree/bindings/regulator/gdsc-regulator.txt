@@ -24,6 +24,7 @@ Optional properties:
 			    on/off this regulator based on internal HW signals
 			    to save more power.
  - qcom,enable-root-clk: Presence denotes that the clocks in the "clocks"
+<<<<<<< HEAD
 			property are required to be enabled before gdsc is
 			turned on and disabled before turning off gdsc. This
 			will be used in subsystems where reset is synchronous
@@ -37,10 +38,19 @@ Optional properties:
 			to be force-enabled prior to turning on the core. The
 			clock-name which denotes the root clock should be
 			"core_root_clk".
+=======
+			property are requried to be enabled before gdsc is
+			turned on and disabled before turning off gdsc. This
+			will be used in susbsystems where reset is synchronous
+			and root clk is active without sw being aware of its
+			state. The clock-name which denotes the root clock
+			should be named as "core_root_clk".
+>>>>>>> p9x
  - qcom,clk-dis-wait-val: Input value for CLK_DIS_WAIT controls state transition
 			 delay after halting clock in the collapsible core.
  - reg-names:		Names of the bases for the above "reg" registers.
 			Ex. "base", "domain_addr".
+<<<<<<< HEAD
  - qcom,no-status-check-on-disable: Do not poll the status bit when GDSC
 			is disabled.
  - qcom,disallow-clear: Presence denotes the periph & core memory will not be
@@ -50,6 +60,8 @@ Optional properties:
 			to enable.
  - qcom,reset-aon-logic: If present, the GPU DEMET cells need to be reset while
 			 enabling the GX GDSC.
+=======
+>>>>>>> p9x
 
 Example:
 	gdsc_oxili_gx: qcom,gdsc@fd8c4024 {

@@ -1,9 +1,13 @@
 
 generic-y += clkdev.h
+<<<<<<< HEAD
 generic-y += hash.h
 generic-y += irq_work.h
 generic-y += mcs_spinlock.h
 generic-y += preempt.h
+=======
+generic-y += mcs_spinlock.h
+>>>>>>> p9x
 generic-y += rwsem.h
 generic-y += scatterlist.h
 generic-y += trace_clock.h

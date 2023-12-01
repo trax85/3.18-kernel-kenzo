@@ -15,6 +15,7 @@
 #ifndef MDSS_COMPAT_UTILS_H
 #define MDSS_COMPAT_UTILS_H
 
+<<<<<<< HEAD
 /*
  * To allow proper structure padding for 64bit/32bit target
  */
@@ -24,6 +25,8 @@
 #define MDP_LAYER_COMMIT_V1_PAD 3
 #endif
 
+=======
+>>>>>>> p9x
 struct mdp_buf_sync32 {
 	u32		flags;
 	u32		acq_fen_fd_cnt;
@@ -109,6 +112,7 @@ struct mdp_pcc_coeff32 {
 	uint32_t c, r, g, b, rr, gg, bb, rg, gb, rb, rgb_0, rgb_1;
 };
 
+<<<<<<< HEAD
 struct mdp_pcc_coeff_v1_7_32 {
 	uint32_t c, r, g, b, rg, gb, rb, rgb;
 };
@@ -122,6 +126,12 @@ struct mdp_pcc_cfg_data32 {
 	uint32_t ops;
 	struct mdp_pcc_coeff32 r, g, b;
 	compat_caddr_t cfg_payload;
+=======
+struct mdp_pcc_cfg_data32 {
+	uint32_t block;
+	uint32_t ops;
+	struct mdp_pcc_coeff32 r, g, b;
+>>>>>>> p9x
 };
 
 struct mdp_csc_cfg32 {
@@ -150,6 +160,13 @@ struct mdp_pa_mem_col_cfg32 {
 	uint32_t hue_region;
 	uint32_t sat_region;
 	uint32_t val_region;
+<<<<<<< HEAD
+=======
+	uint32_t color_adjust_p2;
+	uint32_t blend_gain;
+	uint8_t sat_hold;
+	uint8_t val_hold;
+>>>>>>> p9x
 };
 
 struct mdp_pa_v2_data32 {
@@ -166,6 +183,7 @@ struct mdp_pa_v2_data32 {
 	uint32_t six_zone_thresh;
 	compat_caddr_t six_zone_curve_p0;
 	compat_caddr_t six_zone_curve_p1;
+<<<<<<< HEAD
 };
 
 struct mdp_pa_mem_col_data_v1_7_32 {
@@ -190,10 +208,13 @@ struct mdp_pa_data_v1_7_32 {
 	struct mdp_pa_mem_col_data_v1_7_32 sky_cfg;
 	struct mdp_pa_mem_col_data_v1_7_32 fol_cfg;
 	uint32_t six_zone_thresh;
+=======
+>>>>>>> p9x
 	uint32_t six_zone_adj_p0;
 	uint32_t six_zone_adj_p1;
 	uint8_t six_zone_sat_hold;
 	uint8_t six_zone_val_hold;
+<<<<<<< HEAD
 	uint32_t six_zone_len;
 	compat_caddr_t six_zone_curve_p0;
 	compat_caddr_t six_zone_curve_p1;
@@ -205,6 +226,13 @@ struct mdp_pa_v2_cfg_data32 {
 	uint32_t flags;
 	struct mdp_pa_v2_data32 pa_v2_data;
 	compat_caddr_t cfg_payload;
+=======
+};
+
+struct mdp_pa_v2_cfg_data32 {
+	uint32_t block;
+	struct mdp_pa_v2_data32 pa_v2_data;
+>>>>>>> p9x
 };
 
 struct mdp_pa_cfg32 {
@@ -220,6 +248,7 @@ struct mdp_pa_cfg_data32 {
 	struct mdp_pa_cfg32 pa_data;
 };
 
+<<<<<<< HEAD
 struct mdp_igc_lut_data_v1_7_32 {
 	uint32_t table_fmt;
 	uint32_t len;
@@ -227,6 +256,8 @@ struct mdp_igc_lut_data_v1_7_32 {
 	compat_caddr_t c2_data;
 };
 
+=======
+>>>>>>> p9x
 struct mdp_rgb_lut_data32 {
 	uint32_t flags;
 	uint32_t lut_type;
@@ -235,6 +266,7 @@ struct mdp_rgb_lut_data32 {
 
 struct mdp_igc_lut_data32 {
 	uint32_t block;
+<<<<<<< HEAD
 	uint32_t version;
 	uint32_t len, ops;
 	compat_caddr_t c0_c1_data;
@@ -245,16 +277,27 @@ struct mdp_igc_lut_data32 {
 struct mdp_hist_lut_data_v1_7_32 {
 	uint32_t len;
 	compat_caddr_t data;
+=======
+	uint32_t len, ops;
+	compat_caddr_t c0_c1_data;
+	compat_caddr_t c2_data;
+>>>>>>> p9x
 };
 
 struct mdp_hist_lut_data32 {
 	uint32_t block;
+<<<<<<< HEAD
 	uint32_t version;
 	uint32_t hist_lut_first;
 	uint32_t ops;
 	uint32_t len;
 	compat_caddr_t data;
 	compat_caddr_t cfg_payload;
+=======
+	uint32_t ops;
+	uint32_t len;
+	compat_caddr_t data;
+>>>>>>> p9x
 };
 
 struct mdp_ar_gc_lut_data32 {
@@ -263,6 +306,7 @@ struct mdp_ar_gc_lut_data32 {
 	uint32_t offset;
 };
 
+<<<<<<< HEAD
 struct mdp_pgc_lut_data_v1_7_32 {
 	uint32_t  len;
 	compat_caddr_t c0_data;
@@ -272,6 +316,9 @@ struct mdp_pgc_lut_data_v1_7_32 {
 
 struct mdp_pgc_lut_data32 {
 	uint32_t version;
+=======
+struct mdp_pgc_lut_data32 {
+>>>>>>> p9x
 	uint32_t block;
 	uint32_t flags;
 	uint8_t num_r_stages;
@@ -280,7 +327,10 @@ struct mdp_pgc_lut_data32 {
 	compat_caddr_t r_data;
 	compat_caddr_t g_data;
 	compat_caddr_t b_data;
+<<<<<<< HEAD
 	compat_caddr_t cfg_payload;
+=======
+>>>>>>> p9x
 };
 
 struct mdp_lut_cfg_data32 {
@@ -313,6 +363,7 @@ struct mdp_dither_cfg_data32 {
 	uint32_t b_cb_depth;
 };
 
+<<<<<<< HEAD
 struct mdp_gamut_data_v1_7_32 {
 	uint32_t mode;
 	uint32_t tbl_size[MDP_GAMUT_TABLE_NUM_V1_7];
@@ -326,12 +377,20 @@ struct mdp_gamut_cfg_data32 {
 	uint32_t block;
 	uint32_t flags;
 	uint32_t version;
+=======
+struct mdp_gamut_cfg_data32 {
+	uint32_t block;
+	uint32_t flags;
+>>>>>>> p9x
 	uint32_t gamut_first;
 	uint32_t tbl_size[MDP_GAMUT_TABLE_NUM];
 	compat_caddr_t r_tbl[MDP_GAMUT_TABLE_NUM];
 	compat_caddr_t g_tbl[MDP_GAMUT_TABLE_NUM];
 	compat_caddr_t b_tbl[MDP_GAMUT_TABLE_NUM];
+<<<<<<< HEAD
 	compat_caddr_t cfg_payload;
+=======
+>>>>>>> p9x
 };
 
 struct mdp_calib_config_data32 {
@@ -443,8 +502,11 @@ struct mdp_overlay_pp_params32 {
 	struct mdp_sharp_cfg32 sharp_cfg;
 	struct mdp_histogram_cfg32 hist_cfg;
 	struct mdp_hist_lut_data32 hist_lut_cfg;
+<<<<<<< HEAD
 	struct mdp_pa_v2_cfg_data32 pa_v2_cfg_data;
 	struct mdp_pcc_cfg_data32 pcc_cfg_data;
+=======
+>>>>>>> p9x
 };
 
 struct msmfb_mdp_pp32 {
@@ -498,6 +560,7 @@ struct mdp_overlay_list32 {
 	uint32_t processed_overlays;
 };
 
+<<<<<<< HEAD
 struct mdp_input_layer32 {
 	uint32_t		flags;
 	uint32_t		pipe_ndx;
@@ -552,4 +615,6 @@ struct mdp_position_update32 {
 	uint32_t input_layer_cnt;
 };
 
+=======
+>>>>>>> p9x
 #endif

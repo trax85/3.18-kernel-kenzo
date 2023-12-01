@@ -27,7 +27,11 @@
 		clock-names = "iface_clk", "core_clk";
 		status = "ok";
 
+<<<<<<< HEAD
 		qcom,iommu-ctx@1f08000 {
+=======
+		gfx3d_user: qcom,iommu-ctx@1f08000 {
+>>>>>>> p9x
 			compatible = "qcom,msm-smmu-v2-ctx";
 			reg = <0x1f08000 0x1000>;
 			interrupts = <0 240 0>;
@@ -35,7 +39,11 @@
 			label = "gfx3d_user";
 		};
 
+<<<<<<< HEAD
 		qcom,iommu-ctx@1f09000 {
+=======
+		gfx3d_secure: qcom,iommu-ctx@1f09000 {
+>>>>>>> p9x
 			compatible = "qcom,msm-smmu-v2-ctx";
 			reg = <0x1f09000 0x1000>;
 			qcom,secure-context;
@@ -44,7 +52,11 @@
 			label = "gfx3d_secure";
 		};
 
+<<<<<<< HEAD
 		qcom,iommu-ctx@1f0b000 {
+=======
+		gfx3d_priv: qcom,iommu-ctx@1f0b000 {
+>>>>>>> p9x
 			compatible = "qcom,msm-smmu-v2-ctx";
 			reg = <0x1f0b000 0x1000>;
 			interrupts = <0 245 0>;
@@ -137,6 +149,7 @@
 			label = "adsp_opendsp";
 		};
 
+<<<<<<< HEAD
 		adsp_shared: qcom,iommu-ctx@1e31000 {
 			compatible = "qcom,msm-smmu-v2-ctx";
 			reg = <0x1e31000 0x1000>;
@@ -146,6 +159,8 @@
 			label = "adsp_shared";
 		};
 
+=======
+>>>>>>> p9x
 		lpass_stream: qcom,iommu-ctx@1e32000 {
 			compatible = "qcom,msm-smmu-v2-ctx";
 			reg = <0x1e32000 0x1000>;

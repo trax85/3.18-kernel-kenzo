@@ -24,7 +24,11 @@
 /* MRC14 and MCR14 */
 #define MRC14(op1, crn, crm, op2)					\
 ({									\
+<<<<<<< HEAD
 u32 val;								\
+=======
+uint32_t val;								\
+>>>>>>> p9x
 asm volatile("mrc p14, "#op1", %0, "#crn", "#crm", "#op2 : "=r" (val));	\
 val;									\
 })
@@ -34,8 +38,12 @@ val;									\
 asm volatile("mcr p14, "#op1", %0, "#crn", "#crm", "#op2 : : "r" (val));\
 })
 
+<<<<<<< HEAD
 /*
  * Debug Registers
+=======
+/* Debug Registers
+>>>>>>> p9x
  *
  * Available only in DBGv7
  * DBGECR, DBGDSCCR, DBGDSMCR, DBGDRCR
@@ -255,8 +263,12 @@ asm volatile("mcr p14, "#op1", %0, "#crn", "#crm", "#op2 : : "r" (val));\
 #define WCP14_DBGCLAIMSET(val)		MCR14(val, 0, c7, c8, 6)
 #define WCP14_DBGCLAIMCLR(val)		MCR14(val, 0, c7, c9, 6)
 
+<<<<<<< HEAD
 /*
  * ETM Registers
+=======
+/* ETM Registers
+>>>>>>> p9x
  *
  * Available only in ETMv3.3, 3.4, 3.5
  * ETMASICCR, ETMTECR2, ETMFFRR, ETMVDEVR, ETMVDCR1, ETMVDCR2, ETMVDCR3,
@@ -393,7 +405,11 @@ asm volatile("mcr p14, "#op1", %0, "#crn", "#crm", "#op2 : : "r" (val));\
 #define RCP14_ETMIDR2()			MRC14(1, c1, c2, 0)
 #define RCP14_ETMVMIDCVR()		MRC14(1, c1, c0, 1)
 #define RCP14_ETMOSLSR()		MRC14(1, c1, c1, 4)
+<<<<<<< HEAD
 /* Not available in PFTv1.1 */
+=======
+/* not available in PFTv1.1 */
+>>>>>>> p9x
 #define RCP14_ETMOSSRR()		MRC14(1, c1, c2, 4)
 #define RCP14_ETMPDCR()			MRC14(1, c1, c4, 4)
 #define RCP14_ETMPDSR()			MRC14(1, c1, c5, 4)
@@ -518,7 +534,11 @@ asm volatile("mcr p14, "#op1", %0, "#crn", "#crm", "#op2 : : "r" (val));\
 #define WCP14_ETMIMPSPEC5(val)		MCR14(val, 1, c0, c5, 7)
 #define WCP14_ETMIMPSPEC6(val)		MCR14(val, 1, c0, c6, 7)
 #define WCP14_ETMIMPSPEC7(val)		MCR14(val, 1, c0, c7, 7)
+<<<<<<< HEAD
 /* Can be read only in ETMv3.4, ETMv3.5 */
+=======
+/* can be read only in ETMv3.4, ETMv3.5 */
+>>>>>>> p9x
 #define WCP14_ETMSYNCFR(val)		MCR14(val, 1, c0, c8, 7)
 #define WCP14_ETMEXTINSELR(val)		MCR14(val, 1, c0, c11, 7)
 #define WCP14_ETMTESSEICR(val)		MCR14(val, 1, c0, c12, 7)
@@ -529,14 +549,22 @@ asm volatile("mcr p14, "#op1", %0, "#crn", "#crm", "#op2 : : "r" (val));\
 #define WCP14_ETMIDR2(val)		MCR14(val, 1, c1, c2, 0)
 #define WCP14_ETMVMIDCVR(val)		MCR14(val, 1, c1, c0, 1)
 #define WCP14_ETMOSLAR(val)		MCR14(val, 1, c1, c0, 4)
+<<<<<<< HEAD
 /* Not available in PFTv1.1 */
+=======
+/* not available in PFTv1.1 */
+>>>>>>> p9x
 #define WCP14_ETMOSSRR(val)		MCR14(val, 1, c1, c2, 4)
 #define WCP14_ETMPDCR(val)		MCR14(val, 1, c1, c4, 4)
 #define WCP14_ETMPDSR(val)		MCR14(val, 1, c1, c5, 4)
 #define WCP14_ETMITCTRL(val)		MCR14(val, 1, c7, c0, 4)
 #define WCP14_ETMCLAIMSET(val)		MCR14(val, 1, c7, c8, 6)
 #define WCP14_ETMCLAIMCLR(val)		MCR14(val, 1, c7, c9, 6)
+<<<<<<< HEAD
 /* Writes to this from CP14 interface are ignored */
+=======
+/* writes to this from CP14 interface are ignored */
+>>>>>>> p9x
 #define WCP14_ETMLAR(val)		MCR14(val, 1, c7, c12, 6)
 
 #endif

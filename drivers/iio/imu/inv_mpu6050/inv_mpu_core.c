@@ -673,7 +673,12 @@ static int inv_mpu_probe(struct i2c_client *client,
 
 	st = iio_priv(indio_dev);
 	st->client = client;
+<<<<<<< HEAD
 	pdata = dev_get_platdata(&client->dev);
+=======
+	pdata = (struct inv_mpu6050_platform_data
+			*)dev_get_platdata(&client->dev);
+>>>>>>> p9x
 	if (pdata)
 		st->plat_data = *pdata;
 	/* power is turned on inside check chip type*/

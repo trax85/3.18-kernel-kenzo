@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2002,2008-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2002,2008-2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -57,6 +61,7 @@ static int _isdb_get(void *data, u64 *val)
 
 DEFINE_SIMPLE_ATTRIBUTE(_isdb_fops, _isdb_get, _isdb_set, "%llu\n");
 
+<<<<<<< HEAD
 static int _lm_limit_set(void *data, u64 val)
 {
 	struct kgsl_device *device = data;
@@ -112,6 +117,8 @@ static int _lm_threshold_count_get(void *data, u64 *val)
 DEFINE_SIMPLE_ATTRIBUTE(_lm_threshold_fops, _lm_threshold_count_get,
 	NULL, "%llu\n");
 
+=======
+>>>>>>> p9x
 static int _active_count_get(void *data, u64 *val)
 {
 	struct kgsl_device *device = data;
@@ -131,8 +138,11 @@ typedef void (*reg_read_fill_t)(struct kgsl_device *device, int i,
 static void sync_event_print(struct seq_file *s,
 		struct kgsl_cmdbatch_sync_event *sync_event)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 
+=======
+>>>>>>> p9x
 	switch (sync_event->type) {
 	case KGSL_CMD_SYNCPOINT_TYPE_TIMESTAMP: {
 		seq_printf(s, "sync: ctx: %d ts: %d",
@@ -140,6 +150,7 @@ static void sync_event_print(struct seq_file *s,
 		break;
 	}
 	case KGSL_CMD_SYNCPOINT_TYPE_FENCE:
+<<<<<<< HEAD
 		spin_lock_irqsave(&sync_event->handle_lock, flags);
 
 		seq_printf(s, "sync: [%pk] %s", sync_event->handle,
@@ -147,6 +158,11 @@ static void sync_event_print(struct seq_file *s,
 				? sync_event->handle->fence->name : "NULL");
 
 		spin_unlock_irqrestore(&sync_event->handle_lock, flags);
+=======
+		seq_printf(s, "sync: [%pK] %s", sync_event->handle,
+		(sync_event->handle && sync_event->handle->fence)
+				? sync_event->handle->fence->name : "NULL");
+>>>>>>> p9x
 		break;
 	default:
 		seq_printf(s, "sync: type: %d", sync_event->type);
@@ -174,7 +190,10 @@ static const struct flag_entry context_flags[] = {KGSL_CONTEXT_FLAGS};
  * KGSL_CONTEXT_PRIV_DEVICE_SPECIFIC so it is ok to cross the streams here.
  */
 static const struct flag_entry context_priv[] = {
+<<<<<<< HEAD
 	{ KGSL_CONTEXT_PRIV_SUBMITTED, "submitted"},
+=======
+>>>>>>> p9x
 	{ KGSL_CONTEXT_PRIV_DETACHED, "detached"},
 	{ KGSL_CONTEXT_PRIV_INVALID, "invalid"},
 	{ KGSL_CONTEXT_PRIV_PAGEFAULT, "pagefault"},
@@ -208,6 +227,7 @@ static void print_flags(struct seq_file *s, const struct flag_entry *table,
 
 static void cmdbatch_print(struct seq_file *s, struct kgsl_cmdbatch *cmdbatch)
 {
+<<<<<<< HEAD
 	struct kgsl_cmdbatch_sync_event *event;
 	unsigned int i;
 
@@ -219,21 +239,48 @@ static void cmdbatch_print(struct seq_file *s, struct kgsl_cmdbatch *cmdbatch)
 		if (!kgsl_cmdbatch_event_pending(cmdbatch, i))
 			continue;
 
+=======
+	struct kgsl_cmdbatch_sync_event *sync_event;
+
+	/*
+	 * print fences first, since they block this cmdbatch.
+	 * We may have cmdbatch timer running, which also uses
+	 * same lock, take a lock with software interrupt disabled (bh)
+	 * to avoid spin lock recursion.
+	 */
+	spin_lock_bh(&cmdbatch->lock);
+
+	list_for_each_entry(sync_event, &cmdbatch->synclist, node) {
+>>>>>>> p9x
 		/*
 		 * Timestamp is 0 for KGSL_CONTEXT_SYNC, but print it anyways
 		 * so that it is clear if the fence was a separate submit
 		 * or part of an IB submit.
 		 */
 		seq_printf(s, "\t%d ", cmdbatch->timestamp);
+<<<<<<< HEAD
 		sync_event_print(s, event);
 		seq_puts(s, "\n");
 	}
 
+=======
+		sync_event_print(s, sync_event);
+		seq_puts(s, "\n");
+	}
+
+	spin_unlock_bh(&cmdbatch->lock);
+
+>>>>>>> p9x
 	/* if this flag is set, there won't be an IB */
 	if (cmdbatch->flags & KGSL_CONTEXT_SYNC)
 		return;
 
+<<<<<<< HEAD
 	seq_printf(s, "\t%d: ", cmdbatch->timestamp);
+=======
+	seq_printf(s, "\t%d: ib: expires: %lu",
+		cmdbatch->timestamp, cmdbatch->expires);
+>>>>>>> p9x
 
 	seq_puts(s, " flags: ");
 	print_flags(s, cmdbatch_flags, ARRAY_SIZE(cmdbatch_flags),
@@ -361,7 +408,11 @@ adreno_context_debugfs_init(struct adreno_device *adreno_dev,
 
 void adreno_debugfs_init(struct adreno_device *adreno_dev)
 {
+<<<<<<< HEAD
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
+=======
+	struct kgsl_device *device = &adreno_dev->dev;
+>>>>>>> p9x
 
 	if (!device->d_debugfs || IS_ERR(device->d_debugfs))
 		return;
@@ -373,6 +424,7 @@ void adreno_debugfs_init(struct adreno_device *adreno_dev)
 	adreno_dev->ctx_d_debugfs = debugfs_create_dir("ctx",
 							device->d_debugfs);
 
+<<<<<<< HEAD
 	if (ADRENO_FEATURE(adreno_dev, ADRENO_LM)) {
 		debugfs_create_file("lm_limit", 0644, device->d_debugfs, device,
 			&_lm_limit_fops);
@@ -380,6 +432,8 @@ void adreno_debugfs_init(struct adreno_device *adreno_dev)
 			device->d_debugfs, device, &_lm_threshold_fops);
 	}
 
+=======
+>>>>>>> p9x
 	if (adreno_is_a5xx(adreno_dev))
 		debugfs_create_file("isdb", 0644, device->d_debugfs,
 			device, &_isdb_fops);

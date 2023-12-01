@@ -109,6 +109,7 @@ static void __iomem *__ioremap_caller(resource_size_t phys_addr,
 	/*
 	 * Don't allow anybody to remap normal RAM that we're using..
 	 */
+<<<<<<< HEAD
 	/* First check if whole region can be identified as RAM or not */
 	ram_region = region_is_ram(phys_addr, size);
 	if (ram_region > 0) {
@@ -117,6 +118,13 @@ static void __iomem *__ioremap_caller(resource_size_t phys_addr,
 				(unsigned long int)last_addr);
 		return NULL;
 	}
+=======
+	pfn      = phys_addr >> PAGE_SHIFT;
+	last_pfn = last_addr >> PAGE_SHIFT;
+	if (walk_system_ram_range(pfn, last_pfn - pfn + 1, NULL,
+				  __ioremap_check_ram) == 1)
+		return NULL;
+>>>>>>> p9x
 
 	/* If could not be identified(-1), check page by page */
 	if (ram_region < 0) {

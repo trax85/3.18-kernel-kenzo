@@ -56,7 +56,11 @@ struct ti_usb_type_c {
 	int			enb_gpio_polarity;
 	struct regulator	*i2c_1p8;
 };
+<<<<<<< HEAD
 static struct ti_usb_type_c *ti_usb;
+=======
+struct ti_usb_type_c *ti_usb;
+>>>>>>> p9x
 
 static int tiusb_read_regdata(struct i2c_client *i2c)
 {

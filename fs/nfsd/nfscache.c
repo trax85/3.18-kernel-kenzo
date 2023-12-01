@@ -237,6 +237,7 @@ prune_bucket(struct nfsd_drc_bucket *b)
 	struct svc_cacherep *rp, *tmp;
 	long freed = 0;
 
+<<<<<<< HEAD
 	list_for_each_entry_safe(rp, tmp, &b->lru_head, c_lru) {
 		/*
 		 * Don't free entries attached to calls that are still
@@ -253,6 +254,8 @@ prune_bucket(struct nfsd_drc_bucket *b)
 	return freed;
 }
 
+=======
+>>>>>>> p9x
 /*
  * Walk the LRU list and prune off entries that are older than RC_EXPIRE.
  * Also prune the oldest ones when the total exceeds the max number of entries.
@@ -264,6 +267,7 @@ prune_cache_entries(void)
 	long freed = 0;
 	bool cancel = true;
 
+<<<<<<< HEAD
 	for (i = 0; i < drc_hashsize; i++) {
 		struct nfsd_drc_bucket *b = &drc_hashtbl[i];
 
@@ -274,6 +278,19 @@ prune_cache_entries(void)
 		if (!list_empty(&b->lru_head))
 			cancel = false;
 		spin_unlock(&b->cache_lock);
+=======
+	list_for_each_entry_safe(rp, tmp, &lru_head, c_lru) {
+		/*
+		 * Don't free entries attached to calls that are still
+		 * in-progress, but do keep scanning the list.
+		 */
+		if (rp->c_state == RC_INPROG)
+			continue;
+		if (num_drc_entries <= max_drc_entries &&
+		    time_before(jiffies, rp->c_timestamp + RC_EXPIRE))
+			break;
+		nfsd_reply_cache_free_locked(rp);
+>>>>>>> p9x
 	}
 
 	/*
@@ -436,9 +453,15 @@ nfsd_cache_lookup(struct svc_rqst *rqstp)
 	}
 
 	/* go ahead and prune the cache */
+<<<<<<< HEAD
 	prune_bucket(b);
 
 	found = nfsd_cache_search(b, rqstp, csum);
+=======
+	prune_cache_entries();
+
+	found = nfsd_cache_search(rqstp, csum);
+>>>>>>> p9x
 	if (found) {
 		if (likely(rp))
 			nfsd_reply_cache_free_locked(rp);

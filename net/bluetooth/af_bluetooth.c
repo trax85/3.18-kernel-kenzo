@@ -31,7 +31,16 @@
 #include <net/bluetooth/bluetooth.h>
 #include <linux/proc_fs.h>
 
+<<<<<<< HEAD
 #define VERSION "2.19"
+=======
+#ifndef CONFIG_BT_SOCK_DEBUG
+#undef  BT_DBG
+#define BT_DBG(D...)
+#endif
+
+#define VERSION "2.16"
+>>>>>>> p9x
 
 /* Bluetooth sockets */
 #define BT_MAX_PROTO	8

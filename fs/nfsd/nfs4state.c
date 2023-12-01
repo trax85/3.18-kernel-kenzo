@@ -633,6 +633,7 @@ static struct nfs4_delegation *
 alloc_init_deleg(struct nfs4_client *clp, struct svc_fh *current_fh)
 {
 	struct nfs4_delegation *dp;
+<<<<<<< HEAD
 	long n;
 
 	dprintk("NFSD alloc_init_deleg\n");
@@ -641,6 +642,19 @@ alloc_init_deleg(struct nfs4_client *clp, struct svc_fh *current_fh)
 		goto out_dec;
 	if (delegation_blocked(&current_fh->fh_handle))
 		goto out_dec;
+=======
+
+	dprintk("NFSD alloc_init_deleg\n");
+	/*
+	 * Major work on the lease subsystem (for example, to support
+	 * calbacks on stat) will be required before we can support
+	 * write delegations properly.
+	 */
+	if (type != NFS4_OPEN_DELEGATE_READ)
+		return NULL;
+	if (num_delegations > max_delegations)
+		return NULL;
+>>>>>>> p9x
 	dp = delegstateid(nfs4_alloc_stid(clp, deleg_slab));
 	if (dp == NULL)
 		goto out_dec;
@@ -655,10 +669,19 @@ alloc_init_deleg(struct nfs4_client *clp, struct svc_fh *current_fh)
 	INIT_LIST_HEAD(&dp->dl_perfile);
 	INIT_LIST_HEAD(&dp->dl_perclnt);
 	INIT_LIST_HEAD(&dp->dl_recall_lru);
+<<<<<<< HEAD
 	dp->dl_type = NFS4_OPEN_DELEGATE_READ;
 	dp->dl_retries = 1;
 	nfsd4_init_cb(&dp->dl_recall, dp->dl_stid.sc_client,
 		      &nfsd4_cb_recall_ops, NFSPROC4_CLNT_CB_RECALL);
+=======
+	dp->dl_file = NULL;
+	dp->dl_type = type;
+	fh_copy_shallow(&dp->dl_fh, &current_fh->fh_handle);
+	dp->dl_time = 0;
+	atomic_set(&dp->dl_count, 1);
+	nfsd4_init_callback(&dp->dl_recall);
+>>>>>>> p9x
 	return dp;
 out_dec:
 	atomic_long_dec(&num_delegations);
@@ -1877,7 +1900,11 @@ static struct nfs4_client *create_client(struct xdr_netobj name,
 		free_client(clp);
 		return NULL;
 	}
+<<<<<<< HEAD
 	nfsd4_init_cb(&clp->cl_cb_null, clp, NULL, NFSPROC4_CLNT_CB_NULL);
+=======
+	nfsd4_init_callback(&clp->cl_cb_null);
+>>>>>>> p9x
 	clp->cl_time = get_seconds();
 	clear_bit(0, &clp->cl_cb_slot_busy);
 	copy_verf(clp, verf);
@@ -3877,6 +3904,7 @@ out_fput:
 	return status;
 }
 
+<<<<<<< HEAD
 static struct nfs4_delegation *
 nfs4_set_delegation(struct nfs4_client *clp, struct svc_fh *fh,
 		    struct nfs4_file *fp)
@@ -3917,6 +3945,37 @@ out:
 		return ERR_PTR(status);
 	}
 	return dp;
+=======
+static int nfs4_set_delegation(struct nfs4_delegation *dp, int flag, struct nfs4_file *fp)
+{
+	int status;
+
+	if (fp->fi_had_conflict)
+		return -EAGAIN;
+	get_nfs4_file(fp);
+	dp->dl_file = fp;
+	if (!fp->fi_lease) {
+		status = nfs4_setlease(dp, flag);
+		if (status)
+			goto out_free;
+		return 0;
+	}
+	spin_lock(&recall_lock);
+	if (fp->fi_had_conflict) {
+		spin_unlock(&recall_lock);
+		status = -EAGAIN;
+		goto out_free;
+	}
+	atomic_inc(&fp->fi_delegees);
+	list_add(&dp->dl_perfile, &fp->fi_delegations);
+	spin_unlock(&recall_lock);
+	list_add(&dp->dl_perclnt, &dp->dl_stid.sc_client->cl_delegations);
+	return 0;
+out_free:
+	put_nfs4_file(fp);
+	dp->dl_file = fp;
+	return status;
+>>>>>>> p9x
 }
 
 static void nfsd4_open_deleg_none_ext(struct nfsd4_open *open, int status)
@@ -3993,6 +4052,12 @@ nfs4_open_delegation(struct svc_fh *fh, struct nfsd4_open *open,
 	dp = nfs4_set_delegation(clp, fh, stp->st_stid.sc_file);
 	if (IS_ERR(dp))
 		goto out_no_deleg;
+<<<<<<< HEAD
+=======
+	status = nfs4_set_delegation(dp, flag, stp->st_file);
+	if (status)
+		goto out_free;
+>>>>>>> p9x
 
 	memcpy(&open->op_delegate_stateid, &dp->dl_stid.sc_stateid, sizeof(dp->dl_stid.sc_stateid));
 
@@ -4577,6 +4642,7 @@ nfs4_preprocess_stateid_op(struct net *net, struct nfsd4_compound_state *cstate,
 		goto out;
 	status = nfs4_check_fh(fhp, s);
 
+<<<<<<< HEAD
 	if (!status && filpp) {
 		*filpp = nfs4_find_file(s, flags);
 		if (!*filpp)
@@ -4585,6 +4651,22 @@ nfs4_preprocess_stateid_op(struct net *net, struct nfsd4_compound_state *cstate,
 out:
 	nfs4_put_stid(s);
 	return status;
+=======
+static __be32
+nfsd4_free_lock_stateid(struct nfs4_ol_stateid *stp)
+{
+	struct nfs4_lockowner *lo = lockowner(stp->st_stateowner);
+
+	if (check_for_locks(stp->st_file, lo))
+		return nfserr_locks_held;
+	/*
+	 * Currently there's a 1-1 lock stateid<->lockowner
+	 * correspondance, and we have to delete the lockowner when we
+	 * delete the lock stateid:
+	 */
+	release_lockowner(lo);
+	return nfs_ok;
+>>>>>>> p9x
 }
 
 /*
@@ -5037,6 +5119,24 @@ nevermind:
 		deny->ld_type = NFS4_WRITE_LT;
 }
 
+<<<<<<< HEAD
+=======
+static bool same_lockowner_ino(struct nfs4_lockowner *lo, struct inode *inode, clientid_t *clid, struct xdr_netobj *owner)
+{
+	struct nfs4_ol_stateid *lst;
+
+	if (!same_owner_str(&lo->lo_owner, owner, clid))
+		return false;
+	if (list_empty(&lo->lo_owner.so_stateids)) {
+		WARN_ON_ONCE(1);
+		return false;
+	}
+	lst = list_first_entry(&lo->lo_owner.so_stateids,
+			       struct nfs4_ol_stateid, st_perstateowner);
+	return lst->st_file->fi_inode == inode;
+}
+
+>>>>>>> p9x
 static struct nfs4_lockowner *
 find_lockowner_str_locked(clientid_t *clid, struct xdr_netobj *owner,
 		struct nfs4_client *clp)

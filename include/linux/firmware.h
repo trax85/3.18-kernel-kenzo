@@ -45,17 +45,27 @@ int request_firmware_nowait(
 	struct module *module, bool uevent,
 	const char *name, struct device *device, gfp_t gfp, void *context,
 	void (*cont)(const struct firmware *fw, void *context));
+<<<<<<< HEAD
 int request_firmware_direct(const struct firmware **fw, const char *name,
 			    struct device *device);
 
 int request_firmware_into_buf(const char *name, struct device *device,
+=======
+int request_firmware_direct(const char *name, struct device *device,
+>>>>>>> p9x
 			    phys_addr_t dest_addr, size_t dest_size,
 			    void * (*map_fw_mem)(phys_addr_t phys,
 						 size_t size, void *data),
 			    void (*unmap_fw_mem)(void *virt, size_t size,
+<<<<<<< HEAD
 						 void *data),
 			    void *data);
 int request_firmware_nowait_into_buf(
+=======
+							void *data),
+			    void *data);
+int request_firmware_nowait_direct(
+>>>>>>> p9x
 	struct module *module, bool uevent,
 	const char *name, struct device *device, gfp_t gfp, void *context,
 	void (*cont)(const struct firmware *fw, void *context),
@@ -70,15 +80,23 @@ static inline int request_firmware(const struct firmware **fw,
 {
 	return -EINVAL;
 }
+<<<<<<< HEAD
 static inline int request_firmware_into_buf(const char *name,
+=======
+static inline int request_firmware_direct(const char *name,
+>>>>>>> p9x
 					  struct device *device,
 					  phys_addr_t dest_addr,
 					  size_t dest_size,
 					  void * (*map_fw_mem)(phys_addr_t phys,
 						       size_t size, void *data),
+<<<<<<< HEAD
 					  void (*unmap_fw_mem)(void *virt,
 							       size_t size,
 							       void *data),
+=======
+					  void (*unmap_fw_mem)(void *virt),
+>>>>>>> p9x
 					  void *data)
 {
 	return -EINVAL;
@@ -90,13 +108,21 @@ static inline int request_firmware_nowait(
 {
 	return -EINVAL;
 }
+<<<<<<< HEAD
 static inline int request_firmware_nowait_into_buf(
+=======
+static inline int request_firmware_nowait_direct(
+>>>>>>> p9x
 	struct module *module, bool uevent,
 	const char *name, struct device *device, gfp_t gfp, void *context,
 	void (*cont)(const struct firmware *fw, void *context),
 	phys_addr_t dest_addr, size_t dest_size,
 	void * (*map_fw_mem)(phys_addr_t phys, size_t size, void *data),
+<<<<<<< HEAD
 	void (*unmap_fw_mem)(void *virt, size_t size, void *data), void *data)
+=======
+	void (*unmap_fw_mem)(void *virt, void *data), void *data)
+>>>>>>> p9x
 {
 	return -EINVAL;
 }

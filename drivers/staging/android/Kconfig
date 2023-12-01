@@ -7,6 +7,7 @@ config ANDROID
 
 if ANDROID
 
+<<<<<<< HEAD
 config ANDROID_BINDER_IPC
 	bool "Android Binder IPC Driver"
 	depends on MMU
@@ -54,6 +55,8 @@ config ANDROID_BINDER_IPC_SELFTEST
           exhaustively with combinations of various buffer sizes and
           alignments.
 
+=======
+>>>>>>> p9x
 config ASHMEM
 	bool "Enable the Anonymous Shared Memory Subsystem"
 	default n
@@ -65,23 +68,6 @@ config ASHMEM
 
 	  It is, in theory, a good memory allocator for low-memory devices,
 	  because it can discard shared memory units when under memory pressure.
-
-config ANDROID_LOGGER
-	tristate "Android log driver"
-	default n
-	---help---
-	  This adds support for system-wide logging using four log buffers.
-
-	  These are:
-
-	      1: main
-	      2: events
-	      3: radio
-	      4: system
-
-	  Log reading and writing is performed via normal Linux reads and
-	  optimized writes. This optimization avoids logging having too
-	  much overhead in the system.
 
 config ANDROID_TIMED_OUTPUT
 	bool "Timed output class driver"
@@ -148,6 +134,7 @@ config ONESHOT_SYNC_USER
 	help
 	  Provide a userspace API for creating oneshot sync objects.
 
+<<<<<<< HEAD
 config ANDROID_VSOC
 	tristate "Android Virtual SoC support"
 	default n
@@ -157,6 +144,8 @@ config ANDROID_VSOC
 	  a 'cuttlefish' Android image inside QEmu. The driver interacts with
 	  a QEmu ivshmem device. If built as a module, it will be called vsoc.
 
+=======
+>>>>>>> p9x
 source "drivers/staging/android/ion/Kconfig"
 
 source "drivers/staging/android/fiq_debugger/Kconfig"

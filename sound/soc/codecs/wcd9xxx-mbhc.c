@@ -36,6 +36,10 @@
 #include <linux/gpio.h>
 #include <linux/input.h>
 #include "wcd9320.h"
+<<<<<<< HEAD
+=======
+#include "wcd9306.h"
+>>>>>>> p9x
 #include "wcd9xxx-mbhc.h"
 #include "wcdcal-hwdep.h"
 #include "wcd9xxx-resmgr.h"
@@ -64,7 +68,11 @@
 #define BUTTON_MIN 0x8000
 #define STATUS_REL_DETECTION 0x0C
 
+<<<<<<< HEAD
 #define HS_DETECT_PLUG_TIME_MS (5 * 1000)
+=======
+#define HS_DETECT_PLUG_TIME_MS (1 * 1000)
+>>>>>>> p9x
 #define ANC_HPH_DETECT_PLUG_TIME_MS (5 * 1000)
 #define HS_DETECT_PLUG_INERVAL_MS 100
 #define SWCH_REL_DEBOUNCE_TIME_MS 50
@@ -141,7 +149,11 @@
 #define WCD9XXX_BOX_CAR_AVRG_MIN 1
 #define WCD9XXX_BOX_CAR_AVRG_MAX 10
 
+<<<<<<< HEAD
 /*
+=======
+/* Android L spec
+>>>>>>> p9x
  * Need to report LINEIN if H/L impedance
  * is larger than 5K ohm
  */
@@ -334,11 +346,14 @@ static bool __wcd9xxx_switch_micbias(struct wcd9xxx_mbhc *mbhc,
 			   0x04;
 		if (!override)
 			wcd9xxx_turn_onoff_override(mbhc, true);
+<<<<<<< HEAD
 
 		snd_soc_update_bits(codec, WCD9XXX_A_MAD_ANA_CTRL,
 				    0x10, 0x00);
 		snd_soc_update_bits(codec, WCD9XXX_A_LDO_H_MODE_1,
 				    0x20, 0x00);
+=======
+>>>>>>> p9x
 		/* Adjust threshold if Mic Bias voltage changes */
 		if (d->micb_mv != VDDIO_MICBIAS_MV) {
 			cfilt_k_val = __wcd9xxx_resmgr_get_k_val(mbhc,
@@ -400,11 +415,14 @@ static bool __wcd9xxx_switch_micbias(struct wcd9xxx_mbhc *mbhc,
 		if ((!checkpolling || mbhc->polling_active) &&
 		    restartpolling)
 			wcd9xxx_pause_hs_polling(mbhc);
+<<<<<<< HEAD
 
 			snd_soc_update_bits(codec, WCD9XXX_A_MAD_ANA_CTRL,
 					    0x10, 0x10);
 			snd_soc_update_bits(codec, WCD9XXX_A_LDO_H_MODE_1,
 					    0x20, 0x20);
+=======
+>>>>>>> p9x
 		/* Reprogram thresholds */
 		if (d->micb_mv != VDDIO_MICBIAS_MV) {
 			cfilt_k_val =
@@ -613,7 +631,11 @@ static void wcd9xxx_jack_report(struct wcd9xxx_mbhc *mbhc,
 						status & SND_JACK_HEADPHONE);
 	}
 
+<<<<<<< HEAD
 	snd_soc_jack_report(jack, status, mask);
+=======
+	snd_soc_jack_report_no_dapm(jack, status, mask);
+>>>>>>> p9x
 }
 
 static void __hphocp_off_report(struct wcd9xxx_mbhc *mbhc, u32 jack_status,
@@ -987,7 +1009,12 @@ static void wcd9xxx_report_plug(struct wcd9xxx_mbhc *mbhc, int insertion,
 		if (((mbhc->current_plug == PLUG_TYPE_HEADSET) ||
 		     (mbhc->current_plug == PLUG_TYPE_ANC_HEADPHONE)) &&
 		    ((mbhc->event_state & (1 << MBHC_EVENT_PA_HPHL |
+<<<<<<< HEAD
 			1 << MBHC_EVENT_PA_HPHR))))
+=======
+			1 << MBHC_EVENT_PA_HPHR |
+			1 << MBHC_EVENT_PRE_TX_1_3_ON))))
+>>>>>>> p9x
 			__wcd9xxx_switch_micbias(mbhc, 1, false,
 						 false);
 		wcd9xxx_clr_and_turnon_hph_padac(mbhc);
@@ -3126,6 +3153,10 @@ static inline void wcd9xxx_handle_gnd_mic_swap(struct wcd9xxx_mbhc *mbhc,
 		 * otherwise report unsupported plug
 		 */
 		mbhc->mbhc_cfg->swap_gnd_mic(mbhc->codec);
+<<<<<<< HEAD
+=======
+		mbhc->is_jack_type_swchd = true;
+>>>>>>> p9x
 	} else if (pt_gnd_mic_swap_cnt >= GND_MIC_SWAP_THRESHOLD) {
 		/* Report UNSUPPORTED plug
 		 * and continue polling
@@ -3142,6 +3173,10 @@ static inline void wcd9xxx_handle_gnd_mic_swap(struct wcd9xxx_mbhc *mbhc,
 		if (mbhc->current_plug != plug_type)
 			wcd9xxx_report_plug(mbhc, 1,
 					SND_JACK_UNSUPPORTED);
+<<<<<<< HEAD
+=======
+		mbhc->is_jack_type_swchd = false;
+>>>>>>> p9x
 		WCD9XXX_BCL_UNLOCK(mbhc->resmgr);
 	}
 }
@@ -3438,6 +3473,16 @@ static void wcd9xxx_swch_irq_handler(struct wcd9xxx_mbhc *mbhc)
 					    0x08, 0x00);
 			/* Turn off override */
 			wcd9xxx_turn_onoff_override(mbhc, false);
+<<<<<<< HEAD
+=======
+
+			/* Set the jack switch to default */
+			if (mbhc->is_jack_type_swchd) {
+				mbhc->mbhc_cfg->swap_gnd_mic(codec);
+				mbhc->is_jack_type_swchd = false;
+				pr_debug("%s: Set the switch back", __func__);
+			}
+>>>>>>> p9x
 		}
 	}
 exit:
@@ -4263,7 +4308,14 @@ static void wcd9xxx_mbhc_setup(struct wcd9xxx_mbhc *mbhc)
 	gain = wcd9xxx_mbhc_cal_btn_det_mp(btn_det, MBHC_BTN_DET_GAIN);
 	snd_soc_update_bits(codec, WCD9XXX_A_CDC_MBHC_B2_CTL, 0x78,
 			    gain[idx] << 3);
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WCD9XXX_A_MICB_2_MBHC, 0x04, 0x04);
+=======
+	if (mbhc->mbhc_cb && mbhc->mbhc_cb->get_cdc_type &&
+			mbhc->mbhc_cb->get_cdc_type() !=
+				WCD9XXX_CDC_TYPE_TOMTOM)
+		snd_soc_update_bits(codec, WCD9XXX_A_MICB_2_MBHC, 0x04, 0x04);
+>>>>>>> p9x
 
 	pr_debug("%s: leave\n", __func__);
 }
@@ -4900,7 +4952,11 @@ static int wcd9xxx_event_notify(struct notifier_block *self, unsigned long val,
 			hphlocp_off_report(mbhc, SND_JACK_OC_HPHL);
 		if (!(mbhc->event_state &
 		      (1 << MBHC_EVENT_PA_HPHL | 1 << MBHC_EVENT_PA_HPHR |
+<<<<<<< HEAD
 		       1 << MBHC_EVENT_PRE_TX_3_ON)))
+=======
+		       1 << MBHC_EVENT_PRE_TX_1_3_ON)))
+>>>>>>> p9x
 			wcd9xxx_switch_micbias(mbhc, 0);
 		break;
 	case WCD9XXX_EVENT_POST_HPHR_PA_OFF:
@@ -4912,7 +4968,11 @@ static int wcd9xxx_event_notify(struct notifier_block *self, unsigned long val,
 			hphrocp_off_report(mbhc, SND_JACK_OC_HPHL);
 		if (!(mbhc->event_state &
 		      (1 << MBHC_EVENT_PA_HPHL | 1 << MBHC_EVENT_PA_HPHR |
+<<<<<<< HEAD
 		       1 << MBHC_EVENT_PRE_TX_3_ON)))
+=======
+		       1 << MBHC_EVENT_PRE_TX_1_3_ON)))
+>>>>>>> p9x
 			wcd9xxx_switch_micbias(mbhc, 0);
 		break;
 	/* Clock usage change */
@@ -4994,23 +5054,39 @@ static int wcd9xxx_event_notify(struct notifier_block *self, unsigned long val,
 	case WCD9XXX_EVENT_POST_BG_MBHC_ON:
 		/* Not used for now */
 		break;
+<<<<<<< HEAD
 	case WCD9XXX_EVENT_PRE_TX_3_ON:
+=======
+	case WCD9XXX_EVENT_PRE_TX_1_3_ON:
+>>>>>>> p9x
 		/*
 		 * if polling is ON, mbhc micbias not enabled
 		 *  switch micbias source to VDDIO
 		 */
+<<<<<<< HEAD
 		set_bit(MBHC_EVENT_PRE_TX_3_ON, &mbhc->event_state);
+=======
+		set_bit(MBHC_EVENT_PRE_TX_1_3_ON, &mbhc->event_state);
+>>>>>>> p9x
 		if (!(snd_soc_read(codec, mbhc->mbhc_bias_regs.ctl_reg)
 		      & 0x80) &&
 		    mbhc->polling_active && !mbhc->mbhc_micbias_switched)
 			wcd9xxx_switch_micbias(mbhc, 1);
 		break;
+<<<<<<< HEAD
 	case WCD9XXX_EVENT_POST_TX_3_OFF:
+=======
+	case WCD9XXX_EVENT_POST_TX_1_3_OFF:
+>>>>>>> p9x
 		/*
 		 * Switch back to micbias if HPH PA or TX3 path
 		 * is disabled
 		 */
+<<<<<<< HEAD
 		clear_bit(MBHC_EVENT_PRE_TX_3_ON, &mbhc->event_state);
+=======
+		clear_bit(MBHC_EVENT_PRE_TX_1_3_ON, &mbhc->event_state);
+>>>>>>> p9x
 		if (mbhc->polling_active && mbhc->mbhc_micbias_switched &&
 		    !(mbhc->event_state & (1 << MBHC_EVENT_PA_HPHL |
 		      1 << MBHC_EVENT_PA_HPHR)))
@@ -5488,6 +5564,10 @@ int wcd9xxx_mbhc_init(struct wcd9xxx_mbhc *mbhc, struct wcd9xxx_resmgr *resmgr,
 	mbhc->intr_ids = mbhc_cdc_intr_ids;
 	mbhc->impedance_detect = impedance_det_en;
 	mbhc->hph_type = MBHC_HPH_NONE;
+<<<<<<< HEAD
+=======
+	mbhc->is_jack_type_swchd = mbhc->is_jack_type_swchd;
+>>>>>>> p9x
 
 	if (mbhc->intr_ids == NULL) {
 		pr_err("%s: Interrupt mapping not provided\n", __func__);

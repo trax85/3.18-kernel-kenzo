@@ -43,6 +43,7 @@
 #define UBIFS_VERSION 1
 
 /* Normal UBIFS messages */
+<<<<<<< HEAD
 #define ubifs_msg(c, fmt, ...)                                      \
 	pr_notice("UBIFS (ubi%d:%d): " fmt "\n",                    \
 		  (c)->vi.ubi_num, (c)->vi.vol_id, ##__VA_ARGS__)
@@ -65,6 +66,22 @@
 		if (!(c)->probing)                                  \
 			ubifs_err(c, fmt, ##__VA_ARGS__);           \
 	} while (0)
+=======
+#define ubifs_msg(fmt, ubi_num, ...)				\
+		pr_notice("UBIFS-%d: " fmt "\n",		\
+		ubi_num, ##__VA_ARGS__)
+/* UBIFS error messages */
+#define ubifs_err(fmt, ubi_num, ...)				\
+	pr_err("UBIFS-%d error (pid %d): %s: " fmt "\n",	\
+		ubi_num, current->pid, __func__, ##__VA_ARGS__)
+/* UBIFS warning messages */
+#define ubifs_warn(fmt, ubi_num, ...)				\
+	pr_warn("UBIFS-%d warning (pid %d): %s: " fmt "\n",	\
+		ubi_num, current->pid, __func__, ##__VA_ARGS__)
+
+/* Used when device number is unknown or irrelevant */
+#define UBIFS_UNKNOWN_DEV_NUM -1
+>>>>>>> p9x
 
 /* UBIFS file system VFS magic number */
 #define UBIFS_SUPER_MAGIC 0x24051905
@@ -1793,10 +1810,17 @@ long ubifs_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
 /* compressor.c */
 int __init ubifs_compressors_init(void);
 void ubifs_compressors_exit(void);
+<<<<<<< HEAD
 void ubifs_compress(const struct ubifs_info *c, const void *in_buf, int in_len,
 		    void *out_buf, int *out_len, int *compr_type);
 int ubifs_decompress(const struct ubifs_info *c, const void *buf, int len,
 		     void *out, int *out_len, int compr_type);
+=======
+void ubifs_compress(struct ubifs_info *c, const void *in_buf, int in_len,
+		    void *out_buf, int *out_len, int *compr_type);
+int ubifs_decompress(struct ubifs_info *c, const void *buf, int len, void *out,
+		     int *out_len, int compr_type);
+>>>>>>> p9x
 
 #include "debug.h"
 #include "misc.h"

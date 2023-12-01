@@ -447,6 +447,16 @@ static inline struct net_bridge_port *br_port_get_check_rcu(const struct net_dev
 	return br_rx_handler_check_rcu(dev) ? br_port_get_rcu(dev) : NULL;
 }
 
+static inline bool br_rx_handler_check_rcu(const struct net_device *dev)
+{
+	return rcu_dereference(dev->rx_handler) == br_handle_frame;
+}
+
+static inline struct net_bridge_port *br_port_get_check_rcu(const struct net_device *dev)
+{
+	return br_rx_handler_check_rcu(dev) ? br_port_get_rcu(dev) : NULL;
+}
+
 /* br_ioctl.c */
 int br_dev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
 int br_ioctl_deviceless_stub(struct net *net, unsigned int cmd,
@@ -784,10 +794,17 @@ struct net_bridge_port *br_get_port(struct net_bridge *br, u16 port_no);
 void br_init_port(struct net_bridge_port *p);
 void br_become_designated_port(struct net_bridge_port *p);
 
+<<<<<<< HEAD
 void __br_set_forward_delay(struct net_bridge *br, unsigned long t);
 int br_set_forward_delay(struct net_bridge *br, unsigned long x);
 int br_set_hello_time(struct net_bridge *br, unsigned long x);
 int br_set_max_age(struct net_bridge *br, unsigned long x);
+=======
+extern void __br_set_forward_delay(struct net_bridge *br, unsigned long t);
+extern int br_set_forward_delay(struct net_bridge *br, unsigned long x);
+extern int br_set_hello_time(struct net_bridge *br, unsigned long x);
+extern int br_set_max_age(struct net_bridge *br, unsigned long x);
+>>>>>>> p9x
 
 
 /* br_stp_if.c */

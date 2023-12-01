@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2002,2007-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2002,2007-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -13,9 +17,21 @@
 #ifndef __KGSL_SHAREDMEM_H
 #define __KGSL_SHAREDMEM_H
 
+<<<<<<< HEAD
 #include <linux/dma-mapping.h>
 
 #include "kgsl_mmu.h"
+=======
+#include <linux/slab.h>
+#include <linux/dma-mapping.h>
+#include "kgsl_mmu.h"
+#include <linux/slab.h>
+#include <linux/kmemleak.h>
+#include <linux/iommu.h>
+
+#include "kgsl_mmu.h"
+#include "kgsl_log.h"
+>>>>>>> p9x
 
 struct kgsl_device;
 struct kgsl_process_private;
@@ -24,9 +40,22 @@ struct kgsl_process_private;
 #define KGSL_CACHE_OP_FLUSH     0x02
 #define KGSL_CACHE_OP_CLEAN     0x03
 
+<<<<<<< HEAD
 int kgsl_sharedmem_alloc_contig(struct kgsl_device *device,
 			struct kgsl_memdesc *memdesc,
 			uint64_t size);
+=======
+int kgsl_sharedmem_page_alloc_user(struct kgsl_memdesc *memdesc,
+				struct kgsl_pagetable *pagetable,
+				uint64_t size);
+
+int kgsl_cma_alloc_coherent(struct kgsl_device *device,
+			struct kgsl_memdesc *memdesc,
+			struct kgsl_pagetable *pagetable, uint64_t size);
+
+int kgsl_cma_alloc_secure(struct kgsl_device *device,
+			struct kgsl_memdesc *memdesc, uint64_t size);
+>>>>>>> p9x
 
 void kgsl_sharedmem_free(struct kgsl_memdesc *memdesc);
 
@@ -66,12 +95,17 @@ void kgsl_sharedmem_uninit_sysfs(void);
 
 int kgsl_allocate_user(struct kgsl_device *device,
 		struct kgsl_memdesc *memdesc,
+<<<<<<< HEAD
 		uint64_t size, uint64_t flags);
 
 void kgsl_get_memory_usage(char *str, size_t len, uint64_t memflags);
 
 int kgsl_sharedmem_page_alloc_user(struct kgsl_memdesc *memdesc,
 				uint64_t size);
+=======
+		struct kgsl_pagetable *pagetable,
+		uint64_t size, uint64_t mmapsize, uint64_t flags);
+>>>>>>> p9x
 
 #define MEMFLAGS(_flags, _mask, _shift) \
 	((unsigned int) (((_flags) & (_mask)) >> (_shift)))
@@ -116,8 +150,15 @@ kgsl_memdesc_get_memtype(const struct kgsl_memdesc *memdesc)
 static inline int
 kgsl_memdesc_set_align(struct kgsl_memdesc *memdesc, unsigned int align)
 {
+<<<<<<< HEAD
 	if (align > 32)
 		align = 32;
+=======
+	if (align > 32) {
+		KGSL_CORE_ERR("Alignment too big, restricting to 2^32\n");
+		align = 32;
+	}
+>>>>>>> p9x
 
 	memdesc->flags &= ~KGSL_MEMALIGN_MASK;
 	memdesc->flags |= (align << KGSL_MEMALIGN_SHIFT) & KGSL_MEMALIGN_MASK;
@@ -210,11 +251,17 @@ kgsl_memdesc_has_guard_page(const struct kgsl_memdesc *memdesc)
  * Returns guard page size
  */
 static inline int
+<<<<<<< HEAD
 kgsl_memdesc_guard_page_size(const struct kgsl_mmu *mmu,
 				const struct kgsl_memdesc *memdesc)
 {
 	return kgsl_memdesc_is_secured(memdesc) ? mmu->secure_align_mask + 1 :
 								PAGE_SIZE;
+=======
+kgsl_memdesc_guard_page_size(const struct kgsl_memdesc *memdesc)
+{
+	return kgsl_memdesc_is_secured(memdesc) ? SZ_1M : PAGE_SIZE;
+>>>>>>> p9x
 }
 
 /*
@@ -228,7 +275,11 @@ kgsl_memdesc_use_cpu_map(const struct kgsl_memdesc *memdesc)
 }
 
 /*
+<<<<<<< HEAD
  * kgsl_memdesc_footprint - get the size of the mmap region
+=======
+ * kgsl_memdesc_mmapsize - get the size of the mmap region
+>>>>>>> p9x
  * @memdesc - the memdesc
  *
  * The entire memdesc must be mapped. Additionally if the
@@ -237,7 +288,11 @@ kgsl_memdesc_use_cpu_map(const struct kgsl_memdesc *memdesc)
  * match up.
  */
 static inline uint64_t
+<<<<<<< HEAD
 kgsl_memdesc_footprint(const struct kgsl_memdesc *memdesc)
+=======
+kgsl_memdesc_mmapsize(const struct kgsl_memdesc *memdesc)
+>>>>>>> p9x
 {
 	uint64_t size = memdesc->size;
 	if (kgsl_memdesc_has_guard_page(memdesc))
@@ -245,6 +300,24 @@ kgsl_memdesc_footprint(const struct kgsl_memdesc *memdesc)
 	return size;
 }
 
+<<<<<<< HEAD
+=======
+static inline int
+kgsl_allocate_contiguous(struct kgsl_device *device,
+			struct kgsl_memdesc *memdesc, size_t size)
+{
+	int ret;
+
+	size = ALIGN(size, PAGE_SIZE);
+
+	ret = kgsl_cma_alloc_coherent(device, memdesc, NULL, size);
+	if (!ret && (kgsl_mmu_get_mmutype() == KGSL_MMU_TYPE_NONE))
+		memdesc->gpuaddr = memdesc->physaddr;
+
+	return ret;
+}
+
+>>>>>>> p9x
 /*
  * kgsl_allocate_global() - Allocate GPU accessible memory that will be global
  * across all processes
@@ -261,6 +334,7 @@ kgsl_memdesc_footprint(const struct kgsl_memdesc *memdesc)
  */
 static inline int kgsl_allocate_global(struct kgsl_device *device,
 	struct kgsl_memdesc *memdesc, uint64_t size, uint64_t flags,
+<<<<<<< HEAD
 	unsigned int priv, const char *name)
 {
 	int ret;
@@ -280,6 +354,27 @@ static inline int kgsl_allocate_global(struct kgsl_device *device,
 
 	if (ret == 0)
 		kgsl_mmu_add_global(device, memdesc, name);
+=======
+	unsigned int priv)
+{
+	int ret;
+
+	BUG_ON(size > SIZE_MAX);
+
+	if (size == 0)
+		return -EINVAL;
+
+	memdesc->flags = flags;
+	memdesc->priv = priv;
+
+	ret = kgsl_allocate_contiguous(device, memdesc, (size_t) size);
+
+	if (!ret) {
+		ret = kgsl_add_global_pt_entry(device, memdesc);
+		if (ret)
+			kgsl_sharedmem_free(memdesc);
+	}
+>>>>>>> p9x
 
 	return ret;
 }
@@ -288,12 +383,16 @@ static inline int kgsl_allocate_global(struct kgsl_device *device,
  * kgsl_free_global() - Free a device wide GPU allocation and remove it from the
  * global pagetable entry list
  *
+<<<<<<< HEAD
  * @device: Pointer to the device
+=======
+>>>>>>> p9x
  * @memdesc: Pointer to the GPU memory descriptor to free
  *
  * Remove the specific memory descriptor from the global pagetable entry list
  * and free it
  */
+<<<<<<< HEAD
 static inline void kgsl_free_global(struct kgsl_device *device,
 		struct kgsl_memdesc *memdesc)
 {
@@ -378,4 +477,12 @@ static inline int kgsl_get_page_size(size_t size, unsigned int align)
 }
 #endif
 
+=======
+static inline void kgsl_free_global(struct kgsl_memdesc *memdesc)
+{
+	kgsl_remove_global_pt_entry(memdesc);
+	kgsl_sharedmem_free(memdesc);
+}
+
+>>>>>>> p9x
 #endif /* __KGSL_SHAREDMEM_H */

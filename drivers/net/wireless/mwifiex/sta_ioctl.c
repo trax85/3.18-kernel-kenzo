@@ -110,10 +110,17 @@ int mwifiex_request_set_multicast_list(struct mwifiex_private *priv,
 				"info: Set multicast list=%d\n",
 				mcast_list->num_multicast_addr);
 			/* Send multicast addresses to firmware */
+<<<<<<< HEAD
 			ret = mwifiex_send_cmd(priv,
 					       HostCmd_CMD_MAC_MULTICAST_ADR,
 					       HostCmd_ACT_GEN_SET, 0,
 					       mcast_list, false);
+=======
+			ret = mwifiex_send_cmd_async(priv,
+				HostCmd_CMD_MAC_MULTICAST_ADR,
+				HostCmd_ACT_GEN_SET, 0,
+				mcast_list);
+>>>>>>> p9x
 		}
 	}
 	dev_dbg(priv->adapter->dev,
@@ -341,6 +348,16 @@ int mwifiex_bss_start(struct mwifiex_private *priv, struct cfg80211_bss *bss,
 		    (!mwifiex_ssid_cmp(&priv->curr_bss_params.bss_descriptor.
 				       ssid, &bss_desc->ssid))) {
 			ret = 0;
+<<<<<<< HEAD
+=======
+			goto done;
+		}
+
+		/* Exit Adhoc mode first */
+		dev_dbg(adapter->dev, "info: Sending Adhoc Stop\n");
+		ret = mwifiex_deauthenticate(priv, NULL);
+		if (ret)
+>>>>>>> p9x
 			goto done;
 		}
 

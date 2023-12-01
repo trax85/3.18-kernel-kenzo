@@ -51,7 +51,11 @@ static ssize_t sdcardfs_read(struct file *file, char __user *buf,
 	/* update our inode atime upon a successful lower read */
 	if (err >= 0)
 		fsstack_copy_attr_atime(dentry->d_inode,
+<<<<<<< HEAD
 					file_inode(lower_file));
+=======
+					lower_file->f_path.dentry->d_inode);
+>>>>>>> p9x
 
 	return err;
 }
@@ -59,7 +63,11 @@ static ssize_t sdcardfs_read(struct file *file, char __user *buf,
 static ssize_t sdcardfs_write(struct file *file, const char __user *buf,
 			    size_t count, loff_t *ppos)
 {
+<<<<<<< HEAD
 	int err;
+=======
+	int err = 0;
+>>>>>>> p9x
 	struct file *lower_file;
 	struct dentry *dentry = file->f_path.dentry;
 	struct inode *inode = dentry->d_inode;
@@ -76,8 +84,15 @@ static ssize_t sdcardfs_write(struct file *file, const char __user *buf,
 	if (err >= 0) {
 		if (sizeof(loff_t) > sizeof(long))
 			mutex_lock(&inode->i_mutex);
+<<<<<<< HEAD
 		fsstack_copy_inode_size(inode, file_inode(lower_file));
 		fsstack_copy_attr_times(inode, file_inode(lower_file));
+=======
+		fsstack_copy_inode_size(inode,
+				lower_file->f_path.dentry->d_inode);
+		fsstack_copy_attr_times(inode,
+				lower_file->f_path.dentry->d_inode);
+>>>>>>> p9x
 		if (sizeof(loff_t) > sizeof(long))
 			mutex_unlock(&inode->i_mutex);
 	}
@@ -87,7 +102,11 @@ static ssize_t sdcardfs_write(struct file *file, const char __user *buf,
 
 static int sdcardfs_readdir(struct file *file, struct dir_context *ctx)
 {
+<<<<<<< HEAD
 	int err;
+=======
+	int err = 0;
+>>>>>>> p9x
 	struct file *lower_file = NULL;
 	struct dentry *dentry = file->f_path.dentry;
 
@@ -98,7 +117,11 @@ static int sdcardfs_readdir(struct file *file, struct dir_context *ctx)
 	file->f_pos = lower_file->f_pos;
 	if (err >= 0)		/* copy the atime */
 		fsstack_copy_attr_atime(dentry->d_inode,
+<<<<<<< HEAD
 					file_inode(lower_file));
+=======
+					lower_file->f_path.dentry->d_inode);
+>>>>>>> p9x
 	return err;
 }
 
@@ -255,6 +278,10 @@ static int sdcardfs_open(struct inode *inode, struct file *file)
 		goto out_err;
 	}
 
+<<<<<<< HEAD
+=======
+	file->f_mode |= FMODE_NONMAPPABLE;
+>>>>>>> p9x
 	file->private_data =
 		kzalloc(sizeof(struct sdcardfs_file_info), GFP_KERNEL);
 	if (!SDCARDFS_F(file)) {
@@ -295,10 +322,15 @@ static int sdcardfs_flush(struct file *file, fl_owner_t id)
 	struct file *lower_file = NULL;
 
 	lower_file = sdcardfs_lower_file(file);
+<<<<<<< HEAD
 	if (lower_file && lower_file->f_op && lower_file->f_op->flush) {
 		filemap_write_and_wait(file->f_mapping);
 		err = lower_file->f_op->flush(lower_file, id);
 	}
+=======
+	if (lower_file && lower_file->f_op && lower_file->f_op->flush)
+		err = lower_file->f_op->flush(lower_file, id);
+>>>>>>> p9x
 
 	return err;
 }
@@ -326,7 +358,11 @@ static int sdcardfs_fsync(struct file *file, loff_t start, loff_t end,
 	struct path lower_path;
 	struct dentry *dentry = file->f_path.dentry;
 
+<<<<<<< HEAD
 	err = __generic_file_fsync(file, start, end, datasync);
+=======
+	err = generic_file_fsync(file, start, end, datasync);
+>>>>>>> p9x
 	if (err)
 		goto out;
 
@@ -350,6 +386,14 @@ static int sdcardfs_fasync(int fd, struct file *file, int flag)
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+static struct file *sdcardfs_get_lower_file(struct file *f)
+{
+	return sdcardfs_lower_file(f);
+}
+
+>>>>>>> p9x
 /*
  * Sdcardfs cannot use generic_file_llseek as ->llseek, because it would
  * only set the offset of the upper file.  So we have to implement our
@@ -372,6 +416,7 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 /*
  * Sdcardfs read_iter, redirect modified iocb to lower read_iter
  */
@@ -431,6 +476,8 @@ ssize_t sdcardfs_write_iter(struct kiocb *iocb, struct iov_iter *iter)
 out:
 	return err;
 }
+=======
+>>>>>>> p9x
 
 const struct file_operations sdcardfs_main_fops = {
 	.llseek		= generic_file_llseek,
@@ -446,8 +493,12 @@ const struct file_operations sdcardfs_main_fops = {
 	.release	= sdcardfs_file_release,
 	.fsync		= sdcardfs_fsync,
 	.fasync		= sdcardfs_fasync,
+<<<<<<< HEAD
 	.read_iter	= sdcardfs_read_iter,
 	.write_iter	= sdcardfs_write_iter,
+=======
+	.get_lower_file = sdcardfs_get_lower_file,
+>>>>>>> p9x
 };
 
 /* trimmed directory options */
@@ -464,4 +515,8 @@ const struct file_operations sdcardfs_dir_fops = {
 	.flush		= sdcardfs_flush,
 	.fsync		= sdcardfs_fsync,
 	.fasync		= sdcardfs_fasync,
+<<<<<<< HEAD
+=======
+	.get_lower_file = sdcardfs_get_lower_file,
+>>>>>>> p9x
 };

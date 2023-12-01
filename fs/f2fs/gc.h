@@ -13,7 +13,10 @@
 						 * whether IO subsystem is idle
 						 * or not
 						 */
+<<<<<<< HEAD
 #define DEF_GC_THREAD_URGENT_SLEEP_TIME	500	/* 500 ms */
+=======
+>>>>>>> p9x
 #define DEF_GC_THREAD_MIN_SLEEP_TIME	30000	/* milliseconds */
 #define DEF_GC_THREAD_MAX_SLEEP_TIME	60000
 #define DEF_GC_THREAD_NOGC_SLEEP_TIME	300000	/* wait 5 min */
@@ -30,13 +33,20 @@ struct f2fs_gc_kthread {
 	wait_queue_head_t gc_wait_queue_head;
 
 	/* for gc sleep time */
+<<<<<<< HEAD
 	unsigned int urgent_sleep_time;
+=======
+>>>>>>> p9x
 	unsigned int min_sleep_time;
 	unsigned int max_sleep_time;
 	unsigned int no_gc_sleep_time;
 
 	/* for changing gc mode */
+<<<<<<< HEAD
 	unsigned int gc_wake;
+=======
+	unsigned int gc_idle;
+>>>>>>> p9x
 };
 
 struct gc_inode_list {
@@ -69,6 +79,7 @@ static inline block_t limit_free_user_blocks(struct f2fs_sb_info *sbi)
 }
 
 static inline void increase_sleep_time(struct f2fs_gc_kthread *gc_th,
+<<<<<<< HEAD
 							unsigned int *wait)
 {
 	unsigned int min_time = gc_th->min_sleep_time;
@@ -95,6 +106,27 @@ static inline void decrease_sleep_time(struct f2fs_gc_kthread *gc_th,
 		*wait = min_time;
 	else
 		*wait -= min_time;
+=======
+								long *wait)
+{
+	if (*wait == gc_th->no_gc_sleep_time)
+		return;
+
+	*wait += gc_th->min_sleep_time;
+	if (*wait > gc_th->max_sleep_time)
+		*wait = gc_th->max_sleep_time;
+}
+
+static inline void decrease_sleep_time(struct f2fs_gc_kthread *gc_th,
+								long *wait)
+{
+	if (*wait == gc_th->no_gc_sleep_time)
+		*wait = gc_th->max_sleep_time;
+
+	*wait -= gc_th->min_sleep_time;
+	if (*wait <= gc_th->min_sleep_time)
+		*wait = gc_th->min_sleep_time;
+>>>>>>> p9x
 }
 
 static inline bool has_enough_invalid_blocks(struct f2fs_sb_info *sbi)

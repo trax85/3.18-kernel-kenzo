@@ -224,7 +224,12 @@ struct se_dev_entry *core_get_se_deve_from_rtpi(
 		if (port->sep_rtpi != rtpi)
 			continue;
 
+<<<<<<< HEAD
 		atomic_inc_mb(&deve->pr_ref_count);
+=======
+		atomic_inc(&deve->pr_ref_count);
+		smp_mb__after_atomic();
+>>>>>>> p9x
 		spin_unlock_irq(&nacl->device_list_lock);
 
 		return deve;
@@ -1404,7 +1409,12 @@ int core_dev_add_initiator_node_lun_acl(
 
 	spin_lock(&lun->lun_acl_lock);
 	list_add_tail(&lacl->lacl_list, &lun->lun_acl_list);
+<<<<<<< HEAD
 	atomic_inc_mb(&lun->lun_acl_count);
+=======
+	atomic_inc(&lun->lun_acl_count);
+	smp_mb__after_atomic();
+>>>>>>> p9x
 	spin_unlock(&lun->lun_acl_lock);
 
 	pr_debug("%s_TPG[%hu]_LUN[%u->%u] - Added %s ACL for "
@@ -1438,7 +1448,12 @@ int core_dev_del_initiator_node_lun_acl(
 
 	spin_lock(&lun->lun_acl_lock);
 	list_del(&lacl->lacl_list);
+<<<<<<< HEAD
 	atomic_dec_mb(&lun->lun_acl_count);
+=======
+	atomic_dec(&lun->lun_acl_count);
+	smp_mb__after_atomic();
+>>>>>>> p9x
 	spin_unlock(&lun->lun_acl_lock);
 
 	core_disable_device_list_for_node(lun, NULL, lacl->mapped_lun,
@@ -1572,6 +1587,7 @@ struct se_device *target_alloc_device(struct se_hba *hba, const char *name)
 				DA_UNMAP_GRANULARITY_ALIGNMENT_DEFAULT;
 	dev->dev_attrib.max_write_same_len = DA_MAX_WRITE_SAME_LEN;
 	dev->dev_attrib.fabric_max_sectors = DA_FABRIC_MAX_SECTORS;
+<<<<<<< HEAD
 
 	xcopy_lun = &dev->xcopy_lun;
 	xcopy_lun->lun_se_dev = dev;
@@ -1580,6 +1596,8 @@ struct se_device *target_alloc_device(struct se_hba *hba, const char *name)
 	spin_lock_init(&xcopy_lun->lun_acl_lock);
 	spin_lock_init(&xcopy_lun->lun_sep_lock);
 	init_completion(&xcopy_lun->lun_ref_comp);
+=======
+>>>>>>> p9x
 
 	return dev;
 }

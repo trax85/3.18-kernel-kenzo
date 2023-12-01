@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2012-2016 Qualcomm Atheros, Inc.
+=======
+ * Copyright (c) 2012-2014 Qualcomm Atheros, Inc.
+>>>>>>> p9x
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -291,6 +295,7 @@ struct vring_tx_dma {
 	__le16 length;
 } __packed;
 
+<<<<<<< HEAD
 /* TSO type used in dma descriptor d0 bits 11-12 */
 enum {
 	wil_tso_type_hdr = 0,
@@ -299,6 +304,8 @@ enum {
 	wil_tso_type_lst  = 3,
 };
 
+=======
+>>>>>>> p9x
 /* Rx descriptor - MAC part
  * [dword 0]
  * bit  0.. 3 : tid:4 The QoS (b3-0) TID Field
@@ -396,6 +403,7 @@ struct vring_rx_mac {
 #define RX_DMA_D0_CMD_DMA_RT	BIT(9)  /* always 1 */
 #define RX_DMA_D0_CMD_DMA_IT	BIT(10) /* interrupt */
 
+<<<<<<< HEAD
 /* Error field */
 #define RX_DMA_ERROR_FCS	BIT(0)
 #define RX_DMA_ERROR_MIC	BIT(1)
@@ -413,6 +421,19 @@ struct vring_rx_mac {
 #define RX_DMA_STATUS_L4I	BIT(5)
 #define RX_DMA_STATUS_PHY_INFO	BIT(6)
 #define RX_DMA_STATUS_FFM	BIT(7) /* EtherType Flex Filter Match */
+=======
+/* Error field, offload bits */
+#define RX_DMA_ERROR_L3_ERR   BIT(4)
+#define RX_DMA_ERROR_L4_ERR   BIT(5)
+
+/* Status field */
+#define RX_DMA_STATUS_DU         BIT(0)
+#define RX_DMA_STATUS_ERROR      BIT(2)
+
+#define RX_DMA_STATUS_L3I	BIT(4)
+#define RX_DMA_STATUS_L4I	BIT(5)
+#define RX_DMA_STATUS_PHY_INFO	BIT(6)
+>>>>>>> p9x
 
 struct vring_rx_dma {
 	u32 d0;
@@ -517,7 +538,10 @@ static inline struct vring_rx_desc *wil_skb_rxdesc(struct sk_buff *skb)
 
 void wil_netif_rx_any(struct sk_buff *skb, struct net_device *ndev);
 void wil_rx_reorder(struct wil6210_priv *wil, struct sk_buff *skb);
+<<<<<<< HEAD
 void wil_rx_bar(struct wil6210_priv *wil, u8 cid, u8 tid, u16 seq);
+=======
+>>>>>>> p9x
 struct wil_tid_ampdu_rx *wil_tid_ampdu_rx_alloc(struct wil6210_priv *wil,
 						int size, u16 ssn);
 void wil_tid_ampdu_rx_free(struct wil6210_priv *wil,

@@ -47,7 +47,12 @@ void * __init early_init_dt_alloc_memory_arch(u64 size, u64 align)
 	return __alloc_bootmem(size, align, __pa(MAX_DMA_ADDRESS));
 }
 
+<<<<<<< HEAD
 void __init __dt_setup_arch(void *bph)
+=======
+#ifdef CONFIG_BLK_DEV_INITRD
+void __init early_init_dt_setup_initrd_arch(u64 start, u64 end)
+>>>>>>> p9x
 {
 	if (!early_init_dt_scan(bph))
 		return;

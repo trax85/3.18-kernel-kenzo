@@ -1,8 +1,11 @@
 #ifndef UAPI_UFS_H_
 #define UAPI_UFS_H_
 
+<<<<<<< HEAD
 #define MAX_QUERY_IDN	0x12
 
+=======
+>>>>>>> p9x
 /* Flag idn for Query Requests*/
 enum flag_idn {
 	QUERY_FLAG_IDN_FDEVICEINIT		= 0x01,
@@ -38,8 +41,11 @@ enum attr_idn {
 	QUERY_ATTR_IDN_CORR_PRG_BLK_NUM		= 0x11,
 };
 
+<<<<<<< HEAD
 #define QUERY_ATTR_IDN_BOOT_LU_EN_MAX	0x02
 
+=======
+>>>>>>> p9x
 /* Descriptor idn for Query requests */
 enum desc_idn {
 	QUERY_DESC_IDN_DEVICE		= 0x0,
@@ -66,6 +72,9 @@ enum query_opcode {
 	UPIU_QUERY_OPCODE_SET_FLAG	= 0x6,
 	UPIU_QUERY_OPCODE_CLEAR_FLAG	= 0x7,
 	UPIU_QUERY_OPCODE_TOGGLE_FLAG	= 0x8,
+<<<<<<< HEAD
 	UPIU_QUERY_OPCODE_MAX,
+=======
+>>>>>>> p9x
 };
 #endif /* UAPI_UFS_H_ */

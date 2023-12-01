@@ -2,13 +2,18 @@
 # SPMI driver configuration
 #
 menuconfig SPMI
+<<<<<<< HEAD
 	tristate "SPMI support"
+=======
+	bool "SPMI support"
+>>>>>>> p9x
 	help
 	  SPMI (System Power Management Interface) is a two-wire
 	  serial interface between baseband and application processors
 	  and Power Management Integrated Circuits (PMIC).
 
 if SPMI
+<<<<<<< HEAD
 
 config SPMI_MSM_PMIC_ARB
 	tristate "Qualcomm MSM SPMI Controller (PMIC Arbiter)"
@@ -16,6 +21,10 @@ config SPMI_MSM_PMIC_ARB
 	depends on ARCH_QCOM || COMPILE_TEST
 	depends on HAS_IOMEM
 	default ARCH_QCOM
+=======
+config SPMI_MSM_PMIC_ARB
+	tristate "Qualcomm MSM SPMI Controller (PMIC Arbiter)"
+>>>>>>> p9x
 	help
 	  If you say yes to this option, support will be included for the
 	  built-in SPMI PMIC Arbiter interface on Qualcomm MSM family
@@ -24,4 +33,22 @@ config SPMI_MSM_PMIC_ARB
 	  This is required for communicating with Qualcomm PMICs and
 	  other devices that have the SPMI interface.
 
+<<<<<<< HEAD
+=======
+config MSM_QPNP_INT
+	depends on SPARSE_IRQ
+	depends on SPMI
+	depends on OF_SPMI
+	bool "MSM QPNP INT"
+	help
+	  Say 'y' here to include support for the Qualcomm QPNP interrupt
+	  support. QPNP is a SPMI based PMIC implementation.
+
+config MSM_SPMI_DEBUGFS_RO
+	depends on DEBUG_FS
+	depends on SPMI
+	bool "Disable SPMI debugfs write"
+	help
+	  Say 'y' here to disable the SPMI debugfs register write operation.
+>>>>>>> p9x
 endif

@@ -15,7 +15,10 @@
 #include <asm/uaccess.h>
 #include <asm/ftrace.h>
 #include <asm/fpu.h>
+<<<<<<< HEAD
 #include <asm/msa.h>
+=======
+>>>>>>> p9x
 
 extern void *__bzero(void *__s, size_t __count);
 extern long __strncpy_from_kernel_nocheck_asm(char *__to,
@@ -38,9 +41,14 @@ extern long __strnlen_user_asm(const char *s);
 /*
  * Core architecture code
  */
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(_save_fp);
 #ifdef CONFIG_CPU_HAS_MSA
 EXPORT_SYMBOL_GPL(_save_msa);
+=======
+#ifdef CONFIG_CPU_R4K_FPU
+EXPORT_SYMBOL_GPL(_save_fp);
+>>>>>>> p9x
 #endif
 
 /*

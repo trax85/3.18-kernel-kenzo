@@ -35,6 +35,19 @@
 #include <net/netfilter/nf_conntrack.h>
 #endif
 
+<<<<<<< HEAD
+=======
+void
+xt_socket_put_sk(struct sock *sk)
+{
+	if (sk->sk_state == TCP_TIME_WAIT)
+		inet_twsk_put(inet_twsk(sk));
+	else
+		sock_put(sk);
+}
+EXPORT_SYMBOL(xt_socket_put_sk);
+
+>>>>>>> p9x
 static int
 extract_icmp4_fields(const struct sk_buff *skb,
 		    u8 *protocol,
@@ -92,6 +105,7 @@ extract_icmp4_fields(const struct sk_buff *skb,
 	return 0;
 }
 
+<<<<<<< HEAD
 /* "socket" match based redirection (no specific rule)
  * ===================================================
  *
@@ -131,6 +145,8 @@ xt_socket_get_sock_v4(struct net *net, const u8 protocol,
 
 
 
+=======
+>>>>>>> p9x
 struct sock*
 xt_socket_get4_sk(const struct sk_buff *skb, struct xt_action_param *par)
 {
@@ -184,12 +200,18 @@ xt_socket_get4_sk(const struct sk_buff *skb, struct xt_action_param *par)
 	}
 #endif
 
+<<<<<<< HEAD
 	if (sk)
 		atomic_inc(&sk->sk_refcnt);
 	else
 		sk = xt_socket_get_sock_v4(dev_net(skb->dev), protocol,
 					   saddr, daddr, sport, dport,
 					   par->in);
+=======
+	sk = nf_tproxy_get_sock_v4(dev_net(skb->dev), protocol,
+				   saddr, daddr, sport, dport,
+				   par->in, NFT_LOOKUP_ANY);
+>>>>>>> p9x
 
 	pr_debug("proto %hhu %pI4:%hu -> %pI4:%hu (orig %pI4:%hu) sock %p\n",
 		 protocol, &saddr, ntohs(sport),
@@ -208,7 +230,10 @@ socket_match(const struct sk_buff *skb, struct xt_action_param *par,
 	struct sock *sk;
 
 	sk = xt_socket_get4_sk(skb, par);
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	if (sk) {
 		bool wildcard;
 		bool transparent = true;
@@ -229,10 +254,18 @@ socket_match(const struct sk_buff *skb, struct xt_action_param *par,
 					inet_twsk(sk)->tw_transparent));
 
 		if (info->flags & XT_SOCKET_RESTORESKMARK && !wildcard &&
+<<<<<<< HEAD
 		    transparent && sk_fullsock(sk))
 			pskb->mark = sk->sk_mark;
 
 		sock_gen_put(sk);
+=======
+		    transparent)
+			pskb->mark = sk->sk_mark;
+
+		if (sk != skb->sk)
+			xt_socket_put_sk(sk);
+>>>>>>> p9x
 
 		if (wildcard || !transparent)
 			sk = NULL;
@@ -313,6 +346,7 @@ extract_icmp6_fields(const struct sk_buff *skb,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct sock *
 xt_socket_get_sock_v6(struct net *net, const u8 protocol,
 		      const struct in6_addr *saddr, const struct in6_addr *daddr,
@@ -332,6 +366,8 @@ xt_socket_get_sock_v6(struct net *net, const u8 protocol,
 	return NULL;
 }
 
+=======
+>>>>>>> p9x
 struct sock*
 xt_socket_get6_sk(const struct sk_buff *skb, struct xt_action_param *par)
 {
@@ -367,12 +403,18 @@ xt_socket_get6_sk(const struct sk_buff *skb, struct xt_action_param *par)
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	if (sk)
 		atomic_inc(&sk->sk_refcnt);
 	else
 		sk = xt_socket_get_sock_v6(dev_net(skb->dev), tproto,
 					   saddr, daddr, sport, dport,
 					   par->in);
+=======
+	sk = nf_tproxy_get_sock_v6(dev_net(skb->dev), tproto,
+				   saddr, daddr, sport, dport,
+				   par->in, NFT_LOOKUP_ANY);
+>>>>>>> p9x
 
 	pr_debug("proto %hhd %pI6:%hu -> %pI6:%hu "
 		 "(orig %pI6:%hu) sock %p\n",
@@ -391,7 +433,10 @@ socket_mt6_v1_v2_v3(const struct sk_buff *skb, struct xt_action_param *par)
 	const struct xt_socket_mtinfo1 *info;
 
 	info = (struct xt_socket_mtinfo1 *) par->matchinfo;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 	sk = xt_socket_get6_sk(skb, par);
 
 	if (sk) {
@@ -403,7 +448,11 @@ socket_mt6_v1_v2_v3(const struct sk_buff *skb, struct xt_action_param *par)
 		 */
 		wildcard = (!(info->flags & XT_SOCKET_NOWILDCARD) &&
 			    sk->sk_state != TCP_TIME_WAIT &&
+<<<<<<< HEAD
 			    ipv6_addr_any(&sk->sk_v6_rcv_saddr));
+=======
+			    ipv6_addr_any(&inet6_sk(sk)->rcv_saddr));
+>>>>>>> p9x
 
 		/* Ignore non-transparent sockets,
 		   if XT_SOCKET_TRANSPARENT is used */
@@ -414,11 +463,19 @@ socket_mt6_v1_v2_v3(const struct sk_buff *skb, struct xt_action_param *par)
 					inet_twsk(sk)->tw_transparent));
 
 		if (info->flags & XT_SOCKET_RESTORESKMARK && !wildcard &&
+<<<<<<< HEAD
 		    transparent && sk_fullsock(sk))
 			pskb->mark = sk->sk_mark;
 
 		if (sk != skb->sk)
 			sock_gen_put(sk);
+=======
+		    transparent)
+			pskb->mark = sk->sk_mark;
+
+		if (sk != skb->sk)
+			xt_socket_put_sk(sk);
+>>>>>>> p9x
 
 		if (wildcard || !transparent)
 			sk = NULL;

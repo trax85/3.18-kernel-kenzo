@@ -98,6 +98,7 @@ config SATA_AHCI_PLATFORM
 
 	  If unsure, say N.
 
+<<<<<<< HEAD
 config AHCI_DA850
 	tristate "DaVinci DA850 AHCI SATA support"
 	depends on ARCH_DAVINCI_DA850
@@ -157,6 +158,19 @@ config AHCI_XGENE
 	help
 	 This option enables support for APM X-Gene SoC SATA host controller.
 
+=======
+config SATA_AHCI_MSM
+	tristate "MSM AHCI SATA support"
+	depends on OF && ARCH_MSM
+	select SATA_AHCI_PLATFORM
+	help
+	  This option enables support for AHCI SATA controller
+	  integrated into MSM chipsets. For more information
+	  please refer to http://www.qualcomm.com/chipsets.
+
+	  If unsure, say N.
+
+>>>>>>> p9x
 config SATA_FSL
 	tristate "Freescale 3.0Gbps SATA support"
 	depends on FSL_SOC

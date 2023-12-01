@@ -22,7 +22,10 @@
 #include <linux/uaccess.h>
 #include <linux/time.h>
 #include <linux/kmemleak.h>
+<<<<<<< HEAD
 #include <linux/wakelock.h>
+=======
+>>>>>>> p9x
 #include <linux/mutex.h>
 #include <sound/apr_audio.h>
 #include <linux/qdsp6v2/usf.h>
@@ -34,7 +37,11 @@
 #define USF_VERSION_ID 0x0171
 
 /* Standard timeout in the asynchronous ops */
+<<<<<<< HEAD
 #define USF_TIMEOUT_JIFFIES (1*HZ) /* 1 sec */
+=======
+#define USF_TIMEOUT_JIFFIES 1000 /* 1 sec */
+>>>>>>> p9x
 
 /* Undefined USF device */
 #define USF_UNDEF_DEV_ID 0xffff
@@ -61,9 +68,12 @@
 #define USF_MAX_BUF_SIZE 3145680
 #define USF_MAX_BUF_NUM  32
 
+<<<<<<< HEAD
 /* max size for buffer set from user space */
 #define USF_MAX_USER_BUF_SIZE 100000
 
+=======
+>>>>>>> p9x
 /* Place for opreation result, received from QDSP6 */
 #define APR_RESULT_IND 1
 
@@ -72,9 +82,12 @@
 
 #define BITS_IN_BYTE 8
 
+<<<<<<< HEAD
 /* Time to stay awake after tx read event (e.g., proximity) */
 #define STAY_AWAKE_AFTER_READ_MSECS 3000
 
+=======
+>>>>>>> p9x
 /* The driver states */
 enum usf_state_type {
 	USF_IDLE_STATE,
@@ -181,8 +194,11 @@ static const int s_button_map[] = {
 /* The opened devices container */
 static atomic_t s_opened_devs[MAX_DEVS_NUMBER];
 
+<<<<<<< HEAD
 static struct wakeup_source usf_wakeup_source;
 
+=======
+>>>>>>> p9x
 #define USF_NAME_PREFIX "usf_"
 #define USF_NAME_PREFIX_SIZE 4
 
@@ -226,7 +242,10 @@ static int prepare_tsc_input_device(uint16_t ind,
 		__func__,
 		input_info->req_buttons_bitmap,
 		max_buttons_bitmap);
+<<<<<<< HEAD
 		input_free_device(in_dev);
+=======
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
@@ -447,10 +466,13 @@ static void usf_tx_cb(uint32_t opcode, uint32_t token,
 
 	switch (opcode) {
 	case Q6USM_EVENT_READ_DONE:
+<<<<<<< HEAD
 		pr_debug("%s: acquiring %d msec wake lock\n", __func__,
 				STAY_AWAKE_AFTER_READ_MSECS);
 		__pm_wakeup_event(&usf_wakeup_source,
 				  STAY_AWAKE_AFTER_READ_MSECS);
+=======
+>>>>>>> p9x
 		if (token == USM_WRONG_TOKEN)
 			usf_xx->usf_state = USF_ERROR_STATE;
 		usf_xx->new_region = token;
@@ -578,6 +600,14 @@ static int config_xx(struct usf_xx_type *usf_xx, struct us_xx_info_type *config)
 	       (void *)config->port_id,
 	       min_map_size);
 
+<<<<<<< HEAD
+=======
+	if (rc) {
+		pr_err("%s: ports offsets copy failure\n", __func__);
+		return -EINVAL;
+	}
+
+>>>>>>> p9x
 	usf_xx->encdec_cfg.format_id = config->stream_format;
 	usf_xx->encdec_cfg.params_size = config->params_data_size;
 	usf_xx->user_upd_info_na = 1; /* it's used in US_GET_TX_UPDATE */
@@ -894,9 +924,16 @@ static int __usf_set_us_detection(struct usf_type *usf,
 						USF_ADSP_RESTART_STATE));
 	} else {
 		if (detect_info->detect_timeout == USF_DEFAULT_TIMEOUT)
+<<<<<<< HEAD
 			timeout = USF_TIMEOUT_JIFFIES;
 		else
 			timeout = detect_info->detect_timeout * HZ;
+=======
+			timeout = msecs_to_jiffies(USF_TIMEOUT_JIFFIES);
+		else
+			timeout = detect_info->detect_timeout *
+				msecs_to_jiffies(1000);
+>>>>>>> p9x
 	}
 	rc = wait_event_interruptible_timeout(usf_xx->wait,
 					(usf_xx->us_detect_type !=
@@ -937,12 +974,15 @@ static int usf_set_us_detection(struct usf_type *usf, unsigned long arg)
 		return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	if (detect_info.params_data_size > USF_MAX_USER_BUF_SIZE) {
 		pr_err("%s: user buffer size exceeds maximum\n",
 			__func__);
 		return -EFAULT;
 	}
 
+=======
+>>>>>>> p9x
 	rc = __usf_set_us_detection(usf, &detect_info);
 	if (rc < 0) {
 		pr_err("%s: set us detection failed; rc=%d\n",
@@ -1040,12 +1080,15 @@ static int usf_set_tx_info(struct usf_type *usf, unsigned long arg)
 		return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	if (config_tx.us_xx_info.params_data_size > USF_MAX_USER_BUF_SIZE) {
 		pr_err("%s: user buffer size exceeds maximum\n",
 			__func__);
 		return -EFAULT;
 	}
 
+=======
+>>>>>>> p9x
 	return __usf_set_tx_info(usf, &config_tx);
 } /* usf_set_tx_info */
 
@@ -1112,12 +1155,15 @@ static int usf_set_rx_info(struct usf_type *usf, unsigned long arg)
 		return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	if (config_rx.us_xx_info.params_data_size > USF_MAX_USER_BUF_SIZE) {
 		pr_err("%s: user buffer size exceeds maximum\n",
 			__func__);
 		return -EFAULT;
 	}
 
+=======
+>>>>>>> p9x
 	return __usf_set_rx_info(usf, &config_rx);
 } /* usf_set_rx_info */
 
@@ -1156,7 +1202,11 @@ static int __usf_get_tx_update(struct usf_type *usf,
 		else {
 			prev_jiffies = jiffies;
 			if (upd_tx_info->timeout == USF_DEFAULT_TIMEOUT) {
+<<<<<<< HEAD
 				timeout = USF_TIMEOUT_JIFFIES;
+=======
+				timeout = msecs_to_jiffies(USF_TIMEOUT_JIFFIES);
+>>>>>>> p9x
 				rc = wait_event_timeout(
 						usf_xx->wait,
 						(usf_xx->prev_region !=
@@ -1165,7 +1215,12 @@ static int __usf_get_tx_update(struct usf_type *usf,
 						 USF_WORK_STATE),
 						timeout);
 			} else {
+<<<<<<< HEAD
 				timeout = upd_tx_info->timeout * HZ;
+=======
+				timeout = upd_tx_info->timeout *
+					msecs_to_jiffies(1000);
+>>>>>>> p9x
 				rc = wait_event_interruptible_timeout(
 						usf_xx->wait,
 						(usf_xx->prev_region !=
@@ -1266,7 +1321,11 @@ static int __usf_set_rx_update(struct usf_xx_type *usf_xx,
 			usf_xx->usc,
 			&(upd_rx_info->free_region)) ||
 		(usf_xx->usf_state == USF_IDLE_STATE),
+<<<<<<< HEAD
 		USF_TIMEOUT_JIFFIES);
+=======
+		 msecs_to_jiffies(USF_TIMEOUT_JIFFIES));
+>>>>>>> p9x
 
 	if (!rc) {
 		rc = -ETIME;
@@ -1485,6 +1544,7 @@ static int __usf_get_stream_param(struct usf_xx_type *usf_xx,
 				int dir)
 {
 	struct us_client *usc = usf_xx->usc;
+<<<<<<< HEAD
 	struct us_port_data *port;
 	int rc = 0;
 
@@ -1496,6 +1556,11 @@ static int __usf_get_stream_param(struct usf_xx_type *usf_xx,
 
 	port = &usc->port[dir];
 
+=======
+	struct us_port_data *port = &usc->port[dir];
+	int rc = 0;
+
+>>>>>>> p9x
 	if (port->param_buf == NULL) {
 		pr_err("%s: parameter buffer is null\n",
 			__func__);
@@ -2048,12 +2113,15 @@ static int usf_set_us_detection32(struct usf_type *usf, unsigned long arg)
 		return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	if (detect_info32.params_data_size > USF_MAX_USER_BUF_SIZE) {
 		pr_err("%s: user buffer size exceeds maximum\n",
 			__func__);
 		return -EFAULT;
 	}
 
+=======
+>>>>>>> p9x
 	memset(&detect_info, 0, sizeof(detect_info));
 	detect_info.us_detector = detect_info32.us_detector;
 	detect_info.us_detect_mode = detect_info32.us_detect_mode;
@@ -2369,7 +2437,10 @@ static int usf_open(struct inode *inode, struct file *file)
 		pr_err("%s:usf allocation failed\n", __func__);
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	wakeup_source_init(&usf_wakeup_source, "usf");
+=======
+>>>>>>> p9x
 
 	file->private_data = usf;
 	usf->dev_ind = dev_ind;
@@ -2400,7 +2471,10 @@ static int usf_release(struct inode *inode, struct file *file)
 
 	atomic_set(&s_opened_devs[usf->dev_ind], 0);
 
+<<<<<<< HEAD
 	wakeup_source_trash(&usf_wakeup_source);
+=======
+>>>>>>> p9x
 	mutex_unlock(&usf->mutex);
 	mutex_destroy(&usf->mutex);
 	kfree(usf);

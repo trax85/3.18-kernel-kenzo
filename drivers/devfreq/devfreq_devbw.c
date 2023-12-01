@@ -137,7 +137,11 @@ int devfreq_add_devbw(struct device *dev)
 	struct dev_data *d;
 	struct devfreq_dev_profile *p;
 	u32 *data, ports[MAX_PATHS * 2];
+<<<<<<< HEAD
 	const char *gov_name;
+=======
+	const char *gov_name, *label;
+>>>>>>> p9x
 	int ret, len, i, num_paths;
 
 	d = devm_kzalloc(dev, sizeof(*d), GFP_KERNEL);
@@ -145,6 +149,12 @@ int devfreq_add_devbw(struct device *dev)
 		return -ENOMEM;
 	dev_set_drvdata(dev, d);
 
+<<<<<<< HEAD
+=======
+	if (of_property_read_string(dev->of_node, "label", &label) == 0)
+		dev_set_name(dev, "%s", label);
+
+>>>>>>> p9x
 	if (of_find_property(dev->of_node, PROP_PORTS, &len)) {
 		len /= sizeof(ports[0]);
 		if (len % 2 || len > ARRAY_SIZE(ports)) {

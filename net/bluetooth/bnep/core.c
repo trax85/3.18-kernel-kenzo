@@ -534,8 +534,13 @@ int bnep_add_connection(struct bnep_connadd_req *req, struct socket *sock)
 	if (!l2cap_is_socket(sock))
 		return -EBADFD;
 
+<<<<<<< HEAD
 	baswap((void *) dst, &l2cap_pi(sock->sk)->chan->dst);
 	baswap((void *) src, &l2cap_pi(sock->sk)->chan->src);
+=======
+	baswap((void *) dst, &bt_sk(sock->sk)->dst);
+	baswap((void *) src, &bt_sk(sock->sk)->src);
+>>>>>>> p9x
 
 	/* session struct allocated as private part of net_device */
 	dev = alloc_netdev(sizeof(struct bnep_session),

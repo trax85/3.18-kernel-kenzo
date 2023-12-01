@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -14,6 +18,10 @@
 #define pr_fmt(fmt) "%s:%s " fmt, KBUILD_MODNAME, __func__
 
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_device.h>
+>>>>>>> p9x
 #include <linux/interrupt.h>
 #include <linux/workqueue.h>
 #include <linux/kernel.h>
@@ -35,11 +43,24 @@
 #define BCL_IBAT_INT_NAME       "bcl-high-ibat-int"
 #define BCL_PARAM_MAX_ATTR      3
 
+<<<<<<< HEAD
 #define BCL_MONITOR_EN          0x46
 #define BCL_VBAT_VALUE          0x54
 #define BCL_IBAT_VALUE          0x55
 #define BCL_VBAT_MIN            0x58
 #define BCL_IBAT_MAX            0x59
+=======
+#define BCL_INT_EN              0x15
+#define BCL_MONITOR_EN          0x46
+#define BCL_VBAT_VALUE          0x54
+#define BCL_IBAT_VALUE          0x55
+#define BCL_VBAT_CP_VALUE       0x56
+#define BCL_IBAT_CP_VALUE       0x57
+#define BCL_VBAT_MIN            0x58
+#define BCL_IBAT_MAX            0x59
+#define BCL_VBAT_MIN_CP         0x5A
+#define BCL_IBAT_MAX_CP         0x5B
+>>>>>>> p9x
 #define BCL_V_GAIN_BAT          0x60
 #define BCL_I_GAIN_RSENSE       0x61
 #define BCL_I_OFFSET_RSENSE     0x62
@@ -51,6 +72,7 @@
 #define BCL_VBAT_TRIP           0x68
 #define BCL_IBAT_TRIP           0x69
 
+<<<<<<< HEAD
 #define BCL_8998_VBAT_VALUE     0x58
 #define BCL_8998_IBAT_VALUE     0x59
 #define BCL_8998_VBAT_MIN       0x5C
@@ -66,6 +88,8 @@
 #define BCL_8998_IBAT_SCALING   80000
 #define BCL_CFG_VAL             0x81
 
+=======
+>>>>>>> p9x
 #define BCL_CONSTANT_NUM        32
 #define BCL_READ_RETRY_LIMIT    3
 #define VAL_CP_REG_BUF_LEN      3
@@ -90,8 +114,11 @@
 			goto bcl_dev_exit; \
 		} else if (!_ret) { \
 			_dest = _val; \
+<<<<<<< HEAD
 		} else { \
 			_ret = 0; \
+=======
+>>>>>>> p9x
 		} \
 	} while (0)
 
@@ -101,12 +128,15 @@ enum bcl_monitor_state {
 	BCL_PARAM_POLLING,
 };
 
+<<<<<<< HEAD
 enum bcl_hw_type {
 	BCL_PMI8994,
 	BCL_PMI8998,
 	BCL_VERSION_MAX,
 };
 
+=======
+>>>>>>> p9x
 struct bcl_peripheral_data {
 	struct bcl_param_data   *param_data;
 	struct bcl_driver_ops   ops;
@@ -147,7 +177,10 @@ static const char bcl_psy_name[] = "fg_adc";
 static bool calibration_done;
 static DEFINE_MUTEX(bcl_access_mutex);
 static DEFINE_MUTEX(bcl_enable_mutex);
+<<<<<<< HEAD
 static enum bcl_hw_type bcl_perph_version;
+=======
+>>>>>>> p9x
 
 static int bcl_read_multi_register(int16_t reg_offset, uint8_t *data, int len)
 {
@@ -190,7 +223,11 @@ static int bcl_write_general_register(int16_t reg_offset,
 		return -EINVAL;
 	}
 	ret = spmi_ext_register_writel(bcl_perph->spmi->ctrl,
+<<<<<<< HEAD
  	 bcl_perph->slave_id, (base + reg_offset),
+=======
+		bcl_perph->slave_id, (base + reg_offset),
+>>>>>>> p9x
 		write_buf, 1);
 	if (ret < 0) {
 		pr_err("Error reading register %d. err:%d", reg_offset, ret);
@@ -212,6 +249,7 @@ static void convert_vbat_to_adc_val(int *val)
 {
 	struct bcl_peripheral_data *perph_data = NULL;
 
+<<<<<<< HEAD
 	switch (bcl_perph_version) {
 	case BCL_PMI8994:
 		if (!bcl_perph)
@@ -230,6 +268,16 @@ static void convert_vbat_to_adc_val(int *val)
 		break;
 	}
 
+=======
+	if (!bcl_perph)
+		return;
+	perph_data = &bcl_perph->param[BCL_PARAM_VOLTAGE];
+	*val = (*val * 100
+		/ (100 + (perph_data->gain_factor_num * perph_data->gain)
+		* BCL_CONSTANT_NUM
+		/ perph_data->gain_factor_den))
+		/ perph_data->scaling_factor;
+>>>>>>> p9x
 	return;
 }
 
@@ -237,6 +285,7 @@ static void convert_adc_to_vbat_val(int *val)
 {
 	struct bcl_peripheral_data *perph_data = NULL;
 
+<<<<<<< HEAD
 	switch (bcl_perph_version) {
 	case BCL_PMI8994:
 		if (!bcl_perph)
@@ -255,6 +304,15 @@ static void convert_adc_to_vbat_val(int *val)
 		break;
 	}
 
+=======
+	if (!bcl_perph)
+		return;
+	perph_data = &bcl_perph->param[BCL_PARAM_VOLTAGE];
+	*val = ((*val + 2) * perph_data->scaling_factor)
+		* (100 + (perph_data->gain_factor_num * perph_data->gain)
+		* BCL_CONSTANT_NUM  / perph_data->gain_factor_den)
+		/ 100;
+>>>>>>> p9x
 	return;
 }
 
@@ -262,6 +320,7 @@ static void convert_ibat_to_adc_val(int *val)
 {
 	struct bcl_peripheral_data *perph_data = NULL;
 
+<<<<<<< HEAD
 	switch (bcl_perph_version) {
 	case BCL_PMI8994:
 		if (!bcl_perph)
@@ -282,6 +341,17 @@ static void convert_ibat_to_adc_val(int *val)
 		break;
 	}
 
+=======
+	if (!bcl_perph)
+		return;
+	perph_data = &bcl_perph->param[BCL_PARAM_CURRENT];
+	*val = (*val * 100
+		/ (100 + (perph_data->gain_factor_num * perph_data->gain)
+		* BCL_CONSTANT_NUM / perph_data->gain_factor_den)
+		- (perph_data->offset_factor_num * perph_data->offset)
+		/ perph_data->offset_factor_den)
+		/  perph_data->scaling_factor;
+>>>>>>> p9x
 	return;
 }
 
@@ -289,6 +359,7 @@ static void convert_adc_to_ibat_val(int *val)
 {
 	struct bcl_peripheral_data *perph_data = NULL;
 
+<<<<<<< HEAD
 	switch (bcl_perph_version) {
 	case BCL_PMI8994:
 		if (!bcl_perph)
@@ -308,6 +379,16 @@ static void convert_adc_to_ibat_val(int *val)
 		break;
 	}
 
+=======
+	if (!bcl_perph)
+		return;
+	perph_data = &bcl_perph->param[BCL_PARAM_CURRENT];
+	*val = (*val * perph_data->scaling_factor
+		+ (perph_data->offset_factor_num * perph_data->offset)
+		/ perph_data->offset_factor_den)
+		* (100 + (perph_data->gain_factor_num * perph_data->gain)
+		* BCL_CONSTANT_NUM / perph_data->gain_factor_den) / 100;
+>>>>>>> p9x
 	return;
 }
 
@@ -333,8 +414,12 @@ static int bcl_set_high_ibat(int thresh_value)
 	pr_debug("Setting Ibat high trip:%d. ADC_val:%d\n", ibat_ua,
 			thresh_value);
 	val = (int8_t)thresh_value;
+<<<<<<< HEAD
 	ret = bcl_write_register((bcl_perph_version == BCL_PMI8994) ?
 		BCL_IBAT_TRIP : BCL_8998_IBAT_HIGH, val);
+=======
+	ret = bcl_write_register(BCL_IBAT_TRIP, val);
+>>>>>>> p9x
 	if (ret) {
 		pr_err("Error accessing BCL peripheral. err:%d\n", ret);
 		return ret;
@@ -375,8 +460,12 @@ static int bcl_set_low_vbat(int thresh_value)
 	pr_debug("Setting Vbat low trip:%d. ADC_val:%d\n", vbat_uv,
 			thresh_value);
 	val = (int8_t)thresh_value;
+<<<<<<< HEAD
 	ret = bcl_write_register((bcl_perph_version == BCL_PMI8994)
 		? BCL_VBAT_TRIP : BCL_8998_VBAT_ADC_LOW, val);
+=======
+	ret = bcl_write_register(BCL_VBAT_TRIP, val);
+>>>>>>> p9x
 	if (ret) {
 		pr_err("Error accessing BCL peripheral. err:%d\n", ret);
 		return ret;
@@ -426,7 +515,12 @@ static int bcl_access_monitor_enable(bool enable)
 				/* Fall through to clear the poll work */
 			case BCL_PARAM_INACTIVE:
 			case BCL_PARAM_POLLING:
+<<<<<<< HEAD
 				cancel_delayed_work(&perph_data->poll_work);
+=======
+				cancel_delayed_work_sync(
+					&perph_data->poll_work);
+>>>>>>> p9x
 				break;
 			default:
 				break;
@@ -460,8 +554,12 @@ static int bcl_read_ibat_high_trip(int *thresh_value)
 	int8_t val = 0;
 
 	*thresh_value = (int)val;
+<<<<<<< HEAD
 	ret = bcl_read_register((bcl_perph_version == BCL_PMI8994) ?
 		BCL_IBAT_TRIP : BCL_8998_IBAT_HIGH, &val);
+=======
+	ret = bcl_read_register(BCL_IBAT_TRIP, &val);
+>>>>>>> p9x
 	if (ret) {
 		pr_err("BCL register read error. err:%d\n", ret);
 		ret = 0;
@@ -489,9 +587,13 @@ static int bcl_read_vbat_low_trip(int *thresh_value)
 	int8_t val = 0;
 
 	*thresh_value = (int)val;
+<<<<<<< HEAD
 	ret = bcl_read_register((bcl_perph_version == BCL_PMI8994)
 			? BCL_VBAT_TRIP : BCL_8998_VBAT_ADC_LOW,
 			&val);
+=======
+	ret = bcl_read_register(BCL_VBAT_TRIP, &val);
+>>>>>>> p9x
 	if (ret) {
 		pr_err("BCL register read error. err:%d\n", ret);
 		ret = 0;
@@ -516,11 +618,15 @@ static int bcl_clear_vbat_min(void)
 {
 	int ret  = 0;
 
+<<<<<<< HEAD
 	if (bcl_perph_version == BCL_PMI8994)
 		ret = bcl_write_register(BCL_VBAT_MIN_CLR, BIT(7));
 	else
 		ret = bcl_write_register(BCL_8998_MAX_MIN_CLR,
 			BIT(BCL_8998_VBAT_MIN_CLR));
+=======
+	ret = bcl_write_register(BCL_VBAT_MIN_CLR, BIT(7));
+>>>>>>> p9x
 	if (ret)
 		pr_err("Error in clearing vbat min reg. err:%d", ret);
 
@@ -531,11 +637,15 @@ static int bcl_clear_ibat_max(void)
 {
 	int ret  = 0;
 
+<<<<<<< HEAD
 	if (bcl_perph_version == BCL_PMI8994)
 		ret = bcl_write_register(BCL_IBAT_MAX_CLR, BIT(7));
 	else
 		ret = bcl_write_register(BCL_8998_MAX_MIN_CLR,
 			BIT(BCL_8998_IBAT_MAX_CLR));
+=======
+	ret = bcl_write_register(BCL_IBAT_MAX_CLR, BIT(7));
+>>>>>>> p9x
 	if (ret)
 		pr_err("Error in clearing ibat max reg. err:%d", ret);
 
@@ -549,9 +659,13 @@ static int bcl_read_ibat_max(int *adc_value)
 
 	*adc_value = (int)val[VAL_REG_BUF_OFFSET];
 	do {
+<<<<<<< HEAD
 		ret = bcl_read_multi_register(
 			(bcl_perph_version == BCL_PMI8994) ? BCL_IBAT_MAX
 			: BCL_8998_IBAT_MAX, val,
+=======
+		ret = bcl_read_multi_register(BCL_IBAT_MAX, val,
+>>>>>>> p9x
 			VAL_CP_REG_BUF_LEN);
 		if (ret) {
 			pr_err("BCL register read error. err:%d\n", ret);
@@ -580,9 +694,13 @@ static int bcl_read_vbat_min(int *adc_value)
 
 	*adc_value = (int)val[VAL_REG_BUF_OFFSET];
 	do {
+<<<<<<< HEAD
 		ret = bcl_read_multi_register(
 			(bcl_perph_version == BCL_PMI8994) ? BCL_VBAT_MIN
 			: BCL_8998_VBAT_MIN, val,
+=======
+		ret = bcl_read_multi_register(BCL_VBAT_MIN, val,
+>>>>>>> p9x
 			VAL_CP_REG_BUF_LEN);
 		if (ret) {
 			pr_err("BCL register read error. err:%d\n", ret);
@@ -611,9 +729,13 @@ static int bcl_read_ibat(int *adc_value)
 
 	*adc_value = (int)val[VAL_REG_BUF_OFFSET];
 	do {
+<<<<<<< HEAD
 		ret = bcl_read_multi_register(
 			(bcl_perph_version == BCL_PMI8994) ? BCL_IBAT_VALUE
 			: BCL_8998_IBAT_VALUE, val,
+=======
+		ret = bcl_read_multi_register(BCL_IBAT_VALUE, val,
+>>>>>>> p9x
 			VAL_CP_REG_BUF_LEN);
 		if (ret) {
 			pr_err("BCL register read error. err:%d\n", ret);
@@ -642,9 +764,13 @@ static int bcl_read_vbat(int *adc_value)
 
 	*adc_value = (int)val[VAL_REG_BUF_OFFSET];
 	do {
+<<<<<<< HEAD
 		ret = bcl_read_multi_register(
 			(bcl_perph_version == BCL_PMI8994) ? BCL_VBAT_VALUE :
 			BCL_8998_VBAT_VALUE, val,
+=======
+		ret = bcl_read_multi_register(BCL_VBAT_VALUE, val,
+>>>>>>> p9x
 			VAL_CP_REG_BUF_LEN);
 		if (ret) {
 			pr_err("BCL register read error. err:%d\n", ret);
@@ -904,6 +1030,7 @@ static int bcl_get_devicetree_data(struct spmi_device *spmi)
 	}
 	bcl_perph->param[BCL_PARAM_CURRENT].irq_num = irq_num;
 
+<<<<<<< HEAD
 	if (bcl_perph_version == BCL_PMI8994) {
 		/* Get VADC and IADC scaling factor */
 		key = "qcom,vbat-scaling-factor";
@@ -935,12 +1062,45 @@ static int bcl_get_devicetree_data(struct spmi_device *spmi)
 			bcl_perph->param[BCL_PARAM_CURRENT].
 			inhibit_derating_ua);
 	}
+=======
+	/* Get VADC and IADC scaling factor */
+	key = "qcom,vbat-scaling-factor";
+	READ_CONV_FACTOR(dev_node, key, temp_val, ret,
+		bcl_perph->param[BCL_PARAM_VOLTAGE].scaling_factor);
+	key = "qcom,vbat-gain-numerator";
+	READ_CONV_FACTOR(dev_node, key, temp_val, ret,
+		bcl_perph->param[BCL_PARAM_VOLTAGE].gain_factor_num);
+	key = "qcom,vbat-gain-denominator";
+	READ_CONV_FACTOR(dev_node, key, temp_val, ret,
+		bcl_perph->param[BCL_PARAM_VOLTAGE].gain_factor_den);
+	key = "qcom,ibat-scaling-factor";
+	READ_CONV_FACTOR(dev_node, key, temp_val, ret,
+		bcl_perph->param[BCL_PARAM_CURRENT].scaling_factor);
+	key = "qcom,ibat-offset-numerator";
+	READ_CONV_FACTOR(dev_node, key, temp_val, ret,
+		bcl_perph->param[BCL_PARAM_CURRENT].offset_factor_num);
+	key = "qcom,ibat-offset-denominator";
+	READ_CONV_FACTOR(dev_node, key, temp_val, ret,
+		bcl_perph->param[BCL_PARAM_CURRENT].offset_factor_den);
+	key = "qcom,ibat-gain-numerator";
+	READ_CONV_FACTOR(dev_node, key, temp_val, ret,
+		bcl_perph->param[BCL_PARAM_CURRENT].gain_factor_num);
+	key = "qcom,ibat-gain-denominator";
+	READ_CONV_FACTOR(dev_node, key, temp_val, ret,
+		bcl_perph->param[BCL_PARAM_CURRENT].gain_factor_den);
+>>>>>>> p9x
 	key = "qcom,vbat-polling-delay-ms";
 	READ_CONV_FACTOR(dev_node, key, temp_val, ret,
 		bcl_perph->param[BCL_PARAM_VOLTAGE].polling_delay_ms);
 	key = "qcom,ibat-polling-delay-ms";
 	READ_CONV_FACTOR(dev_node, key, temp_val, ret,
 		bcl_perph->param[BCL_PARAM_CURRENT].polling_delay_ms);
+<<<<<<< HEAD
+=======
+	key = "qcom,inhibit-derating-ua";
+	READ_OPTIONAL_PROP(dev_node, key, temp_val, ret,
+		bcl_perph->param[BCL_PARAM_CURRENT].inhibit_derating_ua);
+>>>>>>> p9x
 
 bcl_dev_exit:
 	return ret;
@@ -1103,6 +1263,10 @@ static int bcl_probe(struct spmi_device *spmi)
 		pr_err("Memory alloc failed\n");
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
+=======
+	memset(bcl_perph, 0, sizeof(struct bcl_device));
+>>>>>>> p9x
 	bcl_perph->spmi = spmi;
 	bcl_perph->dev = &(spmi->dev);
 
@@ -1111,6 +1275,7 @@ static int bcl_probe(struct spmi_device *spmi)
 		pr_err("Device tree data fetch error. err:%d", ret);
 		goto bcl_probe_exit;
 	}
+<<<<<<< HEAD
 	if (bcl_perph_version == BCL_PMI8994) {
 		ret = bcl_calibrate();
 		if (ret) {
@@ -1131,6 +1296,23 @@ static int bcl_probe(struct spmi_device *spmi)
 		}
 	} else {
 		bcl_write_register(BCL_8998_BCL_CFG, BCL_CFG_VAL);
+=======
+	ret = bcl_calibrate();
+	if (ret) {
+		pr_debug("Could not read calibration values. err:%d", ret);
+		goto bcl_probe_exit;
+	}
+	bcl_psy.name = bcl_psy_name;
+	bcl_psy.type = POWER_SUPPLY_TYPE_BMS;
+	bcl_psy.get_property     = bcl_psy_get_property;
+	bcl_psy.set_property     = bcl_psy_set_property;
+	bcl_psy.num_properties   = 0;
+	bcl_psy.external_power_changed = power_supply_callback;
+	ret = power_supply_register(&spmi->dev, &bcl_psy);
+	if (ret < 0) {
+		pr_err("Unable to register bcl_psy rc = %d\n", ret);
+		return ret;
+>>>>>>> p9x
 	}
 
 	ret = bcl_update_data();
@@ -1210,11 +1392,15 @@ static int bcl_remove(struct spmi_device *spmi)
 }
 
 static struct of_device_id bcl_match[] = {
+<<<<<<< HEAD
 	{	.compatible	= "qcom,msm-bcl",
 		.data		= (void *) BCL_PMI8994,
 	},
 	{	.compatible	= "qcom,msm-bcl-lmh",
 		.data		= (void *) BCL_PMI8998,
+=======
+	{	.compatible = "qcom,msm-bcl",
+>>>>>>> p9x
 	},
 	{},
 };
@@ -1231,6 +1417,7 @@ static struct spmi_driver bcl_driver = {
 
 static int __init bcl_perph_init(void)
 {
+<<<<<<< HEAD
 	struct device_node *comp_node;
 
 	comp_node = of_find_matching_node(NULL, bcl_match);
@@ -1247,6 +1434,9 @@ static int __init bcl_perph_init(void)
 	}
 
 plt_register:
+=======
+	pr_info("BCL Initialized\n");
+>>>>>>> p9x
 	return spmi_driver_register(&bcl_driver);
 }
 
@@ -1257,3 +1447,7 @@ static void __exit bcl_perph_exit(void)
 fs_initcall(bcl_perph_init);
 module_exit(bcl_perph_exit);
 MODULE_ALIAS("platform:" BCL_DRIVER_NAME);
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x

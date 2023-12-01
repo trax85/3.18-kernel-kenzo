@@ -1,6 +1,10 @@
 /*
  * Copyright (c) 2008-2009 Atheros Communications Inc.
+<<<<<<< HEAD
  * Copyright (c) 2014-2015 The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2014 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,9 +40,12 @@
 #define VERSION "1.0"
 #define ATH3K_FIRMWARE	"ath3k-1.fw"
 
+<<<<<<< HEAD
 #define ROME2_1_USB_RAMPATCH_FILE	"ar3k/rampatch_tlv_usb_2.1.tlv"
 #define ROME2_1_USB_NVM_FILE		"ar3k/nvm_tlv_usb_2.1.bin"
 
+=======
+>>>>>>> p9x
 #define ROME1_1_USB_RAMPATCH_FILE	"ar3k/rampatch_1.1.img"
 #define ROME1_1_USB_NVM_FILE		"ar3k/nvm_tlv_usb_1.1.bin"
 
@@ -157,6 +164,7 @@ static struct usb_device_id ath3k_table[] = {
 	{ USB_DEVICE(0x0CF3, 0x311D) },
 	{ USB_DEVICE(0x0CF3, 0x311E) },
 	{ USB_DEVICE(0x0CF3, 0x311F) },
+<<<<<<< HEAD
 	{ USB_DEVICE(0x0cf3, 0x3121) },
 	{ USB_DEVICE(0x0CF3, 0x817a) },
 	{ USB_DEVICE(0x0cf3, 0xe003) },
@@ -176,6 +184,29 @@ static struct usb_device_id ath3k_table[] = {
 	{ USB_DEVICE(0x13d3, 0x3474) },
 	{ USB_DEVICE(0x13d3, 0x3487) },
 	{ USB_DEVICE(0x13d3, 0x3490) },
+=======
+	{ USB_DEVICE(0x0CF3, 0x817a) },
+	{ USB_DEVICE(0x0CF3, 0xe500) },
+	{ USB_DEVICE(0x13d3, 0x3375) },
+	{ USB_DEVICE(0x04CA, 0x3004) },
+	{ USB_DEVICE(0x04CA, 0x3005) },
+	{ USB_DEVICE(0x04CA, 0x3006) },
+	{ USB_DEVICE(0x04CA, 0x3007) },
+	{ USB_DEVICE(0x04CA, 0x3008) },
+	{ USB_DEVICE(0x13d3, 0x3362) },
+	{ USB_DEVICE(0x0CF3, 0xE004) },
+	{ USB_DEVICE(0x0CF3, 0xE005) },
+	{ USB_DEVICE(0x0930, 0x0219) },
+	{ USB_DEVICE(0x0489, 0xe057) },
+	{ USB_DEVICE(0x13d3, 0x3393) },
+	{ USB_DEVICE(0x0489, 0xe04e) },
+	{ USB_DEVICE(0x0489, 0xe056) },
+	{ USB_DEVICE(0x0489, 0xe04d) },
+	{ USB_DEVICE(0x04c5, 0x1330) },
+	{ USB_DEVICE(0x13d3, 0x3402) },
+	{ USB_DEVICE(0x0cf3, 0x3121) },
+	{ USB_DEVICE(0x0cf3, 0xe003) },
+>>>>>>> p9x
 
 	/* Atheros AR5BBU12 with sflash firmware */
 	{ USB_DEVICE(0x0489, 0xE02C) },
@@ -225,6 +256,7 @@ static const struct usb_device_id ath3k_blist_tbl[] = {
 	{ USB_DEVICE(0x0cf3, 0x311D), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0cf3, 0x311E), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0cf3, 0x311F), .driver_info = BTUSB_ATH3012 },
+<<<<<<< HEAD
 	{ USB_DEVICE(0x0cf3, 0x3121), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0CF3, 0x817a), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x0cf3, 0xe004), .driver_info = BTUSB_ATH3012 },
@@ -243,6 +275,28 @@ static const struct usb_device_id ath3k_blist_tbl[] = {
 	{ USB_DEVICE(0x13d3, 0x3474), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x13d3, 0x3487), .driver_info = BTUSB_ATH3012 },
 	{ USB_DEVICE(0x13d3, 0x3490), .driver_info = BTUSB_ATH3012 },
+=======
+	{ USB_DEVICE(0x0CF3, 0x817a), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x13d3, 0x3375), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x04ca, 0x3004), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x04ca, 0x3005), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x04ca, 0x3006), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x04ca, 0x3007), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x04ca, 0x3008), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x13d3, 0x3362), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x0cf3, 0xe004), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x0cf3, 0xe005), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x0930, 0x0219), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x0489, 0xe057), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x13d3, 0x3393), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x0489, 0xe04e), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x0489, 0xe056), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x0489, 0xe04d), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x04c5, 0x1330), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x13d3, 0x3402), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x0cf3, 0x3121), .driver_info = BTUSB_ATH3012 },
+	{ USB_DEVICE(0x0cf3, 0xe003), .driver_info = BTUSB_ATH3012 },
+>>>>>>> p9x
 
 	/* Atheros AR5BBU22 with sflash firmware */
 	{ USB_DEVICE(0x0489, 0xE036), .driver_info = BTUSB_ATH3012 },
@@ -370,11 +424,19 @@ static int ath3k_get_version(struct usb_device *udev,
 int get_rome_version(struct usb_device *udev, struct ath3k_version *version)
 {
 	struct ath3k_version fw_version;
+<<<<<<< HEAD
 	int ret;
 
 	if (!version) {
 		BT_ERR("NULL output parameters");
 		return -EINVAL;
+=======
+	int ret = -1;
+
+	if (!version) {
+		BT_ERR("NULL output parameters");
+		return ret;
+>>>>>>> p9x
 	}
 
 	ret = ath3k_get_version(udev, &fw_version);
@@ -393,7 +455,11 @@ int get_rome_version(struct usb_device *udev, struct ath3k_version *version)
 		break;
 	default:
 		BT_ERR("Unsupported ROME USB version");
+<<<<<<< HEAD
 		ret = -EINVAL;
+=======
+		ret = -1;
+>>>>>>> p9x
 		break;
 	}
 
@@ -432,7 +498,16 @@ static int ath3k_load_fwfile(struct usb_device *udev,
 	sent += size;
 	count -= size;
 
+<<<<<<< HEAD
 	pipe = usb_sndbulkpipe(udev, 0x02);
+=======
+	while (count) {
+		/* workaround the compatibility issue with xHCI controller*/
+		usleep_range(TIMEGAP_USEC_MIN, TIMEGAP_USEC_MAX);
+
+		size = min_t(uint, count, BULK_SIZE);
+		pipe = usb_sndbulkpipe(udev, 0x02);
+>>>>>>> p9x
 
 	while (count) {
 		/* workaround the compatibility issue with xHCI controller*/
@@ -621,8 +696,13 @@ static int ath3k_load_syscfg(struct usb_device *udev,
 		BT_INFO("%s: NVM already downloaded(fw_state: %d)", __func__,
 			fw_state);
 		return 0;
+<<<<<<< HEAD
 	}
 	BT_DBG("Downloading NVM(fw_state: %d)", fw_state);
+=======
+	} else
+		BT_DBG("%s: Downloading NVM(fw_state: %d)", __func__, fw_state);
+>>>>>>> p9x
 
 	switch (version->ref_clock) {
 	case ATH3K_XTAL_FREQ_26M:
@@ -650,7 +730,12 @@ static int ath3k_load_syscfg(struct usb_device *udev,
 			BT_INFO("Unsupported Chip");
 			return -ENODEV;
 		}
+<<<<<<< HEAD
 	} else if (version->rom_version == ROME1_1_USB_CHIP_VERSION)
+=======
+	}
+	else if (version->rom_version == ROME1_1_USB_CHIP_VERSION)
+>>>>>>> p9x
 		snprintf(filename, ATH3K_NAME_LEN, ROME1_1_USB_NVM_FILE);
 	else
 		snprintf(filename, ATH3K_NAME_LEN, "ar3k/ramps_0x%08x_%d%s",

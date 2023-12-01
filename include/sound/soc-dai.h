@@ -127,7 +127,10 @@ int snd_soc_dai_get_channel_map(struct snd_soc_dai *dai,
 	unsigned int *tx_num, unsigned int *tx_slot,
 	unsigned int *rx_num, unsigned int *rx_slot);
 
+<<<<<<< HEAD
 int snd_soc_dai_is_dummy(struct snd_soc_dai *dai);
+=======
+>>>>>>> p9x
 
 struct snd_soc_dai_ops {
 	/*
@@ -158,6 +161,10 @@ struct snd_soc_dai_ops {
 	int (*get_channel_map)(struct snd_soc_dai *dai,
 		unsigned int *tx_num, unsigned int *tx_slot,
 		unsigned int *rx_num, unsigned int *rx_slot);
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 
 	/*
 	 * DAI digital mute - optional.

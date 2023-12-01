@@ -105,7 +105,11 @@ extern int ip_vs_conn_tab_size;
 
 struct ip_vs_iphdr {
 	__u32 len;	/* IPv4 simply where L4 starts
+<<<<<<< HEAD
 			 * IPv6 where L4 Transport Header starts */
+=======
+			   IPv6 where L4 Transport Header starts */
+>>>>>>> p9x
 	__u16 fragoffs; /* IPv6 fragment offset, 0 if first frag (or not frag)*/
 	__s16 protocol;
 	__s32 flags;

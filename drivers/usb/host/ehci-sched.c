@@ -547,7 +547,11 @@ static void qh_link_periodic(struct ehci_hcd *ehci, struct ehci_qh *qh)
 	unsigned	i;
 	unsigned	period = qh->ps.period;
 
+<<<<<<< HEAD
 	dev_dbg(&qh->ps.udev->dev,
+=======
+	dev_dbg (&qh->dev->dev,
+>>>>>>> p9x
 		"link qh%d-%04x/%pK start %d [%d/%d us]\n",
 		period, hc32_to_cpup(ehci, &qh->hw->hw_info2)
 			& (QH_CMASK | QH_SMASK),
@@ -640,9 +644,15 @@ static void qh_unlink_periodic(struct ehci_hcd *ehci, struct ehci_qh *qh)
 		? ((qh->ps.usecs + qh->ps.c_usecs) / qh->ps.bw_period)
 		: (qh->ps.usecs * 8);
 
+<<<<<<< HEAD
 	dev_dbg(&qh->ps.udev->dev,
 		"unlink qh%d-%04x/%pK start %d [%d/%d us]\n",
 		qh->ps.period,
+=======
+	dev_dbg (&qh->dev->dev,
+		"unlink qh%d-%04x/%pK start %d [%d/%d us]\n",
+		qh->period,
+>>>>>>> p9x
 		hc32_to_cpup(ehci, &qh->hw->hw_info2) & (QH_CMASK | QH_SMASK),
 		qh, qh->ps.phase, qh->ps.usecs, qh->ps.c_usecs);
 
@@ -900,6 +910,7 @@ static int qh_schedule(struct ehci_hcd *ehci, struct ehci_qh *qh)
 			}
 		}
 
+<<<<<<< HEAD
 	/* qh->ps.bw_period == 0 means every uframe */
 	} else {
 		status = check_intr_schedule(ehci, 0, 0, qh, &c_mask, tt);
@@ -920,6 +931,16 @@ static int qh_schedule(struct ehci_hcd *ehci, struct ehci_qh *qh)
 	hw->hw_info2 &= cpu_to_hc32(ehci, ~(QH_CMASK | QH_SMASK));
 	hw->hw_info2 |= cpu_to_hc32(ehci, qh->ps.cs_mask);
 	reserve_release_intr_bandwidth(ehci, qh, 1);
+=======
+		/* reset S-frame and (maybe) C-frame masks */
+		hw->hw_info2 &= cpu_to_hc32(ehci, ~(QH_CMASK | QH_SMASK));
+		hw->hw_info2 |= qh->period
+			? cpu_to_hc32(ehci, 1 << uframe)
+			: cpu_to_hc32(ehci, QH_SMASK);
+		hw->hw_info2 |= c_mask;
+	} else
+		ehci_dbg (ehci, "reused qh %pK schedule\n", qh);
+>>>>>>> p9x
 
 done:
 	return status;
@@ -1122,9 +1143,20 @@ iso_stream_init (
 
 			/* c-mask as specified in USB 2.0 11.18.4 3.c */
 			tmp = (1 << (hs_transfers + 2)) - 1;
+<<<<<<< HEAD
 			stream->ps.cs_mask |= tmp << (8 + 2);
 		} else
 			stream->ps.cs_mask = smask_out[hs_transfers - 1];
+=======
+			stream->raw_mask |= tmp << (8 + 2);
+		} else if (hs_transfers <=
+				(sizeof(smask_out) / sizeof(smask_out[0]))) {
+			stream->raw_mask = smask_out [hs_transfers - 1];
+		}
+
+		bandwidth = stream->usecs + stream->c_usecs;
+		bandwidth /= interval << 3;
+>>>>>>> p9x
 
 		/* period for bandwidth allocation */
 		tmp = min_t(unsigned, EHCI_BANDWIDTH_FRAMES,
@@ -1604,10 +1636,105 @@ iso_stream_schedule (
 	 */
 	now2 = (now - base) & (mod - 1);
 
+<<<<<<< HEAD
 	/* Is the schedule about to wrap around? */
 	if (unlikely(!empty && start < period)) {
 		ehci_dbg(ehci, "request %pK would overflow (%u-%u < %u mod %u)\n",
 				urb, stream->next_uframe, base, period, mod);
+=======
+		/* Take the isochronous scheduling threshold into account */
+		if (ehci->i_thresh)
+			next = now + ehci->i_thresh;	/* uframe cache */
+		else
+			next = (now + 2 + 7) & ~0x07;	/* full frame cache */
+
+		/*
+		 * Use ehci->last_iso_frame as the base.  There can't be any
+		 * TDs scheduled for earlier than that.
+		 */
+		base = ehci->last_iso_frame << 3;
+		next = (next - base) & (mod - 1);
+		start = (stream->next_uframe - base) & (mod - 1);
+
+		/* Is the schedule already full? */
+		if (unlikely(start < period)) {
+			ehci_dbg(ehci, "iso sched full %pK (%u-%u < %u mod %u)\n",
+					urb, stream->next_uframe, base,
+					period, mod);
+			status = -ENOSPC;
+			goto fail;
+		}
+
+		/* Behind the scheduling threshold? */
+		if (unlikely(start < next)) {
+			unsigned now2 = (now - base) & (mod - 1);
+
+			/* USB_ISO_ASAP: Round up to the first available slot */
+			if (urb->transfer_flags & URB_ISO_ASAP)
+				start += (next - start + period - 1) & -period;
+
+			/*
+			 * Not ASAP: Use the next slot in the stream,
+			 * no matter what.
+			 */
+			else if (start + span - period < now2) {
+				ehci_dbg(ehci, "iso underrun %pK (%u+%u < %u)\n",
+						urb, start + base,
+						span - period, now2 + base);
+			}
+		}
+
+		start += base;
+	}
+
+	/* need to schedule; when's the next (u)frame we could start?
+	 * this is bigger than ehci->i_thresh allows; scheduling itself
+	 * isn't free, the delay should handle reasonably slow cpus.  it
+	 * can also help high bandwidth if the dma and irq loads don't
+	 * jump until after the queue is primed.
+	 */
+	else {
+		int done = 0;
+
+		base = now & ~0x07;
+		start = base + SCHEDULING_DELAY;
+
+		/* find a uframe slot with enough bandwidth.
+		 * Early uframes are more precious because full-speed
+		 * iso IN transfers can't use late uframes,
+		 * and therefore they should be allocated last.
+		 */
+		next = start;
+		start += period;
+		do {
+			start--;
+			/* check schedule: enough space? */
+			if (stream->highspeed) {
+				if (itd_slot_ok(ehci, mod, start,
+						stream->usecs, period))
+					done = 1;
+			} else {
+				if ((start % 8) >= 6)
+					continue;
+				if (sitd_slot_ok(ehci, mod, stream,
+						start, sched, period))
+					done = 1;
+			}
+		} while (start > next && !done);
+
+		/* no room in the schedule */
+		if (!done) {
+			ehci_dbg(ehci, "iso sched full %pK", urb);
+			status = -ENOSPC;
+			goto fail;
+		}
+	}
+
+	/* Tried to schedule too far into the future? */
+	if (unlikely(start - base + span - period >= mod)) {
+		ehci_dbg(ehci, "request %pK would overflow (%u+%u >= %u)\n",
+				urb, start - base, span - period, mod);
+>>>>>>> p9x
 		status = -EFBIG;
 		goto fail;
 	}

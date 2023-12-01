@@ -390,6 +390,7 @@ struct nested_vmx {
 	struct list_head vmcs02_pool;
 	int vmcs02_num;
 	u64 vmcs01_tsc_offset;
+	bool change_vmcs01_virtual_x2apic_mode;
 	/* L2 must run next, and mustn't decide to exit to L1. */
 	bool nested_run_pending;
 	/*
@@ -471,8 +472,12 @@ struct vcpu_vmx {
 #endif
 		int           gs_ldt_reload_needed;
 		int           fs_reload_needed;
+<<<<<<< HEAD
 		u64           msr_host_bndcfgs;
 		unsigned long vmcs_host_cr4;	/* May not match real cr4 */
+=======
+		unsigned long vmcs_host_cr4;    /* May not match real cr4 */
+>>>>>>> p9x
 	} host_state;
 	struct {
 		int vm86_active;
@@ -1094,6 +1099,7 @@ static inline bool nested_cpu_has_virtual_nmis(struct vmcs12 *vmcs12)
 	return vmcs12->pin_based_vm_exec_control & PIN_BASED_VIRTUAL_NMIS;
 }
 
+<<<<<<< HEAD
 static inline bool nested_cpu_has_preemption_timer(struct vmcs12 *vmcs12)
 {
 	return vmcs12->pin_based_vm_exec_control &
@@ -1106,9 +1112,12 @@ static inline int nested_cpu_has_ept(struct vmcs12 *vmcs12)
 }
 
 static inline bool is_exception(u32 intr_info)
+=======
+static inline bool is_nmi(u32 intr_info)
+>>>>>>> p9x
 {
 	return (intr_info & (INTR_INFO_INTR_TYPE_MASK | INTR_INFO_VALID_MASK))
-		== (INTR_TYPE_HARD_EXCEPTION | INTR_INFO_VALID_MASK);
+		== (INTR_TYPE_NMI_INTR | INTR_INFO_VALID_MASK);
 }
 
 static void nested_vmx_vmexit(struct kvm_vcpu *vcpu, u32 exit_reason,
@@ -3291,7 +3300,7 @@ static void fix_rmode_seg(int seg, struct kvm_segment *save)
 	}
 
 	vmcs_write16(sf->selector, var.selector);
-	vmcs_write32(sf->base, var.base);
+	vmcs_writel(sf->base, var.base);
 	vmcs_write32(sf->limit, var.limit);
 	vmcs_write32(sf->ar_bytes, vmx_segment_access_rights(&var));
 }
@@ -4304,7 +4313,11 @@ static void vmx_set_constant_host_state(struct vcpu_vmx *vmx)
 	vmcs_writel(HOST_CR3, read_cr3());  /* 22.2.3  FIXME: shadow tables */
 
 	/* Save the most likely value for this task's CR4 in the VMCS. */
+<<<<<<< HEAD
 	cr4 = cr4_read_shadow();
+=======
+	cr4 = read_cr4();
+>>>>>>> p9x
 	vmcs_writel(HOST_CR4, cr4);			/* 22.2.3, 22.2.5 */
 	vmx->host_state.vmcs_host_cr4 = cr4;
 
@@ -4898,7 +4911,7 @@ static int handle_exception(struct kvm_vcpu *vcpu)
 	if (is_machine_check(intr_info))
 		return handle_machine_check(vcpu);
 
-	if ((intr_info & INTR_INFO_INTR_TYPE_MASK) == INTR_TYPE_NMI_INTR)
+	if (is_nmi(intr_info))
 		return 1;  /* already handled by vmx_vcpu_run() */
 
 	if (is_no_device(intr_info)) {
@@ -6731,6 +6744,7 @@ static int handle_vmptrst(struct kvm_vcpu *vcpu)
 	return 1;
 }
 
+<<<<<<< HEAD
 /* Emulate the INVEPT instruction */
 static int handle_invept(struct kvm_vcpu *vcpu)
 {
@@ -6793,6 +6807,11 @@ static int handle_invept(struct kvm_vcpu *vcpu)
 	}
 
 	skip_emulated_instruction(vcpu);
+=======
+static int handle_invept(struct kvm_vcpu *vcpu)
+{
+	kvm_queue_exception(vcpu, UD_VECTOR);
+>>>>>>> p9x
 	return 1;
 }
 
@@ -6844,8 +6863,13 @@ static int (*const kvm_vmx_exit_handlers[])(struct kvm_vcpu *vcpu) = {
 	[EXIT_REASON_EPT_VIOLATION]	      = handle_ept_violation,
 	[EXIT_REASON_EPT_MISCONFIG]           = handle_ept_misconfig,
 	[EXIT_REASON_PAUSE_INSTRUCTION]       = handle_pause,
+<<<<<<< HEAD
 	[EXIT_REASON_MWAIT_INSTRUCTION]	      = handle_mwait,
 	[EXIT_REASON_MONITOR_INSTRUCTION]     = handle_monitor,
+=======
+	[EXIT_REASON_MWAIT_INSTRUCTION]	      = handle_invalid_op,
+	[EXIT_REASON_MONITOR_INSTRUCTION]     = handle_invalid_op,
+>>>>>>> p9x
 	[EXIT_REASON_INVEPT]                  = handle_invept,
 	[EXIT_REASON_INVVPID]                 = handle_invvpid,
 };
@@ -7048,7 +7072,7 @@ static bool nested_vmx_exit_handled(struct kvm_vcpu *vcpu)
 
 	switch (exit_reason) {
 	case EXIT_REASON_EXCEPTION_NMI:
-		if (!is_exception(intr_info))
+		if (is_nmi(intr_info))
 			return 0;
 		else if (is_page_fault(intr_info))
 			return enable_ept;
@@ -7251,6 +7275,12 @@ static void vmx_set_virtual_x2apic_mode(struct kvm_vcpu *vcpu, bool set)
 {
 	u32 sec_exec_control;
 
+	/* Postpone execution until vmcs01 is the current VMCS. */
+	if (is_guest_mode(vcpu)) {
+		to_vmx(vcpu)->nested.change_vmcs01_virtual_x2apic_mode = true;
+		return;
+	}
+
 	/*
 	 * There is not point to enable virtualize x2apic without enable
 	 * apicv
@@ -7387,8 +7417,7 @@ static void vmx_complete_atomic_exit(struct vcpu_vmx *vmx)
 		kvm_machine_check();
 
 	/* We need to handle NMIs before interrupts are enabled */
-	if ((exit_intr_info & INTR_INFO_INTR_TYPE_MASK) == INTR_TYPE_NMI_INTR &&
-	    (exit_intr_info & INTR_INFO_VALID_MASK)) {
+	if (is_nmi(exit_intr_info)) {
 		kvm_before_handle_nmi(&vmx->vcpu);
 		asm("int $2");
 		kvm_after_handle_nmi(&vmx->vcpu);
@@ -7607,7 +7636,11 @@ static void __noclone vmx_vcpu_run(struct kvm_vcpu *vcpu)
 	if (test_bit(VCPU_REGS_RIP, (unsigned long *)&vcpu->arch.regs_dirty))
 		vmcs_writel(GUEST_RIP, vcpu->arch.regs[VCPU_REGS_RIP]);
 
+<<<<<<< HEAD
 	cr4 = cr4_read_shadow();
+=======
+	cr4 = read_cr4();
+>>>>>>> p9x
 	if (unlikely(cr4 != vmx->host_state.vmcs_host_cr4)) {
 		vmcs_writel(HOST_CR4, cr4);
 		vmx->host_state.vmcs_host_cr4 = cr4;
@@ -7825,9 +7858,13 @@ static void vmx_free_vcpu(struct kvm_vcpu *vcpu)
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 
 	free_vpid(vmx);
+<<<<<<< HEAD
 	leave_guest_mode(vcpu);
 	vmx_free_vcpu_nested(vcpu);
+=======
+>>>>>>> p9x
 	free_loaded_vmcs(vmx->loaded_vmcs);
+	free_nested(vmx);
 	kfree(vmx->guest_msrs);
 	kvm_vcpu_uninit(vcpu);
 	kmem_cache_free(kvm_vcpu_cache, vmx);
@@ -8938,8 +8975,11 @@ static void load_vmcs12_host_state(struct kvm_vcpu *vcpu,
 	 */
 	vcpu->arch.cr4_guest_owned_bits = ~vmcs_readl(CR4_GUEST_HOST_MASK);
 	vmx_set_cr4(vcpu, vmcs12->host_cr4);
+<<<<<<< HEAD
 
 	nested_ept_uninit_mmu_context(vcpu);
+=======
+>>>>>>> p9x
 
 	kvm_set_cr3(vcpu, vmcs12->host_cr3);
 	kvm_mmu_reset_context(vcpu);
@@ -9075,6 +9115,12 @@ static void nested_vmx_vmexit(struct kvm_vcpu *vcpu, u32 exit_reason,
 
 	/* Update TSC_OFFSET if TSC was changed while L2 ran */
 	vmcs_write64(TSC_OFFSET, vmx->nested.vmcs01_tsc_offset);
+
+	if (vmx->nested.change_vmcs01_virtual_x2apic_mode) {
+		vmx->nested.change_vmcs01_virtual_x2apic_mode = false;
+		vmx_set_virtual_x2apic_mode(vcpu,
+				vcpu->arch.apic_base & X2APIC_ENABLE);
+	}
 
 	/* This is needed for same reason as it was needed in prepare_vmcs02 */
 	vmx->host_rsp = 0;

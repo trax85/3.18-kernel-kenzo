@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2016,2018 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -65,7 +69,10 @@ struct ipa_rm_resource {
 	u32				needed_bw;
 	enum ipa_rm_resource_state	state;
 	struct ipa_rm_peers_list	*peers_list;
+<<<<<<< HEAD
 	struct ipa_rm_delayed_release_work_type *release_work;
+=======
+>>>>>>> p9x
 };
 
 /**
@@ -117,12 +124,19 @@ int ipa_rm_resource_producer_deregister(struct ipa_rm_resource_prod *producer,
 				struct ipa_rm_register_params *reg_params);
 
 int ipa_rm_resource_add_dependency(struct ipa_rm_resource *resource,
+<<<<<<< HEAD
 				   struct ipa_rm_resource *depends_on,
 				   bool userspace_dep);
 
 int ipa_rm_resource_delete_dependency(struct ipa_rm_resource *resource,
 				      struct ipa_rm_resource *depends_on,
 				      bool userspace_dep);
+=======
+				   struct ipa_rm_resource *depends_on);
+
+int ipa_rm_resource_delete_dependency(struct ipa_rm_resource *resource,
+				      struct ipa_rm_resource *depends_on);
+>>>>>>> p9x
 
 int ipa_rm_resource_producer_request(struct ipa_rm_resource_prod *producer);
 
@@ -130,8 +144,12 @@ int ipa_rm_resource_producer_release(struct ipa_rm_resource_prod *producer);
 
 int ipa_rm_resource_consumer_request(struct ipa_rm_resource_cons *consumer,
 				u32 needed_bw,
+<<<<<<< HEAD
 				bool inc_usage_count,
 				bool wake_client);
+=======
+				bool inc_usage_count);
+>>>>>>> p9x
 
 int ipa_rm_resource_consumer_release(struct ipa_rm_resource_cons *consumer,
 				u32 needed_bw,
@@ -156,8 +174,12 @@ int ipa_rm_resource_producer_print_stat(
 int ipa_rm_resource_consumer_request_work(struct ipa_rm_resource_cons *consumer,
 		enum ipa_rm_resource_state prev_state,
 		u32 needed_bw,
+<<<<<<< HEAD
 		bool notify_completion,
 		bool dec_client_on_err);
+=======
+		bool notify_completion);
+>>>>>>> p9x
 
 int ipa_rm_resource_consumer_release_work(
 		struct ipa_rm_resource_cons *consumer,

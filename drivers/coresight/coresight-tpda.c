@@ -662,6 +662,12 @@ static int tpda_probe(struct platform_device *pdev)
 	struct resource *res;
 	struct coresight_desc *desc;
 
+<<<<<<< HEAD
+=======
+	if (coresight_fuse_access_disabled())
+		return -EPERM;
+
+>>>>>>> p9x
 	pdata = of_get_coresight_platform_data(dev, pdev->dev.of_node);
 	if (IS_ERR(pdata))
 		return PTR_ERR(pdata);
@@ -695,6 +701,7 @@ static int tpda_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	ret = clk_prepare_enable(drvdata->clk);
 	if (ret)
 		return ret;
@@ -704,6 +711,8 @@ static int tpda_probe(struct platform_device *pdev)
 
 	clk_disable_unprepare(drvdata->clk);
 
+=======
+>>>>>>> p9x
 	tpda_init_default_data(drvdata);
 
 	desc = devm_kzalloc(dev, sizeof(*desc), GFP_KERNEL);
@@ -720,11 +729,16 @@ static int tpda_probe(struct platform_device *pdev)
 	if (IS_ERR(drvdata->csdev))
 		return PTR_ERR(drvdata->csdev);
 
+<<<<<<< HEAD
 	dev_dbg(drvdata->dev, "TPDA initialized\n");
 	return 0;
 err:
 	clk_disable_unprepare(drvdata->clk);
 	return -EPERM;
+=======
+	dev_info(drvdata->dev, "TPDA initialized\n");
+	return 0;
+>>>>>>> p9x
 }
 
 static int tpda_remove(struct platform_device *pdev)

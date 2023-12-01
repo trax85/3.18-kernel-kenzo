@@ -33,24 +33,54 @@ typedef struct xpaddr {
 #define INVALID_P2M_ENTRY      (~0UL)
 
 unsigned long __pfn_to_mfn(unsigned long pfn);
+<<<<<<< HEAD
+=======
+unsigned long __mfn_to_pfn(unsigned long mfn);
+>>>>>>> p9x
 extern struct rb_root phys_to_mach;
 
 static inline unsigned long pfn_to_mfn(unsigned long pfn)
 {
 	unsigned long mfn;
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> p9x
 	if (phys_to_mach.rb_node != NULL) {
 		mfn = __pfn_to_mfn(pfn);
 		if (mfn != INVALID_P2M_ENTRY)
 			return mfn;
 	}
 
+<<<<<<< HEAD
 	return pfn;
+=======
+	if (xen_initial_domain())
+		return pfn;
+	else
+		return INVALID_P2M_ENTRY;
+>>>>>>> p9x
 }
 
 static inline unsigned long mfn_to_pfn(unsigned long mfn)
 {
+<<<<<<< HEAD
 	return mfn;
+=======
+	unsigned long pfn;
+
+	if (phys_to_mach.rb_node != NULL) {
+		pfn = __mfn_to_pfn(mfn);
+		if (pfn != INVALID_P2M_ENTRY)
+			return pfn;
+	}
+
+	if (xen_initial_domain())
+		return mfn;
+	else
+		return INVALID_P2M_ENTRY;
+>>>>>>> p9x
 }
 
 #define mfn_to_local_pfn(mfn) mfn_to_pfn(mfn)
@@ -104,11 +134,15 @@ static inline bool set_phys_to_machine(unsigned long pfn, unsigned long mfn)
 	return __set_phys_to_machine(pfn, mfn);
 }
 
+<<<<<<< HEAD
 #define xen_remap(cookie, size) ioremap_cache((cookie), (size))
 #define xen_unmap(cookie) iounmap((cookie))
 
 bool xen_arch_need_swiotlb(struct device *dev,
 			   unsigned long pfn,
 			   unsigned long mfn);
+=======
+#define xen_remap(cookie, size) ioremap_cache((cookie), (size));
+>>>>>>> p9x
 
 #endif /* _ASM_ARM_XEN_PAGE_H */

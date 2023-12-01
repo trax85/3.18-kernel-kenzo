@@ -20,6 +20,10 @@
 #include <linux/input/mt.h>
 #include <uapi/linux/hbtp_input.h>
 #include <uapi/linux/hbtp_vm.h>
+<<<<<<< HEAD
+=======
+#include <linux/delay.h>
+>>>>>>> p9x
 
 #define hbtp_vm_name    "hbtp_vm"
 
@@ -41,7 +45,11 @@ static int hbtp_vm_open(struct inode *inode, struct file *file)
 {
 	mutex_lock(&hbtp_vm->mutex);
 	if (hbtp_vm->open_count)
+<<<<<<< HEAD
 		pr_debug("hbtp_vm was already opened\n");
+=======
+		pr_info("hbtp_vm was already opened\n");
+>>>>>>> p9x
 	hbtp_vm->open_count++;
 	mutex_unlock(&hbtp_vm->mutex);
 
@@ -155,7 +163,11 @@ static int hbtp_vm_report_clicks(struct hbtp_virtual_mouse *hbtp_data,
 static long hbtp_vm_ioctl(struct file *file, unsigned int cmd,
 			unsigned long arg)
 {
+<<<<<<< HEAD
 	int error = 0;
+=======
+	int error;
+>>>>>>> p9x
 	struct hbtp_input_mt mt_data;
 	struct hbtp_vm_click clik_data;
 

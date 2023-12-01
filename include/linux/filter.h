@@ -336,6 +336,7 @@ static inline unsigned int bpf_prog_size(unsigned int proglen)
 		   offsetof(struct bpf_prog, insns[proglen]));
 }
 
+<<<<<<< HEAD
 #define bpf_classic_proglen(fprog) (fprog->len * sizeof(fprog->filter[0]))
 
 #ifdef CONFIG_DEBUG_SET_MODULE_RONX
@@ -358,11 +359,14 @@ static inline void bpf_prog_unlock_ro(struct bpf_prog *fp)
 }
 #endif /* CONFIG_DEBUG_SET_MODULE_RONX */
 
+=======
+>>>>>>> p9x
 int sk_filter_trim_cap(struct sock *sk, struct sk_buff *skb, unsigned int cap);
 static inline int sk_filter(struct sock *sk, struct sk_buff *skb)
 {
 	return sk_filter_trim_cap(sk, skb, 1);
 }
+<<<<<<< HEAD
 
 void bpf_prog_select_runtime(struct bpf_prog *fp);
 void bpf_prog_free(struct bpf_prog *fp);
@@ -396,6 +400,18 @@ void sk_filter_uncharge(struct sock *sk, struct sk_filter *fp);
 
 u64 __bpf_call_base(u64 r1, u64 r2, u64 r3, u64 r4, u64 r5);
 void bpf_int_jit_compile(struct bpf_prog *fp);
+=======
+extern unsigned int sk_run_filter(const struct sk_buff *skb,
+				  const struct sock_filter *filter);
+extern int sk_unattached_filter_create(struct sk_filter **pfp,
+				       struct sock_fprog *fprog);
+extern void sk_unattached_filter_destroy(struct sk_filter *fp);
+extern int sk_attach_filter(struct sock_fprog *fprog, struct sock *sk);
+extern int sk_detach_filter(struct sock *sk);
+extern int sk_chk_filter(struct sock_filter *filter, unsigned int flen);
+extern int sk_get_filter(struct sock *sk, struct sock_filter __user *filter, unsigned len);
+extern void sk_decode_filter(struct sock_filter *filt, struct sock_filter *to);
+>>>>>>> p9x
 
 #ifdef CONFIG_BPF_JIT
 typedef void (*bpf_jit_fill_hole_t)(void *area, unsigned int size);

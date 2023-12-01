@@ -14,9 +14,13 @@ conditions.
                         "arm,smmu-v1"
                         "arm,smmu-v2"
                         "arm,mmu-400"
+<<<<<<< HEAD
                         "arm,mmu-401"
                         "arm,mmu-500"
                         "qcom,smmu-v2"
+=======
+                        "arm,mmu-500"
+>>>>>>> p9x
 
                   depending on the particular implementation and/or the
                   version of the architecture implemented.
@@ -50,6 +54,7 @@ conditions.
                   aliases of secure registers have to be used during
                   SMMU configuration.
 
+<<<<<<< HEAD
 - qcom,smmu-invalidate-on-map : Enable proper handling of buggy
                   implementations that require a TLB invalidate
                   operation to occur at map time.
@@ -142,6 +147,8 @@ conditions.
 - qcom,bus-master-id : The master ID of the bus, if a bus vote is needed.
                        See include/dt-bindings/msm/msm-bus-ids.h.
 
+=======
+>>>>>>> p9x
 Example:
 
         smmu {
@@ -161,8 +168,11 @@ Example:
                  */
                 mmu-masters = <&dma0 0xd01d 0xd01e>,
                               <&dma1 0xd11c>;
+<<<<<<< HEAD
 
                 attach-impl-defs = <0x124 0x3>,
                     <0x128 0xa5>,
                     <0x12c 0x1>;
+=======
+>>>>>>> p9x
         };

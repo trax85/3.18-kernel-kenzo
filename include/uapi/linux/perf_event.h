@@ -301,10 +301,16 @@ struct perf_event_attr {
 
 				exclude_callchain_kernel : 1, /* exclude kernel callchains */
 				exclude_callchain_user   : 1, /* exclude user callchains */
+<<<<<<< HEAD
 				mmap2          :  1, /* include mmap with inode data     */
 				comm_exec      :  1, /* flag comm events that are due to an exec */
 				constraint_duplicate : 1,
 				__reserved_1   : 38;
+=======
+				constraint_duplicate : 1,
+
+				__reserved_1   : 40;
+>>>>>>> p9x
 
 	union {
 		__u32		wakeup_events;	  /* wakeup every n events */

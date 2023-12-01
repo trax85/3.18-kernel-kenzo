@@ -524,8 +524,13 @@ static void serio_init_port(struct serio *serio)
 	spin_lock_init(&serio->lock);
 	mutex_init(&serio->drv_mutex);
 	device_initialize(&serio->dev);
+<<<<<<< HEAD
 	dev_set_name(&serio->dev, "serio%lu",
 		     (unsigned long)atomic_inc_return(&serio_no));
+=======
+	dev_set_name(&serio->dev, "serio%ld",
+			(long)atomic_inc_return(&serio_no));
+>>>>>>> p9x
 	serio->dev.bus = &serio_bus;
 	serio->dev.release = serio_release_port;
 	serio->dev.groups = serio_device_attr_groups;

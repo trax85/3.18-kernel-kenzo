@@ -1,18 +1,28 @@
 /*
  *
+<<<<<<< HEAD
  *  Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+=======
+ *  Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *  Copyright (C) 2000-2004 Russell King
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+>>>>>>> p9x
 #include <linux/module.h>
 #include <linux/mm.h>
 #include <linux/gfp.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/ioport.h>
+=======
+>>>>>>> p9x
 #include <linux/list.h>
 #include <linux/init.h>
 #include <linux/device.h>
@@ -25,6 +35,7 @@
 #include <linux/io.h>
 #include <linux/vmalloc.h>
 #include <linux/sizes.h>
+<<<<<<< HEAD
 #include <linux/spinlock.h>
 #include <asm/dma-contiguous.h>
 #include <asm/tlbflush.h>
@@ -216,22 +227,36 @@ static void removed_region_fixup(struct removed_region *dma_mem, int index)
 	dma_mem->nr_pages = index;
 }
 
+=======
+
+#define NO_KERNEL_MAPPING_DUMMY	0x2222
+
+>>>>>>> p9x
 void *removed_alloc(struct device *dev, size_t size, dma_addr_t *handle,
 		    gfp_t gfp, struct dma_attrs *attrs)
 {
 	bool no_kernel_mapping = dma_get_attr(DMA_ATTR_NO_KERNEL_MAPPING,
 					attrs);
 	bool skip_zeroing = dma_get_attr(DMA_ATTR_SKIP_ZEROING, attrs);
+<<<<<<< HEAD
 	int pageno;
 	unsigned long order;
 	void *addr = NULL;
 	struct removed_region *dma_mem = dev->removed_mem;
 	int nbits;
 	unsigned int align;
+=======
+	unsigned long pfn;
+	unsigned long order = get_order(size);
+	void *addr = NULL;
+
+	size = PAGE_ALIGN(size);
+>>>>>>> p9x
 
 	if (!(gfp & __GFP_WAIT))
 		return NULL;
 
+<<<<<<< HEAD
 	size = PAGE_ALIGN(size);
 	nbits = size >> PAGE_SHIFT;
 	order = get_order(size);
@@ -265,6 +290,19 @@ void *removed_alloc(struct device *dev, size_t size, dma_addr_t *handle,
 		addr = ioremap(base, size);
 		if (WARN_ON(!addr)) {
 			bitmap_clear(dma_mem->bitmap, pageno, nbits);
+=======
+	pfn = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT, order);
+
+	if (pfn) {
+		if (no_kernel_mapping && skip_zeroing) {
+			*handle = __pfn_to_phys(pfn);
+			return (void *)NO_KERNEL_MAPPING_DUMMY;
+		}
+
+		addr = ioremap(__pfn_to_phys(pfn), size);
+		if (WARN_ON(!addr)) {
+			dma_release_from_contiguous(dev, pfn, order);
+>>>>>>> p9x
 		} else {
 			if (!skip_zeroing)
 				memset_io(addr, 0, size);
@@ -272,12 +310,19 @@ void *removed_alloc(struct device *dev, size_t size, dma_addr_t *handle,
 				iounmap(addr);
 				addr = (void *)NO_KERNEL_MAPPING_DUMMY;
 			}
+<<<<<<< HEAD
 			*handle = base;
 		}
 	}
 
 out:
 	mutex_unlock(&dma_mem->lock);
+=======
+			*handle = __pfn_to_phys(pfn);
+		}
+	}
+
+>>>>>>> p9x
 	return addr;
 }
 
@@ -294,6 +339,7 @@ void removed_free(struct device *dev, size_t size, void *cpu_addr,
 {
 	bool no_kernel_mapping = dma_get_attr(DMA_ATTR_NO_KERNEL_MAPPING,
 					attrs);
+<<<<<<< HEAD
 	struct removed_region *dma_mem = dev->removed_mem;
 
 	if (!no_kernel_mapping)
@@ -302,6 +348,13 @@ void removed_free(struct device *dev, size_t size, void *cpu_addr,
 	bitmap_clear(dma_mem->bitmap, (handle - dma_mem->base) >> PAGE_SHIFT,
 				size >> PAGE_SHIFT);
 	mutex_unlock(&dma_mem->lock);
+=======
+
+	if (!no_kernel_mapping)
+		iounmap(cpu_addr);
+	dma_release_from_contiguous(dev, __phys_to_pfn(handle),
+					size >> PAGE_SHIFT);
+>>>>>>> p9x
 }
 
 static dma_addr_t removed_map_page(struct device *dev, struct page *page,
@@ -390,6 +443,7 @@ struct dma_map_ops removed_dma_ops = {
 };
 EXPORT_SYMBOL(removed_dma_ops);
 
+<<<<<<< HEAD
 #ifdef CONFIG_OF_RESERVED_MEM
 #include <linux/of.h>
 #include <linux/of_fdt.h>
@@ -449,3 +503,6 @@ static int __init removed_dma_setup(struct reserved_mem *rmem)
 }
 RESERVEDMEM_OF_DECLARE(dma, "removed-dma-pool", removed_dma_setup);
 #endif
+=======
+
+>>>>>>> p9x

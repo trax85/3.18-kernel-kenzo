@@ -73,6 +73,15 @@ struct key;
 
 #define KEY_PERM_UNDEF	0xffffffff
 
+/* New permission defines for backport */
+#define	KEY_NEED_VIEW	0x01	/* Require permission to view attributes */
+#define	KEY_NEED_READ	0x02	/* Require permission to read content */
+#define	KEY_NEED_WRITE	0x04	/* Require permission to update / modify */
+#define	KEY_NEED_SEARCH	0x08	/* Require permission to search (keyring) or find (key) */
+#define	KEY_NEED_LINK	0x10	/* Require permission to link */
+#define	KEY_NEED_SETATTR 0x20	/* Require permission to change attributes */
+#define	KEY_NEED_ALL	0x3f	/* All the above permissions */
+
 struct seq_file;
 struct user_struct;
 struct signal_struct;
@@ -168,11 +177,15 @@ struct key {
 #define KEY_FLAG_NEGATIVE	5	/* set if key is negative */
 #define KEY_FLAG_ROOT_CAN_CLEAR	6	/* set if key can be cleared by root without permission */
 #define KEY_FLAG_INVALIDATED	7	/* set if key has been invalidated */
+<<<<<<< HEAD
 #define KEY_FLAG_TRUSTED	8	/* set if key is trusted */
 #define KEY_FLAG_TRUSTED_ONLY	9	/* set if keyring only accepts links to trusted keys */
 #define KEY_FLAG_BUILTIN	10	/* set if key is builtin */
 #define KEY_FLAG_ROOT_CAN_INVAL	11	/* set if key can be invalidated by root without permission */
 #define KEY_FLAG_UID_KEYRING	12	/* set if key is a user or user session keyring */
+=======
+#define KEY_FLAG_UID_KEYRING	11	/* set if key is a user or user session keyring */
+>>>>>>> p9x
 
 	/* the key type and key description string
 	 * - the desc is used to match a key against search criteria
@@ -223,7 +236,10 @@ extern struct key *key_alloc(struct key_type *type,
 #define KEY_ALLOC_IN_QUOTA	0x0000	/* add to quota, reject if would overrun */
 #define KEY_ALLOC_QUOTA_OVERRUN	0x0001	/* add to quota, permit even if overrun */
 #define KEY_ALLOC_NOT_IN_QUOTA	0x0002	/* not in quota */
+<<<<<<< HEAD
 #define KEY_ALLOC_TRUSTED	0x0004	/* Key should be flagged as trusted */
+=======
+>>>>>>> p9x
 #define KEY_ALLOC_UID_KEYRING	0x0010	/* allocating a user or user session keyring */
 
 extern void key_revoke(struct key *key);

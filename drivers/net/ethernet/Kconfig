@@ -107,7 +107,10 @@ source "drivers/net/ethernet/marvell/Kconfig"
 source "drivers/net/ethernet/mellanox/Kconfig"
 source "drivers/net/ethernet/micrel/Kconfig"
 source "drivers/net/ethernet/microchip/Kconfig"
+<<<<<<< HEAD
 source "drivers/net/ethernet/moxa/Kconfig"
+=======
+>>>>>>> p9x
 source "drivers/net/ethernet/msm/Kconfig"
 source "drivers/net/ethernet/myricom/Kconfig"
 

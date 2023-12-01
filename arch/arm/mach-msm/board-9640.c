@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -13,8 +17,20 @@
 #include <linux/kernel.h>
 #include <asm/mach/map.h>
 #include <asm/mach/arch.h>
+<<<<<<< HEAD
 #include "board-dt.h"
 
+=======
+#include <mach/board.h>
+#include <mach/msm_iomap.h>
+#include "board-dt.h"
+
+static void __init mdm9640_map_io(void)
+{
+	msm_map_mdm9640_io();
+}
+
+>>>>>>> p9x
 static const char *mdm9640_dt_match[] __initconst = {
 	"qcom,mdm9640",
 	NULL
@@ -29,4 +45,8 @@ DT_MACHINE_START(MDM9640_DT,
 		 "Qualcomm Technologies, Inc. MSM 9640 (Flattened Device Tree)")
 	.init_machine		= mdm9640_init,
 	.dt_compat		= mdm9640_dt_match,
+<<<<<<< HEAD
+=======
+	.map_io			= mdm9640_map_io,
+>>>>>>> p9x
 MACHINE_END

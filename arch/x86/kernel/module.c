@@ -47,11 +47,15 @@ do {							\
 
 #ifdef CONFIG_RANDOMIZE_BASE
 static unsigned long module_load_offset;
+<<<<<<< HEAD
 static int randomize_modules = 1;
+=======
+>>>>>>> p9x
 
 /* Mutex protects the module_load_offset. */
 static DEFINE_MUTEX(module_kaslr_mutex);
 
+<<<<<<< HEAD
 static int __init parse_nokaslr(char *p)
 {
 	randomize_modules = 0;
@@ -62,6 +66,11 @@ early_param("nokaslr", parse_nokaslr);
 static unsigned long int get_module_load_offset(void)
 {
 	if (randomize_modules) {
+=======
+static unsigned long int get_module_load_offset(void)
+{
+	if (kaslr_enabled()) {
+>>>>>>> p9x
 		mutex_lock(&module_kaslr_mutex);
 		/*
 		 * Calculate the module_load_offset the first time this

@@ -27,10 +27,13 @@
 #include <linux/bug.h>
 #include <linux/errno.h>
 
+<<<<<<< HEAD
 #include <asm/byteorder.h>
 #include <asm/word-at-a-time.h>
 #include <asm/page.h>
 
+=======
+>>>>>>> p9x
 #ifndef __HAVE_ARCH_STRNCASECMP
 /**
  * strncasecmp - Case insensitive, length-limited string comparison
@@ -410,12 +413,12 @@ EXPORT_SYMBOL(strchrnul);
  */
 char *strrchr(const char *s, int c)
 {
-       const char *p = s + strlen(s);
-       do {
-           if (*p == (char)c)
-               return (char *)p;
-       } while (--p >= s);
-       return NULL;
+	const char *last = NULL;
+	do {
+		if (*s == (char)c)
+			last = s;
+	} while (*s++);
+	return (char *)last;
 }
 EXPORT_SYMBOL(strrchr);
 #endif

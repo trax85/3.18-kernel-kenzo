@@ -1626,7 +1626,37 @@ static int lm90_remove(struct i2c_client *client)
 
 static void lm90_alert(struct i2c_client *client, unsigned int flag)
 {
+<<<<<<< HEAD
 	u16 alarms;
+=======
+	struct lm90_data *data = i2c_get_clientdata(client);
+	u8 config, alarms, alarms2 = 0;
+
+	lm90_read_reg(client, LM90_REG_R_STATUS, &alarms);
+
+	if (data->kind == max6696)
+		lm90_read_reg(client, MAX6696_REG_R_STATUS2, &alarms2);
+
+	if ((alarms & 0x7f) == 0 && (alarms2 & 0xfe) == 0) {
+		dev_info(&client->dev, "Everything OK\n");
+	} else {
+		if ((alarms & 0x61) || (alarms2 & 0x80))
+			dev_warn(&client->dev,
+				 "temp%d out of range, please check!\n", 1);
+		if ((alarms & 0x1a) || (alarms2 & 0x20))
+			dev_warn(&client->dev,
+				 "temp%d out of range, please check!\n", 2);
+		if (alarms & 0x04)
+			dev_warn(&client->dev,
+				 "temp%d diode open, please check!\n", 2);
+
+		if (alarms2 & 0x5a)
+			dev_warn(&client->dev,
+				 "temp%d out of range, please check!\n", 3);
+		if (alarms2 & 0x04)
+			dev_warn(&client->dev,
+				 "temp%d diode open, please check!\n", 3);
+>>>>>>> p9x
 
 	if (lm90_is_tripped(client, &alarms)) {
 		/*

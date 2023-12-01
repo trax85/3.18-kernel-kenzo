@@ -1477,7 +1477,11 @@ void ath_tx_aggr_sleep(struct ieee80211_sta *sta, struct ath_softc *sc,
 			continue;
 		}
 
+<<<<<<< HEAD
 		buffered = ath_tid_has_buffered(tid);
+=======
+		buffered = !skb_queue_empty(&tid->buf_q);
+>>>>>>> p9x
 
 		tid->sched = false;
 		list_del(&tid->list);

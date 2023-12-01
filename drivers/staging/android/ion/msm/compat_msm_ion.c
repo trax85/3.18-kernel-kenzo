@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014,2016 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -26,6 +30,7 @@ struct compat_ion_flush_data {
 	compat_uint_t length;
 };
 
+<<<<<<< HEAD
 struct compat_ion_prefetch_regions {
 	compat_uint_t vmid;
 	compat_uptr_t sizes;
@@ -37,6 +42,11 @@ struct compat_ion_prefetch_data {
 	compat_ulong_t len;
 	compat_uptr_t regions;
 	compat_uint_t nr_regions;
+=======
+struct compat_ion_prefetch_data {
+	compat_int_t heap_id;
+	compat_ulong_t len;
+>>>>>>> p9x
 };
 
 #define COMPAT_ION_IOC_CLEAN_CACHES    _IOWR(ION_IOC_MSM_MAGIC, 0, \
@@ -78,6 +88,7 @@ static int compat_get_ion_flush_data(
 
 static int compat_get_ion_prefetch_data(
 			struct compat_ion_prefetch_data __user *data32,
+<<<<<<< HEAD
 			struct ion_prefetch_data __user *data,
 			size_t stack_offset)
 {
@@ -89,11 +100,19 @@ static int compat_get_ion_prefetch_data(
 	struct compat_ion_prefetch_regions __user *regions32;
 	struct ion_prefetch_regions __user *regions;
 	compat_uptr_t ptr;
+=======
+			struct ion_prefetch_data __user *data)
+{
+	compat_int_t i;
+	compat_ulong_t l;
+	int err;
+>>>>>>> p9x
 
 	err = get_user(i, &data32->heap_id);
 	err |= put_user(i, &data->heap_id);
 	err |= get_user(l, &data32->len);
 	err |= put_user(l, &data->len);
+<<<<<<< HEAD
 	err |= get_user(nr_regions, &data32->nr_regions);
 	err |= put_user(nr_regions, &data->nr_regions);
 	err |= get_user(ptr, &data32->regions);
@@ -133,6 +152,8 @@ static int compat_get_ion_prefetch_data(
 			err |= put_user(s, &sizes[j]);
 		}
 	}
+=======
+>>>>>>> p9x
 
 	return err;
 }
@@ -193,7 +214,11 @@ long compat_msm_ion_ioctl(struct ion_client *client, unsigned int cmd,
 		if (data == NULL)
 			return -EFAULT;
 
+<<<<<<< HEAD
 		err = compat_get_ion_prefetch_data(data32, data, sizeof(*data));
+=======
+		err = compat_get_ion_prefetch_data(data32, data);
+>>>>>>> p9x
 		if (err)
 			return err;
 

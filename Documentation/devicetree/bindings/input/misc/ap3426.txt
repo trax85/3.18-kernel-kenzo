@@ -10,7 +10,11 @@ Required properties:
  - reg			: i2c slave address of this device.
  - vdd-supply		: Analog power supply needed to power up this device.
  - vio-supply		: Digital IO power supply needed for IO and i2c.
+<<<<<<< HEAD
  - interrupt-parent	: The interrupt controller this device connected to.
+=======
+ - interrupt-parent	: The interrupt controler this device connected to.
+>>>>>>> p9x
  - interrupts		: L/P sample interrupt to indicate new data ready.
  - pinctrl-names	: pinctrl configuration names of this device. Should be "default" and "sleep".
  - pinctrl-0		: Should specify pin control groups used for this sensor.

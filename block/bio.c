@@ -566,8 +566,14 @@ void __bio_clone_fast(struct bio *bio, struct bio *bio_src)
 	bio->bi_bdev = bio_src->bi_bdev;
 	bio->bi_flags |= 1 << BIO_CLONED;
 	bio->bi_rw = bio_src->bi_rw;
+<<<<<<< HEAD:block/bio.c
 	bio->bi_iter = bio_src->bi_iter;
 	bio->bi_io_vec = bio_src->bi_io_vec;
+=======
+	bio->bi_vcnt = bio_src->bi_vcnt;
+	bio->bi_size = bio_src->bi_size;
+	bio->bi_idx = bio_src->bi_idx;
+>>>>>>> p9x:fs/bio.c
 	bio->bi_dio_inode = bio_src->bi_dio_inode;
 }
 EXPORT_SYMBOL(__bio_clone_fast);
@@ -1000,11 +1006,16 @@ void bio_copy_data(struct bio *dst, struct bio *src)
 
 		bytes = min(src_bv.bv_len, dst_bv.bv_len);
 
+<<<<<<< HEAD:block/bio.c
 		src_p = kmap_atomic(src_bv.bv_page);
 		dst_p = kmap_atomic(dst_bv.bv_page);
 
 		memcpy(dst_p + dst_bv.bv_offset,
 		       src_p + src_bv.bv_offset,
+=======
+		memcpy(dst_p + dst_offset,
+		       src_p + src_offset,
+>>>>>>> p9x:fs/bio.c
 		       bytes);
 
 		kunmap_atomic(dst_p);
@@ -1112,14 +1123,23 @@ int bio_uncopy_user(struct bio *bio)
 		 * don't copy into a random user address space, just free.
 		 */
 		if (current->mm)
+<<<<<<< HEAD:block/bio.c
 			ret = __bio_copy_iov(bio, bmd->sgvecs, bmd->nr_sgvecs,
 					     bio_data_dir(bio) == READ,
+=======
+			ret = __bio_copy_iov(bio, bmd->iovecs, bmd->sgvecs,
+					     bmd->nr_sgvecs, bio_data_dir(bio) == READ,
+>>>>>>> p9x:fs/bio.c
 					     0, bmd->is_our_pages);
 		else if (bmd->is_our_pages)
 			bio_for_each_segment_all(bvec, bio, i)
 				__free_page(bvec->bv_page);
 	}
+<<<<<<< HEAD:block/bio.c
 	kfree(bmd);
+=======
+	bio_free_map_data(bmd);
+>>>>>>> p9x:fs/bio.c
 	bio_put(bio);
 	return ret;
 }

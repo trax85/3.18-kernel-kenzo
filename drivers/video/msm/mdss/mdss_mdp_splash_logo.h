@@ -26,14 +26,21 @@ struct msm_fb_splash_info {
 	uint32_t		frame_done_count;
 	struct completion	frame_done;
 
+<<<<<<< HEAD
 	struct dma_buf		*dma_buf;
 	struct dma_buf_attachment *attachment;
 	struct sg_table		*table;
+=======
+	struct ion_handle	*ion_handle;
+>>>>>>> p9x
 	dma_addr_t		iova;
 	void			*splash_buffer;
 	int			pipe_ndx[2];
 	bool			splash_pipe_allocated;
+<<<<<<< HEAD
 	uint32_t		size;
+=======
+>>>>>>> p9x
 };
 
 struct msm_fb_data_type;

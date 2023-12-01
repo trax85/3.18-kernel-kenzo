@@ -133,8 +133,12 @@ static void debug_create(const char *name, mode_t mode,
 static void dfunc_string(struct encode_context *ectxt,
 			 struct decode_context *dctxt)
 {
+<<<<<<< HEAD
 	tsv_timestamp_read(ectxt, dctxt, "");
 	tsv_qtimer_read(ectxt, dctxt, " ");
+=======
+	tsv_timestamp_read(ectxt, dctxt, " ");
+>>>>>>> p9x
 	tsv_byte_array_read(ectxt, dctxt, "");
 
 	/* add trailing \n if necessary */

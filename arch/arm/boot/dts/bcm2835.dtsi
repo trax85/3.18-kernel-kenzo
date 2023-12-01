@@ -122,7 +122,21 @@
 			status = "disabled";
 		};
 
+<<<<<<< HEAD
 		sdhci: sdhci@7e300000 {
+=======
+		i2c1: i2c@20804000 {
+			compatible = "brcm,bcm2835-i2c";
+			reg = <0x7e804000 0x1000>;
+			interrupts = <2 21>;
+			clocks = <&clk_i2c>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "disabled";
+		};
+
+		sdhci: sdhci {
+>>>>>>> p9x
 			compatible = "brcm,bcm2835-sdhci";
 			reg = <0x7e300000 0x100>;
 			interrupts = <2 30>;

@@ -40,6 +40,15 @@ struct rand_pool_info {
 	__u32	buf[0];
 };
 
+<<<<<<< HEAD
+=======
+struct rnd_state {
+	__u32 s1, s2, s3;
+};
+
+/* Exported functions */
+
+>>>>>>> p9x
 /*
  * Flags for getrandom(2)
  *

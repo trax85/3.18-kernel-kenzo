@@ -21,7 +21,11 @@ The swapper_pg_dir address is written to TTBR1 and never written to
 TTBR0.
 
 
+<<<<<<< HEAD
 AArch64 Linux memory layout with 4KB pages + 3 levels:
+=======
+AArch64 Linux memory layout with 4KB pages:
+>>>>>>> p9x
 
 Start			End			Size		Use
 -----------------------------------------------------------------------
@@ -37,6 +41,7 @@ Start			End			Size		Use
 ffff000000000000	ffffffffffffffff	 256TB		kernel
 
 
+<<<<<<< HEAD
 AArch64 Linux memory layout with 64KB pages + 2 levels:
 
 Start			End			Size		Use
@@ -44,6 +49,15 @@ Start			End			Size		Use
 0000000000000000	000003ffffffffff	   4TB		user
 fffffc0000000000	ffffffffffffffff	   4TB		kernel
 
+=======
+ffffffbffa000000	ffffffbffaffffff	  16MB		PCI I/O space
+
+ffffffbffb000000	ffffffbffbbfffff	  12MB		[guard]
+
+ffffffbffbc00000	ffffffbffbdfffff	   2MB		fixed mappings
+
+ffffffbffbe00000	ffffffbffbffffff	   2MB		[guard]
+>>>>>>> p9x
 
 AArch64 Linux memory layout with 64KB pages + 3 levels:
 
@@ -55,6 +69,33 @@ ffff000000000000	ffffffffffffffff	 256TB		kernel
 
 For details of the virtual kernel memory layout please see the kernel
 booting log.
+
+
+AArch64 Linux memory layout with 64KB pages:
+
+Start			End			Size		Use
+-----------------------------------------------------------------------
+0000000000000000	000003ffffffffff	   4TB		user
+
+fffffc0000000000	fffffdfbfffeffff	  ~2TB		vmalloc
+
+fffffdfbffff0000	fffffdfbffffffff	  64KB		[guard page]
+
+fffffdfc00000000	fffffdfdffffffff	   8GB		vmemmap
+
+fffffdfe00000000	fffffdfffbbfffff	  ~8GB		[guard, future vmmemap]
+
+fffffdfffa000000	fffffdfffaffffff	  16MB		PCI I/O space
+
+fffffdfffb000000	fffffdfffbbfffff	  12MB		[guard]
+
+fffffdfffbc00000	fffffdfffbdfffff	   2MB		fixed mappings
+
+fffffdfffbe00000	fffffdfffbffffff	   2MB		[guard]
+
+fffffdfffc000000	fffffdffffffffff	  64MB		modules
+
+fffffe0000000000	ffffffffffffffff	   2TB		kernel logical memory map
 
 
 Translation table lookup with 4KB pages:

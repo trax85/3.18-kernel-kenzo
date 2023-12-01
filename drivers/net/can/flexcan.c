@@ -62,7 +62,11 @@
 #define FLEXCAN_MCR_BCC			BIT(16)
 #define FLEXCAN_MCR_LPRIO_EN		BIT(13)
 #define FLEXCAN_MCR_AEN			BIT(12)
+<<<<<<< HEAD
 #define FLEXCAN_MCR_MAXMB(x)		((x) & 0x7f)
+=======
+#define FLEXCAN_MCR_MAXMB(x)		((x) & 0x1f)
+>>>>>>> p9x
 #define FLEXCAN_MCR_IDAM_A		(0 << 8)
 #define FLEXCAN_MCR_IDAM_B		(1 << 8)
 #define FLEXCAN_MCR_IDAM_C		(2 << 8)
@@ -882,8 +886,13 @@ static int flexcan_chip_start(struct net_device *dev)
 {
 	struct flexcan_priv *priv = netdev_priv(dev);
 	struct flexcan_regs __iomem *regs = priv->base;
+<<<<<<< HEAD
 	u32 reg_mcr, reg_ctrl, reg_crl2, reg_mecr;
 	int err, i;
+=======
+	int err;
+	u32 reg_mcr, reg_ctrl;
+>>>>>>> p9x
 
 	/* enable module */
 	err = flexcan_chip_enable(priv);
@@ -950,11 +959,17 @@ static int flexcan_chip_start(struct net_device *dev)
 	netdev_dbg(dev, "%s: writing ctrl=0x%08x", __func__, reg_ctrl);
 	flexcan_write(reg_ctrl, &regs->ctrl);
 
+<<<<<<< HEAD
 	/* clear and invalidate all mailboxes first */
 	for (i = FLEXCAN_TX_BUF_ID; i < ARRAY_SIZE(regs->cantxfg); i++) {
 		flexcan_write(FLEXCAN_MB_CODE_RX_INACTIVE,
 			      &regs->cantxfg[i].can_ctrl);
 	}
+=======
+	/* Abort any pending TX, mark Mailbox as INACTIVE */
+	flexcan_write(FLEXCAN_MB_CNT_CODE(0x4),
+		      &regs->cantxfg[FLEXCAN_TX_BUF_ID].can_ctrl);
+>>>>>>> p9x
 
 	/* Errata ERR005829: mark first TX mailbox as INACTIVE */
 	flexcan_write(FLEXCAN_MB_CODE_TX_INACTIVE,
@@ -1207,7 +1222,10 @@ static const struct of_device_id flexcan_of_match[] = {
 	{ .compatible = "fsl,imx6q-flexcan", .data = &fsl_imx6q_devtype_data, },
 	{ .compatible = "fsl,imx28-flexcan", .data = &fsl_imx28_devtype_data, },
 	{ .compatible = "fsl,p1010-flexcan", .data = &fsl_p1010_devtype_data, },
+<<<<<<< HEAD
 	{ .compatible = "fsl,vf610-flexcan", .data = &fsl_vf610_devtype_data, },
+=======
+>>>>>>> p9x
 	{ /* sentinel */ },
 };
 MODULE_DEVICE_TABLE(of, flexcan_of_match);

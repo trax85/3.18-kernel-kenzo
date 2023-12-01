@@ -1004,6 +1004,7 @@ out_unlock:
 	return ret;
 }
 
+<<<<<<< HEAD
 bool ttm_bo_mem_compat(struct ttm_placement *placement,
 		       struct ttm_mem_reg *mem,
 		       uint32_t *new_flags)
@@ -1018,12 +1019,28 @@ bool ttm_bo_mem_compat(struct ttm_placement *placement,
 			continue;
 
 		*new_flags = heap->flags;
+=======
+static bool ttm_bo_mem_compat(struct ttm_placement *placement,
+			      struct ttm_mem_reg *mem,
+			      uint32_t *new_flags)
+{
+	int i;
+
+	if (mem->mm_node && placement->lpfn != 0 &&
+	    (mem->start < placement->fpfn ||
+	     mem->start + mem->num_pages > placement->lpfn))
+		return false;
+
+	for (i = 0; i < placement->num_placement; i++) {
+		*new_flags = placement->placement[i];
+>>>>>>> p9x
 		if ((*new_flags & mem->placement & TTM_PL_MASK_CACHING) &&
 		    (*new_flags & mem->placement & TTM_PL_MASK_MEM))
 			return true;
 	}
 
 	for (i = 0; i < placement->num_busy_placement; i++) {
+<<<<<<< HEAD
 		const struct ttm_place *heap = &placement->busy_placement[i];
 		if (mem->mm_node &&
 		    (mem->start < heap->fpfn ||
@@ -1031,6 +1048,9 @@ bool ttm_bo_mem_compat(struct ttm_placement *placement,
 			continue;
 
 		*new_flags = heap->flags;
+=======
+		*new_flags = placement->busy_placement[i];
+>>>>>>> p9x
 		if ((*new_flags & mem->placement & TTM_PL_MASK_CACHING) &&
 		    (*new_flags & mem->placement & TTM_PL_MASK_MEM))
 			return true;

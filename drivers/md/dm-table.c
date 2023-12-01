@@ -256,6 +256,36 @@ void dm_table_destroy(struct dm_table *t)
 	kfree(t);
 }
 
+<<<<<<< HEAD
+=======
+void dm_table_get(struct dm_table *t)
+{
+	atomic_inc(&t->holders);
+}
+EXPORT_SYMBOL(dm_table_get);
+
+void dm_table_put(struct dm_table *t)
+{
+	if (!t)
+		return;
+
+	smp_mb__before_atomic();
+	atomic_dec(&t->holders);
+}
+EXPORT_SYMBOL(dm_table_put);
+
+/*
+ * Checks to see if we need to extend highs or targets.
+ */
+static inline int check_space(struct dm_table *t)
+{
+	if (t->num_targets >= t->num_allocated)
+		return alloc_targets(t, t->num_allocated * 2);
+
+	return 0;
+}
+
+>>>>>>> p9x
 /*
  * See if we've already got a device in the list.
  */
@@ -467,9 +497,25 @@ static int dm_set_device_limits(struct dm_target *ti, struct dm_dev *dev,
  */
 void dm_put_device(struct dm_target *ti, struct dm_dev *d)
 {
+<<<<<<< HEAD
 	int found = 0;
 	struct list_head *devices = &ti->table->devices;
 	struct dm_dev_internal *dd;
+=======
+	struct dm_dev_internal *dd;
+
+	if (!ti) {
+		DMERR("%s: dm_target pointer is NULL", __func__);
+		return;
+	}
+
+	if (!d) {
+		DMERR("%s: dm_dev pointer is NULL", __func__);
+		return;
+	}
+
+	dd = container_of(d, struct dm_dev_internal, dm_dev);
+>>>>>>> p9x
 
 	if (!ti) {
 		DMERR("%s: dm_target pointer is NULL", __func__);
@@ -530,8 +576,13 @@ static char **realloc_argv(unsigned *size, char **old_argv)
 	unsigned new_size;
 	gfp_t gfp;
 
+<<<<<<< HEAD
 	if (*size) {
 		new_size = *size * 2;
+=======
+	if (*array_size) {
+		new_size = *array_size * 2;
+>>>>>>> p9x
 		gfp = GFP_KERNEL;
 	} else {
 		new_size = 8;

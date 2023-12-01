@@ -123,6 +123,7 @@ void __init footbridge_timer_init(void)
 
 	ce->cpumask = cpumask_of(smp_processor_id());
 	clockevents_config_and_register(ce, rate, 0x4, 0xffffff);
+<<<<<<< HEAD
 }
 
 static u64 notrace footbridge_read_sched_clock(void)
@@ -139,4 +140,6 @@ void __init footbridge_sched_clock(void)
 	*CSR_TIMER3_CNTL = TIMER_CNTL_ENABLE | TIMER_CNTL_DIV16;
 
 	sched_clock_register(footbridge_read_sched_clock, 24, rate);
+=======
+>>>>>>> p9x
 }

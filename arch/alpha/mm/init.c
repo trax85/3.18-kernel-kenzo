@@ -279,7 +279,12 @@ srm_paging_stop (void)
 void __init
 mem_init(void)
 {
+<<<<<<< HEAD
 	set_max_mapnr(max_low_pfn);
+=======
+	max_mapnr = num_physpages = max_low_pfn;
+	free_all_bootmem();
+>>>>>>> p9x
 	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
 	free_all_bootmem();
 	mem_init_print_info(NULL);

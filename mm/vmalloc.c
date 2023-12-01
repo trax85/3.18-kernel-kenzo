@@ -20,6 +20,7 @@
 #include <linux/seq_file.h>
 #include <linux/debugobjects.h>
 #include <linux/kallsyms.h>
+#include <linux/kasan.h>
 #include <linux/list.h>
 #include <linux/rbtree.h>
 #include <linux/radix-tree.h>
@@ -29,7 +30,11 @@
 #include <linux/atomic.h>
 #include <linux/compiler.h>
 #include <linux/llist.h>
+<<<<<<< HEAD
 
+=======
+#include <linux/sizes.h>
+>>>>>>> p9x
 #include <asm/uaccess.h>
 #include <asm/tlbflush.h>
 #include <asm/shmparam.h>
@@ -271,9 +276,9 @@ EXPORT_SYMBOL(vmalloc_to_pfn);
 #define VM_LAZY_FREEING	0x02
 #define VM_VM_AREA	0x04
 
-static DEFINE_SPINLOCK(vmap_area_lock);
 /* Export for kexec only */
 LIST_HEAD(vmap_area_list);
+static DEFINE_SPINLOCK(vmap_area_lock);
 static struct rb_root vmap_area_root = RB_ROOT;
 
 /* The vmap cache globals are protected by vmap_area_lock */
@@ -335,6 +340,11 @@ static void calc_total_vmalloc_size(void) { }
 #endif
 EXPORT_SYMBOL(is_vmalloc_addr);
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> p9x
 static struct vmap_area *__find_vmap_area(unsigned long addr)
 {
 	struct rb_node *n = vmap_area_root.rb_node;
@@ -1285,6 +1295,10 @@ void __init vmalloc_init(void)
 	}
 
 	vmap_area_pcpu_hole = VMALLOC_END;
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x
 	calc_total_vmalloc_size();
 	vmap_initialized = true;
 }
@@ -1730,13 +1744,23 @@ void *__vmalloc_node_range(unsigned long size, unsigned long align,
 	struct vm_struct *area;
 	void *addr;
 	unsigned long real_size = size;
+#ifdef CONFIG_FIX_MOVABLE_ZONE
+	unsigned long total_pages = total_unmovable_pages;
+#else
+	unsigned long total_pages = totalram_pages;
+#endif
 
 	size = PAGE_ALIGN(size);
-	if (!size || (size >> PAGE_SHIFT) > totalram_pages)
+	if (!size || (size >> PAGE_SHIFT) > total_pages)
 		goto fail;
 
+<<<<<<< HEAD
 	area = __get_vm_area_node(size, align, VM_ALLOC | VM_UNINITIALIZED |
 				vm_flags, start, end, node, gfp_mask, caller);
+=======
+	area = __get_vm_area_node(size, align, VM_ALLOC | VM_UNLIST | vm_flags,
+			start, end, node, gfp_mask, caller);
+>>>>>>> p9x
 	if (!area)
 		goto fail;
 
@@ -2729,6 +2753,9 @@ static int s_show(struct seq_file *m, void *p)
 	if (v->flags & VM_VPAGES)
 		seq_puts(m, " vpages");
 
+	if (v->flags & VM_LOWMEM)
+		seq_printf(m, " lowmem");
+
 	show_numa_info(m, v);
 	seq_putc(m, '\n');
 	return 0;
@@ -2764,6 +2791,7 @@ static int __init proc_vmalloc_init(void)
 }
 module_init(proc_vmalloc_init);
 
+<<<<<<< HEAD
 void get_vmalloc_info(struct vmalloc_info *vmi)
 {
 	struct vmap_area *va;
@@ -2811,5 +2839,7 @@ void get_vmalloc_info(struct vmalloc_info *vmi)
 out:
 	rcu_read_unlock();
 }
+=======
+>>>>>>> p9x
 #endif
 

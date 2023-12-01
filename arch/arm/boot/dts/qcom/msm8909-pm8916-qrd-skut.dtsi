@@ -19,6 +19,7 @@
 
 #include "dsi-panel-fl10802-fwvga-video.dtsi"
 
+<<<<<<< HEAD
 &tlmm_pinmux {
 	akm_reset_pin {
 		qcom,pins = <&gp 36>;
@@ -79,6 +80,8 @@
 	};
 };
 
+=======
+>>>>>>> p9x
 &soc {
 	i2c@78b9000 { /* BLSP1 QUP5 */
 		synaptics@20 {
@@ -114,6 +117,7 @@
 		qcom,key-codes = <139 172 158>;
 		qcom,y-offset = <0>;
 	};
+<<<<<<< HEAD
 
 	gpio-leds {
 		compatible = "gpio-leds";
@@ -176,6 +180,8 @@
 			akm,use-hrtimer;
 		};
 	};
+=======
+>>>>>>> p9x
 };
 
 &spmi_bus {
@@ -212,12 +218,15 @@
 			};
 		};
 	};
+<<<<<<< HEAD
 
 	qcom,pm8916@1 {
 		qcom,vibrator@c000 {
 			qcom,vib-vtg-level-mV = <2700>;
 		};
 	};
+=======
+>>>>>>> p9x
 };
 
 &mdss_mdp {

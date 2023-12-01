@@ -97,7 +97,11 @@ static ssize_t cuse_read(struct file *file, char __user *buf, size_t count,
 	struct iov_iter ii;
 	iov_iter_init(&ii, READ, &iov, 1, count);
 
+<<<<<<< HEAD
 	return fuse_direct_io(&io, &ii, &pos, FUSE_DIO_CUSE);
+=======
+	return fuse_direct_io(&io, &iov, 1, count, &pos, FUSE_DIO_CUSE);
+>>>>>>> p9x
 }
 
 static ssize_t cuse_write(struct file *file, const char __user *buf,
@@ -113,7 +117,11 @@ static ssize_t cuse_write(struct file *file, const char __user *buf,
 	 * No locking or generic_write_checks(), the server is
 	 * responsible for locking and sanity checks.
 	 */
+<<<<<<< HEAD
 	return fuse_direct_io(&io, &ii, &pos,
+=======
+	return fuse_direct_io(&io, &iov, 1, count, &pos,
+>>>>>>> p9x
 			      FUSE_DIO_WRITE | FUSE_DIO_CUSE);
 }
 

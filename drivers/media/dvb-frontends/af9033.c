@@ -24,8 +24,13 @@
 /* Max transfer size done by I2C transfer functions */
 #define MAX_XFER_SIZE  64
 
+<<<<<<< HEAD
 struct af9033_dev {
 	struct i2c_client *client;
+=======
+struct af9033_state {
+	struct i2c_adapter *i2c;
+>>>>>>> p9x
 	struct dvb_frontend fe;
 	struct af9033_config cfg;
 	bool is_af9035;
@@ -60,9 +65,15 @@ static int af9033_wr_regs(struct af9033_dev *dev, u32 reg, const u8 *val,
 	};
 
 	if (3 + len > sizeof(buf)) {
+<<<<<<< HEAD
 		dev_warn(&dev->client->dev,
 				"i2c wr reg=%04x: len=%d is too big!\n",
 				reg, len);
+=======
+		dev_warn(&state->i2c->dev,
+			 "%s: i2c wr reg=%04x: len=%d is too big!\n",
+			 KBUILD_MODNAME, reg, len);
+>>>>>>> p9x
 		return -EINVAL;
 	}
 
@@ -184,6 +195,12 @@ static int af9033_wr_reg_val_tab(struct af9033_dev *dev,
 
 	if (tab_len > sizeof(buf)) {
 		dev_warn(&dev->client->dev, "tab len %d is too big\n", tab_len);
+		return -EINVAL;
+	}
+
+	if (tab_len > sizeof(buf)) {
+		dev_warn(&state->i2c->dev, "%s: tab len %d is too big\n",
+				KBUILD_MODNAME, tab_len);
 		return -EINVAL;
 	}
 

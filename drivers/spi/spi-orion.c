@@ -441,7 +441,10 @@ static int orion_spi_probe(struct platform_device *pdev)
 		master->bus_num = pdev->id;
 	if (pdev->dev.of_node) {
 		u32 cell_index;
+<<<<<<< HEAD
 
+=======
+>>>>>>> p9x
 		if (!of_property_read_u32(pdev->dev.of_node, "cell-index",
 					  &cell_index))
 			master->bus_num = cell_index;

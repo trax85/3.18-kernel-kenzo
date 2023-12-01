@@ -15,9 +15,12 @@ ccflags-y := -shared -fno-common -fno-builtin
 ccflags-y += -nostdlib -Wl,-soname=linux-vdso.so.1 \
 		$(call cc-ldoption, -Wl$(comma)--hash-style=sysv)
 
+<<<<<<< HEAD
 # Disable gcov profiling for VDSO code
 GCOV_PROFILE := n
 
+=======
+>>>>>>> p9x
 # Workaround for bare-metal (ELF) toolchains that neglect to pass -shared
 # down to collect2, resulting in silent corruption of the vDSO image.
 ccflags-y += -Wl,-shared
@@ -53,9 +56,15 @@ $(obj-vdso): %.o: %.S FORCE
 	$(call if_changed_dep,vdsoas)
 
 # Actual build commands
+<<<<<<< HEAD
 quiet_cmd_vdsold = VDSOL   $@
       cmd_vdsold = $(CC) $(c_flags) -Wl,-n -Wl,-T $^ -o $@
 quiet_cmd_vdsoas = VDSOA   $@
+=======
+quiet_cmd_vdsold = VDSOL $@
+      cmd_vdsold = $(CC) $(c_flags) -Wl,-n -Wl,-T $^ -o $@
+quiet_cmd_vdsoas = VDSOA $@
+>>>>>>> p9x
       cmd_vdsoas = $(CC) $(a_flags) -c -o $@ $<
 
 # Install commands for the unstripped file

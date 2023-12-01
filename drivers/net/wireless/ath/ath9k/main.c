@@ -228,6 +228,7 @@ static bool ath_complete_reset(struct ath_softc *sc, bool start)
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
 	unsigned long flags;
+	int i;
 
 	ath9k_calculate_summary_state(sc, sc->cur_chan);
 	ath_startrecv(sc);
@@ -259,7 +260,19 @@ static bool ath_complete_reset(struct ath_softc *sc, bool start)
 		}
 	work:
 		ath_restart_work(sc);
+<<<<<<< HEAD
 		ath_txq_schedule_all(sc);
+=======
+
+		for (i = 0; i < ATH9K_NUM_TX_QUEUES; i++) {
+			if (!ATH_TXQ_SETUP(sc, i))
+				continue;
+
+			spin_lock_bh(&sc->tx.txq[i].axq_lock);
+			ath_txq_schedule(sc, &sc->tx.txq[i]);
+			spin_unlock_bh(&sc->tx.txq[i].axq_lock);
+		}
+>>>>>>> p9x
 	}
 
 	sc->gtt_cnt = 0;
@@ -976,8 +989,14 @@ void ath9k_calculate_iter_data(struct ath_softc *sc,
 	struct ath_vif *avp;
 
 	/*
+<<<<<<< HEAD
 	 * The hardware will use primary station addr together with the
 	 * BSSID mask when matching addresses.
+=======
+	 * Pick the MAC address of the first interface as the new hardware
+	 * MAC address. The hardware will use it together with the BSSID mask
+	 * when matching addresses.
+>>>>>>> p9x
 	 */
 	memset(iter_data, 0, sizeof(*iter_data));
 	memset(&iter_data->mask, 0xff, ETH_ALEN);
@@ -1449,9 +1468,90 @@ static int ath9k_config(struct ieee80211_hw *hw, u32 changed)
 		}
 	}
 
+<<<<<<< HEAD
 	if (!ath9k_is_chanctx_enabled() && (changed & IEEE80211_CONF_CHANGE_CHANNEL)) {
 		ctx->offchannel = !!(conf->flags & IEEE80211_CONF_OFFCHANNEL);
 		ath_chanctx_set_channel(sc, ctx, &hw->conf.chandef);
+=======
+	if ((changed & IEEE80211_CONF_CHANGE_CHANNEL) || reset_channel) {
+		struct ieee80211_channel *curchan = hw->conf.chandef.chan;
+		enum nl80211_channel_type channel_type =
+			cfg80211_get_chandef_type(&conf->chandef);
+		int pos = curchan->hw_value;
+		int old_pos = -1;
+		unsigned long flags;
+
+		if (ah->curchan)
+			old_pos = ah->curchan - &ah->channels[0];
+
+		ath_dbg(common, CONFIG, "Set channel: %d MHz type: %d\n",
+			curchan->center_freq, channel_type);
+
+		/* update survey stats for the old channel before switching */
+		spin_lock_irqsave(&common->cc_lock, flags);
+		ath_update_survey_stats(sc);
+		spin_unlock_irqrestore(&common->cc_lock, flags);
+
+		ath9k_cmn_update_ichannel(&sc->sc_ah->channels[pos],
+					  curchan, channel_type);
+
+		/*
+		 * If the operating channel changes, change the survey in-use flags
+		 * along with it.
+		 * Reset the survey data for the new channel, unless we're switching
+		 * back to the operating channel from an off-channel operation.
+		 */
+		if (!(hw->conf.flags & IEEE80211_CONF_OFFCHANNEL) &&
+		    sc->cur_survey != &sc->survey[pos]) {
+
+			if (sc->cur_survey)
+				sc->cur_survey->filled &= ~SURVEY_INFO_IN_USE;
+
+			sc->cur_survey = &sc->survey[pos];
+
+			memset(sc->cur_survey, 0, sizeof(struct survey_info));
+			sc->cur_survey->filled |= SURVEY_INFO_IN_USE;
+		} else if (!(sc->survey[pos].filled & SURVEY_INFO_IN_USE)) {
+			memset(&sc->survey[pos], 0, sizeof(struct survey_info));
+		}
+
+		if (ath_set_channel(sc, hw, &sc->sc_ah->channels[pos]) < 0) {
+			ath_err(common, "Unable to set channel\n");
+			mutex_unlock(&sc->mutex);
+			ath9k_ps_restore(sc);
+			return -EINVAL;
+		}
+
+		/*
+		 * The most recent snapshot of channel->noisefloor for the old
+		 * channel is only available after the hardware reset. Copy it to
+		 * the survey stats now.
+		 */
+		if (old_pos >= 0)
+			ath_update_survey_nf(sc, old_pos);
+
+		/*
+		 * Enable radar pulse detection if on a DFS channel. Spectral
+		 * scanning and radar detection can not be used concurrently.
+		 */
+		if (hw->conf.radar_enabled) {
+			u32 rxfilter;
+
+			/* set HW specific DFS configuration */
+			ath9k_hw_set_radar_params(ah);
+			rxfilter = ath9k_hw_getrxfilter(ah);
+			rxfilter |= ATH9K_RX_FILTER_PHYRADAR |
+				    ATH9K_RX_FILTER_PHYERR;
+			ath9k_hw_setrxfilter(ah, rxfilter);
+			ath_dbg(common, DFS, "DFS enabled at freq %d\n",
+				curchan->center_freq);
+		} else {
+			/* perform spectral scan if requested. */
+			if (sc->scanning &&
+			    sc->spectral_mode == SPECTRAL_CHANSCAN)
+				ath9k_spectral_scan_trigger(hw);
+		}
+>>>>>>> p9x
 	}
 
 	if (changed & IEEE80211_CONF_CHANGE_POWER) {

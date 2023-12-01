@@ -45,6 +45,7 @@ static int backend_create_xenvif(struct backend_info *be);
 static void unregister_hotplug_status_watch(struct backend_info *be);
 static void set_backend_state(struct backend_info *be,
 			      enum xenbus_state state);
+<<<<<<< HEAD
 
 #ifdef CONFIG_DEBUG_FS
 struct dentry *xen_netback_dbg_root = NULL;
@@ -224,6 +225,8 @@ static void xenvif_debugfs_delif(struct xenvif *vif)
 	vif->xenvif_dbg_root = NULL;
 }
 #endif /* CONFIG_DEBUG_FS */
+=======
+>>>>>>> p9x
 
 static int netback_remove(struct xenbus_device *dev)
 {
@@ -333,6 +336,7 @@ static int netback_probe(struct xenbus_device *dev,
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * Split event channels support, this is optional so it is not
 	 * put inside the above loop.
@@ -349,6 +353,8 @@ static int netback_probe(struct xenbus_device *dev,
 	if (err)
 		pr_debug("Error writing multi-queue-max-queues\n");
 
+=======
+>>>>>>> p9x
 	script = xenbus_read(XBT_NIL, dev->nodename, "script", NULL);
 	if (IS_ERR(script)) {
 		err = PTR_ERR(script);
@@ -433,12 +439,17 @@ static int backend_create_xenvif(struct backend_info *be)
 
 static void backend_disconnect(struct backend_info *be)
 {
+<<<<<<< HEAD
 	if (be->vif) {
 #ifdef CONFIG_DEBUG_FS
 		xenvif_debugfs_delif(be->vif);
 #endif /* CONFIG_DEBUG_FS */
 		xenvif_disconnect(be->vif);
 	}
+=======
+	if (be->vif)
+		xenvif_disconnect(be->vif);
+>>>>>>> p9x
 }
 
 static void backend_connect(struct backend_info *be)

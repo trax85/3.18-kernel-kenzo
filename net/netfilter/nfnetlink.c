@@ -157,6 +157,12 @@ static int nfnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 	const struct nfnetlink_subsystem *ss;
 	int type, err;
 
+<<<<<<< HEAD
+=======
+	if (!netlink_net_capable(skb, CAP_NET_ADMIN))
+		return -EPERM;
+
+>>>>>>> p9x
 	/* All the messages must at least contain nfgenmsg */
 	if (nlmsg_len(nlh) < sizeof(struct nfgenmsg))
 		return 0;

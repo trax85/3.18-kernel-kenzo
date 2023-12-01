@@ -1398,9 +1398,12 @@ int jbd2_journal_update_sb_log_tail(journal_t *journal, tid_t tail_tid,
 {
 	journal_superblock_t *sb = journal->j_superblock;
 	int ret;
+<<<<<<< HEAD
 
 	if (is_journal_aborted(journal))
 		return -EIO;
+=======
+>>>>>>> p9x
 
 	BUG_ON(!mutex_is_locked(&journal->j_checkpoint_mutex));
 	jbd_debug(1, "JBD2: updating superblock (start %lu, seq %u)\n",

@@ -7,10 +7,23 @@ obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
 obj-$(CONFIG_MSM_TZ_SMMU) += io-pgtable-msm-secure.o
 obj-$(CONFIG_IOMMU_IO_PGTABLE_FAST) += io-pgtable-fast.o dma-mapping-fast.o
 obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
+<<<<<<< HEAD
 obj-$(CONFIG_IOMMU_DEBUG) += iommu-debug.o
 obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o msm_iommu_domains.o msm_iommu_mapping.o
 obj-$(CONFIG_MSM_IOMMU_V1) += msm_iommu-v1.o msm_iommu_dev-v1.o msm_iommu_sec.o
 obj-$(CONFIG_MSM_IOMMU_PMON) += msm_iommu_perfmon.o msm_iommu_perfmon-v1.o
+=======
+obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o msm_iommu_domains.o msm_iommu_mapping.o
+obj-$(CONFIG_MSM_IOMMU_V0) += msm_iommu-v0.o msm_iommu_dev-v0.o
+obj-$(CONFIG_MSM_IOMMU_V1) += msm_iommu-v1.o msm_iommu_dev-v1.o msm_iommu_sec.o
+obj-$(CONFIG_MSM_IOMMU_PMON) += msm_iommu_perfmon.o
+ifdef CONFIG_MSM_IOMMU_V0
+obj-$(CONFIG_MSM_IOMMU_PMON) += msm_iommu_perfmon-v0.o
+endif
+ifdef CONFIG_MSM_IOMMU_V1
+obj-$(CONFIG_MSM_IOMMU_PMON) += msm_iommu_perfmon-v1.o
+endif
+>>>>>>> p9x
 ifdef CONFIG_IOMMU_LPAE
 obj-$(CONFIG_MSM_IOMMU_V1) += msm_iommu_pagetable_lpae.o
 else

@@ -262,6 +262,7 @@ static int max77686_i2c_probe(struct i2c_client *i2c,
 	max77686->wakeup = pdata->wakeup;
 	max77686->irq = i2c->irq;
 
+<<<<<<< HEAD
 	if (max77686->type == TYPE_MAX77686) {
 		config = &max77686_regmap_config;
 		irq_chip = &max77686_irq_chip;
@@ -279,6 +280,9 @@ static int max77686_i2c_probe(struct i2c_client *i2c,
 	}
 
 	max77686->regmap = devm_regmap_init_i2c(i2c, config);
+=======
+	max77686->regmap = devm_regmap_init_i2c(i2c, &max77686_regmap_config);
+>>>>>>> p9x
 	if (IS_ERR(max77686->regmap)) {
 		ret = PTR_ERR(max77686->regmap);
 		dev_err(max77686->dev, "Failed to allocate register map: %d\n",
@@ -293,6 +297,7 @@ static int max77686_i2c_probe(struct i2c_client *i2c,
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	if (max77686->type == TYPE_MAX77686) {
 		max77686->rtc = i2c_new_dummy(i2c->adapter, I2C_ADDR_RTC);
 		if (!max77686->rtc) {
@@ -301,6 +306,14 @@ static int max77686_i2c_probe(struct i2c_client *i2c,
 			return -ENODEV;
 		}
 		i2c_set_clientdata(max77686->rtc, max77686);
+=======
+	max77686->rtc = i2c_new_dummy(i2c->adapter, I2C_ADDR_RTC);
+	if (!max77686->rtc) {
+		dev_err(max77686->dev, "Failed to allocate I2C device for RTC\n");
+		return -ENODEV;
+	}
+	i2c_set_clientdata(max77686->rtc, max77686);
+>>>>>>> p9x
 
 		max77686->rtc_regmap =
 			devm_regmap_init_i2c(max77686->rtc,

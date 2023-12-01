@@ -118,11 +118,26 @@ static int omap_cpu_init(struct cpufreq_policy *policy)
 	if (IS_ERR(policy->clk))
 		return PTR_ERR(policy->clk);
 
+<<<<<<< HEAD
 	if (!freq_table) {
 		result = dev_pm_opp_init_cpufreq_table(mpu_dev, &freq_table);
 		if (result) {
 			dev_err(mpu_dev,
 				"%s: cpu%d: failed creating freq table[%d]\n",
+=======
+	if (policy->cpu >= NR_CPUS) {
+		result = -EINVAL;
+		goto fail_ck;
+	}
+
+	policy->cur = omap_getspeed(policy->cpu);
+
+	if (!freq_table)
+		result = dev_pm_opp_init_cpufreq_table(mpu_dev, &freq_table);
+
+	if (result) {
+		dev_err(mpu_dev, "%s: cpu%d: failed creating freq table[%d]\n",
+>>>>>>> p9x
 				__func__, policy->cpu, result);
 			goto fail;
 		}

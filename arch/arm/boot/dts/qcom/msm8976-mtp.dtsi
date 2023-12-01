@@ -11,7 +11,11 @@
  * GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
 #include "msm8956-pinctrl.dtsi"
+=======
+#include "msm8976-pinctrl.dtsi"
+>>>>>>> p9x
 #include "msm8976-camera-sensor-mtp.dtsi"
 #include "msm8976-mdss-mtp.dtsi"
 #include "msm8976-wsa881x.dtsi"

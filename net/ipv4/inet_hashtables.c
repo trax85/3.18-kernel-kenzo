@@ -314,6 +314,39 @@ begin:
 	 */
 	if (get_nulls_value(node) != slot)
 		goto begin;
+<<<<<<< HEAD
+=======
+
+begintw:
+	/* Must check for a TIME_WAIT'er before going to listener hash. */
+	sk_nulls_for_each_rcu(sk, node, &head->twchain) {
+		if (sk->sk_hash != hash)
+			continue;
+		if (likely(INET_TW_MATCH(sk, net, acookie,
+					 saddr, daddr, ports,
+					 dif))) {
+			if (unlikely(!atomic_inc_not_zero(&sk->sk_refcnt))) {
+				sk = NULL;
+				goto out;
+			}
+			if (unlikely(!INET_TW_MATCH(sk, net, acookie,
+						    saddr, daddr, ports,
+						    dif))) {
+				inet_twsk_put(inet_twsk(sk));
+				goto begintw;
+			}
+			goto out;
+		}
+	}
+	/*
+	 * if the nulls value we got at the end of this lookup is
+	 * not the expected one, we must restart lookup.
+	 * We probably met an item that was moved to another chain.
+	 */
+	if (get_nulls_value(node) != slot)
+		goto begintw;
+	sk = NULL;
+>>>>>>> p9x
 out:
 	sk = NULL;
 found:

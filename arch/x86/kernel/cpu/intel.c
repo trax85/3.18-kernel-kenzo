@@ -425,7 +425,11 @@ static void init_intel(struct cpuinfo_x86 *c)
 
 	if (c->x86 == 6 && cpu_has_clflush &&
 	    (c->x86_model == 29 || c->x86_model == 46 || c->x86_model == 47))
+<<<<<<< HEAD
 		set_cpu_bug(c, X86_BUG_CLFLUSH_MONITOR);
+=======
+		set_cpu_cap(c, X86_FEATURE_CLFLUSH_MONITOR);
+>>>>>>> p9x
 
 #ifdef CONFIG_X86_64
 	if (c->x86 == 15)
@@ -667,7 +671,40 @@ static void intel_tlb_lookup(const unsigned char desc)
 	}
 }
 
+<<<<<<< HEAD
 static void intel_detect_tlb(struct cpuinfo_x86 *c)
+=======
+static void __cpuinit intel_tlb_flushall_shift_set(struct cpuinfo_x86 *c)
+{
+	switch ((c->x86 << 8) + c->x86_model) {
+	case 0x60f: /* original 65 nm celeron/pentium/core2/xeon, "Merom"/"Conroe" */
+	case 0x616: /* single-core 65 nm celeron/core2solo "Merom-L"/"Conroe-L" */
+	case 0x617: /* current 45 nm celeron/core2/xeon "Penryn"/"Wolfdale" */
+	case 0x61d: /* six-core 45 nm xeon "Dunnington" */
+		tlb_flushall_shift = -1;
+		break;
+	case 0x61a: /* 45 nm nehalem, "Bloomfield" */
+	case 0x61e: /* 45 nm nehalem, "Lynnfield" */
+	case 0x625: /* 32 nm nehalem, "Clarkdale" */
+	case 0x62c: /* 32 nm nehalem, "Gulftown" */
+	case 0x62e: /* 45 nm nehalem-ex, "Beckton" */
+	case 0x62f: /* 32 nm Xeon E7 */
+		tlb_flushall_shift = 6;
+		break;
+	case 0x62a: /* SandyBridge */
+	case 0x62d: /* SandyBridge, "Romely-EP" */
+		tlb_flushall_shift = 5;
+		break;
+	case 0x63a: /* Ivybridge */
+		tlb_flushall_shift = 2;
+		break;
+	default:
+		tlb_flushall_shift = 6;
+	}
+}
+
+static void __cpuinit intel_detect_tlb(struct cpuinfo_x86 *c)
+>>>>>>> p9x
 {
 	int i, j, n;
 	unsigned int regs[4];

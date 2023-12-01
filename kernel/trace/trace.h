@@ -361,6 +361,10 @@ struct tracer {
 	int			(*update_thresh)(struct trace_array *tr);
 	void			(*open)(struct trace_iterator *iter);
 	void			(*pipe_open)(struct trace_iterator *iter);
+<<<<<<< HEAD
+=======
+	int			(*wait_pipe)(struct trace_iterator *iter);
+>>>>>>> p9x
 	void			(*close)(struct trace_iterator *iter);
 	void			(*pipe_close)(struct trace_iterator *iter);
 	ssize_t			(*read)(struct trace_iterator *iter,
@@ -569,6 +573,16 @@ void trace_init_global_iter(struct trace_iterator *iter);
 
 void tracing_iter_reset(struct trace_iterator *iter, int cpu);
 
+<<<<<<< HEAD
+=======
+int poll_wait_pipe(struct trace_iterator *iter);
+
+void ftrace(struct trace_array *tr,
+			    struct trace_array_cpu *data,
+			    unsigned long ip,
+			    unsigned long parent_ip,
+			    unsigned long flags, int pc);
+>>>>>>> p9x
 void tracing_sched_switch_trace(struct trace_array *tr,
 				struct task_struct *prev,
 				struct task_struct *next,

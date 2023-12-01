@@ -624,7 +624,11 @@ static void imxdma_tasklet(unsigned long data)
 {
 	struct imxdma_channel *imxdmac = (void *)data;
 	struct imxdma_engine *imxdma = imxdmac->imxdma;
+<<<<<<< HEAD
 	struct imxdma_desc *desc, *next_desc;
+=======
+	struct imxdma_desc *desc;
+>>>>>>> p9x
 	unsigned long flags;
 
 	spin_lock_irqsave(&imxdma->lock, flags);

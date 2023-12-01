@@ -62,6 +62,10 @@ void get_derived_permission_new(struct dentry *parent, struct dentry *dentry,
 	int err;
 	struct qstr q_Android = QSTR_LITERAL("Android");
 	struct qstr q_data = QSTR_LITERAL("data");
+<<<<<<< HEAD
+=======
+	struct qstr q_sandbox = QSTR_LITERAL("sandbox");
+>>>>>>> p9x
 	struct qstr q_obb = QSTR_LITERAL("obb");
 	struct qstr q_media = QSTR_LITERAL("media");
 	struct qstr q_cache = QSTR_LITERAL("cache");
@@ -110,6 +114,12 @@ void get_derived_permission_new(struct dentry *parent, struct dentry *dentry,
 		if (qstr_case_eq(name, &q_data)) {
 			/* App-specific directories inside; let anyone traverse */
 			info->data->perm = PERM_ANDROID_DATA;
+<<<<<<< HEAD
+=======
+		} else if (qstr_case_eq(name, &q_sandbox)) {
+			/* App-specific directories inside; let anyone traverse */
+			info->data->perm = PERM_ANDROID_DATA;
+>>>>>>> p9x
 		} else if (qstr_case_eq(name, &q_obb)) {
 			/* App-specific directories inside; let anyone traverse */
 			info->data->perm = PERM_ANDROID_OBB;
@@ -163,7 +173,10 @@ void fixup_lower_ownership(struct dentry *dentry, const char *name)
 {
 	struct path path;
 	struct inode *inode;
+<<<<<<< HEAD
 	struct inode *delegated_inode = NULL;
+=======
+>>>>>>> p9x
 	int error;
 	struct sdcardfs_inode_info *info;
 	struct sdcardfs_inode_data *info_d;
@@ -238,8 +251,12 @@ void fixup_lower_ownership(struct dentry *dentry, const char *name)
 
 	sdcardfs_get_lower_path(dentry, &path);
 	inode = path.dentry->d_inode;
+<<<<<<< HEAD
 	if (path.dentry->d_inode->i_gid.val != gid || path.dentry->d_inode->i_uid.val != uid) {
 retry_deleg:
+=======
+	if (path.dentry->d_inode->i_gid != gid || path.dentry->d_inode->i_uid != uid) {
+>>>>>>> p9x
 		newattrs.ia_valid = ATTR_GID | ATTR_UID | ATTR_FORCE;
 		newattrs.ia_uid = make_kuid(current_user_ns(), uid);
 		newattrs.ia_gid = make_kgid(current_user_ns(), gid);
@@ -249,6 +266,7 @@ retry_deleg:
 		mutex_lock(&inode->i_mutex);
 		error = security_path_chown(&path, newattrs.ia_uid, newattrs.ia_gid);
 		if (!error)
+<<<<<<< HEAD
 			error = notify_change2(path.mnt, path.dentry, &newattrs, &delegated_inode);
 		mutex_unlock(&inode->i_mutex);
 		if (delegated_inode) {
@@ -256,6 +274,10 @@ retry_deleg:
 			if (!error)
 				goto retry_deleg;
 		}
+=======
+			error = notify_change2(path.mnt, path.dentry, &newattrs);
+		mutex_unlock(&inode->i_mutex);
+>>>>>>> p9x
 		if (error)
 			pr_debug("sdcardfs: Failed to touch up lower fs gid/uid for %s\n", name);
 	}
@@ -356,7 +378,12 @@ int need_graft_path(struct dentry *dentry)
 	struct sdcardfs_sb_info *sbi = SDCARDFS_SB(dentry->d_sb);
 	struct qstr obb = QSTR_LITERAL("obb");
 
+<<<<<<< HEAD
 	if (parent_info->data->perm == PERM_ANDROID &&
+=======
+	if (!sbi->options.unshared_obb &&
+			parent_info->data->perm == PERM_ANDROID &&
+>>>>>>> p9x
 			qstr_case_eq(&dentry->d_name, &obb)) {
 
 		/* /Android/obb is the base obbpath of DERIVED_UNIFIED */
@@ -468,5 +495,8 @@ int setup_obb_dentry(struct dentry *dentry, struct path *lower_path)
 	}
 	return err;
 }
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> p9x

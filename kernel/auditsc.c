@@ -71,11 +71,15 @@
 #include <linux/capability.h>
 #include <linux/fs_struct.h>
 #include <linux/compat.h>
+<<<<<<< HEAD
 #include <linux/ctype.h>
 #include <linux/uaccess.h>
 #include <linux/string.h>
 #include <linux/uaccess.h>
 #include <uapi/linux/limits.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> p9x
 
 #include "audit.h"
 
@@ -1028,7 +1032,16 @@ static void audit_log_execve_info(struct audit_context *context,
 	unsigned int arg;
 	char *buf_head;
 	char *buf;
+<<<<<<< HEAD
 	const char __user *p = (const char __user *)current->mm->arg_start;
+=======
+	const char __user *p;
+
+	/* NOTE: this buffer needs to be large enough to hold all the non-arg
+	 *       data we put in the audit record for this argument (see the
+	 *       code below) ... at this point in time 96 is plenty */
+	char abuf[96];
+>>>>>>> p9x
 
 	/* NOTE: this buffer needs to be large enough to hold all the non-arg
 	 *       data we put in the audit record for this argument (see the
@@ -1042,6 +1055,16 @@ static void audit_log_execve_info(struct audit_context *context,
 	WARN_ON_ONCE(MAX_EXECVE_AUDIT_LEN > 7500);
 	len_max = MAX_EXECVE_AUDIT_LEN;
 
+<<<<<<< HEAD
+=======
+	/* NOTE: we set MAX_EXECVE_AUDIT_LEN to a rather arbitrary limit, the
+	 *       current value of 7500 is not as important as the fact that it
+	 *       is less than 8k, a setting of 7500 gives us plenty of wiggle
+	 *       room if we go over a little bit in the logging below */
+	WARN_ON_ONCE(MAX_EXECVE_AUDIT_LEN > 7500);
+	len_max = MAX_EXECVE_AUDIT_LEN;
+
+>>>>>>> p9x
 	/* scratch buffer to hold the userspace args */
 	buf_head = kmalloc(MAX_EXECVE_AUDIT_LEN + 1, GFP_KERNEL);
 	if (!buf_head) {
@@ -1050,7 +1073,11 @@ static void audit_log_execve_info(struct audit_context *context,
 	}
 	buf = buf_head;
 
+<<<<<<< HEAD
 	audit_log_format(*ab, "argc=%d", context->execve.argc);
+=======
+	audit_log_format(*ab, "argc=%d", axi->argc);
+>>>>>>> p9x
 
 	len_rem = len_max;
 	len_buf = 0;
@@ -1179,7 +1206,11 @@ static void audit_log_execve_info(struct audit_context *context,
 			require_data = true;
 			encode = false;
 		}
+<<<<<<< HEAD
 	} while (arg < context->execve.argc);
+=======
+	} while (arg < axi->argc);
+>>>>>>> p9x
 
 	/* NOTE: the caller handles the final audit_log_end() call */
 
@@ -1456,8 +1487,11 @@ static void audit_log_exit(struct audit_context *context, struct task_struct *ts
 			continue;
 		audit_log_name(context, n, NULL, i++, &call_panic);
 	}
+<<<<<<< HEAD
 
 	audit_log_proctitle(tsk, context);
+=======
+>>>>>>> p9x
 
 	/* Send end of event record to help user space know we are finished */
 	ab = audit_log_start(context, GFP_KERNEL, AUDIT_EOE);

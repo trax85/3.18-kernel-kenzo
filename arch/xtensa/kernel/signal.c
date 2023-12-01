@@ -341,7 +341,11 @@ static int setup_frame(struct ksignal *ksig, sigset_t *set,
 
 	sp = regs->areg[1];
 
+<<<<<<< HEAD
 	if ((ksig->ka.sa.sa_flags & SA_ONSTACK) != 0 && sas_ss_flags(sp) == 0) {
+=======
+	if ((ka->sa.sa_flags & SA_ONSTACK) != 0 && sas_ss_flags(sp) == 0) {
+>>>>>>> p9x
 		sp = current->sas_ss_sp + current->sas_ss_size;
 	}
 

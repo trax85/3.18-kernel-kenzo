@@ -868,6 +868,7 @@ vhost_scsi_map_iov_to_sgl(struct tcm_vhost_cmd *cmd,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
 vhost_scsi_map_iov_to_prot(struct tcm_vhost_cmd *cmd,
 			   struct iovec *iov,
@@ -909,6 +910,8 @@ vhost_scsi_map_iov_to_prot(struct tcm_vhost_cmd *cmd,
 	return 0;
 }
 
+=======
+>>>>>>> p9x
 static int vhost_scsi_to_tcm_attr(int attr)
 {
 	switch (attr) {
@@ -949,12 +952,20 @@ static void tcm_vhost_submission_work(struct work_struct *work)
 	tv_nexus = cmd->tvc_nexus;
 
 	rc = target_submit_cmd_map_sgls(se_cmd, tv_nexus->tvn_se_sess,
+<<<<<<< HEAD
 			cmd->tvc_cdb, &cmd->tvc_sense_buf[0],
 			cmd->tvc_lun, cmd->tvc_exp_data_len,
 			vhost_scsi_to_tcm_attr(cmd->tvc_task_attr),
 			cmd->tvc_data_direction, TARGET_SCF_ACK_KREF,
 			sg_ptr, cmd->tvc_sgl_count, NULL, 0,
 			sg_prot_ptr, cmd->tvc_prot_sgl_count);
+=======
+			tv_cmd->tvc_cdb, &tv_cmd->tvc_sense_buf[0],
+			tv_cmd->tvc_lun, tv_cmd->tvc_exp_data_len,
+			vhost_scsi_to_tcm_attr(tv_cmd->tvc_task_attr),
+			tv_cmd->tvc_data_direction, 0, sg_ptr,
+			tv_cmd->tvc_sgl_count, sg_bidi_ptr, sg_no_bidi);
+>>>>>>> p9x
 	if (rc < 0) {
 		transport_send_check_condition_and_sense(se_cmd,
 				TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE, 0);
@@ -1191,8 +1202,13 @@ vhost_scsi_handle_vq(struct vhost_scsi *vs, struct vhost_virtqueue *vq)
 			}
 		}
 		if (data_direction != DMA_NONE) {
+<<<<<<< HEAD
 			ret = vhost_scsi_map_iov_to_sgl(cmd,
 					&vq->iov[data_first], data_niov,
+=======
+			ret = vhost_scsi_map_iov_to_sgl(tv_cmd,
+					&vq->iov[data_first], data_num,
+>>>>>>> p9x
 					data_direction == DMA_FROM_DEVICE);
 			if (unlikely(ret)) {
 				vq_err(vq, "Failed to map iov to sgl\n");
@@ -1384,18 +1400,31 @@ vhost_scsi_set_endpoint(struct vhost_scsi *vs,
 			 * go ahead and take an explicit se_tpg->tpg_group.cg_item
 			 * dependency now.
 			 */
+<<<<<<< HEAD
 			se_tpg = &tpg->se_tpg;
+=======
+			se_tpg = &tv_tpg->se_tpg;
+>>>>>>> p9x
 			ret = configfs_depend_item(se_tpg->se_tpg_tfo->tf_subsys,
 						   &se_tpg->tpg_group.cg_item);
 			if (ret) {
 				pr_warn("configfs_depend_item() failed: %d\n", ret);
 				kfree(vs_tpg);
+<<<<<<< HEAD
 				mutex_unlock(&tpg->tv_tpg_mutex);
 				goto out;
 			}
 			tpg->tv_tpg_vhost_count++;
 			tpg->vhost_scsi = vs;
 			vs_tpg[tpg->tport_tpgt] = tpg;
+=======
+				mutex_unlock(&tv_tpg->tv_tpg_mutex);
+				goto out;
+			}
+			tv_tpg->tv_tpg_vhost_count++;
+			tv_tpg->vhost_scsi = vs;
+			vs_tpg[tv_tpg->tport_tpgt] = tv_tpg;
+>>>>>>> p9x
 			smp_mb__after_atomic();
 			match = true;
 		}
@@ -1483,12 +1512,20 @@ vhost_scsi_clear_endpoint(struct vhost_scsi *vs,
 		tpg->vhost_scsi = NULL;
 		vs->vs_tpg[target] = NULL;
 		match = true;
+<<<<<<< HEAD
 		mutex_unlock(&tpg->tv_tpg_mutex);
+=======
+		mutex_unlock(&tv_tpg->tv_tpg_mutex);
+>>>>>>> p9x
 		/*
 		 * Release se_tpg->tpg_group.cg_item configfs dependency now
 		 * to allow vhost-scsi WWPN se_tpg->tpg_group shutdown to occur.
 		 */
+<<<<<<< HEAD
 		se_tpg = &tpg->se_tpg;
+=======
+		se_tpg = &tv_tpg->se_tpg;
+>>>>>>> p9x
 		configfs_undepend_item(se_tpg->se_tpg_tfo->tf_subsys,
 				       &se_tpg->tpg_group.cg_item);
 	}

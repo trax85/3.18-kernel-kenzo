@@ -1492,10 +1492,18 @@ void invalidate_bh_lrus(void)
 }
 EXPORT_SYMBOL_GPL(invalidate_bh_lrus);
 
+<<<<<<< HEAD
 static void evict_bh_lrus(struct buffer_head *bh)
 {
 	on_each_cpu_cond(bh_exists_in_lru, __evict_bh_lru, bh, 1, GFP_ATOMIC);
 }
+=======
+void evict_bh_lrus(struct buffer_head *bh)
+{
+	on_each_cpu_cond(bh_exists_in_lru, __evict_bh_lru, bh, 1, GFP_ATOMIC);
+}
+EXPORT_SYMBOL_GPL(evict_bh_lrus);
+>>>>>>> p9x
 
 void set_bh_page(struct buffer_head *bh,
 		struct page *page, unsigned long offset)

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2013-2014, 2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2013, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -15,6 +19,7 @@
 
 #include <linux/errno.h>
 
+<<<<<<< HEAD
 enum twm_state {
 	PMIC_TWM_CLEAR,
 	PMIC_TWM_ENABLE,
@@ -22,6 +27,9 @@ enum twm_state {
 
 #ifdef CONFIG_QPNP_MISC
 
+=======
+#ifdef CONFIG_QPNP_MISC
+>>>>>>> p9x
 /**
  * qpnp_misc_irqs_available - check if IRQs are available
  *
@@ -35,6 +43,7 @@ enum twm_state {
  */
 
 int qpnp_misc_irqs_available(struct device *consumer_dev);
+<<<<<<< HEAD
 
 /**
  * qpnp_misc_read_reg - read register from misc device
@@ -83,6 +92,10 @@ static inline int qpnp_misc_twm_notifier_register(struct notifier_block *nb)
 	return 0;
 }
 static inline int qpnp_misc_twm_notifier_unregister(struct notifier_block *nb)
+=======
+#else
+static int qpnp_misc_irqs_available(struct device *consumer_dev)
+>>>>>>> p9x
 {
 	return 0;
 }

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2016-2017, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2016, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -137,6 +141,7 @@ static int wcd_gpio_ctrl_probe(struct platform_device *pdev)
 		goto err_lookup_state;
 	}
 
+<<<<<<< HEAD
 	/* skip setting to sleep state for MI2S_AUXPCM_TLMM GPIOs */
 	if (!of_property_read_bool(pdev->dev.of_node,
 				"qcom,mi2s-auxpcm-cdc-gpios")) {
@@ -147,6 +152,14 @@ static int wcd_gpio_ctrl_probe(struct platform_device *pdev)
 			dev_err(&pdev->dev, "%s: set gpio to sleep state fail: %d\n",
 					__func__, ret);
 	}
+=======
+	/* Set pinctrl state to aud_sleep by default */
+	ret = pinctrl_select_state(gpio_data->pinctrl,
+				   gpio_data->pinctrl_sleep);
+	if (ret)
+		dev_err(&pdev->dev, "%s: set cdc gpio sleep state fail: %d\n",
+			__func__, ret);
+>>>>>>> p9x
 
 	dev_set_drvdata(&pdev->dev, gpio_data);
 	return 0;
@@ -190,3 +203,7 @@ module_platform_driver(wcd_gpio_ctrl_driver);
 
 MODULE_DESCRIPTION("WCD GPIO Control module platform driver");
 MODULE_LICENSE("GPL v2");
+<<<<<<< HEAD
+=======
+
+>>>>>>> p9x

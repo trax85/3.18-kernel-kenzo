@@ -4,13 +4,19 @@ Required properties:
 -compatible:	should be "qcom,ipc_router"
 -qcom,node-id:	unique ID to identify the node in network
 
+<<<<<<< HEAD
 Optional properties:
 -qcom,default-peripheral: String property to indicate the default peripheral
 			  to communicate
 
+=======
+>>>>>>> p9x
 Example:
 	qcom,ipc_router {
 		compatible = "qcom,ipc_router";
 		qcom,node-id = <1>;
+<<<<<<< HEAD
 		qcom,default-peripheral = "modem";
+=======
+>>>>>>> p9x
 	};

@@ -220,10 +220,47 @@ static struct trace_array	global_trace;
 LIST_HEAD(ftrace_trace_arrays);
 
 int trace_array_get(struct trace_array *this_tr)
+<<<<<<< HEAD
+=======
 {
 	struct trace_array *tr;
 	int ret = -ENODEV;
 
+	mutex_lock(&trace_types_lock);
+	list_for_each_entry(tr, &ftrace_trace_arrays, list) {
+		if (tr == this_tr) {
+			tr->ref++;
+			ret = 0;
+			break;
+		}
+	}
+	mutex_unlock(&trace_types_lock);
+
+	return ret;
+}
+
+static void __trace_array_put(struct trace_array *this_tr)
+{
+	WARN_ON(!this_tr->ref);
+	this_tr->ref--;
+}
+
+void trace_array_put(struct trace_array *this_tr)
+{
+	mutex_lock(&trace_types_lock);
+	__trace_array_put(this_tr);
+	mutex_unlock(&trace_types_lock);
+}
+
+int filter_current_check_discard(struct ring_buffer *buffer,
+				 struct ftrace_event_call *call, void *rec,
+				 struct ring_buffer_event *event)
+>>>>>>> p9x
+{
+	struct trace_array *tr;
+	int ret = -ENODEV;
+
+<<<<<<< HEAD
 	mutex_lock(&trace_types_lock);
 	list_for_each_entry(tr, &ftrace_trace_arrays, list) {
 		if (tr == this_tr) {
@@ -279,6 +316,9 @@ int call_filter_check_discard(struct ftrace_event_call *call, void *rec,
 EXPORT_SYMBOL_GPL(call_filter_check_discard);
 
 static cycle_t buffer_ftrace_now(struct trace_buffer *buf, int cpu)
+=======
+cycle_t buffer_ftrace_now(struct trace_buffer *buf, int cpu)
+>>>>>>> p9x
 {
 	u64 ts;
 
@@ -427,7 +467,11 @@ unsigned long trace_flags = TRACE_ITER_PRINT_PARENT | TRACE_ITER_PRINTK |
 	TRACE_ITER_GRAPH_TIME | TRACE_ITER_RECORD_CMD | TRACE_ITER_OVERWRITE |
 	TRACE_ITER_IRQ_INFO | TRACE_ITER_MARKERS | TRACE_ITER_FUNCTION;
 
+<<<<<<< HEAD
 static void tracer_tracing_on(struct trace_array *tr)
+=======
+void tracer_tracing_on(struct trace_array *tr)
+>>>>>>> p9x
 {
 	if (tr->trace_buffer.buffer)
 		ring_buffer_record_on(tr->trace_buffer.buffer);
@@ -471,9 +515,12 @@ int __trace_puts(unsigned long ip, const char *str, int size)
 	int alloc;
 	int pc;
 
+<<<<<<< HEAD
 	if (!(trace_flags & TRACE_ITER_PRINTK))
 		return 0;
 
+=======
+>>>>>>> p9x
 	pc = preempt_count();
 
 	if (unlikely(tracing_selftest_running || tracing_disabled))
@@ -524,9 +571,12 @@ int __trace_bputs(unsigned long ip, const char *str)
 	int size = sizeof(struct bputs_entry);
 	int pc;
 
+<<<<<<< HEAD
 	if (!(trace_flags & TRACE_ITER_PRINTK))
 		return 0;
 
+=======
+>>>>>>> p9x
 	pc = preempt_count();
 
 	if (unlikely(tracing_selftest_running || tracing_disabled))
@@ -697,7 +747,11 @@ void tracing_snapshot_alloc(void)
 EXPORT_SYMBOL_GPL(tracing_snapshot_alloc);
 #endif /* CONFIG_TRACER_SNAPSHOT */
 
+<<<<<<< HEAD
 static void tracer_tracing_off(struct trace_array *tr)
+=======
+void tracer_tracing_off(struct trace_array *tr)
+>>>>>>> p9x
 {
 	if (tr->trace_buffer.buffer)
 		ring_buffer_record_off(tr->trace_buffer.buffer);
@@ -741,6 +795,19 @@ void disable_trace_on_warning(void)
  * Shows real state of the ring buffer if it is enabled or not.
  */
 static int tracer_tracing_is_on(struct trace_array *tr)
+{
+	if (tr->trace_buffer.buffer)
+		return ring_buffer_record_is_on(tr->trace_buffer.buffer);
+	return !tr->buffer_disabled;
+}
+
+/**
+ * tracer_tracing_is_on - show real state of ring buffer enabled
+ * @tr : the trace array to know if ring buffer is enabled
+ *
+ * Shows real state of the ring buffer if it is enabled or not.
+ */
+int tracer_tracing_is_on(struct trace_array *tr)
 {
 	if (tr->trace_buffer.buffer)
 		return ring_buffer_record_is_on(tr->trace_buffer.buffer);
@@ -827,12 +894,20 @@ static struct {
 	const char *name;
 	int in_ns;		/* is this clock in nanoseconds? */
 } trace_clocks[] = {
+<<<<<<< HEAD
 	{ trace_clock_local,		"local",	1 },
 	{ trace_clock_global,		"global",	1 },
 	{ trace_clock_counter,		"counter",	0 },
 	{ trace_clock_jiffies,		"uptime",	0 },
 	{ trace_clock,			"perf",		1 },
 	{ ktime_get_mono_fast_ns,	"mono",		1 },
+=======
+	{ trace_clock_local,	"local",	1 },
+	{ trace_clock_global,	"global",	1 },
+	{ trace_clock_counter,	"counter",	0 },
+	{ trace_clock_jiffies,	"uptime",	0 },
+	{ trace_clock,		"perf",		1 },
+>>>>>>> p9x
 	ARCH_TRACE_CLOCKS
 };
 
@@ -1089,14 +1164,22 @@ update_max_tr_single(struct trace_array *tr, struct task_struct *tsk, int cpu)
 }
 #endif /* CONFIG_TRACER_MAX_TRACE */
 
+<<<<<<< HEAD
 static int wait_on_pipe(struct trace_iterator *iter, bool full)
+=======
+static int default_wait_pipe(struct trace_iterator *iter)
+>>>>>>> p9x
 {
 	/* Iterators are static, they should be filled or empty */
 	if (trace_buffer_iter(iter, iter->cpu_file))
 		return 0;
 
+<<<<<<< HEAD
 	return ring_buffer_wait(iter->trace_buffer->buffer, iter->cpu_file,
 				full);
+=======
+	return ring_buffer_wait(iter->trace_buffer->buffer, iter->cpu_file);
+>>>>>>> p9x
 }
 
 #ifdef CONFIG_FTRACE_STARTUP_TEST
@@ -1519,10 +1602,15 @@ static int trace_save_cmdline(struct task_struct *tsk)
 	 * nor do we want to disable interrupts,
 	 * so if we miss here, then better luck next time.
 	 */
+<<<<<<< HEAD
 	if (!arch_spin_trylock(&trace_cmdline_lock)) {
 		preempt_enable();
 		return 0;
 	}
+=======
+	if (!arch_spin_trylock(&trace_cmdline_lock))
+		return 0;
+>>>>>>> p9x
 
 	idx = savedcmd->map_pid_to_cmdline[tsk->pid];
 	if (idx == NO_CMDLINE_MAP) {
@@ -1547,7 +1635,10 @@ static int trace_save_cmdline(struct task_struct *tsk)
 	set_cmdline(idx, tsk->comm);
 	savedcmd->map_cmdline_to_tgid[idx] = tsk->tgid;
 	arch_spin_unlock(&trace_cmdline_lock);
+<<<<<<< HEAD
 	preempt_enable();
+=======
+>>>>>>> p9x
 
 	return 1;
 }
@@ -1573,7 +1664,11 @@ static void __trace_find_cmdline(int pid, char comm[])
 
 	map = savedcmd->map_pid_to_cmdline[pid];
 	if (map != NO_CMDLINE_MAP)
+<<<<<<< HEAD
 		strlcpy(comm, get_saved_cmdlines(map), TASK_COMM_LEN - 1);
+=======
+		strlcpy(comm, saved_cmdlines[map], TASK_COMM_LEN-1);
+>>>>>>> p9x
 	else
 		strcpy(comm, "<...>");
 }
@@ -2232,7 +2327,11 @@ __trace_array_vprintk(struct ring_buffer *buffer,
 
 	memcpy(&entry->buf, tbuffer, len);
 	entry->buf[len] = '\0';
+<<<<<<< HEAD
 	if (!call_filter_check_discard(call, entry, buffer, event)) {
+=======
+	if (!filter_check_discard(call, entry, buffer, event)) {
+>>>>>>> p9x
 		stm_log(OST_ENTITY_TRACE_PRINTK, entry->buf, len + 1);
 		__buffer_unlock_commit(buffer, event);
 		ftrace_trace_stack(buffer, flags, 6, pc);
@@ -3141,16 +3240,23 @@ int tracing_open_generic(struct inode *inode, struct file *filp)
 	return 0;
 }
 
+<<<<<<< HEAD
 bool tracing_is_disabled(void)
 {
 	return (tracing_disabled) ? true: false;
 }
 
+=======
+>>>>>>> p9x
 /*
  * Open and update trace_array ref count.
  * Must have the current trace_array passed to it.
  */
+<<<<<<< HEAD
 static int tracing_open_generic_tr(struct inode *inode, struct file *filp)
+=======
+int tracing_open_generic_tr(struct inode *inode, struct file *filp)
+>>>>>>> p9x
 {
 	struct trace_array *tr = inode->i_private;
 
@@ -4043,9 +4149,15 @@ tracing_saved_tgids_read(struct file *file, char __user *ubuf,
 	return len;
 }
 
+<<<<<<< HEAD
 static const struct file_operations tracing_saved_tgids_fops = {
 	.open	= tracing_open_generic,
 	.read	= tracing_saved_tgids_read,
+=======
+static const struct file_operations tracing_saved_cmdlines_fops = {
+	.open	= tracing_open_generic,
+	.read	= tracing_saved_cmdlines_read,
+>>>>>>> p9x
 	.llseek	= generic_file_llseek,
 };
 
@@ -4562,6 +4674,29 @@ tracing_poll_pipe(struct file *filp, poll_table *poll_table)
 	return trace_poll(iter, filp, poll_table);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * This is a make-shift waitqueue.
+ * A tracer might use this callback on some rare cases:
+ *
+ *  1) the current tracer might hold the runqueue lock when it wakes up
+ *     a reader, hence a deadlock (sched, function, and function graph tracers)
+ *  2) the function tracers, trace all functions, we don't want
+ *     the overhead of calling wake_up and friends
+ *     (and tracing them too)
+ *
+ *     Anyway, this is really very primitive wakeup.
+ */
+int poll_wait_pipe(struct trace_iterator *iter)
+{
+	set_current_state(TASK_INTERRUPTIBLE);
+	/* sleep for 100 msecs, and try again. */
+	schedule_timeout(HZ / 10);
+	return 0;
+}
+
+>>>>>>> p9x
 /* Must be called with trace_types_lock mutex held. */
 static int tracing_wait_pipe(struct file *filp)
 {
@@ -4574,6 +4709,21 @@ static int tracing_wait_pipe(struct file *filp)
 			return -EAGAIN;
 		}
 
+<<<<<<< HEAD
+=======
+		mutex_unlock(&iter->mutex);
+
+		ret = iter->trace->wait_pipe(iter);
+
+		mutex_lock(&iter->mutex);
+
+		if (ret)
+			return ret;
+
+		if (signal_pending(current))
+			return -EINTR;
+
+>>>>>>> p9x
 		/*
 		 * We block until we read something and tracing is disabled.
 		 * We still block if tracing is disabled, but we have never
@@ -4583,7 +4733,11 @@ static int tracing_wait_pipe(struct file *filp)
 		 *
 		 * iter->pos will be 0 if we haven't read anything.
 		 */
+<<<<<<< HEAD
 		if (!tracer_tracing_is_on(iter->tr) && iter->pos)
+=======
+		if (!tracing_is_on() && iter->pos)
+>>>>>>> p9x
 			break;
 
 		mutex_unlock(&iter->mutex);
@@ -4610,13 +4764,6 @@ tracing_read_pipe(struct file *filp, char __user *ubuf,
 	struct trace_array *tr = iter->tr;
 	ssize_t sret;
 
-	/* return any leftover data */
-	sret = trace_seq_to_user(&iter->seq, ubuf, cnt);
-	if (sret != -EBUSY)
-		return sret;
-
-	trace_seq_init(&iter->seq);
-
 	/* copy the tracer to avoid using a global lock all around */
 	mutex_lock(&trace_types_lock);
 	if (unlikely(iter->trace->name != tr->current_trace->name))
@@ -4629,6 +4776,14 @@ tracing_read_pipe(struct file *filp, char __user *ubuf,
 	 * is protected.
 	 */
 	mutex_lock(&iter->mutex);
+
+	/* return any leftover data */
+	sret = trace_seq_to_user(&iter->seq, ubuf, cnt);
+	if (sret != -EBUSY)
+		goto out;
+
+	trace_seq_init(&iter->seq);
+
 	if (iter->trace->read) {
 		sret = iter->trace->read(iter, filp, ubuf, cnt, ppos);
 		if (sret)
@@ -5529,10 +5684,21 @@ tracing_buffers_read(struct file *filp, char __user *ubuf,
 				goto out_unlock;
 			}
 			mutex_unlock(&trace_types_lock);
+<<<<<<< HEAD
 			ret = wait_on_pipe(iter, false);
 			mutex_lock(&trace_types_lock);
 			if (ret) {
 				size = ret;
+=======
+			ret = iter->trace->wait_pipe(iter);
+			mutex_lock(&trace_types_lock);
+			if (ret) {
+				size = ret;
+				goto out_unlock;
+			}
+			if (signal_pending(current)) {
+				size = -EINTR;
+>>>>>>> p9x
 				goto out_unlock;
 			}
 			goto again;
@@ -5664,11 +5830,6 @@ tracing_buffers_splice_read(struct file *file, loff_t *ppos,
 	}
 #endif
 
-	if (splice_grow_spd(pipe, &spd)) {
-		ret = -ENOMEM;
-		goto out;
-	}
-
 	if (*ppos & (PAGE_SIZE - 1)) {
 		ret = -EINVAL;
 		goto out;
@@ -5680,6 +5841,11 @@ tracing_buffers_splice_read(struct file *file, loff_t *ppos,
 			goto out;
 		}
 		len &= PAGE_MASK;
+	}
+
+	if (splice_grow_spd(pipe, &spd)) {
+		ret = -ENOMEM;
+		goto out;
 	}
 
  again:
@@ -5735,18 +5901,30 @@ tracing_buffers_splice_read(struct file *file, loff_t *ppos,
 
 		if ((file->f_flags & O_NONBLOCK) || (flags & SPLICE_F_NONBLOCK)) {
 			ret = -EAGAIN;
-			goto out;
+			goto out_shrink;
 		}
 		mutex_unlock(&trace_types_lock);
+<<<<<<< HEAD
 		ret = wait_on_pipe(iter, true);
 		mutex_lock(&trace_types_lock);
 		if (ret)
 			goto out;
 
+=======
+		ret = iter->trace->wait_pipe(iter);
+		mutex_lock(&trace_types_lock);
+		if (ret)
+			goto out_shrink;
+		if (signal_pending(current)) {
+			ret = -EINTR;
+			goto out_shrink;
+		}
+>>>>>>> p9x
 		goto again;
 	}
 
 	ret = splice_to_pipe(pipe, &spd);
+out_shrink:
 	splice_shrink_spd(&spd);
 out:
 	mutex_unlock(&trace_types_lock);
@@ -6024,7 +6202,11 @@ trace_create_cpu_file(const char *name, umode_t mode, struct dentry *parent,
 }
 
 static void
+<<<<<<< HEAD
 tracing_init_tracefs_percpu(struct trace_array *tr, long cpu)
+=======
+tracing_init_debugfs_percpu(struct trace_array *tr, long cpu)
+>>>>>>> p9x
 {
 	struct dentry *d_percpu = tracing_dentry_percpu(tr, cpu);
 	struct dentry *d_cpu;
@@ -6339,9 +6521,13 @@ rb_simple_write(struct file *filp, const char __user *ubuf,
 
 	if (buffer) {
 		mutex_lock(&trace_types_lock);
+<<<<<<< HEAD
 		if (!!val == tracer_tracing_is_on(tr)) {
 			val = 0; /* do nothing */
 		} else if (val) {
+=======
+		if (val) {
+>>>>>>> p9x
 			tracer_tracing_on(tr);
 			if (tr->current_trace->start)
 				tr->current_trace->start(tr);
@@ -6494,7 +6680,11 @@ static int instance_mkdir(const char *name)
 
 	ret = event_trace_add_tracer(tr->dir, tr);
 	if (ret) {
+<<<<<<< HEAD
 		tracefs_remove_recursive(tr->dir);
+=======
+		debugfs_remove_recursive(tr->dir);
+>>>>>>> p9x
 		goto out_free_tr;
 	}
 
@@ -6561,6 +6751,73 @@ static int instance_rmdir(const char *name)
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static int instance_mkdir (struct inode *inode, struct dentry *dentry, umode_t mode)
+{
+	struct dentry *parent;
+	int ret;
+
+	/* Paranoid: Make sure the parent is the "instances" directory */
+	parent = hlist_entry(inode->i_dentry.first, struct dentry, d_u.d_alias);
+	if (WARN_ON_ONCE(parent != trace_instance_dir))
+		return -ENOENT;
+
+	/*
+	 * The inode mutex is locked, but debugfs_create_dir() will also
+	 * take the mutex. As the instances directory can not be destroyed
+	 * or changed in any other way, it is safe to unlock it, and
+	 * let the dentry try. If two users try to make the same dir at
+	 * the same time, then the new_instance_create() will determine the
+	 * winner.
+	 */
+	mutex_unlock(&inode->i_mutex);
+
+	ret = new_instance_create(dentry->d_iname);
+
+	mutex_lock(&inode->i_mutex);
+
+	return ret;
+}
+
+static int instance_rmdir(struct inode *inode, struct dentry *dentry)
+{
+	struct dentry *parent;
+	int ret;
+
+	/* Paranoid: Make sure the parent is the "instances" directory */
+	parent = hlist_entry(inode->i_dentry.first, struct dentry, d_u.d_alias);
+	if (WARN_ON_ONCE(parent != trace_instance_dir))
+		return -ENOENT;
+
+	/* The caller did a dget() on dentry */
+	mutex_unlock(&dentry->d_inode->i_mutex);
+
+	/*
+	 * The inode mutex is locked, but debugfs_create_dir() will also
+	 * take the mutex. As the instances directory can not be destroyed
+	 * or changed in any other way, it is safe to unlock it, and
+	 * let the dentry try. If two users try to make the same dir at
+	 * the same time, then the instance_delete() will determine the
+	 * winner.
+	 */
+	mutex_unlock(&inode->i_mutex);
+
+	ret = instance_delete(dentry->d_iname);
+
+	mutex_lock_nested(&inode->i_mutex, I_MUTEX_PARENT);
+	mutex_lock(&dentry->d_inode->i_mutex);
+
+	return ret;
+}
+
+static const struct inode_operations instance_dir_inode_operations = {
+	.lookup		= simple_lookup,
+	.mkdir		= instance_mkdir,
+	.rmdir		= instance_rmdir,
+};
+
+>>>>>>> p9x
 static __init void create_trace_instances(struct dentry *d_tracer)
 {
 	trace_instance_dir = tracefs_create_instance_dir("instances", d_tracer,
@@ -6610,6 +6867,7 @@ init_tracer_tracefs(struct trace_array *tr, struct dentry *d_tracer)
 
 	trace_create_file("tracing_on", 0644, d_tracer,
 			  tr, &rb_simple_fops);
+<<<<<<< HEAD
 
 #ifdef CONFIG_TRACER_MAX_TRACE
 	trace_create_file("tracing_max_latency", 0644, d_tracer,
@@ -6618,6 +6876,8 @@ init_tracer_tracefs(struct trace_array *tr, struct dentry *d_tracer)
 
 	if (ftrace_create_function_files(tr, d_tracer))
 		WARN(1, "Could not allocate function filter files");
+=======
+>>>>>>> p9x
 
 #ifdef CONFIG_TRACER_SNAPSHOT
 	trace_create_file("snapshot", 0644, d_tracer,

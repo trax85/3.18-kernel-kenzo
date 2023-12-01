@@ -556,10 +556,13 @@ static void __init realtime_counter_init(void)
 		num = 8;
 		den = 25;
 		break;
+<<<<<<< HEAD
 	case 20000000:
 		num = 192;
 		den = 625;
 		break;
+=======
+>>>>>>> p9x
 	case 26000000:
 		num = 384;
 		den = 1625;

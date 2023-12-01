@@ -3,8 +3,12 @@
  * Copyright 2005-2006, Devicescape Software, Inc.
  * Copyright 2006-2007	Jiri Benc <jbenc@suse.cz>
  * Copyright 2007-2008	Johannes Berg <johannes@sipsolutions.net>
+<<<<<<< HEAD
  * Copyright 2013-2014  Intel Mobile Communications GmbH
  * Copyright 2017	Intel Deutschland GmbH
+=======
+ * Copyright 2015-2017	Intel Deutschland GmbH
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -515,6 +519,7 @@ int ieee80211_key_link(struct ieee80211_key *key,
 {
 	struct ieee80211_local *local = sdata->local;
 	struct ieee80211_key *old_key;
+<<<<<<< HEAD
 	int idx = key->conf.keyidx;
 	bool pairwise = key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE;
 	/*
@@ -524,6 +529,16 @@ int ieee80211_key_link(struct ieee80211_key *key,
 	 */
 	bool delay_tailroom = sdata->vif.type == NL80211_IFTYPE_STATION;
 	int ret;
+=======
+	int idx, ret;
+	bool pairwise;
+
+	BUG_ON(!sdata);
+	BUG_ON(!key);
+
+	pairwise = key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE;
+	idx = key->conf.keyidx;
+>>>>>>> p9x
 
 	mutex_lock(&sdata->local->key_mtx);
 
@@ -538,7 +553,12 @@ int ieee80211_key_link(struct ieee80211_key *key,
 	 * Silently accept key re-installation without really installing the
 	 * new version of the key to avoid nonce reuse or replay issues.
 	 */
+<<<<<<< HEAD
 	if (ieee80211_key_identical(sdata, old_key, key)) {
+=======
+	if (old_key && key->conf.keylen == old_key->conf.keylen &&
+	    !memcmp(key->conf.key, old_key->conf.key, key->conf.keylen)) {
+>>>>>>> p9x
 		ieee80211_key_free_unused(key);
 		ret = 0;
 		goto out;

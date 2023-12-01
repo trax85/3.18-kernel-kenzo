@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -29,14 +33,18 @@
 #include "coresight-priv.h"
 
 #define NO_SINK		(-1)
+<<<<<<< HEAD
 #define CONFIGAUTHSTATUS (0xFB8)
 #define coresight_readl(addr, off) __raw_readl(addr + off)
+=======
+>>>>>>> p9x
 
 static int curr_sink = NO_SINK;
 static LIST_HEAD(coresight_orph_conns);
 static LIST_HEAD(coresight_devs);
 static DEFINE_SEMAPHORE(coresight_mutex);
 
+<<<<<<< HEAD
 bool coresight_authstatus_enabled(void *addr)
 {
 	int ret;
@@ -59,6 +67,8 @@ bool coresight_authstatus_enabled(void *addr)
 }
 EXPORT_SYMBOL(coresight_authstatus_enabled);
 
+=======
+>>>>>>> p9x
 static int coresight_find_link_inport(struct coresight_device *csdev)
 {
 	int i;

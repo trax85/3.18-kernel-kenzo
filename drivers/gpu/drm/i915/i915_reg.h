@@ -2882,6 +2882,7 @@ enum skl_disp_power_wells {
 					GEN6_CXT_EXTENDED_SIZE(cxt_reg) + \
 					GEN6_CXT_PIPELINE_SIZE(cxt_reg))
 #define GEN7_CXT_SIZE		0x21a8
+<<<<<<< HEAD
 #define GEN7_CXT_POWER_SIZE(ctx_reg)	(((ctx_reg) >> 25) & 0x7f)
 #define GEN7_CXT_RING_SIZE(ctx_reg)	(((ctx_reg) >> 22) & 0x7)
 #define GEN7_CXT_RENDER_SIZE(ctx_reg)	(((ctx_reg) >> 16) & 0x3f)
@@ -2889,11 +2890,25 @@ enum skl_disp_power_wells {
 #define GEN7_CXT_GT1_SIZE(ctx_reg)	(((ctx_reg) >> 6) & 0x7)
 #define GEN7_CXT_VFSTATE_SIZE(ctx_reg)	(((ctx_reg) >> 0) & 0x3f)
 #define GEN7_CXT_TOTAL_SIZE(ctx_reg)	(GEN7_CXT_EXTENDED_SIZE(ctx_reg) + \
+=======
+#define GEN7_CXT_POWER_SIZE(ctx_reg)	((ctx_reg >> 25) & 0x7f)
+#define GEN7_CXT_RING_SIZE(ctx_reg)	((ctx_reg >> 22) & 0x7)
+#define GEN7_CXT_RENDER_SIZE(ctx_reg)	((ctx_reg >> 16) & 0x3f)
+#define GEN7_CXT_EXTENDED_SIZE(ctx_reg)	((ctx_reg >> 9) & 0x7f)
+#define GEN7_CXT_GT1_SIZE(ctx_reg)	((ctx_reg >> 6) & 0x7)
+#define GEN7_CXT_VFSTATE_SIZE(ctx_reg)	((ctx_reg >> 0) & 0x3f)
+#define GEN7_CXT_TOTAL_SIZE(ctx_reg)	(GEN7_CXT_POWER_SIZE(ctx_reg) + \
+					 GEN7_CXT_RING_SIZE(ctx_reg) + \
+					 GEN7_CXT_RENDER_SIZE(ctx_reg) + \
+					 GEN7_CXT_EXTENDED_SIZE(ctx_reg) + \
+					 GEN7_CXT_GT1_SIZE(ctx_reg) + \
+>>>>>>> p9x
 					 GEN7_CXT_VFSTATE_SIZE(ctx_reg))
 /* Haswell does have the CXT_SIZE register however it does not appear to be
  * valid. Now, docs explain in dwords what is in the context object. The full
  * size is 70720 bytes, however, the power context and execlist context will
  * never be saved (power context is stored elsewhere, and execlists don't work
+<<<<<<< HEAD
  * on HSW) - so the final size, including the extra state required for the
  * Resource Streamer, is 66944 bytes, which rounds to 17 pages.
  */
@@ -2904,6 +2919,11 @@ enum skl_disp_power_wells {
 #define CHV_CLK_CTL1			0x101100
 #define VLV_CLK_CTL2			0x101104
 #define   CLK_CTL2_CZCOUNT_30NS_SHIFT	28
+=======
+ * on HSW) - so the final size is 66944 bytes, which rounds to 17 pages.
+ */
+#define HSW_CXT_TOTAL_SIZE		(17 * PAGE_SIZE)
+>>>>>>> p9x
 
 /*
  * Overlay regs
@@ -3238,7 +3258,11 @@ enum skl_disp_power_wells {
 #define CRT_HOTPLUG_DETECT_VOLTAGE_325MV	(0 << 2)
 #define CRT_HOTPLUG_DETECT_VOLTAGE_475MV	(1 << 2)
 
+<<<<<<< HEAD
 #define PORT_HOTPLUG_STAT	(dev_priv->info.display_mmio_offset + 0x61114)
+=======
+#define PORT_HOTPLUG_STAT	(dev_priv->info->display_mmio_offset + 0x61114)
+>>>>>>> p9x
 /*
  * HDMI/DP bits are gen4+
  *

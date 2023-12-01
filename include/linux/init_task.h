@@ -166,6 +166,7 @@ extern struct task_group root_task_group;
 # define INIT_RT_MUTEXES(tsk)
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_KASAN
 # define INIT_KASAN(tsk)						\
 	.kasan_depth = 1,
@@ -173,6 +174,8 @@ extern struct task_group root_task_group;
 # define INIT_KASAN(tsk)
 #endif
 
+=======
+>>>>>>> p9x
 /*
  *  INIT_TASK is used to set up the first task table, touch at
  * your own risk!. Base=0, limit=0x1fffff (=2MB)
@@ -243,8 +246,12 @@ extern struct task_group root_task_group;
 	INIT_FTRACE_GRAPH						\
 	INIT_TRACE_RECURSION						\
 	INIT_TASK_RCU_PREEMPT(tsk)					\
+<<<<<<< HEAD
 	INIT_TASK_RCU_TASKS(tsk)					\
 	INIT_CPUSET_SEQ(tsk)						\
+=======
+	INIT_CPUSET_SEQ							\
+>>>>>>> p9x
 	INIT_RT_MUTEXES(tsk)						\
 	INIT_VTIME(tsk)							\
 	INIT_KASAN(tsk)							\

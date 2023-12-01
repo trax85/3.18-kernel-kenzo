@@ -528,6 +528,14 @@ static bool same_amp_caps(struct hda_codec *codec, hda_nid_t nid1,
 		query_amp_caps(codec, nid2, dir));
 }
 
+<<<<<<< HEAD
+=======
+#define nid_has_mute(codec, nid, dir) \
+	check_amp_caps(codec, nid, dir, (AC_AMPCAP_MUTE | AC_AMPCAP_MIN_MUTE))
+#define nid_has_volume(codec, nid, dir) \
+	check_amp_caps(codec, nid, dir, AC_AMPCAP_NUM_STEPS)
+
+>>>>>>> p9x
 /* look for a widget suitable for assigning a mute switch in the path */
 static hda_nid_t look_for_out_mute_nid(struct hda_codec *codec,
 				       struct nid_path *path)
@@ -713,6 +721,7 @@ static void activate_amp(struct hda_codec *codec, hda_nid_t nid, int dir,
 
 	val &= mask;
 	update_amp(codec, nid, dir, idx, mask, val);
+<<<<<<< HEAD
 }
 
 static void check_and_activate_amp(struct hda_codec *codec, hda_nid_t nid,
@@ -723,6 +732,8 @@ static void check_and_activate_amp(struct hda_codec *codec, hda_nid_t nid,
 	if (!enable && is_active_nid(codec, nid, dir, idx_to_check))
 		return;
 	activate_amp(codec, nid, dir, idx, idx_to_check, enable);
+=======
+>>>>>>> p9x
 }
 
 static void activate_amp_out(struct hda_codec *codec, struct nid_path *path,
@@ -915,7 +926,11 @@ static int add_control_with_pfx(struct hda_gen_spec *spec, int type,
 				const char *pfx, const char *dir,
 				const char *sfx, int cidx, unsigned long val)
 {
+<<<<<<< HEAD
 	char name[SNDRV_CTL_ELEM_ID_NAME_MAXLEN];
+=======
+	char name[44];
+>>>>>>> p9x
 	snprintf(name, sizeof(name), "%s %s %s", pfx, dir, sfx);
 	if (!add_control(spec, type, name, cidx, val))
 		return -ENOMEM;

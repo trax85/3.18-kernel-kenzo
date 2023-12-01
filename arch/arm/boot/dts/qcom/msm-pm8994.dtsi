@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2015, 2017 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -48,8 +52,13 @@
 					"resin-bark", "kpdpwr-resin-bark";
 			qcom,pon-dbc-delay = <15625>;
 			qcom,system-reset;
+<<<<<<< HEAD
 			qcom,store-hard-reset-reason;
 			qcom,kpdpwr-sw-debounce;
+=======
+			qcom,s3-debounce = <32>;
+			qcom,s3-src = "kpdpwr-and-resin";
+>>>>>>> p9x
 
 			qcom,pon_1 {
 				qcom,pon-type = <0>;
@@ -338,7 +347,11 @@
 			reg = <0x2800 0x100>;
 		};
 
+<<<<<<< HEAD
 		pm8994_rtc: qcom,pm8994_rtc {
+=======
+		qcom,pm8994_rtc {
+>>>>>>> p9x
 			spmi-dev-container;
 			compatible = "qcom,qpnp-rtc";
 			#address-cells = <1>;

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012-2015 The Linux Foundation. All rights reserved.
+=======
+/* Copyright (c) 2012-2014 The Linux Foundation. All rights reserved.
+>>>>>>> p9x
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -55,7 +59,11 @@
 
 #define JPEG_OFFLINE_CMD_START 0x00000001
 
+<<<<<<< HEAD
 #define JPEG_RESET_DEFAULT 0x00032093
+=======
+#define JPEG_RESET_DEFAULT 0x00030013
+>>>>>>> p9x
 
 #define JPEG_IRQ_DISABLE_ALL 0x00000000
 #define JPEG_IRQ_CLEAR_ALL 0xFFFFFFFF
@@ -104,6 +112,7 @@
 #define JPEG_IRQ_STATUS_ADDR (JPEG_REG_BASE + 0x00000020)
 #define JPEG_IRQ_STATUS_BMSK 0xFFFFFFFF
 
+<<<<<<< HEAD
 #define MSM_JPEG_S0_MMU_PF_ADDR_MIN (JPEG_REG_BASE + 0x00000310)
 #define MSM_JPEG_S0_MMU_PF_ADDR_MIN_BMSK 0xFFFFFFFF
 
@@ -128,6 +137,8 @@
 #define MSM_JPEG_S3_MMU_PF_ADDR_MAX (JPEG_REG_BASE + 0x00000338)
 #define MSM_JPEG_S3_MMU_PF_ADDR_MAX_BMSK 0xFFFFFFFF
 
+=======
+>>>>>>> p9x
 #define JPEG_ENCODE_OUTPUT_SIZE_STATUS_ADDR (JPEG_REG_BASE + 0x00000180)
 #define JPEG_ENCODE_OUTPUT_SIZE_STATUS_BMSK 0x1FFFFFFF
 
@@ -171,7 +182,11 @@
 
 #define JPEGDMA_IRQ_STATUS_ADDR (JPEG_REG_BASE + 0x00000010)
 #define JPEGDMA_IRQ_STATUS_BMSK 0xFFFFFFFF
+<<<<<<< HEAD
 #define JPEGDMA_RESET_DEFAULT 0x00032083
+=======
+#define JPEGDMA_RESET_DEFAULT 0x00030083
+>>>>>>> p9x
 
 
 #define JPEGDMA_CMD_ADDR (JPEG_REG_BASE + 0x0000001C)
@@ -195,6 +210,7 @@
 #define MSM_JPEGDMA_WE_0_WR_PNTR (JPEG_REG_BASE + 0x000000BC)
 #define MSM_JPEGDMA_WE_1_WR_PNTR (JPEG_REG_BASE + 0x000000EC)
 
+<<<<<<< HEAD
 #define MSM_JPEGDMA_S0_MMU_PF_ADDR_MIN (JPEG_REG_BASE + 0x00000190)
 #define MSM_JPEGDMA_S0_MMU_PF_ADDR_MIN_BMSK 0xFFFFFFFF
 
@@ -207,4 +223,6 @@
 #define MSM_JPEGDMA_S1_MMU_PF_ADDR_MAX (JPEG_REG_BASE + 0x000001AC)
 #define MSM_JPEGDMA_S1_MMU_PF_ADDR_MAX_BMSK 0xFFFFFFFF
 
+=======
+>>>>>>> p9x
 #endif /* MSM_JPEG_HW_REG_H */
